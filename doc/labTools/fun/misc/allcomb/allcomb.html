@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of allcomb</title>
+  <meta name="keywords" content="allcomb">
+  <meta name="description" content="ALLCOMB - All combinations">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">allcomb</a> &gt; allcomb.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\allcomb&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>allcomb
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>ALLCOMB - All combinations</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function A = allcomb(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ALLCOMB - All combinations
+    B = ALLCOMB(A1,A2,A3,...,AN) returns all combinations of the elements
+    in the arrays A1, A2, ..., and AN. B is P-by-N matrix where P is the product
+    of the number of elements of the N inputs. 
+    This functionality is also known as the Cartesian Product. The
+    arguments can be numerical and/or characters, or they can be cell arrays.
+
+    Examples:
+       allcomb([1 3 5],[-3 8],[0 1]) % numerical input:
+       % -&gt; [ 1  -3   0
+       %      1  -3   1
+       %      1   8   0
+       %        ...
+       %      5  -3   1
+       %      5   8   1 ] ; % a 12-by-3 array
+
+       allcomb('abc','XY') % character arrays
+       % -&gt; [ aX ; aY ; bX ; bY ; cX ; cY] % a 6-by-2 character array
+
+       allcomb('xy',[65 66]) % a combination -&gt; character output
+       % -&gt; ['xA' ; 'xB' ; 'yA' ; 'yB'] % a 4-by-2 character array
+
+       allcomb({'hello','Bye'},{'Joe', 10:12},{99999 []}) % all cell arrays
+       % -&gt; {  'hello'  'Joe'        [99999]
+       %       'hello'  'Joe'             []
+       %       'hello'  [1x3 double] [99999]
+       %       'hello'  [1x3 double]      []
+       %       'Bye'    'Joe'        [99999]
+       %       'Bye'    'Joe'             []
+       %       'Bye'    [1x3 double] [99999]
+       %       'Bye'    [1x3 double]      [] } ; % a 8-by-3 cell array
+
+    ALLCOMB(..., 'matlab') causes the first column to change fastest which
+    is consistent with matlab indexing. Example: 
+      allcomb(1:2,3:4,5:6,'matlab') 
+      % -&gt; [ 1 3 5 ; 1 4 5 ; 1 3 6 ; ... ; 2 4 6 ]
+
+    If one of the N arguments is empty, ALLCOMB returns a 0-by-N empty array.
+    
+    See also NCHOOSEK, PERMS, NDGRID
+         and NCHOOSE, COMBN, KTHCOMBN (Matlab Central FEX)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParams.html" class="code" title="">DetermineOptimalReconstructAndLabelParams</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li><li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParamsTmp.html" class="code" title="">DetermineOptimalReconstructAndLabelParamsTmp</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = allcomb(varargin)</a>
+0002 
+0003 <span class="comment">% ALLCOMB - All combinations</span>
+0004 <span class="comment">%    B = ALLCOMB(A1,A2,A3,...,AN) returns all combinations of the elements</span>
+0005 <span class="comment">%    in the arrays A1, A2, ..., and AN. B is P-by-N matrix where P is the product</span>
+0006 <span class="comment">%    of the number of elements of the N inputs.</span>
+0007 <span class="comment">%    This functionality is also known as the Cartesian Product. The</span>
+0008 <span class="comment">%    arguments can be numerical and/or characters, or they can be cell arrays.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%    Examples:</span>
+0011 <span class="comment">%       allcomb([1 3 5],[-3 8],[0 1]) % numerical input:</span>
+0012 <span class="comment">%       % -&gt; [ 1  -3   0</span>
+0013 <span class="comment">%       %      1  -3   1</span>
+0014 <span class="comment">%       %      1   8   0</span>
+0015 <span class="comment">%       %        ...</span>
+0016 <span class="comment">%       %      5  -3   1</span>
+0017 <span class="comment">%       %      5   8   1 ] ; % a 12-by-3 array</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%       allcomb('abc','XY') % character arrays</span>
+0020 <span class="comment">%       % -&gt; [ aX ; aY ; bX ; bY ; cX ; cY] % a 6-by-2 character array</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%       allcomb('xy',[65 66]) % a combination -&gt; character output</span>
+0023 <span class="comment">%       % -&gt; ['xA' ; 'xB' ; 'yA' ; 'yB'] % a 4-by-2 character array</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%       allcomb({'hello','Bye'},{'Joe', 10:12},{99999 []}) % all cell arrays</span>
+0026 <span class="comment">%       % -&gt; {  'hello'  'Joe'        [99999]</span>
+0027 <span class="comment">%       %       'hello'  'Joe'             []</span>
+0028 <span class="comment">%       %       'hello'  [1x3 double] [99999]</span>
+0029 <span class="comment">%       %       'hello'  [1x3 double]      []</span>
+0030 <span class="comment">%       %       'Bye'    'Joe'        [99999]</span>
+0031 <span class="comment">%       %       'Bye'    'Joe'             []</span>
+0032 <span class="comment">%       %       'Bye'    [1x3 double] [99999]</span>
+0033 <span class="comment">%       %       'Bye'    [1x3 double]      [] } ; % a 8-by-3 cell array</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%    ALLCOMB(..., 'matlab') causes the first column to change fastest which</span>
+0036 <span class="comment">%    is consistent with matlab indexing. Example:</span>
+0037 <span class="comment">%      allcomb(1:2,3:4,5:6,'matlab')</span>
+0038 <span class="comment">%      % -&gt; [ 1 3 5 ; 1 4 5 ; 1 3 6 ; ... ; 2 4 6 ]</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%    If one of the N arguments is empty, ALLCOMB returns a 0-by-N empty array.</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">%    See also NCHOOSEK, PERMS, NDGRID</span>
+0043 <span class="comment">%         and NCHOOSE, COMBN, KTHCOMBN (Matlab Central FEX)</span>
+0044 
+0045 <span class="comment">% Tested in Matlab R2015a and up</span>
+0046 <span class="comment">% version 4.2 (apr 2018)</span>
+0047 <span class="comment">% (c) Jos van der Geest</span>
+0048 <span class="comment">% email: samelinoa@gmail.com</span>
+0049 
+0050 <span class="comment">% History</span>
+0051 <span class="comment">% 1.1 (feb 2006), removed minor bug when entering empty cell arrays;</span>
+0052 <span class="comment">%     added option to let the first input run fastest (suggestion by JD)</span>
+0053 <span class="comment">% 1.2 (jan 2010), using ii as an index on the left-hand for the multiple</span>
+0054 <span class="comment">%     output by NDGRID. Thanks to Jan Simon, for showing this little trick</span>
+0055 <span class="comment">% 2.0 (dec 2010). Bruno Luong convinced me that an empty input should</span>
+0056 <span class="comment">% return an empty output.</span>
+0057 <span class="comment">% 2.1 (feb 2011). A cell as input argument caused the check on the last</span>
+0058 <span class="comment">%      argument (specifying the order) to crash.</span>
+0059 <span class="comment">% 2.2 (jan 2012). removed a superfluous line of code (ischar(..))</span>
+0060 <span class="comment">% 3.0 (may 2012) removed check for doubles so character arrays are accepted</span>
+0061 <span class="comment">% 4.0 (feb 2014) added support for cell arrays</span>
+0062 <span class="comment">% 4.1 (feb 2016) fixed error for cell array input with last argument being</span>
+0063 <span class="comment">%     'matlab'. Thanks to Richard for pointing this out.</span>
+0064 <span class="comment">% 4.2 (apr 2018) fixed some grammar mistakes in the help and comments</span>
+0065 
+0066 narginchk(1,Inf) ;
+0067 NC = nargin ;
+0068 
+0069 <span class="comment">% check if we should flip the order</span>
+0070 <span class="keyword">if</span> ischar(varargin{end}) &amp;&amp; (strcmpi(varargin{end}, <span class="string">'matlab'</span>) || strcmpi(varargin{end}, <span class="string">'john'</span>))
+0071     <span class="comment">% based on a suggestion by JD on the FEX</span>
+0072     NC = NC-1 ;
+0073     ii = 1:NC ; <span class="comment">% now first argument will change fastest</span>
+0074 <span class="keyword">else</span>
+0075     <span class="comment">% default: enter arguments backwards, so last one (AN) is changing fastest</span>
+0076     ii = NC:-1:1 ;
+0077 <span class="keyword">end</span>
+0078 
+0079 args = varargin(1:NC) ;
+0080 
+0081 <span class="keyword">if</span> any(cellfun(<span class="string">'isempty'</span>, args)) <span class="comment">% check for empty inputs</span>
+0082     warning(<span class="string">'ALLCOMB:EmptyInput'</span>,<span class="string">'One of more empty inputs result in an empty output.'</span>) ;
+0083     A = zeros(0, NC) ;
+0084 <span class="keyword">elseif</span> NC == 0 <span class="comment">% no inputs</span>
+0085     A = zeros(0,0) ; 
+0086 <span class="keyword">elseif</span> NC == 1 <span class="comment">% a single input, nothing to combine</span>
+0087     A = args{1}(:) ; 
+0088 <span class="keyword">else</span>
+0089     isCellInput = cellfun(@iscell, args) ;
+0090     <span class="keyword">if</span> any(isCellInput)
+0091         <span class="keyword">if</span> ~all(isCellInput)
+0092             error(<span class="string">'ALLCOMB:InvalidCellInput'</span>, <span class="keyword">...</span>
+0093                 <span class="string">'For cell input, all arguments should be cell arrays.'</span>) ;
+0094         <span class="keyword">end</span>
+0095         <span class="comment">% for cell input, we use to indices to get all combinations</span>
+0096         ix = cellfun(@(c) 1:numel(c), args, <span class="string">'un'</span>, 0) ;
+0097         
+0098         <span class="comment">% flip using ii if last column is changing fastest</span>
+0099         [ix{ii}] = ndgrid(ix{ii}) ;
+0100         
+0101         A = cell(numel(ix{1}), NC) ; <span class="comment">% pre-allocate the output</span>
+0102         <span class="keyword">for</span> k = 1:NC
+0103             <span class="comment">% combine</span>
+0104             A(:,k) = reshape(args{k}(ix{k}), [], 1) ;
+0105         <span class="keyword">end</span>
+0106     <span class="keyword">else</span>
+0107         <span class="comment">% non-cell input, assuming all numerical values or strings</span>
+0108         <span class="comment">% flip using ii if last column is changing fastest</span>
+0109         [A{ii}] = ndgrid(args{ii}) ;
+0110         <span class="comment">% concatenate</span>
+0111         A = reshape(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(NC+1,A{:}), [], NC) ;
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

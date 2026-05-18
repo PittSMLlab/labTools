@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getVirtualOTS</title>
+  <meta name="keywords" content="getVirtualOTS">
+  <meta name="description" content="getVirtualOTS  Computes virtual markers from model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; getVirtualOTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getVirtualOTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getVirtualOTS  Computes virtual markers from model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getVirtualOTS  Computes virtual markers from model
+
+   virtualOTS = getVirtualOTS(this) computes virtual markers using
+   maximum likelihood estimation
+
+   virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff) uses
+   specified weights and statistics
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       ww - weight for actual data in units of 1/mm^2 (optional,
+            default: 0)
+       meanDiff - mean difference matrix (optional, computed from data)
+       stdDiff - std of differences (optional, computed from data)
+
+   Outputs:
+       virtualOTS - orientedLabTimeSeries with virtual markers
+
+   Note: Uses naive Bayes approach assuming distances are normally
+         distributed
+
+   See also: <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>, <a href="fillGaps.html" class="code" title="function newThis = fillGaps(this, model)">fillGaps</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)</a>
+0002 <span class="comment">%getVirtualOTS  Computes virtual markers from model</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   virtualOTS = getVirtualOTS(this) computes virtual markers using</span>
+0005 <span class="comment">%   maximum likelihood estimation</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff) uses</span>
+0008 <span class="comment">%   specified weights and statistics</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0012 <span class="comment">%       ww - weight for actual data in units of 1/mm^2 (optional,</span>
+0013 <span class="comment">%            default: 0)</span>
+0014 <span class="comment">%       meanDiff - mean difference matrix (optional, computed from data)</span>
+0015 <span class="comment">%       stdDiff - std of differences (optional, computed from data)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       virtualOTS - orientedLabTimeSeries with virtual markers</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: Uses naive Bayes approach assuming distances are normally</span>
+0021 <span class="comment">%         distributed</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: buildNaiveDistancesModel, fillGaps</span>
+0024 
+0025 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ww)
+0026     <span class="comment">% ww represents the weight given to actual data from the marker</span>
+0027     ww = 0;
+0028 <span class="keyword">end</span>
+0029 ll = this.getLabelPrefix;
+0030 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(meanDiff) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stdDiff)
+0031     differences = this.computeDifferenceMatrix([], [], ll, ll);
+0032     meanDiff = nanmean(differences, 1); <span class="comment">% Mean distance</span>
+0033     <span class="comment">% Method: difference Naive Bayes</span>
+0034     stdDiff = nanstd(differences, [], 1);
+0035 <span class="keyword">end</span>
+0036 
+0037 actualData = this.getOrientedData(ll);
+0038 virtualData = nan(size(actualData));
+0039 
+0040 <span class="keyword">for</span> i = 1:length(ll) <span class="comment">% For each marker</span>
+0041     xEstim = nan(size(differences, 1), 3, size(differences, 2));
+0042     w = 1 ./ stdDiff(1, i, :, :).^2;
+0043     w(1, 1, i, :) = ww;
+0044     <span class="keyword">for</span> j = 1:length(ll)
+0045         xEstim(:, :, j) = bsxfun(@<a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>, bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, <span class="keyword">...</span>
+0046             squeeze(actualData(:, j, :)), <span class="keyword">...</span>
+0047             squeeze(meanDiff(1, i, j, :))'), <span class="keyword">...</span>
+0048             squeeze(w(1, 1, j, :))');
+0049     <span class="keyword">end</span>
+0050     aux = any(~isnan(xEstim), 2);
+0051 
+0052     virtualData(:, i, :) = bsxfun(@rdivide, nansum(xEstim, 3), <span class="keyword">...</span>
+0053         squeeze(sum(bsxfun(@<a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>, w, aux), 3)));
+0054 <span class="keyword">end</span>
+0055 virtualOTS = orientedLabTimeSeries.getOTSfromOrientedData(<span class="keyword">...</span>
+0056     virtualData, this.Time(1), this.sampPeriod, ll, this.orientation);
+0057 
+0058 <span class="keyword">end</span>
+0059</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

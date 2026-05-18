@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of addNewParameter</title>
+  <meta name="keywords" content="addNewParameter">
+  <meta name="description" content="addNewParameter  Computes and adds new parameter from existing parameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; addNewParameter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>addNewParameter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>addNewParameter  Computes and adds new parameter from existing parameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = addNewParameter(this, newParamLabel, funHandle,inputParameterLabels, newParamDescription) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">addNewParameter  Computes and adds new parameter from existing parameters
+
+   newThis = addNewParameter(this, newParamLabel, funHandle,
+   inputParameterLabels, newParamDescription) computes new parameter
+   from existing parameters and adds it
+
+   Inputs:
+       this - parameterSeries object
+       newParamLabel - string name for new parameter
+       funHandle - function handle with N input variables
+       inputParameterLabels - cell array of N parameter labels to use
+                              as inputs
+       newParamDescription - description string for new parameter
+
+   Outputs:
+       newThis - parameterSeries with new parameter added
+
+   Example:
+       Define normalized velocity contribution that divides by avg.
+       step time and avg. step velocity, so that velocity contribution is
+       now measure of belt-speed ratio:
+       newThis = this.addNewParameter('newVelocityContribution',
+           @(x,y,z) x ./ (2*y./z), {'velocityContributionAlt',
+           'stepTimeContribution', 'stepTimeDiff'},
+           'velocityContribution normalized to strideTime times
+           average velocity');
+
+   See also: computeNewParameter, <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds new parameters to dataset</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="incorporateDependentParameters.html" class="code" title="function newThis = incorporateDependentParameters(this, labels)">incorporateDependentParameters</a>	incorporateDependentParameters  Adds computed dependent parameters</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = addNewParameter(this, newParamLabel, funHandle, </a><span class="keyword">...</span>
+0002     inputParameterLabels, newParamDescription)
+0003 <span class="comment">%addNewParameter  Computes and adds new parameter from existing parameters</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   newThis = addNewParameter(this, newParamLabel, funHandle,</span>
+0006 <span class="comment">%   inputParameterLabels, newParamDescription) computes new parameter</span>
+0007 <span class="comment">%   from existing parameters and adds it</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - parameterSeries object</span>
+0011 <span class="comment">%       newParamLabel - string name for new parameter</span>
+0012 <span class="comment">%       funHandle - function handle with N input variables</span>
+0013 <span class="comment">%       inputParameterLabels - cell array of N parameter labels to use</span>
+0014 <span class="comment">%                              as inputs</span>
+0015 <span class="comment">%       newParamDescription - description string for new parameter</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       newThis - parameterSeries with new parameter added</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Example:</span>
+0021 <span class="comment">%       Define normalized velocity contribution that divides by avg.</span>
+0022 <span class="comment">%       step time and avg. step velocity, so that velocity contribution is</span>
+0023 <span class="comment">%       now measure of belt-speed ratio:</span>
+0024 <span class="comment">%       newThis = this.addNewParameter('newVelocityContribution',</span>
+0025 <span class="comment">%           @(x,y,z) x ./ (2*y./z), {'velocityContributionAlt',</span>
+0026 <span class="comment">%           'stepTimeContribution', 'stepTimeDiff'},</span>
+0027 <span class="comment">%           'velocityContribution normalized to strideTime times</span>
+0028 <span class="comment">%           average velocity');</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   See also: computeNewParameter, appendData</span>
+0031 
+0032 newData = this.computeNewParameter( <span class="keyword">...</span>
+0033     newParamLabel, funHandle, inputParameterLabels);
+0034 newThis = <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>( <span class="keyword">...</span>
+0035     this, newData, {newParamLabel}, {newParamDescription});
+0036 <span class="keyword">end</span>
+0037</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

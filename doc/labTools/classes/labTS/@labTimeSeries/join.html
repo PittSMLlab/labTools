@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of join</title>
+  <meta name="keywords" content="join">
+  <meta name="description" content="join  Joins cell array of labTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; join.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>join
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>join  Joins cell array of labTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function this = join(labTSCellArray) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">join  Joins cell array of labTimeSeries
+
+   this = join(labTSCellArray) concatenates multiple labTimeSeries
+   along time axis
+
+   Inputs:
+       labTSCellArray - cell array of labTimeSeries objects with
+                        consistent labels and sampling periods
+
+   Outputs:
+       this - joined labTimeSeries
+
+   See also: cat, <a href="concatenate.html" class="code" title="function newThis = concatenate(this, other)">concatenate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function this = join(labTSCellArray)</a>
+0002 <span class="comment">%join  Joins cell array of labTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   this = join(labTSCellArray) concatenates multiple labTimeSeries</span>
+0005 <span class="comment">%   along time axis</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       labTSCellArray - cell array of labTimeSeries objects with</span>
+0009 <span class="comment">%                        consistent labels and sampling periods</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       this - joined labTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: cat, concatenate</span>
+0015 
+0016 masterSampPeriod = labTSCellArray{1}.sampPeriod;
+0017 masterLabels = labTSCellArray{1}.labels;
+0018 newData = labTSCellArray{1}.Data;
+0019 <span class="keyword">for</span> i = 2:length(labTSCellArray(:))
+0020     <span class="comment">% Check sampling rate &amp; dimensions are consistent, and append at</span>
+0021     <span class="comment">% end of data</span>
+0022     <span class="keyword">if</span> all(cellfun(@strcmp, masterLabels, labTSCellArray{i}.labels)) &amp;&amp; <span class="keyword">...</span>
+0023             masterSampPeriod == labTSCellArray{i}.sampPeriod
+0024         newData = [newData; labTSCellArray{i}.Data];
+0025     <span class="keyword">else</span>
+0026         warning([<span class="string">'Element '</span> num2str(i) <span class="string">' of input cell array does not '</span> <span class="keyword">...</span>
+0027             <span class="string">'have labels or sampling period consistent with '</span> <span class="keyword">...</span>
+0028             <span class="string">'other elements.'</span>]);
+0029     <span class="keyword">end</span>
+0030     this = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, labTSCellArray{1}.Time(1), <span class="keyword">...</span>
+0031         masterSampPeriod, masterLabels);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

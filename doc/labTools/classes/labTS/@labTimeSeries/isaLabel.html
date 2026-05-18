@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of isaLabel</title>
+  <meta name="keywords" content="isaLabel">
+  <meta name="description" content="isaLabel  Checks if string is contained in label array">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; isaLabel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>isaLabel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>isaLabel  Checks if string is contained in label array</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [boolFlag, labelIdx] = isaLabel(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">isaLabel  Checks if string is contained in label array
+
+   [boolFlag, labelIdx] = isaLabel(this, label) checks whether
+   specified label(s) exist in the timeseries
+
+   Inputs:
+       this - labTimeSeries object
+       label - string or cell array of label(s) to check
+
+   Outputs:
+       boolFlag - logical vector indicating which labels were found
+       labelIdx - vector of indices for found labels
+
+   See also: <a href="getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">getLabelsThatMatch</a>, <a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@cognitiveData/cognitiveData.html" class="code" title="">cognitiveData</a>	</li><li><a href="../../../../labTools/classes/auxData/@paramData/isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>	isaParameter  Checks if parameter(s) exist in dataset</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [boolFlag, labelIdx] = isaLabel(this, label)</a>
+0002 <span class="comment">%isaLabel  Checks if string is contained in label array</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether</span>
+0005 <span class="comment">%   specified label(s) exist in the timeseries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       label - string or cell array of label(s) to check</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       boolFlag - logical vector indicating which labels were found</span>
+0013 <span class="comment">%       labelIdx - vector of indices for found labels</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: getLabelsThatMatch, getDataAsVector</span>
+0016 
+0017 <span class="keyword">if</span> isa(label, <span class="string">'char'</span>)
+0018     auxLabel{1} = label;
+0019 <span class="keyword">elseif</span> isa(label, <span class="string">'cell'</span>)
+0020     auxLabel = label;
+0021 <span class="keyword">else</span>
+0022     error(<span class="string">'labTimeSeries:isaLabel'</span>, [<span class="string">'label input argument has to be a '</span><span class="keyword">...</span>
+0023         <span class="string">'string or a cell array containing strings.'</span>]);
+0024 <span class="keyword">end</span>
+0025 auxLabel = auxLabel(:);
+0026 N = length(auxLabel);
+0027 M = length(this.labels);
+0028 <span class="comment">% Case in which the list is identical to the label list, save time by</span>
+0029 <span class="comment">% not calling find() recursively. If this is true, it saves about 50ms</span>
+0030 <span class="comment">% per call, or 5 secs every 100 calls. If false, it adds a small</span>
+0031 <span class="comment">% overhead of less than .1ms per call, which is negligible compared to</span>
+0032 <span class="comment">% the loop that needs to be performed.</span>
+0033 <span class="keyword">if</span> N == M &amp;&amp; all(strcmpi(auxLabel, this.labels(:)))
+0034     boolFlag = true(N, 1);
+0035     labelIdx = 1:M;
+0036 <span class="keyword">else</span>
+0037     [boolFlag, labelIdx] = <a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(this.labels, auxLabel);
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

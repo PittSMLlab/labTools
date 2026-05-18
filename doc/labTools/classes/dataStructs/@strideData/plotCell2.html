@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotCell2</title>
+  <meta name="keywords" content="plotCell2">
+  <meta name="description" content="plotCell  Plots cell array of stride data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; plotCell2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@strideData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotCell2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plotCell  Plots cell array of stride data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotCell  Plots cell array of stride data
+
+   plotHandles = plotCell(strides, field, ampNorm,
+   plotHandles, reqElements, color, plotEvents) plots data from
+   multiple strides with various normalization and display
+   options
+
+   Inputs:
+       strides - cell array of strideData objects
+       field - name of field to plot
+       ampNorm - amplitude normalization flag or coefficients
+       plotHandles - handles to plot axes
+       reqElements - elements to plot
+       color - plot color specification
+       plotEvents - flag to overlay gait events
+
+   Outputs:
+       plotHandles - updated plot handles
+
+   See also: <a href="plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>, <a href="cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotHandles = plotCell(strides, field, ampNorm, </a><span class="keyword">...</span>
+0002     plotHandles, reqElements, color, plotEvents)
+0003 <span class="comment">%plotCell  Plots cell array of stride data</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   plotHandles = plotCell(strides, field, ampNorm,</span>
+0006 <span class="comment">%   plotHandles, reqElements, color, plotEvents) plots data from</span>
+0007 <span class="comment">%   multiple strides with various normalization and display</span>
+0008 <span class="comment">%   options</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       strides - cell array of strideData objects</span>
+0012 <span class="comment">%       field - name of field to plot</span>
+0013 <span class="comment">%       ampNorm - amplitude normalization flag or coefficients</span>
+0014 <span class="comment">%       plotHandles - handles to plot axes</span>
+0015 <span class="comment">%       reqElements - elements to plot</span>
+0016 <span class="comment">%       color - plot color specification</span>
+0017 <span class="comment">%       plotEvents - flag to overlay gait events</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Outputs:</span>
+0020 <span class="comment">%       plotHandles - updated plot handles</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: plotCellAvg, cell2mat</span>
+0023 
+0024 <span class="comment">% Method signature only - implementation needed</span>
+0025 plotHandles = [];
+0026 
+0027 <span class="comment">% function [plotHandle, offset, ampCoefs] = plotCell(strides, field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv) % Plot cellarray of stride data</span>
+0028 <span class="comment">%     if nargin &lt; 10</span>
+0029 <span class="comment">%         plotEv = 0;</span>
+0030 <span class="comment">%     end</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%     subplot(plotHandle)</span>
+0033 <span class="comment">%     eval(['testField = strides{1}.' field ';'])</span>
+0034 <span class="comment">%     data = strideData.cell2mat(strides, field, N);</span>
+0035 <span class="comment">%     if numel(ampNorm) &gt; 1</span>
+0036 <span class="comment">%         ampCoefs = ampNorm; % Should check that numel == size(data, 2)</span>
+0037 <span class="comment">%         ampNorm = 1;</span>
+0038 <span class="comment">%     else</span>
+0039 <span class="comment">%         ampCoefs = [];</span>
+0040 <span class="comment">%     end</span>
+0041 <span class="comment">%     if isa(testField, 'labTimeSeries')</span>
+0042 <span class="comment">%         eval(['labels = strides{1}.' field '.getLabels;']);</span>
+0043 <span class="comment">%         if strcmp(field, 'procEMGData')</span>
+0044 <span class="comment">%             data = data * 8;</span>
+0045 <span class="comment">%         end</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">%         if nargin &gt; 6 &amp;&amp; ~isempty(side) % Plot only selected side/labels</span>
+0048 <span class="comment">%             indLabels = false(size(labels));</span>
+0049 <span class="comment">%             for i = 1:length(labels)</span>
+0050 <span class="comment">%                 if isa(side, 'char') % Assuming it is only 'L' or 'R'</span>
+0051 <span class="comment">%                     if strcmp(labels{i}(1), side)</span>
+0052 <span class="comment">%                         indLabels(i) = true; % Only the specified side labels</span>
+0053 <span class="comment">%                     end</span>
+0054 <span class="comment">%                 elseif isa(side, 'cell') &amp;&amp; isa(side{1}, 'char') % List of labels</span>
+0055 <span class="comment">%                     if any(strcmp(labels{i}, side))</span>
+0056 <span class="comment">%                         indLabels(i) = true; % Only the specified side labels</span>
+0057 <span class="comment">%                     end</span>
+0058 <span class="comment">%                 else</span>
+0059 <span class="comment">%                     indLabels(i) = false; % No labels</span>
+0060 <span class="comment">%                 end</span>
+0061 <span class="comment">%             end</span>
+0062 <span class="comment">%         else</span>
+0063 <span class="comment">%             indLabels = true(size(labels)); % All labels</span>
+0064 <span class="comment">%         end</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">%         if nargin &lt; 7</span>
+0067 <span class="comment">%             color = [.5, .5, .5];</span>
+0068 <span class="comment">%         end</span>
+0069 <span class="comment">%         % Do the plot:</span>
+0070 <span class="comment">%         raw = data(:, indLabels == 1, :); % Just one side muscles</span>
+0071 <span class="comment">%         % auxMax = auxMax(:, indLabels == 1, :);</span>
+0072 <span class="comment">%         hold on</span>
+0073 <span class="comment">%         switch sync_norm</span>
+0074 <span class="comment">%             case 0 % Do nothing</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">%             case 1 % Renormalize to swing/stance</span>
+0077 <span class="comment">%                 % To Do</span>
+0078 <span class="comment">%             case 2 % Renormalize to 4 phases</span>
+0079 <span class="comment">%                 % To Do</span>
+0080 <span class="comment">%         end</span>
+0081 <span class="comment">%         switch ampNorm</span>
+0082 <span class="comment">%             case 0 % Do nothing</span>
+0083 <span class="comment">%                 if nargin &gt; 8 &amp;&amp; ~isempty(offset)</span>
+0084 <span class="comment">%                     mOffset = offset;</span>
+0085 <span class="comment">%                 else</span>
+0086 <span class="comment">%                     mOffset = 3 * max(abs(raw(:)));</span>
+0087 <span class="comment">%                 end</span>
+0088 <span class="comment">%                 ampCoefs = 0;</span>
+0089 <span class="comment">%             case 1 % Normalize amplitude to [0, 1] for EACH label/component of data</span>
+0090 <span class="comment">%                 if isempty(ampCoefs)</span>
+0091 <span class="comment">%                     ampCoefs = max(max(abs(raw), [], 1), [], 3);</span>
+0092 <span class="comment">%                     if any(ampCoefs == zeros(size(ampCoefs)))</span>
+0093 <span class="comment">%                         ampCoefs(ampCoefs == 0) = 1 / 100000;</span>
+0094 <span class="comment">%                     end</span>
+0095 <span class="comment">%                 end</span>
+0096 <span class="comment">%                 raw = .9 * raw ./ repmat(ampCoefs, size(raw, 1), 1, size(raw, 3));</span>
+0097 <span class="comment">%                 mOffset = 3;</span>
+0098 <span class="comment">%         end</span>
+0099 <span class="comment">%         for stride = 1:size(raw, 3)</span>
+0100 <span class="comment">%             % Plot</span>
+0101 <span class="comment">%             auxMusc = mOffset * repmat([0:size(raw, 2) - 1], size(raw, 1), 1);</span>
+0102 <span class="comment">%             hh = plot([0:N - 1] / N, auxMusc + raw(:, :, stride), 'Color', color);</span>
+0103 <span class="comment">%             uistack(hh, 'bottom');</span>
+0104 <span class="comment">%             if plotEv == 1</span>
+0105 <span class="comment">%                 % Add events:</span>
+0106 <span class="comment">%                 auxN = [0:N - 1] / N;</span>
+0107 <span class="comment">%                 events = strides{stride}.gaitEvents.resampleN(N).getDataAsVector({'LHS', 'RHS', 'LTO', 'RTO'});</span>
+0108 <span class="comment">%                 plot(auxN(events(:, 1) == 1), auxMusc(events(:, 1) == 1, :) + raw(events(:, 1) == 1, :, stride), 'sy')</span>
+0109 <span class="comment">%                 plot(auxN(events(:, 2) == 1), auxMusc(events(:, 2) == 1, :) + raw(events(:, 2) == 1, :, stride), 'sm')</span>
+0110 <span class="comment">%                 plot(auxN(events(:, 3) == 1), auxMusc(events(:, 3) == 1, :) + raw(events(:, 3) == 1, :, stride), 'sk')</span>
+0111 <span class="comment">%                 plot(auxN(events(:, 4) == 1), auxMusc(events(:, 4) == 1, :) + raw(events(:, 4) == 1, :, stride), 'sg')</span>
+0112 <span class="comment">%             end</span>
+0113 <span class="comment">%         end</span>
+0114 <span class="comment">%         set(gca, 'YTick', mOffset * [0:size(raw, 2) - 1], 'YTickLabel', labels(indLabels == 1));</span>
+0115 <span class="comment">%         axis([0 1 -mOffset / 2 mOffset * size(raw, 2) - mOffset / 2])</span>
+0116 <span class="comment">%         xlabel('% stride')</span>
+0117 <span class="comment">%         ax1 = gca;</span>
+0118 <span class="comment">%         % Add secondary axes for scale: (fancy, matters only if amp is not normalized)</span>
+0119 <span class="comment">%         ax2 = axes('Position', get(ax1, 'Position'), ...</span>
+0120 <span class="comment">%             'XAxisLocation', 'top', ...</span>
+0121 <span class="comment">%             'YAxisLocation', 'right', ...</span>
+0122 <span class="comment">%             'Color', 'none', ...</span>
+0123 <span class="comment">%             'XColor', 'r', 'YColor', 'r');</span>
+0124 <span class="comment">%         linkaxes([ax1, ax2], 'xy')</span>
+0125 <span class="comment">%         auxTick = [-mOffset / 2:mOffset / 4:(mOffset * size(raw, 2) - mOffset / 2)];</span>
+0126 <span class="comment">%         % auxTick(1:4:end) = [];</span>
+0127 <span class="comment">%         for i = 1:length(auxTick)</span>
+0128 <span class="comment">%             if mod(i, 4) == 1</span>
+0129 <span class="comment">%                 auxTickLabel{i} = '';</span>
+0130 <span class="comment">%             else</span>
+0131 <span class="comment">%                 auxTickLabel{i} = (mod(i - 1, 4) - 2) * mOffset / 4;</span>
+0132 <span class="comment">%             end</span>
+0133 <span class="comment">%         end</span>
+0134 <span class="comment">%         set(ax2, 'YTick', auxTick, 'YTickLabel', auxTickLabel);</span>
+0135 <span class="comment">%         set(ax2, 'XTick', []);</span>
+0136 <span class="comment">%         hold off</span>
+0137 <span class="comment">%         offset = mOffset;</span>
+0138 <span class="comment">%     end</span>
+0139 <span class="comment">% end</span>
+0140 <span class="keyword">end</span>
+0141</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

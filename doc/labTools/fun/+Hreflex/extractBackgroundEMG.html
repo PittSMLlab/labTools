@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractBackgroundEMG</title>
+  <meta name="keywords" content="extractBackgroundEMG">
+  <meta name="description" content="EXTRACTBACKGROUNDEMG Extract background EMG snippets before given indices.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; extractBackgroundEMG.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>extractBackgroundEMG
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EXTRACTBACKGROUNDEMG Extract background EMG snippets before given indices.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function snippets = extractBackgroundEMG(inds, rawEMG, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EXTRACTBACKGROUNDEMG Extract background EMG snippets before given indices.
+
+   Extract the snippets of the background EMG from the muscle signal
+ before the indices provided.
+
+ Inputs:
+   inds   - 2-element cell of number of indices x 1 arrays of the
+            indices for which to determine background EMG
+   rawEMG - 2-element cell of number of samples x 1 arrays for right
+            (cell 1) and left (cell 2) leg EMG signal (if one cell is
+            empty, that leg is skipped)
+
+ Optional Name-Value Inputs:
+   dur           - background window duration, s (default: 0.050)
+   numSampsBefore - cell of number of samples to skip before each
+                    index; one cell per leg matching size of inds
+                    (default: zeros, i.e., start window immediately
+                    before each index)
+
+ Outputs:
+   snippets - 2 x 1 cell of number of indices x number of samples
+              arrays for right (row 1) and left (row 2) leg
+              background EMG
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.<a href="extractSnippets.html" class="code" title="function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)">EXTRACTSNIPPETS</a>, COMPUTEHREFLEXPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function snippets = extractBackgroundEMG(inds, rawEMG, options)</a>
+0002 <span class="comment">%EXTRACTBACKGROUNDEMG Extract background EMG snippets before given indices.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Extract the snippets of the background EMG from the muscle signal</span>
+0005 <span class="comment">% before the indices provided.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   inds   - 2-element cell of number of indices x 1 arrays of the</span>
+0009 <span class="comment">%            indices for which to determine background EMG</span>
+0010 <span class="comment">%   rawEMG - 2-element cell of number of samples x 1 arrays for right</span>
+0011 <span class="comment">%            (cell 1) and left (cell 2) leg EMG signal (if one cell is</span>
+0012 <span class="comment">%            empty, that leg is skipped)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Optional Name-Value Inputs:</span>
+0015 <span class="comment">%   dur           - background window duration, s (default: 0.050)</span>
+0016 <span class="comment">%   numSampsBefore - cell of number of samples to skip before each</span>
+0017 <span class="comment">%                    index; one cell per leg matching size of inds</span>
+0018 <span class="comment">%                    (default: zeros, i.e., start window immediately</span>
+0019 <span class="comment">%                    before each index)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   snippets - 2 x 1 cell of number of indices x number of samples</span>
+0023 <span class="comment">%              arrays for right (row 1) and left (row 2) leg</span>
+0024 <span class="comment">%              background EMG</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies:</span>
+0027 <span class="comment">%   None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% See also HREFLEX.EXTRACTSNIPPETS, COMPUTEHREFLEXPARAMETERS.</span>
+0030 
+0031 arguments
+0032     inds   cell
+0033     rawEMG cell
+0034     options.dur           (1,1) double {mustBePositive} = 0.050 <span class="comment">% s</span>
+0035     options.numSampsBefore        = []
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">if</span> all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, inds)) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, rawEMG))
+0039     error(<span class="string">'Missing critical data for extracting background EMG.'</span>);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">%% Resolve Optional Parameters</span>
+0043 dur = options.dur;
+0044 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(options.numSampsBefore)
+0045     numSampsBefore = cellfun(@(x) zeros(size(x)), inds, <span class="keyword">...</span>
+0046         <span class="string">'UniformOutput'</span>, false);
+0047 <span class="keyword">else</span>
+0048     numSampsBefore = options.numSampsBefore;
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">%% Compute Snippet Parameters</span>
+0052 <span class="comment">% NOTE: assuming sampling period remains constant</span>
+0053 period    = 0.0005;                     <span class="comment">% sampling period (seconds)</span>
+0054 numSamps  = round(dur / period);        <span class="comment">% number of samples in the window</span>
+0055 snippets  = cell(2, 1);                 <span class="comment">% preallocate output cell array</span>
+0056 
+0057 <span class="comment">%% Extract Background EMG for Each Leg</span>
+0058 <span class="keyword">for</span> leg = 1:2                           <span class="comment">% for right and left leg, ...</span>
+0059     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(inds{leg}) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG{leg})   <span class="comment">% if missing data, ...</span>
+0060         snippets{leg} = [];             <span class="comment">% return empty array</span>
+0061         <span class="keyword">continue</span>;                       <span class="comment">% advance to next leg</span>
+0062     <span class="keyword">end</span>
+0063 
+0064     numInds  = numel(inds{leg});        <span class="comment">% number of indices for current leg</span>
+0065     snipLeg  = nan(numInds, numSamps);  <span class="comment">% initialize snippet array for leg</span>
+0066     <span class="keyword">for</span> ii = 1:numInds                  <span class="comment">% for each index, ...</span>
+0067         numSkip = numSampsBefore{leg}(ii);  <span class="comment">% number of samples to skip</span>
+0068         <span class="comment">% relative window start and end index</span>
+0069         relStart = -numSamps - numSkip + 1;
+0070         relEnd   = -numSkip;
+0071         win = (inds{leg}(ii) + relStart):(inds{leg}(ii) + relEnd);
+0072         <span class="comment">% check boundaries: if window exceeds signal limits, fill with NaN</span>
+0073         valid = (win &gt;= 1) &amp; (win &lt;= numel(rawEMG{leg}));
+0074         temp = nan(1, numSamps);        <span class="comment">% preallocate temporary snippets</span>
+0075         <span class="keyword">if</span> any(valid)
+0076             temp(valid) = rawEMG{leg}(win(valid));
+0077         <span class="keyword">end</span>
+0078         snipLeg(ii, :) = temp;
+0079     <span class="keyword">end</span>
+0080     snippets{leg} = snipLeg;
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

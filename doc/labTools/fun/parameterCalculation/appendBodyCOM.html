@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of appendBodyCOM</title>
+  <meta name="keywords" content="appendBodyCOM">
+  <meta name="description" content="APPENDBODYCOM Approximate whole-body center of mass from marker data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; appendBodyCOM.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>appendBodyCOM
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>APPENDBODYCOM Approximate whole-body center of mass from marker data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function markerDataOut = appendBodyCOM(markerData, BW) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">APPENDBODYCOM Approximate whole-body center of mass from marker data.
+
+   Estimates the whole-body center of mass (COM) from kinematic marker
+ data using segment inertial parameters. If a HAT (head-arms-trunk)
+ marker is present, the COM is computed from six body segments (foot,
+ shank, and thigh bilaterally plus HAT) using anthropometric fractions
+ from Winter and USAARL-88-5. If no HAT marker is present, the average
+ hip marker position is used as a proxy. Arm motion is assumed to
+ cancel (arms swing in opposite phase) and is excluded from the
+ computation. The computed body COM (BCOMx/y/z) is appended to the
+ input dataset.
+
+ Inputs:
+   markerData - orientedLabTimeSeries containing marker trajectories;
+                must include RHIP and LHIP; if HAT is present, RANK,
+                LANK, RKNE, LKNE, RTOE, and LTOE are also required
+   BW         - subject body weight (kg)
+
+ Outputs:
+   markerDataOut - input markerData with channels BCOMx, BCOMy, and
+                   BCOMz appended
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">COMPUTECOM</a>, APPENDDATA, ORIENTEDLABTIMESERIES.
+
+ Author: CJS 5/2017</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds new parameters to dataset</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">computeCOM</a>	COMPUTECOM Compute stride-by-stride COM kinematics relative to each ankle.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerDataOut = appendBodyCOM(markerData, BW)</a>
+0002 <span class="comment">%APPENDBODYCOM Approximate whole-body center of mass from marker data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Estimates the whole-body center of mass (COM) from kinematic marker</span>
+0005 <span class="comment">% data using segment inertial parameters. If a HAT (head-arms-trunk)</span>
+0006 <span class="comment">% marker is present, the COM is computed from six body segments (foot,</span>
+0007 <span class="comment">% shank, and thigh bilaterally plus HAT) using anthropometric fractions</span>
+0008 <span class="comment">% from Winter and USAARL-88-5. If no HAT marker is present, the average</span>
+0009 <span class="comment">% hip marker position is used as a proxy. Arm motion is assumed to</span>
+0010 <span class="comment">% cancel (arms swing in opposite phase) and is excluded from the</span>
+0011 <span class="comment">% computation. The computed body COM (BCOMx/y/z) is appended to the</span>
+0012 <span class="comment">% input dataset.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   markerData - orientedLabTimeSeries containing marker trajectories;</span>
+0016 <span class="comment">%                must include RHIP and LHIP; if HAT is present, RANK,</span>
+0017 <span class="comment">%                LANK, RKNE, LKNE, RTOE, and LTOE are also required</span>
+0018 <span class="comment">%   BW         - subject body weight (kg)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   markerDataOut - input markerData with channels BCOMx, BCOMy, and</span>
+0022 <span class="comment">%                   BCOMz appended</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies:</span>
+0025 <span class="comment">%   None</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also COMPUTECOM, APPENDDATA, ORIENTEDLABTIMESERIES.</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Author: CJS 5/2017</span>
+0030 
+0031 arguments
+0032     markerData (1,1)
+0033     BW         (1,1) double
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Get Orientation and Hip Markers</span>
+0037 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerData.orientation)
+0038     warning(<span class="string">'appendBodyCOM:noOrientation'</span>, <span class="keyword">...</span>
+0039         <span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0040     orientation = <a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0, 0, 0], <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, 1, 1, 1);
+0041 <span class="keyword">else</span>
+0042     orientation = markerData.orientation;
+0043 <span class="keyword">end</span>
+0044 
+0045 rHip = markerData.getDataAsVector({ <span class="keyword">...</span>
+0046     [<span class="string">'RHIP'</span> orientation.sideAxis], <span class="keyword">...</span>
+0047     [<span class="string">'RHIP'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0048     [<span class="string">'RHIP'</span> orientation.updownAxis]});
+0049 rHip = [orientation.sideSign    * rHip(:, 1), <span class="keyword">...</span>
+0050     orientation.foreaftSign * rHip(:, 2), <span class="keyword">...</span>
+0051     orientation.updownSign  * rHip(:, 3)];
+0052 lHip = markerData.getDataAsVector({ <span class="keyword">...</span>
+0053     [<span class="string">'LHIP'</span> orientation.sideAxis], <span class="keyword">...</span>
+0054     [<span class="string">'LHIP'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0055     [<span class="string">'LHIP'</span> orientation.updownAxis]});
+0056 lHip = [orientation.sideSign    * lHip(:, 1), <span class="keyword">...</span>
+0057     orientation.foreaftSign * lHip(:, 2), <span class="keyword">...</span>
+0058     orientation.updownSign  * lHip(:, 3)];
+0059 
+0060 <span class="comment">%% Compute Body Center of Mass</span>
+0061 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerData.getLabelsThatMatch(<span class="string">'HAT'</span>))
+0062     <span class="comment">% No HAT marker: use mean hip position as a proxy.</span>
+0063     <span class="comment">% NOTE: pelvis ASIS/PSIS markers would be more accurate, but hip</span>
+0064     <span class="comment">%   markers are more reliably present in typical datasets</span>
+0065     warning(<span class="string">'appendBodyCOM:insufficientMarkers'</span>, <span class="keyword">...</span>
+0066         [<span class="string">'Not enough markers to compute the COM; '</span> <span class="keyword">...</span>
+0067         <span class="string">'using average hip position as proxy.'</span>]);
+0068     bCOM = [<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip(:, 1) lHip(:, 1)], 2), <span class="keyword">...</span>
+0069         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip(:, 2) lHip(:, 2)], 2), <span class="keyword">...</span>
+0070         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip(:, 3) lHip(:, 3)], 2)];
+0071 
+0072 <span class="keyword">else</span>
+0073     <span class="comment">%% Compute Segment Centers of Mass</span>
+0074     <span class="comment">% Retrieve segment marker data (ankle, knee, toe, HAT)</span>
+0075     rAnk = markerData.getDataAsVector({ <span class="keyword">...</span>
+0076         [<span class="string">'RANK'</span> orientation.sideAxis], <span class="keyword">...</span>
+0077         [<span class="string">'RANK'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0078         [<span class="string">'RANK'</span> orientation.updownAxis]});
+0079     rAnk = [orientation.sideSign    * rAnk(:, 1), <span class="keyword">...</span>
+0080         orientation.foreaftSign * rAnk(:, 2), <span class="keyword">...</span>
+0081         orientation.updownSign  * rAnk(:, 3)];
+0082     lAnk = markerData.getDataAsVector({ <span class="keyword">...</span>
+0083         [<span class="string">'LANK'</span> orientation.sideAxis], <span class="keyword">...</span>
+0084         [<span class="string">'LANK'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0085         [<span class="string">'LANK'</span> orientation.updownAxis]});
+0086     lAnk = [orientation.sideSign    * lAnk(:, 1), <span class="keyword">...</span>
+0087         orientation.foreaftSign * lAnk(:, 2), <span class="keyword">...</span>
+0088         orientation.updownSign  * lAnk(:, 3)];
+0089     rKnee = markerData.getDataAsVector({ <span class="keyword">...</span>
+0090         [<span class="string">'RKNE'</span> orientation.sideAxis], <span class="keyword">...</span>
+0091         [<span class="string">'RKNE'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0092         [<span class="string">'RKNE'</span> orientation.updownAxis]});
+0093     rKnee = [orientation.sideSign    * rKnee(:, 1), <span class="keyword">...</span>
+0094         orientation.foreaftSign * rKnee(:, 2), <span class="keyword">...</span>
+0095         orientation.updownSign  * rKnee(:, 3)];
+0096     lKnee = markerData.getDataAsVector({ <span class="keyword">...</span>
+0097         [<span class="string">'LKNE'</span> orientation.sideAxis], <span class="keyword">...</span>
+0098         [<span class="string">'LKNE'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0099         [<span class="string">'LKNE'</span> orientation.updownAxis]});
+0100     lKnee = [orientation.sideSign    * lKnee(:, 1), <span class="keyword">...</span>
+0101         orientation.foreaftSign * lKnee(:, 2), <span class="keyword">...</span>
+0102         orientation.updownSign  * lKnee(:, 3)];
+0103     rToe = markerData.getDataAsVector({ <span class="keyword">...</span>
+0104         [<span class="string">'RTOE'</span> orientation.sideAxis], <span class="keyword">...</span>
+0105         [<span class="string">'RTOE'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0106         [<span class="string">'RTOE'</span> orientation.updownAxis]});
+0107     rToe = [orientation.sideSign    * rToe(:, 1), <span class="keyword">...</span>
+0108         orientation.foreaftSign * rToe(:, 2), <span class="keyword">...</span>
+0109         orientation.updownSign  * rToe(:, 3)];
+0110     lToe = markerData.getDataAsVector({ <span class="keyword">...</span>
+0111         [<span class="string">'LTOE'</span> orientation.sideAxis], <span class="keyword">...</span>
+0112         [<span class="string">'LTOE'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0113         [<span class="string">'LTOE'</span> orientation.updownAxis]});
+0114     lToe = [orientation.sideSign    * lToe(:, 1), <span class="keyword">...</span>
+0115         orientation.foreaftSign * lToe(:, 2), <span class="keyword">...</span>
+0116         orientation.updownSign  * lToe(:, 3)];
+0117     hatPos = markerData.getDataAsVector({ <span class="keyword">...</span>
+0118         [<span class="string">'HAT'</span> orientation.sideAxis], <span class="keyword">...</span>
+0119         [<span class="string">'HAT'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0120         [<span class="string">'HAT'</span> orientation.updownAxis]});
+0121     hatPos = [orientation.sideSign    * hatPos(:, 1), <span class="keyword">...</span>
+0122         orientation.foreaftSign * hatPos(:, 2), <span class="keyword">...</span>
+0123         orientation.updownSign  * hatPos(:, 3)];
+0124 
+0125     <span class="comment">% Segment COM fractions from distal to proximal endpoint (Winter 1990)</span>
+0126     footCOMFrac  = 0.5;       <span class="comment">% foot COM: midpoint between ankle and toe</span>
+0127     shankCOMFrac = 0.567;     <span class="comment">% shank COM: 56.7% from ankle toward knee</span>
+0128     thighCOMFrac = 0.567;     <span class="comment">% thigh COM: 56.7% from knee toward hip</span>
+0129     <span class="comment">% NOTE: verify shank and thigh fractions; 0.567 may need recalculation</span>
+0130     hatCOMFrac   = 1 - 0.697; <span class="comment">% HAT COM: 30.3% from HAT marker toward hip</span>
+0131     <span class="comment">% (fraction derived from Winter and USAARL-88-5 pilot data)</span>
+0132 
+0133     rFootCOM  = abs(rAnk  - rToe)  .* footCOMFrac  + rToe;
+0134     lFootCOM  = abs(lAnk  - lToe)  .* footCOMFrac  + lToe;
+0135     rShankCOM = abs(rKnee - rAnk)  .* shankCOMFrac + rAnk;
+0136     lShankCOM = abs(lKnee - lAnk)  .* shankCOMFrac + lAnk;
+0137     rThighCOM = abs(rHip  - rKnee) .* thighCOMFrac + rKnee;
+0138     lThighCOM = abs(lHip  - lKnee) .* thighCOMFrac + lKnee;
+0139 
+0140     hipMidpoint = (rHip + lHip) ./ 2;
+0141     hipMeanPos  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip; lHip], <span class="string">'omitnan'</span>);  <span class="comment">% grand mean of all hip samples</span>
+0142     hatCOM = abs(hipMidpoint - hatPos) .* hatCOMFrac + hipMeanPos;
+0143 
+0144     <span class="comment">%% Compile Whole-Body Center of Mass</span>
+0145     <span class="comment">% Segment mass fractions (Winter 1990 anthropometric tables)</span>
+0146     footMassFrac  = 0.0145;  <span class="comment">% foot mass as fraction of BW</span>
+0147     shankMassFrac = 0.0465;  <span class="comment">% shank mass as fraction of BW</span>
+0148     thighMassFrac = 0.1;     <span class="comment">% thigh mass as fraction of BW</span>
+0149     hatMassFrac   = 0.71;    <span class="comment">% HAT mass as fraction of BW</span>
+0150 
+0151     footWeight  = footMassFrac  .* BW;
+0152     shankWeight = shankMassFrac .* BW;
+0153     thighWeight = thighMassFrac .* BW;
+0154     hatWeight   = hatMassFrac   .* BW;
+0155 
+0156     rightLegCOM = rFootCOM*footWeight + rShankCOM*shankWeight + <span class="keyword">...</span>
+0157         rThighCOM*thighWeight;
+0158     leftLegCOM  = lFootCOM*footWeight + lShankCOM*shankWeight + <span class="keyword">...</span>
+0159         lThighCOM*thighWeight;
+0160     bodyCOM = (1/BW) .* <span class="keyword">...</span>
+0161         (rightLegCOM + leftLegCOM + hatCOM*hatWeight);
+0162     bCOM = bodyCOM;
+0163 
+0164     <span class="comment">% CJS note: change here to change what is stored in the COM dataset</span>
+0165     segCOMData = [rFootCOM lFootCOM rShankCOM lShankCOM <span class="keyword">...</span>
+0166         rThighCOM lThighCOM hatCOM bodyCOM];
+0167     segLabels = { <span class="keyword">...</span>
+0168         <span class="string">'RfCOMx'</span>, <span class="string">'RfCOMy'</span>, <span class="string">'RfCOMz'</span>, <span class="keyword">...</span>
+0169         <span class="string">'LfCOMx'</span>, <span class="string">'LfCOMy'</span>, <span class="string">'LfCOMz'</span>, <span class="keyword">...</span>
+0170         <span class="string">'RsCOMx'</span>, <span class="string">'RsCOMy'</span>, <span class="string">'RsCOMz'</span>, <span class="keyword">...</span>
+0171         <span class="string">'LsCOMx'</span>, <span class="string">'LsCOMy'</span>, <span class="string">'LsCOMz'</span>, <span class="keyword">...</span>
+0172         <span class="string">'RtCOMx'</span>, <span class="string">'RtCOMy'</span>, <span class="string">'RtCOMz'</span>, <span class="keyword">...</span>
+0173         <span class="string">'LtCOMx'</span>, <span class="string">'LtCOMy'</span>, <span class="string">'LtCOMz'</span>, <span class="keyword">...</span>
+0174         <span class="string">'HATCOMx'</span>, <span class="string">'HATCOMy'</span>, <span class="string">'HATCOMz'</span>, <span class="keyword">...</span>
+0175         <span class="string">'BCOMx'</span>, <span class="string">'BCOMy'</span>, <span class="string">'BCOMz'</span>};
+0176 <span class="keyword">end</span>
+0177 
+0178 <span class="comment">%% Append Body COM to Marker Dataset</span>
+0179 labelsBody    = {<span class="string">'BCOMx'</span>, <span class="string">'BCOMy'</span>, <span class="string">'BCOMz'</span>};
+0180 <span class="comment">% Pablo: creating orientedLabTS</span>
+0181 <span class="comment">% COMTS = orientedLabTimeSeries(segCOMData, markerData.Time(1), ...</span>
+0182 <span class="comment">%     markerData.sampPeriod, segLabels(:), markerData.orientation);</span>
+0183 markerDataOut = <a href="../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>( <span class="keyword">...</span>
+0184     markerData, bCOM, labelsBody, markerData.orientation);
+0185 
+0186 <span class="keyword">end</span>
+0187</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

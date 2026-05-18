@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of appendData</title>
+  <meta name="keywords" content="appendData">
+  <meta name="description" content="appendData  Adds new parameters to dataset">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">auxData</a> &gt; <a href="index.html">@paramData</a> &gt; appendData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\auxData\@paramData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>appendData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>appendData  Adds new parameters to dataset</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = appendData(this, newData, newLabels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">appendData  Adds new parameters to dataset
+
+   newThis = appendData(this, newData, newLabels) creates a new
+   paramData object with additional parameters appended
+
+   Inputs:
+       this - paramData object
+       newData - matrix of new parameter values (same number of rows
+                 as existing Data)
+       newLabels - cell array of labels for new parameters
+
+   Outputs:
+       newThis - paramData object with appended data
+
+   See also: <a href="paramData.html" class="code" title="">paramData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="paramData.html" class="code" title="">paramData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/addNewParameter.html" class="code" title="function [newThis, newData] = addNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">addNewParameter</a>	addNewParameter  Adds computed parameter from existing data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/addNewParameter.html" class="code" title="function newThis = addNewParameter(this, newParamLabel, funHandle,inputParameterLabels, newParamDescription)">addNewParameter</a>	addNewParameter  Computes and adds new parameter from existing parameters</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/linearStretch.html" class="code" title="function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)">linearStretch</a>	linearStretch  Linearly transforms parameter values</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/appendBodyCOM.html" class="code" title="function markerDataOut = appendBodyCOM(markerData, BW)">appendBodyCOM</a>	APPENDBODYCOM Approximate whole-body center of mass from marker data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = appendData(this, newData, newLabels)</a>
+0002 <span class="comment">%appendData  Adds new parameters to dataset</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = appendData(this, newData, newLabels) creates a new</span>
+0005 <span class="comment">%   paramData object with additional parameters appended</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - paramData object</span>
+0009 <span class="comment">%       newData - matrix of new parameter values (same number of rows</span>
+0010 <span class="comment">%                 as existing Data)</span>
+0011 <span class="comment">%       newLabels - cell array of labels for new parameters</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       newThis - paramData object with appended data</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: paramData</span>
+0017 
+0018 newThis = <a href="paramData.html" class="code" title="">paramData</a>([this.Data newData], [this.labels newLabels], <span class="keyword">...</span>
+0019     this.indsInTrial, this.trialTypes);
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

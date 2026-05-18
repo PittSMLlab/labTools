@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkLabelSanity</title>
+  <meta name="keywords" content="checkLabelSanity">
+  <meta name="description" content="checkLabelSanity  Validates label format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; checkLabelSanity.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>checkLabelSanity
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>checkLabelSanity  Validates label format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function labelSane = checkLabelSanity(labels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">checkLabelSanity  Validates label format
+
+   labelSane = checkLabelSanity(labels) checks that labels are in
+   expected format for oriented data
+
+   Inputs:
+       labels - cell array of label strings
+
+   Outputs:
+       labelSane - true if labels pass all checks, false otherwise
+
+   Note: Checks that: (1) label count is multiple of 3, (2) labels end
+         in x, y, z in that order, (3) labels have same prefix in
+         groups of 3
+
+   See also: <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">addLabelSuffix</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function labelSane = checkLabelSanity(labels)</a>
+0002 <span class="comment">%checkLabelSanity  Validates label format</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   labelSane = checkLabelSanity(labels) checks that labels are in</span>
+0005 <span class="comment">%   expected format for oriented data</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       labels - cell array of label strings</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       labelSane - true if labels pass all checks, false otherwise</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Note: Checks that: (1) label count is multiple of 3, (2) labels end</span>
+0014 <span class="comment">%         in x, y, z in that order, (3) labels have same prefix in</span>
+0015 <span class="comment">%         groups of 3</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: addLabelSuffix</span>
+0018 
+0019 labelSane = true;
+0020 <span class="comment">% Check: labels is a multiple of 3</span>
+0021 <span class="keyword">if</span> mod(length(labels), 3) ~= 0
+0022     warning([<span class="string">'Label length is not a multiple of 3, therefore they '</span> <span class="keyword">...</span>
+0023         <span class="string">'can''t correspond to 3D oriented data.'</span>]);
+0024     labelSane = false;
+0025     <span class="keyword">return</span>;
+0026 <span class="keyword">end</span>
+0027 <span class="comment">% Check: all labels end in 'x', 'y' or 'z'</span>
+0028 <span class="comment">% Should be 'x', 'y', 'z'</span>
+0029 aux2 = cellfun(@(x) x(end), labels, <span class="string">'UniformOutput'</span>, false);
+0030 <span class="keyword">if</span> any(~strcmp(aux2(1:3:end), <span class="string">'x'</span>)) || <span class="keyword">...</span>
+0031         any(~strcmp(aux2(2:3:end), <span class="string">'y'</span>)) || <span class="keyword">...</span>
+0032         any(~strcmp(aux2(3:3:end), <span class="string">'z'</span>))
+0033     warning([<span class="string">'Labels do not end in ''x'', ''y'', or ''z'' or in '</span> <span class="keyword">...</span>
+0034         <span class="string">'that order, as expected.'</span>]);
+0035     labelSane = false;
+0036     <span class="keyword">return</span>;
+0037 <span class="keyword">end</span>
+0038 <span class="comment">% Check: and labels have the same prefix in groups of 3</span>
+0039 aux = cellfun(@(x) x(1:end - 1), labels, <span class="string">'UniformOutput'</span>, false);
+0040 labelsx = aux(1:3:end);
+0041 labelsy = aux(2:3:end);
+0042 labelsz = aux(3:3:end);
+0043 <span class="keyword">if</span> any(~strcmp(labelsx, labelsy)) || any(~strcmp(labelsx, labelsz))
+0044     labelSane = false;
+0045     <span class="keyword">return</span>;
+0046 <span class="keyword">end</span>
+0047 <span class="keyword">end</span>
+0048</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

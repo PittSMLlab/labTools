@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; gaitMovieHH.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc\hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>gaitMovieHH
 </h1>
@@ -44,7 +44,7 @@ but on opposite sides of vertical axis</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>	drawball  Draws 3D sphere</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>	drawsegment  Draws 3D ellipsoid segment</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -202,19 +202,19 @@ This function is called by:
 0145             X = [Marker.([s joint1]).X(i) Marker.([s joint2]).X(i)];
 0146             Y = [Marker.([s joint1]).Y(i) Marker.([s joint2]).Y(i)];
 0147             Z = [Marker.([s joint1]).Z(i) Marker.([s joint2]).Z(i)];
-0148             <a href="#_sub1" class="code" title="subfunction drawsegment(h_axes,X1,Y1,Z1,a,color)">drawsegment</a>(gca,X,Y,Z,radius,colorLegs)
+0148             <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>(gca,X,Y,Z,radius,colorLegs)
 0149         <span class="keyword">end</span>
 0150         <span class="comment">%draw hip joints</span>
 0151         X = Marker.([s <span class="string">'Hip'</span>]).X(i);
 0152         Y = Marker.([s <span class="string">'Hip'</span>]).Y(i);
 0153         Z = Marker.([s <span class="string">'Hip'</span>]).Z(i);
-0154         <a href="#_sub2" class="code" title="subfunction drawball(h_axes,X1,Y1,Z1,radius,color)">drawball</a>(gca,X,Y,Z,50,color)        
+0154         <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>(gca,X,Y,Z,50,color)        
 0155     <span class="keyword">end</span>
 0156     <span class="comment">%draw pelvis</span>
 0157     X = [Marker.RHip.X(i) Marker.LHip.X(i)];
 0158     Y = [Marker.RHip.Y(i) Marker.LHip.Y(i)];
 0159     Z = [Marker.RHip.Z(i) Marker.LHip.Z(i)];
-0160     <a href="#_sub1" class="code" title="subfunction drawsegment(h_axes,X1,Y1,Z1,a,color)">drawsegment</a>(gca,X,Y,Z,[1 .4 .4],color)  
+0160     <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>(gca,X,Y,Z,[1 .4 .4],color)  
 0161   
 0162     h_light = camlight(<span class="string">'headlight'</span>);
 0163     set(findobj(gca,<span class="string">'type'</span>,<span class="string">'surface'</span>),<span class="keyword">...</span>
@@ -270,6 +270,6 @@ This function is called by:
 0213 
 0214 
 0215</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

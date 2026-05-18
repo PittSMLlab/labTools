@@ -4,7 +4,7 @@
 <head>
   <title>Description of estimateDopplerShift</title>
   <meta name="keywords" content="estimateDopplerShift">
-  <meta name="description" content="Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:">
+  <meta name="description" content="ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,127 +15,176 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; estimateDopplerShift.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>estimateDopplerShift
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:</strong></div>
+<div class="box"><strong>ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M) </strong></div>
+<div class="box"><strong>function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:
-this could be fixed by time-aligning previously, assuming that the doppler
-shift is &lt;&lt; M during the time signal length
-MAximum detectable relative shift is ~ 1/M
-It is also recommended that signals be high-pass filtered, as it gives
-better results</pre></div>
+<div class="fragment"><pre class="comment">ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.
+
+   Divides both signals into windows of length M, estimates the time
+ lag between each window pair using FINDTIMELAG, then fits a line to
+ the lag-vs-time relationship. The slope of that line is the relative
+ Doppler shift (fractional sampling-rate difference). Outlier windows
+ are iteratively rejected until convergence.
+
+   Signals should be pre-aligned (relative delay &lt;&lt; M) and high-pass
+ filtered for best results. The maximum detectable relative shift is
+ approximately 1/M.
+
+ Inputs:
+   signal1 - 1-D reference signal (row vector)
+   signal2 - 1-D secondary signal (row vector)
+   M       - (optional) window length in samples; defaults to a value
+             that yields approximately sqrt(N)/4 windows, capped at 128
+
+ Outputs:
+   relativeShift  - fractional sampling-rate difference (slope of lag
+                    vs. time line); positive means signal2 is faster
+   initTimeDelay  - intercept of the lag-vs-time line, in samples
+
+ Toolbox Dependencies: None
+
+ See also <a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">MATCHSIGNALS</a>, <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">FINDTIMELAG</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="findTimeLag.html" class="code" title="function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal)">findTimeLag</a>	First: truncate:</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>	FINDTIMELAG Estimate the sample lag between two signals via correlation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<li><a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Find and apply the transformation that best aligns signal2</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)</a>
-0002 <span class="comment">%Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:</span>
-0003 <span class="comment">%this could be fixed by time-aligning previously, assuming that the doppler</span>
-0004 <span class="comment">%shift is &lt;&lt; M during the time signal length</span>
-0005 <span class="comment">%MAximum detectable relative shift is ~ 1/M</span>
-0006 <span class="comment">%It is also recommended that signals be high-pass filtered, as it gives</span>
-0007 <span class="comment">%better results</span>
-0008 
-0009 <span class="keyword">if</span> nargin&lt;3
-0010     k=sqrt(length(signal2))/4; <span class="comment">%Approx number of windows that is optimal for the estimation</span>
-0011     <span class="keyword">if</span> k&gt;128
-0012         k=128;
-0013     <span class="keyword">end</span>
-0014     M=ceil(length(signal2)/k);
-0015 <span class="keyword">end</span>
-0016 
-0017 N=ceil(max([length(signal2) length(signal1)])/M);
-0018 signal1=signal1-mean(signal1);
-0019 signal2=signal2-mean(signal2);
-0020 signal1(end+1:N*M)=0;
-0021 signal2(end+1:N*M)=0; <span class="comment">%Padding zeros to have a number of samples that is multiple of the window size (M)</span>
-0022 signal1=signal1-mean(signal1);
-0023 
-0024 E1=sum(signal1.^2);
-0025 E2=sum(signal2.^2);
-0026 
-0027 <span class="comment">%% Two step approach: identify outliers, and fit a line. Repeat identifying outliers through the residuals to the line fit, until convergence.</span>
-0028 firstStep=true;
-0029 differences=true;
-0030 <span class="keyword">while</span> differences
-0031     
-0032     clear s x t lineFit
-0033     t=nan(1,N);
-0034     <span class="keyword">for</span> i=1:N
-0035         aux2=signal2((i-1)*M+1:i*M); <span class="comment">%Getting a portion of signal2</span>
-0036         aux1=signal1((i-1)*M+1:i*M);
-0037         [~,~,t(i)]=<a href="findTimeLag.html" class="code" title="function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal)">findTimeLag</a>(aux1,aux2);
-0038 <span class="comment">%         F1=fft(aux1);</span>
-0039 <span class="comment">%         F2=fft(aux2);</span>
-0040 <span class="comment">%         F=F1.*conj(F2);</span>
-0041 <span class="comment">%         P=ifft(F);</span>
-0042 <span class="comment">%         [s(i),t(i)]=max(abs(P));</span>
-0043 <span class="comment">%     %     [acor,lag]=xcorr(aux1,aux2,'unbiased');</span>
-0044 <span class="comment">%     %     [~,ii]=max(abs(acor));</span>
-0045 <span class="comment">%     %     t(i)=lag(ii);</span>
-0046         x(i)=M/2 + (i-1)*M;
-0047         
-0048 <span class="comment">%         if 5*N*sqrt(sum(aux1.^2)*sum(aux2.^2))&lt;sqrt(E1*E2) %Reject intervals of the signal with too little activity compared to overall</span>
-0049 <span class="comment">%             t(i)=NaN;</span>
-0050 <span class="comment">%         end</span>
-0051     <span class="keyword">end</span>
-0052     auxI=~isnan(t);
-0053     properX=x(auxI);
-0054     properT=t(auxI);
-0055     <span class="keyword">if</span> firstStep
-0056         lineFit=polyfit(properX,properT,1);
-0057         firstStep=false;
-0058         iiOld=[];
-0059     <span class="keyword">else</span>
-0060         auxX=x(ii);
-0061         auxT=t(ii);
-0062         lineFit=polyfit(auxX(auxI(ii)),auxT(auxI(ii)),1);
-0063         iiOld=ii;
-0064     <span class="keyword">end</span>
-0065     residuals=abs(t-x*lineFit(1) - lineFit(2));
-0066     pp=prctile(residuals,[50]);
-0067     <span class="keyword">if</span> pp(1)&lt;.5
-0068         pp(1)=.5; <span class="comment">%Because of quantization, we would expect to see at least .5 samples errors even on the best of fits</span>
-0069     <span class="keyword">end</span>
-0070     ii=find(residuals&lt;pp(1) &amp; auxI); <span class="comment">%Rejecting outliers</span>
-0071     
-0072         <span class="keyword">if</span> length(ii)&gt;0 &amp;&amp; (length(iiOld)~=length(ii) || any(ii~=iiOld))
-0073             differences=true;
-0074         <span class="keyword">else</span>
-0075             differences=false;
-0076         <span class="keyword">end</span>
-0077 
-0078 <span class="keyword">end</span>
-0079 <span class="comment">% figure(1)</span>
-0080 <span class="comment">% plot(x,t,'.')</span>
-0081 <span class="comment">% hold on</span>
-0082 <span class="comment">% plot(x(ii),t(ii),'g.')</span>
-0083 <span class="comment">% plot(x,x*lineFit(1)+lineFit(2),'r')</span>
-0084 <span class="comment">% hold off</span>
-0085 <span class="comment">% legend('Rejected samples','Used samples','Line fit')</span>
-0086 relativeShift=lineFit(1);
-0087 initTimeDelay=lineFit(2); <span class="comment">%In samples</span>
-0088 <span class="keyword">end</span>
-0089</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [relativeShift, initTimeDelay] = estimateDopplerShift( </a><span class="keyword">...</span>
+0002     signal1, signal2, M)
+0003 <span class="comment">%ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Divides both signals into windows of length M, estimates the time</span>
+0006 <span class="comment">% lag between each window pair using FINDTIMELAG, then fits a line to</span>
+0007 <span class="comment">% the lag-vs-time relationship. The slope of that line is the relative</span>
+0008 <span class="comment">% Doppler shift (fractional sampling-rate difference). Outlier windows</span>
+0009 <span class="comment">% are iteratively rejected until convergence.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Signals should be pre-aligned (relative delay &lt;&lt; M) and high-pass</span>
+0012 <span class="comment">% filtered for best results. The maximum detectable relative shift is</span>
+0013 <span class="comment">% approximately 1/M.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Inputs:</span>
+0016 <span class="comment">%   signal1 - 1-D reference signal (row vector)</span>
+0017 <span class="comment">%   signal2 - 1-D secondary signal (row vector)</span>
+0018 <span class="comment">%   M       - (optional) window length in samples; defaults to a value</span>
+0019 <span class="comment">%             that yields approximately sqrt(N)/4 windows, capped at 128</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   relativeShift  - fractional sampling-rate difference (slope of lag</span>
+0023 <span class="comment">%                    vs. time line); positive means signal2 is faster</span>
+0024 <span class="comment">%   initTimeDelay  - intercept of the lag-vs-time line, in samples</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies: None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also MATCHSIGNALS, FINDTIMELAG.</span>
+0029 
+0030 arguments
+0031     signal1 (1,:) double
+0032     signal2 (1,:) double
+0033     M       (1,1) double = NaN
+0034 <span class="keyword">end</span>
+0035 
+0036 maxWindowCount = 128; <span class="comment">% cap on number of windows for stability</span>
+0037 
+0038 <span class="comment">%% Compute Default Window Length</span>
+0039 <span class="keyword">if</span> isnan(M)
+0040     <span class="comment">% Approx. number of windows that is optimal for the estimation</span>
+0041     windowCount = sqrt(length(signal2)) / 4;
+0042     <span class="keyword">if</span> windowCount &gt; maxWindowCount
+0043         windowCount = maxWindowCount;
+0044     <span class="keyword">end</span>
+0045     M = ceil(length(signal2) / windowCount);
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">%% Prepare Signals</span>
+0049 N       = ceil(max([length(signal2) length(signal1)]) / M);
+0050 signal1 = signal1 - <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(signal1);
+0051 signal2 = signal2 - <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(signal2);
+0052 <span class="comment">% Pad to a multiple of M so every window is the same length</span>
+0053 signal1(end+1:N*M) = 0;
+0054 signal2(end+1:N*M) = 0;
+0055 signal1 = signal1 - <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(signal1);
+0056 
+0057 <span class="comment">% E1 = sum(signal1.^2);</span>
+0058 <span class="comment">% E2 = sum(signal2.^2);</span>
+0059 
+0060 <span class="comment">%% Fit Line to Per-Window Lags (Iterative Outlier Rejection)</span>
+0061 <span class="comment">% Identify outlier windows, fit a line, repeat until convergence.</span>
+0062 firstStep   = true;
+0063 differences = true;
+0064 <span class="keyword">while</span> differences
+0065     clear x t lineFit;
+0066     t = nan(1, N);
+0067     <span class="keyword">for</span> win = 1:N
+0068         winSlice2      = signal2((win-1)*M + 1:win*M);
+0069         winSlice1      = signal1((win-1)*M + 1:win*M);
+0070         [~, ~, t(win)] = <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>(winSlice1, winSlice2);
+0071         <span class="comment">% F1 = fft(winSlice1);</span>
+0072         <span class="comment">% F2 = fft(winSlice2);</span>
+0073         <span class="comment">% F = F1 .* conj(F2);</span>
+0074         <span class="comment">% P = ifft(F);</span>
+0075         <span class="comment">% [s(win), t(win)] = max(abs(P));</span>
+0076         <span class="comment">% [acor, lag] = xcorr(winSlice1, winSlice2, 'unbiased');</span>
+0077         <span class="comment">% [~, ii] = max(abs(acor));</span>
+0078         <span class="comment">% t(win) = lag(ii);</span>
+0079         x(win) = M/2 + (win - 1)*M;
+0080 
+0081         <span class="comment">% if 5*N*sqrt(sum(winSlice1.^2)*sum(winSlice2.^2)) &lt; ...</span>
+0082         <span class="comment">%         sqrt(E1*E2)</span>
+0083         <span class="comment">%     t(win) = NaN;</span>
+0084         <span class="comment">% end</span>
+0085     <span class="keyword">end</span>
+0086     validMask = ~isnan(t);
+0087     properX   = x(validMask);
+0088     properT   = t(validMask);
+0089     <span class="keyword">if</span> firstStep
+0090         lineFit   = polyfit(properX, properT, 1);
+0091         firstStep = false;
+0092         iiOld     = [];
+0093     <span class="keyword">else</span>
+0094         inlierX = x(ii);
+0095         inlierT = t(ii);
+0096         lineFit = polyfit(inlierX(validMask(ii)), <span class="keyword">...</span>
+0097             inlierT(validMask(ii)), 1);
+0098         iiOld   = ii;
+0099     <span class="keyword">end</span>
+0100     residuals = abs(t - x*lineFit(1) - lineFit(2));
+0101     pp = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(residuals, 50);
+0102     <span class="keyword">if</span> pp &lt; 0.5
+0103         pp = 0.5; <span class="comment">% quantization floor: expect at least 0.5-sample error</span>
+0104     <span class="keyword">end</span>
+0105     ii = find(residuals &lt; pp &amp; validMask); <span class="comment">% reject outlier windows</span>
+0106 
+0107     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ii) &amp;&amp; <span class="keyword">...</span>
+0108             (length(iiOld) ~= length(ii) || any(ii ~= iiOld))
+0109         differences = true;
+0110     <span class="keyword">else</span>
+0111         differences = false;
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 
+0115 relativeShift  = lineFit(1);
+0116 initTimeDelay  = lineFit(2); <span class="comment">% in samples</span>
+0117 
+0118 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

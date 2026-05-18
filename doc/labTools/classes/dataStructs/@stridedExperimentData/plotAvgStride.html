@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotAvgStride</title>
+  <meta name="keywords" content="plotAvgStride">
+  <meta name="description" content="plotAvgStride  Plots average stride across conditions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@stridedExperimentData</a> &gt; plotAvgStride.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@stridedExperimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotAvgStride
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plotAvgStride  Plots average stride across conditions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotAvgStride  Plots average stride across conditions
+
+   [figHandle, plotHandles] = plotAvgStride(this, field, conditions)
+   creates plots showing the average stride for each condition
+
+   [figHandle, plotHandles] = plotAvgStride(this, field, conditions,
+   plotHandles, figHandle) uses existing plot handles
+
+   Inputs:
+       this - stridedExperimentData object
+       field - name of field to plot (e.g., 'procEMGData',
+               'angleData')
+       conditions - vector of condition indices to plot
+       plotHandles - existing subplot handles (optional)
+       figHandle - existing figure handle (optional)
+
+   Outputs:
+       figHandle - handle to figure
+       plotHandles - array of subplot handles
+
+   See also: <a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>, strideData/plotCellAvg</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>	tight_subplot creates "subplot" axes with adjustable gaps and margins</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle, plotHandles] = plotAvgStride(this, field, </a><span class="keyword">...</span>
+0002     conditions, plotHandles, figHandle)
+0003 <span class="comment">%plotAvgStride  Plots average stride across conditions</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [figHandle, plotHandles] = plotAvgStride(this, field, conditions)</span>
+0006 <span class="comment">%   creates plots showing the average stride for each condition</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [figHandle, plotHandles] = plotAvgStride(this, field, conditions,</span>
+0009 <span class="comment">%   plotHandles, figHandle) uses existing plot handles</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       this - stridedExperimentData object</span>
+0013 <span class="comment">%       field - name of field to plot (e.g., 'procEMGData',</span>
+0014 <span class="comment">%               'angleData')</span>
+0015 <span class="comment">%       conditions - vector of condition indices to plot</span>
+0016 <span class="comment">%       plotHandles - existing subplot handles (optional)</span>
+0017 <span class="comment">%       figHandle - existing figure handle (optional)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Outputs:</span>
+0020 <span class="comment">%       figHandle - handle to figure</span>
+0021 <span class="comment">%       plotHandles - array of subplot handles</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: plotAllStrides, strideData/plotCellAvg</span>
+0024 
+0025 <span class="comment">% Set colors</span>
+0026 <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
+0027 <span class="comment">% Set colors order</span>
+0028 ColorOrder = [p_red; p_orange; p_fade_green; p_fade_blue; p_plum; <span class="keyword">...</span>
+0029     p_green; p_blue; p_fade_red; p_lime; p_yellow];
+0030 set(gcf, <span class="string">'DefaultAxesColorOrder'</span>, ColorOrder);
+0031 
+0032 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
+0033     figHandle = figure(<span class="string">'Name'</span>, <span class="keyword">...</span>
+0034         [<span class="string">'Subject '</span> num2str(this.subData.ID) <span class="string">' '</span> field]);
+0035 <span class="keyword">else</span>
+0036     figure(figHandle); <span class="comment">% Only works for one condition!</span>
+0037 <span class="keyword">end</span>
+0038 set(figHandle, <span class="string">'Units'</span>, <span class="string">'normalized'</span>, <span class="string">'OuterPosition'</span>, [0 0 1 1]);
+0039 aux = this.getStridesFromCondition(conditions(1));
+0040 N = 2^ceil(log2(size(aux{1}.(field).Data, 1)));
+0041 structure = this.getDataAsMatrices(field, conditions, N);
+0042 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles)
+0043     M = size(structure{1}, 2);
+0044     [b, a] = <a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(M);
+0045     plotHandles = <a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>(b, a, [0.04 0.02], [0.05 0.02], <span class="keyword">...</span>
+0046         [0.04 0.05]);
+0047 <span class="keyword">end</span>
+0048 <span class="keyword">for</span> i = 1:M
+0049     <span class="comment">% subplot(b, a, i)</span>
+0050     subplot(plotHandles(i));
+0051     hold on;
+0052     legStr = {};
+0053     title(aux{1}.(field).labels{i});
+0054     <span class="keyword">for</span> cond = conditions
+0055         data = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(squeeze(structure{cond}(:, i, :)), 2);
+0056         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0:N - 1] / N, data, <span class="string">'LineWidth'</span>, 2, <span class="string">'Color'</span>, <span class="keyword">...</span>
+0057             ColorOrder(mod(cond - 1, size(ColorOrder, 1)) + 1, :));
+0058         legStr{end + 1} = [<span class="string">'Condition '</span> num2str(cond)];
+0059     <span class="keyword">end</span>
+0060     <span class="keyword">if</span> i == M
+0061         legend(legStr);
+0062     <span class="keyword">end</span>
+0063     hold off;
+0064 <span class="keyword">end</span>
+0065 <span class="keyword">end</span>
+0066</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

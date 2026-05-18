@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; rawEMGhealthCheck.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>rawEMGhealthCheck
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">spectrogram</a>	spectrogram  Computes spectrogram</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -49,11 +49,11 @@ This function is called by:
 0005 
 0006 <span class="keyword">for</span> trial=1:length(rawExperimentData.data)
 0007     clear energy LFrms HFrms MFrms EMGrms SNR
-0008     <span class="keyword">if</span> ~isempty(rawExperimentData.data{trial})
+0008     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawExperimentData.data{trial})
 0009         <span class="comment">%Computing noise structure on the raw signal:</span>
 0010         auxTS=rawExperimentData.data{trial}.EMGData;
 0011         data=auxTS.Data;
-0012         offset=mean(data);
+0012         offset=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(data);
 0013         data=detrend(data,<span class="string">'constant'</span>);
 0014         winTime=.128; <span class="comment">%128 ms windows</span>
 0015         Nwin=round(winTime*rawExperimentData.data{trial}.EMGData.sampFreq);
@@ -63,7 +63,7 @@ This function is called by:
 0019         window=hann(Nwin);
 0020         <span class="comment">%window=ones(Nwin,1);</span>
 0021         <span class="keyword">for</span> ch=1:size(data,2)
-0022             [Pdata,fVector,tVector] = spectrogram(data(:,ch),window,Noverlap,Nfft,fs); 
+0022             [Pdata,fVector,tVector] = <a href="../../../labTools/classes/labTS/@labTimeSeries/spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">spectrogram</a>(data(:,ch),window,Noverlap,Nfft,fs); 
 0023             
 0024             <span class="comment">%See spectrogram:</span>
 0025 <span class="comment">%             figure</span>
@@ -121,11 +121,11 @@ This function is called by:
 0077         <span class="comment">%Save computations into a structure</span>
 0078         t0=auxTS.Time(1)+winTime/2;
 0079         Ts=winTime*(Nwin-Noverlap)/Nwin;
-0080         signalStats{trial}.noiseLevelRMS=labTimeSeries(HFrms',t0,Ts,auxTS.labels); <span class="comment">% Background noise estimation on the full signal</span>
-0081         signalStats{trial}.lowFreqSignalRMS=labTimeSeries(LFrms',t0,Ts,auxTS.labels); <span class="comment">%Movement artifacts RMS values</span>
-0082         signalStats{trial}.signalRMS=labTimeSeries(EMGrms',t0,Ts,auxTS.labels); <span class="comment">%Actual signal RMS value</span>
+0080         signalStats{trial}.noiseLevelRMS=<a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(HFrms',t0,Ts,auxTS.labels); <span class="comment">% Background noise estimation on the full signal</span>
+0081         signalStats{trial}.lowFreqSignalRMS=<a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(LFrms',t0,Ts,auxTS.labels); <span class="comment">%Movement artifacts RMS values</span>
+0082         signalStats{trial}.signalRMS=<a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(EMGrms',t0,Ts,auxTS.labels); <span class="comment">%Actual signal RMS value</span>
 0083         signalStats{trial}.offset=offset; <span class="comment">%Offset</span>
-0084         signalStats{trial}.SNR=labTimeSeries(SNR',t0,Ts,auxTS.labels); <span class="comment">%Signal to background noise ratio</span>
+0084         signalStats{trial}.SNR=<a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(SNR',t0,Ts,auxTS.labels); <span class="comment">%Signal to background noise ratio</span>
 0085         signalStats{trial}.avgSNR=avgSNR;
 0086         
 0087         <span class="comment">%eventsTS=rawExperimentData.data{trial}.gaitEvents;</span>
@@ -135,10 +135,10 @@ This function is called by:
 0091         <span class="comment">%signalStats{trial}.avgStride=avgStride;</span>
 0092         <span class="comment">%signalStats{trial}.energyDecomp=decomposition;</span>
 0093         signalStats{trial}.rawCrossCorr=corr(rawExperimentData.data{trial}.EMGData.Data);
-0094         signalStats{trial}.rawMean=mean(rawExperimentData.data{trial}.EMGData.Data);
+0094         signalStats{trial}.rawMean=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rawExperimentData.data{trial}.EMGData.Data);
 0095         signalStats{trial}.rawVar=var(rawExperimentData.data{trial}.EMGData.Data);
 0096         <span class="keyword">if</span> rawExperimentData.isProcessed==1
-0097             signalStats{trial}.procMean=mean(rawExperimentData.data{trial}.procEMGData.Data);
+0097             signalStats{trial}.procMean=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rawExperimentData.data{trial}.procEMGData.Data);
 0098             signalStats{trial}.procVar=var(rawExperimentData.data{trial}.procEMGData.Data);
 0099             signalStats{trial}.procCrossCorr=corr(rawExperimentData.data{trial}.procEMGData.Data);
 0100         <span class="keyword">end</span>
@@ -197,6 +197,6 @@ This function is called by:
 0153 
 0154 <span class="keyword">end</span>
 0155</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

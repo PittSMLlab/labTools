@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEMGworksdataAcc</title>
   <meta name="keywords" content="getEMGworksdataAcc">
-  <meta name="description" content="% get EMG from EMGworks">
+  <meta name="description" content="GETEMGWORKSDATAACC retrieve accelerometer data from 'EMGworks' software">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,35 +15,28 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; getEMGworksdataAcc.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getEMGworksdataAcc
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>% get EMG from EMGworks</strong></div>
+<div class="box"><strong>GETEMGWORKSDATAACC retrieve accelerometer data from 'EMGworks' software</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [ACCList, allData,analogsInfo]=getEMGworksdataAcc(infoEMGList2 ,secFileList,fileList, NexusfileList,emptyChannels1,emptyChannels2,EMGList) </strong></div>
+<div class="box"><strong>function [ACCList,allData,analogsInfo] = getEMGworksdataAcc(infoEMGList2,secFileList,fileList,NexusfileList,emptyChannels1,emptyChannels2,EMGList) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> % get EMG from EMGworks
+<div class="fragment"><pre class="comment">GETEMGWORKSDATAACC retrieve accelerometer data from 'EMGworks' software
 
- %needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs
- % outputs: EMGList relData relData2
-
- %
- % fileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC1/RenameTrials/Trial02';
- % secFileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC2/RenameTrials/Trial02';
- % info.EMGList1={'LTA','LPER','LRF','LVL','LVM','LADM','LHIP','LTFL','LGLU','LMG','LLG','LSOL','LBF','LSEMT','LSEMB','sync1'};
- % info.EMGList2={'RTA','RPER','RRF','RVL','RVM','RADM','RHIP','RTFL','RGLU','RMG','RLG','RSOL','RBF','RSEMT','RSEMB','sync2'};
- % secondFile=1;</pre></div>
+INPUTS: EMGList1, EMGList2, secFileList{t}, fileList, analogs
+OUTPUTS: EMGList,relData,relData2</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -52,233 +45,235 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ACCList, allData,analogsInfo]=getEMGworksdataAcc(infoEMGList2 ,secFileList,fileList, NexusfileList,emptyChannels1,emptyChannels2,EMGList)</a>
-0002 <span class="comment">% % get EMG from EMGworks</span>
-0003 <span class="comment">%</span>
-0004 <span class="comment">% %needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs</span>
-0005 <span class="comment">% % outputs: EMGList relData relData2</span>
-0006 <span class="comment">%</span>
-0007 <span class="comment">% %</span>
-0008 <span class="comment">% % fileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC1/RenameTrials/Trial02';</span>
-0009 <span class="comment">% % secFileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC2/RenameTrials/Trial02';</span>
-0010 <span class="comment">% % info.EMGList1={'LTA','LPER','LRF','LVL','LVM','LADM','LHIP','LTFL','LGLU','LMG','LLG','LSOL','LBF','LSEMT','LSEMB','sync1'};</span>
-0011 <span class="comment">% % info.EMGList2={'RTA','RPER','RRF','RVL','RVM','RADM','RHIP','RTFL','RGLU','RMG','RLG','RSOL','RBF','RSEMT','RSEMB','sync2'};</span>
-0012 <span class="comment">% % secondFile=1;</span>
-0013 <span class="keyword">if</span> ~isempty(infoEMGList2)
-0014     secondFile=true;
-0015 <span class="keyword">end</span>
-0016 
-0017 idx1=str2num(NexusfileList(strfind(NexusfileList,<span class="string">'Trial'</span>)+5:end));
-0018 
-0019 <span class="comment">%% File 1</span>
-0020 <span class="comment">%files=what('./');</span>
-0021 <span class="comment">%RawfileList=files.mat;</span>
-0022 <span class="comment">%</span>
-0023 <span class="comment">%indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));</span>
-0024 <span class="comment">% load(RawfileList{indexTrial})</span>
-0025 <span class="keyword">if</span> idx1&lt;10
-0026     load([fileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
-0027 <span class="keyword">else</span>
-0028     load([fileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
-0029 <span class="keyword">end</span>
-0030 
-0031 <span class="comment">% Data=Data(:,1:2:end);</span>
-0032 
-0033 analogs=[];
-0034 analogsInfo=[];
-0035 <span class="keyword">for</span> j=1:length(Channels)
-0036     B(j) = convertCharsToStrings(Channels(j,:));
-0037     B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
-0038     B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
-0039     B(j) =deblank(B(j));
-0040     C(j) = cellstr(B(j));
-0041     analogs.(B{j})=Data(j,:)';
-0042 <span class="keyword">end</span>
-0043 
-0044 relData=[];
-0045 relDataTemp=[];
-0046 fieldList=fields(analogs);
-0047 idxList=[];
-0048 <span class="keyword">for</span> j=1:length(fieldList)
-0049     
-0050     <span class="keyword">if</span>  contains(fieldList{j},<span class="string">'acc'</span>,<span class="string">'IgnoreCase'</span>, true) <span class="comment">% || ~isempty(strfind(fieldList{j},'Acc'))Getting fields that start with 'EMG' onl</span>
-0051         
-0052         <span class="keyword">if</span> j&lt;37
-0053             idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+7));
-0054             
-0055         <span class="keyword">else</span>
-0056             idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+8));
-0057         <span class="keyword">end</span>
-0058         <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4)
-0059             <span class="keyword">case</span> <span class="string">'X'</span>
-0060                 aux=1;
-0061             <span class="keyword">case</span> <span class="string">'Y'</span>
-0062                 aux=2;
-0063             <span class="keyword">case</span> <span class="string">'Z'</span>
-0064                 aux=3;
-0065                 
-0066         <span class="keyword">end</span>
-0067         
-0068         <span class="keyword">if</span> ~exist(<span class="string">'aux'</span>)
-0069             <span class="keyword">switch</span> fieldList{j}(end)
-0070                 <span class="keyword">case</span> <span class="string">'X'</span>
-0071                     aux=1;
-0072                 <span class="keyword">case</span> <span class="string">'Y'</span>
-0073                     aux=2;
-0074                 <span class="keyword">case</span> <span class="string">'Z'</span>
-0075                     aux=3;
-0076                     
-0077             <span class="keyword">end</span>
-0078         <span class="keyword">end</span>
-0079         eval([<span class="string">'relData(:,idxList(j),aux)=analogs.'</span> fieldList{j} <span class="string">';'</span>]);
-0080         analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
-0081         analogsInfo.frequency=Fs(j);
-0082         
-0083     <span class="keyword">elseif</span> contains(fieldList{j},<span class="string">'adapter'</span>,<span class="string">'IgnoreCase'</span>, true)
-0084         
-0085         idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Adapter'</span>)+8:strfind(fieldList{j},<span class="string">'Adapter'</span>)+9));
-0086         <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+10)
-0087             <span class="keyword">case</span> <span class="string">'A'</span>
-0088                 aux=1;
-0089             <span class="keyword">case</span> <span class="string">'B'</span>
-0090                 aux=2;
-0091             <span class="keyword">case</span> <span class="string">'C'</span>
-0092                 aux=3;
-0093                 
-0094         <span class="keyword">end</span>
-0095         
-0096         <span class="keyword">if</span>  ~exist(<span class="string">'aux'</span>)
-0097             <span class="keyword">switch</span> fieldList{j}(end)
-0098                 <span class="keyword">case</span> <span class="string">'A'</span>
-0099                     aux=1;
-0100                 <span class="keyword">case</span> <span class="string">'B'</span>
-0101                     aux=2;
-0102                 <span class="keyword">case</span> <span class="string">'C'</span>
-0103                     aux=3;
-0104 
-0105             <span class="keyword">end</span>
-0106         <span class="keyword">end</span>
-0107         
-0108         eval([<span class="string">'relData(:,idxList(j),aux)=analogs.'</span> fieldList{j} <span class="string">';'</span>]);
-0109         analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
-0110  
-0111         
-0112     <span class="keyword">end</span>
-0113     
-0114     
-0115 <span class="keyword">end</span>
-0116 relData=permute(relData(:,~emptyChannels1,:),[1,3,2]);
-0117 relData=relData(:,:);
-0118 allData=relData;
-0119 
-0120 <span class="comment">%% File 2</span>
-0121 <span class="keyword">if</span> secondFile
-0122     <span class="comment">%  secFileList{t}</span>
-0123     <span class="comment">% files=what('./');</span>
-0124     <span class="comment">% RawfileList=files.mat;</span>
-0125     <span class="comment">% %</span>
-0126     <span class="comment">% indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));</span>
-0127     <span class="comment">% load(RawfileList{indexTrial})</span>
-0128     <span class="keyword">if</span> idx1&lt;10
-0129         load([secFileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
-0130     <span class="keyword">else</span>
-0131         load([secFileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
-0132     <span class="keyword">end</span>
-0133     <span class="comment">% load([secFileList '.mat'])</span>
-0134     <span class="comment">% Data=Data(:,1:2:end);</span>
-0135     
-0136     analogs2=[];
-0137     analogsInfo2=[];
-0138     <span class="keyword">for</span> j=1:length(Channels)
-0139         B(j) = convertCharsToStrings(Channels(j,:));
-0140         B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
-0141         B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
-0142         B(j) =deblank(B(j));
-0143         C(j) = cellstr(B(j));
-0144         analogs2.(B{j})=Data(j,:)';
-0145     <span class="keyword">end</span>
-0146     
-0147     relData2=[];
-0148     idxList2=[];
-0149     
-0150     fieldList=fields(analogs2);
-0151     <span class="keyword">for</span> j=1:length(fieldList)
-0152         
-0153         <span class="keyword">if</span>  contains(fieldList{j},<span class="string">'acc'</span>,<span class="string">'IgnoreCase'</span>, true) <span class="comment">% || ~isempty(strfind(fieldList{j},'Acc'))Getting fields that start with 'EMG' onl</span>
-0154             
-0155             <span class="keyword">if</span> j&lt;37
-0156                 idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+7));
-0157                 
-0158             <span class="keyword">else</span>
-0159                 idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+8));
-0160             <span class="keyword">end</span>
-0161             <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4)
-0162                 <span class="keyword">case</span> <span class="string">'X'</span>
-0163                     aux=1;
-0164                 <span class="keyword">case</span> <span class="string">'Y'</span>
-0165                     aux=2;
-0166                 <span class="keyword">case</span> <span class="string">'Z'</span>
-0167                     aux=3;
-0168             <span class="keyword">end</span>
-0169             
-0170             <span class="keyword">if</span> ~exist(<span class="string">'aux'</span>)
-0171                 <span class="keyword">switch</span> fieldList{j}(end)
-0172                     <span class="keyword">case</span> <span class="string">'X'</span>
-0173                         aux=1;
-0174                     <span class="keyword">case</span> <span class="string">'Y'</span>
-0175                         aux=2;
-0176                     <span class="keyword">case</span> <span class="string">'Z'</span>
-0177                         aux=3;
-0178                         
-0179                 <span class="keyword">end</span>
-0180         <span class="keyword">end</span>
-0181             eval([<span class="string">'relData2(:,idxList2(j),aux)=analogs2.'</span> fieldList{j} <span class="string">';'</span>]);
-0182             analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
-0183         <span class="keyword">elseif</span> contains(fieldList{j},<span class="string">'adapter'</span>,<span class="string">'IgnoreCase'</span>, true)
-0184             idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Adapter'</span>)+8:strfind(fieldList{j},<span class="string">'Adapter'</span>)+9));
-0185             
-0186             <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+10)
-0187                 <span class="keyword">case</span> <span class="string">'A'</span>
-0188                     aux=1;
-0189                 <span class="keyword">case</span> <span class="string">'B'</span>
-0190                     aux=2;
-0191                 <span class="keyword">case</span> <span class="string">'C'</span>
-0192                     aux=3;
-0193                     
-0194             <span class="keyword">end</span>
-0195             
-0196             <span class="keyword">if</span>  ~exist(<span class="string">'aux'</span>)
-0197             <span class="keyword">switch</span> fieldList{j}(end)
-0198                 <span class="keyword">case</span> <span class="string">'A'</span>
-0199                     aux=1;
-0200                 <span class="keyword">case</span> <span class="string">'B'</span>
-0201                     aux=2;
-0202                 <span class="keyword">case</span> <span class="string">'C'</span>
-0203                     aux=3;
-0204 
-0205             <span class="keyword">end</span>
-0206         <span class="keyword">end</span>
-0207             eval([<span class="string">'relData2(:,idxList2(j),aux)=analogs2.'</span> fieldList{j} <span class="string">';'</span>]);
-0208             analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
-0209         <span class="keyword">end</span>
-0210         
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ACCList,allData,analogsInfo] = getEMGworksdataAcc( </a><span class="keyword">...</span>
+0002     infoEMGList2,secFileList,fileList,NexusfileList, <span class="keyword">...</span>
+0003     emptyChannels1,emptyChannels2,EMGList)
+0004 <span class="comment">%GETEMGWORKSDATAACC retrieve accelerometer data from 'EMGworks' software</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%INPUTS: EMGList1, EMGList2, secFileList{t}, fileList, analogs</span>
+0007 <span class="comment">%OUTPUTS: EMGList,relData,relData2</span>
+0008 
+0009 <span class="comment">% fileList = ['/Users/dulcemariscal/Box/11_Research_Projects/' ...</span>
+0010 <span class="comment">%     'EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC1/RenameTrials/Trial02'];</span>
+0011 <span class="comment">% secFileList = ['/Users/dulcemariscal/Box/11_Research_Projects/' ...</span>
+0012 <span class="comment">%     'EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC2/RenameTrials/Trial02'];</span>
+0013 <span class="comment">% info.EMGList1 = {'LTA','LPER','LRF','LVL','LVM','LADM','LHIP','LTFL', ...</span>
+0014 <span class="comment">%     'LGLU','LMG','LLG','LSOL','LBF','LSEMT','LSEMB','sync1'};</span>
+0015 <span class="comment">% info.EMGList2 = {'RTA','RPER','RRF','RVL','RVM','RADM','RHIP','RTFL', ...</span>
+0016 <span class="comment">%     'RGLU','RMG','RLG','RSOL','RBF','RSEMT','RSEMB','sync2'};</span>
+0017 <span class="comment">% secondFile = 1;</span>
+0018 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(infoEMGList2)
+0019     secondFile = true;
+0020 <span class="keyword">end</span>
+0021 
+0022 idx1 = str2num(NexusfileList(strfind(NexusfileList,<span class="string">'Trial'</span>)+5:end));
+0023 
+0024 <span class="comment">%% File 1</span>
+0025 <span class="comment">%files=what('./');</span>
+0026 <span class="comment">%RawfileList=files.mat;</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));</span>
+0029 <span class="comment">% load(RawfileList{indexTrial})</span>
+0030 <span class="keyword">if</span> idx1&lt;10
+0031     load([fileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0032 <span class="keyword">else</span>
+0033     load([fileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">% Data=Data(:,1:2:end);</span>
+0037 
+0038 analogs=[];
+0039 analogsInfo=[];
+0040 <span class="keyword">for</span> j=1:length(Channels)
+0041     B(j) = convertCharsToStrings(Channels(j,:));
+0042     B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
+0043     B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
+0044     B(j) =deblank(B(j));
+0045     C(j) = cellstr(B(j));
+0046     analogs.(B{j})=Data(j,:)';
+0047 <span class="keyword">end</span>
+0048 
+0049 relData=[];
+0050 relDataTemp=[];
+0051 fieldList=fields(analogs);
+0052 idxList=[];
+0053 <span class="keyword">for</span> j=1:length(fieldList)
+0054     
+0055     <span class="keyword">if</span>  contains(fieldList{j},<span class="string">'acc'</span>,<span class="string">'IgnoreCase'</span>, true) <span class="comment">% || ~isempty(strfind(fieldList{j},'Acc'))Getting fields that start with 'EMG' onl</span>
+0056         
+0057         <span class="keyword">if</span> j&lt;37
+0058             idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+7));
+0059             
+0060         <span class="keyword">else</span>
+0061             idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+8));
+0062         <span class="keyword">end</span>
+0063         <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4)
+0064             <span class="keyword">case</span> <span class="string">'X'</span>
+0065                 aux=1;
+0066             <span class="keyword">case</span> <span class="string">'Y'</span>
+0067                 aux=2;
+0068             <span class="keyword">case</span> <span class="string">'Z'</span>
+0069                 aux=3;
+0070                 
+0071         <span class="keyword">end</span>
+0072         
+0073         <span class="keyword">if</span> ~exist(<span class="string">'aux'</span>)
+0074             <span class="keyword">switch</span> fieldList{j}(end)
+0075                 <span class="keyword">case</span> <span class="string">'X'</span>
+0076                     aux=1;
+0077                 <span class="keyword">case</span> <span class="string">'Y'</span>
+0078                     aux=2;
+0079                 <span class="keyword">case</span> <span class="string">'Z'</span>
+0080                     aux=3;
+0081                     
+0082             <span class="keyword">end</span>
+0083         <span class="keyword">end</span>
+0084         eval([<span class="string">'relData(:,idxList(j),aux)=analogs.'</span> fieldList{j} <span class="string">';'</span>]);
+0085         analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0086         analogsInfo.frequency=Fs(j);
+0087         
+0088     <span class="keyword">elseif</span> contains(fieldList{j},<span class="string">'adapter'</span>,<span class="string">'IgnoreCase'</span>, true)
+0089         
+0090         idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Adapter'</span>)+8:strfind(fieldList{j},<span class="string">'Adapter'</span>)+9));
+0091         <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+10)
+0092             <span class="keyword">case</span> <span class="string">'A'</span>
+0093                 aux=1;
+0094             <span class="keyword">case</span> <span class="string">'B'</span>
+0095                 aux=2;
+0096             <span class="keyword">case</span> <span class="string">'C'</span>
+0097                 aux=3;
+0098                 
+0099         <span class="keyword">end</span>
+0100         
+0101         <span class="keyword">if</span>  ~exist(<span class="string">'aux'</span>)
+0102             <span class="keyword">switch</span> fieldList{j}(end)
+0103                 <span class="keyword">case</span> <span class="string">'A'</span>
+0104                     aux=1;
+0105                 <span class="keyword">case</span> <span class="string">'B'</span>
+0106                     aux=2;
+0107                 <span class="keyword">case</span> <span class="string">'C'</span>
+0108                     aux=3;
+0109 
+0110             <span class="keyword">end</span>
+0111         <span class="keyword">end</span>
+0112         
+0113         eval([<span class="string">'relData(:,idxList(j),aux)=analogs.'</span> fieldList{j} <span class="string">';'</span>]);
+0114         analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117 relData=permute(relData(:,~emptyChannels1,:),[1,3,2]);
+0118 relData=relData(:,:);
+0119 allData=relData;
+0120 
+0121 <span class="comment">%% File 2</span>
+0122 <span class="keyword">if</span> secondFile
+0123     <span class="comment">%  secFileList{t}</span>
+0124     <span class="comment">% files=what('./');</span>
+0125     <span class="comment">% RawfileList=files.mat;</span>
+0126     <span class="comment">% %</span>
+0127     <span class="comment">% indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));</span>
+0128     <span class="comment">% load(RawfileList{indexTrial})</span>
+0129     <span class="keyword">if</span> idx1&lt;10
+0130         load([secFileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0131     <span class="keyword">else</span>
+0132         load([secFileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0133     <span class="keyword">end</span>
+0134     <span class="comment">% load([secFileList '.mat'])</span>
+0135     <span class="comment">% Data=Data(:,1:2:end);</span>
+0136     
+0137     analogs2=[];
+0138     analogsInfo2=[];
+0139     <span class="keyword">for</span> j=1:length(Channels)
+0140         B(j) = convertCharsToStrings(Channels(j,:));
+0141         B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
+0142         B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
+0143         B(j) =deblank(B(j));
+0144         C(j) = cellstr(B(j));
+0145         analogs2.(B{j})=Data(j,:)';
+0146     <span class="keyword">end</span>
+0147     
+0148     relData2=[];
+0149     idxList2=[];
+0150     
+0151     fieldList=fields(analogs2);
+0152     <span class="keyword">for</span> j=1:length(fieldList)
+0153         
+0154         <span class="keyword">if</span>  contains(fieldList{j},<span class="string">'acc'</span>,<span class="string">'IgnoreCase'</span>, true) <span class="comment">% || ~isempty(strfind(fieldList{j},'Acc'))Getting fields that start with 'EMG' onl</span>
+0155             
+0156             <span class="keyword">if</span> j&lt;37
+0157                 idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+7));
+0158                 
+0159             <span class="keyword">else</span>
+0160                 idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'sensor'</span>)+7:strfind(fieldList{j},<span class="string">'sensor'</span>)+8));
+0161             <span class="keyword">end</span>
+0162             <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4)
+0163                 <span class="keyword">case</span> <span class="string">'X'</span>
+0164                     aux=1;
+0165                 <span class="keyword">case</span> <span class="string">'Y'</span>
+0166                     aux=2;
+0167                 <span class="keyword">case</span> <span class="string">'Z'</span>
+0168                     aux=3;
+0169             <span class="keyword">end</span>
+0170             
+0171             <span class="keyword">if</span> ~exist(<span class="string">'aux'</span>)
+0172                 <span class="keyword">switch</span> fieldList{j}(end)
+0173                     <span class="keyword">case</span> <span class="string">'X'</span>
+0174                         aux=1;
+0175                     <span class="keyword">case</span> <span class="string">'Y'</span>
+0176                         aux=2;
+0177                     <span class="keyword">case</span> <span class="string">'Z'</span>
+0178                         aux=3;
+0179                         
+0180                 <span class="keyword">end</span>
+0181         <span class="keyword">end</span>
+0182             eval([<span class="string">'relData2(:,idxList2(j),aux)=analogs2.'</span> fieldList{j} <span class="string">';'</span>]);
+0183             analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0184         <span class="keyword">elseif</span> contains(fieldList{j},<span class="string">'adapter'</span>,<span class="string">'IgnoreCase'</span>, true)
+0185             idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Adapter'</span>)+8:strfind(fieldList{j},<span class="string">'Adapter'</span>)+9));
+0186             
+0187             <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+10)
+0188                 <span class="keyword">case</span> <span class="string">'A'</span>
+0189                     aux=1;
+0190                 <span class="keyword">case</span> <span class="string">'B'</span>
+0191                     aux=2;
+0192                 <span class="keyword">case</span> <span class="string">'C'</span>
+0193                     aux=3;
+0194                     
+0195             <span class="keyword">end</span>
+0196             
+0197             <span class="keyword">if</span>  ~exist(<span class="string">'aux'</span>)
+0198             <span class="keyword">switch</span> fieldList{j}(end)
+0199                 <span class="keyword">case</span> <span class="string">'A'</span>
+0200                     aux=1;
+0201                 <span class="keyword">case</span> <span class="string">'B'</span>
+0202                     aux=2;
+0203                 <span class="keyword">case</span> <span class="string">'C'</span>
+0204                     aux=3;
+0205 
+0206             <span class="keyword">end</span>
+0207         <span class="keyword">end</span>
+0208             eval([<span class="string">'relData2(:,idxList2(j),aux)=analogs2.'</span> fieldList{j} <span class="string">';'</span>]);
+0209             analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0210         <span class="keyword">end</span>
 0211         
-0212     <span class="keyword">end</span>
-0213     relData2=permute(relData2(:,~emptyChannels2,:),[1,3,2]);
-0214     relData2=relData2(:,:);
-0215     allData=[relData,relData2];
-0216 <span class="keyword">end</span>
-0217 
+0212         
+0213     <span class="keyword">end</span>
+0214     relData2=permute(relData2(:,~emptyChannels2,:),[1,3,2]);
+0215     relData2=relData2(:,:);
+0216     allData=[relData,relData2];
+0217 <span class="keyword">end</span>
 0218 
 0219 
-0220 ACCList={};
-0221 <span class="keyword">for</span> j=1:length(EMGList)
-0222     ACCList{end+1}=[EMGList{j} <span class="string">'x'</span>];
-0223     ACCList{end+1}=[EMGList{j} <span class="string">'y'</span>];
-0224     ACCList{end+1}=[EMGList{j} <span class="string">'z'</span>];
-0225 <span class="keyword">end</span>
-0226 
-0227 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0220 
+0221 ACCList={};
+0222 <span class="keyword">for</span> j=1:length(EMGList)
+0223     ACCList{end+1}=[EMGList{j} <span class="string">'x'</span>];
+0224     ACCList{end+1}=[EMGList{j} <span class="string">'y'</span>];
+0225     ACCList{end+1}=[EMGList{j} <span class="string">'z'</span>];
+0226 <span class="keyword">end</span>
+0227 
+0228 <span class="keyword">end</span>
+0229</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

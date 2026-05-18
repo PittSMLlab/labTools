@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of normalityTestWithFig</title>
+  <meta name="keywords" content="normalityTestWithFig">
+  <meta name="description" content="Perform normality test on the data vector given using Shapiro-Wilk">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+utils</a> &gt; normalityTestWithFig.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+utils&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>normalityTestWithFig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Perform normality test on the data vector given using Shapiro-Wilk</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [hn_sw,p_sw, h_ks, p_ks] = normalityTestWithFig(data, dataLabel, subplot_hist, subplot_qq, alpha, plotDiagnostics) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Perform normality test on the data vector given using Shapiro-Wilk
+test and kstest. Though preferred method is SW-test and the diagnostic plot
+title will reflect SW test result because the SW test is more appropriate for our data. 
+Also plot histogram and QQ plot for data
+visualization. Normal looking histogram and QQ plot following a y=x
+line is important indicator for data following a normal distribution.
+
+[OUTPUTARGS]: 
+ - hn_sw: normality decision from SW test (1 is rejecting normal)
+ - p_sw: p-value from sw test: for now use p &lt; alpha as rejecting
+       normal.
+ - h_ks: normality decision from KS test (1 is rejecting normal)
+ - p_ks: p-value from ks test: for now use p &lt; alpha as rejecting
+       normal.
+
+[INPUTARGS]
+ - data: a vector of double, data to test normality
+ - dataLabel: string for name of the data
+ - subplot_hist: subplot handle to plot the histogram on. OPTIONAL,
+       can be empty or pass filler variable if the plotDiagnostics is false
+ - subplot_qq: subplot handle to plot the QQ plot on. OPTIONAL,
+       can be empty  or pass filler variable if the plotDiagnostics is false
+ - alpha: OPTIONA. default is 0.05. alpha for type I error (p &lt; alpha 
+       will be considered evidence to reject null where data is normal). 
+ - plotDiagnostics: OPTIONAL. default true. Whether or not to generate
+       a histogram and QQ plot to visually check for normality</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/fun/ext/swtest/swtest.html" class="code" title="function [H, pValue, W] = swtest(x, alpha)">swtest</a>	SWTEST Shapiro-Wilk parametric hypothesis test of composite normality.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [hn_sw,p_sw, h_ks, p_ks] = normalityTestWithFig(data, dataLabel, subplot_hist, subplot_qq, alpha, plotDiagnostics)</a>
+0002     <span class="comment">%Perform normality test on the data vector given using Shapiro-Wilk</span>
+0003     <span class="comment">%test and kstest. Though preferred method is SW-test and the diagnostic plot</span>
+0004     <span class="comment">%title will reflect SW test result because the SW test is more appropriate for our data.</span>
+0005     <span class="comment">%Also plot histogram and QQ plot for data</span>
+0006     <span class="comment">%visualization. Normal looking histogram and QQ plot following a y=x</span>
+0007     <span class="comment">%line is important indicator for data following a normal distribution.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%[OUTPUTARGS]:</span>
+0010     <span class="comment">% - hn_sw: normality decision from SW test (1 is rejecting normal)</span>
+0011     <span class="comment">% - p_sw: p-value from sw test: for now use p &lt; alpha as rejecting</span>
+0012     <span class="comment">%       normal.</span>
+0013     <span class="comment">% - h_ks: normality decision from KS test (1 is rejecting normal)</span>
+0014     <span class="comment">% - p_ks: p-value from ks test: for now use p &lt; alpha as rejecting</span>
+0015     <span class="comment">%       normal.</span>
+0016     <span class="comment">%</span>
+0017     <span class="comment">%[INPUTARGS]</span>
+0018     <span class="comment">% - data: a vector of double, data to test normality</span>
+0019     <span class="comment">% - dataLabel: string for name of the data</span>
+0020     <span class="comment">% - subplot_hist: subplot handle to plot the histogram on. OPTIONAL,</span>
+0021     <span class="comment">%       can be empty or pass filler variable if the plotDiagnostics is false</span>
+0022     <span class="comment">% - subplot_qq: subplot handle to plot the QQ plot on. OPTIONAL,</span>
+0023     <span class="comment">%       can be empty  or pass filler variable if the plotDiagnostics is false</span>
+0024     <span class="comment">% - alpha: OPTIONA. default is 0.05. alpha for type I error (p &lt; alpha</span>
+0025     <span class="comment">%       will be considered evidence to reject null where data is normal).</span>
+0026     <span class="comment">% - plotDiagnostics: OPTIONAL. default true. Whether or not to generate</span>
+0027     <span class="comment">%       a histogram and QQ plot to visually check for normality</span>
+0028     
+0029     <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(alpha) 
+0030         alpha = 0.05; <span class="comment">%default to 0.05</span>
+0031     <span class="keyword">end</span>
+0032     
+0033     <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotDiagnostics) 
+0034         plotDiagnostics = true; <span class="comment">%default to true</span>
+0035     <span class="keyword">end</span>
+0036     
+0037     <span class="keyword">if</span> plotDiagnostics
+0038         axes(subplot_hist);
+0039         histfit(data); 
+0040         title(dataLabel);
+0041 
+0042         axes(subplot_qq);
+0043         qqplot(data)
+0044     <span class="keyword">end</span>
+0045     
+0046     [hn_sw, p_sw, W_sw] = <a href="../../../labTools/fun/ext/swtest/swtest.html" class="code" title="function [H, pValue, W] = swtest(x, alpha)">swtest</a>(data);
+0047     [h_ks,p_ks] = kstest(normalize(data));
+0048 
+0049     <span class="keyword">if</span> hn_sw || h_ks <span class="comment">%0 is normal, 1 is reject = not normal</span>
+0050 <span class="comment">%         fprintf('\n') %start a new line for the warning, warning will by default have \n in the end but not in the beginning. So after the warning we will have an empty line bc I always start the print message with a \n</span>
+0051         <span class="keyword">if</span> p_sw &lt; 0.01 <span class="comment">%arbitrarily set &lt;0.01 as severe deviation from normality</span>
+0052             warning(<span class="string">'Data normality failed (severe deviation &lt;0.01) %s, p_sw = %.4f, p_ks=%.4f'</span>,dataLabel,p_sw,p_ks);
+0053         <span class="keyword">else</span>
+0054             warning(<span class="string">'Data normality failed %s, p_sw = %.4f, p_ks=%.4f'</span>,dataLabel,p_sw,p_ks);
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">else</span>
+0057         fprintf(<span class="string">'Data normal pass %s, p_sw = %.4f, p_ks=%.4f\n'</span>,dataLabel,p_sw,p_ks);
+0058     <span class="keyword">end</span>
+0059     <span class="keyword">if</span> p_sw &lt; alpha
+0060         title(sprintf(<span class="string">'%s swtest p=%.2f'</span>,dataLabel,p_sw),<span class="string">'Color'</span>,<span class="string">'r'</span>)
+0061     <span class="keyword">else</span>
+0062         title(sprintf(<span class="string">'%s swtest p=%.2f'</span>,dataLabel,p_sw),<span class="string">'Color'</span>,<span class="string">'k'</span>)
+0063     <span class="keyword">end</span>
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

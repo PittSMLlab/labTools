@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; processedTrialData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>processedTrialData
 </h1>
@@ -33,68 +33,121 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li><li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li><li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li><li><a href="../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin);</a></li></ul>
+<li><a href="#_sub1" class="code">function this = processedTrialData(metaData, markerData,</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 classdef <a href="processedTrialData.html" class="code" title="">processedTrialData</a> &lt; processedLabData
-0002     <span class="comment">%Almost dummy class: implements processedLabData as is, just checking that</span>
-0003     <span class="comment">%metaData is of trialMetaData type.</span>
-0004     <span class="comment">%</span>
-0005     <span class="comment">%See also: processedLabData</span>
-0006     
-0007     <span class="comment">%%</span>
-0008     properties (SetAccess=private)
-0009 
-0010     <span class="keyword">end</span>
-0011         
-0012     
-0013     <span class="comment">%%</span>
-0014     methods
-0015         
-0016         <span class="comment">%Constructor:</span>
-0017         <a name="_sub0" href="#_subfunctions" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin); </a><span class="comment">%All arguments are mandatory</span>
-0018             
-0019             <span class="keyword">if</span> nargin&lt;16 <span class="comment">%metaData does not get replaced.</span>
-0020                markerData=[];
-0021                EMGData=[];
-0022                GRFData=[];
-0023                beltSpeedSetData=[];
-0024                beltSpeedReadData=[];
-0025                accData=[];
-0026                EEGData=[];
-0027                footSwitches=[];
-0028                events=[];
-0029                procEMG=[];
-0030                angleData = [];
-0031                COPData=[];
-0032                COMData=[];
-0033                jointMomentsData=[];
-0034                HreflexPin = [];
-0035             <span class="keyword">end</span>
-0036             <span class="keyword">if</span> ~isa(metaData,<span class="string">'trialMetaData'</span>) &amp;&amp; ~isa(metaData,<span class="string">'derivedMetaData'</span>) &amp;&amp; ~isempty(metaData)
-0037                 ME=MException(<span class="string">'processedTrialData:Constructor'</span>,<span class="string">'First argument is not a trialMetaData object.'</span>);
-0038                 throw(ME);
-0039             <span class="keyword">end</span>
-0040             this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin)
-0041         <span class="keyword">end</span>
-0042         
-0043 <span class="comment">%         function calcParams(this)</span>
-0044 <span class="comment">%             this.adaptParams=calcParameters(this);</span>
-0045 <span class="comment">%         end</span>
-0046        
-0047     <span class="keyword">end</span>
-0048     
-0049     
-0050 <span class="keyword">end</span>
-0051</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 classdef <a href="processedTrialData.html" class="code" title="">processedTrialData</a> &lt; <a href="../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>
+0002     <span class="comment">%processedTrialData  Processed data container for individual trials</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   processedTrialData extends processedLabData to enforce that the</span>
+0005     <span class="comment">%   metadata is of trialMetaData type rather than the more general</span>
+0006     <span class="comment">%   labMetaData type. This ensures proper trial-specific metadata is</span>
+0007     <span class="comment">%   associated with the processed data.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%processedTrialData properties:</span>
+0010     <span class="comment">%   (inherits all properties from processedLabData and labData)</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">%processedTrialData methods:</span>
+0013     <span class="comment">%   processedTrialData - constructor for processed trial data</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">%See also: processedLabData, labData, trialMetaData, rawTrialData</span>
+0016 
+0017     <span class="comment">%% Properties</span>
+0018     properties (SetAccess = private)
+0019     <span class="keyword">end</span>
+0020 
+0021     <span class="comment">%% Constructor</span>
+0022     methods
+0023         <a name="_sub0" href="#_subfunctions" class="code">function this = processedTrialData(metaData, markerData, </a><span class="keyword">...</span>
+0024                 EMGData, GRFData, beltSpeedSetData, beltSpeedReadData, <span class="keyword">...</span>
+0025                 accData, EEGData, footSwitches, events, procEMG, <span class="keyword">...</span>
+0026                 angleData, COPData, COMData, jointMomentsData, HreflexPin)
+0027             <span class="comment">%processedTrialData  Constructor for processedTrialData class</span>
+0028             <span class="comment">%</span>
+0029             <span class="comment">%   this = processedTrialData(metaData, markerData, EMGData,</span>
+0030             <span class="comment">%   GRFData, beltSpeedSetData, beltSpeedReadData, accData,</span>
+0031             <span class="comment">%   EEGData, footSwitches, events, procEMG, angleData,</span>
+0032             <span class="comment">%   COPData, COMData, jointMomentsData, HreflexPin) creates a</span>
+0033             <span class="comment">%   processed trial data object with specified data and</span>
+0034             <span class="comment">%   metadata</span>
+0035             <span class="comment">%</span>
+0036             <span class="comment">%   Inputs:</span>
+0037             <span class="comment">%       metaData - trialMetaData or derivedMetaData object</span>
+0038             <span class="comment">%       markerData - orientedLabTimeSeries with marker</span>
+0039             <span class="comment">%                    trajectories</span>
+0040             <span class="comment">%       EMGData - labTimeSeries with filtered EMG signals</span>
+0041             <span class="comment">%       GRFData - orientedLabTimeSeries with ground reaction</span>
+0042             <span class="comment">%                 forces</span>
+0043             <span class="comment">%       beltSpeedSetData - labTimeSeries with commanded belt</span>
+0044             <span class="comment">%                          speeds</span>
+0045             <span class="comment">%       beltSpeedReadData - labTimeSeries with actual belt</span>
+0046             <span class="comment">%                           speeds</span>
+0047             <span class="comment">%       accData - orientedLabTimeSeries with acceleration</span>
+0048             <span class="comment">%                 data</span>
+0049             <span class="comment">%       EEGData - labTimeSeries with EEG signals</span>
+0050             <span class="comment">%       footSwitches - labTimeSeries with foot switch data</span>
+0051             <span class="comment">%       events - labTimeSeries with gait events</span>
+0052             <span class="comment">%       procEMG - processedEMGTimeSeries with processed EMG</span>
+0053             <span class="comment">%       angleData - labTimeSeries with joint angles</span>
+0054             <span class="comment">%       COPData - orientedLabTimeSeries with center of</span>
+0055             <span class="comment">%                 pressure</span>
+0056             <span class="comment">%       COMData - orientedLabTimeSeries with center of mass</span>
+0057             <span class="comment">%       jointMomentsData - labTimeSeries with joint moments</span>
+0058             <span class="comment">%       HreflexPin - labTimeSeries with H-reflex stimulus</span>
+0059             <span class="comment">%                    timing</span>
+0060             <span class="comment">%</span>
+0061             <span class="comment">%   Outputs:</span>
+0062             <span class="comment">%       this - processedTrialData object</span>
+0063             <span class="comment">%</span>
+0064             <span class="comment">%   Note: All arguments are mandatory</span>
+0065             <span class="comment">%</span>
+0066             <span class="comment">%   See also: processedLabData, trialMetaData, rawTrialData</span>
+0067 
+0068             <span class="keyword">if</span> nargin &lt; 16 <span class="comment">% metaData does not get replaced.</span>
+0069                 markerData = [];
+0070                 EMGData = [];
+0071                 GRFData = [];
+0072                 beltSpeedSetData = [];
+0073                 beltSpeedReadData = [];
+0074                 accData = [];
+0075                 EEGData = [];
+0076                 footSwitches = [];
+0077                 events = [];
+0078                 procEMG = [];
+0079                 angleData = [];
+0080                 COPData = [];
+0081                 COMData = [];
+0082                 jointMomentsData = [];
+0083                 HreflexPin = [];
+0084             <span class="keyword">end</span>
+0085 
+0086             <span class="keyword">if</span> ~isa(metaData, <span class="string">'trialMetaData'</span>) &amp;&amp; <span class="keyword">...</span>
+0087                     ~isa(metaData, <span class="string">'derivedMetaData'</span>) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(metaData)
+0088                 ME = MException(<span class="string">'processedTrialData:Constructor'</span>, <span class="keyword">...</span>
+0089                     <span class="string">'First argument is not a trialMetaData object.'</span>);
+0090                 throw(ME);
+0091             <span class="keyword">end</span>
+0092             this@<a href="../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>(metaData, markerData, EMGData, <span class="keyword">...</span>
+0093                 GRFData, beltSpeedSetData, beltSpeedReadData, accData, <span class="keyword">...</span>
+0094                 EEGData, footSwitches, events, procEMG, angleData, <span class="keyword">...</span>
+0095                 COPData, COMData, jointMomentsData, HreflexPin);
+0096         <span class="keyword">end</span>
+0097 
+0098         <span class="comment">% function calcParams(this)</span>
+0099         <span class="comment">%     this.adaptParams = calcParameters(this);</span>
+0100         <span class="comment">% end</span>
+0101     <span class="keyword">end</span>
+0102 
+0103 <span class="keyword">end</span>
+0104</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

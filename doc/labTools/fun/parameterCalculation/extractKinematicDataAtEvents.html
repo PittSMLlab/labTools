@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractKinematicDataAtEvents</title>
+  <meta name="keywords" content="extractKinematicDataAtEvents">
+  <meta name="description" content="EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; extractKinematicDataAtEvents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>extractKinematicDataAtEvents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.
+
+   Shared implementation used by GETKINEMATICDATA and
+ GETKINEMATICDATAABS. Determines fast/slow leg assignment, extracts
+ marker data at eight gait events per stride from both markerData
+ (original lab frame) and rotatedMarkerData (caller-specific rotated
+ frame), extracts and sign-corrects limb angles, computes walking
+ direction, and computes hip and ankle positions. The caller provides
+ rotatedMarkerData and is responsible for computing the final ankle
+ positions in its chosen coordinate frame.
+
+ Inputs:
+   eventTimes        - (numStrides x numEvents) array of gait event
+                       times
+   markerData        - orientedLabTimeSeries of 3D marker trajectories
+                       in the original lab frame
+   rotatedMarkerData - orientedLabTimeSeries already translated/rotated
+                       by the caller to the desired reference frame
+   angleData         - labTimeSeries of limb angles (or empty)
+   s                 - (char) slow-leg identifier: 'L' or 'R'
+
+ Outputs:
+   sAnk            - (numStrides x numEvents x 3) slow ankle marker
+                     positions at event times, in lab frame
+   fAnk            - (numStrides x numEvents x 3) fast ankle marker
+                     positions at event times, in lab frame
+   sAngle          - (numStrides x numEvents) slow leg limb angles,
+                     sign-corrected so SHS value is positive
+   fAngle          - (numStrides x numEvents) fast leg limb angles,
+                     sign-corrected to match sAngle sign
+   direction       - (numStrides x 1) walking direction (+1 or -1)
+   hipPos3D        - (numStrides x numEvents x 3) mid-hip 3D position
+                     (average of slow and fast hip markers) at event
+                     times, in lab frame
+   hipPosSHS       - (numStrides x 1) mid-hip fore-aft position at SHS
+   sAnk_fromAvgHip - (numStrides x numEvents) slow ankle fore-aft
+                     position relative to mean hip position over stride
+   fAnk_fromAvgHip - (numStrides x numEvents) fast ankle fore-aft
+                     position relative to mean hip position over stride
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getKinematicData.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicData(eventTimes, markerData, angleData, s)">GETKINEMATICDATA</a>, <a href="getKinematicDataAbs.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicDataAbs(eventTimes, markerData, angleData, s)">GETKINEMATICDATAABS</a>, <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">isaLabelPrefix</a>	isaLabelPrefix  Checks if prefix exists</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="getKinematicData.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicData(eventTimes, markerData, angleData, s)">getKinematicData</a>	GETKINEMATICDATA Extract marker and angle data at gait event times.</li><li><a href="getKinematicDataAbs.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicDataAbs(eventTimes, markerData, angleData, s)">getKinematicDataAbs</a>	GETKINEMATICDATAABS Extract marker data in absolute lab-frame coordinates.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D, </a><span class="keyword">...</span>
+0002     hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] = <span class="keyword">...</span>
+0003     extractKinematicDataAtEvents(eventTimes, markerData, <span class="keyword">...</span>
+0004     rotatedMarkerData, angleData, s)
+0005 <span class="comment">%EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Shared implementation used by GETKINEMATICDATA and</span>
+0008 <span class="comment">% GETKINEMATICDATAABS. Determines fast/slow leg assignment, extracts</span>
+0009 <span class="comment">% marker data at eight gait events per stride from both markerData</span>
+0010 <span class="comment">% (original lab frame) and rotatedMarkerData (caller-specific rotated</span>
+0011 <span class="comment">% frame), extracts and sign-corrects limb angles, computes walking</span>
+0012 <span class="comment">% direction, and computes hip and ankle positions. The caller provides</span>
+0013 <span class="comment">% rotatedMarkerData and is responsible for computing the final ankle</span>
+0014 <span class="comment">% positions in its chosen coordinate frame.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   eventTimes        - (numStrides x numEvents) array of gait event</span>
+0018 <span class="comment">%                       times</span>
+0019 <span class="comment">%   markerData        - orientedLabTimeSeries of 3D marker trajectories</span>
+0020 <span class="comment">%                       in the original lab frame</span>
+0021 <span class="comment">%   rotatedMarkerData - orientedLabTimeSeries already translated/rotated</span>
+0022 <span class="comment">%                       by the caller to the desired reference frame</span>
+0023 <span class="comment">%   angleData         - labTimeSeries of limb angles (or empty)</span>
+0024 <span class="comment">%   s                 - (char) slow-leg identifier: 'L' or 'R'</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Outputs:</span>
+0027 <span class="comment">%   sAnk            - (numStrides x numEvents x 3) slow ankle marker</span>
+0028 <span class="comment">%                     positions at event times, in lab frame</span>
+0029 <span class="comment">%   fAnk            - (numStrides x numEvents x 3) fast ankle marker</span>
+0030 <span class="comment">%                     positions at event times, in lab frame</span>
+0031 <span class="comment">%   sAngle          - (numStrides x numEvents) slow leg limb angles,</span>
+0032 <span class="comment">%                     sign-corrected so SHS value is positive</span>
+0033 <span class="comment">%   fAngle          - (numStrides x numEvents) fast leg limb angles,</span>
+0034 <span class="comment">%                     sign-corrected to match sAngle sign</span>
+0035 <span class="comment">%   direction       - (numStrides x 1) walking direction (+1 or -1)</span>
+0036 <span class="comment">%   hipPos3D        - (numStrides x numEvents x 3) mid-hip 3D position</span>
+0037 <span class="comment">%                     (average of slow and fast hip markers) at event</span>
+0038 <span class="comment">%                     times, in lab frame</span>
+0039 <span class="comment">%   hipPosSHS       - (numStrides x 1) mid-hip fore-aft position at SHS</span>
+0040 <span class="comment">%   sAnk_fromAvgHip - (numStrides x numEvents) slow ankle fore-aft</span>
+0041 <span class="comment">%                     position relative to mean hip position over stride</span>
+0042 <span class="comment">%   fAnk_fromAvgHip - (numStrides x numEvents) fast ankle fore-aft</span>
+0043 <span class="comment">%                     position relative to mean hip position over stride</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% Toolbox Dependencies:</span>
+0046 <span class="comment">%   None</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">% See also GETKINEMATICDATA, GETKINEMATICDATAABS, COMPUTESPATIALPARAMETERS.</span>
+0049 
+0050 arguments
+0051     eventTimes        (:,:) double
+0052     markerData
+0053     rotatedMarkerData
+0054     angleData
+0055     s                 (1,:) char
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%% Get Relevant Sample of Data (Using Interpolation)</span>
+0059 <span class="comment">% 's' represents the slow limb, 'f' represents the fast limb</span>
+0060 <span class="keyword">if</span> strcmp(s, <span class="string">'L'</span>)
+0061     f = <span class="string">'R'</span>;
+0062 <span class="keyword">elseif</span> strcmp(s, <span class="string">'R'</span>)
+0063     f = <span class="string">'L'</span>;
+0064 <span class="keyword">else</span>
+0065     error(<span class="string">'Invalid limb specification. Must be ''L'' or ''R''.'</span>);
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">% extract marker orientation and axis information</span>
+0069 orientation = markerData.orientation;
+0070 <span class="comment">% NOTE: directions, signs, and legs2 are not currently used downstream</span>
+0071 <span class="comment">% but are preserved here for potential future generalization.</span>
+0072 directions  = {orientation.sideAxis, orientation.foreaftAxis, <span class="keyword">...</span>
+0073     orientation.updownAxis};
+0074 signs = [orientation.sideSign orientation.foreaftSign <span class="keyword">...</span>
+0075     orientation.updownSign];
+0076 
+0077 <span class="comment">% define markers of interest</span>
+0078 markers = {<span class="string">'HIP'</span>, <span class="string">'ANK'</span>, <span class="string">'TOE'</span>};
+0079 labels  = {};
+0080 legs    = {s, f};
+0081 legs2   = {<span class="string">'s'</span>, <span class="string">'f'</span>};
+0082 
+0083 <span class="comment">% construct labels for markers (e.g., 'sHIP', 'fANK', etc.)</span>
+0084 <span class="keyword">for</span> mrkr = 1:length(markers)
+0085     <span class="keyword">for</span> ii = 1:2
+0086         <span class="comment">% odd indices: slow leg, even indices: fast leg</span>
+0087         labels{end+1} = [legs{ii} markers{mrkr}];
+0088     <span class="keyword">end</span>
+0089 <span class="keyword">end</span>
+0090 
+0091 <span class="comment">% check for missing markers</span>
+0092 [bool, idx] = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">isaLabelPrefix</a>(markerData, labels);
+0093 <span class="keyword">if</span> ~all(bool)
+0094     warning([<span class="string">'Markers are missing: '</span> <span class="keyword">...</span>
+0095         <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(labels(~bool), <span class="string">','</span>))]);
+0096 <span class="keyword">end</span>
+0097 
+0098 <span class="comment">% extract marker data at gait event times</span>
+0099 <span class="comment">% NOTE: sToe, fToe, sToeRel, and fToeRel are populated by the loop</span>
+0100 <span class="comment">% below but are not exposed as outputs; add outputs here if callers</span>
+0101 <span class="comment">% need toe marker data.</span>
+0102 <span class="keyword">for</span> lbl = 1:length(labels) <span class="comment">% assign each marker data to a x3 str</span>
+0103     aux = markerData.getDataAsTS( <span class="keyword">...</span>
+0104         markerData.addLabelSuffix(labels{lbl}));
+0105     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux.Data)
+0106         <span class="comment">% extract data by finding the closest available sample at each</span>
+0107         <span class="comment">% event time</span>
+0108         newMarkerData = aux.getSample(eventTimes, <span class="string">'closest'</span>);
+0109         relMarkerData = rotatedMarkerData.getDataAsTS( <span class="keyword">...</span>
+0110             rotatedMarkerData.addLabelSuffix(labels{lbl}));
+0111         relMarkerData = relMarkerData.getSample(eventTimes, <span class="string">'closest'</span>);
+0112     <span class="keyword">else</span>    <span class="comment">% otherwise, a marker is missing</span>
+0113         warning([<span class="string">'Marker '</span> labels{lbl} <span class="keyword">...</span>
+0114             <span class="string">' is missing. All references to it will return NaN.'</span>]);
+0115         newMarkerData = nan([size(eventTimes), 3]);
+0116         relMarkerData = nan([size(eventTimes), 3]);
+0117     <span class="keyword">end</span>
+0118 
+0119     <span class="comment">% assign extracted marker data to corresponding variables</span>
+0120     <span class="keyword">if</span> strcmp(labels{lbl}(1), s)       <span class="comment">% if slow leg markers, ...</span>
+0121         eval([<span class="string">'s'</span> upper(labels{lbl}(2)) <span class="keyword">...</span>
+0122             lower(labels{lbl}(3:4)) <span class="string">' = newMarkerData;'</span>]);
+0123         eval([<span class="string">'s'</span> upper(labels{lbl}(2)) <span class="keyword">...</span>
+0124             lower(labels{lbl}(3:4)) <span class="string">'Rel = relMarkerData;'</span>]);
+0125     <span class="keyword">elseif</span> strcmp(labels{lbl}(1), f)   <span class="comment">% if fast leg markers, ...</span>
+0126         eval([<span class="string">'f'</span> upper(labels{lbl}(2)) <span class="keyword">...</span>
+0127             lower(labels{lbl}(3:4)) <span class="string">' = newMarkerData;'</span>]);
+0128         eval([<span class="string">'f'</span> upper(labels{lbl}(2)) <span class="keyword">...</span>
+0129             lower(labels{lbl}(3:4)) <span class="string">'Rel = relMarkerData;'</span>]);
+0130     <span class="keyword">else</span>                            <span class="comment">% otherwise, ...</span>
+0131         error(<span class="string">'Marker labels must begin with ''R'' or ''L''.'</span>);
+0132     <span class="keyword">end</span>
+0133 <span class="keyword">end</span>
+0134 
+0135 <span class="comment">%% Extract Angle Data at Gait Event Times</span>
+0136 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(angleData)
+0137     newAngleData = angleData.getDataAsTS({[s <span class="string">'Limb'</span>], [f <span class="string">'Limb'</span>]});
+0138     newAngleData = newAngleData.getSample(eventTimes, <span class="string">'closest'</span>);
+0139     sAngle = newAngleData(:, :, 1);
+0140     fAngle = newAngleData(:, :, 2);
+0141 <span class="keyword">else</span>
+0142     sAngle = nan(size(eventTimes, 1), size(eventTimes, 2), 1);
+0143     fAngle = nan(size(eventTimes, 1), size(eventTimes, 2), 1);
+0144 <span class="keyword">end</span>
+0145 
+0146 aux    = sign(sAngle(:, 1));            <span class="comment">% checks for sAngle(indSHS) &lt; 0</span>
+0147 sAngle = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, sAngle, aux);
+0148 fAngle = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, fAngle, aux);
+0149 
+0150 <span class="comment">%% Compute Walking Direction</span>
+0151 <span class="comment">% direction is determined from y-axis difference of slow ankle marker</span>
+0152 <span class="comment">% during swing phase (STO to SHS2)</span>
+0153 <span class="comment">% TODO: would using SHS and STO work just as well?</span>
+0154 direction = sign(diff(sAnk(:, 4:5, 2), 1, 2));
+0155 
+0156 <span class="comment">% handle missing values in direction vector</span>
+0157 indsDirNans = find(isnan(direction));   <span class="comment">% identify any NaN values</span>
+0158 numNans     = length(indsDirNans);      <span class="comment">% number of NaN values</span>
+0159 <span class="keyword">for</span> miss = 1:numNans                    <span class="comment">% for each missing value, ...</span>
+0160     <span class="comment">% check only y-axis values for current stride (i.e., none of gait</span>
+0161     <span class="comment">% events with '2' in the name since could be at or approaching a turn)</span>
+0162     hasVal = ~isnan(sAnk(indsDirNans(miss), 1:4, 2));
+0163     <span class="comment">% use two most disparate gait events in time to try to account for</span>
+0164     <span class="comment">% noise in the ankle marker y-axis position during stance phase</span>
+0165     direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), <span class="keyword">...</span>
+0166         [find(hasVal, 1) find(hasVal, 1, <span class="string">'last'</span>)], 2), 1, 2));
+0167 <span class="keyword">end</span>
+0168 
+0169 <span class="comment">% TODO: would it be best to simply leave the zeros since unclear?</span>
+0170 <span class="comment">% handle invalid direction values (where only one valid y-value exists)</span>
+0171 indsDirZeros = find(direction == 0);
+0172 numZeros     = length(indsDirZeros);
+0173 <span class="keyword">for</span> ii = 1:numZeros                     <span class="comment">% for each invalid measure, ...</span>
+0174     <span class="keyword">if</span> indsDirZeros(ii) == 1            <span class="comment">% if first stride is invalid, ...</span>
+0175         direction(1) = direction(2);    <span class="comment">% set to be same as stride 2</span>
+0176     <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
+0177         <span class="comment">% set invalid direction value to be previous stride direction value</span>
+0178         direction(indsDirZeros(ii)) = direction(indsDirZeros(ii)-1);
+0179     <span class="keyword">end</span>
+0180 <span class="keyword">end</span>
+0181 
+0182 <span class="comment">%% Compute Hip Positions</span>
+0183 hipPos3D    = 0.5 * (sHip + fHip);
+0184 hipPosFwd   = hipPos3D(:, :, 2);    <span class="comment">% extract y-axis component</span>
+0185 <span class="comment">% just for check, should be all zeros</span>
+0186 hipPos3DRel = 0.5 * (sHipRel + fHipRel);
+0187 <span class="comment">% hipPos = mean([sHip(indSHS,2) fHip(indSHS,2)]);</span>
+0188 hipPosSHS   = hipPosFwd(:, 1);      <span class="comment">% hip position at SHS</span>
+0189 <span class="comment">% compute average hip position over gait cycle (SHS to STO2)</span>
+0190 hipPosAvg_forFast = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(hipPosFwd(:, 1:6), <span class="string">'omitnan'</span>));
+0191 hipPosAvg_forSlow = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(hipPosFwd(:, 3:8), <span class="string">'omitnan'</span>));
+0192 
+0193 <span class="comment">% y position of slow/fast ankle corrected by average hip position</span>
+0194 sAnk_fromAvgHip = sAnk(:, :, 2) - hipPosAvg_forSlow;
+0195 fAnk_fromAvgHip = fAnk(:, :, 2) - hipPosAvg_forFast;
+0196 
+0197 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

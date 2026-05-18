@@ -4,7 +4,7 @@
 <head>
   <title>Description of TorqueCalculator</title>
   <meta name="keywords" content="TorqueCalculator">
-  <meta name="description" content="TorqueCalculator This function calculates the torques at each of the">
+  <meta name="description" content="TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,61 +15,64 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">biomechAnalysis</a> &gt; TorqueCalculator.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/biomechAnalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\biomechAnalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>TorqueCalculator
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>TorqueCalculator This function calculates the torques at each of the</strong></div>
+<div class="box"><strong>TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [ AllMomentsTS,COPTS,COMTS ] = TorqueCalculator(rawTrialData, weight) </strong></div>
+<div class="box"><strong>function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">TorqueCalculator This function calculates the torques at each of the
-joints of the lower body based on inverse dynamics calculations.</pre></div>
+<div class="fragment"><pre class="comment">TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="COMCalculator.html" class="code" title="function [COMTS] = COMCalculator(markerData)">COMCalculator</a>	% Step 1: Get relevant marker data</li><li><a href="COPCalculator.html" class="code" title="function [COPTS] = COPCalculator(GRFData)">COPCalculator</a>	% Filter the GRFs</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>	COMCALCULATOR Compute segment center-of-mass time series from marker data.</li><li><a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>	COPCALCULATOR Calculate the center of pressure time series from GRF data</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/computeTorques.html" class="code" title="function [momentData, COP, COM] = computeTorques(this,subjectWeight)">computeTorques</a>	computeTorques  Computes joint torques from kinematics and kinetics</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ AllMomentsTS,COPTS,COMTS ] = TorqueCalculator(rawTrialData, weight)</a>
-0002 <span class="comment">%TorqueCalculator This function calculates the torques at each of the</span>
-0003 <span class="comment">%joints of the lower body based on inverse dynamics calculations.</span>
-0004 
-0005 in=rawTrialData;
-0006 clear rawTrialData
-0007 
-0008 <span class="comment">%% STEP 1: Compute COP</span>
-0009 <span class="keyword">if</span> isempty(in.GRFData)
-0010     COPTS = [];
-0011 <span class="keyword">else</span>
-0012     [COPTS] = <a href="COPCalculator.html" class="code" title="function [COPTS] = COPCalculator(GRFData)">COPCalculator</a>(in.GRFData);
-0013 <span class="keyword">end</span>
-0014 
-0015 <span class="comment">%% STEP 2: Compute COM &amp; extract values</span>
-0016 <span class="keyword">if</span> isempty(in.markerData) || numel(in.markerData.labels)==0
-0017     COMTS = [];
-0018 <span class="keyword">else</span>
-0019     [COMTS] = <a href="COMCalculator.html" class="code" title="function [COMTS] = COMCalculator(markerData)">COMCalculator</a>(in.markerData);
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)</a>
+0002 <span class="comment">%TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</span>
+0003 
+0004 in = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
+0005 clear <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
+0006 
+0007 <span class="comment">%% STEP 1: Compute Center of Pressure (COP)</span>
+0008 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.GRFData)                  <span class="comment">% if GRF data is empty, ...</span>
+0009     COPTS = [];                         <span class="comment">% output empty array</span>
+0010 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
+0011     COPTS = <a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>(in.GRFData);  <span class="comment">% calculate COP time series</span>
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">%% STEP 2: Compute Center of Mass (COM)</span>
+0015 <span class="comment">% if no marker data or no marker labels, ...</span>
+0016 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.markerData) || numel(in.markerData.labels) == 0
+0017     COMTS = [];                             <span class="comment">% output empty array</span>
+0018 <span class="keyword">else</span>                                        <span class="comment">% otherwise, ...</span>
+0019     COMTS = <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>(in.markerData);   <span class="comment">% calculate COM time series</span>
 0020 <span class="keyword">end</span>
-0021 <span class="comment">%% STEP 3: Compute Torques</span>
-0022 <span class="keyword">if</span> isempty(COMTS) || isempty(COPTS)
-0023     AllMomentsTS = [];
-0024 <span class="keyword">else</span>
-0025     [AllMomentsTS] = []; <span class="comment">% TorqueCalculatorNew(COMTS, COPTS, in.markerData, in.GRFData, weight);</span>
-0026 <span class="keyword">end</span>
-0027 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0021 
+0022 <span class="comment">%% STEP 3: Compute Torques</span>
+0023 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COMTS) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COPTS)     <span class="comment">% if no COM or COP time series, ...</span>
+0024     AllMomentsTS = [];                  <span class="comment">% output empty array</span>
+0025 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
+0026     <span class="comment">% NOT YET IMPLEMENTED</span>
+0027     AllMomentsTS = []; <span class="comment">% TorqueCalculatorNew(COMTS,COPTS,in.markerData,in.GRFData,weight);</span>
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="keyword">end</span>
+0031</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

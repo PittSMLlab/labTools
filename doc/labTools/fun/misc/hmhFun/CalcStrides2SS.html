@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; CalcStrides2SS.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc\hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>CalcStrides2SS
 </h1>
@@ -43,7 +43,7 @@ instead of all subjects.</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li></ul>
@@ -67,7 +67,7 @@ This function is called by:
 0013 
 0014 
 0015 <span class="comment">% %%%How to calculate strides to ss</span>
-0016 <span class="keyword">if</span> isempty(plotFlag)~=0 || plotFlag==1
+0016 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag)~=0 || plotFlag==1
 0017     figure
 0018 <span class="keyword">end</span>
 0019 
@@ -75,7 +75,7 @@ This function is called by:
 0021 idxNET = find(strcmp(params, <span class="string">'netContributionNorm2'</span>));
 0022 
 0023 <span class="comment">%Smooth the data:</span>
-0024 allValuesALL=bin_dataV1(allValues,20); SmoothType=<span class="string">'Whole, BW=20, first not before raw min'</span>;
+0024 allValuesALL=<a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(allValues,20); SmoothType=<span class="string">'Whole, BW=20, first not before raw min'</span>;
 0025 ss=SSraw;
 0026 
 0027 <span class="keyword">for</span> var=1:length(params)
@@ -98,7 +98,7 @@ This function is called by:
 0044     <span class="keyword">end</span>
 0045     
 0046     t=find(allValuesALL(:,var)&gt;=ss(var)*.632);
-0047     <span class="keyword">if</span> isempty(t)==1
+0047     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)==1
 0048         Stride2SS(1, var)=NaN;
 0049     <span class="keyword">else</span> <span class="comment">%this prevents a stride from being identified before the min value in the timecourse</span>
 0050         first_t=t(1);
@@ -114,10 +114,10 @@ This function is called by:
 0060     <span class="comment">%optional plotting to see where the Tau is being identified</span>
 0061     <span class="keyword">if</span> plotFlag
 0062         subplot(1, length(params), var)
-0063         plot([allValuesALL(:, var)], <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
+0063         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([allValuesALL(:, var)], <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
 0064         
-0065         plot(whereIS:whereIS+9, allValuesALL(whereIS:whereIS+9, var), <span class="string">'c.'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
-0066         plot(first_t, allValuesALL(first_t, var) , <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25); hold on
+0065         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(whereIS:whereIS+9, allValuesALL(whereIS:whereIS+9, var), <span class="string">'c.'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
+0066         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(first_t, allValuesALL(first_t, var) , <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25); hold on
 0067         line([0 900], [ss(var) ss(var)],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1)
 0068         line([0 900], [ss(var)*.632 ss(var)*.632],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>,<span class="string">':'</span>)
 0069         line([0 900], [0 0])
@@ -139,6 +139,6 @@ This function is called by:
 0085 
 0086 <span class="keyword">end</span>
 0087</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

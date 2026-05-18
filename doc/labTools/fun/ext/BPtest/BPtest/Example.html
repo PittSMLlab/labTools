@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Example</title>
+  <meta name="keywords" content="Example">
+  <meta name="description" content="% Example for non-heteroscedastic residuals">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">BPtest</a> &gt; <a href="index.html">BPtest</a> &gt; Example.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\ext\BPtest\BPtest&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>Example
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>% Example for non-heteroscedastic residuals</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Example for non-heteroscedastic residuals</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="BPtest.html" class="code" title="function[T,P,df] = BPtest(z,studentize)">BPtest</a>	INPUTS:</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 <span class="comment">%% Example for non-heteroscedastic residuals</span>
+0003 x = transpose(0.1:0.1:50);
+0004 y = x + randn(numel(x),1);
+0005 
+0006 
+0007 
+0008 <span class="comment">% with Linear model input</span>
+0009 lm = fitlm(x,y);
+0010 [T,P,df] = <a href="BPtest.html" class="code" title="function[T,P,df] = BPtest(z,studentize)">BPtest</a>(lm);
+0011 
+0012 
+0013 <span class="comment">% with matrix input</span>
+0014 [T,P,df] = <a href="BPtest.html" class="code" title="function[T,P,df] = BPtest(z,studentize)">BPtest</a>([x,y]);
+0015 
+0016 
+0017 
+0018 <span class="comment">%% Example for heteroscedastic residuals</span>
+0019 
+0020 x = transpose(0.1:0.1:50);
+0021 y = x.*randn(numel(x),1);
+0022 
+0023 
+0024 <span class="comment">% lm input (with standard BP test)</span>
+0025 lm = fitlm(x,y);
+0026 [T,P,df] = <a href="BPtest.html" class="code" title="function[T,P,df] = BPtest(z,studentize)">BPtest</a>(lm,false);
+0027 plotResiduals(lm,<span class="string">'fitted'</span>)</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

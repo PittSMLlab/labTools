@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeHemiCOP</title>
+  <meta name="keywords" content="computeHemiCOP">
+  <meta name="description" content="computeHemiCOP  Computes center of pressure for one leg">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; computeHemiCOP.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>computeHemiCOP
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>computeHemiCOP  Computes center of pressure for one leg</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">computeHemiCOP  Computes center of pressure for one leg
+
+   [COP, F, M] = computeHemiCOP(this, side) computes center of pressure
+   for specified leg with default filtering
+
+   [COP, F, M] = computeHemiCOP(this, side, noFilterFlag) optionally
+   disables filtering when noFilterFlag is true
+
+   Inputs:
+       this - labData object
+       side - 'L' or 'R' for left or right leg
+       noFilterFlag - flag to disable filtering (default: filtered)
+
+   Outputs:
+       COP - orientedLabTimeSeries containing center of pressure
+       F - force data matrix
+       M - moment data matrix
+
+   Note: COP computation is calibrated only for GRFData
+         obtained from the Bertec instrumented treadmill
+
+   See also: <a href="computeCOPAlt.html" class="code" title="function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)">computeCOPAlt</a>, <a href="mergeHemiCOPs.html" class="code" title="function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)">mergeHemiCOPs</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="computeCOPAlt.html" class="code" title="function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)">computeCOPAlt</a>	computeCOPAlt  Alternative method to compute center of pressure</li><li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)</a>
+0002 <span class="comment">%computeHemiCOP  Computes center of pressure for one leg</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [COP, F, M] = computeHemiCOP(this, side) computes center of pressure</span>
+0005 <span class="comment">%   for specified leg with default filtering</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [COP, F, M] = computeHemiCOP(this, side, noFilterFlag) optionally</span>
+0008 <span class="comment">%   disables filtering when noFilterFlag is true</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labData object</span>
+0012 <span class="comment">%       side - 'L' or 'R' for left or right leg</span>
+0013 <span class="comment">%       noFilterFlag - flag to disable filtering (default: filtered)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       COP - orientedLabTimeSeries containing center of pressure</span>
+0017 <span class="comment">%       F - force data matrix</span>
+0018 <span class="comment">%       M - moment data matrix</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: COP computation is calibrated only for GRFData</span>
+0021 <span class="comment">%         obtained from the Bertec instrumented treadmill</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: computeCOPAlt, mergeHemiCOPs</span>
+0024 
+0025 <span class="comment">% COP calculation as used by the ALTERNATIVE version</span>
+0026 
+0027 this = this.GRFData;
+0028 fcut = 50;
+0029 <span class="comment">% Warning: this only works if GRF data is stored here</span>
+0030 warning(<span class="string">'orientedLabTimeSeries:computeCOP'</span>, <span class="keyword">...</span>
+0031     [<span class="string">'COP computation is calibrated only for GRFData '</span> <span class="keyword">...</span>
+0032     <span class="string">'obtained from the Bertec instrumented treadmill'</span>]);
+0033 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(noFilterFlag) &amp;&amp; noFilterFlag == 1
+0034     F = squeeze(this.getDataAsOTS([side <span class="string">'F'</span>]).getOrientedData);
+0035     M = squeeze(this.getDataAsOTS([side <span class="string">'M'</span>]).getOrientedData);
+0036 <span class="keyword">else</span>
+0037     F = this.getDataAsOTS([side <span class="string">'F'</span>]).medianFilter(5).substituteNaNs;
+0038     F = F.lowPassFilter(fcut).thresholdByChannel(-100, [side <span class="string">'Fz'</span>], 1);
+0039     F = squeeze(F.getOrientedData);
+0040     M = this.getDataAsOTS([side <span class="string">'M'</span>]).medianFilter(5).substituteNaNs;
+0041     M = M.lowPassFilter(fcut);
+0042     M = squeeze(M.getOrientedData);
+0043     <span class="comment">% Thresholding to avoid artifacts</span>
+0044     F(abs(F(:, 3)) &lt; 100, :) = 0;
+0045 <span class="keyword">end</span>
+0046 <span class="comment">% I believe this should work for all forceplates in the world:</span>
+0047 <span class="comment">% aux = bsxfun(@rdivide, cross(F, M), (sum(F.^2, 2)));</span>
+0048 <span class="comment">% t = -aux(:, 3) ./ F(:, 3);</span>
+0049 <span class="comment">% COP = orientedLabTimeSeries(aux + t .* F, this.Time(1), this.sampPeriod,</span>
+0050 <span class="comment">% orientedLabTimeSeries.addLabelSuffix([side 'COP']), this.orientation);</span>
+0051 <span class="comment">% This is Bertec Treadmill specific:</span>
+0052 aux(:, 1) = (-15 * F(:, 1) - M(:, 2)) ./ F(:, 3);
+0053 aux(:, 2) = (15 * F(:, 2) + M(:, 1)) ./ F(:, 3);
+0054 aux(:, 3) = 0;
+0055 <span class="keyword">if</span> strcmp(side, <span class="string">'R'</span>)
+0056     <span class="comment">% Flipping and offsetting to match reference axis of L-forceplate</span>
+0057     aux(:, 1) = aux(:, 1) - 977.9;
+0058 <span class="keyword">end</span>
+0059 <span class="comment">% Flipping &amp; adding offset to match lab's reference axis sign</span>
+0060 aux(:, 2) = -aux(:, 2) + 1619.25;
+0061 <span class="comment">% Adding offset to lab's reference origin</span>
+0062 aux(:, 1) = aux(:, 1) + 25.4;
+0063 COP = <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(aux, this.Time(1), this.sampPeriod, <span class="keyword">...</span>
+0064     orientedLabTimeSeries.addLabelSuffix([side <span class="string">'COP'</span>]), this.orientation);
+0065 <span class="keyword">end</span>
+0066</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

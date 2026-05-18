@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mergeHemiCOPs</title>
+  <meta name="keywords" content="mergeHemiCOPs">
+  <meta name="description" content="mergeHemiCOPs  Merges left and right center of pressure data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; mergeHemiCOPs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>mergeHemiCOPs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>mergeHemiCOPs  Merges left and right center of pressure data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">mergeHemiCOPs  Merges left and right center of pressure data
+
+   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag) combines left and
+   right COP data weighted by vertical forces
+
+   Inputs:
+       COPL - left leg center of pressure (orientedLabTS)
+       COPR - right leg center of pressure (orientedLabTS)
+       FL - left leg force data
+       FR - right leg force data
+       noFilterFlag - flag indicating if filtering should be applied
+                      (1 = apply filtering)
+
+   Outputs:
+       COP - merged center of pressure data containing both individual and
+             combined COP
+
+   See also: <a href="computeCOPAlt.html" class="code" title="function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)">computeCOPAlt</a>, <a href="computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)</a>
+0002 <span class="comment">%mergeHemiCOPs  Merges left and right center of pressure data</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag) combines left and</span>
+0005 <span class="comment">%   right COP data weighted by vertical forces</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       COPL - left leg center of pressure (orientedLabTS)</span>
+0009 <span class="comment">%       COPR - right leg center of pressure (orientedLabTS)</span>
+0010 <span class="comment">%       FL - left leg force data</span>
+0011 <span class="comment">%       FR - right leg force data</span>
+0012 <span class="comment">%       noFilterFlag - flag indicating if filtering should be applied</span>
+0013 <span class="comment">%                      (1 = apply filtering)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       COP - merged center of pressure data containing both individual and</span>
+0017 <span class="comment">%             combined COP</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: computeCOPAlt, computeHemiCOP</span>
+0020 
+0021 <span class="keyword">if</span> noFilterFlag == 1
+0022     COPL = COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
+0023     COPR = COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+0024 <span class="keyword">end</span>
+0025 
+0026 newData = bsxfun(@rdivide, (bsxfun(@<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, COPL.Data, FL(:, 3)) + <span class="keyword">...</span>
+0027     bsxfun(@<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, COPR.Data, FR(:, 3))), FL(:, 3) + FR(:, 3));
+0028 COP = <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newData, COPL.Time(1), COPL.sampPeriod, <span class="keyword">...</span>
+0029     orientedLabTimeSeries.addLabelSuffix([<span class="string">'COP'</span>]), COPL.orientation);
+0030 COP = COP.cat(COPL).cat(COPR);
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

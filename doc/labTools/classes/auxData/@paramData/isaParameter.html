@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of isaParameter</title>
+  <meta name="keywords" content="isaParameter">
+  <meta name="description" content="isaParameter  Checks if parameter(s) exist in dataset">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">auxData</a> &gt; <a href="index.html">@paramData</a> &gt; isaParameter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\auxData\@paramData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>isaParameter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>isaParameter  Checks if parameter(s) exist in dataset</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [boolFlag, labelIdx] = isaParameter(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">isaParameter  Checks if parameter(s) exist in dataset
+
+   [boolFlag, labelIdx] = isaParameter(this, label) checks whether
+   specified parameter(s) are present and issues warnings for missing
+   parameters
+
+   Inputs:
+       this - paramData object
+       label - string or cell array of parameter name(s) to check
+
+   Outputs:
+       boolFlag - logical vector indicating which parameters were found
+       labelIdx - vector of indices for found parameters (0 for not
+                  found)
+
+   Note: Issues warning if requested parameter does not exist
+
+   See also: <a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>, <a href="getParameter.html" class="code" title="function [data, auxLabel] = getParameter(this, label)">getParameter</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@cognitiveData/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if label(s) exist in dataset</li><li><a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if label(s) exist in dataset</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if labels exist</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if string is contained in label array</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [boolFlag, labelIdx] = isaParameter(this, label)</a>
+0002 <span class="comment">%isaParameter  Checks if parameter(s) exist in dataset</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [boolFlag, labelIdx] = isaParameter(this, label) checks whether</span>
+0005 <span class="comment">%   specified parameter(s) are present and issues warnings for missing</span>
+0006 <span class="comment">%   parameters</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - paramData object</span>
+0010 <span class="comment">%       label - string or cell array of parameter name(s) to check</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       boolFlag - logical vector indicating which parameters were found</span>
+0014 <span class="comment">%       labelIdx - vector of indices for found parameters (0 for not</span>
+0015 <span class="comment">%                  found)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Note: Issues warning if requested parameter does not exist</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: isaLabel, getParameter</span>
+0020 
+0021 <span class="keyword">if</span> isa(label, <span class="string">'char'</span>)
+0022     auxLabel{1} = label;
+0023 <span class="keyword">elseif</span> isa(label, <span class="string">'cell'</span>)
+0024     auxLabel = label;
+0025 <span class="keyword">end</span>
+0026 [boolFlag, labelIdx] = <a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>(this, label);
+0027 <span class="keyword">for</span> i = 1:length(boolFlag)
+0028     <span class="keyword">if</span> boolFlag(i) == 0
+0029         warning([<span class="string">'Label '</span> auxLabel{i} <span class="keyword">...</span>
+0030             <span class="string">' is not a parameter in this dataset.'</span>]);
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

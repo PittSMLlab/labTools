@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getResultsBF.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc\hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>getResultsBF
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li><li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -51,7 +51,7 @@ This function is called by:
 0007 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
 0008 transientNumPts = 5; <span class="comment">%OG and Washout</span>
 0009 
-0010 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0010 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groups)
 0011     groups=fields(SMatrix);  <span class="comment">%default</span>
 0012 <span class="keyword">end</span>
 0013 ngroups=length(groups);
@@ -99,7 +99,7 @@ This function is called by:
 0055         PossibleTarget=unique(rts{1});
 0056         LLL=max(PossibleTarget);
 0057         SS=min(PossibleTarget);
-0058         MM=median(PossibleTarget);
+0058         MM=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(PossibleTarget);
 0059         
 0060         <span class="keyword">for</span> z = 1:length(rts)
 0061             
@@ -131,12 +131,12 @@ This function is called by:
 0087             r=1;
 0088             RR{z}=[0, 0, 0];
 0089             <span class="keyword">while</span> t&lt;length(rts{z})
-0090                 RR{z}(r, RDATA(t))=mean(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-2)));
+0090                 RR{z}(r, RDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-2)));
 0091                 <span class="keyword">if</span> isnan(RR{z}(r, RDATA(t)))
-0092                     RR{z}(r, RDATA(t))=mean(rhits{z}(t:end));
+0092                     RR{z}(r, RDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rhits{z}(t:end));
 0093                 <span class="keyword">end</span>
 0094                 t=find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-1;
-0095                 <span class="keyword">if</span> isempty(t)
+0095                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
 0096                     t=length(rts{z});
 0097                 <span class="keyword">end</span>
 0098                 <span class="keyword">if</span>  RR{z}(r, RDATA(t))~=0;
@@ -147,12 +147,12 @@ This function is called by:
 0103             r=1;
 0104             LL{z}=[0, 0, 0];
 0105             <span class="keyword">while</span> t&lt;length(lts{z})
-0106                 LL{z}(r, LDATA(t))=mean(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-2)));
+0106                 LL{z}(r, LDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-2)));
 0107                 <span class="keyword">if</span> isnan(LL{z}(r, LDATA(t)))
-0108                     LL{z}(r, LDATA(t))=mean(lhits{z}(t:end));
+0108                     LL{z}(r, LDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(lhits{z}(t:end));
 0109                 <span class="keyword">end</span>
 0110                 t=find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-1;
-0111                 <span class="keyword">if</span> isempty(t)
+0111                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
 0112                     t=length(lts{z});
 0113                 <span class="keyword">end</span>
 0114                 <span class="keyword">if</span>  LL{z}(r,LDATA(t))~=0;
@@ -195,7 +195,7 @@ This function is called by:
 0151                 BFafter2=[BFafter2; DDR{1}(1, 1) DDL{1}(1, 1)];
 0152             <span class="keyword">end</span>
 0153         <span class="keyword">else</span>
-0154             cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Which leg is fast????'</span>);
+0154             <a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Which leg is fast????'</span>);
 0155         <span class="keyword">end</span>
 0156         
 0157         
@@ -260,6 +260,6 @@ This function is called by:
 0216 <span class="keyword">end</span>
 0217 
 0218</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

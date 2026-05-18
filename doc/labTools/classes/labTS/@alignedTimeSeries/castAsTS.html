@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of castAsTS</title>
+  <meta name="keywords" content="castAsTS">
+  <meta name="description" content="castAsTS  Converts to labTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; castAsTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>castAsTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>castAsTS  Converts to labTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = castAsTS(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">castAsTS  Converts to labTimeSeries
+
+   newThis = castAsTS(this) converts alignedTimeSeries to
+   labTimeSeries
+
+   Inputs:
+       this - alignedTimeSeries object
+
+   Outputs:
+       newThis - labTimeSeries object
+
+   Note: Temp function until alignedTS inherits from labTS. Requires
+         single stride.
+
+   See also: <a href="concatenateAsTS.html" class="code" title="function newThis = concatenateAsTS(this)">concatenateAsTS</a>, <a href="catStrides.html" class="code" title="function newThis = catStrides(this)">catStrides</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = castAsTS(this)</a>
+0002 <span class="comment">%castAsTS  Converts to labTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = castAsTS(this) converts alignedTimeSeries to</span>
+0005 <span class="comment">%   labTimeSeries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - alignedTimeSeries object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       newThis - labTimeSeries object</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Note: Temp function until alignedTS inherits from labTS. Requires</span>
+0014 <span class="comment">%         single stride.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: concatenateAsTS, catStrides</span>
+0017 
+0018 <span class="keyword">if</span> size(this.Data, 3) &gt; 1
+0019     ME = MException(<span class="string">'alignedTS:castAsTS'</span>, <span class="keyword">...</span>
+0020         [<span class="string">'To cast as TS, there may be a single alignedTS (i.e. '</span> <span class="keyword">...</span>
+0021         <span class="string">'size(this.Data, 3) == 1)'</span>]);
+0022     throw(ME);
+0023 <span class="keyword">end</span>
+0024 newThis = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this.Data, this.Time(1), <span class="keyword">...</span>
+0025     this.Time(2) - this.Time(1), this.labels);
+0026 <span class="keyword">end</span>
+0027</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

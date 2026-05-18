@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">PlotEMGTraces</a> &gt; <a href="index.html">Func</a> &gt; plotEMGtraces.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/PlotEMGTraces/Func&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\PlotEMGTraces\Func&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>plotEMGtraces
 </h1>
@@ -53,10 +53,10 @@ during treadmill baseline
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>	% get time series EMG data</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>	% get time series EMG data</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/fun/PlotEMGTraces/EMG_traces_example.html" class="code" title="">EMG_traces_example</a>	%Traces from example subject to show how data is summarized</li><li><a href="../../../../labTools/fun/PlotEMGTraces/Nim_EMG_traces_per_Cond.html" class="code" title="">Nim_EMG_traces_per_Cond</a>	%Traces from example subject to show how data is summarized</li><li><a href="../../../../labTools/fun/PlotEMGTraces/VR_EMG_traces_per_Cond.html" class="code" title="">VR_EMG_traces_per_Cond</a>	%Traces from example subject to show how data is summarized</li></ul>
 <!-- crossreference -->
 
 
@@ -90,11 +90,11 @@ This function is called by:
 0026 colum=6;
 0027 
 0028 <span class="comment">%%</span>
-0029 <span class="keyword">if</span> nargin&lt;6 || isempty(normalize)
+0029 <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normalize)
 0030     normalize=0;
 0031 <span class="keyword">end</span>
 0032 
-0033 <span class="keyword">if</span> normalize==1 &amp;&amp; isempty(normCond)
+0033 <span class="keyword">if</span> normalize==1 &amp;&amp; <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normCond)
 0034    error(<span class="string">'You need to define which conditions to use for normalization'</span>)
 0035 <span class="keyword">end</span>
 0036 
@@ -109,7 +109,7 @@ This function is called by:
 0045 
 0046 
 0047 fh=figure(<span class="string">'Units'</span>,<span class="string">'Normalized'</span>);
-0048 poster_colors;
+0048 <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
 0049 colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];
 0050 condColors=colorOrder;
 0051 <span class="keyword">if</span> length(conds)&gt;length(colorOrder)
@@ -137,15 +137,15 @@ This function is called by:
 0073 
 0074 
 0075             <span class="keyword">if</span> l==1
-0076                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late(c),strides(c),IgnoreStridesEarly(c));
+0076                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late(c),strides(c),IgnoreStridesEarly(c));
 0077                 <span class="keyword">if</span> normalize==1
-0078                     norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},normCond,leg{l},1,40);
+0078                     norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},normCond,leg{l},1,40);
 0079                 <span class="keyword">end</span>
 0080                 tit=[<span class="string">'R'</span> muscle{m}];
 0081             <span class="keyword">elseif</span> l==2
-0082                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late(c),strides(c),IgnoreStridesEarly(c));
+0082                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late(c),strides(c),IgnoreStridesEarly(c));
 0083                 <span class="keyword">if</span> normalize==1
-0084                     norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},normCond,leg{l},1,40);
+0084                     norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},normCond,leg{l},1,40);
 0085                 <span class="keyword">end</span>
 0086                 tit=[<span class="string">'L'</span> muscle{m}];
 0087             <span class="keyword">end</span>
@@ -197,6 +197,6 @@ This function is called by:
 0133 
 0134 
 0135 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

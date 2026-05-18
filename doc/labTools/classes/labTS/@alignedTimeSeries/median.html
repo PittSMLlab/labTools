@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of median</title>
+  <meta name="keywords" content="median">
+  <meta name="description" content="median  Computes median">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; median.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>median
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>median  Computes median</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function medianTS = median(this, strideIdxs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">median  Computes median
+
+   medianTS = median(this) computes median across all strides
+
+   medianTS = median(this, strideIdxs) computes for specified strides
+
+   Inputs:
+       this - alignedTimeSeries object
+       strideIdxs - vector of stride indices (optional, default: all)
+
+   Outputs:
+       medianTS - alignedTimeSeries with median values
+
+   See also: <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>, <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/fixBadLabels.html" class="code" title="function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList)">fixBadLabels</a>	fixBadLabels  Detects and fixes label swaps</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/computeAmplitudes.html" class="code" title="function [amplitudes, rms, usedMedMinMaxInds] =computeAmplitudes(snippets, options)">computeAmplitudes</a>	COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.</li><li><a href="../../../../labTools/fun/+Hreflex/fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">fitCal</a>	FITCAL Fit M- and H-wave recruitment curves.</li><li><a href="../../../../labTools/fun/+Hreflex/plotNoiseHistogram.html" class="code" title="function fig = plotNoiseHistogram(amplitudesNoise, leg, id, trialNum, options)">plotNoiseHistogram</a>	PLOTNOISEHISTOGRAM Plot the noise amplitude distribution for the H-reflex.</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromAngles.html" class="code" title="function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation)">getEventsFromAngles</a>	GETEVENTSFROMANGLES Detect gait events from limb angle data.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParams.html" class="code" title="">DetermineOptimalReconstructAndLabelParams</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li><li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParamsTmp.html" class="code" title="">DetermineOptimalReconstructAndLabelParamsTmp</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)">getResultsBF</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function medianTS = median(this, strideIdxs)</a>
+0002 <span class="comment">%median  Computes median</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   medianTS = median(this) computes median across all strides</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   medianTS = median(this, strideIdxs) computes for specified strides</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - alignedTimeSeries object</span>
+0010 <span class="comment">%       strideIdxs - vector of stride indices (optional, default: all)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       medianTS - alignedTimeSeries with median values</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: mean, prctile</span>
+0016 
+0017 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
+0018     strideIdxs = [];
+0019 <span class="keyword">end</span>
+0020 medianTS = <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this, 50, strideIdxs);
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of BPtest</title>
+  <meta name="keywords" content="BPtest">
+  <meta name="description" content="INPUTS:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">BPtest</a> &gt; <a href="index.html">BPtest</a> &gt; BPtest.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\ext\BPtest\BPtest&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>BPtest
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>INPUTS:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function[T,P,df] = BPtest(z,studentize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> INPUTS:
+ z:            an object of class 'LinearModel' or a (n x p) matrix with the last
+               column corresponding to the dependent (response) variable and the first p-1 columns
+               corresponding to the regressors. Do not include a column of ones for the
+               intercept, this is automatically accounted for.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="Example.html" class="code" title="">Example</a>	% Example for non-heteroscedastic residuals</li><li><a href="../../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function[T,P,df] = BPtest(z,studentize)</a>
+0002 
+0003 <span class="comment">% INPUTS:</span>
+0004 <span class="comment">% z:            an object of class 'LinearModel' or a (n x p) matrix with the last</span>
+0005 <span class="comment">%               column corresponding to the dependent (response) variable and the first p-1 columns</span>
+0006 <span class="comment">%               corresponding to the regressors. Do not include a column of ones for the</span>
+0007 <span class="comment">%               intercept, this is automatically accounted for.</span>
+0008 
+0009 <span class="comment">% studentize:   optional flag (logical). if True the studentized Koenker's statistic is</span>
+0010 <span class="comment">%               used. If false the statistics from the original Breusch-Pagan test is</span>
+0011 <span class="comment">%               used.</span>
+0012 
+0013 <span class="comment">% OUTPUTS:</span>
+0014 <span class="comment">% BP:    test statistics.</span>
+0015 <span class="comment">% P:     P-value.</span>
+0016 <span class="comment">% df:    degrees of freedom of the asymptotic Chi-squared distribution of BP</span>
+0017 
+0018 
+0019 
+0020 <span class="keyword">if</span> nargin == 1
+0021     studentize = true;
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> isa(z, <span class="string">'LinearModel'</span>)
+0025     n  = height(z.Variables);
+0026     df = z.NumPredictors;    
+0027     x = z.Variables{:,z.PredictorNames};
+0028     <span class="comment">%tODO: this won't work if some variables are categorical, should add a</span>
+0029     <span class="comment">%fix to auto-detect categorical and change code accordingly</span>
+0030     r = z.Residuals.Raw;
+0031 <span class="keyword">else</span>   
+0032     
+0033     x = z(:,1:end-1);
+0034     y = z(:,end);    
+0035     n = numel(y);
+0036     df = size(x,2);    
+0037     lm = fitlm(x,y);
+0038     r = lm.Residuals.Raw;    
+0039     
+0040 <span class="keyword">end</span>
+0041 
+0042 
+0043 aux = fitlm(x,r.^2);
+0044 T = aux.Rsquared.Ordinary*n;
+0045 
+0046 <span class="keyword">if</span> ~studentize
+0047     lam = (n-1)/n*var(r.^2)/(2*((n-1)/n*var(r)).^2);
+0048     T  = T*lam;
+0049 <span class="keyword">end</span>
+0050 
+0051 P = 1-chi2cdf(abs(T),df);
+0052 
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

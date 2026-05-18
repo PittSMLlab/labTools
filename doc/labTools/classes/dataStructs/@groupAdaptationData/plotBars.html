@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; plotBars.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>plotBars
 </h1>
@@ -36,7 +36,7 @@ plots may not work properly, as it expects ordered things.</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
@@ -51,7 +51,7 @@ This function is called by:
 0004             <span class="comment">%This will work if they are not, but the statistical testing</span>
 0005             <span class="comment">%plots may not work properly, as it expects ordered things.</span>
 0006 
-0007             <span class="keyword">if</span> nargin&lt;3 || isempty(removeBiasFlag)
+0007             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBiasFlag)
 0008                warning(<span class="string">'RemoveBiasFlag argument not provided, will NOT remove bias.'</span>)  <span class="comment">%For efficiency, subjects should remove bias before hand, as it is a computationally intensive task that should be done the least number of times possible</span>
 0009                removeBiasFlag=0; 
 0010             <span class="keyword">end</span>
@@ -82,7 +82,7 @@ This function is called by:
 0035             <span class="keyword">if</span> nargin&lt;12
 0036                 colors=[];
 0037             <span class="keyword">end</span>
-0038             <span class="keyword">if</span> nargin&lt;13 || isempty(significancePlotMatrix)
+0038             <span class="keyword">if</span> nargin&lt;13 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(significancePlotMatrix)
 0039                 M=length(condList)*length(numberOfStrides);
 0040                 <span class="comment">%significancePlotMatrix=ones(M);</span>
 0041                 significancePlotMatrix=zeros(M);
@@ -90,7 +90,7 @@ This function is called by:
 0043                 significancePlotMatrix(2,3:M)=1; <span class="comment">%Comparing second strideGroup vs. every other (except 1st)</span>
 0044             <span class="keyword">end</span>
 0045             [figHandle,allData]=groupAdaptationData.plotMultipleGroupsBars({this},label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors);
-0046             <span class="keyword">if</span> ~isempty(significanceThreshold)
+0046             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(significanceThreshold)
 0047                 <span class="comment">%[p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,condList,numberOfStrides,exemptFirst,exemptLast);</span>
 0048                 <span class="comment">%[pf,tablef,statsf,postHocf,postHocEstimatesf,dataf]=friedman(this,label,condList,numberOfStrides,exemptFirst,exemptLast);</span>
 0049                 <span class="comment">%if ~isa(postHoc,'cell')</span>
@@ -138,7 +138,7 @@ This function is called by:
 0091                                 <span class="comment">%Paired t-test:</span>
 0092                                 [~,pp]=ttest(data1,data2); <span class="comment">%Use ttest2 to do independent 2-sample t-test</span>
 0093                                 <span class="keyword">if</span> pp&lt;significanceThreshold/sum(significancePlotMatrix(:)~=0)
-0094                                     plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
+0094                                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
 0095                                     text(XData(k)-1.5,(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*.95,[<span class="string">'p='</span> num2str(pp)],<span class="string">'Color'</span>,<span class="string">'k'</span>)
 0096                                 <span class="keyword">end</span>
 0097                             <span class="keyword">end</span>
@@ -149,6 +149,6 @@ This function is called by:
 0102                 <span class="keyword">end</span>
 0103             <span class="keyword">end</span>
 0104 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

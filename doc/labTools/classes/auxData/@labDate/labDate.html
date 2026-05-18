@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of labDate</title>
+  <meta name="keywords" content="labDate">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">auxData</a> &gt; <a href="index.html">@labDate</a> &gt; labDate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\auxData\@labDate&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>labDate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="labDate.html" class="code" title="">labDate</a>	</li><li><a href="timeSince.html" class="code" title="function timeInMonths = timeSince(this, other)">timeSince</a>	timeSince  Calculates elapsed time from another date.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labDate.html" class="code" title="">labDate</a>	</li><li><a href="../../../../labTools/classes/auxData/strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = labDate(dd, mm, year)</a></li><li><a href="#_sub2" class="code">function str = monthString(a)</a></li><li><a href="#_sub3" class="code">function id = genIDFromClock()</a></li><li><a href="#_sub4" class="code">function d = getCurrent()</a></li><li><a href="#_sub5" class="code">function d = default()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="labDate.html" class="code" title="">labDate</a>
+0002     <span class="comment">% labDate  Stores a single date as day, month, and year.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   labDate provides a simple date representation and utilities for</span>
+0005     <span class="comment">% date manipulation, comparison, and generation of date-based</span>
+0006     <span class="comment">% identifiers.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">% labDate properties:</span>
+0009     <span class="comment">%   day   - day of month (1-31)</span>
+0010     <span class="comment">%   month - month number (1-12)</span>
+0011     <span class="comment">%   year  - four-digit year number</span>
+0012     <span class="comment">%</span>
+0013     <span class="comment">% labDate methods:</span>
+0014     <span class="comment">%   labDate   - constructor for date object</span>
+0015     <span class="comment">%   timeSince - calculates elapsed time from another date in months</span>
+0016     <span class="comment">%   isempty   - checks if date equals default value</span>
+0017     <span class="comment">%</span>
+0018     <span class="comment">% labDate static methods:</span>
+0019     <span class="comment">%   monthString    - converts month number to 3-letter string</span>
+0020     <span class="comment">%   genIDFromClock - generates timestamp ID from current time</span>
+0021     <span class="comment">%   getCurrent     - creates labDate for current date</span>
+0022     <span class="comment">%   default        - generates the default date (Jan 1, 1900)</span>
+0023     <span class="comment">%</span>
+0024     <span class="comment">% See also: datetime</span>
+0025 
+0026     <span class="comment">% TODO: labDate essentially reimplements a small subset of what</span>
+0027     <span class="comment">% datetime already provides — storage, construction from components,</span>
+0028     <span class="comment">% and elapsed-time arithmetic — with less accuracy and no timezone or</span>
+0029     <span class="comment">% DST awareness. Wrapping or replacing it with datetime would eliminate</span>
+0030     <span class="comment">% the 30-days/month approximation in timeSince, remove the need for the</span>
+0031     <span class="comment">% custom setters, and make the class interoperable with the rest of</span>
+0032     <span class="comment">% MATLAB's date/time ecosystem. This is admittedly a large refactor</span>
+0033     <span class="comment">% given how widely labDate is presumably used across labTools.</span>
+0034 
+0035     <span class="comment">%% Properties</span>
+0036     properties
+0037         day   (1,1) double {mustBeInteger, mustBeInRange(day,   1, 31)} = 1
+0038         month (1,1) double {mustBeInteger, mustBeInRange(month, 1, 12)} = 1
+0039         year  (1,1) double {mustBeInteger}                              = 1900
+0040     <span class="keyword">end</span>
+0041 
+0042     <span class="comment">%% Constructor</span>
+0043     methods
+0044         <a name="_sub0" href="#_subfunctions" class="code">function this = labDate(dd, mm, year)</a>
+0045             <span class="comment">% labDate  Constructor for labDate class.</span>
+0046             <span class="comment">%</span>
+0047             <span class="comment">%   Inputs:</span>
+0048             <span class="comment">%     dd   - Day of month; integer in range [1, 31]</span>
+0049             <span class="comment">%     mm   - Month; either integer (1-12) or 3-character</span>
+0050             <span class="comment">%            string (e.g., 'jan', 'dec')</span>
+0051             <span class="comment">%     year - Four-digit year number</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">%   Outputs:</span>
+0054             <span class="comment">%     this - labDate object</span>
+0055             <span class="comment">%</span>
+0056             <span class="comment">%   Examples:</span>
+0057             <span class="comment">%     d = labDate(15, 3,     2015);</span>
+0058             <span class="comment">%     d = labDate(15, 'mar', 2015);</span>
+0059             <span class="comment">%</span>
+0060             <span class="comment">%   See also: getCurrent, default</span>
+0061 
+0062             this.day = dd;
+0063             <span class="keyword">if</span> ischar(mm) &amp;&amp; length(mm) == 3
+0064                 <span class="keyword">switch</span> lower(mm)
+0065                     <span class="keyword">case</span> {<span class="string">'jan'</span>, <span class="string">'ene'</span>},  this.month = 1;
+0066                     <span class="keyword">case</span> {<span class="string">'feb'</span>},         this.month = 2;
+0067                     <span class="keyword">case</span> {<span class="string">'mar'</span>},         this.month = 3;
+0068                     <span class="keyword">case</span> {<span class="string">'apr'</span>, <span class="string">'abr'</span>},  this.month = 4;
+0069                     <span class="keyword">case</span> {<span class="string">'may'</span>},         this.month = 5;
+0070                     <span class="keyword">case</span> {<span class="string">'jun'</span>},         this.month = 6;
+0071                     <span class="keyword">case</span> {<span class="string">'jul'</span>},         this.month = 7;
+0072                     <span class="keyword">case</span> {<span class="string">'aug'</span>, <span class="string">'ago'</span>},  this.month = 8;
+0073                     <span class="keyword">case</span> {<span class="string">'sep'</span>, <span class="string">'set'</span>},  this.month = 9;
+0074                     <span class="keyword">case</span> {<span class="string">'oct'</span>},         this.month = 10;
+0075                     <span class="keyword">case</span> {<span class="string">'nov'</span>},         this.month = 11;
+0076                     <span class="keyword">case</span> {<span class="string">'dec'</span>, <span class="string">'dic'</span>},  this.month = 12;
+0077                     <span class="keyword">otherwise</span>
+0078                         ME = MException(<span class="string">'labDate:Constructor'</span>, <span class="keyword">...</span>
+0079                             <span class="string">'Unrecognized month string.'</span>);
+0080                         throw(ME);
+0081                 <span class="keyword">end</span>
+0082             <span class="keyword">elseif</span> isnumeric(mm) &amp;&amp; mm &lt;= 12
+0083                 this.month = mm;
+0084             <span class="keyword">else</span>
+0085                 ME = MException(<span class="string">'labDate:Constructor'</span>, <span class="keyword">...</span>
+0086                     [<span class="string">'Month parameter is not a 3-letter string or '</span> <span class="keyword">...</span>
+0087                     <span class="string">'a valid numerical value.'</span>]);
+0088                 throw(ME);
+0089             <span class="keyword">end</span>
+0090             this.year = year;
+0091         <span class="keyword">end</span>
+0092     <span class="keyword">end</span>
+0093 
+0094     <span class="comment">%% Date Calculation Methods</span>
+0095     methods
+0096         <span class="comment">% Suggested method: find number of years/months/days that</span>
+0097         <span class="comment">% separate two dates. The method could be called like:</span>
+0098 
+0099         <span class="comment">% Defined in separate files in the @labDate class folder</span>
+0100         timeInMonths = <a href="timeSince.html" class="code" title="function timeInMonths = timeSince(this, other)">timeSince</a>(this, other)
+0101 
+0102         <span class="comment">% TODO: Overriding isempty to mean &quot;equals the sentinel date&quot; is</span>
+0103         <span class="comment">% unconventional — MATLAB users generally expect isempty to return</span>
+0104         <span class="comment">% true only when an object has no data (e.g., a 0×0 array). A name</span>
+0105         <span class="comment">% like isDefault() or isUninitialized() would be less surprising,</span>
+0106         <span class="comment">% and would leave isempty free to behave as MATLAB's built-in would</span>
+0107         <span class="comment">% expect.</span>
+0108         flag = <a href="isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this)
+0109 
+0110         <span class="comment">% function disp(this)</span>
+0111         <span class="comment">%     disp([num2str(this.day) ' ' ...</span>
+0112         <span class="comment">%         labDate.monthString(this.month) ' ' ...</span>
+0113         <span class="comment">%         num2str(this.year)]);</span>
+0114         <span class="comment">% end</span>
+0115     <span class="keyword">end</span>
+0116 
+0117     <span class="comment">%% Static Methods</span>
+0118     methods (Static)
+0119         <a name="_sub1" href="#_subfunctions" class="code">function str = monthString(a)</a>
+0120             <span class="comment">% monthString  Converts a numeric month to a 3-letter string.</span>
+0121             <span class="comment">%</span>
+0122             <span class="comment">%   Inputs:</span>
+0123             <span class="comment">%     a - Month number (1-12)</span>
+0124             <span class="comment">%</span>
+0125             <span class="comment">%   Outputs:</span>
+0126             <span class="comment">%     str - Three-character month abbreviation (lowercase)</span>
+0127             <span class="comment">%</span>
+0128             <span class="comment">%   Example:</span>
+0129             <span class="comment">%     str = labDate.monthString(1);  % returns 'jan'</span>
+0130             <span class="comment">%</span>
+0131             <span class="comment">%   See also: labDate</span>
+0132 
+0133             <span class="keyword">switch</span> a
+0134                 <span class="keyword">case</span> 1,  str = <span class="string">'jan'</span>;
+0135                 <span class="keyword">case</span> 2,  str = <span class="string">'feb'</span>;
+0136                 <span class="keyword">case</span> 3,  str = <span class="string">'mar'</span>;
+0137                 <span class="keyword">case</span> 4,  str = <span class="string">'apr'</span>;
+0138                 <span class="keyword">case</span> 5,  str = <span class="string">'may'</span>;
+0139                 <span class="keyword">case</span> 6,  str = <span class="string">'jun'</span>;
+0140                 <span class="keyword">case</span> 7,  str = <span class="string">'jul'</span>;
+0141                 <span class="keyword">case</span> 8,  str = <span class="string">'aug'</span>;
+0142                 <span class="keyword">case</span> 9,  str = <span class="string">'sep'</span>;
+0143                 <span class="keyword">case</span> 10, str = <span class="string">'oct'</span>;
+0144                 <span class="keyword">case</span> 11, str = <span class="string">'nov'</span>;
+0145                 <span class="keyword">case</span> 12, str = <span class="string">'dec'</span>;
+0146                 <span class="keyword">otherwise</span>, str = <span class="string">''</span>;
+0147             <span class="keyword">end</span>
+0148         <span class="keyword">end</span>
+0149 
+0150         <a name="_sub2" href="#_subfunctions" class="code">function id = genIDFromClock()</a>
+0151             <span class="comment">% genIDFromClock  Generates timestamp ID from the current time.</span>
+0152             <span class="comment">%</span>
+0153             <span class="comment">%   Formats the current wall-clock time as a zero-padded string</span>
+0154             <span class="comment">% in the form yyyymmddHHMMSS.</span>
+0155             <span class="comment">%</span>
+0156             <span class="comment">%   Outputs:</span>
+0157             <span class="comment">%     id - String timestamp (e.g., '20150821111631')</span>
+0158             <span class="comment">%</span>
+0159             <span class="comment">%   Example:</span>
+0160             <span class="comment">%     id = labDate.genIDFromClock();</span>
+0161             <span class="comment">%</span>
+0162             <span class="comment">%   See also: getCurrent, datetime</span>
+0163 
+0164             t  = datetime(<span class="string">'now'</span>);
+0165             id = sprintf(<span class="string">'%04d%02d%02d%02d%02d%02d'</span>, <span class="keyword">...</span>
+0166                 t.Year, t.Month, t.Day, <span class="keyword">...</span>
+0167                 t.Hour, t.Minute, round(t.Second));
+0168         <span class="keyword">end</span>
+0169 
+0170         <a name="_sub3" href="#_subfunctions" class="code">function d = getCurrent()</a>
+0171             <span class="comment">% getCurrent  Creates a labDate for the current date.</span>
+0172             <span class="comment">%</span>
+0173             <span class="comment">%   Outputs:</span>
+0174             <span class="comment">%     d - labDate object representing today's date</span>
+0175             <span class="comment">%</span>
+0176             <span class="comment">%   Example:</span>
+0177             <span class="comment">%     d = labDate.getCurrent();</span>
+0178             <span class="comment">%</span>
+0179             <span class="comment">%   See also: default, datetime</span>
+0180 
+0181             t = datetime(<span class="string">'now'</span>);
+0182             d = <a href="labDate.html" class="code" title="">labDate</a>(t.Day, labDate.monthString(t.Month), t.Year);
+0183         <span class="keyword">end</span>
+0184 
+0185         <a name="_sub4" href="#_subfunctions" class="code">function d = default()</a>
+0186             <span class="comment">% default  Generates the default sentinel date (Jan 1, 1900).</span>
+0187             <span class="comment">%</span>
+0188             <span class="comment">%   Outputs:</span>
+0189             <span class="comment">%     d - labDate object set to Jan 1, 1900</span>
+0190             <span class="comment">%</span>
+0191             <span class="comment">%   See also: getCurrent, isempty</span>
+0192 
+0193             d = <a href="labDate.html" class="code" title="">labDate</a>(1, <span class="string">'jan'</span>, 1900);
+0194         <span class="keyword">end</span>
+0195     <span class="keyword">end</span>
+0196 
+0197 <span class="keyword">end</span>
+0198</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

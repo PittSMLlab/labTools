@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of logicalHist</title>
+  <meta name="keywords" content="logicalHist">
+  <meta name="description" content="logicalHist  Generates histogram from logical event data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; logicalHist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>logicalHist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>logicalHist  Generates histogram from logical event data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [histogram, newLabels] = logicalHist(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">logicalHist  Generates histogram from logical event data
+
+   [histogram, newLabels] = logicalHist(this) creates histogram of
+   event timing across strides
+
+   Inputs:
+       this - alignedTimeSeries object with logical data
+
+   Outputs:
+       histogram - matrix of event sample indices (strides x events)
+       newLabels - cell array of event labels
+
+   Note: Assumes all aligned TS contain same events in same order
+
+   See also: <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>, <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	iqr  Computes interquartile range</li><li><a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [histogram, newLabels] = logicalHist(this)</a>
+0002 <span class="comment">%logicalHist  Generates histogram from logical event data</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [histogram, newLabels] = logicalHist(this) creates histogram of</span>
+0005 <span class="comment">%   event timing across strides</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - alignedTimeSeries object with logical data</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       histogram - matrix of event sample indices (strides x events)</span>
+0012 <span class="comment">%       newLabels - cell array of event labels</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Note: Assumes all aligned TS contain same events in same order</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: mean, std</span>
+0017 
+0018 <span class="comment">% TODO: Check this is a logical alignedTS</span>
+0019 <span class="comment">% TODO: determine number of expected events. Currently this is as many</span>
+0020 <span class="comment">% events as stride 1 has. May be problematic if stride one is invalid.</span>
+0021 aaux = cellfun(@(x) <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), strfind(this.labels, <span class="string">'force'</span>)) &amp; <span class="keyword">...</span>
+0022     cellfun(@(x) <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), strfind(this.labels, <span class="string">'kin'</span>));
+0023 <span class="comment">% Mode of the # of events per stride, assuming this is what should</span>
+0024 <span class="comment">% happen on every stride.</span>
+0025 eventNo = mode(sum(sum(this.Data(:, aaux), 1), 2));
+0026 nStrides = size(this.Data, 3);
+0027 eventType = nan(eventNo, 1);
+0028 <span class="keyword">for</span> i = 1:eventNo
+0029     aux = nan(nStrides, 1);
+0030     <span class="keyword">for</span> k = 1:nStrides <span class="comment">% Going over strides</span>
+0031         <span class="comment">% Time index of first i events in stride k</span>
+0032         eventIdx = find(sum(this.Data(:, aaux, k), 2) == 1, i, <span class="string">'first'</span>);
+0033         <span class="keyword">if</span> length(eventIdx) == i <span class="comment">% Checking that I found i events</span>
+0034             aux(k) = find(this.Data(eventIdx(i), aaux, k), 1, <span class="string">'first'</span>);
+0035         <span class="keyword">end</span>
+0036     <span class="keyword">end</span>
+0037     <span class="comment">% Rounding is to break possible ties (very unlikely)</span>
+0038     eventType(i) = round(nanmedian(aux));
+0039 <span class="keyword">end</span>
+0040 histogram = nan(nStrides, eventNo);
+0041 ii = eventType;
+0042 aux = zeros(eventNo, 1);
+0043 newLabels = cell(size(ii));
+0044 <span class="keyword">for</span> i = 1:length(ii)
+0045     aux(ii(i)) = aux(ii(i)) + 1;
+0046     <span class="keyword">if</span> aux(ii(i)) == 1
+0047         newLabels{i} = this.labels{ii(i)};
+0048     <span class="keyword">else</span>
+0049         newLabels{i} = [this.labels{ii(i)} num2str(aux(ii(i)))];
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">for</span> i = 1:nStrides
+0054     [eventTimeIndex, eventType] = find(this.Data(:, aaux, i));
+0055     <span class="keyword">if</span> length(eventTimeIndex) ~= length(newLabels)
+0056         warning([<span class="string">'alignedTS:logicalHist: Stride '</span> num2str(i) <span class="keyword">...</span>
+0057             <span class="string">' has more or less events than expected (expecting '</span> <span class="keyword">...</span>
+0058             num2str(length(newLabels)) <span class="string">', but got '</span> <span class="keyword">...</span>
+0059             num2str(length(eventTimeIndex)) <span class="string">'). Discarding.'</span>]);
+0060         histogram(i, :) = nan;
+0061     <span class="keyword">else</span>
+0062         <span class="comment">% FIXME: check event order by using the labels.</span>
+0063         [eventTimeIndex, auxInds] = sort(eventTimeIndex);
+0064         <span class="keyword">if</span> all(ii == eventType(auxInds))
+0065             histogram(i, :) = eventTimeIndex;
+0066         <span class="keyword">else</span>
+0067             warning([<span class="string">'alignedTS:logicalHist: Stride '</span> num2str(i) <span class="keyword">...</span>
+0068                 <span class="string">' has events in different order than expected '</span> <span class="keyword">...</span>
+0069                 <span class="string">'(expecting '</span> num2str(ii') <span class="string">', but got '</span> <span class="keyword">...</span>
+0070                 num2str(eventType(auxInds)') <span class="string">'). Discarding.'</span>]);
+0071         <span class="keyword">end</span>
+0072     <span class="keyword">end</span>
+0073 <span class="keyword">end</span>
+0074 <span class="keyword">end</span>
+0075</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

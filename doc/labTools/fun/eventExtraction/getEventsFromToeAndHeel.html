@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEventsFromToeAndHeel</title>
   <meta name="keywords" content="getEventsFromToeAndHeel">
-  <meta name="description" content="% Get stance phases">
+  <meta name="description" content="GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,69 +15,114 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromToeAndHeel.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getEventsFromToeAndHeel
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>% Get stance phases</strong></div>
+<div class="box"><strong>GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample) </strong></div>
+<div class="box"><strong>function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Get stance phases</pre></div>
+<div class="fragment"><pre class="comment">GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.
+
+   Estimates stance phases from heel and toe marker kinematics, derives
+ gait events from those phases, and masks out events that occur before
+ meaningful limb activity begins (onset detection via cumulative energy).
+
+ Inputs:
+   Ltoe    - N×3 double, left toe marker position (mm)
+   Lheel   - N×3 double, left heel marker position (mm)
+   Rtoe    - N×3 double, right toe marker position (mm)
+   Rheel   - N×3 double, right heel marker position (mm)
+   fsample - scalar double, sampling frequency (Hz)
+
+ Outputs:
+   LHS - N×1 logical, left heel-strike events
+   RHS - N×1 logical, right heel-strike events
+   LTO - N×1 logical, left toe-off events
+   RTO - N×1 logical, right toe-off events
+
+ Toolbox Dependencies: None
+
+ See also GETSTANCEFROMTOENANDHEEL, <a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">GETEVENTSFROMSTANCE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>	First step:</li><li><a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	</li></ul>
+<li><a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>	GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.</li><li><a href="getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample)</a>
-0002 
-0003 <span class="comment">%% Get stance phases</span>
-0004 [stanceL] = <a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Lheel, Ltoe, fsample); <span class="comment">%Lheel and Ltoe need to be</span>
-0005 [stanceR] = <a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Rheel, Rtoe, fsample);
-0006 
-0007 <span class="comment">%% Get events from stance</span>
-0008 [LHS,RHS,LTO,RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>(stanceL,stanceR);
-0009 badInds=any(isnan(Lheel'))|any(isnan(Ltoe'))|any(isnan(Rheel'))|any(isnan(Rtoe'));
-0010 LHS(badInds)=false;
-0011 RHS(badInds)=false;
-0012 LTO(badInds)=false;
-0013 RTO(badInds)=false;
-0014 
-0015 <span class="comment">%% Eliminate any events that ocurr prior to actual activity in the trial</span>
-0016 aux=Rheel(:,1)-Rheel(1,1); <span class="comment">%Zero initial value</span>
-0017 aux2=cumsum(aux.^2); <span class="comment">%Cumulative energy</span>
-0018 begin_index1=find(aux2&gt;.001*aux2(end),1); <span class="comment">%First element whose cumulative energy is at least .1% of total energy</span>
-0019 aux=Lheel(:,1)-Lheel(1,1); <span class="comment">%Zero initial value</span>
-0020 aux2=cumsum(aux.^2); <span class="comment">%Cumulative energy</span>
-0021 begin_index2=find(aux2&gt;.001*aux2(end),1); <span class="comment">%First element whose cumulative energy is at least .1% of total energy</span>
-0022 
-0023 begin_index=max([begin_index1,begin_index2]);
-0024 
-0025 LHS(1:begin_index)=false;
-0026 RHS(1:begin_index)=false;
-0027 LTO(1:begin_index)=false;
-0028 RTO(1:begin_index)=false;
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS, RHS, LTO, RTO] = </a><span class="keyword">...</span>
+0002     getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)
+0003 <span class="comment">%GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Estimates stance phases from heel and toe marker kinematics, derives</span>
+0006 <span class="comment">% gait events from those phases, and masks out events that occur before</span>
+0007 <span class="comment">% meaningful limb activity begins (onset detection via cumulative energy).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   Ltoe    - N×3 double, left toe marker position (mm)</span>
+0011 <span class="comment">%   Lheel   - N×3 double, left heel marker position (mm)</span>
+0012 <span class="comment">%   Rtoe    - N×3 double, right toe marker position (mm)</span>
+0013 <span class="comment">%   Rheel   - N×3 double, right heel marker position (mm)</span>
+0014 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   LHS - N×1 logical, left heel-strike events</span>
+0018 <span class="comment">%   RHS - N×1 logical, right heel-strike events</span>
+0019 <span class="comment">%   LTO - N×1 logical, left toe-off events</span>
+0020 <span class="comment">%   RTO - N×1 logical, right toe-off events</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies: None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also GETSTANCEFROMTOENANDHEEL, GETEVENTSFROMSTANCE.</span>
+0025 
+0026 <span class="comment">% retrieve stance gait phases from toe and heel markers</span>
+0027 stanceL = <a href="getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Lheel, Ltoe, fsample);
+0028 stanceR = <a href="getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Rheel, Rtoe, fsample);
 0029 
-0030 <span class="comment">%% Check consistency</span>
-0031 <span class="comment">%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);</span>
-0032 
-0033 
-0034 
-0035 <span class="keyword">end</span>
-0036</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0030 <span class="comment">% retrieve gait events from stance phase</span>
+0031 [LHS, RHS, LTO, RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>(stanceL, stanceR);
+0032 badInds = any(isnan(Lheel), 2) | any(isnan(Ltoe), 2) <span class="keyword">...</span>
+0033     | any(isnan(Rheel), 2) | any(isnan(Rtoe), 2);
+0034 LHS(badInds) = false;
+0035 RHS(badInds) = false;
+0036 LTO(badInds) = false;
+0037 RTO(badInds) = false;
+0038 
+0039 <span class="comment">% eliminate any events that occur prior to actual activity in the trial</span>
+0040 ENERGY_FRAC = 0.001; <span class="comment">% 0.1% of total cumulative energy used as onset threshold</span>
+0041 
+0042 rHeelShifted   = Rheel(:, 1) - Rheel(1, 1); <span class="comment">% zero initial value (right)</span>
+0043 rHeelCumEnergy = cumsum(rHeelShifted .^ 2);
+0044 begin_index1   = find(rHeelCumEnergy &gt; ENERGY_FRAC * rHeelCumEnergy(end), 1);
+0045 
+0046 lHeelShifted   = Lheel(:, 1) - Lheel(1, 1); <span class="comment">% zero initial value (left)</span>
+0047 lHeelCumEnergy = cumsum(lHeelShifted .^ 2);
+0048 begin_index2   = find(lHeelCumEnergy &gt; ENERGY_FRAC * lHeelCumEnergy(end), 1);
+0049 
+0050 begin_index = max([begin_index1 begin_index2]);
+0051 
+0052 LHS(1:begin_index) = false;
+0053 RHS(1:begin_index) = false;
+0054 LTO(1:begin_index) = false;
+0055 RTO(1:begin_index) = false;
+0056 
+0057 <span class="comment">% NOTE: checkEventConsistency can be called here for debugging, but is</span>
+0058 <span class="comment">% omitted by default to avoid noise from imperfect kinematics-based events.</span>
+0059 
+0060 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

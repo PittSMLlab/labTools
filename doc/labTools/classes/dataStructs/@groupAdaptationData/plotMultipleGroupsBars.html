@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; plotMultipleGroupsBars.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>plotMultipleGroupsBars
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>	anova  Performs ANOVA comparing groups across epochs</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>	anova  Performs one-way ANOVA on parameters</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	Define color scheme</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
@@ -43,7 +43,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)</a>
-0002             <span class="keyword">if</span> nargin&lt;3 || isempty(removeBiasFlag)
+0002             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBiasFlag)
 0003                warning(<span class="string">'RemoveBiasFlag argument not provided, will NOT remove bias.'</span>)  <span class="comment">%For efficiency, subjects should remove bias before hand, as it is a computationally intensive task that should be done the least number of times possible</span>
 0004                removeBiasFlag=0; 
 0005             <span class="keyword">end</span>
@@ -71,15 +71,15 @@ This function is called by:
 0027             <span class="keyword">if</span> nargin&lt;11
 0028                 plotHandles=[];
 0029             <span class="keyword">end</span>
-0030             <span class="keyword">if</span> nargin&lt;12 || isempty(colors)
-0031                 colorScheme
+0030             <span class="keyword">if</span> nargin&lt;12 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colors)
+0031                 <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
 0032                 colors=color_palette;
 0033             <span class="keyword">end</span>
 0034             
-0035             <span class="keyword">if</span> nargin&lt;14 || isempty(medianFlag)
+0035             <span class="keyword">if</span> nargin&lt;14 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(medianFlag)
 0036                 medianFlag=0;
 0037             <span class="keyword">end</span>
-0038             <span class="keyword">if</span> nargin&lt;15 || isempty(signifPlotMatrixConds)
+0038             <span class="keyword">if</span> nargin&lt;15 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(signifPlotMatrixConds)
 0039                 M=length(condList)*length(numberOfStrides);
 0040                signifPlotMatrixConds=zeros(M); 
 0041             <span class="keyword">end</span>
@@ -94,7 +94,7 @@ This function is called by:
 0050             <span class="keyword">if</span> ~isa(groups,<span class="string">'cell'</span>) || ~isa(groups{1},<span class="string">'groupAdaptationData'</span>)
 0051                 error(<span class="string">'First argument needs to be a cell array of groupAdaptationData objects'</span>)
 0052             <span class="keyword">end</span>
-0053             <span class="keyword">if</span> nargin&lt;13 || isempty(significancePlotMatrixGroups)
+0053             <span class="keyword">if</span> nargin&lt;13 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(significancePlotMatrixGroups)
 0054                 M=length(groups);
 0055                 significancePlotMatrixGroups=ones(M);
 0056             <span class="keyword">end</span>
@@ -104,17 +104,17 @@ This function is called by:
 0060             nGroups=length(groups);
 0061             <span class="keyword">if</span> nGroups&gt;1
 0062             <span class="comment">%[p]=compareTwoGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast);</span>
-0063             <span class="keyword">if</span> ~isempty(significanceThreshold)
+0063             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(significanceThreshold)
 0064                 ch=findobj(figHandle,<span class="string">'Type'</span>,<span class="string">'Axes'</span>);
 0065                 <span class="keyword">for</span> i=1:length(ch)
 0066                     aux=find(strcmp(label,ch(i).Title.String));
-0067                     <span class="keyword">if</span> ~isempty(aux)
+0067                     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux)
 0068                     subplot(ch(i))
 0069                     hold on
 0070 
 0071                     clear XData YData
 0072                     b=findobj(ch(i),<span class="string">'Type'</span>,<span class="string">'Bar'</span>);
-0073                     <span class="keyword">if</span> ~isempty(b)
+0073                     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(b)
 0074                     <span class="keyword">for</span> j=1:length(b)
 0075                         XData(j,:)=b(end-j+1).XData;
 0076                         YData(j,:)=b(end-j+1).YData;
@@ -168,7 +168,7 @@ This function is called by:
 0124                                     [pp]=ranksum(data1,data2); <span class="comment">%Use ranksum 2 to do independent 2-sample non-param testing</span>
 0125                                 <span class="keyword">end</span>
 0126                                 <span class="keyword">if</span> pp&lt;significanceThreshold<span class="comment">%/(length(numberOfStrides)*length(condList))</span>
-0127                                     lh=plot(XData(j)+[0,1],yOff+yRef*[1,1],<span class="string">'m'</span>,<span class="string">'LineWidth'</span>,2);
+0127                                     lh=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(XData(j)+[0,1],yOff+yRef*[1,1],<span class="string">'m'</span>,<span class="string">'LineWidth'</span>,2);
 0128                                     lh.Annotation.LegendInformation.IconDisplayStyle=<span class="string">'off'</span>;
 0129                                     <span class="comment">%text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')</span>
 0130                                     <span class="keyword">if</span> pp&gt;significanceThreshold/10
@@ -224,7 +224,7 @@ This function is called by:
 0180                     IDs=repmat(groups{1}.ID(1),length(groups{1}.ID),1);
 0181                     <span class="comment">%Cat all groups:</span>
 0182                     <span class="keyword">for</span> kk=2:length(allData.group)
-0183                         relevantData=cat(2,relevantData,reshape(permute(allData.group{kk}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{kk}.ID)));
+0183                         relevantData=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(2,relevantData,reshape(permute(allData.group{kk}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{kk}.ID)));
 0184                         groupMembership=[groupMembership; kk*ones(length(groups{kk}.ID),1)];
 0185                         IDs=[IDs; repmat(groups{kk}.ID(1),length(groups{kk}.ID),1)]; <span class="comment">%Each group gets assigned the ID of the first member</span>
 0186                     <span class="keyword">end</span>
@@ -244,33 +244,33 @@ This function is called by:
 0200                     wt=table(dim1Names,<span class="string">'VariableNames'</span>,{<span class="string">'Condition'</span>});
 0201                     rm = fitrm(t,[<span class="string">'t0-t'</span> num2str(size(relevantData,1)-1) <span class="string">' ~ Group'</span>],<span class="string">'WithinDesign'</span>,wt,<span class="string">'WithinModel'</span>,<span class="string">'Condition'</span>);
 0202                     ra=ranova(rm);
-0203                     aa=anova(rm);
+0203                     aa=<a href="../../../../labTools/classes/dataStructs/@studyData/anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>(rm);
 0204                     <span class="comment">%[~,tbl]=anova2(relevantData',size(allData.group{1},4),'off'); %This fails for imbalanced groups</span>
 0205                     phoc=rm.multcompare(<span class="string">'Condition'</span>,<span class="string">'By'</span>,<span class="string">'Group'</span>,<span class="string">'ComparisonType'</span>,<span class="string">'lsd'</span>); <span class="comment">%Unpaired t-tests; this is NOT fine, conditions are naturally paired</span>
 0206                     phoc2=rm.multcompare(<span class="string">'Group'</span>,<span class="string">'By'</span>,<span class="string">'Condition'</span>,<span class="string">'ComparisonType'</span>,<span class="string">'lsd'</span>); <span class="comment">%Unpaired t-tests; this is fine</span>
 0207                     xx=get(gca,<span class="string">'YLim'</span>);
 0208                     xx2=diff(xx);
-0209                     xx=mean(xx);
+0209                     xx=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(xx);
 0210                     yy=get(gca,<span class="string">'XLim'</span>);
 0211                     yk=-.01;
-0212                     text(mean(yy(2))-yk*diff(yy),xx+1.75*xx2/8,<span class="string">'Mauchly:'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
+0212                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx+1.75*xx2/8,<span class="string">'Mauchly:'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
 0213                     <span class="keyword">if</span> rm.mauchly.pValue&gt;.05
-0214                         text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,[<span class="string">'p= '</span> num2str(rm.mauchly.pValue)])
+0214                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx+1*xx2/8,[<span class="string">'p= '</span> num2str(rm.mauchly.pValue)])
 0215                     <span class="keyword">else</span>
-0216                         text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,[<span class="string">'p= '</span> num2str(rm.mauchly.pValue)],<span class="string">'Color'</span>,<span class="string">'b'</span>)
+0216                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx+1*xx2/8,[<span class="string">'p= '</span> num2str(rm.mauchly.pValue)],<span class="string">'Color'</span>,<span class="string">'b'</span>)
 0217                     <span class="keyword">end</span>
-0218                     text(mean(yy(2))-yk*diff(yy),xx+.25*xx2/8,<span class="string">'RM-ANOVA stats:'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
-0219                     text(mean(yy(2))-yk*diff(yy),xx-.5*xx2/8,[<span class="string">'Group: F='</span> num2str(aa.F(2),2) <span class="string">', p='</span> num2str(aa.pValue(2),2)],<span class="string">'Fontsize'</span>,10)
+0218                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx+.25*xx2/8,<span class="string">'RM-ANOVA stats:'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
+0219                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-.5*xx2/8,[<span class="string">'Group: F='</span> num2str(aa.F(2),2) <span class="string">', p='</span> num2str(aa.pValue(2),2)],<span class="string">'Fontsize'</span>,10)
 0220                     <span class="keyword">if</span> rm.mauchly.pValue&gt;.05
-0221                         text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,[<span class="string">'Cond: F='</span> num2str(ra.F(1),2) <span class="string">', p='</span> num2str(ra.pValue(1),2)],<span class="string">'Fontsize'</span>,10)
-0222                         text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,[<span class="string">'Interac.: F='</span> num2str(ra.F(2),2) <span class="string">', p='</span> num2str(ra.pValue(2),2)],<span class="string">'Fontsize'</span>,10)
+0221                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-1.25*xx2/8,[<span class="string">'Cond: F='</span> num2str(ra.F(1),2) <span class="string">', p='</span> num2str(ra.pValue(1),2)],<span class="string">'Fontsize'</span>,10)
+0222                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-2*xx2/8,[<span class="string">'Interac.: F='</span> num2str(ra.F(2),2) <span class="string">', p='</span> num2str(ra.pValue(2),2)],<span class="string">'Fontsize'</span>,10)
 0223                     <span class="keyword">else</span>
-0224                         text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,[<span class="string">'Cond: F='</span> num2str(ra.F(1),2) <span class="string">', pGG='</span> num2str(ra.pValueGG(1),2)],<span class="string">'Fontsize'</span>,10,<span class="string">'Color'</span>,<span class="string">'b'</span>)
-0225                         text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,[<span class="string">'Interac.: F='</span> num2str(ra.F(2),2) <span class="string">', pGG='</span> num2str(ra.pValueGG(2),2)],<span class="string">'Fontsize'</span>,10,<span class="string">'Color'</span>,<span class="string">'b'</span>)
+0224                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-1.25*xx2/8,[<span class="string">'Cond: F='</span> num2str(ra.F(1),2) <span class="string">', pGG='</span> num2str(ra.pValueGG(1),2)],<span class="string">'Fontsize'</span>,10,<span class="string">'Color'</span>,<span class="string">'b'</span>)
+0225                         text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-2*xx2/8,[<span class="string">'Interac.: F='</span> num2str(ra.F(2),2) <span class="string">', pGG='</span> num2str(ra.pValueGG(2),2)],<span class="string">'Fontsize'</span>,10,<span class="string">'Color'</span>,<span class="string">'b'</span>)
 0226                     <span class="keyword">end</span>
-0227                     text(mean(yy(2))-yk*diff(yy),xx-2.75*xx2/8,[<span class="string">'Post-hoc (unpr.):'</span>],<span class="string">'Fontsize'</span>,10,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
-0228                     text(mean(yy(2)),xx-3.5*xx2/8,[<span class="string">'* p&lt;.05'</span>],<span class="string">'Fontsize'</span>,10)
-0229                     text(mean(yy(2)),xx-4.25*xx2/8,[<span class="string">'** p&lt;Bonferroni'</span>],<span class="string">'Fontsize'</span>,10)
+0227                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2))-yk*diff(yy),xx-2.75*xx2/8,[<span class="string">'Post-hoc (unpr.):'</span>],<span class="string">'Fontsize'</span>,10,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
+0228                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2)),xx-3.5*xx2/8,[<span class="string">'* p&lt;.05'</span>],<span class="string">'Fontsize'</span>,10)
+0229                     text(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yy(2)),xx-4.25*xx2/8,[<span class="string">'** p&lt;Bonferroni'</span>],<span class="string">'Fontsize'</span>,10)
 0230                     <span class="comment">%text(mean(yy(2))-.1*diff(yy),xx-2.75*xx2/8,'2-ANOVA stats:')</span>
 0231                     <span class="comment">%text(mean(yy(2))-.1*diff(yy),xx-3.5*xx2/8,['Group: F=' num2str(tbl{3,5},2) ', p=' num2str(tbl{3,6},2)],'Fontsize',10,'FontWeight','bold')</span>
 0232                     <span class="comment">%text(mean(yy(2))-.1*diff(yy),xx-4.25*xx2/8,['Cond: F=' num2str(tbl{2,5},2) ', p=' num2str(tbl{2,6},2)],'Fontsize',10,'FontWeight','bold')</span>
@@ -292,7 +292,7 @@ This function is called by:
 0248                                 pp=phoc2.pValue(c1 &amp; c2 &amp; c3);<span class="comment">%This is the same as using pp3</span>
 0249                                 <span class="comment">%disp(['post-hoc=' num2str(pp) ', t-test (unp)=' num2str(pp3) ', ranksum=' num2str(pp2)]) %This is to check that the post-hoc is indeed an unpaired t-test</span>
 0250                                 <span class="keyword">if</span> pp3&lt;significanceThreshold 
-0251                                     lh=plot(XData(ii)+[0,1],yOff+yRef*[1,1],<span class="string">'m'</span>,<span class="string">'LineWidth'</span>,2);
+0251                                     lh=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(XData(ii)+[0,1],yOff+yRef*[1,1],<span class="string">'m'</span>,<span class="string">'LineWidth'</span>,2);
 0252                                     lh.Annotation.LegendInformation.IconDisplayStyle=<span class="string">'off'</span>;
 0253                                     <span class="comment">%text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')</span>
 0254                                     <span class="keyword">if</span> pp&gt;(significanceThreshold/Ncomp2) <span class="comment">%Bonferroni threshold</span>
@@ -317,7 +317,7 @@ This function is called by:
 0273                                     pp=phoc.pValue(c1 &amp; c2 &amp; c3);
 0274                                     <span class="comment">%disp(['post-hoc=' num2str(pp) ', t-test (paired)=' num2str(pp1) ', t-test (unp)=' num2str(pp3) ', signrank=' num2str(pp2)])</span>
 0275                                     <span class="keyword">if</span> pp1&lt;(significanceThreshold) 
-0276                                         lh=plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),<span class="string">'Color'</span>,colors(mod(kk-1,length(colors))+1,:),<span class="string">'LineWidth'</span>,2);
+0276                                         lh=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),<span class="string">'Color'</span>,colors(mod(kk-1,length(colors))+1,:),<span class="string">'LineWidth'</span>,2);
 0277                                         lh.Annotation.LegendInformation.IconDisplayStyle=<span class="string">'off'</span>;
 0278                                         <span class="keyword">if</span> pp1&gt;(significanceThreshold/(.5*Ncomp)) <span class="comment">%Does not pass Bonferroni's criteria for significance</span>
 0279                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),[<span class="string">'*'</span>],<span class="string">'Color'</span>,colors(mod(kk-1,length(colors))+1,:))
@@ -340,6 +340,6 @@ This function is called by:
 0296             <span class="keyword">end</span>
 0297             
 0298 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

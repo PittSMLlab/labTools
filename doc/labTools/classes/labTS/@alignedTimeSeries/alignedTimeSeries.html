@@ -1,0 +1,492 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of alignedTimeSeries</title>
+  <meta name="keywords" content="alignedTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; alignedTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>alignedTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@cognitiveData/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if label(s) exist in dataset</li><li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/@paramData/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if label(s) exist in dataset</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="castAsTS.html" class="code" title="function newThis = castAsTS(this)">castAsTS</a>	castAsTS  Converts to labTimeSeries</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="catStrides.html" class="code" title="function newThis = catStrides(this)">catStrides</a>	catStrides  Concatenates strides into labTimeSeries</li><li><a href="concatenateAsTS.html" class="code" title="function newThis = concatenateAsTS(this)">concatenateAsTS</a>	concatenateAsTS  Concatenates strides sequentially</li><li><a href="demean.html" class="code" title="function newThis = demean(this)">demean</a>	demean  Removes mean</li><li><a href="discretize.html" class="code" title="function newThis = discretize(this, averagingVector)">discretize</a>	discretize  Averages data across phases</li><li><a href="energyDecomposition.html" class="code" title="function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this)">energyDecomposition</a>	energyDecomposition  Decomposes variance</li><li><a href="equalizeEnergyPerChannel.html" class="code" title="function newThis = equalizeEnergyPerChannel(this)">equalizeEnergyPerChannel</a>	equalizeEnergyPerChannel  Normalizes by RMS</li><li><a href="expandEventTimes.html" class="code" title="function expEventTimes = expandEventTimes(eventTimes, alignmentVector)">expandEventTimes</a>	expandEventTimes  Computes sample times for all events</li><li><a href="fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	fftshift  Shifts alignment by half cycle</li><li><a href="flipLR.html" class="code" title="function [this, iC, iI] = flipLR(this)">flipLR</a>	flipLR  Flips left/right alignment</li><li><a href="getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">getLabelsThatMatch</a>	getLabelsThatMatch  Finds labels matching pattern</li><li><a href="getPartialDataAsATS.html" class="code" title="function newThis = getPartialDataAsATS(this, labels)">getPartialDataAsATS</a>	getPartialDataAsATS  Extracts subset of channels</li><li><a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>	getPartialStridesAsATS  Extracts subset of strides</li><li><a href="getSym.html" class="code" title="function [this, iC, iI] = getSym(this)">getSym</a>	getSym  Computes symmetric components</li><li><a href="getaSym.html" class="code" title="function [this, iC, iI] = getaSym(this)">getaSym</a>	getaSym  Computes asymmetric components</li><li><a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	iqr  Computes interquartile range</li><li><a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if labels exist</li><li><a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>	logicalHist  Generates histogram from logical event data</li><li><a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="plotCheckerboard.html" class="code" title="function [fh, ph] = plotCheckerboard(this, fh, ph)">plotCheckerboard</a>	plotCheckerboard  Displays data as heatmap</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="removeStridesWithNaNs.html" class="code" title="function newThis = removeStridesWithNaNs(this)">removeStridesWithNaNs</a>	removeStridesWithNaNs  Removes strides with missing data</li><li><a href="renameLabels.html" class="code" title="function this = renameLabels(this, originalLabels, newLabels)">renameLabels</a>	renameLabels  Renames labels</li><li><a href="rescaleTime.html" class="code" title="function newThis = rescaleTime(this, newTs, newT0)">rescaleTime</a>	rescaleTime  Redefines time vector</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="stdRobust.html" class="code" title="function stdTS = stdRobust(this, strideIdxs)">stdRobust</a>	stdRobust  Computes robust standard deviation</li><li><a href="times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/demean.html" class="code" title="function newthis = demean(this)">demean</a>	demean  Removes mean from each channel</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/discretize.html" class="code" title="function [DTS, bad] = discretize(this, eventTS, eventLabel, N,summaryFunction)">discretize</a>	discretize  Discretizes by averaging across phases</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/equalizeEnergyPerChannel.html" class="code" title="function newthis = equalizeEnergyPerChannel(this)">equalizeEnergyPerChannel</a>	equalizeEnergyPerChannel  Normalizes by RMS</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">getLabelsThatMatch</a>	getLabelsThatMatch  Returns labels matching regular expression</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if string is contained in label array</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/renameLabels.html" class="code" title="function this = renameLabels(this, originalLabels, newLabels)">renameLabels</a>	renameLabels  Renames labels in timeseries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/pitools/math/demean.html" class="code" title="function Y = demean(X)">demean</a>	DEMEAN Remove the column-wise mean from a matrix.</li><li><a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>	tight_subplot creates "subplot" axes with adjustable gaps and margins</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="discretize.html" class="code" title="function newThis = discretize(this, averagingVector)">discretize</a>	discretize  Averages data across phases</li><li><a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>	getPartialStridesAsATS  Extracts subset of strides</li><li><a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="rescaleTime.html" class="code" title="function newThis = rescaleTime(this, newTs, newT0)">rescaleTime</a>	rescaleTime  Redefines time vector</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/align_v2.html" class="code" title="function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)">align_v2</a>	align_v2  Efficient and robust alignment to events</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/discretize.html" class="code" title="function [DTS, bad] = discretize(this, eventTS, eventLabel, N,summaryFunction)">discretize</a>	discretize  Discretizes by averaging across phases</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/stridedTSToAlignedTS.html" class="code" title="function [alignedTS, originalDurations] =stridedTSToAlignedTS(stridedTS, N)">stridedTSToAlignedTS</a>	stridedTSToAlignedTS  Converts strided TS to aligned TS</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = alignedTimeSeries(t0, Ts, Data, labels,</a></li><li><a href="#_sub2" class="code">function eET = get.expandedEventTimes(this)</a></li><li><a href="#_sub3" class="code">function this = set.eventTimes(this, eventTimes)</a></li><li><a href="#_sub4" class="code">function newThis = abs(this)</a></li><li><a href="#_sub5" class="code">function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a> <span class="comment">% &lt; labTimeSeries</span>
+0002     <span class="comment">% TODO: make this inherit from labTimeSeries, as it should</span>
+0003     <span class="comment">%alignedTimeSeries  Time-series-like object for aligned/repeated data</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%   alignedTimeSeries stores multiple repetitions of recorded data</span>
+0006     <span class="comment">%   aligned to common events (e.g., gait cycles aligned to heel</span>
+0007     <span class="comment">%   strikes). Data is organized as (samples x channels x repetitions).</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%alignedTimeSeries properties:</span>
+0010     <span class="comment">%   Data - 3D matrix (samples x channels x strides)</span>
+0011     <span class="comment">%   Time - time vector for one stride cycle</span>
+0012     <span class="comment">%   labels - cell array of channel labels</span>
+0013     <span class="comment">%   alignmentVector - vector specifying samples per phase</span>
+0014     <span class="comment">%   alignmentLabels - cell array of phase/event labels</span>
+0015     <span class="comment">%   eventTimes - matrix of actual event times (events x strides+1)</span>
+0016     <span class="comment">%   expandedEventTimes - sample times for all events (dependent)</span>
+0017     <span class="comment">%</span>
+0018     <span class="comment">%alignedTimeSeries methods:</span>
+0019     <span class="comment">%   alignedTimeSeries - constructor</span>
+0020     <span class="comment">%   getPartialStridesAsATS - extracts subset of strides</span>
+0021     <span class="comment">%   removeStridesWithNaNs - removes strides with missing data</span>
+0022     <span class="comment">%   getPartialDataAsATS - extracts subset of channels</span>
+0023     <span class="comment">%   mean - computes mean across strides</span>
+0024     <span class="comment">%   std - computes standard deviation</span>
+0025     <span class="comment">%   iqr - computes interquartile range</span>
+0026     <span class="comment">%   stdRobust - computes robust standard deviation</span>
+0027     <span class="comment">%   prctile - computes percentile</span>
+0028     <span class="comment">%   median - computes median</span>
+0029     <span class="comment">%   energyDecomposition - decomposes variance</span>
+0030     <span class="comment">%   abs - takes absolute value</span>
+0031     <span class="comment">%   equalizeEnergyPerChannel - normalizes by RMS</span>
+0032     <span class="comment">%   demean - removes mean</span>
+0033     <span class="comment">%   minus - subtracts two alignedTimeSeries</span>
+0034     <span class="comment">%   plus - adds two alignedTimeSeries</span>
+0035     <span class="comment">%   times - multiplies by constant</span>
+0036     <span class="comment">%   catStrides - concatenates strides into labTimeSeries</span>
+0037     <span class="comment">%   castAsTS - converts to labTimeSeries</span>
+0038     <span class="comment">%   concatenateAsTS - concatenates strides sequentially</span>
+0039     <span class="comment">%   isaLabel - checks if labels exist</span>
+0040     <span class="comment">%   getLabelsThatMatch - finds labels matching pattern</span>
+0041     <span class="comment">%   renameLabels - renames labels</span>
+0042     <span class="comment">%   cat - concatenates alignedTimeSeries</span>
+0043     <span class="comment">%   fftshift - shifts alignment by half cycle</span>
+0044     <span class="comment">%   discretize - averages data across phases</span>
+0045     <span class="comment">%   flipLR - flips left/right alignment</span>
+0046     <span class="comment">%   getSym - computes symmetric components</span>
+0047     <span class="comment">%   getaSym - computes asymmetric components</span>
+0048     <span class="comment">%   rescaleTime - redefines time vector</span>
+0049     <span class="comment">%   plot - plots aligned data with mean</span>
+0050     <span class="comment">%   plotCheckerboard - displays data as heatmap</span>
+0051     <span class="comment">%</span>
+0052     <span class="comment">%See also: labTimeSeries, processedLabData</span>
+0053 
+0054     <span class="comment">%% Properties</span>
+0055     properties
+0056         Data
+0057         Time
+0058         labels
+0059         alignmentVector = [];
+0060         alignmentLabels = {};
+0061         eventTimes = [];
+0062     <span class="keyword">end</span>
+0063 
+0064     properties (Dependent)
+0065         expandedEventTimes
+0066     <span class="keyword">end</span>
+0067 
+0068     <span class="comment">%% Constructor</span>
+0069     methods
+0070         <a name="_sub0" href="#_subfunctions" class="code">function this = alignedTimeSeries(t0, Ts, Data, labels, </a><span class="keyword">...</span>
+0071                 alignmentVector, alignmentLabels, eventTimes)
+0072             <span class="comment">%alignedTimeSeries  Constructor for alignedTimeSeries class</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">%   this = alignedTimeSeries(t0, Ts, Data, labels,</span>
+0075             <span class="comment">%   alignmentVector, alignmentLabels) creates aligned</span>
+0076             <span class="comment">%   timeseries without event times</span>
+0077             <span class="comment">%</span>
+0078             <span class="comment">%   this = alignedTimeSeries(t0, Ts, Data, labels,</span>
+0079             <span class="comment">%   alignmentVector, alignmentLabels, eventTimes) includes</span>
+0080             <span class="comment">%   event timing information</span>
+0081             <span class="comment">%</span>
+0082             <span class="comment">%   Inputs:</span>
+0083             <span class="comment">%       t0 - initial time</span>
+0084             <span class="comment">%       Ts - sampling period</span>
+0085             <span class="comment">%       Data - 3D matrix (samples x channels x strides)</span>
+0086             <span class="comment">%       labels - cell array of channel labels</span>
+0087             <span class="comment">%       alignmentVector - vector specifying number of samples</span>
+0088             <span class="comment">%                         per phase</span>
+0089             <span class="comment">%       alignmentLabels - cell array of phase/event labels</span>
+0090             <span class="comment">%       eventTimes - matrix of event times (optional)</span>
+0091             <span class="comment">%</span>
+0092             <span class="comment">%   Outputs:</span>
+0093             <span class="comment">%       this - alignedTimeSeries object</span>
+0094             <span class="comment">%</span>
+0095             <span class="comment">%   See also: labTimeSeries, processedLabData/reduce</span>
+0096 
+0097             <span class="keyword">if</span> nargin &lt; 6
+0098                 warning([<span class="string">'alignedTimeSeries being created without '</span> <span class="keyword">...</span>
+0099                     <span class="string">'specifying alignment criteria.'</span>]);
+0100                 alignmentVector = 1;
+0101                 alignmentLabels = {<span class="string">'Unknown'</span>};
+0102             <span class="keyword">end</span>
+0103             <span class="keyword">if</span> size(Data, 2) == length(labels)
+0104                 this.Data = Data;
+0105                 this.Time = t0 + [0:size(Data, 1) - 1] * Ts;
+0106                 this.labels = labels;
+0107                 <span class="keyword">if</span> length(alignmentVector) ~= length(alignmentLabels)
+0108                     error(<span class="string">'alignedTS:Constructor'</span>, <span class="keyword">...</span>
+0109                         <span class="string">'Alignment vector and labels sizes do not match.'</span>);
+0110                 <span class="keyword">else</span>
+0111                     this.alignmentVector = alignmentVector;
+0112                     this.alignmentLabels = alignmentLabels;
+0113                 <span class="keyword">end</span>
+0114             <span class="keyword">else</span>
+0115                 error(<span class="string">'alignedTS:Constructor'</span>, <span class="keyword">...</span>
+0116                     <span class="string">'Data size and label number do not match.'</span>);
+0117             <span class="keyword">end</span>
+0118             <span class="keyword">if</span> nargin &gt; 6
+0119                 <span class="comment">% This actually calls on the set() method</span>
+0120                 this.eventTimes = eventTimes;
+0121             <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123     <span class="keyword">end</span>
+0124 
+0125     <span class="comment">%% Property Getters and Setters</span>
+0126     methods
+0127         <a name="_sub1" href="#_subfunctions" class="code">function eET = get.expandedEventTimes(this)</a>
+0128             <span class="comment">%get.expandedEventTimes  Returns sample times for all events</span>
+0129             <span class="comment">%</span>
+0130             <span class="comment">%   Outputs:</span>
+0131             <span class="comment">%       eET - matrix of sample times for each event</span>
+0132 
+0133             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.eventTimes)
+0134                 eET = alignedTimeSeries.expandEventTimes(<span class="keyword">...</span>
+0135                     this.eventTimes, this.alignmentVector);
+0136             <span class="keyword">else</span> <span class="comment">% legacy version</span>
+0137                 error(<span class="string">'alignedTS:expandedEventTimes'</span>, <span class="keyword">...</span>
+0138                     <span class="string">'eventTimes are not determined'</span>);
+0139             <span class="keyword">end</span>
+0140         <span class="keyword">end</span>
+0141 
+0142         <a name="_sub2" href="#_subfunctions" class="code">function this = set.eventTimes(this, eventTimes)</a>
+0143             <span class="comment">%set.eventTimes  Validates and sets event times</span>
+0144             <span class="comment">%</span>
+0145             <span class="comment">%   Inputs:</span>
+0146             <span class="comment">%       this - alignedTimeSeries object</span>
+0147             <span class="comment">%       eventTimes - matrix of event times</span>
+0148 
+0149             <span class="keyword">if</span> any(size(eventTimes) ~= [length(this.alignmentVector) <span class="keyword">...</span>
+0150                     size(this.Data, 3) + 1])
+0151                 error(<span class="string">'alignedTS:SetEventTimes'</span>, <span class="keyword">...</span>
+0152                     <span class="string">'Data and eventTimes sizes do not match.'</span>);
+0153             <span class="keyword">else</span>
+0154                 this.eventTimes = eventTimes;
+0155             <span class="keyword">end</span>
+0156         <span class="keyword">end</span>
+0157     <span class="keyword">end</span>
+0158 
+0159     <span class="comment">%% Data Extraction Methods</span>
+0160     methods
+0161         newThis = <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>(this, inds)
+0162 
+0163         newThis = <a href="removeStridesWithNaNs.html" class="code" title="function newThis = removeStridesWithNaNs(this)">removeStridesWithNaNs</a>(this)
+0164 
+0165         newThis = <a href="getPartialDataAsATS.html" class="code" title="function newThis = getPartialDataAsATS(this, labels)">getPartialDataAsATS</a>(this, labels)
+0166     <span class="keyword">end</span>
+0167 
+0168     <span class="comment">%% Statistical Methods</span>
+0169     methods
+0170         [meanTS, stds] = <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(this, strideIdxs)
+0171 
+0172         stdTS = <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(this, strideIdxs)
+0173 
+0174         iqrTS = <a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>(this, strideIdxs)
+0175 
+0176         stdTS = <a href="stdRobust.html" class="code" title="function stdTS = stdRobust(this, strideIdxs)">stdRobust</a>(this, strideIdxs)
+0177 
+0178         prctileTS = <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this, p, strideIdxs)
+0179 
+0180         medianTS = <a href="median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(this, strideIdxs)
+0181 
+0182         [decomposition, meanValue, avgStride, trial2trialVariability] = <span class="keyword">...</span>
+0183             <a href="energyDecomposition.html" class="code" title="function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this)">energyDecomposition</a>(this)
+0184     <span class="keyword">end</span>
+0185 
+0186     <span class="comment">%% Normalization Methods</span>
+0187     methods
+0188         newThis = <a href="equalizeEnergyPerChannel.html" class="code" title="function newThis = equalizeEnergyPerChannel(this)">equalizeEnergyPerChannel</a>(this)
+0189 
+0190         newThis = <a href="demean.html" class="code" title="function newThis = demean(this)">demean</a>(this)
+0191     <span class="keyword">end</span>
+0192 
+0193     <span class="comment">%% Arithmetic Operations</span>
+0194     methods
+0195         <a name="_sub3" href="#_subfunctions" class="code">function newThis = abs(this)</a>
+0196             <span class="comment">%abs  Takes absolute value</span>
+0197             <span class="comment">%</span>
+0198             <span class="comment">%   newThis = abs(this) computes absolute value of data</span>
+0199             <span class="comment">%</span>
+0200             <span class="comment">%   Inputs:</span>
+0201             <span class="comment">%       this - alignedTimeSeries object</span>
+0202             <span class="comment">%</span>
+0203             <span class="comment">%   Outputs:</span>
+0204             <span class="comment">%       newThis - alignedTimeSeries with absolute values</span>
+0205 
+0206             newThis = this;
+0207             newThis.Data = <a href="#_sub4" class="code" title="subfunction newThis = abs(this)">abs</a>(this.Data);
+0208         <span class="keyword">end</span>
+0209 
+0210         newThis = <a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>(this, other)
+0211 
+0212         newThis = <a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>(this, other)
+0213 
+0214         this = <a href="times.html" class="code" title="function this = times(this, constant)">times</a>(this, constant)
+0215     <span class="keyword">end</span>
+0216 
+0217     <span class="comment">%% Type Conversion Methods</span>
+0218     methods
+0219         newThis = <a href="catStrides.html" class="code" title="function newThis = catStrides(this)">catStrides</a>(this)
+0220 
+0221         newThis = <a href="castAsTS.html" class="code" title="function newThis = castAsTS(this)">castAsTS</a>(this)
+0222 
+0223         newThis = <a href="concatenateAsTS.html" class="code" title="function newThis = concatenateAsTS(this)">concatenateAsTS</a>(this)
+0224     <span class="keyword">end</span>
+0225 
+0226     <span class="comment">%% Label Methods</span>
+0227     methods
+0228         [boolFlag, labelIdx] = <a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>(this, label)
+0229 
+0230         labelList = <a href="getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">getLabelsThatMatch</a>(this, exp)
+0231 
+0232         this = <a href="renameLabels.html" class="code" title="function this = renameLabels(this, originalLabels, newLabels)">renameLabels</a>(this, originalLabels, newLabels)
+0233     <span class="keyword">end</span>
+0234 
+0235     <span class="comment">%% Data Manipulation Methods</span>
+0236     methods
+0237         newThis = <a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(this, other, dim, forceFlag)
+0238 
+0239         newThis = <a href="fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>(this, labels)
+0240 
+0241         newThis = <a href="discretize.html" class="code" title="function newThis = discretize(this, averagingVector)">discretize</a>(this, averagingVector)
+0242 
+0243         [this, iC, iI] = <a href="flipLR.html" class="code" title="function [this, iC, iI] = flipLR(this)">flipLR</a>(this)
+0244 
+0245         [this, iC, iI] = <a href="getSym.html" class="code" title="function [this, iC, iI] = getSym(this)">getSym</a>(this)
+0246 
+0247         [this, iC, iI] = <a href="getaSym.html" class="code" title="function [this, iC, iI] = getaSym(this)">getaSym</a>(this)
+0248 
+0249         newThis = <a href="rescaleTime.html" class="code" title="function newThis = rescaleTime(this, newTs, newT0)">rescaleTime</a>(this, newTs, newT0)
+0250     <span class="keyword">end</span>
+0251 
+0252     <span class="comment">%% Visualization Methods</span>
+0253     methods
+0254         <span class="comment">% [figHandle, plotHandles, plottedInds] = plot(this, figHandle, ...</span>
+0255         <span class="comment">%     plotHandles, meanColor, events, individualLineStyle, ...</span>
+0256         <span class="comment">%         plottedInds, bounds, medianFlag)</span>
+0257         <a name="_sub4" href="#_subfunctions" class="code">function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)</a>
+0258             <span class="comment">% Plot individual instances (strides) of the time-series, and overlays the mean of all of them</span>
+0259             <span class="comment">% Uses one subplot for each label in the timeseries (same as</span>
+0260             <span class="comment">% labTimeSeries.plot).</span>
+0261             <span class="comment">% If events are given (alignedTimeSeries with the same time vector and number of strides),</span>
+0262             <span class="comment">% it will display the average event-time ocurrence in the plot,</span>
+0263             <span class="comment">% instead of the time in the x-axis.</span>
+0264             <span class="comment">% See also labTimeSeries.plot</span>
+0265             <span class="comment">%</span>
+0266             <span class="comment">% SYNTAX:</span>
+0267             <span class="comment">% [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)</span>
+0268             <span class="comment">%</span>
+0269             <span class="comment">% INPUTS:</span>
+0270             <span class="comment">% this: alignedTimeSeries object to plot</span>
+0271             <span class="comment">% figHandle: handle to the figure to be used. If absent,</span>
+0272             <span class="comment">% creates a new figure.</span>
+0273             <span class="comment">% plotHandles: handles to the subplots being used. There need</span>
+0274             <span class="comment">% to be at least as many handles as labels in the data.</span>
+0275             <span class="comment">% meanColor: color to use for the plot of the mean. %FIXME</span>
+0276             <span class="comment">% events: alignedTimeSeries of events.</span>
+0277             <span class="comment">%</span>
+0278             <span class="comment">% OUTPUT:</span>
+0279             <span class="comment">% figHandle: handle to the figure used.</span>
+0280             <span class="comment">% plotHandles: handles to the subplots used.</span>
+0281             <span class="comment">%</span>
+0282             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(meanColor)
+0283                 meanColor=[1,0,0];
+0284             <span class="keyword">end</span>
+0285             <span class="keyword">if</span> nargin&lt;9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(medianFlag)
+0286                 medianFlag=1;
+0287             <span class="keyword">end</span>
+0288             structure=this.Data;
+0289             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
+0290                 figHandle=figure();
+0291             <span class="keyword">else</span>
+0292                 figure(figHandle) <span class="comment">%Only works for one condition!</span>
+0293             <span class="keyword">end</span>
+0294             set(figHandle,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1])
+0295             M=size(structure,2);
+0296             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles) || length(plotHandles)&lt;size(this.Data,2)
+0297                 [b,a]=<a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(M);
+0298                 plotHandles=<a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>(b,a,[.02 .02],[.05 .05], [.05 .05]); <span class="comment">%External function</span>
+0299             <span class="keyword">end</span>
+0300             meanStr=<a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(structure,3);
+0301             <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plottedInds)
+0302                 plottedInds=1:size(structure,3);
+0303                 <span class="keyword">if</span> (numel(structure))&gt;1e7
+0304                     P=floor(1e7/numel(structure(:,:,1)));
+0305                     warning([<span class="string">'There are too many strides in this condition to plot ('</span> num2str(size(structure,3)) <span class="string">'). Only plotting first '</span> num2str(P) <span class="string">'.'</span>])
+0306                     plottedInds=1:P;
+0307                     structure=structure(:,:,plottedInds);
+0308                 <span class="keyword">end</span>
+0309             <span class="keyword">elseif</span> any(plottedInds&lt;=0) <span class="comment">%Counting from the back</span>
+0310                 plottedInds(plottedInds&lt;=0)=size(structure,3)+plottedInds(plottedInds&lt;=0);
+0311             <span class="keyword">end</span>
+0312 
+0313 
+0314             <span class="comment">%Define centerline plot:</span>
+0315             <span class="keyword">if</span> medianFlag==1
+0316                 centerline=this.median.castAsTS; <span class="comment">%Could do mean or median</span>
+0317             <span class="keyword">else</span>
+0318                 centerline=this.mean.castAsTS;
+0319             <span class="keyword">end</span>
+0320 
+0321             <span class="comment">%Plot percentiles (bounds)</span>
+0322             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0323                 events=[];
+0324                 meanEvents=[];
+0325             <span class="keyword">else</span>
+0326                 <span class="keyword">if</span> isa(events,<span class="string">'alignedTimeSeries'</span>)
+0327                     [meanEvents,ss]=<a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(events);
+0328                     meanEvents=meanEvents.castAsTS;
+0329                 <span class="keyword">else</span>
+0330                     meanEvents=events;
+0331                     ss=[];
+0332                 <span class="keyword">end</span>
+0333                 [i2,~]=find(meanEvents.Data);
+0334             <span class="keyword">end</span>
+0335             <span class="keyword">if</span> ~islogical(this.Data) &amp;&amp; nargin&gt;7 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(bounds)
+0336                 <span class="keyword">if</span> length(bounds)==2 <span class="comment">%Alt visualization: add patch</span>
+0337                     <span class="keyword">if</span> any(bounds)==0
+0338                         <span class="keyword">if</span> medianFlag==1
+0339                             st=this.stdRobust.castAsTS;
+0340                         <span class="keyword">else</span>
+0341                             st=this.std.castAsTS;
+0342                         <span class="keyword">end</span>
+0343                         <span class="keyword">if</span> all(bounds)==0 <span class="comment">%Plots ste</span>
+0344                             aux1=centerline+(st.* 1/sqrt(size(this.Data,3)));
+0345                             aux2=centerline-(st .* 1/sqrt(size(this.Data,3)));
+0346                         <span class="keyword">else</span> <span class="comment">%Plots std</span>
+0347                             aux1=centerline+(st);
+0348                             aux2=centerline-(st);
+0349                         <span class="keyword">end</span>
+0350                     <span class="keyword">else</span>
+0351                         aux1=<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this,bounds(1));
+0352                         aux2=<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this,bounds(2));
+0353                     <span class="keyword">end</span>
+0354                     <span class="keyword">for</span> i=1:M
+0355                         subplot(plotHandles(i))
+0356                         hold on
+0357                         <span class="keyword">if</span> size(aux1.Time,1)==numel(aux1.Time) <span class="comment">%column vector</span>
+0358                             megaTime=[aux1.Time; aux1.Time(end:-1:1)];
+0359                         <span class="keyword">else</span> <span class="comment">%row vector</span>
+0360                             megaTime=[aux1.Time, aux1.Time(end:-1:1)];
+0361                         <span class="keyword">end</span>
+0362                         megaData=[aux1.Data(:,i);aux2.Data(end:-1:1,i)];
+0363                         megaData(isnan(megaData))=0;
+0364                         pp=patch(megaTime,megaData,meanColor,<span class="string">'FaceAlpha'</span>,.4,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0365                         uistack(pp,<span class="string">'bottom'</span>);
+0366                         hold off
+0367                     <span class="keyword">end</span>
+0368                 <span class="keyword">else</span> <span class="comment">%Plot each percentile line</span>
+0369                     <span class="keyword">for</span> k=1:length(bounds)
+0370                         [figHandle,plotHandles]=<a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
+0371                     <span class="keyword">end</span>
+0372                 <span class="keyword">end</span>
+0373             <span class="keyword">end</span>
+0374 
+0375             <span class="comment">%PLot mean trace</span>
+0376             [figHandle,plotHandles]=<a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(centerline,figHandle,[],plotHandles,meanEvents,meanColor); <span class="comment">%Plotting mean data</span>
+0377 
+0378             <span class="comment">%Plot individual traces</span>
+0379             <span class="keyword">for</span> i=1:M <span class="comment">%Go over labels</span>
+0380                 <span class="comment">%subplot(b,a,i)</span>
+0381                 subplot(plotHandles(i))
+0382                 hold on
+0383                 <span class="comment">%title(aux{1}.(field).labels{i})</span>
+0384                 data=squeeze(structure(:,i,:));
+0385                 N=size(data,1);
+0386                 <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(individualLineStyle)
+0387                     ppp=<a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.Time,data,<span class="string">'Color'</span>,[.7,.7,.7]);
+0388                     uistack(ppp,<span class="string">'bottom'</span>)
+0389                 <span class="keyword">elseif</span> individualLineStyle==0
+0390                     <span class="comment">%nop</span>
+0391                 <span class="keyword">else</span>
+0392                     ppp=<a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.Time,data,individualLineStyle);
+0393                     uistack(ppp,<span class="string">'bottom'</span>)
+0394                 <span class="keyword">end</span>
+0395 
+0396                 <span class="comment">%plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);</span>
+0397                 <span class="comment">%legend(this.labels{i})</span>
+0398                 <span class="comment">%maxM(i)=5*norm(data(:))/sqrt(length(data(:)));</span>
+0399                 meanM(i)=<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:),50);
+0400                 maxM(i)=2*(<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:),99)-meanM(i))+meanM(i)+eps;
+0401                 minM(i)=2*(<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:),1)-meanM(i))+meanM(i);
+0402                 axis([this.Time(1) this.Time(end) minM(i) maxM(i)])
+0403                 hold off
+0404             <span class="keyword">end</span>
+0405 
+0406             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0407                 <span class="keyword">for</span> i=1:length(plotHandles) <span class="comment">%For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).</span>
+0408                     eventSampPeriod=(events.Time(2)-events.Time(1));
+0409                     subplot(plotHandles(i))
+0410                     hold on
+0411                     <span class="keyword">for</span> j=1:length(ss)
+0412                         <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1);
+0413                     <span class="keyword">end</span>
+0414                     <span class="comment">%axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.</span>
+0415                     hold off
+0416                 <span class="keyword">end</span>
+0417             <span class="keyword">else</span>
+0418                 <span class="keyword">for</span> i=1:length(plotHandles) <span class="comment">%For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).</span>
+0419                     subplot(plotHandles(i))
+0420                     xt=get(gca,<span class="string">'XTick'</span>);
+0421                     xt=[this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector)];
+0422                     xtl=[[this.alignmentLabels, this.alignmentLabels(1)]];
+0423                     set(gca,<span class="string">'XTick'</span>,xt,<span class="string">'XTickLabel'</span>,xtl)
+0424                     set(gca,<span class="string">'xgrid'</span>,<span class="string">'on'</span>)
+0425                 <span class="keyword">end</span>
+0426             <span class="keyword">end</span>
+0427         <span class="keyword">end</span>
+0428 
+0429         [fh, ph] = <a href="plotCheckerboard.html" class="code" title="function [fh, ph] = plotCheckerboard(this, fh, ph)">plotCheckerboard</a>(this, fh, ph)
+0430     <span class="keyword">end</span>
+0431 
+0432     <span class="comment">%% Static Methods</span>
+0433     methods (Static)
+0434         expEventTimes = <a href="expandEventTimes.html" class="code" title="function expEventTimes = expandEventTimes(eventTimes, alignmentVector)">expandEventTimes</a>(eventTimes, alignmentVector)
+0435     <span class="keyword">end</span>
+0436 
+0437     <span class="comment">%% Hidden Methods</span>
+0438     methods (Hidden)
+0439         [histogram, newLabels] = <a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>(this)
+0440     <span class="keyword">end</span>
+0441 
+0442 <span class="keyword">end</span>
+0443</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

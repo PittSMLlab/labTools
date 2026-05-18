@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of timeNormalize</title>
+  <meta name="keywords" content="timeNormalize">
+  <meta name="description" content="timeNormalize  Resamples all data to uniform length">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; timeNormalize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@strideData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>timeNormalize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>timeNormalize  Resamples all data to uniform length</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = timeNormalize(this, N, newClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">timeNormalize  Resamples all data to uniform length
+
+   newThis = timeNormalize(this, N) resamples all time series
+   data to N samples, creating a time-normalized stride
+
+   newThis = timeNormalize(this, N, newClass) resamples and
+   returns object of type specified by newClass string
+
+   Inputs:
+       this - strideData object
+       N - target number of samples
+       newClass - string representing class/object type to
+                  return (optional, default: 'strideData')
+
+   Outputs:
+       newThis - time-normalized stride object
+
+   Note: EMG data is resampled to next power of 2 to maintain
+         appropriate sampling rate
+
+   See also: <a href="getMasterSampleLength.html" class="code" title="function N = getMasterSampleLength(this)">getMasterSampleLength</a>, labTimeSeries/resampleN</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/metaData/strideMetaData.html" class="code" title="">strideMetaData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="strideData.html" class="code" title="">strideData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N)">timeNormalize</a>	timeNormalize  Resamples all strides to uniform length</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = timeNormalize(this, N, newClass)</a>
+0002 <span class="comment">%timeNormalize  Resamples all data to uniform length</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = timeNormalize(this, N) resamples all time series</span>
+0005 <span class="comment">%   data to N samples, creating a time-normalized stride</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   newThis = timeNormalize(this, N, newClass) resamples and</span>
+0008 <span class="comment">%   returns object of type specified by newClass string</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - strideData object</span>
+0012 <span class="comment">%       N - target number of samples</span>
+0013 <span class="comment">%       newClass - string representing class/object type to</span>
+0014 <span class="comment">%                  return (optional, default: 'strideData')</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Outputs:</span>
+0017 <span class="comment">%       newThis - time-normalized stride object</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Note: EMG data is resampled to next power of 2 to maintain</span>
+0020 <span class="comment">%         appropriate sampling rate</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: getMasterSampleLength, labTimeSeries/resampleN</span>
+0023 
+0024 newThis = []; <span class="comment">% Just to avoid Matlab saying this is not defined</span>
+0025 cname = class(this);
+0026 <span class="keyword">if</span> nargin &lt; 3
+0027     metaData = <a href="../../../../labTools/classes/dataStructs/metaData/strideMetaData.html" class="code" title="">strideMetaData</a>(labDate.genIDFromClock, <span class="keyword">...</span>
+0028         labDate.getCurrent, <span class="string">'strideData.timeNormalize'</span>, <span class="keyword">...</span>
+0029         <span class="string">'normalizedInterval'</span>, <span class="keyword">...</span>
+0030         [<span class="string">'Normalized '</span> this.metaData.description], <span class="keyword">...</span>
+0031         <span class="string">'Auto-generated'</span>, this.metaData);
+0032     <span class="comment">% Call empty constructor of same class</span>
+0033     eval([<span class="string">'newThis = '</span> cname <span class="string">'(metaData);'</span>]);
+0034 <span class="keyword">else</span>
+0035     <span class="comment">% Should I call a different metaData constructor depending on newClass?</span>
+0036     metaData = <a href="../../../../labTools/classes/dataStructs/metaData/strideMetaData.html" class="code" title="">strideMetaData</a>(labDate.genIDFromClock, <span class="keyword">...</span>
+0037         labDate.getCurrent, <span class="string">'strideData.timeNormalize'</span>, <span class="keyword">...</span>
+0038         <span class="string">'normalizedInterval'</span>, <span class="keyword">...</span>
+0039         [<span class="string">'Normalized  '</span> this.metaData.description], <span class="keyword">...</span>
+0040         <span class="string">'Auto-generated'</span>, this.metaData);
+0041     <span class="comment">% Call empty constructor of same class</span>
+0042     eval([<span class="string">'newThis = '</span> newClass <span class="string">'(metaData);'</span>]);
+0043 <span class="keyword">end</span>
+0044 auxLst = properties(cname);
+0045 <span class="keyword">for</span> i = 1:length(auxLst)
+0046     <span class="comment">% Should try to do this only if the property is not dependent,</span>
+0047     <span class="comment">% otherwise, I'm computing things I don't need</span>
+0048     eval([<span class="string">'oldVal = this.'</span> auxLst{i} <span class="string">';'</span>])
+0049     <span class="keyword">if</span> isa(oldVal, <span class="string">'labTimeSeries'</span>) &amp;&amp; ~strcmp(auxLst{i}, <span class="string">'EMGData'</span>)
+0050         <span class="comment">% Calling labTS.resample (or one of the subclass' implementation),</span>
+0051         <span class="comment">% it should keep the time interval, which for strided data should</span>
+0052         newVal = oldVal.resampleN(N);
+0053     <span class="keyword">elseif</span> strcmp(auxLst{i}, <span class="string">'EMGData'</span>)
+0054         k = this.EMGData.Nsamples / this.markerData.Nsamples;
+0055         NN = 2^ceil(log2(k * N));
+0056         newVal = oldVal.resampleN(NN);
+0057     <span class="keyword">elseif</span> ~isa(oldVal, <span class="string">'labMetaData'</span>)
+0058         newVal = oldVal; <span class="comment">% Not a labTS object, not splitting</span>
+0059     <span class="keyword">end</span>
+0060     <span class="keyword">try</span>
+0061         <span class="comment">% If this fails it is because the property is not settable</span>
+0062         eval([<span class="string">'newThis.'</span> auxLst{i} <span class="string">' = newVal;'</span>])
+0063     <span class="keyword">catch</span>
+0064         <span class="keyword">if</span> isa(oldVal, <span class="string">'labTimeSeries'</span>)
+0065             disp([<span class="string">'Failed to set new labTS value'</span> auxLst{i}]);
+0066         <span class="keyword">end</span>
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Part1RL</title>
+  <meta name="keywords" content="Part1RL">
+  <meta name="description" content="pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">OptimizedReconstructAndLabel</a> &gt; Part1RL.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\OptimizedReconstructAndLabel&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>Part1RL
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function mrkrTrajs = Part1RL(trialPath) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	</li><li><a href="CompareTrajectory_RL.html" class="code" title="">CompareTrajectory_RL</a>	</li><li><a href="../../../../labTools/fun/misc/plotMarkerProcessingTrajectories.html" class="code" title="function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)">plotMarkerProcessingTrajectories</a>	PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets(</a></li><li><a href="#_sub2" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function mrkrTrajs = Part1RL(trialPath)</a>
+0002 
+0003     <span class="comment">% pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</span>
+0004 
+0005     fprintf(<span class="string">'Connecting to Vicon Nexus...\n'</span>);
+0006     newVicon = ViconNexus();
+0007 
+0008     <span class="comment">% --- Open Trial ---</span>
+0009     fprintf(<span class="string">'Opening trial: %s\n'</span>, trialPath);
+0010     <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(trialPath, newVicon)
+0011         warning(<span class="string">'Could not open trial. Exiting. \n'</span>);
+0012         mrkrTrajs = struct(); <span class="keyword">return</span>;
+0013     <span class="keyword">end</span>
+0014 
+0015     pause(5);
+0016     
+0017     mrkrTrajs = struct();
+0018 
+0019     [~, trialName] = fileparts(trialPath);
+0020     fprintf(<span class="string">'\n--- Processing trial: %s ---\n'</span>, trialName);
+0021 
+0022     <span class="comment">% ---Step 1a: Run Pre-Pattern Pipeline (R&amp;L)---</span>
+0023     fprintf(<span class="string">'Running RLPrePatternFill1 pipeline...\n'</span>);
+0024     <span class="comment">%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPrePatternFill1';</span>
+0025     <span class="keyword">try</span>
+0026         <span class="comment">%newVicon.RunPipeline(pipelinePath, '', 200);</span>
+0027         newVicon.RunPipeline(<span class="string">'RLPrePatternFill1'</span>,<span class="string">''</span>,200);
+0028         pause(1);
+0029         mrkrTrajs.Step1RandL = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(newVicon);
+0030         fprintf(<span class="string">'Pre-pattern fill 1 complete.\n'</span>);
+0031     <span class="keyword">catch</span> ME
+0032         warning(<span class="string">'Failed to run RLPrePatternFill: %s'</span>, ME.message);
+0033     <span class="keyword">end</span>
+0034     
+0035         <span class="comment">% ---Step 1b: Run Pre-Pattern Pipeline (Woltring)---</span>
+0036     fprintf(<span class="string">'Running RLPrePatternFill2 pipeline...\n'</span>);
+0037     <span class="comment">%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPrePatternFill1';</span>
+0038     <span class="keyword">try</span>
+0039         <span class="comment">%newVicon.RunPipeline(pipelinePath, '', 200);</span>
+0040         newVicon.RunPipeline(<span class="string">'RLPrePatternFill2'</span>,<span class="string">''</span>,200);
+0041         pause(1);
+0042         mrkrTrajs.Step2Woltring = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(newVicon);
+0043         fprintf(<span class="string">'Pre-pattern fill 2 complete.\n'</span>);
+0044     <span class="keyword">catch</span> ME
+0045         warning(<span class="string">'Failed to run RLPrePatternFill: %s'</span>, ME.message);
+0046     <span class="keyword">end</span>
+0047 
+0048     <span class="comment">% ---Step 2: Custom Pattern Fill</span>
+0049 
+0050     <span class="comment">% define reference and target markers for pattern-based gap filling</span>
+0051     markersRef = {<span class="string">'GT'</span>,<span class="string">'KNEE'</span>,<span class="string">'GT'</span>,<span class="string">'ANK'</span>};
+0052     markersTarg = {
+0053         {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0054         {<span class="string">'GT'</span>,<span class="string">'ANK'</span>}, <span class="keyword">...</span>
+0055         {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0056         {<span class="string">'SHANK'</span>,<span class="string">'HEEL'</span>,<span class="string">'TOE'</span>}
+0057         };
+0058 
+0059     <span class="comment">% extract marker gaps to be filled</span>
+0060     markerGaps = dataMotion.extractMarkerGapsTrial(trialPath,newVicon);
+0061 
+0062     <span class="comment">% fill small marker gaps using spline interpolation</span>
+0063 <span class="comment">%     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, trialPath,newVicon,false);</span>
+0064 
+0065     <span class="comment">% fill gaps using pattern fill for each reference marker</span>
+0066     <span class="keyword">for</span> ref = 1:numel(markersRef)       <span class="comment">% for each reference marker, ...</span>
+0067         refMarker = markersRef{ref};    <span class="comment">% retrieve reference marker name</span>
+0068         targetMarkers = markersTarg{ref};
+0069 
+0070         <span class="comment">% Call the helper function to process each ref marker group</span>
+0071         markerGaps = <a href="#_sub1" class="code" title="subfunction markerGaps = fillMarkerGapsPatternSpecifiedTargets( ">fillMarkerGapsPatternSpecifiedTargets</a>( <span class="keyword">...</span>
+0072             markerGaps,targetMarkers,refMarker,trialPath,newVicon);
+0073     <span class="keyword">end</span>
+0074     
+0075     pause(1);
+0076     mrkrTrajs.Step3Pattern = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(newVicon);
+0077 
+0078 <span class="comment">%     fprintf('Saving trial %d: %s\n',trialName,trialPath);</span>
+0079 <span class="comment">%     try</span>
+0080 <span class="comment">%         newVicon.SaveTrial(200);</span>
+0081 <span class="comment">%         fprintf('Trial saved successfully.\n');</span>
+0082 <span class="comment">%     catch ME</span>
+0083 <span class="comment">%         warning(ME.identifier,'%s',ME.message);</span>
+0084 <span class="comment">%     end</span>
+0085 
+0086     <span class="comment">% ---Step 3: Run Post-Pattern Pipeline ---</span>
+0087     fprintf(<span class="string">'Running RLPostPatternFill pipeline...\n'</span>);
+0088     <span class="comment">%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPostPatternFill';</span>
+0089     <span class="keyword">try</span>
+0090         <span class="comment">%vicon.RunPipeline(pipelinePath, '', 200);</span>
+0091         newVicon.RunPipeline(<span class="string">'RLPostPatternFill'</span>,<span class="string">''</span>,200);
+0092         pause(1);
+0093         mrkrTrajs.Step4Butterworth = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(newVicon);
+0094         fprintf(<span class="string">'Post-pattern fill complete.\n'</span>);
+0095     <span class="keyword">catch</span> ME
+0096         warning(<span class="string">'Failed to run RLPostPatternFill: %s'</span>, ME.message);
+0097     <span class="keyword">end</span>
+0098 
+0099     fprintf(<span class="string">'Saving trial %d: %s\n'</span>,trialName,trialPath);
+0100      <span class="keyword">try</span>
+0101          newVicon.SaveTrial(200);
+0102          fprintf(<span class="string">'Trial saved successfully.\n'</span>);
+0103      <span class="keyword">catch</span> ME
+0104          warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
+0105      <span class="keyword">end</span>
+0106     
+0107 <span class="keyword">end</span>
+0108 
+0109 <span class="comment">%% Helper function</span>
+0110 <a name="_sub1" href="#_subfunctions" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets( </a><span class="keyword">...</span>
+0111     markerGaps,targetMarkers,refMarker,trialPath,newVicon)
+0112 <span class="comment">%PROCESSREFERENCEMARKERGAPS Process marker gaps for a reference marker</span>
+0113 <span class="comment">%   Helper function to perform a pattern-based fill of marker gaps for</span>
+0114 <span class="comment">% specified target markers and a referencefor right and left markers.</span>
+0115 
+0116 sides = {<span class="string">'R'</span>,<span class="string">'L'</span>};
+0117 <span class="keyword">for</span> i = 1:numel(sides)
+0118     sidePrefix = sides{i};
+0119     gaps = struct();
+0120 
+0121     <span class="comment">% collect gaps for the target markers</span>
+0122     <span class="keyword">for</span> j = 1:numel(targetMarkers)
+0123         markerName = [sidePrefix targetMarkers{j}];
+0124         <span class="keyword">if</span> isfield(markerGaps,markerName)
+0125             gaps.(markerName) = markerGaps.(markerName);
+0126         <span class="keyword">end</span>
+0127     <span class="keyword">end</span>
+0128 
+0129     <span class="comment">% skip if no gaps to process</span>
+0130     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(gaps))
+0131         <span class="keyword">continue</span>;
+0132     <span class="keyword">end</span>
+0133 
+0134     <span class="comment">% fill gaps using pattern-based method</span>
+0135     remainingGaps = dataMotion.fillMarkerGapsPattern( <span class="keyword">...</span>
+0136         gaps,trialPath,[sidePrefix refMarker],newVicon,false);
+0137 
+0138     <span class="comment">% update the marker gaps structure with the remaining gaps</span>
+0139     markerNames = fieldnames(remainingGaps);
+0140     <span class="keyword">for</span> k = 1:numel(markerNames)
+0141         markerGaps.(markerNames{k}) = remainingGaps.(markerNames{k});
+0142     <span class="keyword">end</span>
+0143 <span class="keyword">end</span>
+0144 <span class="keyword">end</span>
+0145 <span class="comment">%% Get the trajectories</span>
+0146 <a name="_sub2" href="#_subfunctions" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a>
+0147 
+0148 mrkrsRelevant = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
+0149 mrkrTrajs = struct();
+0150 
+0151 subjects = newVicon.GetSubjectNames();
+0152 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subjects)
+0153     warning(<span class="string">'No subject found in trial.'</span>); mrkrTrajs = struct(); <span class="keyword">return</span>;
+0154 <span class="keyword">end</span>
+0155 subject = subjects{1};
+0156 
+0157 <span class="keyword">for</span> i = 1:numel(mrkrsRelevant)
+0158     marker = mrkrsRelevant{i};
+0159     [trajX, trajY, trajZ, existsTraj] = newVicon.GetTrajectory(subject, marker);
+0160     
+0161     trajX(~existsTraj) = NaN;
+0162     trajY(~existsTraj) = NaN;
+0163     trajZ(~existsTraj) = NaN;
+0164     
+0165     mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];<span class="comment">%, double(exists(:))];</span>
+0166 <span class="keyword">end</span>
+0167 <span class="comment">% for mrkr = mrkrsRelevant</span>
+0168 <span class="comment">%     [trajX,trajY,trajZ,exists] = newVicon.getTrajectory(mrkrsRelevant{mrkr});</span>
+0169 <span class="comment">%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];</span>
+0170 <span class="comment">% end</span>
+0171 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

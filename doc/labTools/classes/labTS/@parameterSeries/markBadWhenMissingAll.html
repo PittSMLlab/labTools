@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of markBadWhenMissingAll</title>
+  <meta name="keywords" content="markBadWhenMissingAll">
+  <meta name="description" content="markBadWhenMissingAll  Marks strides bad if all params missing">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; markBadWhenMissingAll.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>markBadWhenMissingAll
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>markBadWhenMissingAll  Marks strides bad if all params missing</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = markBadWhenMissingAll(this, labels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">markBadWhenMissingAll  Marks strides bad if all params missing
+
+   newThis = markBadWhenMissingAll(this, labels) marks strides as bad
+   if all of the specified parameters have NaN values
+
+   Inputs:
+       this - parameterSeries object
+       labels - cell array of parameter labels to check
+
+   Outputs:
+       newThis - parameterSeries with updated bad flags
+
+   See also: <a href="markBadWhenMissingAny.html" class="code" title="function newThis = markBadWhenMissingAny(this, labels)">markBadWhenMissingAny</a>, <a href="markBadStridesAsNan.html" class="code" title="function this = markBadStridesAsNan(this)">markBadStridesAsNan</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = markBadWhenMissingAll(this, labels)</a>
+0002 <span class="comment">%markBadWhenMissingAll  Marks strides bad if all params missing</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = markBadWhenMissingAll(this, labels) marks strides as bad</span>
+0005 <span class="comment">%   if all of the specified parameters have NaN values</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - parameterSeries object</span>
+0009 <span class="comment">%       labels - cell array of parameter labels to check</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - parameterSeries with updated bad flags</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: markBadWhenMissingAny, markBadStridesAsNan</span>
+0015 
+0016 newThis = this;
+0017 aux = this.getDataAsVector(labels);
+0018 [~, bi] = this.isaLabel(<span class="string">'bad'</span>);
+0019 newThis.Data(:, bi) = this.bad | all(isnan(aux), 2);
+0020 [~, bg] = this.isaLabel(<span class="string">'good'</span>);
+0021 newThis.Data(:, bg) = ~this.bad;
+0022 <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

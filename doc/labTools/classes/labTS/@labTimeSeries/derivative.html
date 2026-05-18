@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of derivative</title>
+  <meta name="keywords" content="derivative">
+  <meta name="description" content="derivative  Numerical differentiation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; derivative.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>derivative
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>derivative  Numerical differentiation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [newThis, lag] = derivative(this, diffOrder) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">derivative  Numerical differentiation
+
+   [newThis, lag] = derivative(this) computes numerical derivative
+   using 2nd order finite differences
+
+   [newThis, lag] = derivative(this, diffOrder) uses specified
+   difference order
+
+   Inputs:
+       this - labTimeSeries object
+       diffOrder - filter order: 1, 2, 4, 6, or 8 (optional, default:
+                   2)
+
+   Outputs:
+       newThis - differentiated labTimeSeries
+       lag - time lag in samples (diffOrder/2)
+
+   Note: diffOrder establishes order of FIR filter used for
+         estimation, NOT higher order derivatives. Approximates IIR
+         filter (true derivative) through FIR. For even orders, pads
+         with NaN to preserve time vector.
+
+   Reference:
+   https://en.wikipedia.org/wiki/Finite_difference_coefficient
+
+   See also: <a href="derivate.html" class="code" title="function newThis = derivate(this)">derivate</a>, <a href="integrate.html" class="code" title="function newThis = integrate(this, initValues)">integrate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	derivative  Numerical derivative (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis, lag] = derivative(this, diffOrder)</a>
+0002 <span class="comment">%derivative  Numerical differentiation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [newThis, lag] = derivative(this) computes numerical derivative</span>
+0005 <span class="comment">%   using 2nd order finite differences</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [newThis, lag] = derivative(this, diffOrder) uses specified</span>
+0008 <span class="comment">%   difference order</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       diffOrder - filter order: 1, 2, 4, 6, or 8 (optional, default:</span>
+0013 <span class="comment">%                   2)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       newThis - differentiated labTimeSeries</span>
+0017 <span class="comment">%       lag - time lag in samples (diffOrder/2)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Note: diffOrder establishes order of FIR filter used for</span>
+0020 <span class="comment">%         estimation, NOT higher order derivatives. Approximates IIR</span>
+0021 <span class="comment">%         filter (true derivative) through FIR. For even orders, pads</span>
+0022 <span class="comment">%         with NaN to preserve time vector.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   Reference:</span>
+0025 <span class="comment">%   https://en.wikipedia.org/wiki/Finite_difference_coefficient</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   See also: derivate, integrate</span>
+0028 
+0029 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(diffOrder)
+0030     diffOrder = 2; <span class="comment">% Default</span>
+0031 <span class="keyword">end</span>
+0032 lag = diffOrder / 2;
+0033 <span class="keyword">switch</span> diffOrder
+0034     <span class="keyword">case</span> 1
+0035         w = [1 -1];
+0036     <span class="keyword">case</span> 2
+0037         w = 0.5 * [1 0 -1];
+0038     <span class="keyword">case</span> 4
+0039         w = [-1 8 0 -8 1] / 12;
+0040     <span class="keyword">case</span> 6
+0041         w = [1 -9 45 0 -45 9 -1] / 60;
+0042     <span class="keyword">case</span> 8
+0043         w = [-1/56 4/21 -1 4 0 -4 1 -4/21 1/56] / 5;
+0044     <span class="keyword">otherwise</span>
+0045         error(<span class="string">'labTS:derivative'</span>, <span class="string">'Order not supported'</span>);
+0046 <span class="keyword">end</span>
+0047 M = size(this.Data, 2);
+0048 newData = conv2(this.Data, w', <span class="string">'valid'</span>) / this.sampPeriod;
+0049 <span class="comment">% newData = [nan(order, M); .5 * (this.Data(3:end, :) -</span>
+0050 <span class="comment">%     this.Data(1:end - 2, :)); nan(order, M)] / this.sampPeriod;</span>
+0051 <span class="comment">%     % Centered differential</span>
+0052 <span class="comment">% For even order differences, we can preserve the sampling of the time</span>
+0053 <span class="comment">% series, padding with NaN on the edges</span>
+0054 <span class="keyword">if</span> mod(diffOrder, 2) == 0
+0055     newT0 = this.Time(1);
+0056     newData = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(1, nan(lag, size(newData, 2)), newData, <span class="keyword">...</span>
+0057         nan(lag, size(newData, 2)));
+0058 <span class="keyword">else</span>
+0059     newT0 = this.Time(1) + lag * this.sampPeriod;
+0060 <span class="keyword">end</span>
+0061 newLabels = strcat(<span class="string">'d/dt'</span>, {<span class="string">' '</span>}, this.labels);
+0062 newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, newT0, this.sampPeriod, newLabels);
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

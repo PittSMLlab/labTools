@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prctile</title>
+  <meta name="keywords" content="prctile">
+  <meta name="description" content="prctile  Computes percentile">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; prctile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>prctile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>prctile  Computes percentile</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function prctileTS = prctile(this, p, strideIdxs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">prctile  Computes percentile
+
+   prctileTS = prctile(this, p) computes specified percentile across
+   all strides
+
+   prctileTS = prctile(this, p, strideIdxs) computes for specified strides
+
+   Inputs:
+       this - alignedTimeSeries object
+       p - percentile value (0-100)
+       strideIdxs - vector of stride indices (optional, default: all)
+
+   Outputs:
+       prctileTS - alignedTimeSeries with percentile values
+
+   See also: <a href="median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>, <a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>, <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../../labTools/fun/+Hreflex/plotNoiseHistogram.html" class="code" title="function fig = plotNoiseHistogram(amplitudesNoise, leg, id, trialNum, options)">plotNoiseHistogram</a>	PLOTNOISEHISTOGRAM Plot the noise amplitude distribution for the H-reflex.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">estimateDopplerShift</a>	ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>	clipSignals  Clip the top and bottom of each signal column by percentile.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">computeSpatialParameters</a>	COMPUTESPATIALPARAMETERS Compute spatial parameters per stride.</li><li><a href="../../../../labTools/gui/importc3d/processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">processGRFData</a>	PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prctileTS = prctile(this, p, strideIdxs)</a>
+0002 <span class="comment">%prctile  Computes percentile</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   prctileTS = prctile(this, p) computes specified percentile across</span>
+0005 <span class="comment">%   all strides</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   prctileTS = prctile(this, p, strideIdxs) computes for specified strides</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - alignedTimeSeries object</span>
+0011 <span class="comment">%       p - percentile value (0-100)</span>
+0012 <span class="comment">%       strideIdxs - vector of stride indices (optional, default: all)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       prctileTS - alignedTimeSeries with percentile values</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: median, iqr, mean</span>
+0018 
+0019 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
+0020     this.Data = this.Data(:, :, strideIdxs);
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> ~islogical(this.Data(1))
+0023     <span class="comment">% prctileTS = labTimeSeries(prctile(this.Data, p, 3),</span>
+0024     <span class="comment">%     this.Time(1), this.Time(2) - this.Time(1), this.labels);</span>
+0025     prctileTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
+0026         this.Time(2) - this.Time(1), <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this.Data, p, 3), <span class="keyword">...</span>
+0027         this.labels, this.alignmentVector, this.alignmentLabels);
+0028 <span class="keyword">else</span> <span class="comment">% Logical timeseries.</span>
+0029     error(<span class="string">'alignedTimeSeries:prctile'</span>, <span class="keyword">...</span>
+0030         <span class="string">'Prctile not yet implemented for logical alignedTimeSeries.'</span>);
+0031     <span class="comment">% TODO</span>
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeCOP</title>
   <meta name="keywords" content="computeCOP">
-  <meta name="description" content="UNTITLED2 Summary of this function goes here">
+  <meta name="description" content="COMPUTECOP Compute bilateral center of pressure in lab coordinates.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,62 +15,134 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeCOP.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>computeCOP
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>UNTITLED2 Summary of this function goes here</strong></div>
+<div class="box"><strong>COMPUTECOP Compute bilateral center of pressure in lab coordinates.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [COP] = computeCOP(GRFDataS,GRFDataF,s,f) </strong></div>
+<div class="box"><strong>function COP = computeCOP(grfDataSlow, grfDataFast, slowLeg, fastLeg) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">UNTITLED2 Summary of this function goes here
-   Detailed explanation goes here</pre></div>
+<div class="fragment"><pre class="comment">COMPUTECOP Compute bilateral center of pressure in lab coordinates.
+
+   Computes the instantaneous center of pressure (COP) from bilateral
+ ground reaction force (GRF) data. Each leg's COP is computed in
+ force plate coordinates and then transformed to lab coordinates using
+ plate-specific calibration matrices. The combined COP is a vertical-
+ force-weighted average of the two leg COPs.
+
+ Inputs:
+   grfDataSlow - N-by-5 matrix of GRF data for the slow-leg force
+                 plate [Fx Fy Fz Mx My] in force plate coordinates
+   grfDataFast - N-by-5 matrix of GRF data for the fast-leg force
+                 plate [Fx Fy Fz Mx My] in force plate coordinates
+   slowLeg     - char 'L' or 'R' identifying the slow-leg plate
+   fastLeg     - char 'L' or 'R' identifying the fast-leg plate
+
+ Outputs:
+   COP - 3-by-N matrix of combined COP position in lab coordinates
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>, <a href="computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">COMPUTECOM</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [COP] = computeCOP(GRFDataS,GRFDataF,s,f)</a>
-0002 <span class="comment">%UNTITLED2 Summary of this function goes here</span>
-0003 <span class="comment">%   Detailed explanation goes here</span>
-0004 
-0005         LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];
-0006         RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];
-0007         eval([<span class="string">'STransformationMatrix='</span> s <span class="string">'TransformationMatrix(2:end,2:end);'</span> ])
-0008         eval([<span class="string">'FTransformationMatrix='</span> f <span class="string">'TransformationMatrix(2:end,2:end);'</span> ])
-0009         eval([<span class="string">'STransformationVec='</span> s <span class="string">'TransformationMatrix(2:end,1);'</span> ])
-0010         eval([<span class="string">'FTransformationVec='</span> f <span class="string">'TransformationMatrix(2:end,1);'</span> ])
-0011         
-0012         relGRF=GRFDataS;
-0013         COPS(:,2)=(-5*relGRF(:,2) + relGRF(:,4))./relGRF(:,3);
-0014         COPS(:,1)=(-5*relGRF(:,1) - relGRF(:,5))./relGRF(:,3);
-0015         COPS(:,3)=0;
-0016         COPS=bsxfun(@plus, STransformationMatrix*COPS', STransformationVec);
-0017         
-0018         FzS=relGRF(:,3);
-0019         relGRF=GRFDataF;
-0020         COPF(:,2)=(-5*relGRF(:,2) + relGRF(:,4))./relGRF(:,3);
-0021         COPF(:,1)=(-5*relGRF(:,1) - relGRF(:,5))./relGRF(:,3);
-0022         COPF(:,3)=0;
-0023         COPF=bsxfun(@plus, FTransformationMatrix*COPF', FTransformationVec);
-0024         FzF=relGRF(:,3);
-0025         COP=bsxfun(@rdivide,(bsxfun(@times,COPF,FzF') + bsxfun(@times,COPS,FzS')),(FzS'+FzF'));
-0026 
-0027 <span class="keyword">end</span>
-0028</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function COP = computeCOP(grfDataSlow, grfDataFast, slowLeg, fastLeg)</a>
+0002 <span class="comment">%COMPUTECOP Compute bilateral center of pressure in lab coordinates.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes the instantaneous center of pressure (COP) from bilateral</span>
+0005 <span class="comment">% ground reaction force (GRF) data. Each leg's COP is computed in</span>
+0006 <span class="comment">% force plate coordinates and then transformed to lab coordinates using</span>
+0007 <span class="comment">% plate-specific calibration matrices. The combined COP is a vertical-</span>
+0008 <span class="comment">% force-weighted average of the two leg COPs.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   grfDataSlow - N-by-5 matrix of GRF data for the slow-leg force</span>
+0012 <span class="comment">%                 plate [Fx Fy Fz Mx My] in force plate coordinates</span>
+0013 <span class="comment">%   grfDataFast - N-by-5 matrix of GRF data for the fast-leg force</span>
+0014 <span class="comment">%                 plate [Fx Fy Fz Mx My] in force plate coordinates</span>
+0015 <span class="comment">%   slowLeg     - char 'L' or 'R' identifying the slow-leg plate</span>
+0016 <span class="comment">%   fastLeg     - char 'L' or 'R' identifying the fast-leg plate</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   COP - 3-by-N matrix of combined COP position in lab coordinates</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies:</span>
+0022 <span class="comment">%   None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also COMPUTEFORCEPARAMETERS, COMPUTECOM.</span>
+0025 
+0026 arguments
+0027     grfDataSlow (:,:) double
+0028     grfDataFast (:,:) double
+0029     slowLeg     (1,1) char
+0030     fastLeg     (1,1) char
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% Force Plate Transformation Matrices</span>
+0034 <span class="comment">% NOTE: Calibration matrices encode lab-specific force plate positions</span>
+0035 <span class="comment">% and orientations on the instrumented treadmill; do not modify.</span>
+0036 LTransformationMatrix = [ <span class="keyword">...</span>
+0037     1,    0,  0,  0; <span class="keyword">...</span>
+0038     20,   1,  0,  0; <span class="keyword">...</span>
+0039     1612, 0, -1,  0; <span class="keyword">...</span>
+0040     0,    0,  0, -1];
+0041 RTransformationMatrix = [ <span class="keyword">...</span>
+0042     1,     0,  0,  0; <span class="keyword">...</span>
+0043     -944, -1,  0,  0; <span class="keyword">...</span>
+0044     1612,  0, -1,  0; <span class="keyword">...</span>
+0045     0,     0,  0, -1];
+0046 
+0047 eval([<span class="string">'slowTransMat='</span> slowLeg <span class="string">'TransformationMatrix(2:end, 2:end);'</span>]);
+0048 eval([<span class="string">'fastTransMat='</span> fastLeg <span class="string">'TransformationMatrix(2:end, 2:end);'</span>]);
+0049 eval([<span class="string">'slowTransVec='</span> slowLeg <span class="string">'TransformationMatrix(2:end, 1);'</span>]);
+0050 eval([<span class="string">'fastTransVec='</span> fastLeg <span class="string">'TransformationMatrix(2:end, 1);'</span>]);
+0051 
+0052 <span class="comment">%% Compute COP for Slow Leg</span>
+0053 <span class="comment">% COP formula: [-h*F + M] ./ Fz, h = 5 mm (plate surface to sensor height)</span>
+0054 copSlow(:, 2) = <span class="keyword">...</span>
+0055     (-5*grfDataSlow(:, 2) + grfDataSlow(:, 4)) ./ grfDataSlow(:, 3);
+0056 copSlow(:, 1) = <span class="keyword">...</span>
+0057     (-5*grfDataSlow(:, 1) - grfDataSlow(:, 5)) ./ grfDataSlow(:, 3);
+0058 copSlow(:, 3) = 0;
+0059 copSlow = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, slowTransMat*copSlow', slowTransVec);
+0060 fzSlow  = grfDataSlow(:, 3);
+0061 
+0062 <span class="comment">%% Compute COP for Fast Leg</span>
+0063 copFast(:, 2) = <span class="keyword">...</span>
+0064     (-5*grfDataFast(:, 2) + grfDataFast(:, 4)) ./ grfDataFast(:, 3);
+0065 copFast(:, 1) = <span class="keyword">...</span>
+0066     (-5*grfDataFast(:, 1) - grfDataFast(:, 5)) ./ grfDataFast(:, 3);
+0067 copFast(:, 3) = 0;
+0068 copFast = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, fastTransMat*copFast', fastTransVec);
+0069 fzFast  = grfDataFast(:, 3);
+0070 
+0071 <span class="comment">%% Compute Combined COP</span>
+0072 <span class="comment">% Weighted average of each leg's COP by its vertical force</span>
+0073 COP = bsxfun(@rdivide, <span class="keyword">...</span>
+0074     bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, copFast, fzFast') + <span class="keyword">...</span>
+0075     bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, copSlow, fzSlow'), <span class="keyword">...</span>
+0076     fzSlow' + fzFast');
+0077 
+0078 <span class="keyword">end</span>
+0079</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

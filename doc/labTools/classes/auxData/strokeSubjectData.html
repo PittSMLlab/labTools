@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">auxData</a> &gt; strokeSubjectData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/auxData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\auxData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>strokeSubjectData
 </h1>
@@ -33,67 +33,133 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="labDate.html" class="code" title="">labDate</a>	</li><li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/labDate.html" class="code" title="">labDate</a>	</li><li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li></ul>
+<li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg,affected,strokeDate)</a></li><li><a href="#_sub2" class="code">function this=set.affectedSide(this,affected)</a></li><li><a href="#_sub3" class="code">function this=set.strokeDate(this,strokeDate)</a></li></ul>
+<li><a href="#_sub1" class="code">function this = strokeSubjectData(DOB, sex, dLeg, dArm, hgt,</a></li><li><a href="#_sub2" class="code">function this = set.affectedSide(this, affected)</a></li><li><a href="#_sub3" class="code">function this = set.strokeDate(this, strokeDate)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 classdef <a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>&lt;<a href="subjectData.html" class="code" title="">subjectData</a>
-0002 <span class="comment">%strokeSubjectData is an extension of subjectData to support stroke</span>
-0003 <span class="comment">%patients and keep data about their condition.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%strokeSubjectData properies:</span>
-0006 <span class="comment">%   affectedSide - string, either 'L' or 'R'</span>
-0007 <span class="comment">%   strokeDate - labDate object</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">%see also: subjectData, labDate</span>
-0010     
-0011     properties (SetAccess=private)
-0012         affectedSide=<span class="string">''</span>;
-0013         strokeDate=<a href="labDate.html" class="code" title="">labDate</a>(01,<span class="string">'Jan'</span>,0000);
-0014     <span class="keyword">end</span>
-0015     
-0016     methods
-0017         <span class="comment">%constructor</span>
-0018         <a name="_sub0" href="#_subfunctions" class="code">function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg,affected,strokeDate)            </a>
-0019             this@<a href="subjectData.html" class="code" title="">subjectData</a>(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg); <span class="comment">% fLeg is added given that newer protocols do not have dominance or affected side as Fast or slow leg (refLeg)</span>
-0020             <span class="keyword">if</span> nargin&gt;9
-0021                 this.affectedSide=affected;
-0022             <span class="keyword">end</span>
-0023             <span class="keyword">if</span> nargin&gt;10
-0024                 this.strokeDate=strokeDate;
-0025             <span class="keyword">end</span>
-0026         <span class="keyword">end</span>
-0027         <span class="comment">%setters --&gt; only used by constructor since properties are private</span>
-0028         <a name="_sub1" href="#_subfunctions" class="code">function this=set.affectedSide(this,affected)</a>
-0029             <span class="keyword">if</span> strcmpi(affected,<span class="string">'R'</span>) || strcmpi(affected,<span class="string">'L'</span>)
-0030                 this.affectedSide=affected;
-0031             <span class="keyword">elseif</span> strcmpi(affected,<span class="string">'Right'</span>) || strcmpi(affected,<span class="string">'Left'</span>)
-0032                 <span class="keyword">if</span> strcmpi(affected,<span class="string">'Right'</span>)
-0033                     this.affectedSide=<span class="string">'R'</span>;
-0034                 <span class="keyword">else</span>
-0035                     this.affectedSide=<span class="string">'L'</span>;
-0036                 <span class="keyword">end</span>
-0037             <span class="keyword">else</span>
-0038                 <span class="comment">%error('strokeSubjectData:Constructor','Argument ''affected'' needs to be either ''R'' or ''L''.')</span>
-0039             <span class="keyword">end</span>
-0040         <span class="keyword">end</span>
-0041         <a name="_sub2" href="#_subfunctions" class="code">function this=set.strokeDate(this,strokeDate)</a>
-0042             <span class="keyword">if</span> isa(strokeDate,<span class="string">'labDate'</span>)
-0043                 this.strokeDate=strokeDate;
-0044             <span class="keyword">else</span>
-0045                 error(<span class="string">'strokeSubjectData:Constructor'</span>,<span class="string">'Argument ''strokeDate'' needs to be of labDate class.'</span>)
-0046             <span class="keyword">end</span>
-0047         <span class="keyword">end</span>
-0048     <span class="keyword">end</span>
-0049     
-0050 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 classdef <a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a> &lt; <a href="subjectData.html" class="code" title="">subjectData</a>
+0002     <span class="comment">%strokeSubjectData  Extended subject data for stroke patients</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   strokeSubjectData is an extension of subjectData to support</span>
+0005     <span class="comment">%   stroke patients and maintain data about their condition,</span>
+0006     <span class="comment">%   including affected side and stroke date.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">%strokeSubjectData properties:</span>
+0009     <span class="comment">%   affectedSide - string, either 'L' or 'R' indicating affected</span>
+0010     <span class="comment">%                  side</span>
+0011     <span class="comment">%   strokeDate - labDate object indicating date of stroke</span>
+0012     <span class="comment">%   (inherits all properties from subjectData)</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">%strokeSubjectData methods:</span>
+0015     <span class="comment">%   strokeSubjectData - constructor for stroke subject data</span>
+0016     <span class="comment">%</span>
+0017     <span class="comment">%See also: subjectData, labDate</span>
+0018 
+0019     <span class="comment">%% Properties</span>
+0020     properties (SetAccess = private)
+0021         affectedSide = <span class="string">''</span>;
+0022         strokeDate = <a href="../../../labTools/classes/auxData/@labDate/labDate.html" class="code" title="">labDate</a>(01, <span class="string">'Jan'</span>, 0000);
+0023     <span class="keyword">end</span>
+0024 
+0025     <span class="comment">%% Constructor</span>
+0026     methods
+0027         <a name="_sub0" href="#_subfunctions" class="code">function this = strokeSubjectData(DOB, sex, dLeg, dArm, hgt, </a><span class="keyword">...</span>
+0028                 wgt, age, ID, fLeg, affected, strokeDate)
+0029             <span class="comment">%strokeSubjectData  Constructor for strokeSubjectData class</span>
+0030             <span class="comment">%</span>
+0031             <span class="comment">%   this = strokeSubjectData(DOB, sex, dLeg, dArm, hgt, wgt,</span>
+0032             <span class="comment">%   age, ID, fLeg, affected, strokeDate) creates a stroke</span>
+0033             <span class="comment">%   subject data object with specified information</span>
+0034             <span class="comment">%</span>
+0035             <span class="comment">%   Inputs:</span>
+0036             <span class="comment">%       DOB - date of birth as labDate (optional, ignored for</span>
+0037             <span class="comment">%             privacy)</span>
+0038             <span class="comment">%       sex - 'male' or 'female' (optional)</span>
+0039             <span class="comment">%       dLeg - dominant leg, 'L' or 'R' (optional)</span>
+0040             <span class="comment">%       dArm - dominant arm, 'L' or 'R' (optional)</span>
+0041             <span class="comment">%       hgt - height in cm (optional)</span>
+0042             <span class="comment">%       wgt - weight in kg (optional)</span>
+0043             <span class="comment">%       age - age in years at experiment time (optional)</span>
+0044             <span class="comment">%       ID - subject identifier string (optional)</span>
+0045             <span class="comment">%       fLeg - fast leg, 'L' or 'R' (optional, added for</span>
+0046             <span class="comment">%              newer protocols where dominance or affected</span>
+0047             <span class="comment">%              side do not determine fast/slow leg)</span>
+0048             <span class="comment">%       affected - affected side, 'L', 'R', 'Left', or</span>
+0049             <span class="comment">%                  'Right' (optional)</span>
+0050             <span class="comment">%       strokeDate - labDate object for date of stroke</span>
+0051             <span class="comment">%                    (optional)</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">%   Outputs:</span>
+0054             <span class="comment">%       this - strokeSubjectData object</span>
+0055             <span class="comment">%</span>
+0056             <span class="comment">%   See also: subjectData, labDate</span>
+0057 
+0058             <span class="comment">% fLeg is added given that newer protocols do not have</span>
+0059             <span class="comment">% dominance or affected side as Fast or slow leg (refLeg)</span>
+0060             this@<a href="subjectData.html" class="code" title="">subjectData</a>( <span class="keyword">...</span>
+0061                 DOB, sex, dLeg, dArm, hgt, wgt, age, ID, fLeg);
+0062             <span class="keyword">if</span> nargin &gt; 9
+0063                 this.affectedSide = affected;
+0064             <span class="keyword">end</span>
+0065             <span class="keyword">if</span> nargin &gt; 10
+0066                 this.strokeDate = strokeDate;
+0067             <span class="keyword">end</span>
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070 
+0071     <span class="comment">%% Property Setters</span>
+0072     methods
+0073         <span class="comment">% Setters are only used by constructor since properties are private</span>
+0074         <a name="_sub1" href="#_subfunctions" class="code">function this = set.affectedSide(this, affected)</a>
+0075             <span class="comment">%set.affectedSide  Validates and sets affected side</span>
+0076             <span class="comment">%</span>
+0077             <span class="comment">%   Accepts 'L', 'R', 'Left', or 'Right' and normalizes to</span>
+0078             <span class="comment">%   single character format</span>
+0079             <span class="comment">%</span>
+0080             <span class="comment">%   Inputs:</span>
+0081             <span class="comment">%       this - strokeSubjectData object</span>
+0082             <span class="comment">%       affected - affected side specification</span>
+0083 
+0084             <span class="keyword">if</span> strcmpi(affected, <span class="string">'R'</span>) || strcmpi(affected, <span class="string">'L'</span>)
+0085                 this.affectedSide = affected;
+0086             <span class="keyword">elseif</span> strcmpi(affected, <span class="string">'Right'</span>) || <span class="keyword">...</span>
+0087                     strcmpi(affected, <span class="string">'Left'</span>)
+0088                 <span class="keyword">if</span> strcmpi(affected, <span class="string">'Right'</span>)
+0089                     this.affectedSide = <span class="string">'R'</span>;
+0090                 <span class="keyword">else</span>
+0091                     this.affectedSide = <span class="string">'L'</span>;
+0092                 <span class="keyword">end</span>
+0093             <span class="keyword">else</span>
+0094                 <span class="comment">% error('strokeSubjectData:Constructor', ['Argument ' ...</span>
+0095                 <span class="comment">%     '''affected'' needs to be either ''R'' or ''L''.']);</span>
+0096             <span class="keyword">end</span>
+0097         <span class="keyword">end</span>
+0098 
+0099         <a name="_sub2" href="#_subfunctions" class="code">function this = set.strokeDate(this, strokeDate)</a>
+0100             <span class="comment">%set.strokeDate  Validates and sets stroke date</span>
+0101             <span class="comment">%</span>
+0102             <span class="comment">%   Inputs:</span>
+0103             <span class="comment">%       this - strokeSubjectData object</span>
+0104             <span class="comment">%       strokeDate - labDate object</span>
+0105 
+0106             <span class="keyword">if</span> isa(strokeDate, <span class="string">'labDate'</span>)
+0107                 this.strokeDate = strokeDate;
+0108             <span class="keyword">else</span>
+0109                 error(<span class="string">'strokeSubjectData:Constructor'</span>, [<span class="string">'Argument '</span> <span class="keyword">...</span>
+0110                     <span class="string">'''strokeDate'' needs to be of labDate class.'</span>]);
+0111             <span class="keyword">end</span>
+0112         <span class="keyword">end</span>
+0113     <span class="keyword">end</span>
+0114 
+0115 <span class="keyword">end</span>
+0116</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -15,7 +15,7 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; findTemplate.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>findTemplate
 </h1>
@@ -39,10 +39,10 @@ k returns the scaling of the data to the template.</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li></ul>
 <!-- crossreference -->
 
 
@@ -71,7 +71,7 @@ This function is called by:
 0021 k=ifft(fft1.*conj(fft2))/norm(template)^2;
 0022 
 0023 <span class="comment">%% Whitening (improves detection under the assumption of independent samples)</span>
-0024 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(whitenFlag)
+0024 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(whitenFlag)
 0025     <span class="keyword">if</span> whitenFlag==1
 0026         fftAux=fft1;
 0027         dataseries=ifft(fftAux./abs(fftAux),<span class="string">'symmetric'</span>);
@@ -131,11 +131,11 @@ This function is called by:
 0081 <span class="comment">%From data:</span>
 0082 <span class="comment">%sigma2=var((1+p3)/2);</span>
 0083 <span class="comment">%a=.5*(1/(4*sigma2)-1); %Finding the best-fitting beta distribution given the variance. In theory, if all samples in the signal are iid, a=(M-1)/2;</span>
-0084 H=1/mean(2./(1+c));
+0084 H=1/<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(2./(1+c));
 0085 a=(H-1)/(2*H-1); <span class="comment">%Another estimation of the distribution parameter that is less susceptible to heavy tails (which may occurr if there are many copies of the template hidden in the data).</span>
 0086 
 0087 <span class="comment">%If whitened:</span>
-0088 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(whitenFlag)
+0088 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(whitenFlag)
 0089     <span class="keyword">if</span> whitenFlag==1
 0090     <span class="comment">%In theory, if samples are independent:</span>
 0091     a=(M-1)/2;
@@ -169,6 +169,6 @@ This function is called by:
 0119 
 0120 <span class="keyword">end</span>
 0121</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

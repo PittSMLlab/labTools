@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractSnippets</title>
+  <meta name="keywords" content="extractSnippets">
+  <meta name="description" content="EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; extractSnippets.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>extractSnippets
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting.
+
+   Extract snippets of the H-reflex from the muscle raw EMG signal based
+ on stimulation artifact peak alignment. Optionally, extract ground
+ reaction force (GRF) snippets for visualizing if stimulation occurs
+ during single stance.
+
+ Inputs:
+   indsPeaks - 2-element cell of number of peaks x 1 arrays of the
+               stimulation artifact peak indices found by the algorithm
+   rawEMG    - 2-element cell of number of samples x 1 arrays for right
+               (cell 1) and left (cell 2) leg EMG signal (if one cell is
+               empty, that leg is skipped)
+
+ Optional Name-Value Inputs:
+   GRFz - 2-element cell of number of samples x 1 arrays for right
+          (cell 1) and left (cell 2) treadmill force plate z-axis GRFs
+          (default: {[], []})
+
+ Outputs:
+   snippets     - 2 x 3 cell of number of stimuli x number of samples
+                  arrays for right (row 1) and left (row 2) leg H-reflex
+                  (col 1), ipsilateral (col 2), and contralateral (col 3)
+                  GRF snippets
+   timesSnippet - number of samples x 1 array of relative time in seconds
+                  (t=0 is stimulation artifact peak alignment)
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.<a href="computeAmplitudes.html" class="code" title="function [amplitudes, rms, usedMedMinMaxInds] =computeAmplitudes(snippets, options)">COMPUTEAMPLITUDES</a>, HREFLEX.<a href="plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">PLOTSNIPPETS</a>,
+   COMPUTEHREFLEXPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function snipCell = extractSnippetsLeg(indsPeaks, EMG, GRFz, leg,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)</a>
+0002 <span class="comment">%EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Extract snippets of the H-reflex from the muscle raw EMG signal based</span>
+0005 <span class="comment">% on stimulation artifact peak alignment. Optionally, extract ground</span>
+0006 <span class="comment">% reaction force (GRF) snippets for visualizing if stimulation occurs</span>
+0007 <span class="comment">% during single stance.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   indsPeaks - 2-element cell of number of peaks x 1 arrays of the</span>
+0011 <span class="comment">%               stimulation artifact peak indices found by the algorithm</span>
+0012 <span class="comment">%   rawEMG    - 2-element cell of number of samples x 1 arrays for right</span>
+0013 <span class="comment">%               (cell 1) and left (cell 2) leg EMG signal (if one cell is</span>
+0014 <span class="comment">%               empty, that leg is skipped)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Optional Name-Value Inputs:</span>
+0017 <span class="comment">%   GRFz - 2-element cell of number of samples x 1 arrays for right</span>
+0018 <span class="comment">%          (cell 1) and left (cell 2) treadmill force plate z-axis GRFs</span>
+0019 <span class="comment">%          (default: {[], []})</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   snippets     - 2 x 3 cell of number of stimuli x number of samples</span>
+0023 <span class="comment">%                  arrays for right (row 1) and left (row 2) leg H-reflex</span>
+0024 <span class="comment">%                  (col 1), ipsilateral (col 2), and contralateral (col 3)</span>
+0025 <span class="comment">%                  GRF snippets</span>
+0026 <span class="comment">%   timesSnippet - number of samples x 1 array of relative time in seconds</span>
+0027 <span class="comment">%                  (t=0 is stimulation artifact peak alignment)</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Toolbox Dependencies:</span>
+0030 <span class="comment">%   None</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% See also HREFLEX.COMPUTEAMPLITUDES, HREFLEX.PLOTSNIPPETS,</span>
+0033 <span class="comment">%   COMPUTEHREFLEXPARAMETERS.</span>
+0034 
+0035 arguments
+0036     indsPeaks cell
+0037     rawEMG    cell
+0038     options.GRFz cell = {[], []}
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, indsPeaks)) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, rawEMG))
+0042     error(<span class="string">'Critical data missing for extracting the H-reflex snippets.'</span>);
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">%% Define Snippet Extraction Parameters</span>
+0046 <span class="comment">% NOTE: should always be same across trials and should be same for forces</span>
+0047 <span class="comment">% TODO: make optional input argument?</span>
+0048 period       = 0.0005;                      <span class="comment">% sampling period (seconds)</span>
+0049 snipStart    = -0.005;                      <span class="comment">% 5 ms before artifact peak</span>
+0050 snipEnd      = 0.055;                       <span class="comment">% 55 ms after artifact peak</span>
+0051 timesSnippet = snipStart:period:snipEnd;    <span class="comment">% snippet sample times</span>
+0052 numSamps     = numel(timesSnippet);         <span class="comment">% number of samples in snippet</span>
+0053 
+0054 <span class="comment">%% Initialize Snippet Cell Array</span>
+0055 numStim  = cellfun(@length, indsPeaks);     <span class="comment">% number of stimuli per leg</span>
+0056 snippets = cell(2, 3);
+0057 <span class="keyword">for</span> leg = 1:2                               <span class="comment">% for right and left leg, ...</span>
+0058     snippets{leg,1} = nan(numStim(leg), numSamps);  <span class="comment">% EMG snippets</span>
+0059     snippets{leg,2} = nan(numStim(leg), numSamps);  <span class="comment">% ipsilateral GRF</span>
+0060     snippets{leg,3} = nan(numStim(leg), numSamps);  <span class="comment">% contralateral GRF</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="comment">%% Extract Snippets for Each Leg</span>
+0064 <span class="keyword">for</span> leg = 1:2                               <span class="comment">% for right and left leg, ...</span>
+0065     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsPeaks{leg}) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG{leg})
+0066         <span class="keyword">continue</span>;                           <span class="comment">% advance to next leg</span>
+0067     <span class="keyword">end</span>
+0068     snippets(leg, :) = <a href="#_sub1" class="code" title="subfunction snipCell = extractSnippetsLeg(indsPeaks, EMG, GRFz, leg, ">extractSnippetsLeg</a>( <span class="keyword">...</span>
+0069         indsPeaks{leg}, rawEMG{leg}, options.GRFz, leg, <span class="keyword">...</span>
+0070         numSamps, snipStart, snipEnd, period);
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">%% Helper Functions</span>
+0076 
+0077 <a name="_sub1" href="#_subfunctions" class="code">function snipCell = extractSnippetsLeg(indsPeaks, EMG, GRFz, leg, </a><span class="keyword">...</span>
+0078     numSamples, snipStart, snipEnd, period)
+0079 <span class="comment">%EXTRACTSNIPPETSLEG Extract EMG and GRF snippets for a single leg.</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">%   Loop over each provided stimulus index, extract the window relative to</span>
+0082 <span class="comment">% the index, and fill any out-of-bound positions with NaN.</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">% Inputs:</span>
+0085 <span class="comment">%   indsPeaks  - number of stimuli x 1 array of artifact peak indices</span>
+0086 <span class="comment">%   EMG        - number of samples x 1 array of raw EMG signal</span>
+0087 <span class="comment">%   GRFz       - 2-element cell of ipsilateral and contralateral GRFz</span>
+0088 <span class="comment">%   leg        - leg index: 1 = right, 2 = left</span>
+0089 <span class="comment">%   numSamples - number of samples per snippet</span>
+0090 <span class="comment">%   snipStart  - snippet start time relative to peak (s)</span>
+0091 <span class="comment">%   snipEnd    - snippet end time relative to peak (s)</span>
+0092 <span class="comment">%   period     - sampling period (s)</span>
+0093 <span class="comment">%</span>
+0094 <span class="comment">% Outputs:</span>
+0095 <span class="comment">%   snipCell - 1 x 3 cell: {EMG snippets, ipsilateral GRF, contralateral GRF}</span>
+0096 <span class="comment">%</span>
+0097 <span class="comment">% Toolbox Dependencies:</span>
+0098 <span class="comment">%   None</span>
+0099 
+0100 numStim    = numel(indsPeaks);              <span class="comment">% number of stimuli for leg</span>
+0101 snipEMG    = nan(numStim, numSamples);      <span class="comment">% EMG snippets</span>
+0102 snipIpsi   = nan(numStim, numSamples);      <span class="comment">% ipsilateral GRFz snippets</span>
+0103 snipContra = nan(numStim, numSamples);      <span class="comment">% contralateral GRFz snippets</span>
+0104 
+0105 <span class="keyword">for</span> st = 1:numStim                          <span class="comment">% for each stimulus, ...</span>
+0106     win = (indsPeaks(st) + round(snipStart / period)) : <span class="keyword">...</span>
+0107         (indsPeaks(st) + round(snipEnd / period));  <span class="comment">% snippet window</span>
+0108     temp  = nan(1, numSamples);
+0109     valid = (win &gt;= 1) &amp; (win &lt;= numel(EMG));
+0110     <span class="keyword">if</span> any(valid)                           <span class="comment">% if any data within bounds, ...</span>
+0111         temp(valid) = EMG(win(valid));      <span class="comment">% H-reflex snippet</span>
+0112     <span class="keyword">end</span>
+0113     snipEMG(st, :) = temp;
+0114 
+0115     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(GRFz{leg})                  <span class="comment">% if GRFz data available, ...</span>
+0116         temp  = nan(1, numSamples);
+0117         valid = (win &gt;= 1) &amp; (win &lt;= numel(GRFz{leg}));
+0118         <span class="keyword">if</span> any(valid)
+0119             temp(valid) = GRFz{leg}(win(valid));        <span class="comment">% ipsilateral GRFz</span>
+0120         <span class="keyword">end</span>
+0121         snipIpsi(st, :) = temp;
+0122     <span class="keyword">end</span>
+0123 
+0124     legContra = 3 - leg;                    <span class="comment">% contralat. index (1→2, 2→1)</span>
+0125     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(GRFz{legContra})            <span class="comment">% if GRFz data available, ...</span>
+0126         temp  = nan(1, numSamples);
+0127         valid = (win &gt;= 1) &amp; (win &lt;= numel(GRFz{legContra}));
+0128         <span class="keyword">if</span> any(valid)
+0129             temp(valid) = GRFz{legContra}(win(valid));  <span class="comment">% contralateral GRF</span>
+0130         <span class="keyword">end</span>
+0131         snipContra(st, :) = temp;
+0132     <span class="keyword">end</span>
+0133 <span class="keyword">end</span>
+0134 
+0135 <span class="comment">% return as a cell array [EMG, Ipsilateral GRF, Contralateral GRF]</span>
+0136 snipCell = {snipEMG, snipIpsi, snipContra};
+0137 
+0138 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

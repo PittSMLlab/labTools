@@ -4,7 +4,7 @@
 <head>
   <title>Description of getPerceptualEventsFromCues</title>
   <meta name="keywords" content="getPerceptualEventsFromCues">
-  <meta name="description" content="">
+  <meta name="description" content="GETPERCEPTUALEVENTSFROMCUES Map auditory cue times to nearest gait events.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,19 +15,43 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getPerceptualEventsFromCues.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getPerceptualEventsFromCues
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETPERCEPTUALEVENTSFROMCUES Map auditory cue times to nearest gait events.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) </strong></div>
+<div class="box"><strong>function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] =getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETPERCEPTUALEVENTSFROMCUES Map auditory cue times to nearest gait events.
+
+   Extracts perceptual trial start/stop cue times from the datalog and
+ finds the nearest left and right heel-strike event times to each cue.
+ Assumes the datalog has already been synchronized with Nexus data.
+
+ Inputs:
+   datlog        - struct, datalog with fields audioCues.start, .stop,
+                   and dataLogTimeOffsetBest
+   infoLHSevent  - M×1 double, times of left heel-strike events (s)
+   infoRHSevent  - K×1 double, times of right heel-strike events (s)
+
+ Outputs:
+   LHSstartCue - M×1 double, sparse: event time at matched LHS index,
+                 zero elsewhere; length matches infoLHSevent
+   LHSstopCue  - M×1 double, sparse: event time at matched LHS index,
+                 zero elsewhere
+   RHSstartCue - K×1 double, sparse: event time at matched RHS index,
+                 zero elsewhere; length matches infoRHSevent
+   RHSstopCue  - K×1 double, sparse: event time at matched RHS index,
+                 zero elsewhere
+
+ Toolbox Dependencies: None
+
+ See also GETEVENTS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -42,33 +66,57 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) </a>
-0002  
-0003 startCue = datlog.audioCues.start;
-0004 stopCue = datlog.audioCues.stop;
-0005 
-0006 <span class="comment">%% Compare the start and stop cue times to the events data to match the start and stop of perceptual trial</span>
-0007 LHSstartCue = zeros(length(infoLHSevent),1); 
-0008 RHSstartCue = zeros(length(infoRHSevent),1); 
-0009 LHSstopCue = zeros(length(infoLHSevent),1); 
-0010 RHSstopCue = zeros(length(infoRHSevent),1); 
-0011 
-0012     <span class="keyword">for</span> t=1:length(startCue)
-0013     
-0014         [~,LidxI]=min(abs(infoLHSevent - startCue(t)));
-0015         [~,LidxF]=min(abs(infoLHSevent - stopCue(t)));
-0016         LHSstartCue(LidxI) = infoLHSevent(LidxI);
-0017         LHSstopCue(LidxF) = infoLHSevent(LidxF);
-0018     
-0019         [~,RidxI]=min(abs(infoRHSevent - startCue(t)));
-0020         [~,RidxF]=min(abs(infoRHSevent - stopCue(t)));
-0021         RHSstartCue(RidxI) =  infoRHSevent(RidxI);
-0022         RHSstopCue(RidxF) = infoRHSevent(RidxF);
-0023     
-0024     <span class="keyword">end</span>
-0025 
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = </a><span class="keyword">...</span>
+0002     getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent)
+0003 <span class="comment">%GETPERCEPTUALEVENTSFROMCUES Map auditory cue times to nearest gait events.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Extracts perceptual trial start/stop cue times from the datalog and</span>
+0006 <span class="comment">% finds the nearest left and right heel-strike event times to each cue.</span>
+0007 <span class="comment">% Assumes the datalog has already been synchronized with Nexus data.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   datlog        - struct, datalog with fields audioCues.start, .stop,</span>
+0011 <span class="comment">%                   and dataLogTimeOffsetBest</span>
+0012 <span class="comment">%   infoLHSevent  - M×1 double, times of left heel-strike events (s)</span>
+0013 <span class="comment">%   infoRHSevent  - K×1 double, times of right heel-strike events (s)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   LHSstartCue - M×1 double, sparse: event time at matched LHS index,</span>
+0017 <span class="comment">%                 zero elsewhere; length matches infoLHSevent</span>
+0018 <span class="comment">%   LHSstopCue  - M×1 double, sparse: event time at matched LHS index,</span>
+0019 <span class="comment">%                 zero elsewhere</span>
+0020 <span class="comment">%   RHSstartCue - K×1 double, sparse: event time at matched RHS index,</span>
+0021 <span class="comment">%                 zero elsewhere; length matches infoRHSevent</span>
+0022 <span class="comment">%   RHSstopCue  - K×1 double, sparse: event time at matched RHS index,</span>
+0023 <span class="comment">%                 zero elsewhere</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies: None</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also GETEVENTS.</span>
+0028 
+0029 <span class="comment">% grab auditory cue times from the datalog, offset by synchronization</span>
+0030 startCue = datlog.audioCues.start + datlog.dataLogTimeOffsetBest;
+0031 stopCue  = datlog.audioCues.stop  + datlog.dataLogTimeOffsetBest;
+0032 
+0033 <span class="comment">%% Match cue times to nearest gait events</span>
+0034 LHSstartCue = zeros(length(infoLHSevent), 1);
+0035 RHSstartCue = zeros(length(infoRHSevent), 1);
+0036 LHSstopCue  = zeros(length(infoLHSevent), 1);
+0037 RHSstopCue  = zeros(length(infoRHSevent), 1);
+0038 
+0039 <span class="keyword">for</span> ii = 1:length(startCue)
+0040     [~, LidxI] = min(abs(infoLHSevent - startCue(ii)));
+0041     [~, LidxF] = min(abs(infoLHSevent - stopCue(ii)));
+0042     LHSstartCue(LidxI) = infoLHSevent(LidxI);
+0043     LHSstopCue(LidxF)  = infoLHSevent(LidxF);
+0044 
+0045     [~, RidxI] = min(abs(infoRHSevent - startCue(ii)));
+0046     [~, RidxF] = min(abs(infoRHSevent - stopCue(ii)));
+0047     RHSstartCue(RidxI) = infoRHSevent(RidxI);
+0048     RHSstopCue(RidxF)  = infoRHSevent(RidxF);
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

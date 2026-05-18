@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeEMGParameters</title>
   <meta name="keywords" content="computeEMGParameters">
-  <meta name="description" content="This function computes summary parameters per stride based on EMG data.">
+  <meta name="description" content="COMPUTEEMGPARAMETERS Compute EMG parameters per stride.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,77 +15,142 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeEMGParameters.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>computeEMGParameters
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>This function computes summary parameters per stride based on EMG data.</strong></div>
+<div class="box"><strong>COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg,eventTypes) </strong></div>
+<div class="box"><strong>function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">This function computes summary parameters per stride based on EMG data.
-The output is a parameterSeries object, which can be concatenated with
-other parameterSeries objects, for example with those from
-computeTemporalParameters. While this is used for EMG parameters strictly,
-it should work for any labTS.
-See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
-<a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+<div class="fragment"><pre class="comment">COMPUTEEMGPARAMETERS Compute EMG parameters per stride.
+
+   Computes stride-by-stride EMG parameters and returns a
+ parameterSeries object that can be concatenated with other parameter
+ series objects (e.g., from computeTemporalParameters).
+
+ Inputs:
+   EMGData    - labTimeSeries containing rectified or raw EMG data,
+                with channel labels prefixed by leg side ('L' or 'R')
+   gaitEvents - labTimeSeries of gait events for the trial
+   slowLeg    - char specifying the slow-belt leg ('L' or 'R')
+   eventTypes - cell array of gait event type strings as constructed
+                in calcParameters (e.g., {'LHS','RTO','RHS','LTO'})
+
+ Outputs:
+   out - parameterSeries object containing all EMG parameters,
+         including statistical and discrete stride-level measures
+         for both mean and median aggregations
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeTemporalParameters.html" class="code" title="function out = computeTemporalParameters(strideEvents)">COMPUTETEMPORALPARAMETERS</a>, <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>,
+   <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>, <a href="computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">COMPUTETSSTATPARAMETERS</a>,
+   <a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">COMPUTETSDISCRETEPARAMETERS</a>, PARAMETERSERIES, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="computeTSdiscreteParameters.html" class="code" title="function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)">computeTSdiscreteParameters</a>	This function averages labTS data across given phases.</li><li><a href="computeTSstatParameters.html" class="code" title="function [out] = computeTSstatParameters(someTS,arrayedEvents)">computeTSstatParameters</a>	This function computes summary parameters per stride based on labTS data.</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>	</li><li><a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>	COMPUTETSDISCRETEPARAMETERS Discretize time series into stride phases.</li><li><a href="computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg,eventTypes)</a>
-0002 <span class="comment">%This function computes summary parameters per stride based on EMG data.</span>
-0003 <span class="comment">%The output is a parameterSeries object, which can be concatenated with</span>
-0004 <span class="comment">%other parameterSeries objects, for example with those from</span>
-0005 <span class="comment">%computeTemporalParameters. While this is used for EMG parameters strictly,</span>
-0006 <span class="comment">%it should work for any labTS.</span>
-0007 <span class="comment">%See also computeSpatialParameters, computeTemporalParameters,</span>
-0008 <span class="comment">%computeForceParameters, parameterSeries</span>
-0009 
-0010 <span class="comment">%% Some pre-process:</span>
-0011 <span class="comment">%do naming as s/f not L/R:</span>
-0012 lS=EMGData.getLabelsThatMatch([<span class="string">'^'</span> slowLeg]);
-0013 fastLeg=getOtherLeg(slowLeg);
-0014 lF=EMGData.getLabelsThatMatch([<span class="string">'^'</span> fastLeg]);
-0015 warning(<span class="string">'off'</span>,<span class="string">'labTS:renameLabels:dont'</span>) <span class="comment">%Silencing renameLabels warning temporarily</span>
-0016 EMGData=EMGData.renameLabels(lS,regexprep(lS,[<span class="string">'^'</span> slowLeg],<span class="string">'s'</span>));
-0017 EMGData=EMGData.renameLabels(lF,regexprep(lF,[<span class="string">'^'</span> fastLeg],<span class="string">'f'</span>));
-0018 <span class="comment">%Get rectified EMG, remove 'abs' suffix:</span>
-0019 newEMG=EMGData.rectify.renameLabels([],EMGData.labels);
-0020 warning(<span class="string">'on'</span>,<span class="string">'labTS:renameLabels:dont'</span>)
-0021 
-0022 <span class="comment">%% Do:</span>
-0023 <span class="keyword">if</span> strcmp(eventTypes{1},<span class="string">'kinLHS'</span>) || strcmp(eventTypes{1},<span class="string">'kinRHS'</span>)
-0024     arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,[<span class="string">'kin'</span>,slowLeg <span class="string">'HS'</span>]);
-0025     
-0026 <span class="keyword">else</span>
-0027     arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,[slowLeg <span class="string">'HS'</span>]);
-0028 <span class="keyword">end</span>
-0029 [statEMG] = <a href="computeTSstatParameters.html" class="code" title="function [out] = computeTSstatParameters(someTS,arrayedEvents)">computeTSstatParameters</a>(EMGData,arrayedEvents); <span class="comment">%Stat parameters for raw EMG</span>
-0030 [EMG_alt] = <a href="computeTSdiscreteParameters.html" class="code" title="function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)">computeTSdiscreteParameters</a>(newEMG,gaitEvents,eventTypes,[]);
-0031 [EMG_alt2] = <a href="computeTSdiscreteParameters.html" class="code" title="function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)">computeTSdiscreteParameters</a>(newEMG,gaitEvents,eventTypes,[],<span class="string">'nanmedian'</span>);
-0032 warning(<span class="string">'off'</span>,<span class="string">'labTS:renameLabels:dont'</span>)
-0033 EMG_alt2=EMG_alt2.renameLabels(EMG_alt2.labels,strcat(<span class="string">'med'</span>,EMG_alt2.labels));
-0034 warning(<span class="string">'on'</span>,<span class="string">'labTS:renameLabels:dont'</span>)
-0035 out=cat(statEMG,EMG_alt);   
-0036 out=cat(out,EMG_alt2);
-0037 <span class="keyword">end</span>
-0038</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = computeEMGParameters( </a><span class="keyword">...</span>
+0002     EMGData, gaitEvents, slowLeg, eventTypes)
+0003 <span class="comment">%COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes stride-by-stride EMG parameters and returns a</span>
+0006 <span class="comment">% parameterSeries object that can be concatenated with other parameter</span>
+0007 <span class="comment">% series objects (e.g., from computeTemporalParameters).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   EMGData    - labTimeSeries containing rectified or raw EMG data,</span>
+0011 <span class="comment">%                with channel labels prefixed by leg side ('L' or 'R')</span>
+0012 <span class="comment">%   gaitEvents - labTimeSeries of gait events for the trial</span>
+0013 <span class="comment">%   slowLeg    - char specifying the slow-belt leg ('L' or 'R')</span>
+0014 <span class="comment">%   eventTypes - cell array of gait event type strings as constructed</span>
+0015 <span class="comment">%                in calcParameters (e.g., {'LHS','RTO','RHS','LTO'})</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   out - parameterSeries object containing all EMG parameters,</span>
+0019 <span class="comment">%         including statistical and discrete stride-level measures</span>
+0020 <span class="comment">%         for both mean and median aggregations</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies:</span>
+0023 <span class="comment">%   None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also COMPUTETEMPORALPARAMETERS, COMPUTESPATIALPARAMETERS,</span>
+0026 <span class="comment">%   COMPUTEFORCEPARAMETERS, COMPUTETSSTATPARAMETERS,</span>
+0027 <span class="comment">%   COMPUTETSDISCRETEPARAMETERS, PARAMETERSERIES, CALCPARAMETERS.</span>
+0028 
+0029 arguments
+0030     EMGData    (1,1)
+0031     gaitEvents (1,1)
+0032     slowLeg    (1,:) char
+0033     eventTypes (1,:) cell
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Pre-Process EMG Labels</span>
+0037 <span class="comment">% Rename channel labels from L/R convention to s/f convention so that</span>
+0038 <span class="comment">% downstream parameter names are leg-agnostic</span>
+0039 fastLeg = <a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>(slowLeg);
+0040 slowLabels = EMGData.getLabelsThatMatch([<span class="string">'^'</span> slowLeg]);
+0041 fastLabels = EMGData.getLabelsThatMatch([<span class="string">'^'</span> fastLeg]);
+0042 
+0043 <span class="comment">% Silence renameLabels warning temporarily during relabeling</span>
+0044 warning(<span class="string">'off'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0045 EMGData = EMGData.renameLabels( <span class="keyword">...</span>
+0046     slowLabels, regexprep(slowLabels, [<span class="string">'^'</span> slowLeg], <span class="string">'s'</span>));
+0047 EMGData = EMGData.renameLabels( <span class="keyword">...</span>
+0048     fastLabels, regexprep(fastLabels, [<span class="string">'^'</span> fastLeg], <span class="string">'f'</span>));
+0049 
+0050 <span class="comment">% Get rectified EMG and strip the 'abs' suffix added by rectify()</span>
+0051 rectEMG = EMGData.rectify().renameLabels([], EMGData.labels);
+0052 warning(<span class="string">'on'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0053 
+0054 <span class="comment">%% Compute EMG Parameters</span>
+0055 <span class="comment">% Select the appropriate heel strike event label based on event class</span>
+0056 <span class="keyword">if</span> strcmp(eventTypes{1}, <span class="string">'kinLHS'</span>) || strcmp(eventTypes{1}, <span class="string">'kinRHS'</span>)
+0057     arrayedEvents = labTimeSeries.getArrayedEvents( <span class="keyword">...</span>
+0058         gaitEvents, [<span class="string">'kin'</span> slowLeg <span class="string">'HS'</span>]);
+0059 <span class="keyword">else</span>
+0060     arrayedEvents = labTimeSeries.getArrayedEvents( <span class="keyword">...</span>
+0061         gaitEvents, [slowLeg <span class="string">'HS'</span>]);
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">% Statistical parameters for raw EMG (mean-aggregated)</span>
+0065 statEMG = <a href="computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>(EMGData, arrayedEvents);
+0066 
+0067 <span class="comment">% Discrete stride-level parameters for rectified EMG (mean and median)</span>
+0068 EMG_alt  = <a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>(rectEMG, gaitEvents, <span class="keyword">...</span>
+0069     eventTypes, []);
+0070 EMG_alt2 = <a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>(rectEMG, gaitEvents, <span class="keyword">...</span>
+0071     eventTypes, [], <span class="string">'nanmedian'</span>);
+0072 
+0073 <span class="comment">% Prefix median-aggregated parameter labels with 'med' to distinguish</span>
+0074 <span class="comment">% them from the mean-aggregated parameters in EMG_alt</span>
+0075 warning(<span class="string">'off'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0076 EMG_alt2 = EMG_alt2.renameLabels( <span class="keyword">...</span>
+0077     EMG_alt2.labels, strcat(<span class="string">'med'</span>, EMG_alt2.labels));
+0078 warning(<span class="string">'on'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0079 
+0080 <span class="comment">%% Concatenate and Output Computed Parameters</span>
+0081 out = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(statEMG, EMG_alt);
+0082 out = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(out, EMG_alt2);
+0083 
+0084 <span class="keyword">end</span>
+0085</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

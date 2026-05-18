@@ -1,0 +1,1119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of matchControlsFixedGUI</title>
+  <meta name="keywords" content="matchControlsFixedGUI">
+  <meta name="description" content="matchControlsFixedGUI  Fixed GUI to choose demographic matching factors">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; matchControlsFixedGUI.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>matchControlsFixedGUI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>matchControlsFixedGUI  Fixed GUI to choose demographic matching factors</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function matchControlsFixedGUI(demoFile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> matchControlsFixedGUI  Fixed GUI to choose demographic matching factors
+ Compatible with MATLAB R2024a.
+ This tool was created via ChatGPT. NWB
+
+ Usage:
+   matchControlsFixedGUI()                      % choose file with dialog
+   matchControlsFixedGUI('Demographics.xlsx')   % pass path
+
+ GUI fields shown: Sex, Age (via DOB), Height, Weight, Years formal
+ education, Race, Ethnicity
+ Computes weighted distance across numeric variables and returns the top-2
+ matches.
+
+ Changes in this version:
+  - BOTH candidate and target height/weight values are converted to a
+    canonical unit (meters for height, kilograms for weight) *before*
+    computing distance and tolerance comparisons.
+  - Tolerances for height/weight are also converted into canonical unit.
+  - Adjusted layout: results area given more vertical space; left-panel
+    Weight / Tolerance / Data-units columns narrowed for readability.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function idx = findColumnByKeywords(keywords)</a></li><li><a href="#_sub2" class="code">function updateHeightFields()</a></li><li><a href="#_sub3" class="code">function out = normalizeCategorical(vals,varKey)</a></li><li><a href="#_sub4" class="code">function out = convertUnits(varName, fromUnit, toUnit, vals)</a></li><li><a href="#_sub5" class="code">function updateComputedAge()</a></li><li><a href="#_sub6" class="code">function previewCandidates()</a></li><li><a href="#_sub7" class="code">function openTable()</a></li><li><a href="#_sub8" class="code">function computeMatches()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function matchControlsFixedGUI(demoFile)</a>
+0002 <span class="comment">% matchControlsFixedGUI  Fixed GUI to choose demographic matching factors</span>
+0003 <span class="comment">% Compatible with MATLAB R2024a.</span>
+0004 <span class="comment">% This tool was created via ChatGPT. NWB</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Usage:</span>
+0007 <span class="comment">%   matchControlsFixedGUI()                      % choose file with dialog</span>
+0008 <span class="comment">%   matchControlsFixedGUI('Demographics.xlsx')   % pass path</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% GUI fields shown: Sex, Age (via DOB), Height, Weight, Years formal</span>
+0011 <span class="comment">% education, Race, Ethnicity</span>
+0012 <span class="comment">% Computes weighted distance across numeric variables and returns the top-2</span>
+0013 <span class="comment">% matches.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Changes in this version:</span>
+0016 <span class="comment">%  - BOTH candidate and target height/weight values are converted to a</span>
+0017 <span class="comment">%    canonical unit (meters for height, kilograms for weight) *before*</span>
+0018 <span class="comment">%    computing distance and tolerance comparisons.</span>
+0019 <span class="comment">%  - Tolerances for height/weight are also converted into canonical unit.</span>
+0020 <span class="comment">%  - Adjusted layout: results area given more vertical space; left-panel</span>
+0021 <span class="comment">%    Weight / Tolerance / Data-units columns narrowed for readability.</span>
+0022 
+0023 arguments
+0024     demoFile (1,:) char = <span class="string">''</span>
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">%% -----------------------------</span>
+0028 <span class="comment">% 0. Fixed variable keywords we want in GUI (used to find columns)</span>
+0029 <span class="comment">% -----------------------------</span>
+0030 fixedVars = struct;
+0031 fixedVars.sex = {<span class="string">'sex'</span>,<span class="string">'gender'</span>};
+0032 fixedVars.age = {<span class="string">'age'</span>,<span class="string">'age_years'</span>,<span class="string">'age_year'</span>};
+0033 fixedVars.dob = {<span class="string">'dob'</span>,<span class="string">'birthdate'</span>,<span class="string">'dateofbirth'</span>};  <span class="comment">% optional (for age)</span>
+0034 fixedVars.height = {<span class="string">'height'</span>,<span class="string">'ht'</span>,<span class="string">'stature'</span>};
+0035 fixedVars.weight = {<span class="string">'weight'</span>,<span class="string">'wt'</span>,<span class="string">'mass'</span>,<span class="string">'bodymass'</span>};
+0036 fixedVars.education = {<span class="string">'education'</span>,<span class="string">'years_education'</span>,<span class="string">'yrs_education'</span>, <span class="keyword">...</span>
+0037     <span class="string">'yearsformaleducation'</span>,<span class="string">'years_formal_education'</span>,<span class="string">'years_schooling'</span>};
+0038 fixedVars.race = {<span class="string">'race'</span>};
+0039 fixedVars.ethnicity = {<span class="string">'ethnicity'</span>};
+0040 fixedVars.matched = {<span class="string">'match'</span>};
+0041 
+0042 <span class="comment">%% -----------------------------</span>
+0043 <span class="comment">% 1. Load table</span>
+0044 <span class="comment">% -----------------------------</span>
+0045 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(demoFile)
+0046     [file,path] = uigetfile( <span class="keyword">...</span>
+0047         {<span class="string">'*.xlsx;*.xls;*.csv'</span>,<span class="string">'Demographic files (*.xlsx,*.xls,*.csv)'</span>},<span class="keyword">...</span>
+0048         <span class="string">'Select demographic file'</span>);
+0049     <span class="keyword">if</span> isequal(file,0)
+0050         disp(<span class="string">'No file selected. Aborting.'</span>);
+0051         <span class="keyword">return</span>;
+0052     <span class="keyword">end</span>
+0053     demoFile = fullfile(path,file);
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="keyword">try</span>
+0057     T = readtable(demoFile,<span class="string">'PreserveVariableNames'</span>,true);
+0058 <span class="keyword">catch</span> ME
+0059     error(<span class="string">'Could not read demographic file: %s'</span>,ME.message);
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="comment">% store sanitized variable names from table</span>
+0063 varNames = T.Properties.VariableNames;
+0064 <span class="comment">% TODO: sanitize 'varNames' to remove any whitespace and handle units,</span>
+0065 <span class="comment">% especially important for categorical variables used as 'struct' fields</span>
+0066 nCols = numel(varNames);
+0067 
+0068 <span class="comment">% helper to find column by keywords (first match)</span>
+0069     <a name="_sub1" href="#_subfunctions" class="code">function idx = findColumnByKeywords(keywords)</a>
+0070         idx = [];
+0071         <span class="keyword">for</span> jj = 1:nCols
+0072             vn = lower(varNames{jj});
+0073             <span class="keyword">for</span> kk = 1:numel(keywords)
+0074                 <span class="keyword">if</span> contains(vn,lower(keywords{kk}))
+0075                     idx = jj;
+0076                     <span class="keyword">return</span>;
+0077                 <span class="keyword">end</span>
+0078             <span class="keyword">end</span>
+0079         <span class="keyword">end</span>
+0080     <span class="keyword">end</span>
+0081 
+0082 <span class="comment">% find columns</span>
+0083 colIdx.sex = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.sex);
+0084 colIdx.age = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.age);
+0085 colIdx.dob = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.dob);
+0086 colIdx.height = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.height);
+0087 colIdx.weight = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.weight);
+0088 colIdx.education = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.education);
+0089 colIdx.race = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.race);
+0090 colIdx.ethnicity = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.ethnicity);
+0091 colIdx.matched = <a href="#_sub1" class="code" title="subfunction idx = findColumnByKeywords(keywords)">findColumnByKeywords</a>(fixedVars.matched);
+0092 
+0093 <span class="comment">%% -----------------------------</span>
+0094 <span class="comment">% 2. Prepare defaults (tolerances, unit assumptions)</span>
+0095 <span class="comment">% -----------------------------</span>
+0096 numericVars = {<span class="string">'age'</span>,<span class="string">'height'</span>,<span class="string">'weight'</span>,<span class="string">'education'</span>};
+0097 defaultTol = struct();
+0098 <span class="keyword">for</span> i = 1:numel(numericVars)
+0099     key = numericVars{i};
+0100     idx = colIdx.(key);
+0101     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
+0102         col = T.(varNames{idx});
+0103         <span class="keyword">if</span> isnumeric(col)
+0104             vals = col(~isnan(col));
+0105             s = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(double(vals));
+0106             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(s) || s &lt;= 0
+0107                 s = 1;
+0108             <span class="keyword">end</span>
+0109             defaultTol.(key) = s;
+0110         <span class="keyword">else</span>
+0111             defaultTol.(key) = 1;
+0112         <span class="keyword">end</span>
+0113     <span class="keyword">else</span>
+0114         defaultTol.(key) = 1;
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">% default dataset unit guesses (used as initial values in dropdowns)</span>
+0119 defaultDataUnits.height = <span class="string">'meters'</span>;
+0120 defaultDataUnits.weight = <span class="string">'pounds'</span>;
+0121 
+0122 <span class="comment">% canonical units used for internal comparisons</span>
+0123 canonicalUnits.height = <span class="string">'meters'</span>;
+0124 canonicalUnits.weight = <span class="string">'pounds'</span>;
+0125 
+0126 <span class="comment">%% -----------------------------</span>
+0127 <span class="comment">% 3. Build GUI (fixed layout) - R2024a: set Layout.* AFTER creation</span>
+0128 <span class="comment">% -----------------------------</span>
+0129 fig = uifigure(<span class="string">'Name'</span>,<span class="string">'Match Controls (Fixed GUI)'</span>, <span class="keyword">...</span>
+0130     <span class="string">'Position'</span>,[150 100 980 760]);
+0131 g = uigridlayout(fig,[11 6]);   <span class="comment">% extra row for more space for results</span>
+0132 <span class="comment">% give more vertical space to results row (last row) by using '2x'</span>
+0133 g.RowHeight = <span class="keyword">...</span>
+0134     {<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'1x'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'fit'</span>,<span class="string">'2x'</span>};
+0135 <span class="comment">% narrow some left-panel columns (weight/tolerance/data units) so</span>
+0136 <span class="comment">% 'Variable' shows better</span>
+0137 g.ColumnWidth = {<span class="string">'1x'</span>,<span class="string">'1x'</span>,<span class="string">'1x'</span>,<span class="string">'1x'</span>,<span class="string">'1x'</span>,<span class="string">'1x'</span>};
+0138 
+0139 <span class="comment">% title label</span>
+0140 lblTitle = uilabel(g);
+0141 lblTitle.Text = sprintf(<span class="string">'Demographic file: %s'</span>,demoFile);
+0142 lblTitle.FontWeight = <span class="string">'bold'</span>;
+0143 lblTitle.FontSize = 13;
+0144 lblTitle.Layout.Row = 1;
+0145 lblTitle.Layout.Column = [1 6];
+0146 
+0147 <span class="comment">% instruction label</span>
+0148 instr = uilabel(g);
+0149 instr.Text = [<span class="string">'Select variables to use for matching, set weights &amp; '</span> <span class="keyword">...</span>
+0150     <span class="string">'tolerances (numbers). Enter target participant info (right).'</span>];
+0151 instr.Layout.Row = 2;
+0152 instr.Layout.Column = [1 6];
+0153 
+0154 <span class="comment">% left block: checkboxes + weight/tol + units</span>
+0155 varsPanel = uipanel(g);
+0156 varsPanel.Title = <span class="string">'Matching Factors &amp; Numeric Settings'</span>;
+0157 varsPanel.Layout.Row = [3 9];      <span class="comment">% &lt;-- Match targetPanel row span</span>
+0158 varsPanel.Layout.Column = [1 3];   <span class="comment">% &lt;-- Use left 3 columns</span>
+0159 varsPanel.Scrollable = true;
+0160 <span class="comment">% varsPanel.RowHeight = {50, '1x', '2x'};</span>
+0161 
+0162 
+0163 <span class="comment">% grid inside panel: columns:</span>
+0164 <span class="comment">%   Use | Variable | Weight | Tolerance | DataUnit (if applicable)</span>
+0165 numVars = 7;
+0166 pv = uigridlayout(varsPanel,[numVars+1 6]);
+0167 pv.Scrollable = true;
+0168 <span class="comment">% --- narrow these internal columns so 'Variable' column has more room:</span>
+0169 <span class="comment">% use 'fit' for checkbox column, '1x' wide for variable label, numeric</span>
+0170 <span class="comment">% columns narrower in px</span>
+0171 pv.RowHeight = repmat({<span class="string">'fit'</span>},1,numVars+1);
+0172 pv.ColumnWidth = {<span class="string">'fit'</span>,<span class="string">'1x'</span>,60,60,80,<span class="string">'fit'</span>};   <span class="comment">% columns 3..5 narrowed</span>
+0173 
+0174 <span class="comment">% header labels</span>
+0175 h1 = uilabel(pv); h1.Text = <span class="string">'Use'</span>;
+0176 h2 = uilabel(pv); h2.Text = <span class="string">'Variable'</span>;
+0177 h3 = uilabel(pv); h3.Text = <span class="string">'Weight'</span>;
+0178 h4 = uilabel(pv); h4.Text = <span class="string">'Tolerance'</span>;
+0179 h5 = uilabel(pv); h5.Text = <span class="string">'Data Units'</span>;
+0180 h1.FontWeight = <span class="string">'bold'</span>; h1.Layout.Row = 1; h1.Layout.Column = 1;
+0181 h2.FontWeight = <span class="string">'bold'</span>; h2.Layout.Row = 1; h2.Layout.Column = 2;
+0182 h3.FontWeight = <span class="string">'bold'</span>; h3.Layout.Row = 1; h3.Layout.Column = 3;
+0183 h4.FontWeight = <span class="string">'bold'</span>; h4.Layout.Row = 1; h4.Layout.Column = 4;
+0184 h5.FontWeight = <span class="string">'bold'</span>; h5.Layout.Row = 1; h5.Layout.Column = 5;
+0185 
+0186 labels = <span class="keyword">...</span>
+0187     {<span class="string">'Sex'</span>,<span class="string">'Age'</span>,<span class="string">'Height'</span>,<span class="string">'Weight'</span>,<span class="string">'Education (years)'</span>,<span class="string">'Race'</span>,<span class="string">'Ethnicity'</span>};
+0188 isNumericArr = [false true true true true false false];
+0189 
+0190 chkUse = gobjects(1,numVars);
+0191 edWeight = gobjects(1,numVars);
+0192 edTol = gobjects(1,numVars);
+0193 dataUnitDd = gobjects(1,numVars);
+0194 
+0195 <span class="keyword">for</span> i = 1:numVars
+0196     row = i + 1;
+0197     <span class="comment">% checkbox: include this variable in the matching</span>
+0198     chkUse(i) = uicheckbox(pv);
+0199     chkUse(i).Text = <span class="string">''</span>; chkUse(i).Value = true;
+0200     chkUse(i).Layout.Row = row; chkUse(i).Layout.Column = 1;
+0201 
+0202     <span class="comment">% variable name label</span>
+0203     lbl = uilabel(pv); lbl.Text = labels{i};
+0204     lbl.Layout.Row = row; lbl.Layout.Column = 2;
+0205     lbl.HorizontalAlignment = <span class="string">'left'</span>;
+0206 
+0207     <span class="keyword">if</span> isNumericArr(i)
+0208         <span class="comment">% numeric: weight &amp; tolerance numeric fields</span>
+0209         edWeight(i) = uieditfield(pv,<span class="string">'numeric'</span>);
+0210         edTol(i) = uieditfield(pv,<span class="string">'numeric'</span>);
+0211         <span class="keyword">if</span> i == 2
+0212             edWeight(i).Value = 3;          <span class="comment">% Age weight preset</span>
+0213             edTol(i).Value = 2.5;             <span class="comment">% Age tolerance preset</span>
+0214         <span class="keyword">elseif</span> i == 3
+0215             edWeight(i).Value = 1;
+0216             edTol(i).Value = 4;             <span class="comment">% height in inches</span>
+0217         <span class="keyword">elseif</span> i == 4
+0218             edWeight(i).Value = 1;
+0219             edTol(i).Value = 30;            <span class="comment">% weight in pounds</span>
+0220         <span class="keyword">elseif</span> i == 5
+0221             edWeight(i).Value = 2;
+0222             edTol(i).Value = 3;             <span class="comment">% years education</span>
+0223         <span class="keyword">else</span>
+0224             edWeight(i).Value = 1;
+0225             edTol(i).Value = 1;
+0226         <span class="keyword">end</span>
+0227         edWeight(i).Limits = [0 Inf];
+0228         edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
+0229         edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
+0230     <span class="keyword">else</span>
+0231         <span class="comment">% non-numeric: show 'N/A' placeholders (disabled)</span>
+0232         edWeight(i) = uieditfield(pv,<span class="string">'text'</span>);
+0233         edWeight(i).Value = <span class="string">'N/A'</span>; edWeight(i).Editable = <span class="string">'off'</span>;
+0234         edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
+0235         edTol(i) = uieditfield(pv,<span class="string">'text'</span>);
+0236         edTol(i).Value = <span class="string">'N/A'</span>; edTol(i).Editable = <span class="string">'off'</span>;
+0237         edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
+0238     <span class="keyword">end</span>
+0239 
+0240     <span class="comment">% data unit dropdown only for height/weight rows (indices 3 and 4)</span>
+0241     <span class="keyword">if</span> i == 3
+0242         <span class="comment">% dataset unit for height (user should pick units from table)</span>
+0243         dataUnitDd(i) = uidropdown(pv);
+0244         dataUnitDd(i).Items = {<span class="string">'meters'</span>,<span class="string">'centimeters'</span>,<span class="string">'inches'</span>};
+0245         dataUnitDd(i).Value = <span class="string">'inches'</span>;
+0246         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
+0247     <span class="keyword">elseif</span> i == 4
+0248         <span class="comment">% dataset unit for weight</span>
+0249         dataUnitDd(i) = uidropdown(pv);
+0250         dataUnitDd(i).Items = {<span class="string">'kilograms'</span>,<span class="string">'pounds'</span>};
+0251         dataUnitDd(i).Value = defaultDataUnits.weight;
+0252         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
+0253     <span class="keyword">else</span>
+0254         dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {<span class="string">'--'</span>};
+0255         dataUnitDd(i).Value = <span class="string">'--'</span>; dataUnitDd(i).Enable = <span class="string">'off'</span>;
+0256         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
+0257     <span class="keyword">end</span>
+0258 <span class="keyword">end</span>
+0259 
+0260 <span class="comment">% right block: target participant entries</span>
+0261 targetPanel = uipanel(g);
+0262 targetPanel.Title = <span class="string">'Target Participant Values'</span>;
+0263 targetPanel.Layout.Row = [3 9];
+0264 targetPanel.Layout.Column = [4 6];
+0265 
+0266 pt = uigridlayout(targetPanel,[12 2]);
+0267 pt.RowHeight = repmat({<span class="string">'fit'</span>},1,12);
+0268 pt.ColumnWidth = {<span class="string">'1x'</span>,<span class="string">'1x'</span>};
+0269 pt.Scrollable = true;
+0270 
+0271 <span class="comment">% header labels for target panel</span>
+0272 lblVarHeader = uilabel(pt);
+0273 lblVarHeader.Text = <span class="string">'Variable'</span>; lblVarHeader.FontWeight = <span class="string">'bold'</span>;
+0274 lblVarHeader.Layout.Row = 1; lblVarHeader.Layout.Column = 1;
+0275 lblEntryHeader = uilabel(pt);
+0276 lblEntryHeader.Text = <span class="string">'Entry'</span>; lblEntryHeader.FontWeight = <span class="string">'bold'</span>;
+0277 lblEntryHeader.Layout.Row = 1; lblEntryHeader.Layout.Column = 2;
+0278 
+0279 <span class="comment">% Row 2: Sex (dropdown)</span>
+0280 lblSex = uilabel(pt); lblSex.Text = <span class="string">'Sex'</span>; lblSex.Layout.Row = 2; lblSex.Layout.Column = 1;
+0281 targetSex = uidropdown(pt,<span class="string">'Items'</span>,{<span class="string">''</span>,<span class="string">'Male'</span>,<span class="string">'Female'</span>,<span class="string">'Other'</span>},<span class="string">'Value'</span>,<span class="string">''</span>);
+0282 targetSex.Layout.Row = 2; targetSex.Layout.Column = 2;
+0283 
+0284 <span class="comment">% Row 3-5: DOB, assessment date, computed age</span>
+0285 lblDOB = uilabel(pt); lblDOB.Text = <span class="string">'Date of birth (DOB)'</span>; lblDOB.Layout.Row = 3; lblDOB.Layout.Column = 1;
+0286 targetDOB = uidatepicker(pt,<span class="string">'Value'</span>,datetime(<span class="string">'2000-01-01'</span>),<span class="string">'DisplayFormat'</span>,<span class="string">'yyyy-MM-dd'</span>);
+0287 targetDOB.Layout.Row = 3; targetDOB.Layout.Column = 2;
+0288 
+0289 lblAssess = uilabel(pt); lblAssess.Text = <span class="string">'Assessment date (for age calc)'</span>; lblAssess.Layout.Row = 4; lblAssess.Layout.Column = 1;
+0290 targetAssessDate = uidatepicker(pt,<span class="string">'Value'</span>,datetime(<span class="string">'today'</span>),<span class="string">'DisplayFormat'</span>,<span class="string">'yyyy-MM-dd'</span>);
+0291 targetAssessDate.Layout.Row = 4; targetAssessDate.Layout.Column = 2;
+0292 
+0293 lblAgeDisp = uilabel(pt); lblAgeDisp.Text = <span class="string">'Computed age (years)'</span>; lblAgeDisp.Layout.Row = 5; lblAgeDisp.Layout.Column = 1;
+0294 <span class="comment">% computed age displayed read-only</span>
+0295 targetAgeDisp = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,-Inf,<span class="string">'Editable'</span>,<span class="string">'off'</span>);
+0296 targetAgeDisp.Layout.Row = 5; targetAgeDisp.Layout.Column = 2;
+0297 
+0298 <span class="comment">% Height input (target) - feet/inches or single field</span>
+0299 lblHt = uilabel(pt); lblHt.Text = <span class="string">'Height'</span>; lblHt.Layout.Row = 8; lblHt.Layout.Column = 1;
+0300 
+0301 htFeet = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,0,<span class="string">'Limits'</span>,[0 Inf]);
+0302 htFeet.Layout.Row = 9; htFeet.Layout.Column = 2;
+0303 htFeet.Placeholder = <span class="string">'Feet'</span>;
+0304 
+0305 htInches = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,0,<span class="string">'Limits'</span>,[0 11]);
+0306 htInches.Layout.Row = 9; htInches.Layout.Column = 3;
+0307 htInches.Placeholder = <span class="string">'Inches'</span>;
+0308 
+0309 htSingle = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,0,<span class="string">'Limits'</span>,[0 Inf]);
+0310 htSingle.Layout.Row = 9; htSingle.Layout.Column = 2;
+0311 htSingle.Placeholder = <span class="string">'Height'</span>;
+0312 htSingle.Visible = false; <span class="comment">% Start hidden</span>
+0313 
+0314 lblHtUnit = uilabel(pt); lblHtUnit.Text = <span class="string">'Height unit (target)'</span>; lblHtUnit.Layout.Row = 9; lblHtUnit.Layout.Column = 1;
+0315 targetHeightUnit = uidropdown(pt,<span class="string">'Items'</span>,{<span class="string">'meters'</span>,<span class="string">'centimeters'</span>,<span class="string">'inches'</span>,<span class="string">'Feet and Inches'</span>},<span class="string">'Value'</span>,<span class="string">'Feet and Inches'</span>);
+0316 targetHeightUnit.Layout.Row = 8; targetHeightUnit.Layout.Column = 2;
+0317 
+0318 <span class="comment">% Callback to update visibility</span>
+0319 targetHeightUnit.ValueChangedFcn = @(src,evt) <a href="#_sub2" class="code" title="subfunction updateHeightFields()">updateHeightFields</a>();
+0320 
+0321 <a name="_sub2" href="#_subfunctions" class="code">function updateHeightFields()</a>
+0322     <span class="keyword">if</span> strcmp(targetHeightUnit.Value, <span class="string">'Feet and Inches'</span>)
+0323         htFeet.Visible = true;
+0324         htInches.Visible = true;
+0325         htSingle.Visible = false;
+0326     <span class="keyword">else</span>
+0327         htFeet.Visible = false;
+0328         htInches.Visible = false;
+0329         htSingle.Visible = true;
+0330     <span class="keyword">end</span>
+0331 <span class="keyword">end</span>
+0332 
+0333 <span class="comment">% Call once to set initial visibility</span>
+0334 <a href="#_sub2" class="code" title="subfunction updateHeightFields()">updateHeightFields</a>();
+0335 
+0336 <span class="comment">% Weight input</span>
+0337 lblWt = uilabel(pt); lblWt.Text = <span class="string">'Weight (target)'</span>; lblWt.Layout.Row = 6; lblWt.Layout.Column = 1;
+0338 targetWeight = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,Inf,<span class="string">'Limits'</span>,[0 Inf]);
+0339 targetWeight.Layout.Row = 7; targetWeight.Layout.Column = 2;
+0340 
+0341 lblWtUnit = uilabel(pt); lblWtUnit.Text = <span class="string">'Weight unit (target)'</span>; lblWtUnit.Layout.Row = 7; lblWtUnit.Layout.Column = 1;
+0342 targetWeightUnit = uidropdown(pt,<span class="string">'Items'</span>,{<span class="string">'kilograms'</span>,<span class="string">'pounds'</span>},<span class="string">'Value'</span>,defaultDataUnits.weight);
+0343 targetWeightUnit.Layout.Row = 6; targetWeightUnit.Layout.Column = 2;
+0344 
+0345 <span class="comment">% Education</span>
+0346 lblEd = uilabel(pt); lblEd.Text = <span class="string">'Years formal education'</span>; lblEd.Layout.Row = 10; lblEd.Layout.Column = 1;
+0347 targetEducation = uieditfield(pt,<span class="string">'numeric'</span>,<span class="string">'Value'</span>,16,<span class="string">'Limits'</span>,[0 100]);
+0348 targetEducation.Layout.Row = 10; targetEducation.Layout.Column = 2;
+0349 
+0350 <span class="comment">% Race</span>
+0351 lblRace = uilabel(pt); lblRace.Text = <span class="string">'Race'</span>;
+0352 lblRace.Layout.Row = 11; lblRace.Layout.Column = 1;
+0353 targetRace = uidropdown(pt,<span class="string">'Items'</span>,{<span class="string">'White'</span>,<span class="string">'Black'</span>},<span class="string">'Value'</span>,<span class="string">'White'</span>);
+0354 targetRace.Layout.Row = 11; targetRace.Layout.Column = 2;
+0355 
+0356 <span class="comment">% Ethnicity</span>
+0357 lblEth = uilabel(pt); lblEth.Text = <span class="string">'Ethnicity'</span>;
+0358 lblEth.Layout.Row = 12; lblEth.Layout.Column = 1;
+0359 targetEthnicity = uidropdown(pt,<span class="string">'Items'</span>,{<span class="string">'Not Hispanic or Latino'</span>, <span class="keyword">...</span>
+0360     <span class="string">'Hispanic or Latino'</span>},<span class="string">'Value'</span>,<span class="string">'Not Hispanic or Latino'</span>);
+0361 targetEthnicity.Layout.Row = 12; targetEthnicity.Layout.Column = 2;
+0362 
+0363 <span class="comment">% update computed age when dob or assessment date changes</span>
+0364 targetDOB.ValueChangedFcn = @(s,e) <a href="#_sub5" class="code" title="subfunction updateComputedAge()">updateComputedAge</a>();
+0365 targetAssessDate.ValueChangedFcn = @(s,e) <a href="#_sub5" class="code" title="subfunction updateComputedAge()">updateComputedAge</a>();
+0366 <a href="#_sub5" class="code" title="subfunction updateComputedAge()">updateComputedAge</a>();
+0367 
+0368 <span class="comment">% Buttons</span>
+0369 btnCompute = uibutton(g,<span class="string">'push'</span>,<span class="string">'Text'</span>,<span class="string">'Compute Matches'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0370 btnCompute.Layout.Row = 9; btnCompute.Layout.Column = 1;
+0371 btnCompute.ButtonPushedFcn = @(btn,event) <a href="#_sub8" class="code" title="subfunction computeMatches()">computeMatches</a>();
+0372 
+0373 btnPreview = uibutton(g,<span class="string">'push'</span>,<span class="string">'Text'</span>,<span class="string">'Preview candidates after categorical filters'</span>);
+0374 btnPreview.Layout.Row = 9; btnPreview.Layout.Column = 2;
+0375 btnPreview.ButtonPushedFcn = @(btn,event) <a href="#_sub6" class="code" title="subfunction previewCandidates()">previewCandidates</a>();
+0376 
+0377 btnViewTable = uibutton(g,<span class="string">'push'</span>,<span class="string">'Text'</span>,<span class="string">'View demographic table'</span>);
+0378 btnViewTable.Layout.Row = 9; btnViewTable.Layout.Column = 3;
+0379 btnViewTable.ButtonPushedFcn = @(btn,event) <a href="#_sub7" class="code" title="subfunction openTable()">openTable</a>();
+0380 
+0381 <span class="comment">% Results area (now gets more vertical space due to RowHeight '2x' on last row)</span>
+0382 resPanel = uipanel(g);
+0383 resPanel.Title = <span class="string">'Results (top matches + within-tolerance)'</span>;
+0384 <span class="comment">% place results in the last row which has '2x' to give more room</span>
+0385 resPanel.Layout.Row = 11; resPanel.Layout.Column = [1 6];
+0386 
+0387 <span class="comment">% inside results, two columns: matches table (left) and within-tolerance (right)</span>
+0388 resGrid = uigridlayout(resPanel,[2,2]);
+0389 resGrid.RowHeight = {<span class="string">'fit'</span>,<span class="string">'1x'</span>};
+0390 <span class="comment">% Give more horizontal room to left matches table and a bit to right</span>
+0391 resGrid.ColumnWidth = {<span class="string">'2x'</span>,<span class="string">'1x'</span>};
+0392 
+0393 lblMatches = uilabel(resGrid); lblMatches.Text = <span class="string">'Top matches (closest first):'</span>; lblMatches.FontWeight = <span class="string">'bold'</span>;
+0394 lblMatches.Layout.Row = 1; lblMatches.Layout.Column = 1;
+0395 tblMatches = uitable(resGrid);
+0396 tblMatches.Layout.Row = 2; tblMatches.Layout.Column = 1;
+0397 
+0398 lblWithin = uilabel(resGrid); lblWithin.Text = <span class="string">'Within-tolerance for numeric variables (rows = matches):'</span>; lblWithin.FontWeight = <span class="string">'bold'</span>;
+0399 lblWithin.Layout.Row = 1; lblWithin.Layout.Column = 2;
+0400 tblWithin = uitable(resGrid);
+0401 tblWithin.Layout.Row = 2; tblWithin.Layout.Column = 2;
+0402 
+0403 statusLabel = uilabel(g);
+0404 statusLabel.Text = <span class="string">'Status: ready'</span>;
+0405 statusLabel.Layout.Row = 1; statusLabel.Layout.Column = 6;
+0406 
+0407 <span class="comment">% disable checkboxes for missing columns and warn user</span>
+0408 mappingMessages = {};
+0409 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.sex)
+0410     mappingMessages{end+1} = <span class="keyword">...</span>
+0411         <span class="string">'Sex column not found. Sex matching disabled.'</span>;
+0412     chkUse(1).Enable = <span class="string">'off'</span>;
+0413 <span class="keyword">end</span>
+0414 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.age) &amp;&amp; <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.dob)
+0415     mappingMessages{end+1} = <span class="string">'Neither Age nor DOB found. Age disabled.'</span>;
+0416     chkUse(2).Enable = <span class="string">'off'</span>;
+0417 <span class="keyword">end</span>
+0418 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.height)
+0419     mappingMessages{end+1} = <span class="string">'Height not found. Height disabled.'</span>;
+0420     chkUse(3).Enable = <span class="string">'off'</span>;
+0421 <span class="keyword">end</span>
+0422 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.weight)
+0423     mappingMessages{end+1} = <span class="string">'Weight not found. Weight disabled.'</span>;
+0424     chkUse(4).Enable = <span class="string">'off'</span>;
+0425 <span class="keyword">end</span>
+0426 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.education)
+0427     mappingMessages{end+1} = <span class="string">'Education not found. Education disabled.'</span>;
+0428     chkUse(5).Enable = <span class="string">'off'</span>;
+0429 <span class="keyword">end</span>
+0430 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.race)
+0431     mappingMessages{end+1} = <span class="string">'Race not found. Race disabled.'</span>;
+0432     chkUse(6).Enable = <span class="string">'off'</span>;
+0433 <span class="keyword">end</span>
+0434 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.ethnicity)
+0435     mappingMessages{end+1} = <span class="string">'Ethnicity not found. Ethnicity disabled.'</span>;
+0436     chkUse(7).Enable = <span class="string">'off'</span>;
+0437 <span class="keyword">end</span>
+0438 
+0439 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(mappingMessages)
+0440     statusLabel.Text = strjoin(mappingMessages,<span class="string">' '</span>);
+0441 <span class="keyword">end</span>
+0442 
+0443 <span class="comment">%% -----------------------------</span>
+0444 <span class="comment">% helper function: normalize categorical values for reliable comparison</span>
+0445 <span class="comment">% - special handling for Sex: maps common short codes to canonical labels.</span>
+0446 <span class="comment">% - for other categorical variables we use trimmed lowercase strings.</span>
+0447 <span class="comment">% -----------------------------</span>
+0448     <a name="_sub3" href="#_subfunctions" class="code">function out = normalizeCategorical(vals,varKey)</a>
+0449         <span class="comment">% normalize input values (vals can be string array, char, numeric, cell)</span>
+0450         <span class="comment">% varKey: name of the variable (e.g., 'sex','race') to allow special-casing</span>
+0451         s = string(vals);              <span class="comment">% convert to string array (handles mixed types)</span>
+0452         s = lower(strtrim(s));         <span class="comment">% lowercase and trim whitespace</span>
+0453         <span class="comment">% replace missing with empty string</span>
+0454         s(ismissing(s)) = &quot;&quot;;
+0455         out = s;
+0456         <span class="comment">% special mapping for sex-like fields</span>
+0457         <span class="keyword">if</span> contains(lower(varKey),<span class="string">'sex'</span>)
+0458             femaleTokens = [&quot;f&quot;,&quot;female&quot;,&quot;fem&quot;,&quot;woman&quot;,&quot;w&quot;];
+0459             maleTokens   = [&quot;m&quot;,&quot;male&quot;,&quot;man&quot;];
+0460             otherTokens  = [&quot;other&quot;,&quot;o&quot;,&quot;nonbinary&quot;,&quot;non-binary&quot;,&quot;nb&quot;,&quot;genderqueer&quot;,&quot;trans&quot;,&quot;nonbinary&quot;];
+0461             <span class="keyword">for</span> ii = 1:numel(out)
+0462                 v = out(ii);
+0463                 <span class="keyword">if</span> v==&quot;&quot; , <span class="keyword">continue</span>; <span class="keyword">end</span>
+0464                 cleaned = regexprep(char(v),<span class="string">'[^a-z0-9]'</span>,<span class="string">''</span>); <span class="comment">% strip punctuation/spaces</span>
+0465                 cleaned = string(cleaned);
+0466                 <span class="keyword">if</span> any(cleaned == femaleTokens)
+0467                     out(ii) = &quot;female&quot;;
+0468                 <span class="keyword">elseif</span> any(cleaned == maleTokens)
+0469                     out(ii) = &quot;male&quot;;
+0470                 <span class="keyword">elseif</span> any(cleaned == otherTokens)
+0471                     out(ii) = &quot;other&quot;;
+0472                 <span class="keyword">else</span>
+0473                     out(ii) = cleaned; <span class="comment">% fallback lowercase cleaned token</span>
+0474                 <span class="keyword">end</span>
+0475             <span class="keyword">end</span>
+0476         <span class="keyword">else</span>
+0477             <span class="comment">% generic cleaning for other categorical values</span>
+0478             <span class="keyword">for</span> ii = 1:numel(out)
+0479                 v = out(ii);
+0480                 <span class="keyword">if</span> v==&quot;&quot; , <span class="keyword">continue</span>; <span class="keyword">end</span>
+0481                 cleaned = regexprep(char(v),<span class="string">'^\s+|\s+$'</span>,<span class="string">''</span>);    <span class="comment">% trim ends</span>
+0482                 cleaned = regexprep(cleaned,<span class="string">'\s+'</span>,<span class="string">' '</span>);        <span class="comment">% collapse interior whitespace</span>
+0483                 out(ii) = lower(string(cleaned));
+0484             <span class="keyword">end</span>
+0485         <span class="keyword">end</span>
+0486     <span class="keyword">end</span>
+0487 
+0488 <span class="comment">%% -----------------------------</span>
+0489 <span class="comment">% Unit conversion helper</span>
+0490 <span class="comment">% - Note: convertUnits(varName, fromUnit, toUnit, vals)</span>
+0491 <span class="comment">% - Supports height units: meters, centimeters, inches</span>
+0492 <span class="comment">% - Supports weight units: kilograms, pounds</span>
+0493 <span class="comment">% -----------------------------</span>
+0494     <a name="_sub4" href="#_subfunctions" class="code">function out = convertUnits(varName, fromUnit, toUnit, vals)</a>
+0495         out = vals;
+0496         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fromUnit) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(toUnit) || strcmpi(fromUnit,toUnit), <span class="keyword">return</span>; <span class="keyword">end</span>
+0497         lname = lower(varName);
+0498         <span class="keyword">if</span> contains(lname,<span class="string">'height'</span>)
+0499             <span class="comment">% normalize: convert 'fromUnit' values into meters, then to 'toUnit'</span>
+0500             <span class="keyword">switch</span> lower(fromUnit)
+0501                 <span class="keyword">case</span> <span class="string">'meters'</span>
+0502                     meters = vals;
+0503                 <span class="keyword">case</span> <span class="string">'centimeters'</span>
+0504                     meters = vals/100;
+0505                 <span class="keyword">case</span> <span class="string">'inches'</span>
+0506                     meters = vals*0.0254;
+0507                 <span class="keyword">case</span> {<span class="string">'feet'</span>, <span class="string">'ft'</span>}
+0508                     meters = vals*0.3048;
+0509                 <span class="keyword">case</span> {<span class="string">'feet and inches'</span>, <span class="string">'ftin'</span>, <span class="string">'ft/in'</span>}
+0510                     <span class="comment">% Expect vals as Nx2: [feet, inches] or a single value (total inches)</span>
+0511                     <span class="keyword">if</span> ismatrix(vals) &amp;&amp; size(vals,2) == 2
+0512                         meters = vals(:,1)*0.3048 + vals(:,2)*0.0254;
+0513                     <span class="keyword">else</span>
+0514                         meters = vals*0.0254; <span class="comment">% fallback: treat as total inches</span>
+0515                     <span class="keyword">end</span>
+0516                 <span class="keyword">otherwise</span>
+0517                     meters = vals; <span class="comment">% assume already meters if unknown</span>
+0518             <span class="keyword">end</span>
+0519             <span class="keyword">switch</span> lower(toUnit)
+0520                 <span class="keyword">case</span> <span class="string">'meters'</span>
+0521                     out = meters;
+0522                 <span class="keyword">case</span> <span class="string">'centimeters'</span>
+0523                     out = meters*100;
+0524                 <span class="keyword">case</span> <span class="string">'inches'</span>
+0525                     out = meters/0.0254; <span class="comment">% meters -&gt; inches</span>
+0526                 <span class="keyword">case</span> {<span class="string">'feet'</span>, <span class="string">'ft'</span>}
+0527                     out = meters/0.3048;
+0528                 <span class="keyword">case</span> {<span class="string">'feet and inches'</span>, <span class="string">'ftin'</span>, <span class="string">'ft/in'</span>}
+0529                     <span class="comment">% Return Nx2: [feet, inches]</span>
+0530                     feet = floor(meters/0.3048);
+0531                     inches = (meters - feet*0.3048)/0.0254;
+0532                     out = [feet, inches];
+0533                 <span class="keyword">otherwise</span>
+0534                     out = meters;
+0535             <span class="keyword">end</span>
+0536         <span class="keyword">elseif</span> contains(lname,<span class="string">'weight'</span>)
+0537             <span class="comment">% convert 'fromUnit' values into kilograms, then to 'toUnit'</span>
+0538             <span class="keyword">switch</span> lower(fromUnit)
+0539                 <span class="keyword">case</span> <span class="string">'kilograms'</span>, kg = vals;
+0540                 <span class="keyword">case</span> <span class="string">'pounds'</span>, kg = vals*0.45359237;
+0541                 <span class="keyword">otherwise</span>, kg = vals; <span class="comment">% assume kilograms if unknown</span>
+0542             <span class="keyword">end</span>
+0543             <span class="keyword">switch</span> lower(toUnit)
+0544                 <span class="keyword">case</span> <span class="string">'kilograms'</span>, out = kg;
+0545                 <span class="keyword">case</span> <span class="string">'pounds'</span>, out = kg / 0.45359237;
+0546                 <span class="keyword">otherwise</span>, out = kg;
+0547             <span class="keyword">end</span>
+0548         <span class="keyword">end</span>
+0549     <span class="keyword">end</span>
+0550 
+0551 <span class="comment">%% -----------------------------</span>
+0552 <span class="comment">% update computed age display (DOB -&gt; decimal years)</span>
+0553 <span class="comment">% -----------------------------</span>
+0554     <a name="_sub5" href="#_subfunctions" class="code">function updateComputedAge()</a>
+0555         dob = targetDOB.Value;
+0556         ref = targetAssessDate.Value;
+0557         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dob) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ref) || ref &lt; dob
+0558             targetAgeDisp.Value = NaN;
+0559             <span class="keyword">return</span>;
+0560         <span class="keyword">end</span>
+0561         daysDiff = days(ref - dob);
+0562         ageYears = daysDiff / 365.2425;
+0563         targetAgeDisp.Value = round(ageYears,4);
+0564     <span class="keyword">end</span>
+0565 
+0566 <span class="comment">%% -----------------------------</span>
+0567 <span class="comment">% preview candidates (categorical filters)</span>
+0568 <span class="comment">%   uses normalized categorical comparison</span>
+0569 <span class="comment">% -----------------------------</span>
+0570     <a name="_sub6" href="#_subfunctions" class="code">function previewCandidates()</a>
+0571         selCats = struct();
+0572         <span class="keyword">if</span> chkUse(1).Value &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.sex)
+0573             val = string(targetSex.Value);
+0574             <span class="keyword">if</span> strlength(strtrim(val)) == 0
+0575                 uialert(fig, <span class="keyword">...</span>
+0576                     <span class="string">'Please enter target Sex (or uncheck Sex).'</span>, <span class="keyword">...</span>
+0577                     <span class="string">'Missing input'</span>);
+0578                 <span class="keyword">return</span>;
+0579             <span class="keyword">end</span>
+0580             selCats.(varNames{colIdx.sex}) = val;
+0581         <span class="keyword">end</span>
+0582         <span class="keyword">if</span> chkUse(6).Value &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.race)
+0583             val = strtrim(string(targetRace.Value));
+0584             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(val)
+0585                 uialert(fig, <span class="keyword">...</span>
+0586                     <span class="string">'Please enter target Race (or uncheck Race).'</span>, <span class="keyword">...</span>
+0587                     <span class="string">'Missing input'</span>);
+0588                 <span class="keyword">return</span>;
+0589             <span class="keyword">end</span>
+0590             selCats.(varNames{colIdx.race}) = val;
+0591         <span class="keyword">end</span>
+0592         <span class="keyword">if</span> chkUse(7).Value &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.ethnicity)
+0593             val = strtrim(string(targetEthnicity.Value));
+0594             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(val)
+0595                 uialert(fig, <span class="keyword">...</span>
+0596                     [<span class="string">'Please enter target Ethnicity (or uncheck '</span> <span class="keyword">...</span>
+0597                     <span class="string">'Ethnicity).'</span>],<span class="string">'Missing input'</span>);
+0598                 <span class="keyword">return</span>;
+0599             <span class="keyword">end</span>
+0600             selCats.(varNames{colIdx.ethnicity}) = val;
+0601         <span class="keyword">end</span>
+0602         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.matched)
+0603             selCats.(varNames{colIdx.matched}) = &quot;&quot;;
+0604         <span class="keyword">end</span>
+0605 
+0606         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(selCats))
+0607             uialert(fig,[<span class="string">'No categorical filters selected or assigned '</span> <span class="keyword">...</span>
+0608                 <span class="string">'matched control; all rows are candidates.'</span>],<span class="string">'Preview'</span>);
+0609             tblToShow = T;
+0610         <span class="keyword">else</span>
+0611             mask = true(height(T),1);
+0612             fn = fieldnames(selCats);
+0613             <span class="keyword">for</span> ii = 1:numel(fn)
+0614                 colname = fn{ii};
+0615                 targ = selCats.(colname);
+0616                 col = T.(colname);
+0617 
+0618                 <span class="comment">% normalize both column and target for comparison</span>
+0619                 colNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(col,colname);
+0620                 targNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(targ,colname);
+0621 
+0622                 <span class="keyword">if</span> isnumeric(col)
+0623                     tn = str2double(targ);
+0624                     <span class="keyword">if</span> ~isnan(tn)
+0625                         mask = mask &amp; (col == tn);
+0626                     <span class="keyword">else</span>
+0627                         mask = mask &amp; false;
+0628                     <span class="keyword">end</span>
+0629                 <span class="keyword">else</span>
+0630                     mask = mask &amp; (colNorm == targNorm);
+0631                 <span class="keyword">end</span>
+0632             <span class="keyword">end</span>
+0633             tblToShow = T(mask,:);
+0634         <span class="keyword">end</span>
+0635 
+0636         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tblToShow) || height(tblToShow) == 0
+0637             uialert(fig,[<span class="string">'No candidates remain after categorical '</span> <span class="keyword">...</span>
+0638                 <span class="string">'filters.'</span>],<span class="string">'Preview'</span>);
+0639         <span class="keyword">else</span>
+0640             w = uifigure(<span class="string">'Name'</span>,<span class="string">'Filtered Candidates'</span>, <span class="keyword">...</span>
+0641                 <span class="string">'Position'</span>,[300 200 900 450]);
+0642             uitable(w,<span class="string">'Data'</span>,tblToShow,<span class="string">'Position'</span>,[10 10 880 430]);
+0643         <span class="keyword">end</span>
+0644     <span class="keyword">end</span>
+0645 
+0646 <span class="comment">%% -----------------------------</span>
+0647 <span class="comment">% open table (full demographics)</span>
+0648 <span class="comment">% -----------------------------</span>
+0649     <a name="_sub7" href="#_subfunctions" class="code">function openTable()</a>
+0650         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(T) || height(T) == 0
+0651             uialert(fig,<span class="string">'Table empty.'</span>,<span class="string">'Table'</span>);
+0652             <span class="keyword">return</span>;
+0653         <span class="keyword">end</span>
+0654         w = uifigure(<span class="string">'Name'</span>,<span class="string">'Demographic Table'</span>, <span class="keyword">...</span>
+0655             <span class="string">'Position'</span>,[300 200 900 450]);
+0656         uitable(w,<span class="string">'Data'</span>,T,<span class="string">'Position'</span>,[10 10 880 430]);
+0657     <span class="keyword">end</span>
+0658 
+0659 <span class="comment">%% -----------------------------</span>
+0660 <span class="comment">% main: computeMatches</span>
+0661 <span class="comment">% - applies categorical filters using normalizeCategorical (robust)</span>
+0662 <span class="comment">% - converts target &amp; candidate height/weight to canonical units BEFORE</span>
+0663 <span class="comment">%   computing distance</span>
+0664 <span class="comment">% - converts tolerance into canonical units too</span>
+0665 <span class="comment">% -----------------------------</span>
+0666     <a name="_sub8" href="#_subfunctions" class="code">function computeMatches()</a>
+0667         <span class="comment">% which checkboxes selected</span>
+0668         useIdx = find(arrayfun(@(c) c.Value,chkUse));
+0669         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(useIdx)
+0670             uialert(fig,[<span class="string">'Please select at least one variable to use '</span> <span class="keyword">...</span>
+0671                 <span class="string">'for matching.'</span>],<span class="string">'No variables'</span>);
+0672             <span class="keyword">return</span>;
+0673         <span class="keyword">end</span>
+0674 
+0675         <span class="comment">% build categorical mask using normalized comparison</span>
+0676         catMask = true(height(T),1);
+0677 
+0678         <span class="comment">% sex categorical filter (normalized)</span>
+0679         <span class="keyword">if</span> chkUse(1).Value
+0680             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.sex)
+0681                 uialert(fig, <span class="keyword">...</span>
+0682                     <span class="string">'Sex selected but Sex column missing.'</span>,<span class="string">'Error'</span>);
+0683                 <span class="keyword">return</span>;
+0684             <span class="keyword">end</span>
+0685             val = string(targetSex.Value);
+0686             <span class="keyword">if</span> strlength(strtrim(val)) == 0
+0687                 uialert(fig, <span class="keyword">...</span>
+0688                     <span class="string">'Please enter target Sex or uncheck Sex.'</span>,<span class="string">'Missing'</span>);
+0689                 <span class="keyword">return</span>;
+0690             <span class="keyword">end</span>
+0691             colname = varNames{colIdx.sex};
+0692             col = T.(colname);
+0693             <span class="keyword">if</span> isnumeric(col)
+0694                 vnum = str2double(val);
+0695                 <span class="keyword">if</span> ~isnan(vnum)
+0696                     catMask = catMask &amp; (col == vnum);
+0697                 <span class="keyword">else</span>
+0698                     catMask = catMask &amp; false;
+0699                 <span class="keyword">end</span>
+0700             <span class="keyword">else</span>
+0701                 colNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(col,colname);
+0702                 targNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(val,colname);
+0703                 catMask = catMask &amp; (colNorm == targNorm);
+0704             <span class="keyword">end</span>
+0705         <span class="keyword">end</span>
+0706 
+0707         <span class="comment">% race</span>
+0708         <span class="keyword">if</span> chkUse(6).Value
+0709             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.race)
+0710                 uialert(fig, <span class="keyword">...</span>
+0711                     <span class="string">'Race selected but Race column missing.'</span>,<span class="string">'Error'</span>);
+0712                 <span class="keyword">return</span>;
+0713             <span class="keyword">end</span>
+0714             val = strtrim(targetRace.Value);
+0715             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(val)
+0716                 uialert(fig, <span class="keyword">...</span>
+0717                     <span class="string">'Please enter target Race or uncheck Race.'</span>,<span class="string">'Missing'</span>);
+0718                 <span class="keyword">return</span>;
+0719             <span class="keyword">end</span>
+0720             colname = varNames{colIdx.race}; col = T.(colname);
+0721             <span class="keyword">if</span> isnumeric(col)
+0722                 vnum = str2double(val);
+0723                 <span class="keyword">if</span> ~isnan(vnum)
+0724                     catMask = catMask &amp; (col == vnum);
+0725                 <span class="keyword">else</span>
+0726                     catMask = catMask &amp; false;
+0727                 <span class="keyword">end</span>
+0728             <span class="keyword">else</span>
+0729                 colNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(col,colname);
+0730                 targNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(val,colname);
+0731                 catMask = catMask &amp; (colNorm == targNorm);
+0732             <span class="keyword">end</span>
+0733         <span class="keyword">end</span>
+0734 
+0735         <span class="comment">% ethnicity</span>
+0736         <span class="keyword">if</span> chkUse(7).Value
+0737             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.ethnicity)
+0738                 uialert(fig,[<span class="string">'Ethnicity selected but Ethnicity column '</span> <span class="keyword">...</span>
+0739                     <span class="string">'missing.'</span>],<span class="string">'Error'</span>);
+0740                 <span class="keyword">return</span>;
+0741             <span class="keyword">end</span>
+0742             val = strtrim(targetEthnicity.Value);
+0743             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(val)
+0744                 uialert(fig,[<span class="string">'Please enter target Ethnicity or uncheck'</span> <span class="keyword">...</span>
+0745                     <span class="string">' Ethnicity.'</span>],<span class="string">'Missing'</span>);
+0746                 <span class="keyword">return</span>;
+0747             <span class="keyword">end</span>
+0748             colname = varNames{colIdx.ethnicity}; col = T.(colname);
+0749             <span class="keyword">if</span> isnumeric(col)
+0750                 vnum = str2double(val);
+0751                 <span class="keyword">if</span> ~isnan(vnum)
+0752                     catMask = catMask &amp; (col == vnum);
+0753                 <span class="keyword">else</span>
+0754                     catMask = catMask &amp; false;
+0755                 <span class="keyword">end</span>
+0756             <span class="keyword">else</span>
+0757                 colNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(col,colname);
+0758                 targNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(val,colname);
+0759                 catMask = catMask &amp; (colNorm == targNorm);
+0760             <span class="keyword">end</span>
+0761         <span class="keyword">end</span>
+0762 
+0763         <span class="comment">% already matched participants</span>
+0764         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.matched)
+0765             val = &quot;&quot;;
+0766             colname = varNames{colIdx.matched}; col = T.(colname);
+0767             colNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(col,colname);
+0768             targNorm = <a href="#_sub3" class="code" title="subfunction out = normalizeCategorical(vals,varKey)">normalizeCategorical</a>(val,colname);
+0769             catMask = catMask &amp; (colNorm == targNorm);
+0770         <span class="keyword">end</span>
+0771 
+0772         <span class="comment">% candidate count after categorical filters</span>
+0773         nCandidates = sum(catMask);
+0774         <span class="keyword">if</span> nCandidates == 0
+0775             statusLabel.Text = [<span class="string">'Status: no candidates remain after '</span> <span class="keyword">...</span>
+0776                 <span class="string">'categorical filtering.'</span>];
+0777             tblMatches.Data = {}; tblWithin.Data = {};
+0778             <span class="keyword">return</span>;
+0779         <span class="keyword">end</span>
+0780 
+0781         <span class="comment">% which numeric variables selected? [age,height,weight,education]</span>
+0782         numericSelected = false(1,4);
+0783         <span class="comment">% positions in chkUse corresponding to numericVars</span>
+0784         mapping = [2,3,4,5];
+0785         <span class="keyword">for</span> k = 1:4
+0786             <span class="keyword">if</span> any(useIdx==mapping(k)) &amp;&amp; <span class="keyword">...</span>
+0787                     (~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.(numericVars{k})) || <span class="keyword">...</span>
+0788                     (k == 1 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.dob)))
+0789                 numericSelected(k) = true;
+0790             <span class="keyword">end</span>
+0791         <span class="keyword">end</span>
+0792 
+0793         <span class="comment">% if no numeric variables, return top 5 rows in filtered table</span>
+0794         <span class="keyword">if</span> ~any(numericSelected)
+0795             candidates = T(catMask,:);
+0796             nReturn = min(5,height(candidates));
+0797             tblMatches.Data = candidates(1:nReturn,:);
+0798             tblWithin.Data = {};
+0799             statusLabel.Text = sprintf([<span class="string">'Status: %d candidates after '</span> <span class="keyword">...</span>
+0800                 <span class="string">'categorical filtering; no numeric variables '</span> <span class="keyword">...</span>
+0801                 <span class="string">'selected.'</span>],nCandidates);
+0802             <span class="keyword">return</span>;
+0803         <span class="keyword">end</span>
+0804 
+0805         <span class="comment">% build target numeric values (convert into canonical units)</span>
+0806         targetVals = struct();
+0807 
+0808         <span class="comment">% age (decimal years)</span>
+0809         <span class="keyword">if</span> numericSelected(1)
+0810             dob = targetDOB.Value; ref = targetAssessDate.Value;
+0811             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dob) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ref) || ref &lt; dob
+0812                 uialert(fig,[<span class="string">'Invalid DOB or assessment date for age '</span> <span class="keyword">...</span>
+0813                     <span class="string">'calculation.'</span>],<span class="string">'Error'</span>);
+0814                 <span class="keyword">return</span>;
+0815             <span class="keyword">end</span>
+0816             targetVals.age = days(ref - dob)/365.2425;
+0817         <span class="keyword">end</span>
+0818 
+0819         <span class="comment">% height: convert target to canonical unit (meters)</span>
+0820         <span class="keyword">if</span> numericSelected(2)
+0821             tUnit = targetHeightUnit.Value;
+0822             <span class="keyword">if</span> strcmpi(tUnit, <span class="string">'Feet and Inches'</span>)
+0823                 feet = htFeet.Value;
+0824                 inches = htInches.Value;
+0825                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(feet), feet = 0; <span class="keyword">end</span>
+0826                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(inches), inches = 0; <span class="keyword">end</span>
+0827                 ht = [feet, inches];
+0828             <span class="keyword">else</span>
+0829                 ht = htSingle.Value;
+0830             <span class="keyword">end</span>
+0831             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ht) || any(isnan(ht))
+0832                 uialert(fig,[<span class="string">'Height selected but target height not '</span> <span class="keyword">...</span>
+0833                     <span class="string">'entered.'</span>],<span class="string">'Missing'</span>);
+0834                 <span class="keyword">return</span>;
+0835             <span class="keyword">end</span>
+0836             <span class="comment">% Convert target height to canonical unit (meters)</span>
+0837             targetVals.height = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'height'</span>, tUnit, canonicalUnits.height, ht));
+0838             <span class="comment">% also convert tolerance (entered in edTol(3)) -&gt; canonical</span>
+0839             tol_raw = edTol(3).Value;
+0840             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
+0841                 tol_raw = defaultTol.height;
+0842             <span class="keyword">end</span>
+0843             dataUnit = dataUnitDd(3).Value;
+0844             tol_canonical = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'height'</span>, dataUnit, canonicalUnits.height, tol_raw));
+0845             <span class="keyword">if</span> tol_canonical &lt;= 0
+0846                 tol_canonical = defaultTol.height;
+0847             <span class="keyword">end</span>
+0848             targetVals.heightTol = tol_canonical;
+0849             <span class="comment">% convert candidate heights (from dataset) to canonical later</span>
+0850         <span class="keyword">end</span>
+0851 
+0852         <span class="comment">% weight: convert target to canonical unit (kilograms)</span>
+0853         <span class="keyword">if</span> numericSelected(3)
+0854             wt = targetWeight.Value;
+0855             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(wt) || isnan(wt)
+0856                 uialert(fig,[<span class="string">'Weight selected but target weight not '</span> <span class="keyword">...</span>
+0857                     <span class="string">'entered.'</span>],<span class="string">'Missing'</span>);
+0858                 <span class="keyword">return</span>;
+0859             <span class="keyword">end</span>
+0860             tUnit = targetWeightUnit.Value;
+0861             dataUnit = dataUnitDd(4).Value;
+0862             targetVals.weight = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'weight'</span>,tUnit, <span class="keyword">...</span>
+0863                 canonicalUnits.weight,wt));
+0864             tol_raw = edTol(4).Value;
+0865             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
+0866                 tol_raw = defaultTol.weight;
+0867             <span class="keyword">end</span>
+0868             tol_canonical = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'weight'</span>,dataUnit, <span class="keyword">...</span>
+0869                 canonicalUnits.weight,tol_raw));
+0870             <span class="keyword">if</span> tol_canonical &lt;= 0
+0871                 tol_canonical = defaultTol.weight;
+0872             <span class="keyword">end</span>
+0873             targetVals.weightTol = tol_canonical;
+0874         <span class="keyword">end</span>
+0875 
+0876         <span class="comment">% education (no units)</span>
+0877         <span class="keyword">if</span> numericSelected(4)
+0878             ed = targetEducation.Value;
+0879             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ed) || isnan(ed)
+0880                 uialert(fig,[<span class="string">'Education selected but target education '</span> <span class="keyword">...</span>
+0881                     <span class="string">'not entered.'</span>],<span class="string">'Missing'</span>);
+0882                 <span class="keyword">return</span>;
+0883             <span class="keyword">end</span>
+0884             targetVals.education = double(ed);
+0885             <span class="comment">% tolerance stored in edTol(5) (no unit conversion needed)</span>
+0886         <span class="keyword">end</span>
+0887 
+0888         <span class="comment">% compute weighted normalized squared distances for each candidate</span>
+0889         candidates = T(catMask,:);
+0890         m = height(candidates);
+0891         dist2 = zeros(m,1);
+0892         withinMat = [];
+0893         withinColNames = {};
+0894 
+0895         <span class="comment">% =============== Age Contribution =================</span>
+0896         <span class="keyword">if</span> numericSelected(1)
+0897             <span class="comment">% get candidate ages from numeric age column or from dob column</span>
+0898             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.age) &amp;&amp; isnumeric(T.(varNames{colIdx.age}))
+0899                 candAges = double(candidates.(varNames{colIdx.age}));
+0900             <span class="keyword">elseif</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colIdx.dob)
+0901                 dobCol = candidates.(varNames{colIdx.dob});
+0902                 candAges = nan(m,1);
+0903                 <span class="keyword">for</span> r = 1:m
+0904                     <span class="keyword">try</span>
+0905                         val = dobCol(r);
+0906                         <span class="keyword">if</span> isdatetime(val)
+0907                             dt = val;
+0908                         <span class="keyword">else</span>
+0909                             dt = datetime(val);
+0910                         <span class="keyword">end</span>
+0911                         candAges(r) = <span class="keyword">...</span>
+0912                             days(targetAssessDate.Value - dt) / 365.2425;
+0913                     <span class="keyword">catch</span>
+0914                         candAges(r) = NaN;
+0915                     <span class="keyword">end</span>
+0916                 <span class="keyword">end</span>
+0917             <span class="keyword">else</span>
+0918                 candAges = nan(m,1);
+0919             <span class="keyword">end</span>
+0920             w = edWeight(2).Value; tol = edTol(2).Value;
+0921             <span class="keyword">if</span> tol&lt;=0
+0922                 tol = defaultTol.age;
+0923             <span class="keyword">end</span>
+0924             tval = targetVals.age;
+0925             diffsq = ((tval - candAges)./tol).^2;
+0926             <span class="keyword">if</span> any(~isnan(diffsq))
+0927                 mx = max(diffsq(~isnan(diffsq)));
+0928             <span class="keyword">else</span>
+0929                 mx = 1;
+0930             <span class="keyword">end</span>
+0931             diffsq(isnan(diffsq)) = (mx + 1e6);
+0932             dist2 = dist2 + w .* diffsq;
+0933             withinColNames{end+1} = sprintf( <span class="keyword">...</span>
+0934                 <span class="string">'Age (\x00B1%g yrs)'</span>,tol);
+0935             withinMat(:,end+1) = abs(tval - candAges) &lt;= tol;
+0936         <span class="keyword">end</span>
+0937 
+0938         <span class="comment">% =============== Height Contribution =================</span>
+0939         <span class="keyword">if</span> numericSelected(2)
+0940             <span class="comment">% candidate raw values as stored in dataset (user indicates</span>
+0941             <span class="comment">% their unit with dataUnitDd(3))</span>
+0942             cvals_raw = double(candidates.(varNames{colIdx.height}));
+0943             <span class="comment">% dataUnit = dataUnitDd(3).Value; % dataset unit selection (height)</span>
+0944             <span class="comment">% convert candidates from 'dataUnit' -&gt; canonical (meters)</span>
+0945             cvals_canonical = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'height'</span>,<span class="string">'meters'</span>, <span class="keyword">...</span>
+0946                 canonicalUnits.height,cvals_raw));
+0947             <span class="comment">% target converted to canonical earlier: targetVals.height</span>
+0948             tval = targetVals.height;
+0949             <span class="comment">% tolerance converted to canonical as targetVals.heightTol</span>
+0950             tol_canonical = targetVals.heightTol;
+0951             <span class="comment">% compute normalized squared difference</span>
+0952             diffsq = ((tval - cvals_canonical)./tol_canonical).^2;
+0953             <span class="keyword">if</span> any(~isnan(diffsq))
+0954                 mx = max(diffsq(~isnan(diffsq)));
+0955             <span class="keyword">else</span>
+0956                 mx = 1;
+0957             <span class="keyword">end</span>
+0958             <span class="comment">% penalize missing candidate values strongly</span>
+0959             diffsq(isnan(diffsq)) = (mx + 1e6);
+0960             w = edWeight(3).Value;
+0961             dist2 = dist2 + w .* diffsq;
+0962             <span class="comment">% TODO: fix hardcoding</span>
+0963             withinColNames{end+1} = sprintf( <span class="keyword">...</span>
+0964                 <span class="string">'Height (\x00B1%g %s)'</span>,edTol(3).Value,<span class="string">'inches'</span>);
+0965             withinMat(:,end+1) = <span class="keyword">...</span>
+0966                 abs(tval - cvals_canonical) &lt;= tol_canonical;
+0967         <span class="keyword">end</span>
+0968 
+0969         <span class="comment">% =============== Weight Contribution =================</span>
+0970         <span class="keyword">if</span> numericSelected(3)
+0971             cvals_raw = double(candidates.(varNames{colIdx.weight}));
+0972             <span class="comment">% dataUnit = dataUnitDd(4).Value; % dataset unit selection</span>
+0973             cvals_canonical = double(<a href="#_sub4" class="code" title="subfunction out = convertUnits(varName, fromUnit, toUnit, vals)">convertUnits</a>(<span class="string">'weight'</span>,<span class="string">'kilograms'</span>, <span class="keyword">...</span>
+0974                 canonicalUnits.weight,cvals_raw));
+0975             tval = targetVals.weight;
+0976             tol_canonical = targetVals.weightTol;
+0977             diffsq = ((tval - cvals_canonical)./tol_canonical).^2;
+0978             <span class="keyword">if</span> any(~isnan(diffsq))
+0979                 mx = max(diffsq(~isnan(diffsq)));
+0980             <span class="keyword">else</span>
+0981                 mx = 1;
+0982             <span class="keyword">end</span>
+0983             diffsq(isnan(diffsq)) = (mx + 1e6);
+0984             w = edWeight(4).Value;
+0985             dist2 = dist2 + w .* diffsq;
+0986             withinColNames{end+1} = sprintf( <span class="keyword">...</span>
+0987                 <span class="string">'Weight (\x00B1%g %s)'</span>,edTol(4).Value,dataUnit);
+0988             withinMat(:,end+1) = <span class="keyword">...</span>
+0989                 abs(tval - cvals_canonical) &lt;= tol_canonical;
+0990         <span class="keyword">end</span>
+0991 
+0992         <span class="comment">% =============== Education Contribution =================</span>
+0993         <span class="keyword">if</span> numericSelected(4)
+0994             cvals = double(candidates.(varNames{colIdx.education}));
+0995             w = edWeight(5).Value; tol = edTol(5).Value;
+0996             <span class="keyword">if</span> tol &lt;= 0
+0997                 tol = defaultTol.education;
+0998             <span class="keyword">end</span>
+0999             tval = targetVals.education;
+1000             diffsq = ((tval - cvals)./tol).^2;
+1001             <span class="keyword">if</span> any(~isnan(diffsq))
+1002                 mx = max(diffsq(~isnan(diffsq)));
+1003             <span class="keyword">else</span>
+1004                 mx = 1;
+1005             <span class="keyword">end</span>
+1006             diffsq(isnan(diffsq)) = (mx + 1e6);
+1007             dist2 = dist2 + w .* diffsq;
+1008             withinColNames{end+1} = sprintf( <span class="keyword">...</span>
+1009                 <span class="string">'Education (\x00B1%g yrs)'</span>,tol);
+1010             withinMat(:,end+1) = abs(tval - cvals) &lt;= tol;
+1011         <span class="keyword">end</span>
+1012 
+1013         <span class="comment">% finalize: compute Euclidean distance (sqrt of weighted sum)</span>
+1014         dist = sqrt(dist2);
+1015         [sortedDist, sidx] = sort(dist,<span class="string">'ascend'</span>,<span class="string">'ComparisonMethod'</span>,<span class="string">'real'</span>);
+1016         nReturn = min(5,numel(sortedDist));
+1017         <span class="keyword">if</span> nReturn == 0
+1018             statusLabel.Text = <span class="string">'No numeric comparisons available.'</span>;
+1019             tblMatches.Data = {}; tblWithin.Data = {};
+1020             <span class="keyword">return</span>;
+1021         <span class="keyword">end</span>
+1022         pickIdx = sidx(1:nReturn);
+1023         matched = candidates(pickIdx,:);
+1024 
+1025         <span class="comment">% prepare within-tolerance output table</span>
+1026         withinReturn = withinMat(pickIdx,:);
+1027         outCell = cell(nReturn,size(withinReturn,2)+1);
+1028         <span class="keyword">for</span> r = 1:nReturn
+1029             outCell{r,1} = sortedDist(r);
+1030             <span class="keyword">for</span> c = 1:size(withinReturn,2)
+1031                 outCell{r,c+1} = logical(withinReturn(r,c));
+1032             <span class="keyword">end</span>
+1033         <span class="keyword">end</span>
+1034         headers = [<span class="string">'Distance'</span> withinColNames];
+1035 
+1036         <span class="comment">% display results</span>
+1037         tblMatches.Data = matched;
+1038         tblMatches.ColumnName = matched.Properties.VariableNames;
+1039         tblWithin.Data = outCell;
+1040         tblWithin.ColumnName = headers;
+1041 
+1042         statusLabel.Text = sprintf([<span class="string">'Status: %d candidates after '</span> <span class="keyword">...</span>
+1043             <span class="string">'categorical filtering; returning %d match(es)'</span>], <span class="keyword">...</span>
+1044             nCandidates,nReturn);
+1045     <span class="keyword">end</span>
+1046 
+1047 <span class="comment">% Combine feet and inches to total inches</span>
+1048 feet = htFeet.Value;
+1049 inches = htInches.Value;
+1050 totalInches = feet * 12 + inches;
+1051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

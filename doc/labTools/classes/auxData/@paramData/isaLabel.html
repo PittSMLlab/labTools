@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of isaLabel</title>
+  <meta name="keywords" content="isaLabel">
+  <meta name="description" content="isaLabel  Checks if label(s) exist in dataset">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">auxData</a> &gt; <a href="index.html">@paramData</a> &gt; isaLabel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\auxData\@paramData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>isaLabel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>isaLabel  Checks if label(s) exist in dataset</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [boolFlag, labelIdx] = isaLabel(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">isaLabel  Checks if label(s) exist in dataset
+
+   [boolFlag, labelIdx] = isaLabel(this, label) checks whether
+   specified label(s) are present in the parameter data (case-
+   insensitive)
+
+   Inputs:
+       this - paramData object
+       label - string or cell array of label(s) to check
+
+   Outputs:
+       boolFlag - logical vector indicating which labels were found
+       labelIdx - vector of indices for found labels (0 for not found)
+
+   Note: Uses case-insensitive comparison
+
+   See also: <a href="isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>, <a href="getParameter.html" class="code" title="function [data, auxLabel] = getParameter(this, label)">getParameter</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@cognitiveData/cognitiveData.html" class="code" title="">cognitiveData</a>	</li><li><a href="isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>	isaParameter  Checks if parameter(s) exist in dataset</li><li><a href="paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [boolFlag, labelIdx] = isaLabel(this, label)</a>
+0002 <span class="comment">%isaLabel  Checks if label(s) exist in dataset</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether</span>
+0005 <span class="comment">%   specified label(s) are present in the parameter data (case-</span>
+0006 <span class="comment">%   insensitive)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - paramData object</span>
+0010 <span class="comment">%       label - string or cell array of label(s) to check</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       boolFlag - logical vector indicating which labels were found</span>
+0014 <span class="comment">%       labelIdx - vector of indices for found labels (0 for not found)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Note: Uses case-insensitive comparison</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: isaParameter, getParameter</span>
+0019 
+0020 <span class="keyword">if</span> isa(label, <span class="string">'char'</span>)
+0021     auxLabel{1} = label;
+0022 <span class="keyword">elseif</span> isa(label, <span class="string">'cell'</span>)
+0023     auxLabel = label;
+0024 <span class="keyword">end</span>
+0025 N = length(auxLabel);
+0026 boolFlag = false(N, 1);
+0027 labelIdx = zeros(N, 1);
+0028 <span class="keyword">for</span> j = 1:N
+0029     <span class="keyword">for</span> i = 1:length(this.labels)
+0030         <span class="keyword">if</span> strcmpi(auxLabel{j}, this.labels{i})
+0031             boolFlag(j) = true;
+0032             labelIdx(j) = i;
+0033             <span class="keyword">break</span>;
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getConditionIdxsFromName</title>
+  <meta name="keywords" content="getConditionIdxsFromName">
+  <meta name="description" content="getConditionIdxsFromName  Gets condition indices from names">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; getConditionIdxsFromName.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getConditionIdxsFromName
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getConditionIdxsFromName  Gets condition indices from names</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function conditionIdxs = getConditionIdxsFromName(this,conditionNames) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getConditionIdxsFromName  Gets condition indices from names
+
+   conditionIdxs = getConditionIdxsFromName(this, conditionNames)
+   looks for conditions with names similar to those specified
+
+   Inputs:
+       this - experimentData object
+       conditionNames - cell array containing strings or nested cell
+                        arrays (e.g., {'Base', 'Adap', {'Post', 'wash'}})
+
+   Outputs:
+       conditionIdxs - vector of condition indices
+
+   See also: experimentMetaData/getConditionIdxsFromName</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>	getAlignedField  Extracts time-aligned field data across</li><li><a href="getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>	getStridedField  Extracts stride-segmented field data across</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function conditionIdxs = getConditionIdxsFromName(this, </a><span class="keyword">...</span>
+0002     conditionNames)
+0003 <span class="comment">%getConditionIdxsFromName  Gets condition indices from names</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   conditionIdxs = getConditionIdxsFromName(this, conditionNames)</span>
+0006 <span class="comment">%   looks for conditions with names similar to those specified</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - experimentData object</span>
+0010 <span class="comment">%       conditionNames - cell array containing strings or nested cell</span>
+0011 <span class="comment">%                        arrays (e.g., {'Base', 'Adap', {'Post', 'wash'}})</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       conditionIdxs - vector of condition indices</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: experimentMetaData/getConditionIdxsFromName</span>
+0017 
+0018 conditionIdxs = this.metaData.getConditionIdxsFromName(conditionNames);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

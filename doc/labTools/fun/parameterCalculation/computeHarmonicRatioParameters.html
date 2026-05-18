@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeHarmonicRatioParameters</title>
+  <meta name="keywords" content="computeHarmonicRatioParameters">
+  <meta name="description" content="COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeHarmonicRatioParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeHarmonicRatioParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function out = computeHarmonicRatioParameters(strideEvents, markerData,options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.
+
+   Computes stride-by-stride harmonic ratio parameters and returns a
+ parameterSeries object that can be concatenated with other parameter
+ series objects (e.g., from computeTemporalParameters). Computes the
+ vertical, medial-lateral, anterior-posterior, and aggregate harmonic
+ ratios using the hip (HIP) markers.
+
+ Inputs:
+   strideEvents - struct of stride-level gait event times generated
+                  by calcParameters, with fields tSHS and tSHS2
+                  (N-by-1 vectors, in seconds)
+   markerData   - orientedLabTimeSeries containing kinematic marker
+                  data; must include 'RHIP' and/or 'LHIP' label
+                  prefixes
+   options      - (optional) struct with fields:
+                    .numHarmonics: number of harmonics to include
+                                   (default: 10; following Menz,
+                                   Lord &amp; Fitzpatrick 2003 J
+                                   Gerontol A, the foundational HR
+                                   paper for walking)
+                    .useMarkers:   'HIP' or 'ALL' (default: 'HIP';
+                                   HIP markers are placed at the
+                                   greater trochanter and have lower
+                                   soft-tissue artifact than
+                                   ASIS/PSIS)
+                    .filterCutoff: low-pass cutoff frequency in Hz
+                                   applied to pelvis position before
+                                   double differentiation (default:
+                                   6; conservative cutoff to limit
+                                   ω² noise amplification from
+                                   double differentiation; yields
+                                   ~6 meaningful harmonics at a
+                                   typical ~1 Hz stride frequency)
+
+ Outputs:
+   out - parameterSeries object containing all harmonic ratio
+         parameters
+
+ Toolbox Dependencies:
+   Signal Processing Toolbox (butter, filtfilt — used in
+   filterMarkerData local function)
+
+ See also <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>, <a href="computeTemporalParameters.html" class="code" title="function out = computeTemporalParameters(strideEvents)">COMPUTETEMPORALPARAMETERS</a>,
+   <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>, PARAMETERSERIES, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function pelvisPos = computePelvisPosition(markerData, useMarkers)</a></li><li><a href="#_sub2" class="code">function markerDataOut = transformCoordinateSystem(</a></li><li><a href="#_sub3" class="code">function dataOut = interpolateNaNGaps(dataIn)</a></li><li><a href="#_sub4" class="code">function dataFilt = filterMarkerData(data, fs, fc)</a></li><li><a href="#_sub5" class="code">function accel = computeAcceleration(pos, fs)</a></li><li><a href="#_sub6" class="code">function HR = computeHR_singleStride(signal, strideFreq, numHarmonics)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = computeHarmonicRatioParameters(strideEvents, markerData, </a><span class="keyword">...</span>
+0002     options)
+0003 <span class="comment">%COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes stride-by-stride harmonic ratio parameters and returns a</span>
+0006 <span class="comment">% parameterSeries object that can be concatenated with other parameter</span>
+0007 <span class="comment">% series objects (e.g., from computeTemporalParameters). Computes the</span>
+0008 <span class="comment">% vertical, medial-lateral, anterior-posterior, and aggregate harmonic</span>
+0009 <span class="comment">% ratios using the hip (HIP) markers.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   strideEvents - struct of stride-level gait event times generated</span>
+0013 <span class="comment">%                  by calcParameters, with fields tSHS and tSHS2</span>
+0014 <span class="comment">%                  (N-by-1 vectors, in seconds)</span>
+0015 <span class="comment">%   markerData   - orientedLabTimeSeries containing kinematic marker</span>
+0016 <span class="comment">%                  data; must include 'RHIP' and/or 'LHIP' label</span>
+0017 <span class="comment">%                  prefixes</span>
+0018 <span class="comment">%   options      - (optional) struct with fields:</span>
+0019 <span class="comment">%                    .numHarmonics: number of harmonics to include</span>
+0020 <span class="comment">%                                   (default: 10; following Menz,</span>
+0021 <span class="comment">%                                   Lord &amp; Fitzpatrick 2003 J</span>
+0022 <span class="comment">%                                   Gerontol A, the foundational HR</span>
+0023 <span class="comment">%                                   paper for walking)</span>
+0024 <span class="comment">%                    .useMarkers:   'HIP' or 'ALL' (default: 'HIP';</span>
+0025 <span class="comment">%                                   HIP markers are placed at the</span>
+0026 <span class="comment">%                                   greater trochanter and have lower</span>
+0027 <span class="comment">%                                   soft-tissue artifact than</span>
+0028 <span class="comment">%                                   ASIS/PSIS)</span>
+0029 <span class="comment">%                    .filterCutoff: low-pass cutoff frequency in Hz</span>
+0030 <span class="comment">%                                   applied to pelvis position before</span>
+0031 <span class="comment">%                                   double differentiation (default:</span>
+0032 <span class="comment">%                                   6; conservative cutoff to limit</span>
+0033 <span class="comment">%                                   ω² noise amplification from</span>
+0034 <span class="comment">%                                   double differentiation; yields</span>
+0035 <span class="comment">%                                   ~6 meaningful harmonics at a</span>
+0036 <span class="comment">%                                   typical ~1 Hz stride frequency)</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Outputs:</span>
+0039 <span class="comment">%   out - parameterSeries object containing all harmonic ratio</span>
+0040 <span class="comment">%         parameters</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% Toolbox Dependencies:</span>
+0043 <span class="comment">%   Signal Processing Toolbox (butter, filtfilt — used in</span>
+0044 <span class="comment">%   filterMarkerData local function)</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">% See also COMPUTESPATIALPARAMETERS, COMPUTETEMPORALPARAMETERS,</span>
+0047 <span class="comment">%   COMPUTEFORCEPARAMETERS, PARAMETERSERIES, CALCPARAMETERS.</span>
+0048 
+0049 <span class="comment">% TODO:</span>
+0050 <span class="comment">%   - store parameters as a structure if possible to convert to</span>
+0051 <span class="comment">% 'parameterSeries' object to help code readability (i.e., far fewer lines)</span>
+0052 <span class="comment">%   - rotate marker data to use a participant-based reference frame</span>
+0053 
+0054 arguments
+0055     strideEvents (1,1) struct
+0056     markerData
+0057     options      (1,1) struct = struct()
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">if</span> ~isfield(options, <span class="string">'numHarmonics'</span>)    <span class="comment">% if no field, ...</span>
+0061     options.numHarmonics = 10;          <span class="comment">% set to default (10 harmonics)</span>
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> ~isfield(options, <span class="string">'useMarkers'</span>)      <span class="comment">% if no field, ...</span>
+0064     options.useMarkers = <span class="string">'HIP'</span>;         <span class="comment">% use only 'HIP' markers (default)</span>
+0065 <span class="keyword">end</span>
+0066 <span class="keyword">if</span> ~isfield(options, <span class="string">'filterCutoff'</span>)    <span class="comment">% if no field, ...</span>
+0067     options.filterCutoff = 6;           <span class="comment">% set to default (6 Hz)</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%% Gait Stride Event Times</span>
+0071 timeSHS  = strideEvents.tSHS;   <span class="comment">% slow heel strike event times</span>
+0072 timeSHS2 = strideEvents.tSHS2;  <span class="comment">% 2nd slow heel strike event times</span>
+0073 
+0074 <span class="comment">%% Labels and Descriptions</span>
+0075 <span class="comment">% harmonic ratio parameters</span>
+0076 aux = { <span class="keyword">...</span>
+0077     <span class="string">'harmonicRatio'</span>,    <span class="string">'aggregate harmonic ratio'</span>; <span class="keyword">...</span>
+0078     <span class="string">'harmonicRatioX'</span>,   <span class="string">'harmonic ratio along medial-lateral (i.e., X) axis'</span>; <span class="keyword">...</span>
+0079     <span class="string">'harmonicRatioY'</span>,   <span class="string">'harmonic ratio along anterior-posterior (i.e., Y) axis'</span>; <span class="keyword">...</span>
+0080     <span class="string">'harmonicRatioZ'</span>,   <span class="string">'harmonic ratio along vertical (i.e., Z) axis'</span>};
+0081 
+0082 paramLabels = aux(:, 1);
+0083 description = aux(:, 2);
+0084 
+0085 <span class="comment">%% Compute Harmonic Ratio Parameters</span>
+0086 <span class="comment">% Get sampling rate from marker data</span>
+0087 samplingRate = 1 / markerData.sampPeriod;
+0088 
+0089 <span class="comment">% Compute pelvis position as centroid of HIP markers; pelvisPos is</span>
+0090 <span class="comment">% a (T x 3) array where the columns correspond to x, y, z</span>
+0091 pelvisPos = <a href="#_sub1" class="code" title="subfunction pelvisPos = computePelvisPosition(markerData, useMarkers)">computePelvisPosition</a>(markerData, options.useMarkers);
+0092 
+0093 <span class="comment">% Interpolate NaN gaps so filtfilt receives finite input</span>
+0094 pelvisPos = <a href="#_sub3" class="code" title="subfunction dataOut = interpolateNaNGaps(dataIn)">interpolateNaNGaps</a>(pelvisPos);
+0095 
+0096 <span class="comment">% Low-pass filter pelvis position data before differentiation</span>
+0097 pelvisPosFilt = <a href="#_sub4" class="code" title="subfunction dataFilt = filterMarkerData(data, fs, fc)">filterMarkerData</a>( <span class="keyword">...</span>
+0098     pelvisPos, samplingRate, options.filterCutoff);
+0099 
+0100 <span class="comment">% Compute pelvis acceleration via double differentiation</span>
+0101 pelvisAccel = <a href="#_sub5" class="code" title="subfunction accel = computeAcceleration(pos, fs)">computeAcceleration</a>(pelvisPosFilt, samplingRate);
+0102 
+0103 <span class="comment">% Initialize output arrays (one value per stride)</span>
+0104 numStrides     = length(timeSHS);
+0105 harmonicRatio  = nan(numStrides, 1);
+0106 harmonicRatioX = nan(numStrides, 1);
+0107 harmonicRatioY = nan(numStrides, 1);
+0108 harmonicRatioZ = nan(numStrides, 1);
+0109 
+0110 markerTime = markerData.Time;
+0111 
+0112 <span class="comment">% Compute harmonic ratio for each stride</span>
+0113 <span class="keyword">for</span> st = 1:numStrides
+0114     tStart = timeSHS(st);
+0115     tEnd   = timeSHS2(st);
+0116 
+0117     <span class="comment">% Skip strides with missing or invalid boundaries</span>
+0118     <span class="keyword">if</span> isnan(tStart) || isnan(tEnd) || tEnd &lt;= tStart
+0119         <span class="keyword">continue</span>;
+0120     <span class="keyword">end</span>
+0121 
+0122     <span class="comment">% Find sample indices for this stride window</span>
+0123     sampleIdx = markerTime &gt;= tStart &amp; markerTime &lt;= tEnd;
+0124 
+0125     <span class="comment">% Skip strides with insufficient samples to resolve numHarmonics</span>
+0126     <span class="keyword">if</span> sum(sampleIdx) &lt; 2 * options.numHarmonics
+0127         <span class="keyword">continue</span>;
+0128     <span class="keyword">end</span>
+0129 
+0130     accelStride    = pelvisAccel(sampleIdx, :);
+0131     strideDuration = tEnd - tStart;
+0132     strideFreq     = 1 / strideDuration;
+0133 
+0134     <span class="comment">% Compute harmonic ratio for each cardinal direction</span>
+0135     harmonicRatioX(st) = <a href="#_sub6" class="code" title="subfunction HR = computeHR_singleStride(signal, strideFreq, numHarmonics)">computeHR_singleStride</a>( <span class="keyword">...</span>
+0136         accelStride(:, 1), strideFreq, options.numHarmonics);
+0137     harmonicRatioY(st) = <a href="#_sub6" class="code" title="subfunction HR = computeHR_singleStride(signal, strideFreq, numHarmonics)">computeHR_singleStride</a>( <span class="keyword">...</span>
+0138         accelStride(:, 2), strideFreq, options.numHarmonics);
+0139     harmonicRatioZ(st) = <a href="#_sub6" class="code" title="subfunction HR = computeHR_singleStride(signal, strideFreq, numHarmonics)">computeHR_singleStride</a>( <span class="keyword">...</span>
+0140         accelStride(:, 3), strideFreq, options.numHarmonics);
+0141 
+0142     <span class="comment">% Compute aggregate HR using vector magnitude</span>
+0143     accelMag          = sqrt(sum(accelStride.^2, 2));
+0144     harmonicRatio(st) = <a href="#_sub6" class="code" title="subfunction HR = computeHR_singleStride(signal, strideFreq, numHarmonics)">computeHR_singleStride</a>( <span class="keyword">...</span>
+0145         accelMag, strideFreq, options.numHarmonics);
+0146 <span class="keyword">end</span>
+0147 
+0148 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0149 data = nan(numStrides, length(paramLabels));
+0150 <span class="keyword">for</span> ii = 1:length(paramLabels)
+0151     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
+0152 <span class="keyword">end</span>
+0153 
+0154 <span class="comment">%% Output Computed Parameters</span>
+0155 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0156 
+0157 <span class="keyword">end</span>
+0158 
+0159 <span class="comment">%% Local Functions</span>
+0160 
+0161 <a name="_sub1" href="#_subfunctions" class="code">function pelvisPos = computePelvisPosition(markerData, useMarkers)</a>
+0162 <span class="comment">%COMPUTEPELVISPOSITION Compute pelvis centroid position from markers.</span>
+0163 <span class="comment">%</span>
+0164 <span class="comment">%   Returns the (T x 3) mean position across available pelvis markers,</span>
+0165 <span class="comment">% where columns correspond to [x, y, z] in the same units as markerData.</span>
+0166 <span class="comment">%</span>
+0167 <span class="comment">% Inputs:</span>
+0168 <span class="comment">%   markerData - orientedLabTimeSeries containing pelvis marker data</span>
+0169 <span class="comment">%   useMarkers - 'HIP' to use only hip (greater trochanter) markers,</span>
+0170 <span class="comment">%                or any other value to use all available pelvis markers</span>
+0171 <span class="comment">%</span>
+0172 <span class="comment">% Outputs:</span>
+0173 <span class="comment">%   pelvisPos - (T x 3) array of pelvis centroid position [x, y, z]</span>
+0174 <span class="comment">%</span>
+0175 <span class="comment">% Toolbox Dependencies:</span>
+0176 <span class="comment">%   None</span>
+0177 <span class="keyword">if</span> strcmpi(useMarkers, <span class="string">'HIP'</span>)
+0178     <span class="comment">% Use only HIP (greater trochanter) markers (most reliable)</span>
+0179     hipData   = markerData.getOrientedData({<span class="string">'RHIP'</span>, <span class="string">'LHIP'</span>});
+0180     pelvisPos = squeeze(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(hipData, 2, <span class="string">'omitnan'</span>));
+0181 <span class="keyword">else</span>
+0182     <span class="comment">% Use all available pelvis markers; getOrientedData returns NaN</span>
+0183     <span class="comment">% columns for any prefixes not present, which are then excluded</span>
+0184     <span class="comment">% by the 'omitnan' flag in mean()</span>
+0185     pelvisLabels = {<span class="string">'RHIP'</span>, <span class="string">'LHIP'</span>, <span class="string">'RASI'</span>, <span class="string">'LASI'</span>, <span class="string">'RPSI'</span>, <span class="string">'LPSI'</span>};
+0186     hipData   = markerData.getOrientedData(pelvisLabels);
+0187     pelvisPos = squeeze(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(hipData, 2, <span class="string">'omitnan'</span>));
+0188 <span class="keyword">end</span>
+0189 <span class="keyword">end</span>
+0190 
+0191 <a name="_sub2" href="#_subfunctions" class="code">function markerDataOut = transformCoordinateSystem( </a><span class="keyword">...</span>
+0192     markerDataIn, coordMapping)
+0193 <span class="comment">%TRANSFORMCOORDINATESYSTEM Reorder marker data columns to ML/AP/VT.</span>
+0194 <span class="comment">%</span>
+0195 <span class="comment">% Inputs:</span>
+0196 <span class="comment">%   markerDataIn  - struct with marker fields (each [n x 3])</span>
+0197 <span class="comment">%   coordMapping  - string specifying the transformation, or a</span>
+0198 <span class="comment">%                   3-element numeric vector [ML_col, AP_col, VT_col]:</span>
+0199 <span class="comment">%                     'XYZ_to_MLAP_VT' - x=ML, y=AP, z=VT (no change)</span>
+0200 <span class="comment">%                     'XZY_to_MLAP_VT' - x=ML, z=AP, y=VT (swap y,z)</span>
+0201 <span class="comment">%                     'YXZ_to_MLAP_VT' - y=ML, x=AP, z=VT (swap x,y)</span>
+0202 <span class="comment">%                     'ZXY_to_MLAP_VT' - z=VT, x=ML, y=AP</span>
+0203 <span class="comment">%</span>
+0204 <span class="comment">% Outputs:</span>
+0205 <span class="comment">%   markerDataOut - struct with columns reordered to [ML, AP, VT]</span>
+0206 <span class="comment">%</span>
+0207 <span class="comment">% Toolbox Dependencies:</span>
+0208 <span class="comment">%   None</span>
+0209 
+0210 markerDataOut = struct();
+0211 fields = fieldnames(markerDataIn);
+0212 
+0213 <span class="comment">% Define transformation</span>
+0214 <span class="keyword">switch</span> coordMapping
+0215     <span class="keyword">case</span> <span class="string">'XYZ_to_MLAP_VT'</span>
+0216         colOrder = [1, 2, 3]; <span class="comment">% No change - already correct</span>
+0217     <span class="keyword">case</span> <span class="string">'XZY_to_MLAP_VT'</span>
+0218         colOrder = [1, 3, 2]; <span class="comment">% Swap y and z</span>
+0219     <span class="keyword">case</span> <span class="string">'YXZ_to_MLAP_VT'</span>
+0220         colOrder = [2, 1, 3]; <span class="comment">% Swap x and y</span>
+0221     <span class="keyword">case</span> <span class="string">'ZXY_to_MLAP_VT'</span>
+0222         colOrder = [3, 1, 2]; <span class="comment">% x→VT, y→ML, z→AP becomes ML,AP,VT</span>
+0223     <span class="keyword">otherwise</span>
+0224         <span class="keyword">if</span> isnumeric(coordMapping) &amp;&amp; length(coordMapping) == 3
+0225             colOrder = coordMapping;
+0226         <span class="keyword">else</span>
+0227             error([<span class="string">'Unknown coordinate mapping. Use predefined '</span> <span class="keyword">...</span>
+0228                 <span class="string">'string or [ML_col, AP_col, VT_col].'</span>]);
+0229         <span class="keyword">end</span>
+0230 <span class="keyword">end</span>
+0231 
+0232 <span class="comment">% Apply transformation to all marker fields</span>
+0233 <span class="keyword">for</span> fld = 1:length(fields)
+0234     fieldName = fields{fld};
+0235     markerDataOut.(fieldName) = markerDataIn.(fieldName)(:, colOrder);
+0236 <span class="keyword">end</span>
+0237 
+0238 fprintf([<span class="string">'Applied coordinate transformation: '</span> <span class="keyword">...</span>
+0239     <span class="string">'columns [%d,%d,%d] → [ML,AP,VT]\n'</span>], colOrder);
+0240 <span class="keyword">end</span>
+0241 
+0242 <a name="_sub3" href="#_subfunctions" class="code">function dataOut = interpolateNaNGaps(dataIn)</a>
+0243 <span class="comment">%INTERPOLATENANGAPS Linearly interpolate NaN gaps in each column.</span>
+0244 <span class="comment">%</span>
+0245 <span class="comment">%   Fills NaN values using linear interpolation on the sample index.</span>
+0246 <span class="comment">% Leading or trailing NaN runs are filled with the nearest valid</span>
+0247 <span class="comment">% value (constant extrapolation). Columns that are entirely NaN are</span>
+0248 <span class="comment">% left unchanged.</span>
+0249 <span class="comment">%</span>
+0250 <span class="comment">% Inputs:</span>
+0251 <span class="comment">%   dataIn  - (T x N) data array, may contain NaN values</span>
+0252 <span class="comment">%</span>
+0253 <span class="comment">% Outputs:</span>
+0254 <span class="comment">%   dataOut - (T x N) array with NaN gaps filled by interpolation</span>
+0255 <span class="comment">%</span>
+0256 <span class="comment">% Toolbox Dependencies:</span>
+0257 <span class="comment">%   None</span>
+0258 
+0259 dataOut = dataIn;
+0260 t = (1:size(dataIn, 1))';
+0261 <span class="keyword">for</span> ii = 1:size(dataIn, 2)
+0262     x       = dataIn(:, ii);
+0263     nanMask = isnan(x);
+0264     <span class="keyword">if</span> ~any(nanMask) || all(nanMask)
+0265         <span class="keyword">continue</span>;
+0266     <span class="keyword">end</span>
+0267     validT  = t(~nanMask);
+0268     validX  = x(~nanMask);
+0269     xInterp = interp1(validT, validX, t, <span class="string">'linear'</span>);
+0270     <span class="comment">% Fill leading/trailing NaN with nearest valid value</span>
+0271     xInterp(t &lt; validT(1))   = validX(1);
+0272     xInterp(t &gt; validT(end)) = validX(end);
+0273     dataOut(:, ii) = xInterp;
+0274 <span class="keyword">end</span>
+0275 <span class="keyword">end</span>
+0276 
+0277 <a name="_sub4" href="#_subfunctions" class="code">function dataFilt = filterMarkerData(data, fs, fc)</a>
+0278 <span class="comment">%FILTERMARKERDATA Apply zero-phase low-pass Butterworth filter.</span>
+0279 <span class="comment">%</span>
+0280 <span class="comment">% Inputs:</span>
+0281 <span class="comment">%   data - (T x N) data array to filter</span>
+0282 <span class="comment">%   fs   - sampling frequency in Hz</span>
+0283 <span class="comment">%   fc   - low-pass cutoff frequency in Hz</span>
+0284 <span class="comment">%</span>
+0285 <span class="comment">% Outputs:</span>
+0286 <span class="comment">%   dataFilt - filtered data, same size as data</span>
+0287 <span class="comment">%</span>
+0288 <span class="comment">% Toolbox Dependencies:</span>
+0289 <span class="comment">%   Signal Processing Toolbox (butter, filtfilt)</span>
+0290 
+0291 [b, a] = butter(4, fc/(fs/2), <span class="string">'low'</span>);
+0292 dataFilt = filtfilt(b, a, data);
+0293 <span class="keyword">end</span>
+0294 
+0295 <a name="_sub5" href="#_subfunctions" class="code">function accel = computeAcceleration(pos, fs)</a>
+0296 <span class="comment">%COMPUTEACCELERATION Compute acceleration via double differentiation.</span>
+0297 <span class="comment">%</span>
+0298 <span class="comment">% Inputs:</span>
+0299 <span class="comment">%   pos - (T x N) position data array</span>
+0300 <span class="comment">%   fs  - sampling frequency in Hz</span>
+0301 <span class="comment">%</span>
+0302 <span class="comment">% Outputs:</span>
+0303 <span class="comment">%   accel - (T x N) acceleration array (same units as pos * fs^2)</span>
+0304 <span class="comment">%</span>
+0305 <span class="comment">% Toolbox Dependencies:</span>
+0306 <span class="comment">%   None</span>
+0307 
+0308 <span class="comment">% Compute time derivative of each column separately; gradient(M, h)</span>
+0309 <span class="comment">% for a matrix M operates along the column dimension, not rows (time)</span>
+0310 vel   = zeros(size(pos));
+0311 accel = zeros(size(pos));
+0312 <span class="keyword">for</span> ii = 1:size(pos, 2)
+0313     vel(:, ii)   = gradient(pos(:, ii), 1/fs);
+0314     accel(:, ii) = gradient(vel(:, ii), 1/fs);
+0315 <span class="keyword">end</span>
+0316 <span class="keyword">end</span>
+0317 
+0318 <a name="_sub6" href="#_subfunctions" class="code">function HR = computeHR_singleStride(signal, strideFreq, numHarmonics)</a>
+0319 <span class="comment">%COMPUTEHR_SINGLESTRIDE Compute harmonic ratio for one stride.</span>
+0320 <span class="comment">%</span>
+0321 <span class="comment">% Inputs:</span>
+0322 <span class="comment">%   signal       - (n x 1) acceleration signal for one stride window</span>
+0323 <span class="comment">%   strideFreq   - fundamental stride frequency in Hz</span>
+0324 <span class="comment">%   numHarmonics - number of harmonics to sum in the even/odd ratio</span>
+0325 <span class="comment">%</span>
+0326 <span class="comment">% Outputs:</span>
+0327 <span class="comment">%   HR - harmonic ratio (even-harmonic sum / odd-harmonic sum);</span>
+0328 <span class="comment">%        NaN if the odd-harmonic sum is zero</span>
+0329 <span class="comment">%</span>
+0330 <span class="comment">% Toolbox Dependencies:</span>
+0331 <span class="comment">%   None</span>
+0332 
+0333 <span class="comment">% Ensure signal is column vector and remove mean</span>
+0334 signal = signal(:) - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(signal);
+0335 n = length(signal);
+0336 
+0337 <span class="comment">% Compute FFT</span>
+0338 Y = fft(signal);
+0339 P = abs(Y/n);
+0340 P = P(1:floor(n/2)+1);
+0341 P(2:end-1) = 2*P(2:end-1);
+0342 
+0343 <span class="comment">% Frequency vector</span>
+0344 fsLocal = n * strideFreq; <span class="comment">% Effective sampling rate for this stride</span>
+0345 f = fsLocal * (0:(floor(n/2))) / n;
+0346 
+0347 <span class="comment">% Extract harmonic amplitudes</span>
+0348 evenSum = 0;
+0349 oddSum  = 0;
+0350 
+0351 <span class="keyword">for</span> hrm = 1:numHarmonics
+0352     harmonicFreq = hrm * strideFreq;
+0353     [~, freqIdx] = min(abs(f - harmonicFreq));
+0354 
+0355     <span class="keyword">if</span> freqIdx &lt;= length(P)
+0356         <span class="keyword">if</span> mod(hrm, 2) == 0
+0357             evenSum = evenSum + P(freqIdx);
+0358         <span class="keyword">else</span>
+0359             oddSum = oddSum + P(freqIdx);
+0360         <span class="keyword">end</span>
+0361     <span class="keyword">end</span>
+0362 <span class="keyword">end</span>
+0363 
+0364 <span class="comment">% Compute harmonic ratio (even/odd)</span>
+0365 <span class="keyword">if</span> oddSum &gt; 0
+0366     HR = evenSum / oddSum;
+0367 <span class="keyword">else</span>
+0368     HR = NaN;
+0369 <span class="keyword">end</span>
+0370 <span class="keyword">end</span>
+0371</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

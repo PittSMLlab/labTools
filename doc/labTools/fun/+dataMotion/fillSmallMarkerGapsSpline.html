@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fillSmallMarkerGapsSpline</title>
+  <meta name="keywords" content="fillSmallMarkerGapsSpline">
+  <meta name="description" content="FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; fillSmallMarkerGapsSpline.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>fillSmallMarkerGapsSpline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, vicon, shouldSave, maxGapSize, interpMethod) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline
+   This function fills gaps in all marker trajectories identified in
+ markerGaps using spline interpolation for gaps smaller than the specified
+ maxGapSize variable. It optionally accepts a Vicon Nexus SDK object.
+
+ input(s):
+   markerGaps: struct with start and end frame indices of gaps in each
+       marker's trajectory, as obtained from extractMarkerGapsTrial
+   pathTrial: string or character array of the full path to the trial
+   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
+   shouldSave: (optional) logical, whether to save changes (default: true)
+   maxGapSize: (optional) integer specifying maximum gap size to fill,
+       (default: 10 frames)
+ output(s):
+   updatedMarkerGaps: struct with only remaining gaps after processing</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [trajX,trajY,trajZ,existsTraj] = fillGap(</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, vicon, shouldSave, maxGapSize, interpMethod)</a>
+0002 <span class="comment">%FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline</span>
+0003 <span class="comment">%   This function fills gaps in all marker trajectories identified in</span>
+0004 <span class="comment">% markerGaps using spline interpolation for gaps smaller than the specified</span>
+0005 <span class="comment">% maxGapSize variable. It optionally accepts a Vicon Nexus SDK object.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% input(s):</span>
+0008 <span class="comment">%   markerGaps: struct with start and end frame indices of gaps in each</span>
+0009 <span class="comment">%       marker's trajectory, as obtained from extractMarkerGapsTrial</span>
+0010 <span class="comment">%   pathTrial: string or character array of the full path to the trial</span>
+0011 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied</span>
+0012 <span class="comment">%   shouldSave: (optional) logical, whether to save changes (default: true)</span>
+0013 <span class="comment">%   maxGapSize: (optional) integer specifying maximum gap size to fill,</span>
+0014 <span class="comment">%       (default: 10 frames)</span>
+0015 <span class="comment">% output(s):</span>
+0016 <span class="comment">%   updatedMarkerGaps: struct with only remaining gaps after processing</span>
+0017 
+0018 <span class="comment">% TODO: add a GUI input option if helpful</span>
+0019 narginchk(2,6);         <span class="comment">% verify correct number of input arguments</span>
+0020 
+0021 <span class="comment">% set default value for maxGapSize if not provided</span>
+0022 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(interpMethod)
+0023     interpMethod = <span class="string">'spline'</span>;
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(maxGapSize)
+0027     maxGapSize = 10;
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(shouldSave)       <span class="comment">% if no 'shouldSave' input</span>
+0031     shouldSave = true;                     <span class="comment">% default to saving changes</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% validate 'markerGaps' structure format</span>
+0035 markers = fieldnames(markerGaps);
+0036 <span class="keyword">for</span> i = 1:numel(markers)
+0037     gaps = markerGaps.(markers{i});
+0038     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(gaps) || size(gaps,2) ~= 2
+0039         error([<span class="string">'Invalid format in markerGaps for marker %s. Expecting '</span> <span class="keyword">...</span>
+0040             <span class="string">'a non-empty Nx2 matrix.'</span>],markers{i});
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
+0045 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0046     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0047         <span class="string">'Nexus...\n'</span>]);
+0048     vicon = ViconNexus();
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">% open the trial if not already open</span>
+0052 <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0053     <span class="keyword">return</span>;                         <span class="comment">% exit if the trial could not be opened</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% get subject name (assuming only one subject in the trial)</span>
+0057 subject = vicon.GetSubjectNames();
+0058 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subject)
+0059     error(<span class="string">'No subject found in the trial.'</span>);
+0060 <span class="keyword">end</span>
+0061 subject = subject{1};
+0062 
+0063 <span class="comment">% process each marker gap in the 'markerGaps' struct</span>
+0064 fprintf(<span class="string">'Filling small marker gaps with %s interpolation...\n'</span>, interpMethod);
+0065 wasChanged = false;                     <span class="comment">% track whether changes were made</span>
+0066 
+0067 <span class="keyword">for</span> mrkr = 1:numel(markers)
+0068     nameMarker = markers{mrkr};         <span class="comment">% get marker name</span>
+0069     gaps = markerGaps.(nameMarker);     <span class="comment">% retrieve gap indices for marker</span>
+0070 
+0071     <span class="keyword">try</span>                                 <span class="comment">% get marker trajectory data</span>
+0072         [trajX,trajY,trajZ,existsTraj] = <span class="keyword">...</span>
+0073             vicon.GetTrajectory(subject,nameMarker);
+0074     <span class="keyword">catch</span>
+0075         warning([<span class="string">'Failed to retrieve trajectory for marker %s. '</span> <span class="keyword">...</span>
+0076             <span class="string">'Skipping...'</span>],nameMarker);
+0077         <span class="keyword">continue</span>;
+0078     <span class="keyword">end</span>
+0079 
+0080     <span class="comment">% preallocate remaining gaps array based on initial size</span>
+0081     gapsRemaining = gaps;   <span class="comment">% store indices of gaps that were not filled</span>
+0082     indNextGap = 1;         <span class="comment">% track the index for remaining gaps</span>
+0083 
+0084     <span class="comment">% process and fill gaps smaller than 'maxGapSize'</span>
+0085     <span class="keyword">for</span> indGap = 1:size(gaps,1)
+0086         gapStart = gaps(indGap,1);
+0087         gapEnd = gaps(indGap,2);
+0088         gapLength = gapEnd - gapStart + 1;
+0089 
+0090         <span class="comment">% fill gap if it is within the allowed 'maxGapSize'</span>
+0091         <span class="keyword">if</span> gapLength &lt;= maxGapSize &amp;&amp; any(existsTraj)
+0092             [trajX,trajY,trajZ,existsTraj] = <span class="keyword">...</span>
+0093                 <a href="#_sub1" class="code" title="subfunction [trajX,trajY,trajZ,existsTraj] = fillGap( ">fillGap</a>(trajX,trajY,trajZ,existsTraj,gaps(indGap,:), interpMethod);
+0094             wasChanged = true;              <span class="comment">% mark changes made</span>
+0095         <span class="keyword">else</span>
+0096             <span class="comment">% retain the gap in 'gapsRemaining' if it exceeds 'maxGapSize'</span>
+0097             <span class="comment">% that is, if gap was not filled, add it to 'gapsRemaining'</span>
+0098             gapsRemaining(indNextGap,:) = gaps(indGap,:);
+0099             indNextGap = indNextGap + 1;    <span class="comment">% increment gap index</span>
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
+0102 
+0103     <span class="comment">% remove any excess preallocated rows in 'gapsRemaining'</span>
+0104     gapsRemaining(indNextGap:<span class="keyword">end</span>,:) = [];
+0105     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(gapsRemaining)          <span class="comment">% if there are gaps remaining, ...</span>
+0106         <span class="comment">% update 'markerGaps' with only the remaining gaps</span>
+0107         markerGaps.(nameMarker) = gapsRemaining;
+0108     <span class="keyword">else</span>                                <span class="comment">% otherwise, remove marker field</span>
+0109         markerGaps = rmfield(markerGaps,nameMarker);
+0110     <span class="keyword">end</span>
+0111 
+0112     <span class="comment">% update trajectory in Vicon Nexus</span>
+0113     vicon.SetTrajectory(subject,nameMarker,trajX,trajY,trajZ,existsTraj);
+0114 <span class="keyword">end</span>
+0115 fprintf(<span class="string">'Small marker gap spline filling complete.\n'</span>);
+0116 
+0117 <span class="comment">% save the trial if changes were made and 'shouldSave' is true</span>
+0118 <span class="keyword">if</span> wasChanged &amp;&amp; shouldSave
+0119     fprintf(<span class="string">'Saving the trial with changes...\n'</span>);
+0120     <span class="keyword">try</span>
+0121         vicon.SaveTrial(200);
+0122         fprintf(<span class="string">'Trial saved successfully.\n'</span>);
+0123     <span class="keyword">catch</span> ME
+0124         warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
+0125     <span class="keyword">end</span>
+0126 <span class="keyword">elseif</span> ~wasChanged
+0127     fprintf(<span class="string">'No changes made; trial not saved.\n'</span>);
+0128 <span class="keyword">elseif</span> ~shouldSave
+0129     fprintf(<span class="string">'Save option is disabled; trial not saved.\n'</span>);
+0130 <span class="keyword">end</span>
+0131 
+0132 <span class="comment">% output the updated markerGaps with only remaining gaps</span>
+0133 markerGapsUpdated = markerGaps;
+0134 
+0135 <span class="keyword">end</span>
+0136 
+0137 <a name="_sub1" href="#_subfunctions" class="code">function [trajX,trajY,trajZ,existsTraj] = fillGap( </a><span class="keyword">...</span>
+0138     trajX,trajY,trajZ,existsTraj,gapRange, interpMethod)
+0139 <span class="comment">% FILLGAP Interpolates a gap in a marker trajectory using spline</span>
+0140 <span class="comment">% input:</span>
+0141 <span class="comment">%   trajX, trajY, trajZ: trajectories for x, y, and z coordinates</span>
+0142 <span class="comment">%   existsTraj: logical array indicating frame existence</span>
+0143 <span class="comment">%   gapRange: 1x2 array with start and end indices of the gap to fill</span>
+0144 
+0145 <span class="comment">% frames to process for filling the gap</span>
+0146 framesToFill = gapRange(1):gapRange(2);
+0147 existingFrames = find(existsTraj);      <span class="comment">% get frames with data</span>
+0148 
+0149 trajX(framesToFill) = interp1(existingFrames, trajX(existingFrames), framesToFill, interpMethod);
+0150 trajY(framesToFill) = interp1(existingFrames, trajY(existingFrames), framesToFill, interpMethod);
+0151 trajZ(framesToFill) = interp1(existingFrames, trajZ(existingFrames), framesToFill, interpMethod);
+0152 existsTraj(framesToFill) = true;        <span class="comment">% update existence array</span>
+0153 
+0154 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of compareExperimentData</title>
+  <meta name="keywords" content="compareExperimentData">
+  <meta name="description" content="COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; compareExperimentData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>compareExperimentData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function report = compareExperimentData(refInput, newInput, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.
+
+   Compares structural properties — data type, field presence, data
+ dimensions, and channel labels — of two experimentData objects or
+ saved MAT files. Unlike COMPAREADAPTATIONDATA, no numerical values
+ are compared; only the layout and composition of each trial's data
+ fields are checked.
+
+   Useful for verifying that a code change did not add, remove, or
+ reorder data channels in rawTrialData or processedTrialData.
+
+   Label comparisons are order-sensitive: a channel list with the same
+ labels in a different order is flagged as a structural difference.
+
+ Inputs:
+   refInput - char path to a *expData.mat or *RAW.mat file, or an
+              experimentData object, to use as the reference
+   newInput - char path to a *expData.mat or *RAW.mat file, or an
+              experimentData object, to compare against the reference
+
+ Outputs:
+   report - struct with fields: refName, newName, refFile, newFile,
+            nRefTrials, nNewTrials, commonTrials, refOnlyTrials,
+            newOnlyTrials, trials (struct array per common trial with
+            fields trial, dataTypesMatch, refType, newType, fields,
+            nFieldsChanged), nTrialsChanged, nFieldDiffs
+
+ Toolbox Dependencies: None
+
+ See also <a href="compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">COMPAREADAPTATIONDATA</a>, EXPERIMENTDATA, LABDATA.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [expData, filePath] = loadExpData(input)</a></li><li><a href="#_sub2" class="code">function desc = describeField(trialObj, fieldName)</a></li><li><a href="#_sub3" class="code">function printStructureReport(report)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function report = compareExperimentData(refInput, newInput, options)</a>
+0002 <span class="comment">%COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Compares structural properties — data type, field presence, data</span>
+0005 <span class="comment">% dimensions, and channel labels — of two experimentData objects or</span>
+0006 <span class="comment">% saved MAT files. Unlike COMPAREADAPTATIONDATA, no numerical values</span>
+0007 <span class="comment">% are compared; only the layout and composition of each trial's data</span>
+0008 <span class="comment">% fields are checked.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Useful for verifying that a code change did not add, remove, or</span>
+0011 <span class="comment">% reorder data channels in rawTrialData or processedTrialData.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Label comparisons are order-sensitive: a channel list with the same</span>
+0014 <span class="comment">% labels in a different order is flagged as a structural difference.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   refInput - char path to a *expData.mat or *RAW.mat file, or an</span>
+0018 <span class="comment">%              experimentData object, to use as the reference</span>
+0019 <span class="comment">%   newInput - char path to a *expData.mat or *RAW.mat file, or an</span>
+0020 <span class="comment">%              experimentData object, to compare against the reference</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   report - struct with fields: refName, newName, refFile, newFile,</span>
+0024 <span class="comment">%            nRefTrials, nNewTrials, commonTrials, refOnlyTrials,</span>
+0025 <span class="comment">%            newOnlyTrials, trials (struct array per common trial with</span>
+0026 <span class="comment">%            fields trial, dataTypesMatch, refType, newType, fields,</span>
+0027 <span class="comment">%            nFieldsChanged), nTrialsChanged, nFieldDiffs</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Toolbox Dependencies: None</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% See also COMPAREADAPTATIONDATA, EXPERIMENTDATA, LABDATA.</span>
+0032 
+0033 arguments
+0034     refInput
+0035     newInput
+0036     options.RefName (1,:) char    = <span class="string">'reference'</span>
+0037     options.NewName (1,:) char    = <span class="string">'new'</span>
+0038     options.Verbose (1,1) logical = true
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">%% Validate inputs</span>
+0042 <span class="keyword">if</span> ~ischar(refInput) &amp;&amp; ~isa(refInput, <span class="string">'experimentData'</span>)
+0043     error(<span class="string">'compareExperimentData:invalidInput'</span>, <span class="keyword">...</span>
+0044         [<span class="string">'refInput must be a char file path or '</span> <span class="keyword">...</span>
+0045         <span class="string">'experimentData object.'</span>]);
+0046 <span class="keyword">end</span>
+0047 <span class="keyword">if</span> ~ischar(newInput) &amp;&amp; ~isa(newInput, <span class="string">'experimentData'</span>)
+0048     error(<span class="string">'compareExperimentData:invalidInput'</span>, <span class="keyword">...</span>
+0049         [<span class="string">'newInput must be a char file path or '</span> <span class="keyword">...</span>
+0050         <span class="string">'experimentData object.'</span>]);
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">%% Load inputs</span>
+0054 [refData, refFile] = <a href="#_sub1" class="code" title="subfunction [expData, filePath] = loadExpData(input)">loadExpData</a>(refInput);
+0055 [newData, newFile] = <a href="#_sub1" class="code" title="subfunction [expData, filePath] = loadExpData(input)">loadExpData</a>(newInput);
+0056 
+0057 <span class="comment">%% Compare trial sets</span>
+0058 refTrials     = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(refData.metaData.trialsInCondition);
+0059 newTrials     = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(newData.metaData.trialsInCondition);
+0060 commonTrials  = intersect(refTrials, newTrials);
+0061 refOnlyTrials = setdiff(refTrials, newTrials);
+0062 newOnlyTrials = setdiff(newTrials, refTrials);
+0063 
+0064 <span class="comment">%% Fields to compare</span>
+0065 <span class="comment">% Base fields present in all labData subclasses</span>
+0066 baseFields = { <span class="keyword">...</span>
+0067     <span class="string">'markerData'</span>, <span class="string">'EMGData'</span>, <span class="string">'GRFData'</span>, <span class="keyword">...</span>
+0068     <span class="string">'beltSpeedSetData'</span>, <span class="string">'beltSpeedReadData'</span>, <span class="keyword">...</span>
+0069     <span class="string">'accData'</span>, <span class="string">'EEGData'</span>, <span class="string">'footSwitches'</span>, <span class="string">'HreflexPin'</span>};
+0070 <span class="comment">% Additional fields present only in processedLabData</span>
+0071 procFields = { <span class="keyword">...</span>
+0072     <span class="string">'gaitEvents'</span>, <span class="string">'procEMGData'</span>, <span class="string">'angleData'</span>, <span class="keyword">...</span>
+0073     <span class="string">'adaptParams'</span>, <span class="string">'COPData'</span>, <span class="string">'COMData'</span>, <span class="string">'jointMomentsData'</span>};
+0074 
+0075 <span class="comment">%% Compare per trial</span>
+0076 nCommon        = length(commonTrials);
+0077 nTrialsChanged = 0;
+0078 nFieldDiffs    = 0;
+0079 
+0080 <span class="keyword">if</span> nCommon &gt; 0
+0081     trialResult(nCommon, 1).trial          = 0;
+0082     trialResult(nCommon, 1).dataTypesMatch = true;
+0083     trialResult(nCommon, 1).refType        = <span class="string">''</span>;
+0084     trialResult(nCommon, 1).newType        = <span class="string">''</span>;
+0085     trialResult(nCommon, 1).fields         = [];
+0086     trialResult(nCommon, 1).nFieldsChanged = 0;
+0087 <span class="keyword">else</span>
+0088     trialResult = struct( <span class="keyword">...</span>
+0089         <span class="string">'trial'</span>, {}, <span class="string">'dataTypesMatch'</span>, {}, <span class="keyword">...</span>
+0090         <span class="string">'refType'</span>, {}, <span class="string">'newType'</span>, {}, <span class="keyword">...</span>
+0091         <span class="string">'fields'</span>, {}, <span class="string">'nFieldsChanged'</span>, {});
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="keyword">for</span> ii = 1:nCommon
+0095     tr     = commonTrials(ii);
+0096     refObj = refData.data{tr};
+0097     newObj = newData.data{tr};
+0098 
+0099     refType = class(refObj);
+0100     newType = class(newObj);
+0101     trialResult(ii).trial          = tr;
+0102     trialResult(ii).refType        = refType;
+0103     trialResult(ii).newType        = newType;
+0104     trialResult(ii).dataTypesMatch = strcmp(refType, newType);
+0105 
+0106     <span class="comment">% Include processedLabData fields if either object is processed</span>
+0107     isProc    = isa(refObj, <span class="string">'processedLabData'</span>) || <span class="keyword">...</span>
+0108                 isa(newObj, <span class="string">'processedLabData'</span>);
+0109     allFields = baseFields;
+0110     <span class="keyword">if</span> isProc
+0111         allFields = [baseFields, procFields];
+0112     <span class="keyword">end</span>
+0113     nFields = length(allFields);
+0114 
+0115     trialChanged = ~trialResult(ii).dataTypesMatch;
+0116 
+0117     <span class="comment">% Reset fieldResult for this trial (clears any prior-iteration data)</span>
+0118     clear fieldResult
+0119     <span class="keyword">for</span> jj = 1:nFields
+0120         fn      = allFields{jj};
+0121         refDesc = <a href="#_sub2" class="code" title="subfunction desc = describeField(trialObj, fieldName)">describeField</a>(refObj, fn);
+0122         newDesc = <a href="#_sub2" class="code" title="subfunction desc = describeField(trialObj, fieldName)">describeField</a>(newObj, fn);
+0123 
+0124         inRef = refDesc.present;
+0125         inNew = newDesc.present;
+0126 
+0127         <span class="keyword">if</span> inRef &amp;&amp; inNew
+0128             sizeMatch   = isequal(refDesc.sz, newDesc.sz);
+0129             labelsMatch = isequal(refDesc.labels, newDesc.labels);
+0130             refOnlyLbl  = setdiff( <span class="keyword">...</span>
+0131                 refDesc.labels, newDesc.labels, <span class="string">'stable'</span>);
+0132             newOnlyLbl  = setdiff( <span class="keyword">...</span>
+0133                 newDesc.labels, refDesc.labels, <span class="string">'stable'</span>);
+0134         <span class="keyword">else</span>
+0135             sizeMatch   = true;
+0136             labelsMatch = true;
+0137             refOnlyLbl  = {};
+0138             newOnlyLbl  = {};
+0139         <span class="keyword">end</span>
+0140 
+0141         changed = (inRef ~= inNew) || ~sizeMatch || ~labelsMatch;
+0142 
+0143         fieldResult(jj).name          = fn;
+0144         fieldResult(jj).inRef         = inRef;
+0145         fieldResult(jj).inNew         = inNew;
+0146         fieldResult(jj).sizeMatch     = sizeMatch;
+0147         fieldResult(jj).refSize       = refDesc.sz;
+0148         fieldResult(jj).newSize       = newDesc.sz;
+0149         fieldResult(jj).labelsMatch   = labelsMatch;
+0150         fieldResult(jj).refOnlyLabels = refOnlyLbl;
+0151         fieldResult(jj).newOnlyLabels = newOnlyLbl;
+0152         fieldResult(jj).changed       = changed;
+0153 
+0154         <span class="keyword">if</span> changed
+0155             trialChanged = true;
+0156             nFieldDiffs  = nFieldDiffs + 1;
+0157         <span class="keyword">end</span>
+0158     <span class="keyword">end</span>
+0159 
+0160     trialResult(ii).fields         = fieldResult;
+0161     trialResult(ii).nFieldsChanged = sum([fieldResult.changed]);
+0162 
+0163     <span class="keyword">if</span> trialChanged
+0164         nTrialsChanged = nTrialsChanged + 1;
+0165     <span class="keyword">end</span>
+0166 <span class="keyword">end</span>
+0167 
+0168 <span class="comment">%% Assemble report</span>
+0169 report.refName        = options.RefName;
+0170 report.newName        = options.NewName;
+0171 report.refFile        = refFile;
+0172 report.newFile        = newFile;
+0173 report.nRefTrials     = length(refTrials);
+0174 report.nNewTrials     = length(newTrials);
+0175 report.commonTrials   = commonTrials;
+0176 report.refOnlyTrials  = refOnlyTrials;
+0177 report.newOnlyTrials  = newOnlyTrials;
+0178 report.trials         = trialResult;
+0179 report.nTrialsChanged = nTrialsChanged;
+0180 report.nFieldDiffs    = nFieldDiffs;
+0181 
+0182 <span class="comment">%% Print report</span>
+0183 <span class="keyword">if</span> options.Verbose
+0184     <a href="#_sub3" class="code" title="subfunction printStructureReport(report)">printStructureReport</a>(report);
+0185 <span class="keyword">end</span>
+0186 
+0187 <span class="keyword">end</span>
+0188 
+0189 <span class="comment">% =========================================================================</span>
+0190 
+0191 <a name="_sub1" href="#_subfunctions" class="code">function [expData, filePath] = loadExpData(input)</a>
+0192 <span class="comment">%LOADEXPDATA Load experimentData from file path or return object as-is.</span>
+0193 <span class="comment">%</span>
+0194 <span class="comment">%   Tries variable names 'expData' and 'rawExpData' first, then searches</span>
+0195 <span class="comment">% for the first variable of class experimentData in the file.</span>
+0196 
+0197 arguments
+0198     input
+0199 <span class="keyword">end</span>
+0200 
+0201 <span class="keyword">if</span> ischar(input)
+0202     filePath = input;
+0203     loaded   = load(input);
+0204     <span class="keyword">if</span> isfield(loaded, <span class="string">'expData'</span>) &amp;&amp; <span class="keyword">...</span>
+0205             isa(loaded.expData, <span class="string">'experimentData'</span>)
+0206         expData = loaded.expData;
+0207     <span class="keyword">elseif</span> isfield(loaded, <span class="string">'rawExpData'</span>) &amp;&amp; <span class="keyword">...</span>
+0208             isa(loaded.rawExpData, <span class="string">'experimentData'</span>)
+0209         expData = loaded.rawExpData;
+0210     <span class="keyword">else</span>
+0211         flds    = fieldnames(loaded);
+0212         expData = [];
+0213         <span class="keyword">for</span> ii = 1:length(flds)
+0214             <span class="keyword">if</span> isa(loaded.(flds{ii}), <span class="string">'experimentData'</span>)
+0215                 expData = loaded.(flds{ii});
+0216                 <span class="keyword">break</span>
+0217             <span class="keyword">end</span>
+0218         <span class="keyword">end</span>
+0219         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(expData)
+0220             error(<span class="string">'compareExperimentData:noExpData'</span>, <span class="keyword">...</span>
+0221                 <span class="string">'No experimentData variable found in: %s'</span>, input);
+0222         <span class="keyword">end</span>
+0223     <span class="keyword">end</span>
+0224 <span class="keyword">else</span>
+0225     filePath = <span class="string">''</span>;
+0226     expData  = input;
+0227 <span class="keyword">end</span>
+0228 <span class="keyword">end</span>
+0229 
+0230 <span class="comment">% =========================================================================</span>
+0231 
+0232 <a name="_sub2" href="#_subfunctions" class="code">function desc = describeField(trialObj, fieldName)</a>
+0233 <span class="comment">%DESCRIBEFIELD Safely extract presence, size, and labels from a field.</span>
+0234 <span class="comment">%</span>
+0235 <span class="comment">%   Returns a struct with fields present (logical), sz (size of .Data</span>
+0236 <span class="comment">% or of the value itself), and labels (cell of strings). Uses try/catch</span>
+0237 <span class="comment">% to handle missing properties across labData subclasses.</span>
+0238 
+0239 arguments
+0240     trialObj
+0241     fieldName (1,:) char
+0242 <span class="keyword">end</span>
+0243 
+0244 desc.present = false;
+0245 desc.sz      = [];
+0246 desc.labels  = {};
+0247 
+0248 <span class="keyword">try</span>
+0249     val = trialObj.(fieldName);
+0250     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(val)
+0251         <span class="keyword">return</span>
+0252     <span class="keyword">end</span>
+0253     desc.present = true;
+0254     <span class="keyword">try</span>
+0255         desc.sz = size(val.Data);
+0256     <span class="keyword">catch</span>
+0257         desc.sz = size(val);
+0258     <span class="keyword">end</span>
+0259     <span class="keyword">try</span>
+0260         desc.labels = val.labels;
+0261     <span class="keyword">catch</span>
+0262         <span class="comment">% Field object has no labels property — treated as unlabeled.</span>
+0263     <span class="keyword">end</span>
+0264 <span class="keyword">catch</span>
+0265     <span class="comment">% Property does not exist on this labData subclass.</span>
+0266 <span class="keyword">end</span>
+0267 <span class="keyword">end</span>
+0268 
+0269 <span class="comment">% =========================================================================</span>
+0270 
+0271 <a name="_sub3" href="#_subfunctions" class="code">function printStructureReport(report)</a>
+0272 <span class="comment">%PRINTSTRUCTUREREPORT Print formatted structure comparison.</span>
+0273 
+0274 arguments
+0275     report struct
+0276 <span class="keyword">end</span>
+0277 
+0278 useCprintf = exist(<span class="string">'cprintf'</span>, <span class="string">'file'</span>) == 2;
+0279 
+0280 fprintf(<span class="string">'\n=== EXPERIMENTDATA STRUCTURE COMPARISON ===\n'</span>);
+0281 fprintf(<span class="string">'Reference : %s'</span>, report.refName);
+0282 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.refFile)
+0283     fprintf(<span class="string">' (%s)'</span>, report.refFile);
+0284 <span class="keyword">end</span>
+0285 fprintf(<span class="string">'\nNew       : %s'</span>, report.newName);
+0286 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.newFile)
+0287     fprintf(<span class="string">' (%s)'</span>, report.newFile);
+0288 <span class="keyword">end</span>
+0289 fprintf(<span class="string">'\n\n'</span>);
+0290 
+0291 <span class="comment">%% Trials</span>
+0292 fprintf(<span class="string">'TRIALS\n'</span>);
+0293 fprintf(<span class="string">'  Reference : %d trials\n'</span>, report.nRefTrials);
+0294 fprintf(<span class="string">'  New       : %d trials\n'</span>, report.nNewTrials);
+0295 fprintf(<span class="string">'  Common: %d  |  Ref-only: %d  |  New-only: %d\n'</span>, <span class="keyword">...</span>
+0296     length(report.commonTrials), <span class="keyword">...</span>
+0297     length(report.refOnlyTrials), <span class="keyword">...</span>
+0298     length(report.newOnlyTrials));
+0299 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.refOnlyTrials)
+0300     fprintf(<span class="string">'  *** Reference-only trials: [%s]\n'</span>, <span class="keyword">...</span>
+0301         num2str(report.refOnlyTrials(:)', <span class="string">'%d '</span>));
+0302 <span class="keyword">end</span>
+0303 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.newOnlyTrials)
+0304     fprintf(<span class="string">'  *** New-only trials: [%s]\n'</span>, <span class="keyword">...</span>
+0305         num2str(report.newOnlyTrials(:)', <span class="string">'%d '</span>));
+0306 <span class="keyword">end</span>
+0307 fprintf(<span class="string">'\n'</span>);
+0308 
+0309 <span class="comment">%% Per-trial field structure</span>
+0310 fprintf(<span class="string">'FIELD STRUCTURE  (%d common trials)\n'</span>, <span class="keyword">...</span>
+0311     length(report.commonTrials));
+0312 
+0313 <span class="keyword">if</span> report.nTrialsChanged == 0
+0314     fprintf(<span class="string">'  All trials: no structural differences.\n'</span>);
+0315 <span class="keyword">else</span>
+0316     <span class="keyword">for</span> ii = 1:length(report.trials)
+0317         tr = report.trials(ii);
+0318         <span class="keyword">if</span> tr.nFieldsChanged == 0 &amp;&amp; tr.dataTypesMatch
+0319             <span class="keyword">continue</span>
+0320         <span class="keyword">end</span>
+0321         fprintf(<span class="string">'  Trial %d:\n'</span>, tr.trial);
+0322         <span class="keyword">if</span> ~tr.dataTypesMatch
+0323             line = sprintf(<span class="string">'    [data type]  ref=%s  new=%s\n'</span>, <span class="keyword">...</span>
+0324                 tr.refType, tr.newType);
+0325             <span class="keyword">if</span> useCprintf; <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'%s'</span>, line);
+0326             <span class="keyword">else</span>;          fprintf(<span class="string">'%s'</span>, line); <span class="keyword">end</span>
+0327         <span class="keyword">end</span>
+0328         <span class="keyword">for</span> jj = 1:length(tr.fields)
+0329             f = tr.fields(jj);
+0330             <span class="keyword">if</span> ~f.changed; <span class="keyword">continue</span>; <span class="keyword">end</span>
+0331             <span class="keyword">if</span> ~f.inRef
+0332                 line = sprintf( <span class="keyword">...</span>
+0333                     <span class="string">'    %-22s  absent in reference\n'</span>, f.name);
+0334             <span class="keyword">elseif</span> ~f.inNew
+0335                 line = sprintf( <span class="keyword">...</span>
+0336                     <span class="string">'    %-22s  absent in new\n'</span>, f.name);
+0337             <span class="keyword">elseif</span> ~f.sizeMatch
+0338                 line = sprintf( <span class="keyword">...</span>
+0339                     <span class="string">'    %-22s  size: ref=%s  new=%s\n'</span>, <span class="keyword">...</span>
+0340                     f.name, <span class="keyword">...</span>
+0341                     mat2str(f.refSize), mat2str(f.newSize));
+0342             <span class="keyword">else</span>
+0343                 <span class="comment">% Size matches but labels differ</span>
+0344                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(f.refOnlyLabels) &amp;&amp; <span class="keyword">...</span>
+0345                         <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(f.newOnlyLabels)
+0346                     detail = <span class="string">'(same set, different order)'</span>;
+0347                 <span class="keyword">else</span>
+0348                     seg = <span class="string">''</span>;
+0349                     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(f.refOnlyLabels)
+0350                         seg = [seg <span class="string">'  ref-only: '</span> <span class="keyword">...</span>
+0351                             strjoin(f.refOnlyLabels, <span class="string">','</span>)];
+0352                     <span class="keyword">end</span>
+0353                     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(f.newOnlyLabels)
+0354                         seg = [seg <span class="string">'  new-only: '</span> <span class="keyword">...</span>
+0355                             strjoin(f.newOnlyLabels, <span class="string">','</span>)];
+0356                     <span class="keyword">end</span>
+0357                     detail = seg;
+0358                 <span class="keyword">end</span>
+0359                 line = sprintf( <span class="keyword">...</span>
+0360                     <span class="string">'    %-22s  labels differ  %s\n'</span>, <span class="keyword">...</span>
+0361                     f.name, detail);
+0362             <span class="keyword">end</span>
+0363             <span class="keyword">if</span> useCprintf; <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'%s'</span>, line);
+0364             <span class="keyword">else</span>;          fprintf(<span class="string">'%s'</span>, line); <span class="keyword">end</span>
+0365         <span class="keyword">end</span>
+0366     <span class="keyword">end</span>
+0367 <span class="keyword">end</span>
+0368 fprintf(<span class="string">'\n'</span>);
+0369 
+0370 <span class="comment">%% Summary</span>
+0371 fprintf(<span class="string">'SUMMARY: '</span>);
+0372 <span class="keyword">if</span> report.nTrialsChanged == 0
+0373     msg = sprintf( <span class="keyword">...</span>
+0374         <span class="string">'0 of %d common trials have structural differences.\n'</span>, <span class="keyword">...</span>
+0375         length(report.commonTrials));
+0376     <span class="keyword">if</span> useCprintf; <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Comments'</span>, <span class="string">'%s'</span>, msg);
+0377     <span class="keyword">else</span>;          fprintf(<span class="string">'%s'</span>, msg); <span class="keyword">end</span>
+0378 <span class="keyword">else</span>
+0379     msg = sprintf( <span class="keyword">...</span>
+0380         [<span class="string">'%d of %d common trials have structural differences '</span> <span class="keyword">...</span>
+0381         <span class="string">'(%d field diffs total).\n'</span>], <span class="keyword">...</span>
+0382         report.nTrialsChanged, length(report.commonTrials), <span class="keyword">...</span>
+0383         report.nFieldDiffs);
+0384     <span class="keyword">if</span> useCprintf; <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'%s'</span>, msg);
+0385     <span class="keyword">else</span>;          fprintf(<span class="string">'%s'</span>, msg); <span class="keyword">end</span>
+0386 <span class="keyword">end</span>
+0387 fprintf(<span class="string">'\n'</span>);
+0388 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

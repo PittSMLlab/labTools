@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPartialDataAsVector</title>
+  <meta name="keywords" content="getPartialDataAsVector">
+  <meta name="description" content="getPartialDataAsVector  Returns data for labels and time range">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; getPartialDataAsVector.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getPartialDataAsVector
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getPartialDataAsVector  Returns data for labels and time range</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getPartialDataAsVector  Returns data for labels and time range
+
+   [data, time, auxLabel] = getPartialDataAsVector(this, label, t0,
+   t1) extracts data for specified labels within time range [t0, t1)
+
+   Inputs:
+       this - labTimeSeries object
+       label - string or cell array of label(s)
+       t0 - start time
+       t1 - end time
+
+   Outputs:
+       data - data matrix for requested labels and time range
+       time - time vector
+       auxLabel - cell array of labels
+
+   See also: <a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>, <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@labData/split.html" class="code" title="function newThis = split(this, t0, t1, newClass)">split</a>	split  Splits data into time-delimited segments</li><li><a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATASVECTOR Extract data vectors for the specified label(s).</li><li><a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Returns timeseries between two timepoints</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries (override)</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries, preserving processing info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, time, auxLabel] = </a><span class="keyword">...</span>
+0002     getPartialDataAsVector(this, label, t0, t1)
+0003 <span class="comment">%getPartialDataAsVector  Returns data for labels and time range</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [data, time, auxLabel] = getPartialDataAsVector(this, label, t0,</span>
+0006 <span class="comment">%   t1) extracts data for specified labels within time range [t0, t1)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - labTimeSeries object</span>
+0010 <span class="comment">%       label - string or cell array of label(s)</span>
+0011 <span class="comment">%       t0 - start time</span>
+0012 <span class="comment">%       t1 - end time</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       data - data matrix for requested labels and time range</span>
+0016 <span class="comment">%       time - time vector</span>
+0017 <span class="comment">%       auxLabel - cell array of labels</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: getDataAsVector, split</span>
+0020 
+0021 newThis = <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>(this.getDataAsTS(label), t0, t1);
+0022 [data, time, auxLabel] = <a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(newThis, label);
+0023 <span class="keyword">end</span>
+0024</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

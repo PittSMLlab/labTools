@@ -4,7 +4,7 @@
 <head>
   <title>Description of loadSubject</title>
   <meta name="keywords" content="loadSubject">
-  <meta name="description" content="loadSubject  Load, organize, process, and save data from .c3d files as a">
+  <meta name="description" content="loadSubject  Load, organize, process, and save experimental session">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,189 +15,351 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; loadSubject.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>loadSubject
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>loadSubject  Load, organize, process, and save data from .c3d files as a</strong></div>
+<div class="box"><strong>loadSubject  Load, organize, process, and save experimental session</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [expData,rawExpData,adaptData]=loadSubject(info,eventClass) </strong></div>
+<div class="box"><strong>function [expData, rawExpData, adaptData] = loadSubject(info, eventClass) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">loadSubject  Load, organize, process, and save data from .c3d files as a 
-             subject's .mat file
+<div class="fragment"><pre class="comment"> loadSubject  Load, organize, process, and save experimental session
+   data from C3D files into labTools data objects.
 
-INPUT:
-'info' is the structured array output from GetInfoGUI
-'eventClass' can be a string value: '' or 'kin' or 'force'   it
-specifies the method to determine gait events. When in doubt use ''
+   Reads raw trial data from the .c3d files specified by info, constructs
+ labTools data objects (experimentData, subjectData), detects gait events,
+ computes adaptation parameters, and saves the results to disk. If datlog
+ files are present for all trials, data logs are synchronized prior to
+ processing.
 
-OUTPUTS:
-expData: a processed instance of the experimentData class
-rawExpData: an unprocessed instance of the experimentData class
+   Inputs:
+     info       - Struct of session information returned by GetInfoGUI,
+                  containing participant demographics, file paths, trial
+                  and condition assignments, and EMG channel labels
+     eventClass - (optional) String specifying the gait event detection
+                  method. Defaults to '' if omitted or empty:
+                    ''      - default (forces for TM, kinematics for OG)
+                    'kin'   - strictly from kinematics (OG trials)
+                    'force' - strictly from forces (TM trials)
 
-See also: <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList, datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>, experimentData, experimentData.process</pre></div>
+   Outputs:
+     expData    - Processed experimentData object
+     rawExpData - Unprocessed experimentData object
+     adaptData  - adaptationData object with computed adaptation params
+
+   Toolbox Dependencies:
+     None
+
+   See also: <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, <a href="c3d2mat.html" class="code" title="">c3d2mat</a>, <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>, <a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>,
+     experimentData, experimentData.process, <a href="SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>, determineRefLeg</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList, datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	getTrialMetaData  generates trialMetaData objects for each trial of a</li><li><a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>	loadTrials  generates rawTrialData instances for each trial</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@labDate/labDate.html" class="code" title="">labDate</a>	</li><li><a href="../../../labTools/classes/auxData/strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>	APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</li><li><a href="../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>	POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</li><li><a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	getTrialMetaData creates trialMetaData object for each trial of experiment</li><li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="c3d2mat.html" class="code" title="">c3d2mat</a>	c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</li><li><a href="c3d2matCLI.html" class="code" title="function [expData,rawExpData,adaptData]=c3d2matCLI(infoFile,eventClass)">c3d2matCLI</a>	This function does the same as c3d2mat but without a GUI</li><li><a href="c3d2matbeta.html" class="code" title="">c3d2matbeta</a>	c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</li></ul>
+<li><a href="c3d2mat.html" class="code" title="">c3d2mat</a>	c3d2mat  Main script for parsing C3D session files into a MAT file.</li><li><a href="c3d2matCLI.html" class="code" title="function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass)">c3d2matCLI</a>	c3d2matCLI  Parses C3D session files into a MAT file without a GUI.</li><li><a href="../../../labTools/gui/importc3d/deprecated/c3d2matbeta.html" class="code" title="">c3d2matbeta</a>	c3d2mat -- The main script for parsing C3D session files into a MAT file.</li></ul>
 <!-- crossreference -->
 
-
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function info = determineRefLeg(info)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)</a>
-0002 <span class="comment">%loadSubject  Load, organize, process, and save data from .c3d files as a</span>
-0003 <span class="comment">%             subject's .mat file</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)</a>
+0002 <span class="comment">% loadSubject  Load, organize, process, and save experimental session</span>
+0003 <span class="comment">%   data from C3D files into labTools data objects.</span>
 0004 <span class="comment">%</span>
-0005 <span class="comment">%INPUT:</span>
-0006 <span class="comment">%'info' is the structured array output from GetInfoGUI</span>
-0007 <span class="comment">%'eventClass' can be a string value: '' or 'kin' or 'force'   it</span>
-0008 <span class="comment">%specifies the method to determine gait events. When in doubt use ''</span>
-0009 <span class="comment">%</span>
-0010 <span class="comment">%OUTPUTS:</span>
-0011 <span class="comment">%expData: a processed instance of the experimentData class</span>
-0012 <span class="comment">%rawExpData: an unprocessed instance of the experimentData class</span>
-0013 <span class="comment">%</span>
-0014 <span class="comment">%See also: getTrialMetaData, experimentData, experimentData.process</span>
-0015 <span class="keyword">if</span> nargin&lt;2 || isempty(eventClass)
-0016     eventClass=<span class="string">''</span>;<span class="comment">%default, will choose based on trial type TM or OG</span>
-0017 <span class="keyword">end</span>
-0018 
-0019 <span class="comment">%% Initialize diary to save all information displayed during loading</span>
-0020 diaryFileName=[info.save_folder filesep info.ID <span class="string">'loading.log'</span>];
-0021 diary(diaryFileName)
-0022 <span class="comment">%% Determine Experiment Date</span>
-0023 expDate = labDate(info.day,info.month,info.year);<span class="comment">%labDate is a labTools class</span>
-0024 
-0025 <span class="comment">% %% Experiment info</span>
-0026 <span class="comment">%</span>
-0027 <span class="comment">% expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...</span>
-0028 <span class="comment">%     info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s</span>
-0029 <span class="comment">% %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</span>
-0030 
-0031 <span class="comment">%% Subject info</span>
-0032 
-0033 <span class="comment">% find reference leg</span>
-0034 <span class="comment">%This assumes</span>
-0035 <span class="comment">%   1) that the leg on the fast belt is the dominant leg</span>
-0036 <span class="comment">%   2) that info.domleg is either 'left' or 'right'</span>
-0037 <span class="comment">%   3) that the reference leg is the leg on the slow belt</span>
-0038 
-0039 <span class="keyword">if</span> isfield(info,<span class="string">'fastLeg'</span>)
-0040     <span class="keyword">if</span> strcmpi(info.fastLeg,<span class="string">'right'</span>)
-0041         info.refLeg=<span class="string">'L'</span>;
-0042     <span class="keyword">elseif</span> strcmpi(info.fastLeg,<span class="string">'left'</span>)
-0043         info.refLeg = <span class="string">'R'</span>;
-0044     <span class="keyword">else</span>
-0045         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.fastLeg is either ''Left'' or ''Right''.'</span>)
-0046     <span class="keyword">end</span>
-0047 <span class="keyword">elseif</span> isfield(info,<span class="string">'isStroke'</span>) &amp;&amp; info.isStroke==1 <span class="comment">%For stroke patients, reference leg is equal to affected side when information on the leg/belt speed is not provided</span>
-0048     <span class="comment">% Add here some condition in case fast leg field doesnt exist</span>
-0049     <span class="keyword">if</span> strcmpi(info.affectedSide,<span class="string">'right'</span>)
-0050         info.refLeg=<span class="string">'R'</span>;
-0051         info.fastLeg=<span class="string">'Left'</span>;       
-0052     <span class="keyword">elseif</span> strcmpi(info.affectedSide,<span class="string">'left'</span>)
-0053         info.refLeg = <span class="string">'L'</span>;
-0054         info.fastLeg=<span class="string">'Right'</span>;        
-0055     <span class="keyword">else</span>
-0056         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.affectedSide is either ''Left'' or ''Right''.'</span>)
-0057     <span class="keyword">end</span>    
-0058 <span class="keyword">else</span> <span class="comment">%For non-stroke patients, we are assuming that the reference leg is their non-dominant leg when information on the leg/belt speed is not provided</span>
-0059     <span class="keyword">if</span> strcmpi(info.domleg,<span class="string">'right'</span>)
-0060         info.refLeg = <span class="string">'L'</span>;
-0061         info.fastLeg=<span class="string">'Right'</span>;        
-0062     <span class="keyword">elseif</span> strcmpi(info.domleg,<span class="string">'left'</span>)
-0063         info.refLeg = <span class="string">'R'</span>;
-0064         info.fastLeg=<span class="string">'Left'</span>;        
-0065     <span class="keyword">else</span>
-0066         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.domleg is either ''Left'' or ''Right''.'</span>)
-0067     <span class="keyword">end</span>
-0068 <span class="keyword">end</span>
-0069 
-0070 DOB = labDate(info.DOBday,info.DOBmonth,info.DOByear);
-0071 
-0072 <span class="comment">%age calc</span>
-0073 ageInMonths=round(expDate.timeSince(DOB)); <span class="comment">%Rounding to closest month</span>
-0074 age=ageInMonths/12;
-0075 <span class="comment">% age = expDate.year - DOB.year;</span>
-0076 <span class="comment">% if expDate.month &lt; DOB.month</span>
-0077 <span class="comment">%     age = age-1;</span>
-0078 <span class="comment">% elseif expDate.month == DOB.month</span>
-0079 <span class="comment">%     if expDate.day &lt; DOB.day</span>
-0080 <span class="comment">%         age = age-1;</span>
-0081 <span class="comment">%     end</span>
-0082 <span class="comment">% end</span>
-0083 
-0084 <span class="keyword">if</span> ~isfield(info,<span class="string">'isStroke'</span>) || info.isStroke==0
-0085     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
-0086     info.weight,age,info.ID,info.fastLeg);
-0087 <span class="keyword">else</span>
-0088     subData=strokeSubjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
-0089     info.weight,age,info.ID,info.fastLeg,info.affectedSide); <span class="comment">%TO DO: add stroke date</span>
-0090 <span class="keyword">end</span>
-0091 
-0092 <span class="comment">%% Trial Data</span>
-0093 
-0094 <span class="comment">% Generate meta data for each trial</span>
-0095 [trialMD,fileList,secFileList, datlogExist]=<a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList, datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>(info);
+0005 <span class="comment">%   Reads raw trial data from the .c3d files specified by info, constructs</span>
+0006 <span class="comment">% labTools data objects (experimentData, subjectData), detects gait events,</span>
+0007 <span class="comment">% computes adaptation parameters, and saves the results to disk. If datlog</span>
+0008 <span class="comment">% files are present for all trials, data logs are synchronized prior to</span>
+0009 <span class="comment">% processing.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%     info       - Struct of session information returned by GetInfoGUI,</span>
+0013 <span class="comment">%                  containing participant demographics, file paths, trial</span>
+0014 <span class="comment">%                  and condition assignments, and EMG channel labels</span>
+0015 <span class="comment">%     eventClass - (optional) String specifying the gait event detection</span>
+0016 <span class="comment">%                  method. Defaults to '' if omitted or empty:</span>
+0017 <span class="comment">%                    ''      - default (forces for TM, kinematics for OG)</span>
+0018 <span class="comment">%                    'kin'   - strictly from kinematics (OG trials)</span>
+0019 <span class="comment">%                    'force' - strictly from forces (TM trials)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   Outputs:</span>
+0022 <span class="comment">%     expData    - Processed experimentData object</span>
+0023 <span class="comment">%     rawExpData - Unprocessed experimentData object</span>
+0024 <span class="comment">%     adaptData  - adaptationData object with computed adaptation params</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   Toolbox Dependencies:</span>
+0027 <span class="comment">%     None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%   See also: GetInfoGUI, c3d2mat, getTrialMetaData, loadTrials,</span>
+0030 <span class="comment">%     experimentData, experimentData.process, SyncDatalog, determineRefLeg</span>
+0031 
+0032 arguments
+0033     info       (1,1) struct
+0034     eventClass (1,:) char   = <span class="string">''</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%% Initialize Diary to Save All Information Displayed during Loading</span>
+0038 <span class="comment">% onCleanup guarantees diary is closed even if an error is thrown</span>
+0039 diaryFileName = fullfile(info.save_folder, [info.ID <span class="string">'loading.log'</span>]);
+0040 diary(diaryFileName);
+0041 cleanupDiary  = onCleanup(@() diary(<span class="string">'off'</span>));
+0042 
+0043 <span class="comment">%% Ask user for EMG normalization condition if EMG data is present</span>
+0044 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList1) || ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList2)
+0045     <span class="comment">%EMG is present, ask user what normalization condition they want to</span>
+0046     <span class="comment">%use. If none provided will use OGBase first is available</span>
+0047     <span class="comment">%Then TMBase, Then NIM base, if none is present will do trial1</span>
+0048     <span class="comment">%</span>
+0049      [indx,tf] = listdlg(<span class="string">'PromptString'</span>,{<span class="string">'EMG data is present.'</span>,<span class="keyword">...</span>
+0050          <span class="string">'Select a condition to normalize the EMG data (all data will be strecthed %'</span>,<span class="keyword">...</span>
+0051          <span class="string">'where 0% = min and 100% = max of this condition'</span>},<span class="keyword">...</span>
+0052         <span class="string">'SelectionMode'</span>,<span class="string">'single'</span>,<span class="string">'ListString'</span>,info.conditionNames,<span class="keyword">...</span>
+0053         <span class="string">'ListSize'</span>,[400,250],<span class="string">'InitialValue'</span>,1);
+0054      <span class="keyword">if</span> tf == 0 <span class="comment">%no selection was made</span>
+0055          warning([<span class="string">'EMG data present but no normalization reference condition was provided to compute EMG norms'</span>,<span class="keyword">...</span>
+0056              <span class="string">'Will use default (look inforder for OGBase, TMBase, NimBase, TRBase, TSBase and use the first one found.'</span>,<span class="keyword">...</span>
+0057              <span class="string">'When still cannot find, will normalize use any conditions containing base matching type of the 1st condition'</span>])
+0058          normalizationRefCond = <span class="string">''</span>;
+0059      <span class="keyword">else</span>
+0060          normalizationRefCond = info.conditionNames{indx};
+0061          fprintf(<span class="string">'EMG data present, will normalize to reference condition using %s based on users choice.\n'</span>,normalizationRefCond)
+0062      <span class="keyword">end</span>
+0063 
+0064     <span class="comment">%next ask the user to choose how they want to bias the data.</span>
+0065     opts.Interpreter = <span class="string">'tex'</span>;
+0066     <span class="comment">% Include the desired Default answer</span>
+0067     opts.Default = <span class="string">'Default'</span>;
+0068     answer = questdlg([<span class="string">'After normalization, we will also compute bias removed norms.'</span>,<span class="keyword">...</span>
+0069         <span class="string">'Do you want to default bias removal (remove based on trial type, this is default behavior) '</span>,<span class="keyword">...</span>
+0070         <span class="string">'or do you want to force bias removal to use the same condition throughout?'</span>],<span class="keyword">...</span>
+0071          <span class="string">'||EMG|| bias removal condition'</span>,<span class="keyword">...</span>
+0072                   <span class="string">'Default'</span>,<span class="string">'Select my own'</span>,opts);
+0073     <span class="keyword">if</span> strcmp(answer,<span class="string">'Default'</span>)
+0074         biasRemovalCond = <span class="string">''</span>;
+0075         fprintf(<span class="string">'Will compute unbiased EMG norm using default bias removal where trial type specific bias will be removed\n'</span>);
+0076     <span class="keyword">else</span>
+0077         
+0078         [indx,tf] = listdlg(<span class="string">'PromptString'</span>,{<span class="string">'Force bias removal to use the same condition for all trials.'</span>,<span class="keyword">...</span>
+0079                 <span class="string">'Select a condition to unbias the EMG data'</span>},<span class="keyword">...</span>
+0080                 <span class="string">'SelectionMode'</span>,<span class="string">'single'</span>,<span class="string">'ListString'</span>,info.conditionNames,<span class="keyword">...</span>
+0081                 <span class="string">'ListSize'</span>,[400,250],<span class="string">'InitialValue'</span>,1);
+0082          <span class="keyword">if</span> tf == 0 <span class="comment">%no selection was made</span>
+0083              warning([<span class="string">'User wanted to choose their own bias removal conditions to remove bias when computing unbiased EMG norms, '</span>,<span class="keyword">...</span>
+0084                  <span class="string">'but no selection was made. Will revert to use default (remove condition type specific bias)'</span>])
+0085              biasRemovalCond = <span class="string">''</span>;
+0086          <span class="keyword">else</span>
+0087              biasRemovalCond = info.conditionNames{indx};
+0088              fprintf(<span class="string">'When computing EMG norm will unbias the data for all trials using %s based on users choice'</span>,biasRemovalCond)
+0089          <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">%% Determine Experiment Date</span>
+0094 <span class="comment">% 'labDate' is a 'labTools' repository class</span>
+0095 expDate = <a href="../../../labTools/classes/auxData/@labDate/labDate.html" class="code" title="">labDate</a>(info.day, info.month, info.year);
 0096 
-0097 <span class="comment">% Load trials</span>
-0098 rawTrialData=<a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>(trialMD,fileList,secFileList,info);
-0099 
-0100 <span class="keyword">if</span> datlogExist || info.perceptualTasks == 1 <span class="comment">%this most likely redundant, but keep for now, the way the code is used will always have datlog = true when perceptual task = 1</span>
-0101     datlog = {{}};
-0102     <span class="keyword">for</span> trial=1:length(rawTrialData)
-0103         <span class="keyword">if</span> ~isempty(rawTrialData{trial})
-0104             datlog{trial}=rawTrialData{trial}.metaData.datlog;
-0105         <span class="keyword">else</span>
-0106             datlog{trial}={};
-0107         <span class="keyword">end</span>    
-0108     <span class="keyword">end</span>
-0109     expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,<span class="keyword">...</span>
-0110     info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks, datlog);<span class="comment">%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s</span>
-0111 <span class="keyword">else</span>
-0112     <span class="comment">% Experiment info</span>
-0113     expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,<span class="keyword">...</span>
-0114         info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);<span class="comment">%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s</span>
-0115     <span class="comment">%Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</span>
-0116 <span class="keyword">end</span>
-0117 
-0118 rawExpData=experimentData(expMD,subData,rawTrialData);
-0119 
-0120 <span class="comment">%Sync the datlog. if datlog for all trials exist and the forces</span>
-0121 <span class="comment">%exist in the datlog.</span>
-0122 <span class="keyword">if</span> datlogExist
-0123     rawExpData = <a href="SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>(rawExpData, [info.save_folder filesep <span class="string">'DatlogSyncRes'</span> filesep]);
-0124 <span class="keyword">end</span>
-0125 
-0126 <span class="comment">%save raw</span>
-0127 save([info.save_folder filesep info.ID <span class="string">'RAW.mat'</span>],<span class="string">'rawExpData'</span>,<span class="string">'-v7.3'</span>)
-0128 
-0129 <span class="comment">%% Process data</span>
-0130 expData=rawExpData.process(eventClass);
-0131 
-0132 <span class="comment">%Save processed</span>
-0133 save([info.save_folder filesep info.ID <span class="string">'.mat'</span>],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>)
-0134 
-0135 <span class="comment">%create adaptationData object</span>
-0136 adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
-0137 
-0138 <span class="comment">%% Add additional handling for experiments that needs trial splited</span>
-0139 <span class="keyword">if</span> strcmp(info.ExpDescription,<span class="string">'SpinalAdaptation'</span>)
-0140     [expData, adaptData] = <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)">SepCondsInExpByAudioCue</a>(expData, info.save_folder, info.ID, eventClass, info.ExpDescription);
-0141 <span class="keyword">end</span>
-0142 
-0143 <span class="comment">%%</span>
-0144 diary off</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0097 <span class="comment">%% Experiment Information</span>
+0098 <span class="comment">% Creates 'experimentMetaData' object, which houses information about</span>
+0099 <span class="comment">% the number of trials, their descriptions, notes, and trial numbers.</span>
+0100 <span class="comment">% expMD = experimentMetaData(info.ExpDescription, expDate, ...</span>
+0101 <span class="comment">%     info.experimenter, info.exp_obs, strtrim(info.conditionNames), ...</span>
+0102 <span class="comment">%     info.conditionDescriptions, info.trialnums, info.numoftrials, ...</span>
+0103 <span class="comment">%     info.schenleyLab, info.perceptualTasks);</span>
+0104 <span class="comment">% Constructor(ID, date, experimenter, obs, conds, desc, trialLst, Ntrials);</span>
+0105 
+0106 <span class="comment">%% Participant Information</span>
+0107 <span class="comment">% Resolve reference leg and fast leg fields, then build subjectData</span>
+0108 info    = <a href="#_sub1" class="code" title="subfunction info = determineRefLeg(info)">determineRefLeg</a>(info);
+0109 DOB     = <a href="../../../labTools/classes/auxData/@labDate/labDate.html" class="code" title="">labDate</a>(info.DOBday, info.DOBmonth, info.DOByear);
+0110 <span class="comment">% Compute age at time of experimental session to nearest month</span>
+0111 <span class="comment">% TODO: why not compute age to the nearest day? privacy concern?</span>
+0112 ageInMonths = round(expDate.timeSince(DOB));
+0113 age         = ageInMonths / 12;
+0114 
+0115 <span class="keyword">if</span> ~isfield(info, <span class="string">'isStroke'</span>) || info.isStroke == 0     <span class="comment">% if no stroke, ...</span>
+0116     subData = <a href="../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>(DOB, info.gender, info.domleg, info.domhand, <span class="keyword">...</span>
+0117         info.height, info.weight, age, info.ID, info.fastLeg);
+0118 <span class="keyword">else</span>                                                    <span class="comment">% otherwise, ...</span>
+0119     <span class="comment">% TODO: add date of stroke to participant data object</span>
+0120     subData = <a href="../../../labTools/classes/auxData/strokeSubjectData.html" class="code" title="">strokeSubjectData</a>(DOB, info.gender, info.domleg, <span class="keyword">...</span>
+0121         info.domhand, info.height, info.weight, age, info.ID, <span class="keyword">...</span>
+0122         info.fastLeg, info.affectedSide);
+0123 <span class="keyword">end</span>
+0124 
+0125 <span class="comment">%% Process Trial Data</span>
+0126 <span class="comment">% Generate meta data for each trial in the experimental session</span>
+0127 [trialMD, fileList, secFileList, datlogExist] = <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>(info);
+0128 <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a> = <a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>(trialMD, fileList, secFileList, info);
+0129 
+0130 <span class="comment">% The below code block is most likely redundant, but keep for now;</span>
+0131 <span class="comment">% the code will always have datlog = true when perceptual task = 1.</span>
+0132 <span class="keyword">if</span> datlogExist || info.perceptualTasks == 1
+0133     datlog = {{}};
+0134     <span class="keyword">for</span> trial = 1:length(<a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>)      <span class="comment">% for each trial, ...</span>
+0135         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>{trial})    <span class="comment">% if trial data available, ...</span>
+0136             <span class="comment">% Extract trial data logs from trial meta data</span>
+0137             datlog{trial} = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>{trial}.metaData.datlog;
+0138         <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
+0139             datlog{trial} = {};             <span class="comment">% set as empty cell</span>
+0140         <span class="keyword">end</span>
+0141     <span class="keyword">end</span>
+0142     <span class="comment">% Creates 'experimentMetaData' object, which contains information about</span>
+0143     <span class="comment">% the number of trials, their descriptions, notes, and trial numbers.</span>
+0144     expMD = <a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(info.ExpDescription, expDate, <span class="keyword">...</span>
+0145         info.experimenter, info.exp_obs, strtrim(info.conditionNames), <span class="keyword">...</span>
+0146         info.conditionDescriptions, info.trialnums, info.numoftrials, <span class="keyword">...</span>
+0147         info.schenleyLab, info.perceptualTasks, datlog);
+0148 <span class="keyword">else</span>
+0149     expMD = <a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(info.ExpDescription, expDate, <span class="keyword">...</span>
+0150         info.experimenter, info.exp_obs, strtrim(info.conditionNames), <span class="keyword">...</span>
+0151         info.conditionDescriptions, info.trialnums, info.numoftrials, <span class="keyword">...</span>
+0152         info.schenleyLab, info.perceptualTasks);
+0153     <span class="comment">% Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials);</span>
+0154 <span class="keyword">end</span>
+0155 rawExpData = <a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>(expMD, subData, <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>);
+0156 
+0157 <span class="comment">% FIXME: close all figures and remove intermediate variables to free</span>
+0158 <span class="comment">% up some memory in MATLAB.</span>
+0159 <span class="comment">% There seems to be a memory issue since summer 2025. During c3d2mat,</span>
+0160 <span class="comment">% the PC will run out of memory, shown as OutOfMemory, OutOfHeapSpace,</span>
+0161 <span class="comment">% or png file failed to write errors. A better solution is needed to</span>
+0162 <span class="comment">% identify why we are running out of memory or if there is a memory</span>
+0163 <span class="comment">% leak. Since the cause is not yet known, closing figures and removing</span>
+0164 <span class="comment">% variables is a temporary workaround to allow the code to run.</span>
+0165 close(<span class="string">'all'</span>);
+0166 clc();
+0167 clearvars -except info eventClass rawExpData datlogExist normalizationRefCond biasRemovalCond;
+0168 
+0169 <span class="comment">% Synchronize data logs if datlog files exist for all trials and the</span>
+0170 <span class="comment">% forces exist within those files.</span>
+0171 <span class="keyword">if</span> datlogExist                          <span class="comment">% if there are data log files, ...</span>
+0172     rawExpData = <a href="SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>(rawExpData, <span class="keyword">...</span>
+0173         [fullfile(info.save_folder, <span class="string">'DatlogSyncRes'</span>) filesep]);
+0174 <span class="keyword">end</span>
+0175 save(fullfile(info.save_folder, [info.ID <span class="string">'RAW.mat'</span>]), <span class="keyword">...</span>
+0176     <span class="string">'rawExpData'</span>, <span class="string">'-v7.3'</span>);
+0177 
+0178 <span class="comment">%% Process Data</span>
+0179 expData   = rawExpData.process(eventClass);
+0180 adaptData = expData.makeDataObj([]); <span class="comment">%make one without saving it.</span>
+0181 
+0182 <span class="comment">%if EMG is present, now also compute EMG norm parameters and populate the</span>
+0183 <span class="comment">%norm back to expData</span>
+0184 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList1) || ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList2)
+0185     <span class="keyword">try</span>
+0186         muscleLabels = [info.EMGList1, info.EMGList2];
+0187         muscleLabels = muscleLabels(~(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,muscleLabels) | startsWith(muscleLabels,<span class="string">'sync'</span>)));
+0188         muscleLabels = unique(cellfun(@(x) x(2:end),muscleLabels,<span class="string">'UniformOutput'</span>,false));
+0189         adaptData = <a href="../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>(adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
+0190         expData = <a href="../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>(expData,adaptData);
+0191     <span class="keyword">catch</span> ME
+0192         <span class="comment">%if the adapt creation or the appending new data fails, save the</span>
+0193         <span class="comment">%expData anyway to have some intermediate data to work with.</span>
+0194         <span class="comment">% Save processed data object</span>
+0195         warning(<span class="string">'EMG data present but norm calculation failed. Saving the data without EMG norm.\n'</span>)
+0196         fprintf(2, <span class="string">'%s\n'</span>, getReport(ME, <span class="string">'extended'</span>, <span class="string">'hyperlinks'</span>, <span class="string">'off'</span>))
+0197     <span class="keyword">end</span>
+0198 <span class="keyword">end</span>
+0199 
+0200 <span class="comment">% Save processed data object</span>
+0201 save(fullfile(info.save_folder, [info.ID <span class="string">'.mat'</span>]), <span class="string">'expData'</span>, <span class="string">'-v7.3'</span>);
+0202 
+0203 <span class="comment">% Make a new 'adaptationData' object and save in the 'params' file. This</span>
+0204 <span class="comment">% ensures parameter order is consistent with what we expect (where</span>
+0205 <span class="comment">% fakeparams) is the last parameter</span>
+0206 adaptData = expData.makeDataObj(fullfile(info.save_folder, info.ID));
+0207 
+0208 <span class="comment">%% Handle Experiments Requiring Special Trial Splitting from Data Logs</span>
+0209 <span class="keyword">if</span> contains(erase(info.ExpDescription, <span class="string">' '</span>), <span class="string">'SpinalAdaptation'</span>)
+0210     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList1) || ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.EMGList2)
+0211         [expData, adaptData] = <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>(expData, <span class="keyword">...</span>
+0212             info.save_folder, info.ID, eventClass, info.ExpDescription,<span class="keyword">...</span>
+0213             muscleLabels, normalizationRefCond, biasRemovalCond);
+0214     <span class="keyword">else</span>
+0215         [expData, adaptData] = <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>(expData, <span class="keyword">...</span>
+0216             info.save_folder, info.ID, eventClass, info.ExpDescription);
+0217     <span class="keyword">end</span>
+0218 <span class="keyword">end</span>
+0219 
+0220 <span class="keyword">end</span>
+0221 
+0222 <span class="comment">% ============================================================</span>
+0223 <span class="comment">% ==================== Local Functions =======================</span>
+0224 <span class="comment">% ============================================================</span>
+0225 
+0226 <a name="_sub1" href="#_subfunctions" class="code">function info = determineRefLeg(info)</a>
+0227 <span class="comment">% determineRefLeg  Resolves info.refLeg and info.fastLeg from the</span>
+0228 <span class="comment">%   available session information.</span>
+0229 <span class="comment">%</span>
+0230 <span class="comment">%   Determines the reference leg (slow-belt leg) using the first</span>
+0231 <span class="comment">% available source of information in the following priority order:</span>
+0232 <span class="comment">%   1) info.fastLeg, if already specified</span>
+0233 <span class="comment">%   2) info.affectedSide, if the participant is a stroke patient</span>
+0234 <span class="comment">%   3) info.domleg, as a fallback (dominant leg assumed to be the</span>
+0235 <span class="comment">%      fast-belt leg)</span>
+0236 <span class="comment">%</span>
+0237 <span class="comment">%   Inputs:</span>
+0238 <span class="comment">%     info - Session info struct from GetInfoGUI. Must contain at least</span>
+0239 <span class="comment">%            one of: info.fastLeg, info.affectedSide (with</span>
+0240 <span class="comment">%            info.isStroke == 1), or info.domleg</span>
+0241 <span class="comment">%</span>
+0242 <span class="comment">%   Outputs:</span>
+0243 <span class="comment">%     info - Session info struct with info.refLeg ('L' or 'R') and, if not</span>
+0244 <span class="comment">%            already present, info.fastLeg ('Left' or 'Right') populated</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">%   See also: loadSubject</span>
+0247 
+0248 <span class="keyword">if</span> isfield(info, <span class="string">'fastLeg'</span>)                 <span class="comment">% if fast leg specified, ...</span>
+0249     <span class="keyword">if</span> strcmpi(info.fastLeg, <span class="string">'right'</span>)
+0250         info.refLeg = <span class="string">'L'</span>;
+0251     <span class="keyword">elseif</span> strcmpi(info.fastLeg, <span class="string">'left'</span>)
+0252         info.refLeg = <span class="string">'R'</span>;
+0253     <span class="keyword">else</span>
+0254         warning([<span class="string">'Reference leg could not be determined from '</span> <span class="keyword">...</span>
+0255             <span class="string">'information given. Make sure info.fastLeg is either '</span> <span class="keyword">...</span>
+0256             <span class="string">'''Left'' or ''Right''.'</span>]);
+0257     <span class="keyword">end</span>
+0258 <span class="keyword">elseif</span> isfield(info, <span class="string">'isStroke'</span>) &amp;&amp; info.isStroke == 1  <span class="comment">% if stroke, ...</span>
+0259     <span class="comment">% Reference leg is the affected side when belt speed is not given.</span>
+0260     <span class="comment">% TODO: add condition in case fast leg field does not exist</span>
+0261     <span class="keyword">if</span> strcmpi(info.affectedSide, <span class="string">'right'</span>)
+0262         info.refLeg  = <span class="string">'R'</span>;
+0263         info.fastLeg = <span class="string">'Left'</span>;
+0264     <span class="keyword">elseif</span> strcmpi(info.affectedSide, <span class="string">'left'</span>)
+0265         info.refLeg  = <span class="string">'L'</span>;
+0266         info.fastLeg = <span class="string">'Right'</span>;
+0267     <span class="keyword">else</span>
+0268         warning([<span class="string">'Reference leg could not be determined from '</span> <span class="keyword">...</span>
+0269             <span class="string">'information given. Make sure info.affectedSide is '</span> <span class="keyword">...</span>
+0270             <span class="string">'either ''Left'' or ''Right''.'</span>]);
+0271     <span class="keyword">end</span>
+0272 <span class="keyword">else</span>                                                    <span class="comment">% otherwise, ...</span>
+0273     <span class="comment">% Assume reference leg is non-dominant when information not given</span>
+0274     <span class="keyword">if</span> strcmpi(info.domleg, <span class="string">'right'</span>)
+0275         info.refLeg  = <span class="string">'L'</span>;
+0276         info.fastLeg = <span class="string">'Right'</span>;
+0277     <span class="keyword">elseif</span> strcmpi(info.domleg, <span class="string">'left'</span>)
+0278         info.refLeg  = <span class="string">'R'</span>;
+0279         info.fastLeg = <span class="string">'Left'</span>;
+0280     <span class="keyword">else</span>
+0281         warning([<span class="string">'Reference leg could not be determined from '</span> <span class="keyword">...</span>
+0282             <span class="string">'information given. Make sure info.domleg is either '</span> <span class="keyword">...</span>
+0283             <span class="string">'''Left'' or ''Right''.'</span>]);
+0284     <span class="keyword">end</span>
+0285 <span class="keyword">end</span>
+0286 
+0287 <span class="keyword">end</span>
+0288</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

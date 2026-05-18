@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of experimentMetaData</title>
+  <meta name="keywords" content="experimentMetaData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../../index.html">dataStructs</a> &gt; <a href="../index.html">metaData</a> &gt; <a href="index.html">@experimentMetaData</a> &gt; experimentMetaData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\metaData\@experimentMetaData&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>experimentMetaData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Gets condition indices from names</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="checkConditionOrder.html" class="code" title="function conditionOrder = checkConditionOrder(this,conditionNamesInOrder, silentFlag)">checkConditionOrder</a>	checkConditionOrder  Checks that conditions appear in order</li><li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="getCondLstPerTrial.html" class="code" title="function condLst = getCondLstPerTrial(this)">getCondLstPerTrial</a>	getCondLstPerTrial  Returns list of condition numbers for each trial</li><li><a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Returns condition indices from names</li><li><a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>	getConditionsThatMatch  Returns condition names matching pattern</li><li><a href="getConditionsThatMatchV2.html" class="code" title="function condNames = getConditionsThatMatchV2(this, name, type)">getConditionsThatMatchV2</a>	getConditionsThatMatchV2  Returns condition names matching pattern</li><li><a href="getTrialsInCondition.html" class="code" title="function trialNums = getTrialsInCondition(this, conditionNames)">getTrialsInCondition</a>	getTrialsInCondition  Returns trial numbers in each condition</li><li><a href="numerateRepeatedConditionNames.html" class="code" title="function [newThis, change] = numerateRepeatedConditionNames(this)">numerateRepeatedConditionNames</a>	numerateRepeatedConditionNames  Adds numbers to repeated condition</li><li><a href="replaceConditionNames.html" class="code" title="function [newThis, change] = replaceConditionNames(this, currentName,newName)">replaceConditionNames</a>	replaceConditionNames  Replaces condition names</li><li><a href="sortConditions.html" class="code" title="function newThis = sortConditions(this)">sortConditions</a>	sortConditions  Sorts conditions by trial order</li><li><a href="splitConditionIntoTrials.html" class="code" title="function newThis = splitConditionIntoTrials(this, condList)">splitConditionIntoTrials</a>	splitConditionIntoTrials  Splits conditions into individual trials</li><li><a href="validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>	validateTrialsInCondition  Validates trial organization</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = experimentMetaData(ID, date, experimenter, obs,</a></li><li><a href="#_sub2" class="code">function this = set.ID(this, ID)</a></li><li><a href="#_sub3" class="code">function this = set.date(this, date)</a></li><li><a href="#_sub4" class="code">function this = set.experimenter(this, experimenter)</a></li><li><a href="#_sub5" class="code">function this = set.observations(this, obs)</a></li><li><a href="#_sub6" class="code">function this = set.conditionName(this, conds)</a></li><li><a href="#_sub7" class="code">function this = set.conditionDescription(this, desc)</a></li><li><a href="#_sub8" class="code">function this = set.trialsInCondition(this, trialLst)</a></li><li><a href="#_sub9" class="code">function this = set.Ntrials(this, Ntrials)</a></li><li><a href="#_sub10" class="code">function this = set.SchenleyPlace(this, SchenleyPlace)</a></li><li><a href="#_sub11" class="code">function this = set.PerceptualTasks(this, PerceptualTasks)</a></li><li><a href="#_sub12" class="code">function this = set.datlog(this, datlog)</a></li><li><a href="#_sub13" class="code">function this = loadobj(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>
+0002     <span class="comment">%experimentMetaData  Information describing the experiment as a whole</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   experimentMetaData contains metadata for an entire experimental</span>
+0005     <span class="comment">%   session, including subject information, experimental conditions,</span>
+0006     <span class="comment">%   trial organization, and condition validation methods.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">%experimentMetaData properties:</span>
+0009     <span class="comment">%   ID - string containing the subject ID (e.g., 'OG90' or 'CGN05')</span>
+0010     <span class="comment">%   date - labDate object containing the date of the experiment</span>
+0011     <span class="comment">%   experimenter - string, initials/name of person(s) who ran the</span>
+0012     <span class="comment">%                  experiment</span>
+0013     <span class="comment">%   observations - string with overall study observations</span>
+0014     <span class="comment">%                  (observations for individual trials are stored in</span>
+0015     <span class="comment">%                  trialMetaData class objects)</span>
+0016     <span class="comment">%   conditionName - cell array of strings containing labels given to</span>
+0017     <span class="comment">%                   each condition of the experiment</span>
+0018     <span class="comment">%   conditionDescription - cell array of strings containing detailed</span>
+0019     <span class="comment">%                          description of each condition (belt speeds,</span>
+0020     <span class="comment">%                          number of steps, belt ratio, etc.)</span>
+0021     <span class="comment">%   trialsInCondition - cell array of numbers matching condition</span>
+0022     <span class="comment">%                       number to trial numbers (trial numbers must</span>
+0023     <span class="comment">%                       match up with c3d file names)</span>
+0024     <span class="comment">%   Ntrials - total number of trials</span>
+0025     <span class="comment">%   SchenleyPlace - flag indicating if data collected at Schenley</span>
+0026     <span class="comment">%                   Place lab</span>
+0027     <span class="comment">%   PerceptualTasks - flag indicating presence of perceptual tasks</span>
+0028     <span class="comment">%   datlog - data log structure</span>
+0029     <span class="comment">%</span>
+0030     <span class="comment">%experimentMetaData methods:</span>
+0031     <span class="comment">%   getCondLstPerTrial - returns list of condition numbers for each</span>
+0032     <span class="comment">%                        trial</span>
+0033     <span class="comment">%   splitConditionIntoTrials - splits condition into separate trials</span>
+0034     <span class="comment">%   getConditionIdxsFromName - returns condition number for</span>
+0035     <span class="comment">%                              conditions with similar name</span>
+0036     <span class="comment">%   getTrialsInCondition - returns trial numbers in each condition</span>
+0037     <span class="comment">%   replaceConditionNames - replaces condition names</span>
+0038     <span class="comment">%   checkConditionOrder - checks that conditions appear in order</span>
+0039     <span class="comment">%   validateTrialsInCondition - validates trial organization</span>
+0040     <span class="comment">%   sortConditions - sorts conditions by trial order</span>
+0041     <span class="comment">%   numerateRepeatedConditionNames - adds numbers to repeated</span>
+0042     <span class="comment">%                                    condition names</span>
+0043     <span class="comment">%   getConditionsThatMatch - returns condition names matching pattern</span>
+0044     <span class="comment">%   getConditionsThatMatchV2 - returns condition names matching</span>
+0045     <span class="comment">%                              pattern with fallback</span>
+0046     <span class="comment">%</span>
+0047     <span class="comment">%See also: labDate, trialMetaData</span>
+0048 
+0049     <span class="comment">%% Properties</span>
+0050     properties
+0051         ID;
+0052         date = labDate.default; <span class="comment">% labDate object</span>
+0053         experimenter = <span class="string">''</span>;
+0054         observations = <span class="string">''</span>;
+0055         conditionName = {};
+0056         conditionDescription = {};
+0057         trialsInCondition = {};
+0058         Ntrials = [];
+0059         SchenleyPlace = [];
+0060         PerceptualTasks = [];
+0061         datlog;
+0062     <span class="keyword">end</span>
+0063 
+0064     <span class="comment">%% Constructor</span>
+0065     methods
+0066         <a name="_sub0" href="#_subfunctions" class="code">function this = experimentMetaData(ID, date, experimenter, obs, </a><span class="keyword">...</span>
+0067                 conds, desc, trialLst, Ntrials, SchenleyPlace, <span class="keyword">...</span>
+0068                 PerceptualTasks, datlog)
+0069             <span class="comment">%experimentMetaData  Constructor for experimentMetaData class</span>
+0070             <span class="comment">%</span>
+0071             <span class="comment">%   this = experimentMetaData(ID) creates an experiment</span>
+0072             <span class="comment">%   metadata object with the specified subject ID</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">%   this = experimentMetaData(ID, date, experimenter, obs,</span>
+0075             <span class="comment">%   conds, desc, trialLst, Ntrials, SchenleyPlace,</span>
+0076             <span class="comment">%   PerceptualTasks, datlog) creates an experiment metadata</span>
+0077             <span class="comment">%   object with all specified parameters</span>
+0078             <span class="comment">%</span>
+0079             <span class="comment">%   Inputs:</span>
+0080             <span class="comment">%       ID - subject identifier string</span>
+0081             <span class="comment">%       date - labDate object (optional)</span>
+0082             <span class="comment">%       experimenter - experimenter name/initials (optional)</span>
+0083             <span class="comment">%       obs - general observations (optional)</span>
+0084             <span class="comment">%       conds - cell array of condition names (optional)</span>
+0085             <span class="comment">%       desc - cell array of condition descriptions (optional)</span>
+0086             <span class="comment">%       trialLst - cell array of trial numbers per condition</span>
+0087             <span class="comment">%                  (optional)</span>
+0088             <span class="comment">%       Ntrials - total number of trials (optional)</span>
+0089             <span class="comment">%       SchenleyPlace - Schenley Place lab flag (optional)</span>
+0090             <span class="comment">%       PerceptualTasks - perceptual tasks flag (optional)</span>
+0091             <span class="comment">%       datlog - data log structure (optional)</span>
+0092             <span class="comment">%</span>
+0093             <span class="comment">%   Outputs:</span>
+0094             <span class="comment">%       this - experimentMetaData object</span>
+0095             <span class="comment">%</span>
+0096             <span class="comment">%   Note: Constructor validates that condition names are unique</span>
+0097             <span class="comment">%         and that trials are not interleaved between</span>
+0098             <span class="comment">%         conditions</span>
+0099             <span class="comment">%</span>
+0100             <span class="comment">%   See also: trialMetaData, labDate</span>
+0101 
+0102             this.ID = ID;
+0103             <span class="keyword">if</span> nargin &gt; 1
+0104                 this.date = date;
+0105             <span class="keyword">end</span>
+0106             <span class="keyword">if</span> nargin &gt; 2
+0107                 this.experimenter = experimenter;
+0108             <span class="keyword">end</span>
+0109             <span class="keyword">if</span> nargin &gt; 3
+0110                 this.observations = obs;
+0111             <span class="keyword">end</span>
+0112             <span class="keyword">if</span> nargin &gt; 4
+0113                 <span class="keyword">if</span> length(unique(conds)) &lt; length(conds)
+0114                     error(<span class="string">'ExperimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0115                         [<span class="string">'There are repeated condition names, which is '</span><span class="keyword">...</span>
+0116                         <span class="string">'not allowed'</span>]);
+0117                 <span class="keyword">elseif</span> sum(cellfun(@(x) ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(x, <span class="keyword">...</span>
+0118                         <span class="string">'TM base'</span>)), conds)) &gt; 1 || <span class="keyword">...</span>
+0119                         sum(cellfun(@(x) ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(x, <span class="keyword">...</span>
+0120                         <span class="string">'OG base'</span>)), conds)) &gt; 1
+0121                     error(<span class="string">'ExperimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0122                         [<span class="string">'More than one condition name contains the '</span> <span class="keyword">...</span>
+0123                         <span class="string">'string ''TM base'' or ''OG base'' which is '</span> <span class="keyword">...</span>
+0124                         <span class="string">'not allowed.'</span>]);
+0125                 <span class="keyword">else</span>
+0126                     this.conditionName = conds;
+0127                 <span class="keyword">end</span>
+0128             <span class="keyword">end</span>
+0129             <span class="keyword">if</span> nargin &gt; 5
+0130                 this.conditionDescription = desc;
+0131             <span class="keyword">end</span>
+0132             <span class="keyword">if</span> nargin &gt; 6
+0133                 this.trialsInCondition = trialLst;
+0134             <span class="keyword">end</span>
+0135             <span class="keyword">if</span> nargin &gt; 7
+0136                 this.Ntrials = Ntrials;
+0137             <span class="keyword">end</span>
+0138             <span class="keyword">if</span> nargin &gt; 8
+0139                 this.SchenleyPlace = SchenleyPlace;
+0140             <span class="keyword">end</span>
+0141             <span class="keyword">if</span> nargin &gt; 9
+0142                 this.PerceptualTasks = PerceptualTasks;
+0143             <span class="keyword">end</span>
+0144             <span class="keyword">if</span> nargin &gt; 10
+0145                 this.datlog = datlog;
+0146             <span class="keyword">end</span>
+0147 
+0148             <span class="comment">% Check that conditions do not include interleaved or</span>
+0149             <span class="comment">% repeated trials:</span>
+0150             conditionOrder = this.validateTrialsInCondition;
+0151             <span class="comment">% Sort conditions according to trial numbers:</span>
+0152             this = this.sortConditions;
+0153         <span class="keyword">end</span>
+0154     <span class="keyword">end</span>
+0155 
+0156     <span class="comment">%% Property Setters</span>
+0157     methods
+0158         <a name="_sub1" href="#_subfunctions" class="code">function this = set.ID(this, ID)</a>
+0159             <span class="keyword">if</span> isa(ID, <span class="string">'char'</span>) <span class="comment">% &amp;&amp; nargin &gt; 0</span>
+0160                 this.ID = ID; <span class="comment">% Mandatory field, needs to be string</span>
+0161             <span class="keyword">elseif</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ID) <span class="comment">% || nargin == 0</span>
+0162                 this.ID = <span class="string">''</span>;
+0163                 <span class="comment">% disp('Warning: creating emtpy ID field.')</span>
+0164             <span class="keyword">else</span>
+0165                 ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0166                     <span class="string">'ID is not a string.'</span>);
+0167                 throw(ME);
+0168             <span class="keyword">end</span>
+0169         <span class="keyword">end</span>
+0170 
+0171         <a name="_sub2" href="#_subfunctions" class="code">function this = set.date(this, date)</a>
+0172             <span class="keyword">if</span> isa(date, <span class="string">'labDate'</span>)
+0173                 this.date = date;
+0174             <span class="keyword">else</span>
+0175                 ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0176                     <span class="string">'date is not labDate object.'</span>);
+0177                 throw(ME);
+0178             <span class="keyword">end</span>
+0179         <span class="keyword">end</span>
+0180 
+0181         <a name="_sub3" href="#_subfunctions" class="code">function this = set.experimenter(this, experimenter)</a>
+0182             <span class="keyword">if</span> isa(experimenter, <span class="string">'char'</span>)
+0183                 this.experimenter = experimenter;
+0184             <span class="keyword">else</span>
+0185                 ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0186                     <span class="string">'experimenter is not a string.'</span>);
+0187                 throw(ME);
+0188             <span class="keyword">end</span>
+0189         <span class="keyword">end</span>
+0190 
+0191         <a name="_sub4" href="#_subfunctions" class="code">function this = set.observations(this, obs)</a>
+0192             <span class="keyword">if</span> isa(obs, <span class="string">'char'</span>)
+0193                 this.observations = obs;
+0194             <span class="keyword">else</span>
+0195                 ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0196                     <span class="string">'observations is not a string.'</span>);
+0197                 throw(ME);
+0198             <span class="keyword">end</span>
+0199         <span class="keyword">end</span>
+0200 
+0201         <a name="_sub5" href="#_subfunctions" class="code">function this = set.conditionName(this, conds)</a>
+0202             <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(conds) &amp;&amp; isa(conds, <span class="string">'cell'</span>)
+0203                 this.conditionName = conds;
+0204             <span class="keyword">end</span>
+0205         <span class="keyword">end</span>
+0206 
+0207         <a name="_sub6" href="#_subfunctions" class="code">function this = set.conditionDescription(this, desc)</a>
+0208             <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(desc) &amp;&amp; isa(desc, <span class="string">'cell'</span>)
+0209                 this.conditionDescription = desc;
+0210             <span class="keyword">end</span>
+0211         <span class="keyword">end</span>
+0212 
+0213         <a name="_sub7" href="#_subfunctions" class="code">function this = set.trialsInCondition(this, trialLst)</a>
+0214             <span class="comment">% Must be cell of doubles</span>
+0215             <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialLst) &amp;&amp; isa(trialLst, <span class="string">'cell'</span>)
+0216                 <span class="comment">% Check that no trial is repeated</span>
+0217                 aux = <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(trialLst);
+0218                 aux2 = unique(aux);
+0219                 <span class="keyword">for</span> i = 1:length(aux2)
+0220                     a = find(aux == aux2(i));
+0221                     <span class="keyword">if</span> numel(a) &gt; 1
+0222                         ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0223                             [<span class="string">'Trial '</span> num2str(aux2(i)) <span class="string">' is listed as '</span> <span class="keyword">...</span>
+0224                             <span class="string">'part of more than one condition.'</span>]);
+0225                         throw(ME);
+0226                     <span class="keyword">end</span>
+0227                 <span class="keyword">end</span>
+0228                 this.trialsInCondition = trialLst;
+0229             <span class="keyword">end</span>
+0230         <span class="keyword">end</span>
+0231 
+0232         <a name="_sub8" href="#_subfunctions" class="code">function this = set.Ntrials(this, Ntrials)</a>
+0233             <span class="keyword">if</span> isa(Ntrials, <span class="string">'double'</span>)
+0234                 this.Ntrials = Ntrials;
+0235             <span class="keyword">end</span>
+0236         <span class="keyword">end</span>
+0237 
+0238         <a name="_sub9" href="#_subfunctions" class="code">function this = set.SchenleyPlace(this, SchenleyPlace)</a>
+0239             <span class="keyword">if</span> isa(SchenleyPlace, <span class="string">'double'</span>)
+0240                 this.SchenleyPlace = SchenleyPlace;
+0241             <span class="keyword">end</span>
+0242         <span class="keyword">end</span>
+0243 
+0244         <a name="_sub10" href="#_subfunctions" class="code">function this = set.PerceptualTasks(this, PerceptualTasks)</a>
+0245             <span class="keyword">if</span> isa(PerceptualTasks, <span class="string">'double'</span>)
+0246                 this.PerceptualTasks = PerceptualTasks;
+0247             <span class="keyword">end</span>
+0248         <span class="keyword">end</span>
+0249 
+0250         <a name="_sub11" href="#_subfunctions" class="code">function this = set.datlog(this, datlog)</a>
+0251             <span class="keyword">if</span> isa(datlog, <span class="string">'cell'</span>)
+0252                 this.datlog = datlog;
+0253             <span class="keyword">end</span>
+0254         <span class="keyword">end</span>
+0255     <span class="keyword">end</span>
+0256 
+0257     <span class="comment">%% Condition Query Methods</span>
+0258     methods
+0259         condLst = <a href="getCondLstPerTrial.html" class="code" title="function condLst = getCondLstPerTrial(this)">getCondLstPerTrial</a>(this)
+0260 
+0261         conditionIdxs = <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>(this, conditionNames, <span class="keyword">...</span>
+0262             exactMatchesOnlyFlag, ignoreMissingNamesFlag)
+0263 
+0264         trialNums = <a href="getTrialsInCondition.html" class="code" title="function trialNums = getTrialsInCondition(this, conditionNames)">getTrialsInCondition</a>(this, conditionNames)
+0265 
+0266         condNames = <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>(this, name, type)
+0267 
+0268         condNames = <a href="getConditionsThatMatchV2.html" class="code" title="function condNames = getConditionsThatMatchV2(this, name, type)">getConditionsThatMatchV2</a>(this, name, type)
+0269     <span class="keyword">end</span>
+0270 
+0271     <span class="comment">%% Condition Manipulation Methods</span>
+0272     methods
+0273         newThis = <a href="splitConditionIntoTrials.html" class="code" title="function newThis = splitConditionIntoTrials(this, condList)">splitConditionIntoTrials</a>(this, condList)
+0274 
+0275         [newThis, change] = <a href="replaceConditionNames.html" class="code" title="function [newThis, change] = replaceConditionNames(this, currentName,newName)">replaceConditionNames</a>(this, currentName, <span class="keyword">...</span>
+0276             newName)
+0277 
+0278         [newThis, change] = <a href="numerateRepeatedConditionNames.html" class="code" title="function [newThis, change] = numerateRepeatedConditionNames(this)">numerateRepeatedConditionNames</a>(this)
+0279     <span class="keyword">end</span>
+0280 
+0281     <span class="comment">%% Validation Methods</span>
+0282     methods
+0283         conditionOrder = <a href="checkConditionOrder.html" class="code" title="function conditionOrder = checkConditionOrder(this,conditionNamesInOrder, silentFlag)">checkConditionOrder</a>(this, <span class="keyword">...</span>
+0284             conditionNamesInOrder, silentFlag)
+0285 
+0286         conditionOrder = <a href="validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>(this)
+0287 
+0288         newThis = <a href="sortConditions.html" class="code" title="function newThis = sortConditions(this)">sortConditions</a>(this)
+0289     <span class="keyword">end</span>
+0290 
+0291     <span class="comment">%% Static Methods</span>
+0292     methods (Static)
+0293         <a name="_sub12" href="#_subfunctions" class="code">function this = loadobj(this)</a>
+0294             <span class="comment">%loadobj  Object loading method for backward compatibility</span>
+0295             <span class="comment">%</span>
+0296             <span class="comment">%   this = loadobj(this) validates and sorts conditions when</span>
+0297             <span class="comment">%   loading saved experimentMetaData objects</span>
+0298             <span class="comment">%</span>
+0299             <span class="comment">%   Inputs:</span>
+0300             <span class="comment">%       this - experimentMetaData object being loaded</span>
+0301             <span class="comment">%</span>
+0302             <span class="comment">%   Outputs:</span>
+0303             <span class="comment">%       this - validated and sorted experimentMetaData object</span>
+0304             <span class="comment">%</span>
+0305             <span class="comment">%   Note: This function was created to retroactively validate</span>
+0306             <span class="comment">%         trials every time this is loaded</span>
+0307             <span class="comment">%</span>
+0308             <span class="comment">%   See also: saveobj, validateTrialsInCondition,</span>
+0309             <span class="comment">%             sortConditions</span>
+0310 
+0311             conditionOrder = this.validateTrialsInCondition();
+0312             this = this.sortConditions();
+0313         <span class="keyword">end</span>
+0314     <span class="keyword">end</span>
+0315 
+0316 <span class="keyword">end</span>
+0317</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

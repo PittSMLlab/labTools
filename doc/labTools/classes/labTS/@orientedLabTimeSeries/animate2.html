@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of animate2</title>
+  <meta name="keywords" content="animate2">
+  <meta name="description" content="animate2  Creates animation with balloon model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; animate2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>animate2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>animate2  Creates animation with balloon model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function mov = animate2(this, t0, t1, frameRate, writeFileFlag,filename, mode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">animate2  Creates animation with balloon model
+
+   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename,
+   mode) renders movie of 3D marker positions
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       t0 - start time (optional, default: beginning)
+       t1 - end time (optional, default: end)
+       frameRate - frames per second (optional, default: 25)
+       writeFileFlag - if 1, writes to file (optional, default: 0)
+       filename - output filename (optional, auto-generated)
+       mode - visualization mode: 1 (lines) or 2 (balloon) (optional,
+              default: 2)
+
+   Outputs:
+       mov - video writer object if writing to file
+
+   Note: Only makes sense for markerData type objects
+
+   See also: animate, <a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function mov = animate2(this, t0, t1, frameRate, writeFileFlag, </a><span class="keyword">...</span>
+0002     filename, mode)
+0003 <span class="comment">%animate2  Creates animation with balloon model</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename,</span>
+0006 <span class="comment">%   mode) renders movie of 3D marker positions</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0010 <span class="comment">%       t0 - start time (optional, default: beginning)</span>
+0011 <span class="comment">%       t1 - end time (optional, default: end)</span>
+0012 <span class="comment">%       frameRate - frames per second (optional, default: 25)</span>
+0013 <span class="comment">%       writeFileFlag - if 1, writes to file (optional, default: 0)</span>
+0014 <span class="comment">%       filename - output filename (optional, auto-generated)</span>
+0015 <span class="comment">%       mode - visualization mode: 1 (lines) or 2 (balloon) (optional,</span>
+0016 <span class="comment">%              default: 2)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Outputs:</span>
+0019 <span class="comment">%       mov - video writer object if writing to file</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   Note: Only makes sense for markerData type objects</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: animate, plot3</span>
+0024 
+0025 <span class="comment">% This function renders a movie of the 3-D position stored in the</span>
+0026 <span class="comment">% orientedLabData object. It only makes sense for markerData type</span>
+0027 <span class="comment">% objects.</span>
+0028 
+0029 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t0) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t1)
+0030     t0 = this.Time(1);
+0031     t1 = this.Time(end);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(mode)
+0034     mode = 2;
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(writeFileFlag)
+0037     writeFileFlag = 0;
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(frameRate)
+0040     frameRate = 25;
+0041 <span class="keyword">end</span>
+0042 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(filename)
+0043     filename = [<span class="string">'anim_t=['</span> num2str(round(t0 * 10) / 10) <span class="string">','</span> <span class="keyword">...</span>
+0044         num2str(round(t1 * 10) / 10) <span class="string">'].avi'</span>];
+0045 <span class="keyword">end</span>
+0046 f = round(this.sampFreq / frameRate);
+0047 frameRate = this.sampFreq / f;
+0048 this = this.split(t0, t1); <span class="comment">% Keeping the requested data only</span>
+0049 
+0050 <span class="keyword">if</span> writeFileFlag == 1
+0051 
+0052     <span class="comment">% mov = VideoWriter(filename, 'Archival');</span>
+0053     mov = VideoWriter(filename, <span class="string">'Uncompressed AVI'</span>);
+0054     mov.FrameRate = frameRate;
+0055     <span class="comment">% mov.Quality = 100;</span>
+0056     open(mov);
+0057 <span class="keyword">end</span>
+0058 
+0059 list = {<span class="string">'TOE'</span>, <span class="string">'HEE'</span>, <span class="string">'HEEL'</span>, <span class="string">'ANK'</span>, <span class="string">'SHANK'</span>, <span class="string">'TIB'</span>, <span class="string">'KNE'</span>, <span class="string">'KNEE'</span>, <span class="keyword">...</span>
+0060     <span class="string">'THI'</span>, <span class="string">'THIGH'</span>, <span class="string">'HIP'</span>, <span class="string">'GT'</span>, <span class="string">'ASI'</span>, <span class="string">'ASIS'</span>, <span class="string">'PSI'</span>, <span class="string">'PSIS'</span>};
+0061 [b, ~] = this.isaLabelPrefix(strcat(<span class="string">'L'</span>, list));
+0062 list = list(b);
+0063 ll = this.getOrientedData(unique(cellfun(@(x) x(1:end - 1), <span class="keyword">...</span>
+0064     this.getLabelsThatMatch(<span class="string">'^L'</span>), <span class="string">'UniformOutput'</span>, false)));
+0065 ll = this.getOrientedData(strcat(<span class="string">'L'</span>, list));
+0066 rr = this.getOrientedData(unique(cellfun(@(x) x(1:end - 1), <span class="keyword">...</span>
+0067     this.getLabelsThatMatch(<span class="string">'^R'</span>), <span class="string">'UniformOutput'</span>, false)));
+0068 rr = this.getOrientedData(strcat(<span class="string">'R'</span>, list));
+0069 dd = this.getOrientedData;
+0070 fh = figure;
+0071 h_axes = gca;
+0072 <span class="comment">% drawnow limitrate</span>
+0073 <span class="comment">% u = uicontrol('Style', 'slider', 'Position', [10 50 20 340], 'Min',</span>
+0074 <span class="comment">%     1, 'Max', size(ll, 1), 'Value', 1);</span>
+0075 
+0076 
+0077 axis equal;
+0078 axis([min(min(dd(:, :, 1))) - 50 max(max(dd(:, :, 1))) + 50 <span class="keyword">...</span>
+0079     min(min(dd(:, :, 2))) - 50 max(max(dd(:, :, 2))) + 50 <span class="keyword">...</span>
+0080     min(min(dd(:, :, 3))) - 50 max(max(dd(:, :, 3))) + 900]);
+0081 view(90, 0);
+0082 hold on;
+0083 <span class="keyword">switch</span> mode
+0084     <span class="keyword">case</span> 1
+0085         <span class="comment">% Option 1: plain lines</span>
+0086 
+0087         L = animatedline(ll(1, :, 1), ll(1, :, 2), ll(1, :, 3), <span class="keyword">...</span>
+0088             <span class="string">'Marker'</span>, <span class="string">'o'</span>, <span class="string">'MarkerSize'</span>, 10, <span class="string">'MarkerEdgeColor'</span>, <span class="string">'r'</span>);
+0089         R = animatedline(rr(1, :, 1), rr(1, :, 2), rr(1, :, 3), <span class="keyword">...</span>
+0090             <span class="string">'Marker'</span>, <span class="string">'o'</span>, <span class="string">'MarkerSize'</span>, 10, <span class="string">'MarkerEdgeColor'</span>, <span class="string">'b'</span>);
+0091         <span class="comment">% set(gca, 'NextPlot', 'replacechildren')</span>
+0092         <span class="keyword">for</span> k = 1:f:size(ll, 1)
+0093             <span class="comment">%</span>
+0094             <span class="comment">% hold on</span>
+0095             <span class="comment">% axes(ax)</span>
+0096             clearpoints(L);
+0097             addpoints(L, ll(k, :, 1), ll(k, :, 2), ll(k, :, 3));
+0098             clearpoints(R);
+0099             addpoints(R, rr(k, :, 1), rr(k, :, 2), rr(k, :, 3));
+0100             <span class="comment">% hold off</span>
+0101             <span class="comment">% u.Value = k;</span>
+0102             M(k) = getframe(gcf);
+0103         <span class="keyword">end</span>
+0104 
+0105     <span class="keyword">case</span> 2
+0106         <span class="comment">% set mannequin color</span>
+0107         color = [0.2 0.2 0.2]; <span class="comment">% gray</span>
+0108         <span class="comment">% Option 2: balloon cartoon (GTO style)</span>
+0109         <span class="keyword">for</span> k = 1:f:size(ll, 1)
+0110             cla;
+0111             <span class="keyword">for</span> side = 1:2 <span class="comment">% For each side</span>
+0112                 <span class="keyword">switch</span> side
+0113                     <span class="keyword">case</span> 1
+0114                         s = rr; <span class="comment">% Right side</span>
+0115                         colorLegs = [0 160 198] / 255;
+0116                     <span class="keyword">case</span> 2
+0117                         s = ll; <span class="comment">% Left side</span>
+0118                         colorLegs = [255 153 0] / 255;
+0119                 <span class="keyword">end</span>
+0120                 <span class="keyword">for</span> seg = 1:3
+0121                     <span class="keyword">switch</span> seg
+0122                         <span class="keyword">case</span> 1
+0123                             ind1 = 1; <span class="comment">% Toe</span>
+0124                             ind2 = 3; <span class="comment">% Ank</span>
+0125                             radius = [1 .5 .5];
+0126                         <span class="keyword">case</span> 2
+0127                             ind1 = 3; <span class="comment">% Ank</span>
+0128                             ind2 = 5; <span class="comment">% Knee</span>
+0129                             radius = [1 .25 .25];
+0130                         <span class="keyword">case</span> 3
+0131                             ind1 = 5; <span class="comment">% Knee</span>
+0132                             ind2 = 7; <span class="comment">% hip</span>
+0133                             radius = [1 .35 .35];
+0134                     <span class="keyword">end</span>
+0135                     X = s(k, [ind1 ind2], 1);
+0136                     Y = s(k, [ind1 ind2], 2);
+0137                     Z = s(k, [ind1 ind2], 3);
+0138                     orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, <span class="keyword">...</span>
+0139                         radius, colorLegs);
+0140                 <span class="keyword">end</span>
+0141                 <span class="comment">% draw hip joints</span>
+0142                 X = s(k, 7, 1);
+0143                 Y = s(k, 7, 2);
+0144                 Z = s(k, 7, 3);
+0145                 orientedLabTimeSeries.drawball(h_axes, X, Y, Z, 50, <span class="keyword">...</span>
+0146                     color);
+0147                 <span class="comment">% draw shoulder joints: using hip data by default</span>
+0148                 X = s(k, 7, 1);
+0149                 Y = s(k, 7, 2);
+0150                 Z = s(k, 7, 3) + 530;
+0151                 orientedLabTimeSeries.drawball(h_axes, X, Y, Z, 50, <span class="keyword">...</span>
+0152                     color);
+0153             <span class="keyword">end</span>
+0154             <span class="comment">% Draw pelvis</span>
+0155             X = [rr(k, 7, 1) ll(k, 7, 1)];
+0156             Y = [rr(k, 7, 2) ll(k, 7, 2)];
+0157             Z = [rr(k, 7, 3) ll(k, 7, 3)];
+0158             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, <span class="keyword">...</span>
+0159                 [1 .4 .4], color);
+0160             <span class="comment">% Draw shoulder</span>
+0161             X = [rr(k, 7, 1) ll(k, 7, 1)];
+0162             Y = [rr(k, 7, 2) ll(k, 7, 2)];
+0163             Z = [rr(k, 7, 3) ll(k, 7, 3)] + 530;
+0164             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, <span class="keyword">...</span>
+0165                 [1 .35 .35], color);
+0166             <span class="comment">% Draw torso</span>
+0167             X = .5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
+0168             Y = .5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
+0169             <span class="comment">% Fake torso height</span>
+0170             Z = .5 * (rr(k, 7, 3) + ll(k, 7, 3)) + [0 500];
+0171             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, <span class="keyword">...</span>
+0172                 [1 .4 .4], color);
+0173             <span class="comment">% Draw head</span>
+0174             X = .5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
+0175             Y = .5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
+0176             <span class="comment">% Fake head height</span>
+0177             Z = .5 * (rr(k, 7, 3) + ll(k, 7, 3)) + 500 + [60 360];
+0178             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, <span class="keyword">...</span>
+0179                 [1 .75 .75], color);
+0180 
+0181             <span class="comment">% Save frame</span>
+0182             camlight headlight;
+0183             set(findobj(gca, <span class="string">'type'</span>, <span class="string">'surface'</span>), <span class="keyword">...</span>
+0184                 <span class="string">'FaceLighting'</span>, <span class="string">'gouraud'</span>, <span class="keyword">...</span>
+0185                 <span class="string">'AmbientStrength'</span>, .3, <span class="keyword">...</span>
+0186                 <span class="string">'DiffuseStrength'</span>, .8, <span class="keyword">...</span>
+0187                 <span class="string">'SpecularStrength'</span>, .8, <span class="keyword">...</span>
+0188                 <span class="string">'SpecularExponent'</span>, 25, <span class="keyword">...</span>
+0189                 <span class="string">'BackFaceLighting'</span>, <span class="string">'reverselit'</span>);
+0190             currFrame = getframe;
+0191             <span class="keyword">if</span> writeFileFlag == 1
+0192                 writeVideo(mov, currFrame);
+0193             <span class="keyword">end</span>
+0194         <span class="keyword">end</span>
+0195 <span class="keyword">end</span>
+0196 hold off;
+0197 <span class="keyword">if</span> writeFileFlag == 1
+0198     close(mov);
+0199 <span class="keyword">end</span>
+0200 <span class="keyword">end</span>
+0201</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

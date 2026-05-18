@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; addMarkerPair.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>addMarkerPair
 </h1>
@@ -36,7 +36,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>	loadTrials  generates rawTrialData instances for each trial</li></ul>
+<li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
 <!-- crossreference -->
 
 
@@ -44,18 +44,19 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function addMarkerPair(correctLabel,altLabel)</a>
 0002 
-0003 fileStr=which(<span class="string">'markerLabelKey.mat'</span>);
-0004 load(fileStr)
+0003 fileStr = which(<span class="string">'markerLabelKey.mat'</span>);
+0004 load(fileStr);
 0005 
-0006 <span class="keyword">for</span> i=1:size(matchedLabels,1)
-0007    <span class="keyword">if</span> strcmpi(correctLabel,matchedLabels{i,2})
-0008        matchedLabels{i,1}=[matchedLabels{i,1} {altLabel}];       
-0009    <span class="keyword">end</span>
+0006 <span class="keyword">for</span> lbl = 1:size(matchedLabels,1)                   <span class="comment">% for each label, ...</span>
+0007     <span class="keyword">if</span> strcmpi(correctLabel,matchedLabels{lbl,2})
+0008         matchedLabels{lbl,1} = [matchedLabels{lbl,1} {altLabel}];
+0009     <span class="keyword">end</span>
 0010 <span class="keyword">end</span>
 0011 
-0012 save(fileStr,<span class="string">'matchedLabels'</span>)
+0012 save(fileStr,<span class="string">'matchedLabels'</span>);
 0013 
-0014 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="keyword">end</span>
+0015</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

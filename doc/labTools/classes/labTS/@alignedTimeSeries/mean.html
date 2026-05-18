@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mean</title>
+  <meta name="keywords" content="mean">
+  <meta name="description" content="mean  Computes mean across strides">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; mean.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>mean
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>mean  Computes mean across strides</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [meanTS, stds] = mean(this, strideIdxs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">mean  Computes mean across strides
+
+   [meanTS, stds] = mean(this) computes mean and standard deviation
+   across all aligned timeseries
+
+   [meanTS, stds] = mean(this, strideIdxs) computes for specified
+   strides
+
+   Inputs:
+       this - alignedTimeSeries object
+       strideIdxs - vector of stride indices (optional, default: all)
+
+   Outputs:
+       meanTS - alignedTimeSeries with mean data (single stride)
+       stds - standard deviations (for logical data) or empty
+
+   Note: For logical data (events), assumes all aligned timeSeries
+         have same number of events in same order. Returns median
+         event times.
+
+   See also: <a href="median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>, <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>, <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>	logicalHist  Generates histogram from logical event data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	TODO: this file should be updated to call upon plotGroupedBars</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	This function replaces plotMultipleGroupBars</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>	plotCell  Plots cell array of stride data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="equalizeEnergyPerChannel.html" class="code" title="function newThis = equalizeEnergyPerChannel(this)">equalizeEnergyPerChannel</a>	equalizeEnergyPerChannel  Normalizes by RMS</li><li><a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/example/EMGnormalization.html" class="code" title="">EMGnormalization</a>	EMGNORMALIZATION Example: normalize EMG parameters to baseline.</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/computeAmplitudes.html" class="code" title="function [amplitudes, rms, usedMedMinMaxInds] =computeAmplitudes(snippets, options)">computeAmplitudes</a>	COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.</li><li><a href="../../../../labTools/fun/+Hreflex/extractStimArtifactIndsFromTrigger.html" class="code" title="function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, rawEMG_TAP, pinHreflexStim, options)">extractStimArtifactIndsFromTrigger</a>	EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.</li><li><a href="../../../../labTools/fun/+Hreflex/fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">fitCal</a>	FITCAL Fit M- and H-wave recruitment curves.</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/+Hreflex/plotNoiseHistogram.html" class="code" title="function fig = plotNoiseHistogram(amplitudesNoise, leg, id, trialNum, options)">plotNoiseHistogram</a>	PLOTNOISEHISTOGRAM Plot the noise amplitude distribution for the H-reflex.</li><li><a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/rawEMGhealthCheck.html" class="code" title="function [signalStats] = rawEMGhealthCheck(rawExperimentData)">rawEMGhealthCheck</a>	% Compute stats</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromForcesAlt.html" class="code" title="function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)">getStanceFromForcesAlt</a>	GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li><li><a href="../../../../labTools/fun/ext/BTK/matlab/btkEmulateC3Dserver.html" class="code" title="function itf = btkEmulateC3Dserver()">btkEmulateC3Dserver</a>	BTKEMULATEC3DSERVER Creates an emulated COM object for C3Dserver.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/testSkeleton.html" class="code" title="">testSkeleton</a>	testSkeleton</li><li><a href="../../../../labTools/fun/ext/pitools/math/demean.html" class="code" title="function Y = demean(X)">demean</a>	DEMEAN Remove the column-wise mean from a matrix.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">estimateDopplerShift</a>	ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/findTemplate.html" class="code" title="function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag)">findTemplate</a>	findTemplate implements a simple cross-correlation search to find for</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/polyfit1PCA.html" class="code" title="function [pp] = polyfit1PCA(x,y,varNormalizeFlag)">polyfit1PCA</a>	Finding best-fit line through PCA</li><li><a href="../../../../labTools/fun/ext/swtest/swtest.html" class="code" title="function [H, pValue, W] = swtest(x, alpha)">swtest</a>	SWTEST Shapiro-Wilk parametric hypothesis test of composite normality.</li><li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParams.html" class="code" title="">DetermineOptimalReconstructAndLabelParams</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li><li><a href="../../../../labTools/fun/misc/DetermineOptimalReconstructAndLabelParamsTmp.html" class="code" title="">DetermineOptimalReconstructAndLabelParamsTmp</a>	% Determine the Optimal Reconstruct & Label Pipeline Parameters</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/V2P_tester.html" class="code" title="">V2P_tester</a>	</li><li><a href="../../../../labTools/fun/misc/generateHreflexRecruitmentCurves.html" class="code" title="">generateHreflexRecruitmentCurves</a>	% Generate H-Reflex Calibration Recruitment Curves & Other Figures</li><li><a href="../../../../labTools/fun/misc/hmhFun/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResults.html" class="code" title="function results = getResults(Study,params,groups,maxPerturb,plotFlag,indivFlag)">getResults</a>	define number of points to use for calculating values</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)">getResultsBF</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/appendBodyCOM.html" class="code" title="function markerDataOut = appendBodyCOM(markerData, BW)">appendBodyCOM</a>	APPENDBODYCOM Approximate whole-body center of mass from marker data.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">computeCOM</a>	COMPUTECOM Compute stride-by-stride COM kinematics relative to each ankle.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHarmonicRatioParameters.html" class="code" title="function out = computeHarmonicRatioParameters(strideEvents, markerData,options)">computeHarmonicRatioParameters</a>	COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>	COMPUTEHREFLEXPARAMETERS Compute stride-by-stride H-reflex parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>	COMPUTELEGFORCEPARAMETERS Compute AP force parameters for one leg stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">computeSpatialParameters</a>	COMPUTESPATIALPARAMETERS Compute spatial parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</li><li><a href="../../../../labTools/fun/plotting/getNiceAxisLimits.html" class="code" title="function [xl,yl] = getNiceAxisLimits(axHandle,pad)">getNiceAxisLimits</a>	Similar to axis tight, but with pre-determined padding so no datapoints</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [meanTS, stds] = mean(this, strideIdxs)</a>
+0002 <span class="comment">%mean  Computes mean across strides</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [meanTS, stds] = mean(this) computes mean and standard deviation</span>
+0005 <span class="comment">%   across all aligned timeseries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [meanTS, stds] = mean(this, strideIdxs) computes for specified</span>
+0008 <span class="comment">%   strides</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - alignedTimeSeries object</span>
+0012 <span class="comment">%       strideIdxs - vector of stride indices (optional, default: all)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       meanTS - alignedTimeSeries with mean data (single stride)</span>
+0016 <span class="comment">%       stds - standard deviations (for logical data) or empty</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Note: For logical data (events), assumes all aligned timeSeries</span>
+0019 <span class="comment">%         have same number of events in same order. Returns median</span>
+0020 <span class="comment">%         event times.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: median, std, prctile</span>
+0023 
+0024 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
+0025     this.Data = this.Data(:, :, strideIdxs);
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> ~islogical(this.Data(1))
+0028     <span class="comment">% meanTS = labTimeSeries(nanmean(this.Data, 3), this.Time(1),</span>
+0029     <span class="comment">%     this.Time(2) - this.Time(1), this.labels);</span>
+0030     meanTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
+0031         this.Time(2) - this.Time(1), nanmean(this.Data, 3), <span class="keyword">...</span>
+0032         this.labels, this.alignmentVector, this.alignmentLabels);
+0033     stds = [];
+0034 <span class="keyword">else</span>
+0035     <span class="comment">% Logical timeseries. Will find events and average appropriately.</span>
+0036     <span class="comment">% Assuming the SAME number of events per stride, and in the same</span>
+0037     <span class="comment">% ORDER. % FIXME: check event order.</span>
+0038     [histogram, newLabels] = <a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>(this);
+0039     <span class="comment">% Compute mean/median:</span>
+0040     newData = sparse([], [], false, size(this.Data, 1), <span class="keyword">...</span>
+0041         length(newLabels), size(this.Data, 1));
+0042     mH = nanmedian(histogram);
+0043     <span class="keyword">for</span> i = 1:size(histogram, 2)
+0044         <span class="keyword">if</span> mod(mH(i), 1) ~= 0
+0045             mH(i) = floor(mH(i));
+0046             warning([<span class="string">'Median event '</span> num2str(i) <span class="keyword">...</span>
+0047                 <span class="string">' falls between two samples'</span>]);
+0048         <span class="keyword">end</span>
+0049         newData(mH(i), i) = true;
+0050     <span class="keyword">end</span>
+0051     <span class="comment">% meanTS = labTimeSeries(newData, this.Time(1),</span>
+0052     <span class="comment">%     this.Time(2) - this.Time(1), newLabels);</span>
+0053     meanTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
+0054         this.Time(2) - this.Time(1), newData, newLabels, <span class="keyword">...</span>
+0055         this.alignmentVector, this.alignmentLabels);
+0056     stds = nanstd(histogram);
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">end</span>
+0059</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

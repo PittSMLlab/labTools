@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of recomputeParameters</title>
+  <meta name="keywords" content="recomputeParameters">
+  <meta name="description" content="RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; recomputeParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>recomputeParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.
+
+   Recalculates adaptation parameters for all trials in the
+ experimental session from existing processed trial data. Unlike
+ FLUSHANDRECOMPUTEPARAMETERS, this merges newly computed parameters
+ into the existing set, replacing name collisions but preserving
+ parameters with different names — enabling partial recomputation
+ (e.g., one class only) without discarding other parameters.
+
+   The eventClass must match the one used in the original processing
+ run. A different eventClass may produce a different stride count,
+ which is incompatible with the merge-in-place behavior of this
+ function. Use FLUSHANDRECOMPUTEPARAMETERS when changing eventClass.
+
+ Inputs:
+   this                 - experimentData object
+   eventClass           - (optional) gait event source: '' (default,
+                          auto-select), 'kin', or 'force'
+   initEventSide        - (optional) 'L' or 'R'; defaults to trial
+                          metadata when empty
+   parameterClasses     - (optional) string or cell array of parameter
+                          class names to compute; defaults to all
+   shouldComputeEMGNorm - (optional) logical; compute EMG norm
+                          parameters (default false)
+   muscleLabels         - (optional) cell array of unique muscle label
+                          strings; required when shouldComputeEMGNorm
+                          is true
+   normalizationRefCond - (optional) condition name used to normalize
+                          EMG; uses type-specific search if empty
+   biasRemovalCond      - (optional) condition name for bias removal;
+                          uses type-specific default if empty
+
+ Outputs:
+   this - experimentData object with updated parameters
+
+ Toolbox Dependencies: None
+
+ See also <a href="flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">FLUSHANDRECOMPUTEPARAMETERS</a>, <a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">RECOMPUTEEVENTS</a>,
+   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>	APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>	POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function this = recomputeParameters(this, eventClass, initEventSide, </a><span class="keyword">...</span>
+0002     parameterClasses, shouldComputeEMGNorm, muscleLabels, <span class="keyword">...</span>
+0003     normalizationRefCond, biasRemovalCond)
+0004 <span class="comment">%RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Recalculates adaptation parameters for all trials in the</span>
+0007 <span class="comment">% experimental session from existing processed trial data. Unlike</span>
+0008 <span class="comment">% FLUSHANDRECOMPUTEPARAMETERS, this merges newly computed parameters</span>
+0009 <span class="comment">% into the existing set, replacing name collisions but preserving</span>
+0010 <span class="comment">% parameters with different names — enabling partial recomputation</span>
+0011 <span class="comment">% (e.g., one class only) without discarding other parameters.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   The eventClass must match the one used in the original processing</span>
+0014 <span class="comment">% run. A different eventClass may produce a different stride count,</span>
+0015 <span class="comment">% which is incompatible with the merge-in-place behavior of this</span>
+0016 <span class="comment">% function. Use FLUSHANDRECOMPUTEPARAMETERS when changing eventClass.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   this                 - experimentData object</span>
+0020 <span class="comment">%   eventClass           - (optional) gait event source: '' (default,</span>
+0021 <span class="comment">%                          auto-select), 'kin', or 'force'</span>
+0022 <span class="comment">%   initEventSide        - (optional) 'L' or 'R'; defaults to trial</span>
+0023 <span class="comment">%                          metadata when empty</span>
+0024 <span class="comment">%   parameterClasses     - (optional) string or cell array of parameter</span>
+0025 <span class="comment">%                          class names to compute; defaults to all</span>
+0026 <span class="comment">%   shouldComputeEMGNorm - (optional) logical; compute EMG norm</span>
+0027 <span class="comment">%                          parameters (default false)</span>
+0028 <span class="comment">%   muscleLabels         - (optional) cell array of unique muscle label</span>
+0029 <span class="comment">%                          strings; required when shouldComputeEMGNorm</span>
+0030 <span class="comment">%                          is true</span>
+0031 <span class="comment">%   normalizationRefCond - (optional) condition name used to normalize</span>
+0032 <span class="comment">%                          EMG; uses type-specific search if empty</span>
+0033 <span class="comment">%   biasRemovalCond      - (optional) condition name for bias removal;</span>
+0034 <span class="comment">%                          uses type-specific default if empty</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% Outputs:</span>
+0037 <span class="comment">%   this - experimentData object with updated parameters</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">% Toolbox Dependencies: None</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% See also FLUSHANDRECOMPUTEPARAMETERS, RECOMPUTEEVENTS,</span>
+0042 <span class="comment">%   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.</span>
+0043 
+0044 arguments
+0045     this
+0046     eventClass           (1,:) char    = <span class="string">''</span>
+0047     initEventSide        (1,:) char    = <span class="string">''</span>
+0048     parameterClasses                   = []
+0049     shouldComputeEMGNorm (1,1) logical = false
+0050     muscleLabels                       = {}
+0051     normalizationRefCond               = []
+0052     biasRemovalCond                    = []
+0053 <span class="keyword">end</span>
+0054 
+0055 trials = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.metaData.trialsInCondition);
+0056 <span class="keyword">for</span> tr = trials
+0057     newParams = <a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>(this.data{tr}, this.subData, <span class="keyword">...</span>
+0058         eventClass, initEventSide, parameterClasses);
+0059     nNew      = size(newParams.Data, 1);
+0060     nExisting = size(this.data{tr}.adaptParams.Data, 1);
+0061     <span class="keyword">if</span> nNew ~= nExisting
+0062         error(<span class="string">'recomputeParameters:strideMismatch'</span>, <span class="keyword">...</span>
+0063             [<span class="string">'Trial %d: new stride count (%d) differs from '</span> <span class="keyword">...</span>
+0064             <span class="string">'existing (%d). A different eventClass produces '</span> <span class="keyword">...</span>
+0065             <span class="string">'different stride boundaries — use '</span> <span class="keyword">...</span>
+0066             <span class="string">'flushAndRecomputeParameters instead.'</span>], <span class="keyword">...</span>
+0067             tr, nNew, nExisting);
+0068     <span class="keyword">end</span>
+0069     this.data{tr}.adaptParams = <span class="keyword">...</span>
+0070         this.data{tr}.adaptParams.replaceParams(newParams);
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="keyword">if</span> shouldComputeEMGNorm
+0074     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(muscleLabels)
+0075         warning(<span class="string">'recomputeParameters:noMuscleLabels'</span>, <span class="keyword">...</span>
+0076             [<span class="string">'muscleLabels not provided — EMG norm parameters '</span> <span class="keyword">...</span>
+0077             <span class="string">'were not computed.'</span>]);
+0078         <span class="keyword">return</span>
+0079     <span class="keyword">end</span>
+0080     adaptData = this.makeDataObj([]);
+0081     adaptData = <a href="../../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>( <span class="keyword">...</span>
+0082         adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
+0083     this = <a href="../../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>(this, adaptData);
+0084 <span class="keyword">end</span>
+0085 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

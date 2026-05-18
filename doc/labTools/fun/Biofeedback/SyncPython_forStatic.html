@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">Biofeedback</a> &gt; SyncPython_forStatic.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>SyncPython_forStatic
 </h1>
@@ -39,7 +39,7 @@ by Dulce Mariscal</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATASVECTOR Extract data vectors for the specified label(s).</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -66,7 +66,7 @@ This function is called by:
 0016 adaptData = adaptData.removeBadStrides;
 0017 
 0018 condition= adaptData.metaData.conditionName;
-0019 condition=condition(find(~cellfun(@isempty,adaptData.metaData.trialsInCondition)));<span class="comment">%watches out for conditions with no trials</span>
+0019 condition=condition(find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,adaptData.metaData.trialsInCondition)));<span class="comment">%watches out for conditions with no trials</span>
 0020 
 0021 <span class="comment">%initializes output structure</span>
 0022 w=0;
@@ -147,12 +147,12 @@ This function is called by:
 0097         
 0098         <span class="comment">%Force plate data from Nexus</span>
 0099 
-0100         GRRz=getDataAsVector(expData.data{j}.GRFData,<span class="string">'RFz'</span>);
-0101         GRLz=getDataAsVector(expData.data{j}.GRFData,<span class="string">'LFz'</span>);
+0100         GRRz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'RFz'</span>);
+0101         GRLz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'LFz'</span>);
 0102         
 0103         <span class="comment">%Converting force plate data from 1080Hz to 120Hz</span>
-0104         NexusRlowFreq=resample(GRRz,1,9);
-0105         NexusLlowFreq=resample(GRLz,1,9);
+0104         NexusRlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRRz,1,9);
+0105         NexusLlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRLz,1,9);
 0106         
 0107         <span class="comment">%Creating NaN matrix with the lenght of the data</span>
 0108         newData=nan((((outmat(<span class="keyword">end</span>,1)-outmat(1,1)))+1),size(header,2));
@@ -172,7 +172,7 @@ This function is called by:
 0122         <span class="comment">%Calculating the gaps length for pyton data</span>
 0123         gap=diff(outmat(:,1));
 0124         figure()
-0125         plot(gap,<span class="string">'b'</span>)
+0125         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(gap,<span class="string">'b'</span>)
 0126         
 0127         <span class="comment">%Creating a linear interpolate matrix from Pyton data</span>
 0128         newData=interp1(outmat(:,1),outmat(:,1:end),[outmat(1,1):outmat(<span class="keyword">end</span>,1)]);
@@ -184,15 +184,15 @@ This function is called by:
 0134         
 0135         <span class="comment">%%</span>
 0136         RANK=[];
-0137         [RANK,~,~]=getDataAsVector(expData.data{j}.markerData,<span class="string">'RANKy'</span>);
+0137         [RANK,~,~]=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.markerData,<span class="string">'RANKy'</span>);
 0138         
 0139         <span class="comment">%Determination of crosscorrelation between Nexus at 120Hz and Interpolate</span>
 0140         <span class="comment">%Pyton data</span>
 0141 
 0142             figure()
-0143             plot(RANK,<span class="string">'b'</span>)
+0143             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
 0144             hold on
-0145             plot(newData(:,16)*1000, <span class="string">'r'</span>)
+0145             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData(:,16)*1000, <span class="string">'r'</span>)
 0146             
 0147             [acor, lag]=xcorr(NexusRlowFreq,newData(:,2));
 0148             [~,I]=max((acor));
@@ -222,16 +222,16 @@ This function is called by:
 0172                 <span class="keyword">end</span>
 0173             <span class="keyword">end</span>
 0174             figure()
-0175             plot(RANK,<span class="string">'b'</span>)
+0175             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
 0176             hold on
-0177             plot(newData2(:,16)*1000, <span class="string">'r'</span>)
+0177             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData2(:,16)*1000, <span class="string">'r'</span>)
 0178 
 0179         
 0180         <span class="comment">%%</span>
 0181         <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
 0182         <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
-0183         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,120);
-0184         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,3),newData(:,2),120);
+0183         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(NexusLlowFreq,NexusRlowFreq,120);
+0184         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(newData(:,3),newData(:,2),120);
 0185         
 0186         <span class="comment">%% HEEL STRIKE</span>
 0187         <span class="comment">%localication of HS==1);</span>
@@ -253,7 +253,7 @@ This function is called by:
 0203             diffLengthR=length(locRindex)-length(locRHSpyton);
 0204             FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
 0205             IsBadR=find(FrameDiffR&lt;=-10);
-0206             <span class="keyword">if</span> isempty(IsBadR)
+0206             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0207                 <span class="keyword">break</span>
 0208             <span class="keyword">else</span>
 0209                 locRindex(IsBadR(1))=[];
@@ -264,7 +264,7 @@ This function is called by:
 0214             diffLength=length(locLindex)-length(locLHSpyton);
 0215             FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
 0216             IsBad=find(FrameDiff&lt;=-10);
-0217             <span class="keyword">if</span> isempty(IsBad)
+0217             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0218                 <span class="keyword">break</span>
 0219             <span class="keyword">else</span>
 0220                 locLindex(IsBad(1))=[];
@@ -278,7 +278,7 @@ This function is called by:
 0228                 diffLengthR=length(locRindex)-length(locRHSnexus);
 0229                 FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
 0230                 IsBadR=find(abs(FrameDiffR)&gt;10);
-0231                 <span class="keyword">if</span> isempty(IsBadR)
+0231                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0232                     <span class="keyword">break</span>
 0233                 <span class="keyword">else</span>
 0234                     locRindex(IsBadR(1))=[];
@@ -293,7 +293,7 @@ This function is called by:
 0243                 diffLength=length(locLindex)-length(locLHSnexus);
 0244                 FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
 0245                 IsBad=find(abs(FrameDiff)&gt;10);
-0246                 <span class="keyword">if</span> isempty(IsBad)
+0246                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0247                     <span class="keyword">break</span>
 0248                 <span class="keyword">else</span>
 0249                     locLindex(IsBad(1))=[];
@@ -309,7 +309,7 @@ This function is called by:
 0259                 FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
 0260                
 0261                 IsBadR=find(FrameDiffR&lt;=-10);
-0262                 <span class="keyword">if</span> isempty(IsBadR)
+0262                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0263                     <span class="keyword">break</span>
 0264                 <span class="keyword">else</span>
 0265                     locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
@@ -324,7 +324,7 @@ This function is called by:
 0274                 diffLengthL=-length(locLindex)+length(locLHSnexus);
 0275                 FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
 0276                 IsBadL=find(FrameDiffL&lt;=-10);
-0277                 <span class="keyword">if</span> isempty(IsBadL)
+0277                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadL)
 0278                     <span class="keyword">break</span>
 0279                 <span class="keyword">else</span>
 0280                     locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
@@ -457,27 +457,27 @@ This function is called by:
 0407         
 0408         figure()
 0409         hold on
-0410         toleranceR=plot(1:length(GoodRHS),ystdRU,<span class="string">'--r'</span>,1:length(GoodRHS),ystdRL,<span class="string">'--r'</span>,1:length(GoodRHS),Rtarget,<span class="string">'r'</span>);
+0410         toleranceR=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodRHS),ystdRU,<span class="string">'--r'</span>,1:length(GoodRHS),ystdRL,<span class="string">'--r'</span>,1:length(GoodRHS),Rtarget,<span class="string">'r'</span>);
 0411         
 0412         
 0413         GoodnexusR=NaN(length(GoodRHS),1);
 0414         <span class="keyword">for</span> i=1:length(GoodRHS)
 0415             
 0416             <span class="keyword">if</span> GoodRHS(i)==1
-0417                 gPr=plot(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0417                 gPr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
 0418                 
 0419                 
 0420             <span class="keyword">elseif</span> GoodRHS(i)==0
 0421                 
-0422                 blackPr=plot(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0422                 blackPr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
 0423                 
 0424             <span class="keyword">end</span>
 0425             
 0426             <span class="keyword">if</span> abs(alphaRnexus(i)-Rtarget(i))&lt;37.5
-0427                 RNr=plot(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0427                 RNr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
 0428                 GoodnexusR(i,1)=1;
 0429             <span class="keyword">elseif</span> abs(alphaRnexus(i)-Rtarget(i))&gt;=37.5
-0430                 blackNr=plot(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0430                 blackNr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
 0431                 GoodnexusR(i,1)=0;
 0432             <span class="keyword">end</span>
 0433         <span class="keyword">end</span>
@@ -492,25 +492,25 @@ This function is called by:
 0442         
 0443         figure()
 0444         hold on
-0445         toleranceL2=plot(1:length(GoodLHS2),ystdLU2,<span class="string">'--r'</span>,1:length(GoodLHS2),ystdLL2,<span class="string">'--r'</span>,1:length(GoodLHS2),Ltarget2,<span class="string">'r'</span>);
+0445         toleranceL2=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS2),ystdLU2,<span class="string">'--r'</span>,1:length(GoodLHS2),ystdLL2,<span class="string">'--r'</span>,1:length(GoodLHS2),Ltarget2,<span class="string">'r'</span>);
 0446         GoodnexusL=NaN(length(GoodLHS2),1);
 0447         <span class="keyword">for</span> i=1:length(GoodLHS2)
 0448             <span class="keyword">if</span> GoodLHS2(i)==1
 0449                 
-0450                 gPL=plot(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0450                 gPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
 0451                 
 0452             <span class="keyword">elseif</span> GoodLHS2(i)==0
 0453                 
-0454                 blackPL=plot(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0454                 blackPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
 0455                 
 0456             <span class="keyword">end</span>
 0457             
 0458             <span class="keyword">if</span> abs(alphaLnexus(i)-Ltarget2(i))&lt;37.5
-0459                 RNL= plot(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0459                 RNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
 0460                 GoodnexusL(i,1)=1;
 0461             <span class="keyword">elseif</span> abs(alphaLnexus(i)-Ltarget2(i))&gt;=37.5
 0462                 
-0463                 blackNL= plot(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0463                 blackNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
 0464                 GoodnexusL(i,1)=0;
 0465             <span class="keyword">end</span>
 0466             
@@ -528,22 +528,22 @@ This function is called by:
 0478         figure()
 0479         hold on
 0480         title([<span class="string">'Alpha Slow Temp leg'</span> w])
-0481         toleranceL=plot(1:length(GoodLHS),ystdLU,<span class="string">'--r'</span>,1:length(GoodLHS),ystdLL,<span class="string">'--r'</span>,1:length(GoodLHS),Ltarget,<span class="string">'r'</span>);
+0481         toleranceL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS),ystdLU,<span class="string">'--r'</span>,1:length(GoodLHS),ystdLL,<span class="string">'--r'</span>,1:length(GoodLHS),Ltarget,<span class="string">'r'</span>);
 0482         l=0;
 0483         <span class="keyword">for</span> i=1:length(GoodLHS)
 0484             <span class="keyword">if</span> GoodLHS(i)==1
 0485                 
-0486                 gPL=plot(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0486                 gPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
 0487                 
 0488             <span class="keyword">elseif</span> GoodLHS(i)==0
 0489                 
-0490                 blackPL=plot(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0490                 blackPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
 0491                 GoodL(i,1)=0;
 0492             <span class="keyword">end</span>
 0493             <span class="keyword">if</span> abs(alphaLnexusTemp(i)-Ltarget(i))&lt;37.5
-0494                 RNL= plot(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0494                 RNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
 0495             <span class="keyword">elseif</span> abs(alphaLnexusTemp(i)-Ltarget(i))&gt;=37.5
-0496                 blackNL= plot(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0496                 blackNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
 0497                 l=l+1;
 0498             <span class="keyword">end</span>
 0499             
@@ -615,15 +615,15 @@ This function is called by:
 0565 <span class="keyword">if</span> all(aux)
 0566     adaptData.data.Data(:,idx)=[StepsR,StepsL,Steps,Stepsnexus];
 0567 <span class="keyword">else</span>
-0568     this=parameterSeries([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; <span class="string">'TargetHitR'</span>; <span class="string">'TargetHitL'</span> ;<span class="string">'TargetHit'</span>; <span class="string">'TargetNexus'</span>],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+4));
+0568     this=<a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; <span class="string">'TargetHitR'</span>; <span class="string">'TargetHitL'</span> ;<span class="string">'TargetHit'</span>; <span class="string">'TargetNexus'</span>],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+4));
 0569     <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
-0570     adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
+0570     adaptData=<a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(rawExpData.metaData,rawExpData.subData,this);
 0571 <span class="keyword">end</span>
 0572 saveloc=[];
 0573 save([saveloc subject <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>);
 0574 save([saveloc subject <span class="string">'Pyton2.mat'</span>],<span class="string">'newData2'</span>,<span class="string">'header'</span>,<span class="string">'outmat'</span>,<span class="string">'results'</span>)
 0575 
 0576 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

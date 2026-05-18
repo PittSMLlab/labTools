@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">plotting</a> &gt; prettyBarPlot.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/plotting&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\plotting&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>prettyBarPlot
 </h1>
@@ -36,7 +36,7 @@ P is the number of datapoints in each group/condition</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	iqr  Computes interquartile range</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/plotting/colors/figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li><li><a href="figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -56,25 +56,25 @@ This function is called by:
 0009 N=size(data,3); <span class="comment">%Groups (colored)</span>
 0010 
 0011 <span class="comment">%Parse input:</span>
-0012 <span class="keyword">if</span> nargin&lt;2 || isempty(colors)
+0012 <span class="keyword">if</span> nargin&lt;2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colors)
 0013     <a href="figuresColorMap.html" class="code" title="">figuresColorMap</a>
 0014     colors=condColors;
 0015 <span class="keyword">end</span>
-0016 <span class="keyword">if</span> nargin&lt;3 || isempty(medianFlag)
+0016 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(medianFlag)
 0017    medianFlag=1; <span class="comment">%Median +- iqr as plot default</span>
 0018 <span class="keyword">end</span>
-0019 <span class="keyword">if</span> nargin&lt;4 || isempty(pairingLines)
+0019 <span class="keyword">if</span> nargin&lt;4 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(pairingLines)
 0020     pairingLines=2; <span class="comment">%Individual datapoints as default</span>
 0021 <span class="keyword">end</span>
-0022 <span class="keyword">if</span> nargin&lt;5 || isempty(groupNames) || length(groupNames)~=N
+0022 <span class="keyword">if</span> nargin&lt;5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groupNames) || length(groupNames)~=N
 0023     groupNames=strcat(<span class="string">'Group '</span>, num2str([1:N]'));
 0024 <span class="keyword">end</span>
-0025 <span class="keyword">if</span> nargin&lt;6 || isempty(conditionNames) || length(conditionNames)~=M
+0025 <span class="keyword">if</span> nargin&lt;6 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(conditionNames) || length(conditionNames)~=M
 0026     conditionNames=strcat(<span class="string">'Condition '</span>, num2str([1:M]'));
 0027 <span class="keyword">end</span>
 0028 
 0029 <span class="comment">%PLOT------------</span>
-0030 <span class="keyword">if</span> nargin&lt;7 || isempty(plotHandle)
+0030 <span class="keyword">if</span> nargin&lt;7 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandle)
 0031 fh=figure(<span class="string">'Units'</span>,<span class="string">'Normalized'</span>,<span class="string">'OuterPosition'</span>,[0 .5 .3 .5]);
 0032 ph=gca;
 0033 hold on
@@ -87,7 +87,7 @@ This function is called by:
 0040 <span class="comment">%Bars:</span>
 0041 <span class="keyword">if</span> medianFlag==1
 0042     m=squeeze(nanmedian(data));
-0043     s=squeeze(iqr(data));
+0043     s=squeeze(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>(data));
 0044 <span class="keyword">else</span>
 0045     m=squeeze(nanmean(data));
 0046     s=squeeze(nanstd(data));
@@ -111,12 +111,12 @@ This function is called by:
 0064         <span class="comment">%nop</span>
 0065     <span class="keyword">case</span> 1 <span class="comment">%pairing lines (this is for side-by-side bars, corresponding to the same condition in two groups)</span>
 0066         <span class="keyword">for</span> i=1:M
-0067             pp1=plot(i+xo-.05*sign(xo),squeeze(data(:,i,:)),<span class="string">'k'</span>);
+0067             pp1=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i+xo-.05*sign(xo),squeeze(data(:,i,:)),<span class="string">'k'</span>);
 0068         <span class="keyword">end</span>
 0069     <span class="keyword">case</span> 2 <span class="comment">%single datapoints</span>
 0070         <span class="keyword">for</span> i=1:N
 0071             <span class="comment">%Optional: hide half of the bars</span>
-0072             dX=mean(diff(xo))/2;
+0072             dX=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(diff(xo))/2;
 0073             <span class="keyword">for</span> j=1:M
 0074                 <span class="comment">%rectangle((xo(i)+j)+[0,dX,dX,0],[0 0 1 1]*bb(i).YData(j));</span>
 0075                 h=bb(i).YData(j);
@@ -135,6 +135,6 @@ This function is called by:
 0088 legend(groupNames);
 0089 set(gca,<span class="string">'XTick'</span>,[1:M],<span class="string">'XTickLabel'</span>,conditionNames);
 0090 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of plotIndividualsInGroup</title>
   <meta name="keywords" content="plotIndividualsInGroup">
-  <meta name="description" content="This script shows how to plot individual behavior within a group for a">
+  <meta name="description" content="PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,27 +15,30 @@
 <div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; plotIndividualsInGroup.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
 
 <h1>plotIndividualsInGroup
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>This script shows how to plot individual behavior within a group for a</strong></div>
+<div class="box"><strong>PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">This script shows how to plot individual behavior within a group for a
-given subset of strides (e.g. last 40 of adaptation) or biographical
-parameters (e.g. age).</pre></div>
+<div class="fragment"><pre class="comment">PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.
+
+   Demonstrates groupAdaptationData.plotIndividuals for comparing
+ parameters across conditions, correlating with biographical data,
+ and visualizing after-effects. Assumes 'gAdaptData' (and optionally
+ 'gAdaptData2' for Example 4) exists in the workspace.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-</ul>
+<li><a href="../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>	SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
 </ul>
@@ -44,112 +47,127 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%This script shows how to plot individual behavior within a group for a</span>
-0002 <span class="comment">%given subset of strides (e.g. last 40 of adaptation) or biographical</span>
-0003 <span class="comment">%parameters (e.g. age).</span>
-0004 
-0005 <span class="comment">%Pre-req: a groupAdaptationData object needs to be loaded. Assuming its</span>
-0006 <span class="comment">%name is gAdaptData</span>
+<div class="fragment"><pre>0001 <span class="comment">%PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Demonstrates groupAdaptationData.plotIndividuals for comparing</span>
+0004 <span class="comment">% parameters across conditions, correlating with biographical data,</span>
+0005 <span class="comment">% and visualizing after-effects. Assumes 'gAdaptData' (and optionally</span>
+0006 <span class="comment">% 'gAdaptData2' for Example 4) exists in the workspace.</span>
 0007 
-0008 fh=figure;
-0009 <span class="keyword">for</span> i=1:9
-0010     ph(i)=subplot(3,3,i);
-0011 <span class="keyword">end</span>
-0012 
-0013 <span class="comment">%% Example 1: compare a single parameter across conditions</span>
-0014 param={<span class="string">'netContributionNorm2'</span>};
-0015 medianFlag=[]; <span class="comment">%MEan used by default</span>
-0016 strideNo=[20,-40];
-0017 conds={<span class="string">'Wash'</span>,<span class="string">'Adap'</span>};
-0018 exemptNo=5;
-0019 regFlag=1;
-0020 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(1),regFlag);
-0021 
-0022 <span class="comment">%% Example 2: compare two parameters in the same set of strides</span>
-0023 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'spatialContributionNorm2'</span>};
-0024 medianFlag=[]; <span class="comment">%MEan used by default</span>
-0025 strideNo=[20];
-0026 conds={<span class="string">'Wash'</span>};
-0027 exemptNo=5;
-0028 regFlag=1; <span class="comment">%Regression flag</span>
-0029 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(2),regFlag);
-0030 
-0031 <span class="comment">%% Example 3: compare parameter to biographical data</span>
-0032 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'subage'</span>};
-0033 medianFlag=[]; <span class="comment">%MEan used by default</span>
-0034 strideNo=[20];
-0035 conds={<span class="string">'Wash'</span>};
-0036 exemptNo=5;
-0037 regFlag=1;
-0038 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(3),regFlag);
-0039 
-0040 <span class="comment">%% Example 4: overlaying two groups (assuming gAdaptData2 exists)</span>
-0041 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'spatialContributionNorm2'</span>};
-0042 medianFlag=[]; <span class="comment">%MEan used by default</span>
-0043 strideNo=[20];
-0044 conds={<span class="string">'Wash'</span>};
-0045 exemptNo=5;
-0046 regFlag=1; <span class="comment">%Regression flag</span>
-0047 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
-0048 gAdaptData2.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
-0049 
-0050 <span class="comment">%% Example 5: compare BASELINE behavior of one variable, to early post- of the same</span>
-0051 param={<span class="string">'netContributionNorm2'</span>};
-0052 medianFlag=1; <span class="comment">%MEan used by default</span>
-0053 strideNo=[-40,20];
-0054 conds={<span class="string">'Base'</span>,<span class="string">'Wash'</span>};
-0055 exemptNo=5;
-0056 regFlag=1;
-0057 diffFlag=0;
-0058 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(5),regFlag,diffFlag);
-0059 
-0060 <span class="comment">%% Example 6: compare BASELINE behavior of one variable, to CHANGE in early post WRT to baseline</span>
-0061 param={<span class="string">'netContributionNorm2'</span>};
-0062 medianFlag=1; <span class="comment">%MEan used by default</span>
-0063 strideNo=[-40,20];
-0064 conds={<span class="string">'Base'</span>,<span class="string">'Wash'</span>};
-0065 exemptNo=5;
-0066 regFlag=1;
-0067 diffFlag=1;
-0068 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(6),regFlag,diffFlag);
-0069 
-0070 <span class="comment">%% Example 7: on unbiased data, compare after-effects to bias behavior (same as example 6, but from data in which bias has been removed!)</span>
-0071 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'biasTMnetContributionNorm2'</span>};
-0072 medianFlag=1; <span class="comment">%Mean used by default</span>
-0073 strideNo=[20];
-0074 conds={<span class="string">'Wash'</span>};
-0075 exemptNo=5;
-0076 regFlag=1;
-0077 diffFlag=0;
-0078 <span class="comment">%gAdaptData=gAdaptData.removeBias; %This is one way to remove bias</span>
-0079 gAdaptData=gAdaptData.removeAltBias({<span class="string">'TM base'</span>},-40,5,1,0); <span class="comment">%This is an alt way to do it (faster), if we only care about TM trials, it is fine. Uses median of last 40 strides of TM base, exempting very last 5</span>
-0080 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(7),regFlag,diffFlag);
-0081 
-0082 <span class="comment">%% Example 8: Fancy stuff: compare after-effects to change during adaptation (late minus early)</span>
-0083 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'netContributionNorm2'</span>};
-0084 medianFlag=1; <span class="comment">%Mean used by default</span>
-0085 strideNo=[-40,-40,20];
-0086 conds={<span class="string">'Base'</span>,<span class="string">'Adap'</span>,<span class="string">'Adap'</span>};
-0087 exemptNo=5;
-0088 regFlag=1;
-0089 diffFlag=1;
-0090 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(8),regFlag,diffFlag);
-0091 
-0092 <span class="comment">%% Example 9: Fancier still: compare change during adaptation to other variables change during adaptation, by using removeAltBias in the call</span>
-0093 param={<span class="string">'netContributionNorm2'</span>,<span class="string">'stepTimeContributionNorm2'</span>};
-0094 medianFlag=1; <span class="comment">%Mean used by default</span>
-0095 strideNo=[-40,-40];
-0096 conds={<span class="string">'Adap'</span>};
-0097 exemptNo=5;
-0098 regFlag=1;
-0099 diffFlag=0;
-0100 gAdaptData=gAdaptData.removeAltBias({<span class="string">'Adap'</span>},20,5,1,diffFlag); <span class="comment">%This removes the median of the first 20 strides of adaptation, exempting the very first 5: everything will be with respect to early adaptation behavior</span>
-0101 <span class="comment">%Note that removeAltBias can be called successively and it acts in such a</span>
-0102 <span class="comment">%way that it is the same as only having made the last call</span>
-0103 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(9),regFlag,diffFlag);
+0008 <span class="comment">%% Set up figure and subplot axes</span>
+0009 fh = figure;
+0010 <span class="keyword">for</span> ii = 1:9
+0011     ph(ii) = subplot(3, 3, ii);
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">%% Example 1: compare a single parameter across conditions</span>
+0015 param      = {<span class="string">'netContributionNorm2'</span>};
+0016 medianFlag = [];  <span class="comment">% mean used by default</span>
+0017 strideNo   = [20, -40];
+0018 conds      = {<span class="string">'Wash'</span>, <span class="string">'Adap'</span>};
+0019 exemptNo   = 5;
+0020 regFlag    = 1;
+0021 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0022     medianFlag, ph(1), regFlag);
+0023 
+0024 <span class="comment">%% Example 2: compare two parameters in the same stride window</span>
+0025 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'spatialContributionNorm2'</span>};
+0026 medianFlag = [];  <span class="comment">% mean used by default</span>
+0027 strideNo   = [20];
+0028 conds      = {<span class="string">'Wash'</span>};
+0029 exemptNo   = 5;
+0030 regFlag    = 1;
+0031 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0032     medianFlag, ph(2), regFlag);
+0033 
+0034 <span class="comment">%% Example 3: compare parameter to biographical data</span>
+0035 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'subage'</span>};
+0036 medianFlag = [];  <span class="comment">% mean used by default</span>
+0037 strideNo   = [20];
+0038 conds      = {<span class="string">'Wash'</span>};
+0039 exemptNo   = 5;
+0040 regFlag    = 1;
+0041 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0042     medianFlag, ph(3), regFlag);
+0043 
+0044 <span class="comment">%% Example 4: overlay two groups</span>
+0045 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'spatialContributionNorm2'</span>};
+0046 medianFlag = [];  <span class="comment">% mean used by default</span>
+0047 strideNo   = [20];
+0048 conds      = {<span class="string">'Wash'</span>};
+0049 exemptNo   = 5;
+0050 regFlag    = 1;
+0051 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0052     medianFlag, ph(4), regFlag);
+0053 gAdaptData2.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0054     medianFlag, ph(4), regFlag);
+0055 
+0056 <span class="comment">%% Example 5: compare baseline to early post-adaptation</span>
+0057 param      = {<span class="string">'netContributionNorm2'</span>};
+0058 medianFlag = 1;
+0059 strideNo   = [-40, 20];
+0060 conds      = {<span class="string">'Base'</span>, <span class="string">'Wash'</span>};
+0061 exemptNo   = 5;
+0062 regFlag    = 1;
+0063 diffFlag   = 0;
+0064 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0065     medianFlag, ph(5), regFlag, diffFlag);
+0066 
+0067 <span class="comment">%% Example 6: baseline vs. change in early post-adaptation</span>
+0068 param      = {<span class="string">'netContributionNorm2'</span>};
+0069 medianFlag = 1;
+0070 strideNo   = [-40, 20];
+0071 conds      = {<span class="string">'Base'</span>, <span class="string">'Wash'</span>};
+0072 exemptNo   = 5;
+0073 regFlag    = 1;
+0074 diffFlag   = 1;
+0075 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0076     medianFlag, ph(6), regFlag, diffFlag);
+0077 
+0078 <span class="comment">%% Example 7: after-effects vs. bias (unbiased data)</span>
+0079 <span class="comment">% Same as Example 6 but bias has been removed first.</span>
+0080 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'biasTMnetContributionNorm2'</span>};
+0081 medianFlag = 1;
+0082 strideNo   = [20];
+0083 conds      = {<span class="string">'Wash'</span>};
+0084 exemptNo   = 5;
+0085 regFlag    = 1;
+0086 diffFlag   = 0;
+0087 <span class="comment">% gAdaptData = gAdaptData.removeBias();  % alternative approach</span>
+0088 <span class="comment">% removeAltBias is faster when only TM trials are needed; uses median</span>
+0089 <span class="comment">% of last 40 strides of TM base, exempting the very last 5.</span>
+0090 gAdaptData = gAdaptData.removeAltBias({<span class="string">'TM base'</span>}, -40, 5, 1, 0);
+0091 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0092     medianFlag, ph(7), regFlag, diffFlag);
+0093 
+0094 <span class="comment">%% Example 8: after-effects vs. adaptation change (late minus early)</span>
+0095 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'netContributionNorm2'</span>};
+0096 medianFlag = 1;
+0097 strideNo   = [-40, -40, 20];
+0098 conds      = {<span class="string">'Base'</span>, <span class="string">'Adap'</span>, <span class="string">'Adap'</span>};
+0099 exemptNo   = 5;
+0100 regFlag    = 1;
+0101 diffFlag   = 1;
+0102 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0103     medianFlag, ph(8), regFlag, diffFlag);
 0104 
-0105 <span class="comment">%% save fig</span>
-0106 saveFig(fh,<span class="string">'./'</span>,<span class="string">'plotIndividualsInGroup'</span>)</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0105 <span class="comment">%% Example 9: compare changes during adaptation across parameters</span>
+0106 <span class="comment">% removeAltBias can be called successively; the last call always</span>
+0107 <span class="comment">% takes effect (earlier calls are effectively overridden).</span>
+0108 param      = {<span class="string">'netContributionNorm2'</span>, <span class="string">'stepTimeContributionNorm2'</span>};
+0109 medianFlag = 1;
+0110 strideNo   = [-40, -40];
+0111 conds      = {<span class="string">'Adap'</span>};
+0112 exemptNo   = 5;
+0113 regFlag    = 1;
+0114 diffFlag   = 0;
+0115 <span class="comment">% Uses median of first 20 strides of adaptation, exempting the first 5.</span>
+0116 gAdaptData = gAdaptData.removeAltBias({<span class="string">'Adap'</span>}, 20, 5, 1, diffFlag);
+0117 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, <span class="keyword">...</span>
+0118     medianFlag, ph(9), regFlag, diffFlag);
+0119 
+0120 <span class="comment">%% Save figure</span>
+0121 <a href="../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>(fh, <span class="string">'./'</span>, <span class="string">'plotIndividualsInGroup'</span>)</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

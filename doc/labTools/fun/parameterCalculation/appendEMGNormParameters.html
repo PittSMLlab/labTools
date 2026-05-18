@@ -1,0 +1,527 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of appendEMGNormParameters</title>
+  <meta name="keywords" content="appendEMGNormParameters">
+  <meta name="description" content="APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; appendEMGNormParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>appendEMGNormParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.
+
+   Computes L2-norm EMG parameters and appends them to an
+ adaptationData object. Parameter families are computed for each
+ muscle individually, per leg, and across both legs, in both
+ percentage and raw voltage units, with and without bias removal:
+   - Per-muscle L2 norm
+   - Per-leg and bilateral L2 norm and average norm (weighted by
+     non-NaN muscle count)
+   - Per-muscle asymmetry norm (fast minus slow)
+   - Bilateral asymmetry L2 norm and average norm
+
+   Existing 'Norm*' and '*L2norm*' labels are removed and regenerated
+ to avoid stale parameters from prior runs.
+
+ Inputs:
+   adaptData            - adaptationData object to update
+   muscleLabels         - cell array of unique muscle name strings
+                          without the fast/slow prefix (e.g.,
+                          {'BF','GLU','TA'}). If empty or omitted,
+                          falls back to
+                          adaptData.data.DataInfo.UserData.muscleLabels;
+                          returns without change if neither is found.
+   normalizationRefCond - condition name used to normalize EMG; 100%
+                          is the max and 0% is the min of the nanmean
+                          of the last 40 strides (excluding the last
+                          5) of this condition. Falls back to UserData
+                          or auto-detected baseline if empty or
+                          omitted.
+   biasRemovalCond      - condition name for bias removal. If
+                          provided, overrides the default trial-type-
+                          based bias removal in removeBiasV4. Pass []
+                          or omit to use the default behavior.
+                          Optional.
+
+ Outputs:
+   adaptData - updated adaptationData object with new EMG norm
+               parameters appended
+
+ Toolbox Dependencies:
+   None
+
+ $Author: Shuqi Liu $    $Date: 2026/04/02 11:44:22 $    $Revision: 0.1 $
+ See also REMOVEBIAS, REMOVEBIASNV4, LOADSUBJECT,
+   <a href="populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">POPULATENEWPARAMBACKTOEXPDATA</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/fun/defineEpochs.html" class="code" title="function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)">defineEpochs</a>	defineEpochs is used to create a dataset object that defines relevant</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/dataStructs/@experimentData/flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">flushAndRecomputeParameters</a>	FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>	RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</li><li><a href="../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function adaptData = appendEMGNormParameters(adaptData, </a><span class="keyword">...</span>
+0002     muscleLabels, normalizationRefCond, biasRemovalCond)
+0003 <span class="comment">%APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes L2-norm EMG parameters and appends them to an</span>
+0006 <span class="comment">% adaptationData object. Parameter families are computed for each</span>
+0007 <span class="comment">% muscle individually, per leg, and across both legs, in both</span>
+0008 <span class="comment">% percentage and raw voltage units, with and without bias removal:</span>
+0009 <span class="comment">%   - Per-muscle L2 norm</span>
+0010 <span class="comment">%   - Per-leg and bilateral L2 norm and average norm (weighted by</span>
+0011 <span class="comment">%     non-NaN muscle count)</span>
+0012 <span class="comment">%   - Per-muscle asymmetry norm (fast minus slow)</span>
+0013 <span class="comment">%   - Bilateral asymmetry L2 norm and average norm</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Existing 'Norm*' and '*L2norm*' labels are removed and regenerated</span>
+0016 <span class="comment">% to avoid stale parameters from prior runs.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   adaptData            - adaptationData object to update</span>
+0020 <span class="comment">%   muscleLabels         - cell array of unique muscle name strings</span>
+0021 <span class="comment">%                          without the fast/slow prefix (e.g.,</span>
+0022 <span class="comment">%                          {'BF','GLU','TA'}). If empty or omitted,</span>
+0023 <span class="comment">%                          falls back to</span>
+0024 <span class="comment">%                          adaptData.data.DataInfo.UserData.muscleLabels;</span>
+0025 <span class="comment">%                          returns without change if neither is found.</span>
+0026 <span class="comment">%   normalizationRefCond - condition name used to normalize EMG; 100%</span>
+0027 <span class="comment">%                          is the max and 0% is the min of the nanmean</span>
+0028 <span class="comment">%                          of the last 40 strides (excluding the last</span>
+0029 <span class="comment">%                          5) of this condition. Falls back to UserData</span>
+0030 <span class="comment">%                          or auto-detected baseline if empty or</span>
+0031 <span class="comment">%                          omitted.</span>
+0032 <span class="comment">%   biasRemovalCond      - condition name for bias removal. If</span>
+0033 <span class="comment">%                          provided, overrides the default trial-type-</span>
+0034 <span class="comment">%                          based bias removal in removeBiasV4. Pass []</span>
+0035 <span class="comment">%                          or omit to use the default behavior.</span>
+0036 <span class="comment">%                          Optional.</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Outputs:</span>
+0039 <span class="comment">%   adaptData - updated adaptationData object with new EMG norm</span>
+0040 <span class="comment">%               parameters appended</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% Toolbox Dependencies:</span>
+0043 <span class="comment">%   None</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% $Author: Shuqi Liu $    $Date: 2026/04/02 11:44:22 $    $Revision: 0.1 $</span>
+0046 <span class="comment">% See also REMOVEBIAS, REMOVEBIASNV4, LOADSUBJECT,</span>
+0047 <span class="comment">%   POPULATENEWPARAMBACKTOEXPDATA.</span>
+0048 
+0049 arguments
+0050     adaptData            (1,1)
+0051     muscleLabels                 = {}
+0052     normalizationRefCond (1,:) char = <span class="string">''</span>
+0053     biasRemovalCond              = []
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">%% Resolve muscleLabels</span>
+0057 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(muscleLabels)
+0058     <span class="keyword">if</span> ~isfield(adaptData.data.DataInfo.UserData, <span class="string">'muscleLabels'</span>)
+0059         warning([<span class="string">'muscleLabels was not provided and not available in '</span> <span class="keyword">...</span>
+0060             <span class="string">'adaptData.data.DataInfo.UserData. EMGNorm calculation '</span> <span class="keyword">...</span>
+0061             <span class="string">'was not possible. Returning with no change made in params.'</span>])
+0062         <span class="keyword">return</span>
+0063     <span class="keyword">else</span>
+0064         muscleLabels = adaptData.data.DataInfo.UserData.muscleLabels;
+0065         fprintf([<span class="string">'No muscleLabels provided, will use what is '</span> <span class="keyword">...</span>
+0066             <span class="string">'available in adaptData.data.DataInfo.UserData: %s\n'</span>], <span class="keyword">...</span>
+0067             strjoin(muscleLabels))
+0068     <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 
+0071 <span class="comment">%% Resolve normalizationRefCond</span>
+0072 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normalizationRefCond)
+0073     <span class="keyword">if</span> isfield(adaptData.data.DataInfo.UserData, <span class="string">'normalizationRefCond'</span>)
+0074         normalizationRefCond = <span class="keyword">...</span>
+0075             adaptData.data.DataInfo.UserData.normalizationRefCond;
+0076         fprintf([<span class="string">'No normalizationRefCond provided, will use what is '</span> <span class="keyword">...</span>
+0077             <span class="string">'available in adaptData.data.DataInfo.UserData: %s\n'</span>], <span class="keyword">...</span>
+0078             normalizationRefCond)
+0079     <span class="keyword">else</span>
+0080         warning([<span class="string">'No normalizationRefCond provided and could not '</span> <span class="keyword">...</span>
+0081             <span class="string">'find one in adaptData.data.DataInfo.UserData. Will '</span> <span class="keyword">...</span>
+0082             <span class="string">'search for a baseline condition (OGBase, TMBase, ...).'</span>])
+0083         ordersToTry = {<span class="string">'OG'</span>, <span class="string">'TM'</span>, <span class="string">'NIM'</span>, <span class="string">'TR'</span>, <span class="string">'TS'</span>, <span class="keyword">...</span>
+0084             adaptData.trialTypes{find( <span class="keyword">...</span>
+0085             ~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, adaptData.trialTypes), 1)}};
+0086         <span class="keyword">for</span> ord = ordersToTry
+0087             normalizationRefCond = <span class="keyword">...</span>
+0088                 adaptData.metaData.getConditionsThatMatchV2( <span class="keyword">...</span>
+0089                 <span class="string">'base'</span>, ord{1});
+0090             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normalizationRefCond)
+0091                 <span class="keyword">break</span>
+0092             <span class="keyword">end</span>
+0093         <span class="keyword">end</span>
+0094     <span class="keyword">end</span>
+0095 <span class="keyword">end</span>
+0096 
+0097 <span class="comment">%% Resolve biasRemovalCond</span>
+0098 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(biasRemovalCond)
+0099     <span class="keyword">if</span> isfield(adaptData.data.DataInfo.UserData, <span class="string">'biasRemovalCond'</span>)
+0100         biasRemovalCond = <span class="keyword">...</span>
+0101             adaptData.data.DataInfo.UserData.biasRemovalCond;
+0102         fprintf([<span class="string">'No biasRemovalCond provided, will use what is '</span> <span class="keyword">...</span>
+0103             <span class="string">'available in adaptData.data.DataInfo.UserData: %s\n'</span>], <span class="keyword">...</span>
+0104             biasRemovalCond)
+0105     <span class="keyword">else</span>
+0106         warning([<span class="string">'No biasRemovalCond provided and also not found in '</span> <span class="keyword">...</span>
+0107             <span class="string">'adaptData.data.DataInfo.UserData. Will use default '</span> <span class="keyword">...</span>
+0108             <span class="string">'bias removal method.'</span>])
+0109         biasRemovalCond = [];
+0110     <span class="keyword">end</span>
+0111 <span class="keyword">else</span>
+0112     <span class="keyword">if</span> ischar(biasRemovalCond)
+0113         <span class="comment">% Repeat for all trial types; removeBiasV4 indexes by type.</span>
+0114         biasRemovalCond = repmat({biasRemovalCond}, 1, 10);
+0115     <span class="keyword">elseif</span> iscell(biasRemovalCond)
+0116         biasRemovalCond = repmat(biasRemovalCond(1), 1, 10);
+0117     <span class="keyword">else</span>
+0118         warning([<span class="string">'biasRemovalCond must be a char or cell. Invalid '</span> <span class="keyword">...</span>
+0119             <span class="string">'input type provided. Will use default.'</span>])
+0120         biasRemovalCond = [];
+0121     <span class="keyword">end</span>
+0122 <span class="keyword">end</span>
+0123 
+0124 <span class="comment">%% Normalize Data to Reference Condition</span>
+0125 <span class="comment">% Last 40 strides excluding last 5, averaged by nanmean.</span>
+0126 refEp = <a href="../../../labTools/fun/defineEpochs.html" class="code" title="function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)">defineEpochs</a>({normalizationRefCond}, {normalizationRefCond}, <span class="keyword">...</span>
+0127     -40, 0, 5, <span class="string">'nanmean'</span>);
+0128 
+0129 <span class="comment">% Remove stale normalized labels before regenerating.</span>
+0130 staleNorm  = adaptData.data.getLabelsThatMatch(<span class="string">'^Norm'</span>);
+0131 keepLabels = adaptData.data.labels( <span class="keyword">...</span>
+0132     ~ismember(adaptData.data.labels, staleNorm));
+0133 adaptData  = adaptData.reduce(keepLabels);
+0134 
+0135 staleL2    = adaptData.data.getLabelsThatMatch(<span class="string">'.*L2norm.*'</span>);
+0136 keepLabels = adaptData.data.labels( <span class="keyword">...</span>
+0137     ~ismember(adaptData.data.labels, staleL2));
+0138 adaptData  = adaptData.reduce(keepLabels);
+0139 
+0140 <span class="comment">% Build label prefixes for EMG parameters (e.g., 'fBF_s', 'sBF_s').</span>
+0141 newLabelPrefix = adaptData.data.labels( <span class="keyword">...</span>
+0142     startsWith(adaptData.data.labels, strcat(<span class="string">'f'</span>, muscleLabels, <span class="string">'_s'</span>)) | <span class="keyword">...</span>
+0143     startsWith(adaptData.data.labels, strcat(<span class="string">'s'</span>, muscleLabels, <span class="string">'_s'</span>)));
+0144 newLabelPrefix = unique(cellfun( <span class="keyword">...</span>
+0145     @(x) x(1:end-2), newLabelPrefix, <span class="string">'UniformOutput'</span>, false));
+0146 
+0147 fprintf(<span class="string">'\nNormalizing the data using %s\n'</span>, normalizationRefCond);
+0148 <span class="comment">%this function call will create new parameters as NormsTA_s 1 etc. for all</span>
+0149 <span class="comment">%muscles with the linearly stretched data and raw unit data is in sTA_s</span>
+0150 <span class="comment">%1</span>
+0151 adaptData = adaptData.normalizeToBaselineEpoch(newLabelPrefix, refEp);
+0152 
+0153 <span class="comment">% adaptData = adaptData.removeBadStrides;</span>
+0154 
+0155 <span class="comment">%at this point, the raw data is in format sTA_s 1, the normalized data</span>
+0156 <span class="comment">%is in NormsTA_s 1. A total of length(newLabelPrefix) x 12 new labels will be created.</span>
+0157 rawDataLabelPrefix        = newLabelPrefix;
+0158 normalizedDataLabelPrefix = strcat(<span class="string">'Norm'</span>, newLabelPrefix);
+0159 
+0160 clear newLabelPrefix keepLabels staleNorm staleL2
+0161 adaptDataOriginal = adaptData;
+0162 
+0163 <span class="comment">%% Compute Norm Parameters</span>
+0164 nStrides   = size(adaptData.data.Data, 1);
+0165 nAlloc     = 200; <span class="comment">% arbitrarily large pre-allocation</span>
+0166 newData    = nan(nStrides, nAlloc);
+0167 newLabels  = cell(1, nAlloc);
+0168 newDescp   = cell(1, nAlloc);
+0169 newDataCol = 1;
+0170 
+0171 <span class="keyword">for</span> doRemoveBias = [false, true]
+0172     <span class="keyword">if</span> doRemoveBias
+0173         <span class="comment">%Bias removal can be done manually or by calling remove bias. They don't</span>
+0174         <span class="comment">%get the same results, checked that the TMBase we get from calling the</span>
+0175         <span class="comment">%getEpochData TMBase is not the same as the base we get rom callig</span>
+0176         <span class="comment">%removeBiasV4. Some values are the same, some are not, didn't figure out</span>
+0177         <span class="comment">%why. For now wil rely on calling removebias</span>
+0178         adaptData   = adaptDataOriginal.removeBias(biasRemovalCond);
+0179         labelSuffix = <span class="string">'Unbiased'</span>;
+0180         descpSuffix = [<span class="string">'Before any parameter computation, the data '</span> <span class="keyword">...</span>
+0181             <span class="string">'is first unbiased by subtracting the '</span> <span class="keyword">...</span>
+0182             normalizationRefCond <span class="string">' baseline.'</span>];
+0183     <span class="keyword">else</span>
+0184         adaptData   = adaptDataOriginal;
+0185         labelSuffix = <span class="string">''</span>;
+0186         descpSuffix = <span class="string">''</span>;
+0187     <span class="keyword">end</span>
+0188 
+0189     <span class="comment">%% Per-Muscle L2 Norm</span>
+0190     nPrefixes = numel(normalizedDataLabelPrefix);
+0191     nLabels   = numel(adaptData.data.labels);
+0192     <span class="comment">% bothLegsColsIdx(mscl, :): binary mask for that muscle's columns</span>
+0193     bothLegsColsIdx         = nan(nPrefixes, nLabels);
+0194     bothLegsColsIdx_rawUnit = nan(nPrefixes, nLabels);
+0195     allnanMuslcesByStride   = false(nStrides, nPrefixes);
+0196 
+0197     <span class="keyword">for</span> mscl = 1:nPrefixes
+0198         dataColIdx = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0199             adaptData.data.labels, <span class="keyword">...</span>
+0200             [<span class="string">'^'</span> normalizedDataLabelPrefix{mscl} <span class="string">'[ ]?\d+$'</span>]));
+0201         bothLegsColsIdx(mscl, :) = dataColIdx;
+0202         curdata = adaptData.data.Data(:, dataColIdx);
+0203         <span class="comment">%record #of muscles that are all nan, compute it only once bc normalized vs raw should have the same nan content, will have 1</span>
+0204         <span class="comment">%at a stride for a given muscle i that is all nan at that stride</span>
+0205         allnanMuslcesByStride(:, mscl) = all(isnan(curdata), 2);
+0206         <span class="comment">%make nan zero to compute the norm, unless the whole 12 sub</span>
+0207         <span class="comment">%interval is nan in which case the norm should also be nan.</span>
+0208         <span class="comment">%now compute a by muscle norm, take L2 norm, over dim=2 (per rows)</span>
+0209         curdata(isnan(curdata)) = 0;
+0210         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0211         newData(allnanMuslcesByStride(:, mscl), newDataCol) = nan;
+0212         newLabels{newDataCol} = [ <span class="keyword">...</span>
+0213             normalizedDataLabelPrefix{mscl} <span class="keyword">...</span>
+0214             <span class="string">'_L2normPercentUnit'</span> labelSuffix];
+0215         newDescp{newDataCol} = [<span class="string">'L2norm of: '</span> normalizedDataLabelPrefix{mscl} <span class="string">' in percentage unit after stretching each stride to 100%=max and 0%=min of nanmean of last 40 strides of '</span> normalizationRefCond <span class="string">'. NaN treated as 0. '</span> descpSuffix];
+0216         newDataCol = newDataCol + 1;
+0217 
+0218         dataColIdx = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0219             adaptData.data.labels, <span class="keyword">...</span>
+0220             [<span class="string">'^'</span> rawDataLabelPrefix{mscl} <span class="string">'[ ]?\d+$'</span>]));
+0221         bothLegsColsIdx_rawUnit(mscl, :) = dataColIdx;
+0222         curdata = adaptData.data.Data(:, dataColIdx);
+0223         curdata(isnan(curdata)) = 0;
+0224         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0225         newData(allnanMuslcesByStride(:, mscl), newDataCol) = nan;
+0226         newLabels{newDataCol} = [ <span class="keyword">...</span>
+0227             rawDataLabelPrefix{mscl} <span class="string">'_L2normRawUnit'</span> labelSuffix];
+0228         newDescp{newDataCol} = [<span class="string">'L2norm of: '</span> rawDataLabelPrefix{mscl} <span class="string">' in original voltage unit. NaN treated as 0. '</span> descpSuffix];
+0229         newDataCol = newDataCol + 1;
+0230     <span class="keyword">end</span>
+0231 
+0232     <span class="comment">%% Both-Legs L2 Norm</span>
+0233     curdata = adaptData.data.Data(:, any(bothLegsColsIdx, 1));
+0234     allMsNanStride = all(isnan(curdata), 2);
+0235     curdata(isnan(curdata)) = 0;
+0236     newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0237     newData(allMsNanStride, newDataCol) = nan;
+0238     newLabels{newDataCol} = [<span class="string">'BothLegEMGL2normPercentUnit'</span> labelSuffix];
+0239     newDescp{newDataCol}  = [<span class="string">'L2norm of all muscles flattened as a 1D vector in percentage unit (100%=max, 0%=min of nanmean of last 40 strides of '</span> normalizationRefCond <span class="string">'). NaN treated as 0. '</span> descpSuffix];
+0240     newDataCol = newDataCol + 1;
+0241 
+0242     newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0243         sum(~allnanMuslcesByStride, 2);
+0244     newLabels{newDataCol} = [<span class="string">'BothLegEMGL2normPercentUnitAvg'</span> labelSuffix];
+0245     newDescp{newDataCol}  = [<span class="string">'L2norm of all muscles divided by number of non-NaN contributing muscles. A muscle is excluded from the denominator only if all its sub-intervals are NaN. In percentage unit. '</span> descpSuffix];
+0246     newDataCol = newDataCol + 1;
+0247 
+0248     curdata = adaptData.data.Data(:, any(bothLegsColsIdx_rawUnit, 1));
+0249     allMsNanStride = all(isnan(curdata), 2);
+0250     curdata(isnan(curdata)) = 0;
+0251     newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0252     newData(allMsNanStride, newDataCol) = nan;
+0253     newLabels{newDataCol} = [<span class="string">'BothLegEMGL2normRawUnit'</span> labelSuffix];
+0254     newDescp{newDataCol}  = [<span class="string">'L2norm of all muscles flattened as a 1D vector in raw voltage unit. NaN treated as 0. '</span> descpSuffix];
+0255     newDataCol = newDataCol + 1;
+0256 
+0257     newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0258         sum(~allnanMuslcesByStride, 2);
+0259     newLabels{newDataCol} = [<span class="string">'BothLegEMGL2normRawUnitAvg'</span> labelSuffix];
+0260     newDescp{newDataCol}  = [<span class="string">'L2norm of all muscles divided by number of non-NaN contributing muscles in raw voltage unit. '</span> descpSuffix];
+0261     newDataCol = newDataCol + 1;
+0262 
+0263     newData(:, newDataCol) = sum(~allnanMuslcesByStride, 2);
+0264     newLabels{newDataCol} = [<span class="string">'BothLegEMGL2normNumMuscles'</span> labelSuffix];
+0265     newDescp{newDataCol}  = [<span class="string">'Number of non-NaN muscles contributing to the both-legs norm. A muscle is excluded only if all its sub-intervals are NaN. '</span> labelSuffix];
+0266     newDataCol = newDataCol + 1;
+0267 
+0268     <span class="comment">%% Per-Leg L2 Norm</span>
+0269     <span class="keyword">for</span> lg = {<span class="string">'slow'</span>, <span class="string">'fast'</span>}
+0270         legChar  = lg{1}(1);    <span class="comment">% 's' or 'f'</span>
+0271         legName  = lg{1};       <span class="comment">% 'slow' or 'fast'</span>
+0272         normMask = startsWith(normalizedDataLabelPrefix, [<span class="string">'Norm'</span> legChar]);
+0273         rawMask  = startsWith(rawDataLabelPrefix, legChar);
+0274 
+0275         curdata = adaptData.data.Data(:, <span class="keyword">...</span>
+0276             any(bothLegsColsIdx(normMask, :), 1));
+0277         allMsNanStride = all(isnan(curdata), 2);
+0278         curdata(isnan(curdata)) = 0;
+0279         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0280         newData(allMsNanStride, newDataCol) = nan;
+0281         newLabels{newDataCol} = [legName <span class="string">'LegEMGL2normPercentUnit'</span> labelSuffix];
+0282         newDescp{newDataCol}  = [<span class="string">'L2norm of '</span> legName <span class="string">' leg muscles in percentage unit. NaN treated as 0. '</span> descpSuffix];
+0283         newDataCol = newDataCol + 1;
+0284 
+0285         newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0286             sum(~allnanMuslcesByStride(:, normMask), 2);
+0287         newLabels{newDataCol} = [legName <span class="string">'LegEMGL2normPercentUnitAvg'</span> labelSuffix];
+0288         newDescp{newDataCol}  = [<span class="string">'L2norm of '</span> legName <span class="string">' leg muscles divided by number of non-NaN contributing muscles in percentage unit. '</span> descpSuffix];
+0289         newDataCol = newDataCol + 1;
+0290 
+0291         curdata = adaptData.data.Data(:, <span class="keyword">...</span>
+0292             any(bothLegsColsIdx_rawUnit(rawMask, :), 1));
+0293         allMsNanStride = all(isnan(curdata), 2);
+0294         curdata(isnan(curdata)) = 0;
+0295         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+0296         newData(allMsNanStride, newDataCol) = nan;
+0297         newLabels{newDataCol} = [legName <span class="string">'LegEMGL2normRawUnit'</span> labelSuffix];
+0298         newDescp{newDataCol}  = [<span class="string">'L2norm of '</span> legName <span class="string">' leg muscles in raw voltage unit. NaN treated as 0. '</span> descpSuffix];
+0299         newDataCol = newDataCol + 1;
+0300 
+0301         <span class="comment">% Denominator is the same for raw and normalized units.</span>
+0302         newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0303             sum(~allnanMuslcesByStride(:, normMask), 2);
+0304         newLabels{newDataCol} = [legName <span class="string">'LegEMGL2normRawUnitAvg'</span> labelSuffix];
+0305         newDescp{newDataCol}  = [<span class="string">'L2norm of '</span> legName <span class="string">' leg muscles divided by number of non-NaN contributing muscles in raw voltage unit. '</span> descpSuffix];
+0306         newDataCol = newDataCol + 1;
+0307 
+0308         newData(:, newDataCol) = sum(~allnanMuslcesByStride(:, normMask), 2);
+0309         newLabels{newDataCol} = [legName <span class="string">'LegEMGL2normNumMuscles'</span> labelSuffix];
+0310         newDescp{newDataCol}  = [<span class="string">'Number of non-NaN muscles contributing to the '</span> legName <span class="string">' leg norm. A muscle is excluded only if all its sub-intervals are NaN. '</span> labelSuffix];
+0311         newDataCol = newDataCol + 1;
+0312     <span class="keyword">end</span>
+0313 
+0314     <span class="comment">%% Per-Muscle Asymmetry Norm</span>
+0315     allmusclesAsym            = [];
+0316     allmusclesAsym_rawUnit    = [];
+0317     allnanAsymMuslcesByStride = false(nStrides, numel(muscleLabels));
+0318 
+0319     kk = 1;
+0320     <span class="keyword">for</span> mscl = muscleLabels
+0321         muscleName = mscl{1};
+0322 
+0323         <span class="comment">%first identify the prefix for this muscle, then look for match in</span>
+0324         <span class="comment">%all labels that start with the prefix and ends with digits</span>
+0325         <span class="comment">%(look for match that starts with NormfTA_s and end with digits.</span>
+0326         fastNormPrefix = normalizedDataLabelPrefix{ <span class="keyword">...</span>
+0327             contains(normalizedDataLabelPrefix, [<span class="string">'f'</span> muscleName])};
+0328         fastCol = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0329             adaptData.data.labels, [<span class="string">'^'</span> fastNormPrefix <span class="string">'[ ]?\d+$'</span>]));
+0330         fastdata = adaptData.data.Data(:, fastCol);
+0331 
+0332         slowNormPrefix = normalizedDataLabelPrefix{ <span class="keyword">...</span>
+0333             contains(normalizedDataLabelPrefix, [<span class="string">'s'</span> muscleName])};
+0334         slowCol = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0335             adaptData.data.labels, [<span class="string">'^'</span> slowNormPrefix <span class="string">'[ ]?\d+$'</span>]));
+0336         slowdata = adaptData.data.Data(:, slowCol);
+0337 
+0338         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastdata) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(slowdata)
+0339             asymdata = fastdata - slowdata;
+0340             allnanAsymMuslcesByStride(:, kk) = <span class="keyword">...</span>
+0341                 all(isnan(asymdata), 2);
+0342             allmusclesAsym = [allmusclesAsym, asymdata]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0343             asymdata(isnan(asymdata)) = 0;
+0344             newData(:, newDataCol) = vecnorm(asymdata, 2, 2);
+0345             newData(allnanAsymMuslcesByStride(:, kk), <span class="keyword">...</span>
+0346                 newDataCol) = nan;
+0347             newLabels{newDataCol} = [muscleName <span class="string">'AsymL2normPercentUnit'</span> labelSuffix];
+0348             newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry of '</span> muscleName <span class="string">' in percentage unit. NaN treated as 0. '</span> descpSuffix];
+0349             newDataCol = newDataCol + 1;
+0350         <span class="keyword">end</span>
+0351 
+0352         <span class="comment">%look for match that start with fTA_s and ends with digits</span>
+0353         fastRawPrefix = rawDataLabelPrefix{ <span class="keyword">...</span>
+0354             startsWith(rawDataLabelPrefix, [<span class="string">'f'</span> muscleName])};
+0355         fastCol = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0356             adaptData.data.labels, [<span class="string">'^'</span> fastRawPrefix <span class="string">'[ ]?\d+$'</span>]));
+0357         fastdata = adaptData.data.Data(:, fastCol);
+0358 
+0359         slowRawPrefix = rawDataLabelPrefix{ <span class="keyword">...</span>
+0360             startsWith(rawDataLabelPrefix, [<span class="string">'s'</span> muscleName])};
+0361         slowCol = cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp( <span class="keyword">...</span>
+0362             adaptData.data.labels, [<span class="string">'^'</span> slowRawPrefix <span class="string">'[ ]?\d+$'</span>]));
+0363         slowdata = adaptData.data.Data(:, slowCol);
+0364 
+0365         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastdata) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(slowdata)
+0366             asymdata = fastdata - slowdata;
+0367             allmusclesAsym_rawUnit = <span class="keyword">...</span>
+0368                 [allmusclesAsym_rawUnit, asymdata]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0369             asymdata(isnan(asymdata)) = 0;
+0370             newData(:, newDataCol) = vecnorm(asymdata, 2, 2);
+0371             newData(allnanAsymMuslcesByStride(:, kk), <span class="keyword">...</span>
+0372                 newDataCol) = nan;
+0373             newLabels{newDataCol} = [muscleName <span class="string">'AsymL2normRawUnit'</span> labelSuffix];
+0374             newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry of '</span> muscleName <span class="string">' in raw voltage unit. '</span> descpSuffix];
+0375             newDataCol = newDataCol + 1;
+0376         <span class="keyword">end</span>
+0377 
+0378         kk = kk + 1;
+0379     <span class="keyword">end</span>
+0380 
+0381     <span class="comment">%% Both-Legs Asymmetry Norm</span>
+0382     allMsNanStride = all(isnan(allmusclesAsym), 2);
+0383     allmusclesAsym(isnan(allmusclesAsym)) = 0;
+0384     newData(:, newDataCol) = vecnorm(allmusclesAsym, 2, 2);
+0385     newData(allMsNanStride, newDataCol) = nan;
+0386     newLabels{newDataCol} = [<span class="string">'BothLegsAsymL2normPercentUnit'</span> labelSuffix];
+0387     newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry across all muscles in percentage unit. NaN treated as 0. '</span> descpSuffix];
+0388     newDataCol = newDataCol + 1;
+0389 
+0390     newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0391         sum(~allnanAsymMuslcesByStride, 2);
+0392     newLabels{newDataCol} = [<span class="string">'BothLegsAsymL2normPercentUnitAvg'</span> labelSuffix];
+0393     newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry across all muscles divided by number of non-NaN contributing muscles in percentage unit. '</span> descpSuffix];
+0394     newDataCol = newDataCol + 1;
+0395 
+0396     allMsNanStride = all(isnan(allmusclesAsym_rawUnit), 2);
+0397     allmusclesAsym_rawUnit(isnan(allmusclesAsym_rawUnit)) = 0;
+0398     newData(:, newDataCol) = vecnorm(allmusclesAsym_rawUnit, 2, 2);
+0399     newData(allMsNanStride, newDataCol) = nan;
+0400     newLabels{newDataCol} = [<span class="string">'BothLegsAsymL2normRawUnit'</span> labelSuffix];
+0401     newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry across all muscles in raw voltage unit. NaN treated as 0. '</span> descpSuffix];
+0402     newDataCol = newDataCol + 1;
+0403 
+0404     newData(:, newDataCol) = newData(:, newDataCol-1) ./ <span class="keyword">...</span>
+0405         sum(~allnanAsymMuslcesByStride, 2);
+0406     newLabels{newDataCol} = [<span class="string">'BothLegsAsymL2normRawUnitAvg'</span> labelSuffix];
+0407     newDescp{newDataCol}  = [<span class="string">'L2norm of fast-slow asymmetry across all muscles divided by number of non-NaN contributing muscles in raw voltage unit. '</span> descpSuffix];
+0408     newDataCol = newDataCol + 1;
+0409 
+0410     newData(:, newDataCol) = sum(~allnanAsymMuslcesByStride, 2);
+0411     newLabels{newDataCol} = [<span class="string">'BothLegsAsymL2normNumMuscle'</span> labelSuffix];
+0412     newDescp{newDataCol}  = [<span class="string">'Number of non-NaN muscles contributing to the bilateral asymmetry norm. A muscle is excluded only if all its sub-intervals are NaN. '</span> labelSuffix];
+0413     newDataCol = newDataCol + 1;
+0414 <span class="keyword">end</span>
+0415 
+0416 <span class="comment">%% Append Parameters to adaptData</span>
+0417 newData(:, newDataCol:end)   = [];
+0418 newLabels(:, newDataCol:end) = [];
+0419 newDescp(:, newDataCol:end)  = [];
+0420 
+0421 <span class="comment">%set up the adaptData to return, make sure it's the original with only</span>
+0422 <span class="comment">%additions of the norm parameters + normalized data per interval (e.g.,</span>
+0423 <span class="comment">%NormsVL_s 1), without any manipulations like removeBias, removeBadStrides.</span>
+0424 <span class="comment">% A totla of muscles x 12 + 208 (norm)</span>
+0425 <span class="comment">%parameters will be created. (e.g., 28 muscle x 12 + 208 = 544). Or if</span>
+0426 <span class="comment">%this is in a flushAndRecompute, then the net new parameters are 0.</span>
+0427 adaptData      = adaptDataOriginal;
+0428 adaptData.data = adaptData.data.appendData(newData, newLabels, newDescp);
+0429 
+0430 adaptData.data.DataInfo.UserData                      = struct();
+0431 adaptData.data.DataInfo.UserData.muscleLabels         = muscleLabels;
+0432 adaptData.data.DataInfo.UserData.normalizationRefCond = normalizationRefCond;
+0433 adaptData.data.DataInfo.UserData.biasRemovalCond      = biasRemovalCond;
+0434 
+0435 <span class="keyword">end</span>
+0436</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

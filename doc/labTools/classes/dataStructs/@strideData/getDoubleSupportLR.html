@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getDoubleSupportLR</title>
+  <meta name="keywords" content="getDoubleSupportLR">
+  <meta name="description" content="getDoubleSupportLR  Extracts left-to-right double support phase">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; getDoubleSupportLR.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@strideData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getDoubleSupportLR
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getDoubleSupportLR  Extracts left-to-right double support phase</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [dsLR, duration] = getDoubleSupportLR(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getDoubleSupportLR  Extracts left-to-right double support phase
+
+   [dsLR, duration] = getDoubleSupportLR(this) extracts the
+   phase from left heel strike to right toe off
+
+   Inputs:
+       this - strideData object
+
+   Outputs:
+       dsLR - strideData object containing double support phase
+       duration - duration of phase in seconds
+
+   See also: <a href="getDoubleSupportRL.html" class="code" title="function [dsRL, duration] = getDoubleSupportRL(this)">getDoubleSupportRL</a>, <a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a>,
+             <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>	getIntervalBtwEvents  Extracts data between two gait events</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [dsLR, duration] = getDoubleSupportLR(this)</a>
+0002 <span class="comment">%getDoubleSupportLR  Extracts left-to-right double support phase</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [dsLR, duration] = getDoubleSupportLR(this) extracts the</span>
+0005 <span class="comment">%   phase from left heel strike to right toe off</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - strideData object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       dsLR - strideData object containing double support phase</span>
+0012 <span class="comment">%       duration - duration of phase in seconds</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: getDoubleSupportRL, getSingleStanceL,</span>
+0015 <span class="comment">%             getIntervalBtwEvents</span>
+0016 
+0017 dsLR = <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>(this, <span class="string">'LHS'</span>, <span class="string">'RTO'</span>);
+0018 duration = dsLR.gaitEvents.timeRange;
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

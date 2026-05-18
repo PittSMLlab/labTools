@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeTemporalParameters</title>
   <meta name="keywords" content="computeTemporalParameters">
-  <meta name="description" content="%">
+  <meta name="description" content="COMPUTETEMPORALPARAMETERS Compute temporal parameters per stride.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,129 +15,184 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeTemporalParameters.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>computeTemporalParameters
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>%</strong></div>
+<div class="box"><strong>COMPUTETEMPORALPARAMETERS Compute temporal parameters per stride.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [out] = computeTemporalParameters(strideEvents) </strong></div>
+<div class="box"><strong>function out = computeTemporalParameters(strideEvents) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">%</pre></div>
+<div class="fragment"><pre class="comment">COMPUTETEMPORALPARAMETERS Compute temporal parameters per stride.
+
+   Computes stride-by-stride temporal gait parameters and returns a
+ parameterSeries object that can be concatenated with other parameter
+ series objects (e.g., from computeSpatialParameters).
+
+ Inputs:
+   strideEvents - struct of stride-level gait event times with fields
+                  tSHS, tFTO, tFHS, tSTO, tSHS2, and tFTO2
+                  (N-by-1 vectors, in seconds)
+
+ Outputs:
+   out - parameterSeries object containing all temporal parameters
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>, <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>,
+   PARAMETERSERIES, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeTemporalParameters(strideEvents)</a>
-0002 <span class="comment">%%</span>
-0003 timeSHS=strideEvents.tSHS;
-0004 timeFTO=strideEvents.tFTO;
-0005 timeFHS=strideEvents.tFHS;
-0006 timeSTO=strideEvents.tSTO;
-0007 timeSHS2=strideEvents.tSHS2;
-0008 timeFTO2=strideEvents.tFTO2;
-0009 <span class="comment">%% Labels and descriptions:</span>
-0010 aux={<span class="string">'swingTimeSlow'</span>,            <span class="string">'time from STO to SHS2 (in s)'</span>;<span class="keyword">...</span>
-0011     <span class="string">'swingTimeFast'</span>,            <span class="string">'time from FTO to FHS (in s)'</span>;<span class="keyword">...</span>
-0012     <span class="string">'stanceTimeSlow'</span>,           <span class="string">'time from SHS to STO (in s)'</span>;<span class="keyword">...</span>
-0013     <span class="string">'stanceTimeFast'</span>,           <span class="string">'time from FHS to FTO2 (in s)'</span>;<span class="keyword">...</span><span class="comment"> %Fixed description on 7/15/15</span>
-0014     <span class="string">'doubleSupportSlow'</span>,        <span class="string">'time from FHS to STO (in s)'</span>;<span class="keyword">...</span>
-0015     <span class="string">'doubleSupportFast'</span>,        <span class="string">'time from SHS2 to FTO2 (in s)'</span>;<span class="keyword">...</span><span class="comment"> %Fixed description on 7/15/15</span>
-0016     <span class="string">'doubleSupportTemp'</span>,        <span class="string">'time from SHS to FTO (in s)'</span>;<span class="keyword">...</span>
-0017     <span class="string">'stepTimeSlow'</span>,             <span class="string">'time from FHS to SHS2 (in s)'</span>;<span class="keyword">...</span>
-0018     <span class="string">'stepTimeFast'</span>,             <span class="string">'time from SHS to FHS (in s)'</span>;<span class="keyword">...</span>
-0019     <span class="string">'toeOffSlow'</span>,               <span class="string">'time from STO to FTO2 (in s)'</span>;<span class="keyword">...</span>
-0020     <span class="string">'toeOffFast'</span>,               <span class="string">'time from FTO to STO (in s)'</span>;<span class="keyword">...</span>
-0021     <span class="string">'strideTimeSlow'</span>,           <span class="string">'time from SHS to SHS2 (in s)'</span>;<span class="keyword">...</span>
-0022     <span class="string">'strideTimeFast'</span>,           <span class="string">'time from FTO to FTO2 (in s)'</span>;<span class="keyword">...</span>
-0023     <span class="string">'cadenceSlow'</span>,              <span class="string">'1/strideTimeSlow (in Hz)'</span>;<span class="keyword">...</span>
-0024     <span class="string">'cadenceFast'</span>,              <span class="string">'1/strideTimeFast (in Hz)'</span>;<span class="keyword">...</span>
-0025     <span class="string">'stepCadenceSlow'</span>,          <span class="string">'1/stepTimeSlow (in Hz)'</span>;<span class="keyword">...</span>
-0026     <span class="string">'stepCadenceFast'</span>,          <span class="string">'1/stepTimeFast (in Hz)'</span>;<span class="keyword">...</span>
-0027     <span class="string">'doubleSupportPctSlow'</span>,     <span class="string">'(doubleSupportSlow/strideTimeSlow)*100'</span>;<span class="keyword">...</span>
-0028     <span class="string">'doubleSupportPctFast'</span>,     <span class="string">'(doubleSupportFast/strideTimeFast)*100'</span>;<span class="keyword">...</span>
-0029     <span class="string">'doubleSupportDiff'</span>,        <span class="string">'doubleSupportSlow-doubleSupportFast (in s)'</span>;<span class="keyword">...</span><span class="comment">    </span>
-0030     <span class="string">'stepTimeDiff'</span>,             <span class="string">'stepTimeFast-stepTimeSlow (in s)'</span>;<span class="keyword">...</span>
-0031     <span class="string">'stanceTimeDiff'</span>,           <span class="string">'stanceTimeSlow-stanceTimeFast (in s)'</span>;<span class="keyword">...</span>
-0032     <span class="string">'swingTimeDiff'</span>,            <span class="string">'swingTimeFast-swingTimeSlow (in s)'</span>;<span class="keyword">...</span>
-0033     <span class="string">'doubleSupportAsym'</span>,        <span class="string">'(doubleSupportPctFast-doubleSupportPctSlow)/(doubleSupportPctFast+doubleSupportPctSlow)'</span>;<span class="keyword">...</span>
-0034     <span class="string">'Tout'</span>,                     <span class="string">'stepTimeDiff/strideTimeSlow'</span>;<span class="keyword">...</span>
-0035     <span class="string">'Tgoal'</span>,                    <span class="string">'stanceTimeDiff/strideTimeSlow'</span>;<span class="keyword">...</span>
-0036     <span class="string">'TgoalSW'</span>,                  <span class="string">'swingTimeDiff/strideTimeSlow (should be same as Tgoal)'</span>};
-0037 
-0038 paramLabels=aux(:,1);
-0039 description=aux(:,2);
-0040 
-0041 <span class="comment">%% Compute:</span>
-0042        
-0043         <span class="comment">%%% intralimb</span>
-0044         
-0045         <span class="comment">%swing times</span>
-0046         swingTimeSlow=timeSHS2-timeSTO;
-0047         swingTimeFast=timeFHS-timeFTO;
-0048         <span class="comment">%stance times (includes double supports)</span>
-0049         stanceTimeSlow=timeSTO-timeSHS;
-0050         stanceTimeFast=timeFTO2-timeFHS;
-0051         <span class="comment">%double support times</span>
-0052         doubleSupportSlow=timeSTO-timeFHS;
-0053         doubleSupportTemp=timeFTO-timeSHS;
-0054         doubleSupportFast=timeFTO2-timeSHS2; <span class="comment">%PAblo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.</span>
-0055         <span class="comment">%step times (time between heel strikes)</span>
-0056         stepTimeSlow=timeSHS2-timeFHS;
-0057         stepTimeFast=timeFHS-timeSHS;
-0058         <span class="comment">%time betwenn toe offs</span>
-0059         toeOffSlow=timeFTO2-timeSTO;
-0060         toeOffFast=timeSTO-timeFTO;
-0061         <span class="comment">%stride times</span>
-0062         strideTimeSlow=timeSHS2-timeSHS;
-0063         strideTimeFast=timeFTO2-timeFTO;
-0064         <span class="comment">%cadence (stride cycles per s)</span>
-0065         cadenceSlow=1./strideTimeSlow;
-0066         cadenceFast=1./strideTimeFast;
-0067         <span class="comment">%step cadence (steps per s)</span>
-0068         stepCadenceSlow=1./stepTimeSlow;
-0069         stepCadenceFast=1./stepTimeFast;
-0070         <span class="comment">%double support percent</span>
-0071         doubleSupportPctSlow=doubleSupportSlow./strideTimeSlow*100;
-0072         doubleSupportPctFast=doubleSupportFast./strideTimeFast*100;
-0073         
-0074         <span class="comment">%%% interlimb</span>
-0075         <span class="comment">%note: the decision on Fast-Slow vs Slow-Fast was made based on how</span>
-0076         <span class="comment">%the parameter looks when plotted.</span>
-0077         doubleSupportDiff=doubleSupportSlow-doubleSupportFast;
-0078         stepTimeDiff=stepTimeFast-stepTimeSlow;
-0079         stanceTimeDiff=stanceTimeSlow-stanceTimeFast;
-0080         swingTimeDiff=swingTimeFast-swingTimeSlow;
-0081         doubleSupportAsym=(doubleSupportPctFast-doubleSupportPctSlow)./(doubleSupportPctFast+doubleSupportPctSlow);
-0082         Tout=(stepTimeDiff)./strideTimeSlow;
-0083         Tgoal=(stanceTimeDiff)./strideTimeSlow;
-0084         TgoalSW=(swingTimeDiff)./strideTimeSlow;
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = computeTemporalParameters(strideEvents)</a>
+0002 <span class="comment">%COMPUTETEMPORALPARAMETERS Compute temporal parameters per stride.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes stride-by-stride temporal gait parameters and returns a</span>
+0005 <span class="comment">% parameterSeries object that can be concatenated with other parameter</span>
+0006 <span class="comment">% series objects (e.g., from computeSpatialParameters).</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   strideEvents - struct of stride-level gait event times with fields</span>
+0010 <span class="comment">%                  tSHS, tFTO, tFHS, tSTO, tSHS2, and tFTO2</span>
+0011 <span class="comment">%                  (N-by-1 vectors, in seconds)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   out - parameterSeries object containing all temporal parameters</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies:</span>
+0017 <span class="comment">%   None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also COMPUTESPATIALPARAMETERS, COMPUTEFORCEPARAMETERS,</span>
+0020 <span class="comment">%   PARAMETERSERIES, CALCPARAMETERS.</span>
+0021 
+0022 arguments
+0023     strideEvents (1,1) struct
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="comment">%% Gait Stride Event Times</span>
+0027 timeSHS  = strideEvents.tSHS;   <span class="comment">% slow heel strike event times</span>
+0028 timeFTO  = strideEvents.tFTO;   <span class="comment">% fast toe off event times</span>
+0029 timeFHS  = strideEvents.tFHS;   <span class="comment">% fast heel strike event times</span>
+0030 timeSTO  = strideEvents.tSTO;   <span class="comment">% slow toe off event times</span>
+0031 timeSHS2 = strideEvents.tSHS2;  <span class="comment">% 2nd slow heel strike event times</span>
+0032 timeFTO2 = strideEvents.tFTO2;  <span class="comment">% 2nd fast toe off event times</span>
+0033 
+0034 <span class="comment">%% Labels and Descriptions</span>
+0035 aux = { <span class="keyword">...</span>
+0036     <span class="string">'swingTimeSlow'</span>,        <span class="string">'time from STO to SHS2 (in s)'</span>; <span class="keyword">...</span>
+0037     <span class="string">'swingTimeFast'</span>,        <span class="string">'time from FTO to FHS (in s)'</span>; <span class="keyword">...</span>
+0038     <span class="string">'stanceTimeSlow'</span>,       <span class="string">'time from SHS to STO (in s)'</span>; <span class="keyword">...</span>
+0039     <span class="string">'stanceTimeFast'</span>,       <span class="string">'time from FHS to FTO2 (in s)'</span>; <span class="keyword">...</span>
+0040     <span class="string">'doubleSupportSlow'</span>,    <span class="string">'time from FHS to STO (in s)'</span>; <span class="keyword">...</span>
+0041     <span class="string">'doubleSupportFast'</span>,    <span class="string">'time from SHS2 to FTO2 (in s)'</span>; <span class="keyword">...</span>
+0042     <span class="string">'doubleSupportTemp'</span>,    <span class="string">'time from SHS to FTO (in s)'</span>; <span class="keyword">...</span>
+0043     <span class="string">'stepTimeSlow'</span>,         <span class="string">'time from FHS to SHS2 (in s)'</span>; <span class="keyword">...</span>
+0044     <span class="string">'stepTimeFast'</span>,         <span class="string">'time from SHS to FHS (in s)'</span>; <span class="keyword">...</span>
+0045     <span class="string">'toeOffSlow'</span>,           <span class="string">'time from STO to FTO2 (in s)'</span>; <span class="keyword">...</span>
+0046     <span class="string">'toeOffFast'</span>,           <span class="string">'time from FTO to STO (in s)'</span>; <span class="keyword">...</span>
+0047     <span class="string">'strideTimeSlow'</span>,       <span class="string">'time from SHS to SHS2 (in s)'</span>; <span class="keyword">...</span>
+0048     <span class="string">'strideTimeFast'</span>,       <span class="string">'time from FTO to FTO2 (in s)'</span>; <span class="keyword">...</span>
+0049     <span class="string">'cadenceSlow'</span>,          <span class="string">'1/strideTimeSlow (in Hz)'</span>; <span class="keyword">...</span>
+0050     <span class="string">'cadenceFast'</span>,          <span class="string">'1/strideTimeFast (in Hz)'</span>; <span class="keyword">...</span>
+0051     <span class="string">'stepCadenceSlow'</span>,      <span class="string">'1/stepTimeSlow (in Hz)'</span>; <span class="keyword">...</span>
+0052     <span class="string">'stepCadenceFast'</span>,      <span class="string">'1/stepTimeFast (in Hz)'</span>; <span class="keyword">...</span>
+0053     <span class="string">'doubleSupportPctSlow'</span>, <span class="string">'(doubleSupportSlow/strideTimeSlow)*100'</span>; <span class="keyword">...</span>
+0054     <span class="string">'doubleSupportPctFast'</span>, <span class="string">'(doubleSupportFast/strideTimeFast)*100'</span>; <span class="keyword">...</span>
+0055     <span class="string">'doubleSupportDiff'</span>,    <span class="string">'doubleSupportSlow-doubleSupportFast (in s)'</span>; <span class="keyword">...</span>
+0056     <span class="string">'stepTimeDiff'</span>,         <span class="string">'stepTimeFast-stepTimeSlow (in s)'</span>; <span class="keyword">...</span>
+0057     <span class="string">'stanceTimeDiff'</span>,       <span class="string">'stanceTimeSlow-stanceTimeFast (in s)'</span>; <span class="keyword">...</span>
+0058     <span class="string">'swingTimeDiff'</span>,        <span class="string">'swingTimeFast-swingTimeSlow (in s)'</span>; <span class="keyword">...</span>
+0059     <span class="string">'doubleSupportAsym'</span>,    <span class="string">'(doubleSupportPctFast-doubleSupportPctSlow)/(doubleSupportPctFast+doubleSupportPctSlow)'</span>; <span class="keyword">...</span>
+0060     <span class="string">'Tout'</span>,                 <span class="string">'stepTimeDiff/strideTimeSlow'</span>; <span class="keyword">...</span>
+0061     <span class="string">'Tgoal'</span>,                <span class="string">'stanceTimeDiff/strideTimeSlow'</span>; <span class="keyword">...</span>
+0062     <span class="string">'TgoalSW'</span>,              <span class="string">'swingTimeDiff/strideTimeSlow (should be same as Tgoal)'</span>};
+0063 
+0064 paramLabels = aux(:, 1);
+0065 description = aux(:, 2);
+0066 
+0067 <span class="comment">%% Compute Temporal Parameters</span>
+0068 <span class="comment">% Intraleg parameters (i.e., within each leg)</span>
+0069 
+0070 <span class="comment">% Swing phase durations per stride</span>
+0071 swingTimeSlow = timeSHS2 - timeSTO;
+0072 swingTimeFast = timeFHS  - timeFTO;
+0073 
+0074 <span class="comment">% Stance phase durations (includes double support)</span>
+0075 stanceTimeSlow = timeSTO  - timeSHS;
+0076 stanceTimeFast = timeFTO2 - timeFHS;
+0077 
+0078 <span class="comment">% Double support phase durations</span>
+0079 doubleSupportSlow = timeSTO - timeFHS;
+0080 doubleSupportTemp = timeFTO - timeSHS;
+0081 <span class="comment">% Pablo I. modified (11/11/2014) the parameter below to use the second</span>
+0082 <span class="comment">% step rather than the first one, so that:</span>
+0083 <span class="comment">% stance time = step time + double support time (with given indexing)</span>
+0084 doubleSupportFast = timeFTO2 - timeSHS2;
 0085 
-0086 <span class="comment">%% Assign parameters to data matrix</span>
-0087 data=nan(length(timeSHS),length(paramLabels));
-0088 <span class="keyword">for</span> i=1:length(paramLabels)
-0089     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
-0090 <span class="keyword">end</span>
-0091 
-0092 <span class="comment">%% Create parameterSeries</span>
-0093 out=parameterSeries(data,paramLabels,[],description);        
-0094 
-0095 <span class="keyword">end</span>
-0096</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0086 <span class="comment">% Step durations (time between heel strike events)</span>
+0087 stepTimeSlow = timeSHS2 - timeFHS;
+0088 stepTimeFast = timeFHS  - timeSHS;
+0089 
+0090 <span class="comment">% Time between toe off events</span>
+0091 toeOffSlow = timeFTO2 - timeSTO;
+0092 toeOffFast = timeSTO  - timeFTO;
+0093 
+0094 <span class="comment">% Stride durations</span>
+0095 strideTimeSlow = timeSHS2 - timeSHS;
+0096 strideTimeFast = timeFTO2 - timeFTO;
+0097 
+0098 <span class="comment">% Cadence (stride cycles per second)</span>
+0099 cadenceSlow = 1 ./ strideTimeSlow;
+0100 cadenceFast = 1 ./ strideTimeFast;
+0101 
+0102 <span class="comment">% Step cadence (steps per second)</span>
+0103 stepCadenceSlow = 1 ./ stepTimeSlow;
+0104 stepCadenceFast = 1 ./ stepTimeFast;
+0105 
+0106 <span class="comment">% Percentage of gait cycle that is double support phase</span>
+0107 doubleSupportPctSlow = (doubleSupportSlow ./ strideTimeSlow) * 100;
+0108 doubleSupportPctFast = (doubleSupportFast ./ strideTimeFast) * 100;
+0109 
+0110 <span class="comment">% Interleg parameters (i.e., across the legs)</span>
+0111 <span class="comment">% NOTE: the sign convention (fast - slow or slow - fast) was chosen</span>
+0112 <span class="comment">% pragmatically based on how each parameter timecourse appeared</span>
+0113 doubleSupportDiff = doubleSupportSlow - doubleSupportFast;
+0114 stepTimeDiff      = stepTimeFast      - stepTimeSlow;
+0115 stanceTimeDiff    = stanceTimeSlow    - stanceTimeFast;
+0116 swingTimeDiff     = swingTimeFast     - swingTimeSlow;
+0117 doubleSupportAsym = (doubleSupportPctFast - doubleSupportPctSlow) ./ <span class="keyword">...</span>
+0118     (doubleSupportPctFast + doubleSupportPctSlow);
+0119 Tout   = stepTimeDiff   ./ strideTimeSlow;
+0120 Tgoal  = stanceTimeDiff ./ strideTimeSlow;
+0121 TgoalSW = swingTimeDiff ./ strideTimeSlow;
+0122 
+0123 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0124 data = nan(length(timeSHS), length(paramLabels));
+0125 <span class="keyword">for</span> ii = 1:length(paramLabels)
+0126     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
+0127 <span class="keyword">end</span>
+0128 
+0129 <span class="comment">%% Output Computed Parameters</span>
+0130 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0131 
+0132 <span class="keyword">end</span>
+0133</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

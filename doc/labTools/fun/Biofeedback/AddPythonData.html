@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">Biofeedback</a> &gt; AddPythonData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>AddPythonData
 </h1>
@@ -49,7 +49,7 @@ written 10/26/2015 WDA</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATASVECTOR Extract data vectors for the specified label(s).</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -139,7 +139,7 @@ This function is called by:
 0079         fclose(f);
 0080         
 0081         <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
-0082             [Pheader,Pdata] = JSONtxt2cell([path{z} filenames{z}]);
+0082             [Pheader,Pdata] = <a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>([path{z} filenames{z}]);
 0083         <span class="keyword">else</span>
 0084             S = importdata([path{z} filenames{z}],<span class="string">','</span>,1);
 0085             Pdata = S.data;
@@ -168,14 +168,14 @@ This function is called by:
 0108         
 0109         waitbar((z-1)/length(filenames),WB,[<span class="string">'Synchronizing Trial '</span> num2str(z)]);
 0110         <span class="comment">%get nexus data</span>
-0111         GRRz=getDataAsVector(expData.data{mdata{z,2}}.GRFData,<span class="string">'RFz'</span>);
-0112         GRLz=getDataAsVector(expData.data{mdata{z,2}}.GRFData,<span class="string">'LFz'</span>);
+0111         GRRz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{mdata{z,2}}.GRFData,<span class="string">'RFz'</span>);
+0112         GRLz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{mdata{z,2}}.GRFData,<span class="string">'LFz'</span>);
 0113         
 0114         <span class="comment">%TO DO, enable variable sampling frequency inputs, since some BF is</span>
 0115         <span class="comment">%collected at 100 Hz</span>
 0116         <span class="comment">%downsample from 1000 to 100Hz</span>
-0117         NexusRlowFreq=resample(GRRz,1,10);
-0118         NexusLlowFreq=resample(GRLz,1,10);
+0117         NexusRlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRRz,1,10);
+0118         NexusLlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRLz,1,10);
 0119         
 0120         <span class="comment">%Creating NaN matrix with the lenght of the data</span>
 0121         newData=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
@@ -261,9 +261,9 @@ This function is called by:
 0201         <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
 0202         <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
 0203         <span class="comment">%check Gait events</span>
-0204         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,100);
+0204         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(NexusLlowFreq,NexusRlowFreq,100);
 0205         <span class="comment">%aligned python data events:</span>
-0206         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,Lfzc),newData(:,Rfzc),100);
+0206         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(newData(:,Lfzc),newData(:,Rfzc),100);
 0207         
 0208         
 0209         <span class="comment">%localication of HS==1);</span>
@@ -297,7 +297,7 @@ This function is called by:
 0237 
 0238         selections = strfind(ndata(:,2),<span class="string">'YES'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
 0239         selections(cellfun(<span class="string">'isempty'</span>,selections))={0};
-0240         selections = find(cell2mat(selections));
+0240         selections = find(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(selections));
 0241         <span class="keyword">if</span> z==1
 0242             labels=Pheader(selections);
 0243             PPheader = Pheader;<span class="comment">%in case some parameters are not in all the files to be processed</span>
@@ -379,9 +379,9 @@ This function is called by:
 0319     <span class="keyword">if</span> all(aux)
 0320         adaptData.data.Data(:,idx)=appendm;
 0321     <span class="keyword">else</span>
-0322         this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;PPheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
+0322         this=<a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>([adaptData.data.Data,appendm],[adaptData.data.labels;PPheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
 0323         <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
-0324         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
+0324         adaptData=<a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(rawExpData.metaData,rawExpData.subData,this);
 0325     <span class="keyword">end</span>
 0326     
 0327     waitbar(1,WB,<span class="string">'Synchronizing Finished'</span>);
@@ -409,7 +409,7 @@ This function is called by:
 0349     WB = waitbar(0,[<span class="string">'Processing Trial '</span> num2str(1)]);
 0350     
 0351     strideplace = adaptData.data.stridesTrial;<span class="comment">%where to insert data from Python trials</span>
-0352     [Pheader,Pdata] = JSONtxt2cell([path filenames]);<span class="comment">%load python data</span>
+0352     [Pheader,Pdata] = <a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>([path filenames]);<span class="comment">%load python data</span>
 0353 
 0354     <span class="comment">%in the end we can only patch in data to good strides, so give the</span>
 0355     <span class="comment">%user a chance to select which variables to patch in and what event to</span>
@@ -439,14 +439,14 @@ This function is called by:
 0379     <span class="comment">%}</span>
 0380     
 0381     <span class="comment">%get nexus data</span>
-0382     GRRz=getDataAsVector(expData.data{mdata{1,2}}.GRFData,<span class="string">'RFz'</span>);
-0383     GRLz=getDataAsVector(expData.data{mdata{1,2}}.GRFData,<span class="string">'LFz'</span>);
+0382     GRRz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{mdata{1,2}}.GRFData,<span class="string">'RFz'</span>);
+0383     GRLz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{mdata{1,2}}.GRFData,<span class="string">'LFz'</span>);
 0384     
 0385     <span class="comment">%TO DO, enable variable sampling frequency inputs, since some BF is</span>
 0386     <span class="comment">%collected at 120 Hz</span>
 0387     <span class="comment">%downsample from 1000 to 100Hz</span>
-0388     NexusRlowFreq=resample(GRRz,1,10);
-0389     NexusLlowFreq=resample(GRLz,1,10);
+0388     NexusRlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRRz,1,10);
+0389     NexusLlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRLz,1,10);
 0390     
 0391     <span class="comment">%Creating NaN matrix with the lenght of the data</span>
 0392     newData=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
@@ -486,9 +486,9 @@ This function is called by:
 0426     <span class="keyword">end</span>
 0427     
 0428     figure(5)<span class="comment">%display the synchronization</span>
-0429     plot(NexusRlowFreq,<span class="string">'b'</span>)
+0429     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(NexusRlowFreq,<span class="string">'b'</span>)
 0430     hold on
-0431     plot(newData2(:,indc), <span class="string">'r'</span>)
+0431     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData2(:,indc), <span class="string">'r'</span>)
 0432     
 0433     <span class="keyword">try</span>
 0434         [~,rhsc,~] = intersect(Pheader,<span class="string">'RHS'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
@@ -518,8 +518,8 @@ This function is called by:
 0458     <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
 0459     <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
 0460     <span class="comment">%check Gait events</span>
-0461     [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,100);
-0462     [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,lhsc),newData(:,rhsc),100);
+0461     [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(NexusLlowFreq,NexusRlowFreq,100);
+0462     [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(newData(:,lhsc),newData(:,rhsc),100);
 0463     
 0464     <span class="comment">%localication of HS==1);</span>
 0465     locLHSpyton=find(LHSpyton==1);
@@ -568,7 +568,7 @@ This function is called by:
 0508             diffLengthR=length(locRindex)-length(locRHSpyton);
 0509             FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
 0510             IsBadR=find(FrameDiffR&lt;=-10);
-0511             <span class="keyword">if</span> isempty(IsBadR)
+0511             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0512                 <span class="keyword">break</span>
 0513             <span class="keyword">else</span>
 0514                 locRindex(IsBadR(1))=[];
@@ -582,7 +582,7 @@ This function is called by:
 0522             diffLength=length(locLindex)-length(locLHSpyton);
 0523             FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
 0524             IsBad=find(FrameDiff&lt;=-10);
-0525             <span class="keyword">if</span> isempty(IsBad)
+0525             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0526                 <span class="keyword">break</span>
 0527             <span class="keyword">else</span>
 0528                 locLindex(IsBad(1))=[];
@@ -597,7 +597,7 @@ This function is called by:
 0537             diffLengthR=length(locR2index)-length(locRTOpyton);
 0538             FrameDiffR=locR2index(1:end-diffLengthR)-locRTOpyton;
 0539             IsBadR=find(FrameDiffR&lt;=-10);
-0540             <span class="keyword">if</span> isempty(IsBadR)
+0540             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0541                 <span class="keyword">break</span>
 0542             <span class="keyword">else</span>
 0543                 locR2index(IsBadR(1))=[];
@@ -611,7 +611,7 @@ This function is called by:
 0551             diffLengthL=length(locL2index)-length(locLTOpyton);
 0552             FrameDiffL=locL2index(1:end-diffLengthL)-locLTOpyton;
 0553             IsBadL=find(FrameDiffL&lt;=-10);
-0554             <span class="keyword">if</span> isempty(IsBadL)
+0554             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadL)
 0555                 <span class="keyword">break</span>
 0556             <span class="keyword">else</span>
 0557                 locL2index(IsBadL(1))=[];
@@ -627,7 +627,7 @@ This function is called by:
 0567             diffLengthR=length(locRindex)-length(locRHSnexus);
 0568             FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
 0569             IsBadR=find(abs(FrameDiffR)&gt;10);
-0570             <span class="keyword">if</span> isempty(IsBadR)
+0570             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0571                 <span class="keyword">break</span>
 0572             <span class="keyword">else</span>
 0573                 locRindex(IsBadR(1))=[];
@@ -642,7 +642,7 @@ This function is called by:
 0582             diffLength=length(locLindex)-length(locLHSnexus);
 0583             FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
 0584             IsBad=find(abs(FrameDiff)&gt;10);
-0585             <span class="keyword">if</span> isempty(IsBad)
+0585             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0586                 <span class="keyword">break</span>
 0587             <span class="keyword">else</span>
 0588                 locLindex(IsBad(1))=[];
@@ -658,7 +658,7 @@ This function is called by:
 0598             diffLengthR=length(locR2index)-length(locRTOnexus);
 0599             FrameDiffR=-locR2index(1:end-diffLengthR)+locRTOnexus;
 0600             IsBadR=find(abs(FrameDiffR)&gt;10);
-0601             <span class="keyword">if</span> isempty(IsBadR)
+0601             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0602                 <span class="keyword">break</span>
 0603             <span class="keyword">else</span>
 0604                 locR2index(IsBadR(1))=[];
@@ -673,7 +673,7 @@ This function is called by:
 0613             diffLength=length(locL2index)-length(locLTOnexus);
 0614             FrameDiff=-locL2index(1:end-diffLength)+locLTOnexus;
 0615             IsBad=find(abs(FrameDiff)&gt;10);
-0616             <span class="keyword">if</span> isempty(IsBad)
+0616             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0617                 <span class="keyword">break</span>
 0618             <span class="keyword">else</span>
 0619                 locL2index(IsBad(1))=[];
@@ -694,7 +694,7 @@ This function is called by:
 0634             FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
 0635             
 0636             IsBadR=find(FrameDiffR&lt;=-10);
-0637             <span class="keyword">if</span> isempty(IsBadR)
+0637             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0638                 <span class="keyword">break</span>
 0639             <span class="keyword">else</span>
 0640                 locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
@@ -709,7 +709,7 @@ This function is called by:
 0649             diffLengthL=-length(locLindex)+length(locLHSnexus);
 0650             FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
 0651             IsBadL=find(FrameDiffL&lt;=-10);
-0652             <span class="keyword">if</span> isempty(IsBadL)
+0652             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadL)
 0653                 <span class="keyword">break</span>
 0654             <span class="keyword">else</span>
 0655                 locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
@@ -737,7 +737,7 @@ This function is called by:
 0677     
 0678     selections = strfind(ndata(:,2),<span class="string">'YES'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
 0679     selections(cellfun(<span class="string">'isempty'</span>,selections))={0};
-0680     selections = find(cell2mat(selections));
+0680     selections = find(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(selections));
 0681     
 0682     appendm = nan(length(strideplace),length(selections));
 0683     <span class="comment">%make vectors of variable to splice into adapData</span>
@@ -782,9 +782,9 @@ This function is called by:
 0722     <span class="keyword">if</span> all(aux)
 0723         adaptData.data.Data(:,idx)=appendm;
 0724     <span class="keyword">else</span>
-0725         this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;Pheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
+0725         this=<a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>([adaptData.data.Data,appendm],[adaptData.data.labels;Pheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
 0726         <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
-0727         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
+0727         adaptData=<a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(rawExpData.metaData,rawExpData.subData,this);
 0728     <span class="keyword">end</span>
 0729     
 0730     waitbar(1,WB,<span class="string">'Synchronizing Finished'</span>);
@@ -813,6 +813,6 @@ This function is called by:
 0753 
 0754 
 0755</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

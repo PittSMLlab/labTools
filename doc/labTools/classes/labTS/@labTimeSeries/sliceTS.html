@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sliceTS</title>
+  <meta name="keywords" content="sliceTS">
+  <meta name="description" content="sliceTS  Slices at given time breakpoints">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; sliceTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>sliceTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>sliceTS  Slices at given time breakpoints</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [slicedTS, initTime, duration] = sliceTS(this,timeBreakpoints, timeMargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">sliceTS  Slices at given time breakpoints
+
+   [slicedTS, initTime, duration] = sliceTS(this, timeBreakpoints,
+   timeMargin) slices a single timeseries into cell array of smaller
+   timeseries at given breakpoints
+
+   Inputs:
+       this - labTimeSeries object
+       timeBreakpoints - vector of time points for slicing
+       timeMargin - time margin to add before/after each slice
+
+   Outputs:
+       slicedTS - cell array of sliced timeseries
+       initTime - vector of initial times for each slice
+       duration - vector of durations for each slice
+
+   See also: <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>, <a href="splitByEvents.html" class="code" title="function [steppedDataArray, bad, initTime, eventTimes] =splitByEvents(this, eventTS, eventLabel, timeMargin)">splitByEvents</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStridedField.html" class="code" title="function [stridedField, bad, initTime, events] =getStridedField(this, field, events)">getStridedField</a>	getStridedField  Extracts field data organized by stride</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [slicedTS, initTime, duration] = sliceTS(this, </a><span class="keyword">...</span>
+0002     timeBreakpoints, timeMargin)
+0003 <span class="comment">%sliceTS  Slices at given time breakpoints</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [slicedTS, initTime, duration] = sliceTS(this, timeBreakpoints,</span>
+0006 <span class="comment">%   timeMargin) slices a single timeseries into cell array of smaller</span>
+0007 <span class="comment">%   timeseries at given breakpoints</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - labTimeSeries object</span>
+0011 <span class="comment">%       timeBreakpoints - vector of time points for slicing</span>
+0012 <span class="comment">%       timeMargin - time margin to add before/after each slice</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       slicedTS - cell array of sliced timeseries</span>
+0016 <span class="comment">%       initTime - vector of initial times for each slice</span>
+0017 <span class="comment">%       duration - vector of durations for each slice</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: split, splitByEvents</span>
+0020 
+0021 slicedTS = cell(1, length(timeBreakpoints) - 1);
+0022 <span class="keyword">for</span> i = 1:length(timeBreakpoints) - 1
+0023     <span class="keyword">if</span> isnan(timeBreakpoints(i)) || isnan(timeBreakpoints(i + 1)) || <span class="keyword">...</span>
+0024             timeBreakpoints(i + 1) &lt; timeBreakpoints(i)
+0025         <span class="comment">% Preventing overload of annoying warnings</span>
+0026         warning(<span class="string">'off'</span>);
+0027     <span class="keyword">end</span>
+0028     slicedTS{i} = this.split(timeBreakpoints(i) - timeMargin, <span class="keyword">...</span>
+0029         timeBreakpoints(i + 1) + timeMargin);
+0030     warning(<span class="string">'on'</span>);
+0031 <span class="keyword">end</span>
+0032 initTime = timeBreakpoints(1:end - 1) - timeMargin;
+0033 duration = diff(timeBreakpoints) + 2 * timeMargin;
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

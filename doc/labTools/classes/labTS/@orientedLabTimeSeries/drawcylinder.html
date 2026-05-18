@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of drawcylinder</title>
+  <meta name="keywords" content="drawcylinder">
+  <meta name="description" content="drawcylinder  Draws 3D cylinder">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; drawcylinder.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>drawcylinder
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>drawcylinder  Draws 3D cylinder</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function drawcylinder(h_axes, X1, Y1, Z1, radius, color) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">drawcylinder  Draws 3D cylinder
+
+   drawcylinder(h_axes, X1, Y1, Z1, radius, color) draws cylinder
+   between two points
+
+   Inputs:
+       h_axes - axes handle
+       X1 - x-coordinates of endpoints [x1 x2]
+       Y1 - y-coordinates of endpoints [y1 y2]
+       Z1 - z-coordinates of endpoints [z1 z2]
+       radius - cylinder radii (can vary for coned cylinder)
+       color - RGB color vector
+
+   Note: Helper function for animate methods
+
+   See also: <a href="drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>, <a href="drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>, animate</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function drawcylinder(h_axes, X1, Y1, Z1, radius, color)</a>
+0002 <span class="comment">%drawcylinder  Draws 3D cylinder</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   drawcylinder(h_axes, X1, Y1, Z1, radius, color) draws cylinder</span>
+0005 <span class="comment">%   between two points</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       h_axes - axes handle</span>
+0009 <span class="comment">%       X1 - x-coordinates of endpoints [x1 x2]</span>
+0010 <span class="comment">%       Y1 - y-coordinates of endpoints [y1 y2]</span>
+0011 <span class="comment">%       Z1 - z-coordinates of endpoints [z1 z2]</span>
+0012 <span class="comment">%       radius - cylinder radii (can vary for coned cylinder)</span>
+0013 <span class="comment">%       color - RGB color vector</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Helper function for animate methods</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: drawsegment, drawball, animate</span>
+0018 
+0019 <span class="comment">% Hidden Static</span>
+0020 <span class="comment">% draw a cylinder centered around line defined by 2 points radius</span>
+0021 <span class="comment">% defines the radii of the coned-cylinder</span>
+0022 O = [X1(1) Y1(1) Z1(1)]; <span class="comment">% vector origin</span>
+0023 V = [X1(2) - X1(1) Y1(2) - Y1(1) Z1(2) - Z1(1)]; <span class="comment">% vector</span>
+0024 <span class="comment">% build surface and rotate/translate theta is angle with x-axis, phi</span>
+0025 <span class="comment">% is angle with z-axis, r is length of segment</span>
+0026 [theta, phi, r] = cart2sph(V(1), V(2), V(3));
+0027 [X, Y, Z] = cylinder(radius); <span class="comment">% build segment surface about origin</span>
+0028 h = surf(X, Y, Z, <span class="string">'FaceColor'</span>, color, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+0029 t = hgtransform(<span class="string">'Parent'</span>, h_axes);
+0030 set(h, <span class="string">'Parent'</span>, t);
+0031 Sz = makehgtform(<span class="string">'scale'</span>, [1, 1, r]);
+0032 Ry1 = makehgtform(<span class="string">'yrotate'</span>, pi / 2);
+0033 Ry2 = makehgtform(<span class="string">'yrotate'</span>, -phi);
+0034 Rz = makehgtform(<span class="string">'zrotate'</span>, theta);
+0035 Tx = makehgtform(<span class="string">'translate'</span>, O);
+0036 set(t, <span class="string">'Matrix'</span>, Tx * Rz * Ry2 * Ry1 * Sz);
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

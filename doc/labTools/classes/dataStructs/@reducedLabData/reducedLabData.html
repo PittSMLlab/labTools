@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of reducedLabData</title>
+  <meta name="keywords" content="reducedLabData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@reducedLabData</a> &gt; reducedLabData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@reducedLabData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>reducedLabData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="reducedLabData.html" class="code" title="">reducedLabData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@processedLabData/reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">reduce</a>	reduce  Aligns and resamples all timeseries to the same indexes and puts</li><li><a href="reducedLabData.html" class="code" title="">reducedLabData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = reducedLabData(metaData, events, alignTS, bad,</a></li><li><a href="#_sub2" class="code">function pED = get.procEMGData(this)</a></li><li><a href="#_sub3" class="code">function pED = get.angleData(this)</a></li><li><a href="#_sub4" class="code">function pED = get.COPData(this)</a></li><li><a href="#_sub5" class="code">function pED = get.COMData(this)</a></li><li><a href="#_sub6" class="code">function pED = get.jointMomentsData(this)</a></li><li><a href="#_sub7" class="code">function pED = get.markerData(this)</a></li><li><a href="#_sub8" class="code">function pED = get.accData(this)</a></li><li><a href="#_sub9" class="code">function pED = get.GRFData(this)</a></li><li><a href="#_sub10" class="code">function pED = get.beltSpeedSetData(this)</a></li><li><a href="#_sub11" class="code">function pED = get.beltSpeedReadData(this)</a></li><li><a href="#_sub12" class="code">function pED = get.footSwitchData(this)</a></li><li><a href="#_sub13" class="code">function sN = get.strideNo(this)</a></li><li><a href="#_sub14" class="code">function iT = get.initTimes(this)</a></li><li><a href="#_sub15" class="code">function this = set.metaData(this, mD)</a></li><li><a href="#_sub16" class="code">function this = set.Data(this, dd)</a></li><li><a href="#_sub17" class="code">function this = set.bad(this, b)</a></li><li><a href="#_sub18" class="code">function this = set.gaitEvents(this, e)</a></li><li><a href="#_sub19" class="code">function this = set.adaptParams(this, aP)</a></li><li><a href="#_sub20" class="code">function pED = universalDependentFieldGetter(this, funName)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="reducedLabData.html" class="code" title="">reducedLabData</a> <span class="comment">% AKA alignedLabData</span>
+0002     <span class="comment">%reducedLabData  Time-aligned and resampled data container</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   reducedLabData (also known as alignedLabData) contains data that</span>
+0005     <span class="comment">%   has been aligned to gait events and resampled to a standard time</span>
+0006     <span class="comment">%   base. All time series are organized into a single alignedTimeSeries</span>
+0007     <span class="comment">%   object with consistent sampling across strides.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%reducedLabData properties:</span>
+0010     <span class="comment">%   Data - alignedTimeSeries object containing all aligned data</span>
+0011     <span class="comment">%   bad - logical vector indicating strides with issues</span>
+0012     <span class="comment">%   gaitEvents - labTimeSeries with gait event markers</span>
+0013     <span class="comment">%   adaptParams - parameterSeries with adaptation parameters</span>
+0014     <span class="comment">%   metaData - labMetaData object</span>
+0015     <span class="comment">%   procEMGData - processed EMG data (dependent)</span>
+0016     <span class="comment">%   angleData - joint angle data (dependent)</span>
+0017     <span class="comment">%   COPData - center of pressure data (dependent)</span>
+0018     <span class="comment">%   COMData - center of mass data (dependent)</span>
+0019     <span class="comment">%   jointMomentsData - joint moment data (dependent)</span>
+0020     <span class="comment">%   markerData - marker trajectory data (dependent)</span>
+0021     <span class="comment">%   GRFData - ground reaction force data (dependent)</span>
+0022     <span class="comment">%   accData - acceleration data (dependent)</span>
+0023     <span class="comment">%   beltSpeedSetData - commanded belt speeds (dependent)</span>
+0024     <span class="comment">%   beltSpeedReadData - actual belt speeds (dependent)</span>
+0025     <span class="comment">%   footSwitchData - foot switch data (dependent)</span>
+0026     <span class="comment">%   strideNo - number of strides (dependent)</span>
+0027     <span class="comment">%   initTimes - initial time for each stride (dependent)</span>
+0028     <span class="comment">%</span>
+0029     <span class="comment">%reducedLabData methods:</span>
+0030     <span class="comment">%   reducedLabData - constructor for reduced lab data</span>
+0031     <span class="comment">%</span>
+0032     <span class="comment">%See also: processedLabData, alignedTimeSeries, labData</span>
+0033 
+0034     <span class="comment">%% Properties</span>
+0035     properties
+0036         Data = [];
+0037         bad = [];
+0038         gaitEvents <span class="comment">% labTS</span>
+0039         adaptParams
+0040         metaData <span class="comment">% labMetaData object</span>
+0041     <span class="keyword">end</span>
+0042 
+0043     properties (Dependent)
+0044         procEMGData <span class="comment">% processedEMGTS</span>
+0045         angleData <span class="comment">% labTS (angles based off kinematics)</span>
+0046         COPData
+0047         COMData
+0048         jointMomentsData
+0049         markerData <span class="comment">% orientedLabTS</span>
+0050         GRFData <span class="comment">% orientedLabTS</span>
+0051         accData <span class="comment">% orientedLabTS</span>
+0052         beltSpeedSetData <span class="comment">% labTS, sent commands to treadmill</span>
+0053         beltSpeedReadData <span class="comment">% labTS, speed read from treadmill</span>
+0054         footSwitchData <span class="comment">% labTS</span>
+0055         strideNo
+0056         initTimes
+0057     <span class="keyword">end</span>
+0058 
+0059     properties (SetAccess = private)
+0060         fields_
+0061         fieldPrefixes_
+0062     <span class="keyword">end</span>
+0063 
+0064     <span class="comment">%% Constructor</span>
+0065     methods
+0066         <a name="_sub0" href="#_subfunctions" class="code">function this = reducedLabData(metaData, events, alignTS, bad, </a><span class="keyword">...</span>
+0067                 fields, fieldPrefixes, adaptParams)
+0068             <span class="comment">%reducedLabData  Constructor for reducedLabData class</span>
+0069             <span class="comment">%</span>
+0070             <span class="comment">%   this = reducedLabData(metaData, events, alignTS, bad,</span>
+0071             <span class="comment">%   fields, fieldPrefixes, adaptParams) creates a reduced lab</span>
+0072             <span class="comment">%   data object with time-aligned data organized by stride</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">%   Inputs:</span>
+0075             <span class="comment">%       metaData - labMetaData or subclass object</span>
+0076             <span class="comment">%       events - labTimeSeries with gait events</span>
+0077             <span class="comment">%       alignTS - alignedTimeSeries with resampled data</span>
+0078             <span class="comment">%       bad - logical vector indicating bad strides</span>
+0079             <span class="comment">%       fields - cell array of field names included in data</span>
+0080             <span class="comment">%       fieldPrefixes - cell array of prefixes for each field</span>
+0081             <span class="comment">%       adaptParams - parameterSeries with parameters</span>
+0082             <span class="comment">%</span>
+0083             <span class="comment">%   Outputs:</span>
+0084             <span class="comment">%       this - reducedLabData object</span>
+0085             <span class="comment">%</span>
+0086             <span class="comment">%   See also: processedLabData/reduce, alignedTimeSeries</span>
+0087 
+0088             this.metaData = metaData;
+0089             this.Data = alignTS;
+0090             this.bad = bad;
+0091             this.fields_ = fields;
+0092             this.fieldPrefixes_ = fieldPrefixes;
+0093             this.adaptParams = adaptParams;
+0094             this.gaitEvents = events;
+0095         <span class="keyword">end</span>
+0096     <span class="keyword">end</span>
+0097 
+0098     <span class="comment">%% Dependent Property Getters</span>
+0099     methods
+0100         <span class="comment">% Can we do a universal getter for dependent fields like this?</span>
+0101         <span class="comment">% function pED = get(fieldName)</span>
+0102         <span class="comment">%     prefix = this.fieldPrefixes_(strcmp(this.fields_, fieldName));</span>
+0103         <span class="comment">%     pED = this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));</span>
+0104         <span class="comment">% end</span>
+0105 
+0106         <a name="_sub1" href="#_subfunctions" class="code">function pED = get.procEMGData(this)</a>
+0107             <span class="comment">%get.procEMGData  Returns processed EMG data</span>
+0108             <span class="comment">%</span>
+0109             <span class="comment">%   Uses universal getter to extract EMG-prefixed data</span>
+0110 
+0111             ST = dbstack;
+0112             pED = this.universalDependentFieldGetter(ST.name);
+0113         <span class="keyword">end</span>
+0114 
+0115         <a name="_sub2" href="#_subfunctions" class="code">function pED = get.angleData(this)</a>
+0116             <span class="comment">%get.angleData  Returns joint angle data</span>
+0117             <span class="comment">%</span>
+0118             <span class="comment">%   Uses universal getter to extract angle-prefixed data</span>
+0119 
+0120             [ST, ~] = dbstack;
+0121             pED = this.universalDependentFieldGetter(ST.name);
+0122         <span class="keyword">end</span>
+0123 
+0124         <a name="_sub3" href="#_subfunctions" class="code">function pED = get.COPData(this)</a>
+0125             <span class="comment">%get.COPData  Returns center of pressure data</span>
+0126             <span class="comment">%</span>
+0127             <span class="comment">%   Uses universal getter to extract COP-prefixed data</span>
+0128 
+0129             [ST, ~] = dbstack;
+0130             pED = this.universalDependentFieldGetter(ST.name);
+0131         <span class="keyword">end</span>
+0132 
+0133         <a name="_sub4" href="#_subfunctions" class="code">function pED = get.COMData(this)</a>
+0134             <span class="comment">%get.COMData  Returns center of mass data</span>
+0135             <span class="comment">%</span>
+0136             <span class="comment">%   Uses universal getter to extract COM-prefixed data</span>
+0137 
+0138             [ST, ~] = dbstack;
+0139             pED = this.universalDependentFieldGetter(ST.name);
+0140         <span class="keyword">end</span>
+0141 
+0142         <a name="_sub5" href="#_subfunctions" class="code">function pED = get.jointMomentsData(this)</a>
+0143             <span class="comment">%get.jointMomentsData  Returns joint moment data</span>
+0144             <span class="comment">%</span>
+0145             <span class="comment">%   Uses universal getter to extract moment-prefixed data</span>
+0146 
+0147             [ST, ~] = dbstack;
+0148             pED = this.universalDependentFieldGetter(ST.name);
+0149         <span class="keyword">end</span>
+0150 
+0151         <a name="_sub6" href="#_subfunctions" class="code">function pED = get.markerData(this)</a>
+0152             <span class="comment">%get.markerData  Returns marker trajectory data</span>
+0153             <span class="comment">%</span>
+0154             <span class="comment">%   Uses universal getter to extract marker-prefixed data</span>
+0155 
+0156             [ST, ~] = dbstack;
+0157             pED = this.universalDependentFieldGetter(ST.name);
+0158         <span class="keyword">end</span>
+0159 
+0160         <a name="_sub7" href="#_subfunctions" class="code">function pED = get.accData(this)</a>
+0161             <span class="comment">%get.accData  Returns acceleration data</span>
+0162             <span class="comment">%</span>
+0163             <span class="comment">%   Uses universal getter to extract acceleration-prefixed</span>
+0164             <span class="comment">%   data</span>
+0165 
+0166             [ST, ~] = dbstack;
+0167             pED = this.universalDependentFieldGetter(ST.name);
+0168         <span class="keyword">end</span>
+0169 
+0170         <a name="_sub8" href="#_subfunctions" class="code">function pED = get.GRFData(this)</a>
+0171             <span class="comment">%get.GRFData  Returns ground reaction force data</span>
+0172             <span class="comment">%</span>
+0173             <span class="comment">%   Uses universal getter to extract GRF-prefixed data</span>
+0174 
+0175             [ST, ~] = dbstack;
+0176             pED = this.universalDependentFieldGetter(ST.name);
+0177         <span class="keyword">end</span>
+0178 
+0179         <a name="_sub9" href="#_subfunctions" class="code">function pED = get.beltSpeedSetData(this)</a>
+0180             <span class="comment">%get.beltSpeedSetData  Returns commanded belt speed data</span>
+0181             <span class="comment">%</span>
+0182             <span class="comment">%   Currently returns empty as belt speed data is not</span>
+0183             <span class="comment">%   included in reduced format</span>
+0184 
+0185             pED = [];
+0186         <span class="keyword">end</span>
+0187 
+0188         <a name="_sub10" href="#_subfunctions" class="code">function pED = get.beltSpeedReadData(this)</a>
+0189             <span class="comment">%get.beltSpeedReadData  Returns actual belt speed data</span>
+0190             <span class="comment">%</span>
+0191             <span class="comment">%   Currently returns empty as belt speed data is not</span>
+0192             <span class="comment">%   included in reduced format</span>
+0193 
+0194             pED = [];
+0195         <span class="keyword">end</span>
+0196 
+0197         <a name="_sub11" href="#_subfunctions" class="code">function pED = get.footSwitchData(this)</a>
+0198             <span class="comment">%get.footSwitchData  Returns foot switch data</span>
+0199             <span class="comment">%</span>
+0200             <span class="comment">%   Currently returns empty as foot switch data is not</span>
+0201             <span class="comment">%   included in reduced format</span>
+0202 
+0203             pED = [];
+0204         <span class="keyword">end</span>
+0205 
+0206         <a name="_sub12" href="#_subfunctions" class="code">function sN = get.strideNo(this)</a>
+0207             <span class="comment">%get.strideNo  Returns number of strides in data</span>
+0208             <span class="comment">%</span>
+0209             <span class="comment">%   Outputs:</span>
+0210             <span class="comment">%       sN - number of strides (third dimension of Data)</span>
+0211 
+0212             sN = size(this.Data.Data, 3);
+0213         <span class="keyword">end</span>
+0214 
+0215         <a name="_sub13" href="#_subfunctions" class="code">function iT = get.initTimes(this)</a>
+0216             <span class="comment">%get.initTimes  Returns initial time for each stride</span>
+0217             <span class="comment">%</span>
+0218             <span class="comment">%   Outputs:</span>
+0219             <span class="comment">%       iT - vector of initial times for each stride</span>
+0220 
+0221             iT = this.Data.eventTimes(1, 1:end - 1);
+0222         <span class="keyword">end</span>
+0223     <span class="keyword">end</span>
+0224 
+0225     <span class="comment">%% Property Setters</span>
+0226     methods
+0227         <a name="_sub14" href="#_subfunctions" class="code">function this = set.metaData(this, mD)</a>
+0228             <span class="comment">%set.metaData  Validates and sets metadata</span>
+0229             <span class="comment">%</span>
+0230             <span class="comment">%   Inputs:</span>
+0231             <span class="comment">%       this - reducedLabData object</span>
+0232             <span class="comment">%       mD - labMetaData or subclass object</span>
+0233 
+0234             <span class="comment">% TODO: Check something</span>
+0235             this.metaData = mD;
+0236         <span class="keyword">end</span>
+0237 
+0238         <a name="_sub15" href="#_subfunctions" class="code">function this = set.Data(this, dd)</a>
+0239             <span class="comment">%set.Data  Validates and sets aligned data</span>
+0240             <span class="comment">%</span>
+0241             <span class="comment">%   Inputs:</span>
+0242             <span class="comment">%       this - reducedLabData object</span>
+0243             <span class="comment">%       dd - alignedTimeSeries object</span>
+0244 
+0245             <span class="keyword">if</span> ~isa(dd, <span class="string">'alignedTimeSeries'</span>)
+0246                 error(<span class="string">'reducedLabData:setData'</span>, <span class="keyword">...</span>
+0247                     <span class="string">'Data needs to be an ATS'</span>);
+0248             <span class="keyword">else</span>
+0249                 this.Data = dd;
+0250             <span class="keyword">end</span>
+0251         <span class="keyword">end</span>
+0252 
+0253         <a name="_sub16" href="#_subfunctions" class="code">function this = set.bad(this, b)</a>
+0254             <span class="comment">%set.bad  Validates and sets bad stride flags</span>
+0255             <span class="comment">%</span>
+0256             <span class="comment">%   Inputs:</span>
+0257             <span class="comment">%       this - reducedLabData object</span>
+0258             <span class="comment">%       b - logical vector of length equal to number of</span>
+0259             <span class="comment">%           strides</span>
+0260 
+0261             <span class="keyword">if</span> length(b) ~= this.strideNo
+0262                 error(<span class="string">'reducedLabData:setBad'</span>, <span class="keyword">...</span>
+0263                     <span class="string">'Inconsistent sizes'</span>);
+0264             <span class="keyword">else</span>
+0265                 this.bad = b;
+0266             <span class="keyword">end</span>
+0267         <span class="keyword">end</span>
+0268 
+0269         <a name="_sub17" href="#_subfunctions" class="code">function this = set.gaitEvents(this, e)</a>
+0270             <span class="comment">%set.gaitEvents  Validates and sets gait events</span>
+0271             <span class="comment">%</span>
+0272             <span class="comment">%   Inputs:</span>
+0273             <span class="comment">%       this - reducedLabData object</span>
+0274             <span class="comment">%       e - logical labTimeSeries with event markers</span>
+0275 
+0276             <span class="keyword">if</span> ~isa(e, <span class="string">'labTimeSeries'</span>) || ~isa(e.Data, <span class="string">'logical'</span>)
+0277                 error(<span class="string">'reducedLabData:setGaitEvents'</span>, <span class="keyword">...</span>
+0278                     <span class="string">'Input argument needs to be a logical labTimeSeries'</span>);
+0279             <span class="keyword">else</span>
+0280                 this.gaitEvents = e;
+0281             <span class="keyword">end</span>
+0282         <span class="keyword">end</span>
+0283 
+0284         <a name="_sub18" href="#_subfunctions" class="code">function this = set.adaptParams(this, aP)</a>
+0285             <span class="comment">%set.adaptParams  Validates and sets adaptation parameters</span>
+0286             <span class="comment">%</span>
+0287             <span class="comment">%   Inputs:</span>
+0288             <span class="comment">%       this - reducedLabData object</span>
+0289             <span class="comment">%       aP - parameterSeries object with parameters for each</span>
+0290             <span class="comment">%            stride</span>
+0291             <span class="comment">%</span>
+0292             <span class="comment">%   Note: Validates that parameter count matches stride count</span>
+0293             <span class="comment">%         and that initial times are consistent</span>
+0294 
+0295             <span class="keyword">if</span> ~isa(aP, <span class="string">'parameterSeries'</span>) || <span class="keyword">...</span>
+0296                     size(aP.Data, 1) ~= this.strideNo
+0297                 error(<span class="string">'reducedLabData:setAdaptParams'</span>, <span class="keyword">...</span>
+0298                     [<span class="string">'Input argument needs to be a parameterSeries '</span> <span class="keyword">...</span>
+0299                     <span class="string">'object of length equal to stride number.'</span>]);
+0300                 <span class="comment">% Check that adaptParams is computed with the same initial</span>
+0301                 <span class="comment">% event as alignTS was</span>
+0302             <span class="keyword">elseif</span> any(abs(aP.getDataAsVector(<span class="string">'initTime'</span>) - <span class="keyword">...</span>
+0303                     this.initTimes') &gt; 1e-9)
+0304                 error(<span class="string">'reducedLabData:setAdaptParams'</span>, <span class="keyword">...</span>
+0305                     [<span class="string">'AdaptParams seems to have been computed with '</span> <span class="keyword">...</span>
+0306                     <span class="string">'different events than the provided data (alignTS)'</span>]);
+0307             <span class="keyword">else</span>
+0308                 this.adaptParams = aP;
+0309             <span class="keyword">end</span>
+0310         <span class="keyword">end</span>
+0311     <span class="keyword">end</span>
+0312 
+0313     <span class="comment">%% Hidden Methods</span>
+0314     methods (Hidden)
+0315         <a name="_sub19" href="#_subfunctions" class="code">function pED = universalDependentFieldGetter(this, funName)</a>
+0316             <span class="comment">%universalDependentFieldGetter  Universal getter for dependent</span>
+0317             <span class="comment">%fields</span>
+0318             <span class="comment">%</span>
+0319             <span class="comment">%   pED = universalDependentFieldGetter(this, funName)</span>
+0320             <span class="comment">%   extracts data for a dependent field by matching the field</span>
+0321             <span class="comment">%   prefix and removing the prefix from labels</span>
+0322             <span class="comment">%</span>
+0323             <span class="comment">%   Inputs:</span>
+0324             <span class="comment">%       this - reducedLabData object</span>
+0325             <span class="comment">%       funName - full function name from stack trace</span>
+0326             <span class="comment">%</span>
+0327             <span class="comment">%   Outputs:</span>
+0328             <span class="comment">%       pED - alignedTimeSeries with extracted field data</span>
+0329             <span class="comment">%</span>
+0330             <span class="comment">%   Note: This method is called by all dependent property</span>
+0331             <span class="comment">%         getters to extract field-specific data from the</span>
+0332             <span class="comment">%         unified Data property</span>
+0333 
+0334             fieldName = regexp(funName, <span class="string">'\.get\.'</span>, <span class="string">'split'</span>);
+0335             prefix = this.fieldPrefixes_(strcmp(this.fields_, <span class="keyword">...</span>
+0336                 fieldName{2}));
+0337             pED = this.Data.getPartialDataAsATS(<span class="keyword">...</span>
+0338                 this.Data.getLabelsThatMatch(prefix));
+0339             warning(<span class="string">'off'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0340             pED = pED.renameLabels([], cellfun(@(x) x(4:end), <span class="keyword">...</span>
+0341                 pED.labels, <span class="string">'UniformOutput'</span>, false));
+0342             warning(<span class="string">'on'</span>, <span class="string">'labTS:renameLabels:dont'</span>);
+0343         <span class="keyword">end</span>
+0344     <span class="keyword">end</span>
+0345 
+0346 <span class="keyword">end</span>
+0347</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

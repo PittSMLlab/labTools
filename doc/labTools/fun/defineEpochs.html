@@ -15,7 +15,7 @@
 <div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">fun</a> &gt; defineEpochs.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
 
 <h1>defineEpochs
 </h1>
@@ -24,7 +24,7 @@
 <div class="box"><strong>defineEpochs is used to create a dataset object that defines relevant</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName) </strong></div>
+<div class="box"><strong>function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">defineEpochs is used to create a dataset object that defines relevant
@@ -47,16 +47,16 @@ Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Ad
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-</ul>
+<li><a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-</ul>
+<li><a href="../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>	APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)</a>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)</a>
 0002 <span class="comment">%defineEpochs is used to create a dataset object that defines relevant</span>
 0003 <span class="comment">%epochs in the analysis of experimental data. It is used by several</span>
 0004 <span class="comment">%functions within studyData, groupAdaptationData and adaptationData</span>
@@ -73,42 +73,64 @@ This function is called by:
 0015 <span class="comment">%used to summarize accross strides, default is 'nanmean'</span>
 0016 <span class="comment">%Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)','Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})</span>
 0017 
-0018 N=length(epochNames);
-0019 <span class="keyword">if</span> isa(condition,<span class="string">'char'</span>)
-0020     condition={condtion};
+0018 N = length(epochNames);         <span class="comment">% number of epoch names</span>
+0019 <span class="keyword">if</span> isa(condition,<span class="string">'char'</span>)        <span class="comment">% if character array, ...</span>
+0020     condition = {condition};    <span class="comment">% create cell array string</span>
 0021 <span class="keyword">end</span>
-0022 <span class="keyword">if</span> nargin&lt;6 || isempty(summaryMethod)
-0023     summaryMethod=<span class="string">'nanmean'</span>;
-0024 <span class="keyword">end</span>
-0025 
-0026 <span class="keyword">if</span> isa(summaryMethod,<span class="string">'char'</span>) <span class="comment">%To allow for summaryMethod to be given as string directly</span>
-0027     summaryMethod={summaryMethod};
-0028 <span class="keyword">end</span>
-0029 <span class="keyword">if</span> numel(condition)==1
-0030     condition=repmat(condition,N,1);
-0031 <span class="keyword">end</span>
-0032 <span class="keyword">if</span> numel(strideNo)==1
-0033     strideNo=repmat(strideNo,N,1);
-0034 <span class="keyword">end</span>
-0035 <span class="keyword">if</span> numel(exemptFirst)==1
-0036     exemptFirst=repmat(exemptFirst,N,1);
+0022 
+0023 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(summaryMethod)
+0024     summaryMethod = <span class="string">'nanmean'</span>;
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="keyword">if</span> isa(summaryMethod,<span class="string">'char'</span>) <span class="comment">%To allow for summaryMethod to be given as string directly</span>
+0028     summaryMethod = {summaryMethod};
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> numel(condition) == 1
+0032     condition = repmat(condition,N,1);
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> numel(strideNo) == 1
+0036     strideNo = repmat(strideNo,N,1);
 0037 <span class="keyword">end</span>
-0038 <span class="keyword">if</span> numel(exemptLast)==1
-0039     exemptLast=repmat(exemptLast,N,1);
-0040 <span class="keyword">end</span>
-0041 <span class="keyword">if</span> numel(summaryMethod)==1
-0042     summaryMethod=repmat(summaryMethod,N,1);
-0043 <span class="keyword">end</span>
-0044 earlyOrLate=sign(strideNo)==1;
-0045 <span class="keyword">if</span> nargin&lt;7 || isempty(shortName)
-0046     shortName=cell(size(epochNames));
-0047 <span class="keyword">elseif</span> numel(shortName)==1
-0048     shortName=repmat(shortName,N,1);
+0038 
+0039 <span class="keyword">if</span> numel(exemptFirst) == 1
+0040     exemptFirst = repmat(exemptFirst,N,1);
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">if</span> numel(exemptLast) == 1
+0044     exemptLast = repmat(exemptLast,N,1);
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="keyword">if</span> numel(summaryMethod) == 1
+0048     summaryMethod = repmat(summaryMethod,N,1);
 0049 <span class="keyword">end</span>
 0050 
-0051 epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),<span class="string">'VarNames'</span>,{<span class="string">'Condition'</span>,<span class="string">'Stride_No'</span>,<span class="string">'ExemptFirst'</span>,<span class="string">'ExemptLast'</span>,<span class="string">'EarlyOrLate'</span>,<span class="string">'summaryMethod'</span>,<span class="string">'shortName'</span>},<span class="string">'ObsNames'</span>,epochNames);
-0052 <span class="keyword">end</span>
-0053</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0051 earlyOrLate = sign(strideNo) == 1;
+0052 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(shortName)
+0053     shortName = cell(size(epochNames));
+0054 <span class="keyword">elseif</span> numel(shortName) == 1
+0055     shortName = repmat(shortName,N,1);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%add a description string that can be included when we want a description</span>
+0059 <span class="comment">%of the epoch, this is helpful string to use when we want to include the</span>
+0060 <span class="comment">%refEpoch info in any new parameters or any display string to remind us</span>
+0061 <span class="comment">%what was done.</span>
+0062 description = cell(N,1);
+0063 <span class="keyword">for</span> i = 1:N
+0064     description{i} = sprintf(<span class="string">'condition: %s, stride no: %d, exemptfirst: %d, exceptLast: %d, earlyOrLate: %d, summaryMethod: %s, short name: %s'</span>,<span class="keyword">...</span>
+0065         condition{i},strideNo(i),exemptFirst(i), <span class="keyword">...</span>
+0066     exemptLast(i),earlyOrLate(i),summaryMethod{i},shortName{i});
+0067 <span class="keyword">end</span>
+0068 
+0069 epochs = dataset(condition(:),abs(strideNo(:)),exemptFirst(:), <span class="keyword">...</span>
+0070     exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),description(:), <span class="keyword">...</span>
+0071     <span class="string">'VarNames'</span>,{<span class="string">'Condition'</span>,<span class="string">'Stride_No'</span>,<span class="string">'ExemptFirst'</span>,<span class="string">'ExemptLast'</span>, <span class="keyword">...</span>
+0072     <span class="string">'EarlyOrLate'</span>,<span class="string">'summaryMethod'</span>,<span class="string">'shortName'</span>,<span class="string">'Description'</span>},<span class="string">'ObsNames'</span>,epochNames);
+0073 
+0074 <span class="keyword">end</span>
+0075</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

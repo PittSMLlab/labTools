@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of recomputeEvents</title>
+  <meta name="keywords" content="recomputeEvents">
+  <meta name="description" content="recomputeEvents  Recalculates gait events and parameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; recomputeEvents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>recomputeEvents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>recomputeEvents  Recalculates gait events and parameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function this = recomputeEvents(this, eventClass, initEventSide) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">recomputeEvents  Recalculates gait events and parameters
+
+   this = recomputeEvents(this) recomputes events and parameters for
+   all trials with default options
+
+   this = recomputeEvents(this, eventClass, initEventSide)
+   recomputes with specified options
+
+   Inputs:
+       this - experimentData object
+       eventClass - event classification parameter (optional)
+       initEventSide - initial event side specification (optional)
+
+   Outputs:
+       this - experimentData object with recomputed events and parameters
+
+   See also: processedLabData/recomputeEvents, <a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	recomputeEvents  Recalculates gait events and parameters</li><li><a href="../../../../labTools/classes/dataStructs/@labData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-calculates gait events from angle data</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-computes gait events and adaptation parameters</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	recomputeEvents  Recalculates gait events and parameters</li><li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function this = recomputeEvents(this, eventClass, initEventSide)</a>
+0002 <span class="comment">%recomputeEvents  Recalculates gait events and parameters</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   this = recomputeEvents(this) recomputes events and parameters for</span>
+0005 <span class="comment">%   all trials with default options</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   this = recomputeEvents(this, eventClass, initEventSide)</span>
+0008 <span class="comment">%   recomputes with specified options</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - experimentData object</span>
+0012 <span class="comment">%       eventClass - event classification parameter (optional)</span>
+0013 <span class="comment">%       initEventSide - initial event side specification (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       this - experimentData object with recomputed events and parameters</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: processedLabData/recomputeEvents, recomputeParameters</span>
+0019 
+0020 trials = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.metaData.trialsInCondition);
+0021 <span class="keyword">for</span> t = trials
+0022     <span class="comment">% This recomputes events AND recomputes parameters (otherwise</span>
+0023     <span class="comment">% parameters will not correspond to the new events)</span>
+0024     this.data{t} = <a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>(this.data{t});
+0025 <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

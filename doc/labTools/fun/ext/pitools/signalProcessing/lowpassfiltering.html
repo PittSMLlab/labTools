@@ -4,7 +4,7 @@
 <head>
   <title>Description of lowpassfiltering</title>
   <meta name="keywords" content="lowpassfiltering">
-  <meta name="description" content="lowpassfilter function">
+  <meta name="description" content="LOWPASSFILTERING Apply a zero-phase Butterworth lowpass filter.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,20 +15,36 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; lowpassfiltering.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>lowpassfiltering
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>lowpassfilter function</strong></div>
+<div class="box"><strong>LOWPASSFILTERING Apply a zero-phase Butterworth lowpass filter.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function data = lowpassfiltering(datafile, cutoff, complexity, samp); </strong></div>
+<div class="box"><strong>function data = lowpassfiltering(data, fcut, filterOrder, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">lowpassfilter function
-SMM 02/2004</pre></div>
+<div class="fragment"><pre class="comment">LOWPASSFILTERING Apply a zero-phase Butterworth lowpass filter.
+
+   Filters data using MATLAB's filtfilt to achieve zero phase shift.
+ Designed for offline (non-real-time) use where the full signal is
+ available.
+
+ Inputs:
+   data        - (N×C) double, data to filter (columns are channels)
+   fcut        - scalar double, lowpass cutoff frequency (Hz)
+   filterOrder - scalar integer, Butterworth filter order
+   fsample     - scalar double, sampling frequency (Hz)
+
+ Outputs:
+   data - (N×C) double, filtered data (same size as input)
+
+ Toolbox Dependencies: None (butter, filtfilt are core MATLAB)
+
+ See also <a href="lowpassfiltering2.html" class="code" title="function data = lowpassfiltering2(data, fcut, filterOrder, fsample)">LOWPASSFILTERING2</a>, <a href="filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">FILTFILTHD_SHORT</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -43,21 +59,38 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = lowpassfiltering(datafile, cutoff, complexity, samp);</a>
-0002 
-0003 <span class="comment">%lowpassfilter function</span>
-0004 <span class="comment">%SMM 02/2004</span>
-0005 
-0006 <span class="comment">%pass the 'lowpassfilter' function:  1) a data array for filtering,</span>
-0007                                     <span class="comment">%2) the freqency you want removed, and</span>
-0008                                     <span class="comment">%3) the sampling frequency</span>
-0009 <span class="comment">%'lowpassfilter' function returns the data array that has been filtered with a</span>
-0010 <span class="comment">%lowpass Butterworth filter, with the specified complexity and cutoff frequency</span>
-0011 
-0012 
-0013 
-0014 [b,a]=butter(complexity, (cutoff/(.5*samp)));   <span class="comment">%get lowpass filter vectors</span>
-0015 data = filtfilt(b,a,datafile);  <span class="comment">%filter using filtfilt funtion to avoid phase shifts</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = lowpassfiltering(data, fcut, filterOrder, fsample)</a>
+0002 <span class="comment">%LOWPASSFILTERING Apply a zero-phase Butterworth lowpass filter.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Filters data using MATLAB's filtfilt to achieve zero phase shift.</span>
+0005 <span class="comment">% Designed for offline (non-real-time) use where the full signal is</span>
+0006 <span class="comment">% available.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   data        - (N×C) double, data to filter (columns are channels)</span>
+0010 <span class="comment">%   fcut        - scalar double, lowpass cutoff frequency (Hz)</span>
+0011 <span class="comment">%   filterOrder - scalar integer, Butterworth filter order</span>
+0012 <span class="comment">%   fsample     - scalar double, sampling frequency (Hz)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   data - (N×C) double, filtered data (same size as input)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None (butter, filtfilt are core MATLAB)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also LOWPASSFILTERING2, FILTFILTHD_SHORT.</span>
+0020 
+0021 arguments
+0022     data        (:,:) double
+0023     fcut        (1,1) double {mustBePositive}
+0024     filterOrder (1,1) double {mustBePositive, mustBeInteger}
+0025     fsample     (1,1) double {mustBePositive}
+0026 <span class="keyword">end</span>
+0027 
+0028 nyquist    = 0.5 * fsample;  <span class="comment">% Nyquist frequency (Hz)</span>
+0029 [b, a]     = butter(filterOrder, fcut / nyquist);
+0030 data       = filtfilt(b, a, data);  <span class="comment">% zero-phase filtering</span>
+0031 
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

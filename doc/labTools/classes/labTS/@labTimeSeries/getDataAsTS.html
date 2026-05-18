@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getDataAsTS</title>
+  <meta name="keywords" content="getDataAsTS">
+  <meta name="description" content="getDataAsTS  Returns new labTimeSeries with given label(s)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; getDataAsTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getDataAsTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getDataAsTS  Returns new labTimeSeries with given label(s)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [newTS, auxLabel] = getDataAsTS(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getDataAsTS  Returns new labTimeSeries with given label(s)
+
+   [newTS, auxLabel] = getDataAsTS(this, label) creates a new
+   labTimeSeries containing only the specified label(s)
+
+   Inputs:
+       this - labTimeSeries object
+       label - string or cell array of label(s) to extract
+
+   Outputs:
+       newTS - new labTimeSeries with requested data
+       auxLabel - cell array of labels in new timeseries
+
+   See also: <a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>, <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATASVECTOR Extract data vectors for the specified label(s).</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns labTimeSeries (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">computeCOM</a>	COMPUTECOM Compute stride-by-stride COM kinematics relative to each ankle.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newTS, auxLabel] = getDataAsTS(this, label)</a>
+0002 <span class="comment">%getDataAsTS  Returns new labTimeSeries with given label(s)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [newTS, auxLabel] = getDataAsTS(this, label) creates a new</span>
+0005 <span class="comment">%   labTimeSeries containing only the specified label(s)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       label - string or cell array of label(s) to extract</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newTS - new labTimeSeries with requested data</span>
+0013 <span class="comment">%       auxLabel - cell array of labels in new timeseries</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: getDataAsVector, split</span>
+0016 
+0017 [data, time, auxLabel] = <a href="getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(this, label);
+0018 newTS = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(data, time(1), this.sampPeriod, auxLabel);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of compareAdaptationData</title>
+  <meta name="keywords" content="compareAdaptationData">
+  <meta name="description" content="COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; compareAdaptationData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>compareAdaptationData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function report = compareAdaptationData(refInput, newInput, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.
+
+   Loads two adaptationData objects and reports differences in computed
+ stride-by-stride parameters. Comparisons are restricted to trials
+ present in both objects and strides matched by initiation time, so an
+ object with only a subset of trials does not generate spurious
+ differences for the missing trials.
+
+   Parameters differing only by floating-point noise (below RelTol and
+ AbsTol) are classified as roundoff-only and not counted as changes.
+
+ Inputs:
+   refInput - char path to a *params.mat file, or an adaptationData
+              object, to use as the reference
+   newInput - char path to a *params.mat file, or an adaptationData
+              object, to compare against the reference
+
+ Outputs:
+   report - struct with fields: refName, newName, refFile, newFile,
+            refTrials, newTrials, commonTrials, refOnlyTrials,
+            newOnlyTrials, refOnlyLabels, newOnlyLabels, commonLabels,
+            nStridesCompared, nUnmatchedRef, nUnmatchedNew, params
+            (struct array with fields label, maxAbsDiff, maxRelDiff,
+            nNanMismatches, isChanged), nChanged, nRoundoffOnly
+
+ Toolbox Dependencies: None
+
+ See also ADAPTATIONDATA, PARAMETERSERIES.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/example/TestPipelineRecompute.html" class="code" title="">TestPipelineRecompute</a>	TESTPIPELINERECOMPUTE Template script for regression-testing recompute pipelines.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [adaptData, filePath] = loadAdaptData(input)</a></li><li><a href="#_sub2" class="code">function printComparisonReport(report, relTol, absTol)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function report = compareAdaptationData(refInput, newInput, options)</a>
+0002 <span class="comment">%COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Loads two adaptationData objects and reports differences in computed</span>
+0005 <span class="comment">% stride-by-stride parameters. Comparisons are restricted to trials</span>
+0006 <span class="comment">% present in both objects and strides matched by initiation time, so an</span>
+0007 <span class="comment">% object with only a subset of trials does not generate spurious</span>
+0008 <span class="comment">% differences for the missing trials.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Parameters differing only by floating-point noise (below RelTol and</span>
+0011 <span class="comment">% AbsTol) are classified as roundoff-only and not counted as changes.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Inputs:</span>
+0014 <span class="comment">%   refInput - char path to a *params.mat file, or an adaptationData</span>
+0015 <span class="comment">%              object, to use as the reference</span>
+0016 <span class="comment">%   newInput - char path to a *params.mat file, or an adaptationData</span>
+0017 <span class="comment">%              object, to compare against the reference</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   report - struct with fields: refName, newName, refFile, newFile,</span>
+0021 <span class="comment">%            refTrials, newTrials, commonTrials, refOnlyTrials,</span>
+0022 <span class="comment">%            newOnlyTrials, refOnlyLabels, newOnlyLabels, commonLabels,</span>
+0023 <span class="comment">%            nStridesCompared, nUnmatchedRef, nUnmatchedNew, params</span>
+0024 <span class="comment">%            (struct array with fields label, maxAbsDiff, maxRelDiff,</span>
+0025 <span class="comment">%            nNanMismatches, isChanged), nChanged, nRoundoffOnly</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Toolbox Dependencies: None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% See also ADAPTATIONDATA, PARAMETERSERIES.</span>
+0030 
+0031 arguments
+0032     refInput
+0033     newInput
+0034     options.RelTol  (1,1) double  = 1e-9
+0035     options.AbsTol  (1,1) double  = 1e-12
+0036     options.RefName (1,:) char    = <span class="string">'reference'</span>
+0037     options.NewName (1,:) char    = <span class="string">'new'</span>
+0038     options.Verbose (1,1) logical = true
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">%% Validate inputs</span>
+0042 <span class="keyword">if</span> ~ischar(refInput) &amp;&amp; ~isa(refInput, <span class="string">'adaptationData'</span>)
+0043     error(<span class="string">'compareAdaptationData:invalidInput'</span>, <span class="keyword">...</span>
+0044         <span class="string">'refInput must be a char file path or adaptationData object.'</span>);
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">if</span> ~ischar(newInput) &amp;&amp; ~isa(newInput, <span class="string">'adaptationData'</span>)
+0047     error(<span class="string">'compareAdaptationData:invalidInput'</span>, <span class="keyword">...</span>
+0048         <span class="string">'newInput must be a char file path or adaptationData object.'</span>);
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">%% Load inputs</span>
+0052 [refData, refFile] = <a href="#_sub1" class="code" title="subfunction [adaptData, filePath] = loadAdaptData(input)">loadAdaptData</a>(refInput);
+0053 [newData, newFile]  = <a href="#_sub1" class="code" title="subfunction [adaptData, filePath] = loadAdaptData(input)">loadAdaptData</a>(newInput);
+0054 
+0055 <span class="comment">%% Compare trial sets</span>
+0056 refTrials = unique(refData.data.stridesTrial);
+0057 newTrials  = unique(newData.data.stridesTrial);
+0058 refTrials  = refTrials(~isnan(refTrials));
+0059 newTrials  = newTrials(~isnan(newTrials));
+0060 commonTrials  = intersect(refTrials, newTrials);
+0061 refOnlyTrials = setdiff(refTrials, newTrials);
+0062 newOnlyTrials  = setdiff(newTrials, refTrials);
+0063 
+0064 <span class="comment">%% Compare parameter labels</span>
+0065 <span class="comment">% Structural columns are used only for alignment; exclude from diffs</span>
+0066 structuralLabels = {<span class="string">'initTime'</span>, <span class="string">'finalTime'</span>, <span class="string">'trial'</span>};
+0067 refAllLabels   = refData.data.labels;
+0068 newAllLabels   = newData.data.labels;
+0069 refCompLabels  = setdiff(refAllLabels, structuralLabels, <span class="string">'stable'</span>);
+0070 newCompLabels  = setdiff(newAllLabels, structuralLabels, <span class="string">'stable'</span>);
+0071 commonLabels   = intersect(refCompLabels, newCompLabels, <span class="string">'stable'</span>);
+0072 refOnlyLabels  = setdiff(refCompLabels, newCompLabels, <span class="string">'stable'</span>);
+0073 newOnlyLabels  = setdiff(newCompLabels, refCompLabels, <span class="string">'stable'</span>);
+0074 
+0075 <span class="comment">%% Pre-compute column indices for aligned comparisons</span>
+0076 nCommon    = length(commonLabels);
+0077 refColIdx  = zeros(1, nCommon);
+0078 newColIdx  = zeros(1, nCommon);
+0079 <span class="keyword">for</span> iLabel = 1:nCommon
+0080     refColIdx(iLabel) = find( <span class="keyword">...</span>
+0081         strcmp(refAllLabels, commonLabels{iLabel}), 1);
+0082     newColIdx(iLabel) = find( <span class="keyword">...</span>
+0083         strcmp(newAllLabels, commonLabels{iLabel}), 1);
+0084 <span class="keyword">end</span>
+0085 refInitCol = find(strcmp(refAllLabels, <span class="string">'initTime'</span>), 1);
+0086 newInitCol  = find(strcmp(newAllLabels, <span class="string">'initTime'</span>), 1);
+0087 
+0088 <span class="comment">%% Align strides per trial and accumulate differences</span>
+0089 maxAbsDiffAcc   = zeros(1, nCommon);
+0090 maxRelDiffAcc   = zeros(1, nCommon);
+0091 nNanMismatchAcc = zeros(1, nCommon);
+0092 isChangedAcc    = false(1, nCommon);
+0093 nStridesCompared = 0;
+0094 nUnmatchedRef   = 0;
+0095 nUnmatchedNew   = 0;
+0096 
+0097 <span class="comment">% Absolute tolerance for stride initTime matching (s); well below</span>
+0098 <span class="comment">% any real stride-to-stride interval (typically 0.8–1.5 s)</span>
+0099 initTimeTol = 0.01;
+0100 
+0101 <span class="keyword">for</span> iTrial = 1:length(commonTrials)
+0102     t = commonTrials(iTrial);
+0103     refIdxCell = refData.data.indsInTrial(t);
+0104     newIdxCell  = newData.data.indsInTrial(t);
+0105     refInds = refIdxCell{1};
+0106     newInds  = newIdxCell{1};
+0107 
+0108     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refInds) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newInds)
+0109         nUnmatchedRef = nUnmatchedRef + length(refInds);
+0110         nUnmatchedNew  = nUnmatchedNew + length(newInds);
+0111         <span class="keyword">continue</span>
+0112     <span class="keyword">end</span>
+0113 
+0114     refTimes = refData.data.Data(refInds, refInitCol);
+0115     newTimes  = newData.data.Data(newInds, newInitCol);
+0116 
+0117     <span class="comment">% Match ref strides to new strides by initTime; DataScale=1 makes</span>
+0118     <span class="comment">% ismembertol use an absolute (not relative) tolerance</span>
+0119     [tfRef, locRef] = ismembertol(refTimes, newTimes, <span class="keyword">...</span>
+0120         initTimeTol, <span class="string">'DataScale'</span>, 1);
+0121 
+0122     matchedNewIdx = locRef(tfRef);
+0123     nUnmatchedRef = nUnmatchedRef + sum(~tfRef);
+0124     nUnmatchedNew  = nUnmatchedNew <span class="keyword">...</span>
+0125         + sum(~ismember(1:length(newTimes), matchedNewIdx));
+0126 
+0127     nMatched = sum(tfRef);
+0128     <span class="keyword">if</span> nMatched == 0
+0129         <span class="keyword">continue</span>
+0130     <span class="keyword">end</span>
+0131     nStridesCompared = nStridesCompared + nMatched;
+0132 
+0133     refMatchedGlobal = refInds(tfRef);
+0134     newMatchedGlobal  = newInds(matchedNewIdx);
+0135 
+0136     <span class="comment">% Compare each common parameter across matched strides</span>
+0137     <span class="keyword">for</span> iLabel = 1:nCommon
+0138         refVals = refData.data.Data( <span class="keyword">...</span>
+0139             refMatchedGlobal, refColIdx(iLabel));
+0140         newVals  = newData.data.Data( <span class="keyword">...</span>
+0141             newMatchedGlobal, newColIdx(iLabel));
+0142 
+0143         oneNaN      = isnan(refVals) ~= isnan(newVals);
+0144         bothNumeric = ~isnan(refVals) &amp; ~isnan(newVals);
+0145 
+0146         nNanMismatchAcc(iLabel) = nNanMismatchAcc(iLabel) <span class="keyword">...</span>
+0147             + sum(oneNaN);
+0148         <span class="keyword">if</span> any(oneNaN)
+0149             isChangedAcc(iLabel) = true;
+0150         <span class="keyword">end</span>
+0151 
+0152         <span class="keyword">if</span> any(bothNumeric)
+0153             rV    = refVals(bothNumeric);
+0154             nV    = newVals(bothNumeric);
+0155             diffs = abs(nV - rV);
+0156             maxAbsDiffAcc(iLabel) = max( <span class="keyword">...</span>
+0157                 maxAbsDiffAcc(iLabel), max(diffs));
+0158             relDiffs = diffs ./ (abs(rV) + options.AbsTol);
+0159             maxRelDiffAcc(iLabel) = max( <span class="keyword">...</span>
+0160                 maxRelDiffAcc(iLabel), max(relDiffs));
+0161             <span class="keyword">if</span> any(diffs &gt; options.AbsTol + options.RelTol * abs(rV))
+0162                 isChangedAcc(iLabel) = true;
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165     <span class="keyword">end</span>
+0166 <span class="keyword">end</span>
+0167 
+0168 <span class="comment">%% Build params struct array and compute summary counts</span>
+0169 <span class="keyword">if</span> nCommon &gt; 0
+0170     paramResults(nCommon, 1).label          = <span class="string">''</span>;
+0171     paramResults(nCommon, 1).maxAbsDiff     = 0;
+0172     paramResults(nCommon, 1).maxRelDiff     = 0;
+0173     paramResults(nCommon, 1).nNanMismatches = 0;
+0174     paramResults(nCommon, 1).isChanged      = false;
+0175     <span class="keyword">for</span> iLabel = 1:nCommon
+0176         paramResults(iLabel).label          = commonLabels{iLabel};
+0177         paramResults(iLabel).maxAbsDiff     = maxAbsDiffAcc(iLabel);
+0178         paramResults(iLabel).maxRelDiff     = maxRelDiffAcc(iLabel);
+0179         paramResults(iLabel).nNanMismatches = nNanMismatchAcc(iLabel);
+0180         paramResults(iLabel).isChanged      = isChangedAcc(iLabel);
+0181     <span class="keyword">end</span>
+0182 <span class="keyword">else</span>
+0183     paramResults = struct( <span class="keyword">...</span>
+0184         <span class="string">'label'</span>, {}, <span class="string">'maxAbsDiff'</span>, {}, <span class="string">'maxRelDiff'</span>, {}, <span class="keyword">...</span>
+0185         <span class="string">'nNanMismatches'</span>, {}, <span class="string">'isChanged'</span>, {});
+0186 <span class="keyword">end</span>
+0187 
+0188 nChanged     = sum(isChangedAcc);
+0189 nRoundoffOnly = sum(maxAbsDiffAcc &gt; 0 &amp; ~isChangedAcc);
+0190 
+0191 <span class="comment">%% Assemble report struct</span>
+0192 report.refName          = options.RefName;
+0193 report.newName          = options.NewName;
+0194 report.refFile          = refFile;
+0195 report.newFile          = newFile;
+0196 report.refTrials        = refTrials;
+0197 report.newTrials        = newTrials;
+0198 report.commonTrials     = commonTrials;
+0199 report.refOnlyTrials    = refOnlyTrials;
+0200 report.newOnlyTrials    = newOnlyTrials;
+0201 report.refOnlyLabels    = refOnlyLabels;
+0202 report.newOnlyLabels    = newOnlyLabels;
+0203 report.commonLabels     = commonLabels;
+0204 report.nStridesCompared = nStridesCompared;
+0205 report.nUnmatchedRef    = nUnmatchedRef;
+0206 report.nUnmatchedNew    = nUnmatchedNew;
+0207 report.params           = paramResults;
+0208 report.nChanged         = nChanged;
+0209 report.nRoundoffOnly    = nRoundoffOnly;
+0210 
+0211 <span class="comment">%% Print report</span>
+0212 <span class="keyword">if</span> options.Verbose
+0213     <a href="#_sub2" class="code" title="subfunction printComparisonReport(report, relTol, absTol)">printComparisonReport</a>(report, options.RelTol, options.AbsTol);
+0214 <span class="keyword">end</span>
+0215 
+0216 <span class="keyword">end</span>
+0217 
+0218 <span class="comment">% =========================================================================</span>
+0219 
+0220 <a name="_sub1" href="#_subfunctions" class="code">function [adaptData, filePath] = loadAdaptData(input)</a>
+0221 <span class="comment">%LOADADAPTDATA Load adaptationData from file path or return object as-is.</span>
+0222 
+0223 arguments
+0224     input
+0225 <span class="keyword">end</span>
+0226 
+0227 <span class="keyword">if</span> ischar(input)
+0228     filePath  = input;
+0229     loaded    = load(input, <span class="string">'adaptData'</span>);
+0230     adaptData = loaded.adaptData;
+0231 <span class="keyword">else</span>
+0232     filePath  = <span class="string">''</span>;
+0233     adaptData = input;
+0234 <span class="keyword">end</span>
+0235 <span class="keyword">end</span>
+0236 
+0237 <span class="comment">% =========================================================================</span>
+0238 
+0239 <a name="_sub2" href="#_subfunctions" class="code">function printComparisonReport(report, relTol, absTol)</a>
+0240 <span class="comment">%PRINTCOMPARISONREPORT Print formatted comparison report to the command window.</span>
+0241 
+0242 arguments
+0243     report struct
+0244     relTol (1,1) double
+0245     absTol (1,1) double
+0246 <span class="keyword">end</span>
+0247 
+0248 useCprintf = exist(<span class="string">'cprintf'</span>, <span class="string">'file'</span>) == 2;
+0249 
+0250 fprintf(<span class="string">'\n=== ADAPTATIONDATA COMPARISON ===\n'</span>);
+0251 fprintf(<span class="string">'Reference : %s'</span>, report.refName);
+0252 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.refFile)
+0253     fprintf(<span class="string">' (%s)'</span>, report.refFile);
+0254 <span class="keyword">end</span>
+0255 fprintf(<span class="string">'\nNew       : %s'</span>, report.newName);
+0256 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.newFile)
+0257     fprintf(<span class="string">' (%s)'</span>, report.newFile);
+0258 <span class="keyword">end</span>
+0259 fprintf(<span class="string">'\n\n'</span>);
+0260 
+0261 <span class="comment">%% Trials</span>
+0262 fprintf(<span class="string">'TRIALS\n'</span>);
+0263 fprintf(<span class="string">'  Reference : [%s]\n'</span>, num2str(report.refTrials(:)', <span class="string">'%d '</span>));
+0264 fprintf(<span class="string">'  New       : [%s]\n'</span>, num2str(report.newTrials(:)', <span class="string">'%d '</span>));
+0265 fprintf(<span class="string">'  Common: %d  |  Ref-only: %d  |  New-only: %d\n'</span>, <span class="keyword">...</span>
+0266     length(report.commonTrials), <span class="keyword">...</span>
+0267     length(report.refOnlyTrials), <span class="keyword">...</span>
+0268     length(report.newOnlyTrials));
+0269 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.refOnlyTrials)
+0270     fprintf(<span class="string">'  *** Reference-only trials: [%s]\n'</span>, <span class="keyword">...</span>
+0271         num2str(report.refOnlyTrials(:)', <span class="string">'%d '</span>));
+0272 <span class="keyword">end</span>
+0273 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.newOnlyTrials)
+0274     fprintf(<span class="string">'  *** New-only trials: [%s]\n'</span>, <span class="keyword">...</span>
+0275         num2str(report.newOnlyTrials(:)', <span class="string">'%d '</span>));
+0276 <span class="keyword">end</span>
+0277 fprintf(<span class="string">'\n'</span>);
+0278 
+0279 <span class="comment">%% Parameter labels</span>
+0280 fprintf(<span class="string">'PARAMETER LABELS\n'</span>);
+0281 fprintf(<span class="string">'  Common: %d  |  Ref-only: %d  |  New-only: %d\n'</span>, <span class="keyword">...</span>
+0282     length(report.commonLabels), <span class="keyword">...</span>
+0283     length(report.refOnlyLabels), <span class="keyword">...</span>
+0284     length(report.newOnlyLabels));
+0285 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.refOnlyLabels)
+0286     fprintf(<span class="string">'  Reference-only labels: %s\n'</span>, <span class="keyword">...</span>
+0287         strjoin(report.refOnlyLabels, <span class="string">', '</span>));
+0288 <span class="keyword">end</span>
+0289 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.newOnlyLabels)
+0290     fprintf(<span class="string">'  New-only labels: %s\n'</span>, <span class="keyword">...</span>
+0291         strjoin(report.newOnlyLabels, <span class="string">', '</span>));
+0292 <span class="keyword">end</span>
+0293 fprintf(<span class="string">'\n'</span>);
+0294 
+0295 <span class="comment">%% Stride alignment</span>
+0296 fprintf(<span class="string">'STRIDE ALIGNMENT\n'</span>);
+0297 fprintf(<span class="string">'  Matched pairs   : %d\n'</span>, report.nStridesCompared);
+0298 fprintf(<span class="string">'  Unmatched (ref) : %d  |  Unmatched (new): %d\n'</span>, <span class="keyword">...</span>
+0299     report.nUnmatchedRef, report.nUnmatchedNew);
+0300 fprintf(<span class="string">'\n'</span>);
+0301 
+0302 <span class="comment">%% Parameter differences</span>
+0303 nTotal     = length(report.params);
+0304 nUnchanged = nTotal - report.nChanged - report.nRoundoffOnly;
+0305 fprintf(<span class="string">'PARAMETER DIFFERENCES  (RelTol=%.0e, AbsTol=%.0e)\n'</span>, <span class="keyword">...</span>
+0306     relTol, absTol);
+0307 fprintf(<span class="string">'  Unchanged  : %d\n'</span>, nUnchanged);
+0308 fprintf(<span class="string">'  Roundoff   : %d\n'</span>, report.nRoundoffOnly);
+0309 
+0310 <span class="keyword">if</span> report.nChanged &gt; 0
+0311     <span class="keyword">if</span> useCprintf
+0312         <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'  Changed    : %d\n'</span>, report.nChanged);
+0313     <span class="keyword">else</span>
+0314         fprintf(<span class="string">'  Changed    : %d\n'</span>, report.nChanged);
+0315     <span class="keyword">end</span>
+0316 <span class="keyword">else</span>
+0317     fprintf(<span class="string">'  Changed    : 0\n'</span>);
+0318 <span class="keyword">end</span>
+0319 
+0320 <span class="keyword">if</span> report.nChanged &gt; 0 || report.nRoundoffOnly &gt; 0
+0321     fprintf(<span class="string">'  ---\n'</span>);
+0322     <span class="keyword">for</span> ii = 1:nTotal
+0323         p = report.params(ii);
+0324         <span class="keyword">if</span> p.isChanged
+0325             line = sprintf( <span class="keyword">...</span>
+0326                 <span class="string">'  %-28s relDiff=%8.2e  absDiff=%8.2e  NaN=%d\n'</span>, <span class="keyword">...</span>
+0327                 p.label, p.maxRelDiff, p.maxAbsDiff, <span class="keyword">...</span>
+0328                 p.nNanMismatches);
+0329             <span class="keyword">if</span> useCprintf
+0330                 <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'%s'</span>, line);
+0331             <span class="keyword">else</span>
+0332                 fprintf(<span class="string">'%s'</span>, line);
+0333             <span class="keyword">end</span>
+0334         <span class="keyword">elseif</span> p.maxAbsDiff &gt; 0
+0335             line = sprintf( <span class="keyword">...</span>
+0336                 <span class="string">'  %-28s relDiff=%8.2e  absDiff=%8.2e  (roundoff)\n'</span>, <span class="keyword">...</span>
+0337                 p.label, p.maxRelDiff, p.maxAbsDiff);
+0338             <span class="keyword">if</span> useCprintf
+0339                 <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'SystemCommands'</span>, <span class="string">'%s'</span>, line);
+0340             <span class="keyword">else</span>
+0341                 fprintf(<span class="string">'%s'</span>, line);
+0342             <span class="keyword">end</span>
+0343         <span class="keyword">end</span>
+0344     <span class="keyword">end</span>
+0345 <span class="keyword">end</span>
+0346 fprintf(<span class="string">'\n'</span>);
+0347 
+0348 <span class="comment">%% Summary line</span>
+0349 fprintf(<span class="string">'SUMMARY: '</span>);
+0350 <span class="keyword">if</span> report.nChanged == 0
+0351     summaryMsg = sprintf( <span class="keyword">...</span>
+0352         <span class="string">'0 of %d common parameters changed beyond tolerance.\n'</span>, <span class="keyword">...</span>
+0353         nTotal);
+0354     <span class="keyword">if</span> useCprintf
+0355         <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Comments'</span>, <span class="string">'%s'</span>, summaryMsg);
+0356     <span class="keyword">else</span>
+0357         fprintf(<span class="string">'%s'</span>, summaryMsg);
+0358     <span class="keyword">end</span>
+0359 <span class="keyword">else</span>
+0360     summaryMsg = sprintf( <span class="keyword">...</span>
+0361         <span class="string">'%d of %d common parameters changed beyond tolerance.\n'</span>, <span class="keyword">...</span>
+0362         report.nChanged, nTotal);
+0363     <span class="keyword">if</span> useCprintf
+0364         <a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'Errors'</span>, <span class="string">'%s'</span>, summaryMsg);
+0365     <span class="keyword">else</span>
+0366         fprintf(<span class="string">'%s'</span>, summaryMsg);
+0367     <span class="keyword">end</span>
+0368 <span class="keyword">end</span>
+0369 fprintf(<span class="string">'\n'</span>);
+0370 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

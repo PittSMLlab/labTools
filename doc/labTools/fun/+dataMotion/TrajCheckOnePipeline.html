@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of TrajCheckOnePipeline</title>
+  <meta name="keywords" content="TrajCheckOnePipeline">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; TrajCheckOnePipeline.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>TrajCheckOnePipeline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>	pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 markersToCompare = {<span class="string">'LGT'</span>};
+0002 subject = <span class="string">'C3S24'</span>;
+0003 trialPath = <span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16'</span>;
+0004 
+0005 <span class="comment">% Connect to Vicon and open trial</span>
+0006 fprintf(<span class="string">'Connecting to Vicon Nexus...\n'</span>);
+0007 vicon = ViconNexus();
+0008 dataMotion.openTrialIfNeeded(trialPath, vicon);
+0009 pause(2);
+0010 
+0011 <span class="comment">% Run the optimized pipeline function (assumes this saves the trial)</span>
+0012 fprintf(<span class="string">'Running optimized pipeline...\n'</span>);
+0013 <a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>(trialPath);  
+0014 pause(5);
+0015 
+0016 trajData = struct();
+0017 
+0018 <span class="keyword">for</span> m = 1:numel(markersToCompare)
+0019     nameMarker = markersToCompare{m};
+0020     <span class="keyword">try</span> 
+0021         [trajX, trajY, trajZ, existsTraj] = vicon.GetTrajectory(subject, nameMarker);
+0022         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a> = (1:numel(trajX)) / 100;  <span class="comment">% or use frameStart/frameEnd for time</span>
+0023         
+0024         <span class="keyword">if</span> any(existsTraj)
+0025             trajX2 = trajX; trajX2(~existsTraj) = NaN;
+0026             trajY2 = trajY; trajY2(~existsTraj) = NaN;
+0027             trajZ2 = trajZ; trajZ2(~existsTraj) = NaN;
+0028 
+0029             figure(<span class="string">'Name'</span>, [<span class="string">'Trajectories for '</span> nameMarker], <span class="string">'NumberTitle'</span>, <span class="string">'off'</span>);
+0030             tl = tiledlayout(3,1);
+0031 
+0032             ax1 = nexttile;
+0033             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, trajX2); ylabel(<span class="string">'X (mm)'</span>);
+0034             title([nameMarker <span class="string">' - X'</span>]);
+0035 
+0036             ax2 = nexttile;
+0037             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, trajY2); ylabel(<span class="string">'Y (mm)'</span>);
+0038             title([nameMarker <span class="string">' - Y'</span>]);
+0039 
+0040             ax3 = nexttile;
+0041             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, trajZ2); ylabel(<span class="string">'Z (mm)'</span>);
+0042             title([nameMarker <span class="string">' - Z'</span>]);
+0043             xlabel(<span class="string">'Time (s)'</span>);
+0044 
+0045             drawnow;
+0046             pause(0.1);  <span class="comment">% ensures figure updates</span>
+0047         <span class="keyword">else</span>
+0048             warning(<span class="string">'No valid data for %s.'</span>, nameMarker);
+0049         <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

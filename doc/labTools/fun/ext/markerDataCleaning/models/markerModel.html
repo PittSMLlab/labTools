@@ -15,7 +15,7 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">models</a> &gt; markerModel.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/models&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\markerDataCleaning\models&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>markerModel
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="../../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveComponents.html" class="code" title="">naiveComponents</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="naivePositions.html" class="code" title="">naivePositions</a>	</li><li><a href="naiveRelPositions.html" class="code" title="">naiveRelPositions</a>	</li></ul>
+<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -67,8 +67,8 @@ This function is called by:
 0021             trainStats=mm.summaryStats(trainData);
 0022             mm.statMean=nanmean(trainStats,2);
 0023             mm.statStd=nanstd(trainStats,[],2);
-0024             mm.statPrctiles=prctile(trainStats,0:100,2);
-0025             mm.trainingLogLPrctiles=prctile(mm.loglikelihood(trainData),0:100,2);
+0024             mm.statPrctiles=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(trainStats,0:100,2);
+0025             mm.trainingLogLPrctiles=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(mm.loglikelihood(trainData),0:100,2);
 0026             mm.activeStats=true(size(mm.statMean));
 0027         <span class="keyword">end</span>
 0028         <a name="_sub1" href="#_subfunctions" class="code">function M = get.Nmarkers(this)</a>
@@ -83,7 +83,7 @@ This function is called by:
 0037         i = indicatrix(this)
 0038         mapData = reconstruct(this,dataPrior,priorConfidence)
 0039         <a name="_sub3" href="#_subfunctions" class="code">function [badFlag,outlierClass1,outlierClass2] = validateMarkerModel(this,verbose)</a>
-0040             <span class="keyword">if</span> nargin&lt;2 || isempty(verbose)
+0040             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
 0041                 verbose=true;
 0042             <span class="keyword">end</span>
 0043             SS=this.stat2Matrix(this.statStd); <span class="comment">%Get stds as matrix indexed by markers</span>
@@ -143,13 +143,13 @@ This function is called by:
 0097                 c(1,:)=[1 1 1];
 0098                 colormap(c)
 0099                 subplot(3,2,1)
-0100                 plot(this.statPrctiles',0:100)
+0100                 <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.statPrctiles',0:100)
 0101                 title(<span class="string">'Training stat cdfs'</span>)
 0102                 subplot(3,2,[2,4,6])
 0103                 idx=all(all(~isnan(this.trainingData)));
 0104                 d=this.trainingData(:,:,idx);
-0105                 m=median(d,3); <span class="comment">%This needs to be rotated accordingly on a frame-by-frame basis for the plot to work well</span>
-0106                 plot3(m(:,1),m(:,2),m(:,3),<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,4)
+0105                 m=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(d,3); <span class="comment">%This needs to be rotated accordingly on a frame-by-frame basis for the plot to work well</span>
+0106                 <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(m(:,1),m(:,2),m(:,3),<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,4)
 0107                 view(3)
 0108                 axis equal
 0109                 hold on
@@ -216,16 +216,16 @@ This function is called by:
 0170             <span class="comment">%keptIdx is such that this.markerLabels(keptIdx)=newThis.markerLabels</span>
 0171             <span class="comment">%And will be equal to markerList if ALL markers in markerList are present</span>
 0172             <span class="comment">%keptStats is such that this.statMean(keptStats)=newThis.statMean</span>
-0173             <span class="keyword">if</span> nargin&lt;3 || isempty(keepMarkersFlag)
+0173             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(keepMarkersFlag)
 0174                 keepMarkersFlag=false; 
 0175             <span class="keyword">end</span>
 0176             error(<span class="string">'Unimplemented'</span>)
 0177         <span class="keyword">end</span>
 0178         <a name="_sub8" href="#_subfunctions" class="code">function [outlierMarkers,markerScores,logL] = outlierDetect(this,data,threshold,fastFlag)</a>
-0179             <span class="keyword">if</span> nargin&lt;3 || isempty(threshold)
-0180                 threshold=-5;
+0179             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>)
+0180                 <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>=-5;
 0181             <span class="keyword">end</span>
-0182             <span class="keyword">if</span> nargin&lt;4 || isempty(fastFlag)
+0182             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
 0183                 fastFlag=false;
 0184             <span class="keyword">end</span>
 0185             markerScores=[];
@@ -239,7 +239,7 @@ This function is called by:
 0193             outlierMarkers=markerScores&lt;(-threshold^2/2);
 0194         <span class="keyword">end</span>
 0195         <a name="_sub9" href="#_subfunctions" class="code">function markerScores = scoreMarkers(this,data,fastFlag)</a>
-0196            <span class="keyword">if</span> nargin&lt;3 || isempty(fastFlag)
+0196            <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
 0197                 fastFlag=false;
 0198            <span class="keyword">end</span>
 0199            markerScores=this.scoreMarkersRanked(data,2); <span class="comment">%Fast scoring</span>
@@ -362,7 +362,7 @@ This function is called by:
 0316             bad=L0&lt;-5^2/2;
 0317             nBad=sum(model.indicatrix* bad &gt;0);
 0318             <span class="comment">%TODO: start with markers associated to bad distances, and then move to a larger set</span>
-0319             <span class="keyword">if</span> nargin&lt;3 || isempty(listToPermute)
+0319             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(listToPermute)
 0320                 <span class="comment">%Run for bad markers.</span>
 0321                 <span class="keyword">if</span> nBad&gt;0
 0322                     listToPermute=find(model.indicatrix* bad &gt;0);
@@ -499,6 +499,6 @@ This function is called by:
 0453     <span class="keyword">end</span>
 0454 <span class="keyword">end</span>
 0455</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

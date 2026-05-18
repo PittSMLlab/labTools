@@ -2,9 +2,9 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of computeTSstatParameters</title>
-  <meta name="keywords" content="computeTSstatParameters">
-  <meta name="description" content="This function computes summary parameters per stride based on labTS data.">
+  <title>Description of computeTSStatParameters</title>
+  <meta name="keywords" content="computeTSStatParameters">
+  <meta name="description" content="COMPUTETSSTATPARAMETERS Compute summary statistics per stride.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -12,121 +12,184 @@
 </head>
 <body>
 <a name="_top"></a>
-<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeTSstatParameters.m</div>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeTSStatParameters.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
-<h1>computeTSstatParameters
+<h1>computeTSStatParameters
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>This function computes summary parameters per stride based on labTS data.</strong></div>
+<div class="box"><strong>COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [out] = computeTSstatParameters(someTS,arrayedEvents) </strong></div>
+<div class="box"><strong>function out = computeTSStatParameters(tsData, strideEvents) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">This function computes summary parameters per stride based on labTS data.
-The output is a parameterSeries object, which can be concatenated with
-other parameterSeries objects, for example with those from
-computeTemporalParameters. 
-See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
-<a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+<div class="fragment"><pre class="comment">COMPUTETSSTATPARAMETERS Compute summary statistics per stride.
+
+   Computes stride-by-stride summary statistics for each channel of a
+ labTimeSeries and returns a parameterSeries object that can be
+ concatenated with other parameter series objects (e.g., from
+ computeTemporalParameters).
+
+ Inputs:
+   tsData       - labTimeSeries object containing channel data
+   strideEvents - N-by-K matrix of stride event times (seconds),
+                  where N is the number of strides; the first
+                  column is used to slice tsData into strides
+
+ Outputs:
+   out - parameterSeries object containing, for each channel, the
+         following statistics per stride: max, min, avg (mean),
+         var (variance), med (median), snr (signal-to-noise ratio
+         in dB), and bad (data-quality flag)
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>, <a href="computeTemporalParameters.html" class="code" title="function out = computeTemporalParameters(strideEvents)">COMPUTETEMPORALPARAMETERS</a>,
+   <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>, PARAMETERSERIES, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	iqr  Computes interquartile range</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="computeEMGParameters.html" class="code" title="function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg,eventTypes)">computeEMGParameters</a>	This function computes summary parameters per stride based on EMG data.</li></ul>
+<li><a href="computeEMGParameters.html" class="code" title="function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)">computeEMGParameters</a>	COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeTSstatParameters(someTS,arrayedEvents)</a>
-0002 <span class="comment">%This function computes summary parameters per stride based on labTS data.</span>
-0003 <span class="comment">%The output is a parameterSeries object, which can be concatenated with</span>
-0004 <span class="comment">%other parameterSeries objects, for example with those from</span>
-0005 <span class="comment">%computeTemporalParameters.</span>
-0006 <span class="comment">%See also computeSpatialParameters, computeTemporalParameters,</span>
-0007 <span class="comment">%computeForceParameters, parameterSeries</span>
-0008 
-0009 <span class="comment">%% Parameter list and description (per muscle!)</span>
-0010 labelSuff={<span class="string">'max'</span>,<span class="string">'min'</span>,<span class="string">'avg'</span>,<span class="string">'var'</span>,<span class="string">'med'</span>,<span class="string">'snr'</span>,<span class="string">'bad'</span>}; <span class="comment">%Some stats on channel data, excluded 'skw','kur','iqr' because they are never used and take long to compute</span>
-0011 <span class="comment">%%</span>
-0012 slicedTS=someTS.sliceTS(arrayedEvents(:,1),0); <span class="comment">%Slicing by first event ONLY</span>
-0013 N=length(slicedTS);
-0014 Nl=length(labelSuff);
-0015 labs=someTS.labels;
-0016 paramData=nan(N,length(labs),Nl);
-0017 paramLabels=cell(length(labs),Nl);
-0018 description=cell(length(labs),Nl);
-0019 <span class="comment">%Define parameter names and descriptions:</span>
-0020 <span class="keyword">for</span> j=1:length(labs) <span class="comment">%Muscles</span>
-0021      <span class="keyword">for</span> k=1:Nl
-0022         <span class="keyword">if</span> strcmp(labelSuff{k},<span class="string">'bad'</span>)
-0023             paramLabels{j,k}=[labs{j} labelSuff{k}];
-0024             description{j,k}=[<span class="string">'Signals if quality was anything other than good (no missing, no spikes, no out-of-range) for muscle '</span> labs{j}];
-0025         <span class="keyword">else</span>
-0026             paramLabels{j,k}=[labs{j} labelSuff{k}];
-0027             description{j,k}=[labelSuff{k} <span class="string">' in timeseries '</span> labs{j}];
-0028         <span class="keyword">end</span>
-0029      <span class="keyword">end</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = computeTSStatParameters(tsData, strideEvents)</a>
+0002 <span class="comment">%COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes stride-by-stride summary statistics for each channel of a</span>
+0005 <span class="comment">% labTimeSeries and returns a parameterSeries object that can be</span>
+0006 <span class="comment">% concatenated with other parameter series objects (e.g., from</span>
+0007 <span class="comment">% computeTemporalParameters).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   tsData       - labTimeSeries object containing channel data</span>
+0011 <span class="comment">%   strideEvents - N-by-K matrix of stride event times (seconds),</span>
+0012 <span class="comment">%                  where N is the number of strides; the first</span>
+0013 <span class="comment">%                  column is used to slice tsData into strides</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   out - parameterSeries object containing, for each channel, the</span>
+0017 <span class="comment">%         following statistics per stride: max, min, avg (mean),</span>
+0018 <span class="comment">%         var (variance), med (median), snr (signal-to-noise ratio</span>
+0019 <span class="comment">%         in dB), and bad (data-quality flag)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies:</span>
+0022 <span class="comment">%   None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also COMPUTESPATIALPARAMETERS, COMPUTETEMPORALPARAMETERS,</span>
+0025 <span class="comment">%   COMPUTEFORCEPARAMETERS, PARAMETERSERIES, CALCPARAMETERS.</span>
+0026 
+0027 arguments
+0028     tsData       (1,1)
+0029     strideEvents (:,:) double
 0030 <span class="keyword">end</span>
 0031 
-0032 <span class="keyword">for</span> i=1:N <span class="comment">%For each stride</span>
-0033     Data=slicedTS{i}.Data;
-0034     Qual=slicedTS{i}.Quality;
-0035     <span class="keyword">for</span> j=1:length(labs) <span class="comment">%Muscles</span>
-0036         mData=Data(:,j);
-0037         <span class="keyword">if</span> ~isempty(Qual)
-0038             qq=Qual(:,j);
-0039         <span class="keyword">else</span>
-0040             qq=0;
-0041         <span class="keyword">end</span>
-0042         <span class="keyword">for</span> k=1:Nl <span class="comment">%Computing each param</span>
-0043             <span class="keyword">switch</span> labelSuff{k}
-0044                 <span class="keyword">case</span> <span class="string">'max'</span>
-0045                     <span class="comment">%description{j,k}=['Peak proc EMG in muscle ' labs{j}];</span>
-0046                     paramData(i,j,k)=max(mData);
-0047                 <span class="keyword">case</span> <span class="string">'min'</span>
-0048                     <span class="comment">%description{j,k}=['Min proc EMG in muscle ' labs{j}];</span>
-0049                     paramData(i,j,k)=min(mData);
-0050                 <span class="keyword">case</span> <span class="string">'iqr'</span>
-0051                     <span class="comment">%description{j,k}=['Inter-quartile range of proc EMG in muscle ' labs{j}];</span>
-0052                     paramData(i,j,k)=iqr(mData);
-0053                 <span class="keyword">case</span> <span class="string">'avg'</span>
-0054                     <span class="comment">%description{j,k}=['Avg. (mean) of proc EMG in muscle ' labs{j}];</span>
-0055                     paramData(i,j,k)=mean(mData);
-0056                 <span class="keyword">case</span> <span class="string">'var'</span>
-0057                     <span class="comment">%description{j,k}=['Variance of proc EMG in muscle ' labs{j}];</span>
-0058                     paramData(i,j,k)=var(mData,0); <span class="comment">%Unbiased</span>
-0059                 <span class="keyword">case</span> <span class="string">'skw'</span>
-0060                     <span class="comment">%description{j,k}=['Skewness of proc EMG in muscle ' labs{j}];</span>
-0061                     paramData(i,j,k)=skewness(mData,0); <span class="comment">%Unbiased</span>
-0062                 <span class="keyword">case</span> <span class="string">'kur'</span>
-0063                     <span class="comment">%description{j,k}=['Kurtosis of proc EMG in muscle ' labs{j}];</span>
-0064                     paramData(i,j,k)=kurtosis(mData,0); <span class="comment">%Unbiased</span>
-0065                 <span class="keyword">case</span> <span class="string">'med'</span>
-0066                     <span class="comment">%description{j,k}=['Median of proc EMG in muscle ' labs{j}];</span>
-0067                     paramData(i,j,k)=median(mData);
-0068                 <span class="keyword">case</span> <span class="string">'snr'</span>
-0069                     <span class="comment">%description{j,k}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' labs{j}];</span>
-0070                     paramData(i,j,k)=20*log10(mean(mData.^2)/min(mData)^2); <span class="comment">%Is this a good estimate?? Seems like min() will always be very close to zero because of the low-pass filtering and the 'dip' it introduces</span>
-0071                 <span class="keyword">case</span> <span class="string">'bad'</span>
-0072                     paramData(i,j,k)=sum(unique(qq)); <span class="comment">%Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.</span>
-0073             <span class="keyword">end</span>
-0074         <span class="keyword">end</span>
-0075     <span class="keyword">end</span>
-0076 <span class="keyword">end</span>
-0077 <span class="comment">%% Create parameterSeries</span>
-0078 out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));        
-0079 <span class="keyword">end</span>
-0080</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0032 <span class="comment">%% Statistic Labels</span>
+0033 <span class="comment">% 'skw', 'kur', and 'iqr' are excluded -- never used and slow to compute</span>
+0034 statSuffixes = {<span class="string">'max'</span>, <span class="string">'min'</span>, <span class="string">'avg'</span>, <span class="string">'var'</span>, <span class="string">'med'</span>, <span class="string">'snr'</span>, <span class="string">'bad'</span>};
+0035 
+0036 <span class="comment">%% Slice Time Series and Allocate Arrays</span>
+0037 slicedTS = tsData.sliceTS(strideEvents(:, 1), 0);  <span class="comment">% first event only</span>
+0038 
+0039 numStrides    = length(slicedTS);
+0040 numStats      = length(statSuffixes);
+0041 channelLabels = tsData.labels;
+0042 numChannels   = length(channelLabels);
+0043 <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>     = nan(numStrides, numChannels, numStats);
+0044 paramLabels   = cell(numChannels, numStats);
+0045 description   = cell(numChannels, numStats);
+0046 
+0047 <span class="comment">%% Build Parameter Labels and Descriptions</span>
+0048 <span class="keyword">for</span> ch = 1:numChannels
+0049     <span class="keyword">for</span> stat = 1:numStats
+0050         paramLabels{ch, stat} = <span class="keyword">...</span>
+0051             [channelLabels{ch} statSuffixes{stat}];
+0052         <span class="keyword">if</span> strcmp(statSuffixes{stat}, <span class="string">'bad'</span>)
+0053             description{ch, stat} = [ <span class="keyword">...</span>
+0054                 <span class="string">'Signals if quality was anything other than good '</span> <span class="keyword">...</span>
+0055                 <span class="string">'(no missing, no spikes, no out-of-range) for muscle '</span> <span class="keyword">...</span>
+0056                 channelLabels{ch}];
+0057         <span class="keyword">else</span>
+0058             description{ch, stat} = [ <span class="keyword">...</span>
+0059                 statSuffixes{stat} <span class="string">' in timeseries '</span> <span class="keyword">...</span>
+0060                 channelLabels{ch}];
+0061         <span class="keyword">end</span>
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">%% Compute Per-Stride Statistics</span>
+0066 <span class="keyword">for</span> st = 1:numStrides
+0067     <a href="../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a> = slicedTS{st}.Data;
+0068     strideQual = slicedTS{st}.Quality;
+0069     <span class="keyword">for</span> ch = 1:numChannels
+0070         channelData = <a href="../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a>(:, ch);
+0071         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideQual)
+0072             qualColumn = strideQual(:, ch);
+0073         <span class="keyword">else</span>
+0074             qualColumn = 0;
+0075         <span class="keyword">end</span>
+0076         <span class="keyword">for</span> stat = 1:numStats
+0077             <span class="keyword">switch</span> statSuffixes{stat}
+0078                 <span class="keyword">case</span> <span class="string">'max'</span>
+0079                     <span class="comment">%description{ch,stat}=['Peak proc EMG in muscle ' channelLabels{ch}];</span>
+0080                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = max(channelData);
+0081                 <span class="keyword">case</span> <span class="string">'min'</span>
+0082                     <span class="comment">%description{ch,stat}=['Min proc EMG in muscle ' channelLabels{ch}];</span>
+0083                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = min(channelData);
+0084                 <span class="keyword">case</span> <span class="string">'iqr'</span>
+0085                     <span class="comment">%description{ch,stat}=['Inter-quartile range of proc EMG in muscle ' channelLabels{ch}];</span>
+0086                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>(channelData);
+0087                 <span class="keyword">case</span> <span class="string">'avg'</span>
+0088                     <span class="comment">%description{ch,stat}=['Avg. (mean) of proc EMG in muscle ' channelLabels{ch}];</span>
+0089                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData);
+0090                 <span class="keyword">case</span> <span class="string">'var'</span>
+0091                     <span class="comment">%description{ch,stat}=['Variance of proc EMG in muscle ' channelLabels{ch}];</span>
+0092                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0093                         var(channelData, 0);  <span class="comment">% unbiased</span>
+0094                 <span class="keyword">case</span> <span class="string">'skw'</span>
+0095                     <span class="comment">%description{ch,stat}=['Skewness of proc EMG in muscle ' channelLabels{ch}];</span>
+0096                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0097                         skewness(channelData, 0);  <span class="comment">% unbiased</span>
+0098                 <span class="keyword">case</span> <span class="string">'kur'</span>
+0099                     <span class="comment">%description{ch,stat}=['Kurtosis of proc EMG in muscle ' channelLabels{ch}];</span>
+0100                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0101                         kurtosis(channelData, 0);  <span class="comment">% unbiased</span>
+0102                 <span class="keyword">case</span> <span class="string">'med'</span>
+0103                     <span class="comment">%description{ch,stat}=['Median of proc EMG in muscle ' channelLabels{ch}];</span>
+0104                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(channelData);
+0105                 <span class="keyword">case</span> <span class="string">'snr'</span>
+0106                     <span class="comment">%description{ch,stat}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' channelLabels{ch}];</span>
+0107                     <span class="comment">% TODO: min() may be near zero after low-pass</span>
+0108                     <span class="comment">%   filtering; verify this is a valid SNR estimate</span>
+0109                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = 20 * log10( <span class="keyword">...</span>
+0110                         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData.^2) / min(channelData)^2);
+0111                 <span class="keyword">case</span> <span class="string">'bad'</span>
+0112                     <span class="comment">% quality codes are powers of 2 (up to 8 per int8);</span>
+0113                     <span class="comment">% summing unique values tracks all issues at once</span>
+0114                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0115                         sum(unique(qualColumn));
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118     <span class="keyword">end</span>
+0119 <span class="keyword">end</span>
+0120 
+0121 <span class="comment">%% Output Computed Parameters</span>
+0122 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(<a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(:, :), paramLabels(:), [], description(:));
+0123 
+0124 <span class="keyword">end</span>
+0125</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

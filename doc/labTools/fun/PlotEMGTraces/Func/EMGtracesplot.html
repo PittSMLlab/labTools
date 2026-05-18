@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">PlotEMGTraces</a> &gt; <a href="index.html">Func</a> &gt; EMGtracesplot.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/PlotEMGTraces/Func&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\PlotEMGTraces\Func&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>EMGtracesplot
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>	% get time series EMG data</li></ul>
+<li><a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>	% get time series EMG data</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -101,12 +101,12 @@ This function is called by:
 0057             
 0058             
 0059             <span class="keyword">if</span> l==1
-0060                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late,strides);
-0061                 norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},{<span class="string">'TR base'</span>},leg{l},1,40);
+0060                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late,strides);
+0061                 norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},{<span class="string">'TR base'</span>},leg{l},1,40);
 0062                 tit=[<span class="string">'R'</span> muscle{m}];
 0063             <span class="keyword">elseif</span> l==2
-0064                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late,strides);
-0065                 norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)">getDataEMGtraces</a>(expData,muscle{m},{<span class="string">'TR base'</span>},leg{l},1,40);
+0064                 data=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},conds(c),leg{l},late,strides);
+0065                 norm=<a href="getDataEMGtraces.html" class="code" title="function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)">getDataEMGtraces</a>(expData,muscle{m},{<span class="string">'TR base'</span>},leg{l},1,40);
 0066                 tit=[<span class="string">'L'</span> muscle{m}];
 0067             <span class="keyword">end</span>
 0068             norm=nanmean(nanmax(squeeze(norm.Data)));
@@ -137,6 +137,6 @@ This function is called by:
 0093     title(<span class="string">'Early Phases'</span>)
 0094 <span class="keyword">end</span>
 0095 legend(ll(end:-1:1),condlegend{:})</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

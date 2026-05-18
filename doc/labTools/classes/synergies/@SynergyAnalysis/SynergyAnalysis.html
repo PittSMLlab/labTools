@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@SynergyAnalysis</a> &gt; SynergyAnalysis.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/synergies/@SynergyAnalysis&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\synergies\@SynergyAnalysis&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>SynergyAnalysis
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li></ul>
@@ -64,10 +64,10 @@ This function is called by:
 0018     methods
 0019         <span class="comment">%Constructor</span>
 0020         <a name="_sub0" href="#_subfunctions" class="code">function this=SynergyAnalysis(testingData,trainingData,muscleList,name,method)</a>
-0021             <span class="keyword">if</span> nargin&lt;5 || isempty(method)
+0021             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(method)
 0022                 method=<span class="string">'nnmf'</span>;
 0023             <span class="keyword">end</span>
-0024             <span class="keyword">if</span> nargin&lt;4 || isempty(name)
+0024             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)
 0025                 name=<span class="string">''</span>;
 0026             <span class="keyword">end</span>
 0027             <span class="comment">%Check that size of testingData and trainingData are the same</span>
@@ -83,14 +83,14 @@ This function is called by:
 0037             this.muscleList=muscleList;
 0038             this.trainingData=trainingData;
 0039             <span class="comment">%Compute coefs from synergies and testing data</span>
-0040             <span class="keyword">if</span> ~isempty(testingData)
+0040             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(testingData)
 0041                 this=<a href="#_sub2" class="code" title="subfunction newThis=factorizeNewTestingData(this,testingData,method,name)">factorizeNewTestingData</a>(this,testingData,method,name);
 0042             <span class="keyword">end</span>
 0043         <span class="keyword">end</span>
 0044         
 0045         <span class="comment">%Extract coefs for testingData</span>
 0046         <a name="_sub1" href="#_subfunctions" class="code">function newThis=factorizeNewTestingData(this,testingData,method,name)</a>
-0047             <span class="keyword">if</span> nargin&lt;4 || isempty(name)
+0047             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)
 0048                 name=<span class="string">''</span>;
 0049             <span class="keyword">end</span>
 0050            <span class="comment">%Check that new testingData and  have compatible</span>
@@ -104,7 +104,7 @@ This function is called by:
 0058                 reshapedData=reshape(testingData,[size(testingData,1)*size(testingData,2),size(testingData,3)]);
 0059                 [coefs] = SynergyAnalysis.coefExtrFromSyn(reshapedData,this.trainingFactorizations{dim}.dim2Vectors,method);
 0060                 reshapedCoefs=reshape(coefs,[dim,size(testingData,1),size(testingData,2)]);
-0061                 testFactorizations{dim}=FactorizedMatrix(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name <span class="string">'_dim'</span> num2str(dim)]);
+0061                 testFactorizations{dim}=<a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name <span class="string">'_dim'</span> num2str(dim)]);
 0062             <span class="keyword">end</span>
 0063             this.testingFactorizations{N+1}=testFactorizations;
 0064             this.testingData{N+1}=testingData;
@@ -166,7 +166,7 @@ This function is called by:
 0120         dim=chooseDim(this) <span class="comment">%TODO</span>
 0121         
 0122         <a name="_sub4" href="#_subfunctions" class="code">function [errTrain,errTest,fh]=assessDimensionality(this,plotFlag,fh,names)</a>
-0123             <span class="keyword">if</span> nargin &lt;4 || isempty(names)
+0123             <span class="keyword">if</span> nargin &lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(names)
 0124                 names=<span class="string">''</span>;
 0125             <span class="keyword">end</span>
 0126             <span class="comment">%First: find error norm as a function of dimension for training and testing</span>
@@ -181,15 +181,15 @@ This function is called by:
 0135                 errTest(i)=norm(eM(:,:),<span class="string">'fro'</span>)/auxTest;
 0136             <span class="keyword">end</span>
 0137 
-0138             <span class="keyword">if</span> nargin&lt;2 || (~isempty(plotFlag) &amp;&amp; plotFlag~=0)
+0138             <span class="keyword">if</span> nargin&lt;2 || (~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag) &amp;&amp; plotFlag~=0)
 0139                 <span class="keyword">if</span> nargin&gt;2
 0140                     figure(fh)
 0141                 <span class="keyword">else</span>
 0142                     fh=figure;
 0143                 <span class="keyword">end</span>
 0144             hold on
-0145             p=<a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(errTrain.^2,<span class="string">'DisplayName'</span>,[names <span class="string">'Training Data'</span>],<span class="string">'LineWidth'</span>,2);
-0146             <a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(errTest.^2,<span class="string">'--'</span>,<span class="string">'DisplayName'</span>,[names <span class="string">'Testing Data'</span>],<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,get(p,<span class="string">'Color'</span>))
+0145             p=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(errTrain.^2,<span class="string">'DisplayName'</span>,[names <span class="string">'Training Data'</span>],<span class="string">'LineWidth'</span>,2);
+0146             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(errTest.^2,<span class="string">'--'</span>,<span class="string">'DisplayName'</span>,[names <span class="string">'Testing Data'</span>],<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,get(p,<span class="string">'Color'</span>))
 0147             xlabel(<span class="string">'Dims.'</span>)
 0148             ylabel(<span class="string">'Normalized reconstruction error squared'</span>)
 0149             hold off
@@ -213,7 +213,7 @@ This function is called by:
 0167                plotHandles1=[];
 0168                plotHandles2=[];
 0169            <span class="keyword">end</span>
-0170            [figHandle,plotHandles1,plotHandles2]=<a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(this.testingFactorizations{dim},plotHandles1,plotHandles2,colors);
+0170            [figHandle,plotHandles1,plotHandles2]=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.testingFactorizations{dim},plotHandles1,plotHandles2,colors);
 0171            <span class="keyword">for</span> i=1:length(plotHandles1)
 0172                subplot(plotHandles1(i))
 0173                set(plotHandles1(i),<span class="string">'XTick'</span>,1:this.testingFactorizations{dim}.matrixSize(end),<span class="string">'XTickLabels'</span>,this.muscleList,<span class="string">'XTickLabelRotation'</span>,90)
@@ -254,7 +254,7 @@ This function is called by:
 0208             opts= optimset(<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'TolFun'</span>,1e-4/size(data,2)^2,<span class="string">'TolX'</span>,1e-4);
 0209 
 0210             poolFlag=0;
-0211             <span class="keyword">if</span> isempty(gcp(<span class="string">'nocreate'</span>))
+0211             <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(gcp(<span class="string">'nocreate'</span>))
 0212                 parpool
 0213                 poolFlag=1;
 0214             <span class="keyword">end</span>
@@ -284,6 +284,6 @@ This function is called by:
 0238         
 0239     <span class="keyword">end</span>
 0240 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

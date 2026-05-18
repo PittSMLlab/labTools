@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getIndsForThisStep</title>
+  <meta name="keywords" content="getIndsForThisStep">
+  <meta name="description" content="GETINDSFORTHISSTEP Return event indices and times for one stride.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">parameterCalculation</a> &gt; <a href="index.html">deprecated</a> &gt; getIndsForThisStep.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation\deprecated&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getIndsForThisStep
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>GETINDSFORTHISSTEP Return event indices and times for one stride.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [indSHS, indFTO, indFHS, indSTO, indSHS2, indFTO2, indFHS2,indSTO2, timeSHS, timeFTO, timeFHS, timeSTO, timeSHS2, timeFTO2,timeFHS2, timeSTO2] = getIndsForThisStep(events, eventsTime, step) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GETINDSFORTHISSTEP Return event indices and times for one stride.
+
+   Returns the sample index and time of each of the eight gait events
+ bracketing one stride, defined as two consecutive slow heel strikes
+ (SHS). The event sequence within the stride is SHS → FTO → FHS →
+ STO → SHS2 → FTO2 → FHS2 → STO2. Events after SHS2 that cannot be
+ located are returned as empty arrays.
+
+ Inputs:
+   events     - M-by-4 binary matrix of gait events; columns are
+                [SHS FHS STO FTO] (slow heel strike, fast heel
+                strike, slow toe-off, fast toe-off)
+   eventsTime - M-by-1 vector of sample times corresponding to
+                rows of events
+   step       - scalar index into the SHS event array specifying
+                which stride to extract
+
+ Outputs:
+   indSHS   - sample index of the slow heel strike
+   indFTO   - sample index of the fast toe-off after SHS
+   indFHS   - sample index of the fast heel strike after FTO
+   indSTO   - sample index of the slow toe-off after FHS
+   indSHS2  - sample index of the next slow heel strike
+   indFTO2  - sample index of fast toe-off after SHS2 ([] if absent)
+   indFHS2  - sample index of fast heel strike after FTO2
+              ([] if absent)
+   indSTO2  - sample index of slow toe-off after FHS2 ([] if absent)
+   timeSHS  - time of indSHS
+   timeFTO  - time of indFTO
+   timeFHS  - time of indFHS
+   timeSTO  - time of indSTO
+   timeSHS2 - time of indSHS2
+   timeFTO2 - time of indFTO2 ([] if absent)
+   timeFHS2 - time of indFHS2 ([] if absent)
+   timeSTO2 - time of indSTO2 ([] if absent)
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getIndsForAllSteps.html" class="code" title="function indData = getIndsForAllSteps(gaitEvents, s, f)">GETINDSFORALLSTEPS</a>, CALCPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [indSHS, indFTO, indFHS, indSTO, indSHS2, indFTO2, indFHS2, </a><span class="keyword">...</span>
+0002     indSTO2, timeSHS, timeFTO, timeFHS, timeSTO, timeSHS2, timeFTO2, <span class="keyword">...</span>
+0003     timeFHS2, timeSTO2] = getIndsForThisStep(events, eventsTime, step)
+0004 <span class="comment">%GETINDSFORTHISSTEP Return event indices and times for one stride.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Returns the sample index and time of each of the eight gait events</span>
+0007 <span class="comment">% bracketing one stride, defined as two consecutive slow heel strikes</span>
+0008 <span class="comment">% (SHS). The event sequence within the stride is SHS → FTO → FHS →</span>
+0009 <span class="comment">% STO → SHS2 → FTO2 → FHS2 → STO2. Events after SHS2 that cannot be</span>
+0010 <span class="comment">% located are returned as empty arrays.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   events     - M-by-4 binary matrix of gait events; columns are</span>
+0014 <span class="comment">%                [SHS FHS STO FTO] (slow heel strike, fast heel</span>
+0015 <span class="comment">%                strike, slow toe-off, fast toe-off)</span>
+0016 <span class="comment">%   eventsTime - M-by-1 vector of sample times corresponding to</span>
+0017 <span class="comment">%                rows of events</span>
+0018 <span class="comment">%   step       - scalar index into the SHS event array specifying</span>
+0019 <span class="comment">%                which stride to extract</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   indSHS   - sample index of the slow heel strike</span>
+0023 <span class="comment">%   indFTO   - sample index of the fast toe-off after SHS</span>
+0024 <span class="comment">%   indFHS   - sample index of the fast heel strike after FTO</span>
+0025 <span class="comment">%   indSTO   - sample index of the slow toe-off after FHS</span>
+0026 <span class="comment">%   indSHS2  - sample index of the next slow heel strike</span>
+0027 <span class="comment">%   indFTO2  - sample index of fast toe-off after SHS2 ([] if absent)</span>
+0028 <span class="comment">%   indFHS2  - sample index of fast heel strike after FTO2</span>
+0029 <span class="comment">%              ([] if absent)</span>
+0030 <span class="comment">%   indSTO2  - sample index of slow toe-off after FHS2 ([] if absent)</span>
+0031 <span class="comment">%   timeSHS  - time of indSHS</span>
+0032 <span class="comment">%   timeFTO  - time of indFTO</span>
+0033 <span class="comment">%   timeFHS  - time of indFHS</span>
+0034 <span class="comment">%   timeSTO  - time of indSTO</span>
+0035 <span class="comment">%   timeSHS2 - time of indSHS2</span>
+0036 <span class="comment">%   timeFTO2 - time of indFTO2 ([] if absent)</span>
+0037 <span class="comment">%   timeFHS2 - time of indFHS2 ([] if absent)</span>
+0038 <span class="comment">%   timeSTO2 - time of indSTO2 ([] if absent)</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% Toolbox Dependencies:</span>
+0041 <span class="comment">%   None</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% See also GETINDSFORALLSTEPS, CALCPARAMETERS.</span>
+0044 
+0045 arguments
+0046     events     (:,:) double
+0047     eventsTime (:,1) double
+0048     step       (1,1) double
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">%% Extract Event Columns</span>
+0052 slowHS  = events(:, 1);
+0053 fastHS  = events(:, 2);
+0054 slowTO  = events(:, 3);
+0055 fastTO  = events(:, 4);
+0056 shsInds = find(slowHS);
+0057 
+0058 <span class="comment">%% Current Stride Events</span>
+0059 indSHS   = shsInds(step);
+0060 timeSHS  = eventsTime(indSHS);
+0061 indFTO   = find((eventsTime &gt; timeSHS) &amp; fastTO, 1);
+0062 timeFTO  = eventsTime(indFTO);
+0063 indFHS   = find((eventsTime &gt; timeFTO) &amp; fastHS, 1);
+0064 timeFHS  = eventsTime(indFHS);
+0065 indSTO   = find((eventsTime &gt; timeFHS) &amp; slowTO, 1);
+0066 timeSTO  = eventsTime(indSTO);
+0067 indSHS2  = shsInds(step + 1);
+0068 timeSHS2 = eventsTime(indSHS2);
+0069 
+0070 <span class="comment">%% Next Stride Events</span>
+0071 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timeSHS2)
+0072     indFTO2  = find((eventsTime &gt; timeSHS2) &amp; fastTO, 1);
+0073     timeFTO2 = eventsTime(indFTO2);
+0074     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timeFTO2)
+0075         indFHS2  = find((eventsTime &gt; timeFTO2) &amp; fastHS, 1);
+0076         timeFHS2 = eventsTime(indFHS2);
+0077         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timeFHS2)
+0078             indSTO2  = find((eventsTime &gt; timeFHS2) &amp; slowTO, 1);
+0079             timeSTO2 = eventsTime(indSTO2);
+0080         <span class="keyword">else</span>
+0081             indSTO2  = [];
+0082             timeSTO2 = [];
+0083         <span class="keyword">end</span>
+0084     <span class="keyword">else</span>
+0085         indFHS2  = [];
+0086         timeFHS2 = [];
+0087         indSTO2  = [];
+0088         timeSTO2 = [];
+0089     <span class="keyword">end</span>
+0090 <span class="keyword">else</span>
+0091     indFTO2  = [];
+0092     timeFTO2 = [];
+0093     indFHS2  = [];
+0094     timeFHS2 = [];
+0095     indSTO2  = [];
+0096     timeSTO2 = [];
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="keyword">end</span>
+0100</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

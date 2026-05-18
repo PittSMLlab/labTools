@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runCustomPatternFill</title>
+  <meta name="keywords" content="runCustomPatternFill">
+  <meta name="description" content="runCustomPatternFill: applies pattern fill using marker specific">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">OptimizedReconstructAndLabel</a> &gt; runCustomPatternFill.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\OptimizedReconstructAndLabel&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>runCustomPatternFill
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>runCustomPatternFill: applies pattern fill using marker specific</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function runCustomPatternFill(vicon, refMap) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> runCustomPatternFill: applies pattern fill using marker specific
+ reference markers
+
+ Inputs:
+   vicon - initialized ViconNexus() object
+   refMap - containers.Map of target marker names to reference marker
+   names</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="OptimizedReconstructAndLabel.html" class="code" title="">OptimizedReconstructAndLabel</a>	% Take 1 at Optimizing Reconstruct & Label Pipeline</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function runCustomPatternFill(vicon, refMap)</a>
+0002 
+0003 <span class="comment">% runCustomPatternFill: applies pattern fill using marker specific</span>
+0004 <span class="comment">% reference markers</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   vicon - initialized ViconNexus() object</span>
+0008 <span class="comment">%   refMap - containers.Map of target marker names to reference marker</span>
+0009 <span class="comment">%   names</span>
+0010 
+0011 markers = refMap.keys;
+0012 
+0013 <span class="keyword">for</span> i = 1:numel(markers)
+0014     targetMarker = markers{i};
+0015     refMarker = refMap(targetMarker);
+0016     
+0017     <span class="keyword">try</span>
+0018         <span class="comment">% Apply pattern fill for the target marker using the reference</span>
+0019         <span class="comment">% marker</span>
+0020         vicon.PatterFillGap(targetMarker, refMarker);
+0021         fprintf(<span class="string">'Pattern filled %s using %s. \n'</span>, targetMarker, refMarker);
+0022     <span class="keyword">catch</span> ME
+0023         warning(<span class="string">'Could not pattern fil %s with %s: %s'</span>, <span class="keyword">...</span>
+0024             targetMarker, refMarker, ME.message);
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

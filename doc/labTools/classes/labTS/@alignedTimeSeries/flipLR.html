@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of flipLR</title>
+  <meta name="keywords" content="flipLR">
+  <meta name="description" content="flipLR  Flips left/right alignment">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; flipLR.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>flipLR
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>flipLR  Flips left/right alignment</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [this, iC, iI] = flipLR(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">flipLR  Flips left/right alignment
+
+   [this, iC, iI] = flipLR(this) flips the non-aligned side to match
+   aligned side timing
+
+   Inputs:
+       this - alignedTimeSeries object
+
+   Outputs:
+       this - flipped alignedTimeSeries
+       iC - indices of contralateral (flipped) labels
+       iI - indices of ipsilateral (aligned) labels
+
+   Note: Finds side with starting event and flips the other side
+
+   See also: <a href="getSym.html" class="code" title="function [this, iC, iI] = getSym(this)">getSym</a>, <a href="getaSym.html" class="code" title="function [this, iC, iI] = getaSym(this)">getaSym</a>, <a href="fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	fftshift  Shifts alignment by half cycle</li><li><a href="../../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [this, iC, iI] = flipLR(this)</a>
+0002 <span class="comment">%flipLR  Flips left/right alignment</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [this, iC, iI] = flipLR(this) flips the non-aligned side to match</span>
+0005 <span class="comment">%   aligned side timing</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - alignedTimeSeries object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       this - flipped alignedTimeSeries</span>
+0012 <span class="comment">%       iC - indices of contralateral (flipped) labels</span>
+0013 <span class="comment">%       iI - indices of ipsilateral (aligned) labels</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Finds side with starting event and flips the other side</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: getSym, getaSym, fftshift</span>
+0018 
+0019 <span class="comment">% Find the side that has the starting event:</span>
+0020 alignedSide = this.alignmentLabels{1}(1);
+0021 nonAlignedSide = <a href="../../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>(alignedSide);
+0022 <span class="comment">% Flip non-aligned side:</span>
+0023 lC = this.getLabelsThatMatch([<span class="string">'^'</span> nonAlignedSide]); <span class="comment">% Get non-aligned side</span>
+0024 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lC)
+0025     [~, iC] = this.isaLabel(lC); <span class="comment">% Index for non-aligned</span>
+0026     <span class="comment">% Getting aligned side labels</span>
+0027     aux = regexprep(lC, [<span class="string">'^'</span> nonAlignedSide], alignedSide);
+0028     [bI, iI] = this.isaLabel(aux); <span class="comment">% Index for aligned</span>
+0029     <span class="keyword">if</span> ~all(bI) <span class="comment">% Labels are not symm, aborting</span>
+0030         warning([<span class="string">'Asked to flipLR but labels are not '</span> <span class="keyword">...</span>
+0031             <span class="string">'symmetrically present.'</span>]);
+0032     <span class="keyword">else</span>
+0033         <span class="comment">% This just flips first and second halves of aligned data, no</span>
+0034         <span class="comment">% checks performed</span>
+0035         this.Data(:, iC) = <a href="fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>(this.Data(:, iC), 1);
+0036         this.alignmentLabels = regexprep(this.alignmentLabels, <span class="keyword">...</span>
+0037             [<span class="string">'^'</span> alignedSide], <span class="string">'i'</span>);
+0038         this.alignmentLabels = regexprep(this.alignmentLabels, <span class="keyword">...</span>
+0039             [<span class="string">'^'</span> nonAlignedSide], <span class="string">'c'</span>);
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">else</span>
+0042     warning(<span class="string">'Asked to flipLR but couldn''t find aligned side.'</span>);
+0043     iC = [];
+0044 <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

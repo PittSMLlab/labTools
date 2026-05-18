@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkConditionOrder</title>
+  <meta name="keywords" content="checkConditionOrder">
+  <meta name="description" content="checkConditionOrder  Checks that conditions appear in order">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../../index.html">dataStructs</a> &gt; <a href="../index.html">metaData</a> &gt; <a href="index.html">@experimentMetaData</a> &gt; checkConditionOrder.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\metaData\@experimentMetaData&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>checkConditionOrder
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>checkConditionOrder  Checks that conditions appear in order</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function conditionOrder = checkConditionOrder(this,conditionNamesInOrder, silentFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">checkConditionOrder  Checks that conditions appear in order
+
+   conditionOrder = checkConditionOrder(this) checks that all
+   conditions appear in order according to trial numbering
+
+   conditionOrder = checkConditionOrder(this,
+   conditionNamesInOrder, silentFlag) checks specified conditions and
+   optionally displays warnings
+
+   Inputs:
+       this - experimentMetaData object
+       conditionNamesInOrder - cell array of condition names to check
+                               (optional, default: all conditions)
+       silentFlag - if false, displays warnings for out-of-order
+                    conditions (optional, default: true)
+
+   Outputs:
+       conditionOrder - vector indicating order of conditions by first
+                        trial number
+
+   See also: <a href="validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>, <a href="sortConditions.html" class="code" title="function newThis = sortConditions(this)">sortConditions</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>	validateTrialsInCondition  Validates trial organization</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function conditionOrder = checkConditionOrder(this, </a><span class="keyword">...</span>
+0002     conditionNamesInOrder, silentFlag)
+0003 <span class="comment">%checkConditionOrder  Checks that conditions appear in order</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   conditionOrder = checkConditionOrder(this) checks that all</span>
+0006 <span class="comment">%   conditions appear in order according to trial numbering</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   conditionOrder = checkConditionOrder(this,</span>
+0009 <span class="comment">%   conditionNamesInOrder, silentFlag) checks specified conditions and</span>
+0010 <span class="comment">%   optionally displays warnings</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Inputs:</span>
+0013 <span class="comment">%       this - experimentMetaData object</span>
+0014 <span class="comment">%       conditionNamesInOrder - cell array of condition names to check</span>
+0015 <span class="comment">%                               (optional, default: all conditions)</span>
+0016 <span class="comment">%       silentFlag - if false, displays warnings for out-of-order</span>
+0017 <span class="comment">%                    conditions (optional, default: true)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Outputs:</span>
+0020 <span class="comment">%       conditionOrder - vector indicating order of conditions by first</span>
+0021 <span class="comment">%                        trial number</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: validateTrialsInCondition, sortConditions</span>
+0024 
+0025 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(conditionNamesInOrder)
+0026     conditionNamesInOrder = this.conditionName;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Doing validation of trials, and getting conditionOrder</span>
+0030 conditionOrder = <a href="validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>(this);
+0031 conditionIdxsInOrder = <span class="keyword">...</span>
+0032     this.getConditionIdxsFromName(conditionNamesInOrder);
+0033 <span class="comment">% Keeping order of requested conditions only</span>
+0034 conditionOrder = conditionOrder(conditionIdxsInOrder);
+0035 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(silentFlag) &amp;&amp; ~silentFlag
+0036     <span class="keyword">if</span> any(diff(conditionOrder) &lt; 1)
+0037         badOrder = find(diff(conditionOrder) &lt; 1);
+0038         <span class="keyword">for</span> i = 1:length(badOrder)
+0039             disp([<span class="string">'Conditions provided are not in order: '</span> <span class="keyword">...</span>
+0040                 conditionNamesInOrder{badOrder(i)} <span class="string">' precedes '</span> <span class="keyword">...</span>
+0041                 conditionNamesInOrder{badOrder(i) + 1}]);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

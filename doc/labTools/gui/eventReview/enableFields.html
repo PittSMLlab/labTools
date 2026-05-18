@@ -4,7 +4,7 @@
 <head>
   <title>Description of enableFields</title>
   <meta name="keywords" content="enableFields">
-  <meta name="description" content="">
+  <meta name="description" content="ENABLEFIELDS Enable a list of named GUI controls in a handles struct.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,19 +15,36 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">eventReview</a> &gt; enableFields.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/eventReview&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\eventReview&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>enableFields
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>ENABLEFIELDS Enable a list of named GUI controls in a handles struct.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function handles = enableFields(handles,varargin) </strong></div>
+<div class="box"><strong>function handles = enableFields(handles, varargin) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">ENABLEFIELDS Enable a list of named GUI controls in a handles struct.
+
+   Sets the 'Enable' property to 'on' for each named field in the
+ handles structure.
+
+ Inputs:
+   handles  - struct with handles and user data (see GUIDATA)
+   varargin - one or more field name strings identifying controls to
+              enable
+
+ Outputs:
+   handles - updated handles struct (enable state unchanged in GUIDATA;
+             call guidata after if persistent state is needed)
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="disableFields.html" class="code" title="function handles = disableFields(handles, varargin)">DISABLEFIELDS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -36,17 +53,37 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI comments go here</li><li><a href="ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	ReviewEventsGUI  Plots data in experimentData object and allows you to</li></ul>
+<li><a href="PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li><li><a href="ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function handles = enableFields(handles,varargin)</a>
-0002 
-0003 <span class="keyword">for</span> i=1:length(varargin)
-0004     set(handles.(varargin{i}),<span class="string">'Enable'</span>,<span class="string">'on'</span>);
-0005 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function handles = enableFields(handles, varargin)</a>
+0002 <span class="comment">%ENABLEFIELDS Enable a list of named GUI controls in a handles struct.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Sets the 'Enable' property to 'on' for each named field in the</span>
+0005 <span class="comment">% handles structure.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   handles  - struct with handles and user data (see GUIDATA)</span>
+0009 <span class="comment">%   varargin - one or more field name strings identifying controls to</span>
+0010 <span class="comment">%              enable</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   handles - updated handles struct (enable state unchanged in GUIDATA;</span>
+0014 <span class="comment">%             call guidata after if persistent state is needed)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies:</span>
+0017 <span class="comment">%   None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also DISABLEFIELDS.</span>
+0020 
+0021 <span class="keyword">for</span> ii = 1:length(varargin)
+0022     set(handles.(varargin{ii}), <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

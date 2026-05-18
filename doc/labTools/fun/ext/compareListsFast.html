@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">ext</a> &gt; compareListsFast.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>compareListsFast
 </h1>
@@ -39,7 +39,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if labels exist</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/computeNewParameter.html" class="code" title="function newData = computeNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">computeNewParameter</a>	computeNewParameter  Computes new parameter without adding to data</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>	isaLabel  Checks if string is contained in label array</li><li><a href="../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
 <!-- crossreference -->
 
 
@@ -52,30 +52,33 @@ This function is called by:
 0005 <span class="comment">%See also: compareLists</span>
 0006 
 0007 <span class="keyword">if</span> isa(list2,<span class="string">'char'</span>)
-0008     bool=strcmp(list1,list2);
-0009     <span class="keyword">if</span> nargout&gt;1
-0010         idxs=find(bool);
+0008     bool = strcmp(list1,list2);
+0009     <span class="keyword">if</span> nargout &gt; 1
+0010         idxs = find(bool);
 0011     <span class="keyword">end</span>
 0012 <span class="keyword">else</span>
-0013      N1=numel(list1);
-0014      N2=numel(list2);  
-0015     bool=false(1,N2);
-0016     idxs=nan(1,N2);
-0017     idxList=1:N1;
-0018     <span class="keyword">for</span> j=1:N2
-0019         aux=strcmpi(list2{j},list1);
+0013     N1 = numel(list1);
+0014     N2 = numel(list2);
+0015     bool = false(1,N2);
+0016     idxs = nan(1,N2);
+0017     idxList = 1:N1;
+0018     <span class="keyword">for</span> jj = 1:N2
+0019         aux = strcmpi(list2{jj},list1);
 0020         <span class="keyword">if</span> any(aux)
-0021             bool(j)=true;
+0021             bool(jj) = true;
 0022             <span class="keyword">try</span>
-0023                 idxs(j)=idxList(aux); <span class="comment">%This will fail if there are repeated elements in list</span>
-0024             <span class="keyword">catch</span>
-0025                 idxs(j)=find(aux,1,<span class="string">'last'</span>); <span class="comment">%Returning 1 match</span>
-0026                 warning([<span class="string">'Multiple matches found for '</span> list2{j}])
-0027             <span class="keyword">end</span>
-0028         <span class="keyword">end</span>
-0029     <span class="keyword">end</span>
-0030 <span class="keyword">end</span>
-0031</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0023                 <span class="comment">% NOTE: will fail if there are repeated elements in list</span>
+0024                 idxs(jj) = idxList(aux);
+0025             <span class="keyword">catch</span>
+0026                 idxs(jj) = find(aux,1,<span class="string">'last'</span>);  <span class="comment">% return one match</span>
+0027                 warning([<span class="string">'Multiple matches found for '</span> list2{jj}]);
+0028             <span class="keyword">end</span>
+0029         <span class="keyword">end</span>
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

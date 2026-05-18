@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findOutliers</title>
+  <meta name="keywords" content="findOutliers">
+  <meta name="description" content="findOutliers  Detects outliers using model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; findOutliers.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>findOutliers
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>findOutliers  Detects outliers using model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [this, logL] = findOutliers(this, model, verbose) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findOutliers  Detects outliers using model
+
+   [this, logL] = findOutliers(this, model) uses marker model to
+   detect outliers
+
+   [this, logL] = findOutliers(this, model, verbose) controls output
+   verbosity
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       model - naiveDistances model for outlier detection
+       verbose - if true, displays detailed results (optional)
+
+   Outputs:
+       this - orientedLabTimeSeries with Quality field updated
+       logL - log likelihood values (currently unused)
+
+   See also: <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>, <a href="removeOutliers.html" class="code" title="function newThis = removeOutliers(this, model)">removeOutliers</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [this, logL] = findOutliers(this, model, verbose)</a>
+0002 <span class="comment">%findOutliers  Detects outliers using model</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [this, logL] = findOutliers(this, model) uses marker model to</span>
+0005 <span class="comment">%   detect outliers</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [this, logL] = findOutliers(this, model, verbose) controls output</span>
+0008 <span class="comment">%   verbosity</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0012 <span class="comment">%       model - naiveDistances model for outlier detection</span>
+0013 <span class="comment">%       verbose - if true, displays detailed results (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       this - orientedLabTimeSeries with Quality field updated</span>
+0017 <span class="comment">%       logL - log likelihood values (currently unused)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: buildNaiveDistancesModel, removeOutliers</span>
+0020 
+0021 <span class="comment">% This assumes ALL markerLabels are present</span>
+0022 [d, l] = this.getOrientedData(model.markerLabels);
+0023 d = permute(d, [2, 3, 1]);
+0024 <span class="comment">% Could also use the non-fast version, but it will take time</span>
+0025 out = model.outlierDetectFast(d);
+0026 [boolF, idx] = this.isaLabelPrefix(model.markerLabels);
+0027 aux(:, idx(boolF)) = (out(boolF, :) == 1)';
+0028 newQual = reshape(<a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(1, aux, aux, aux), size(aux, 1), <span class="keyword">...</span>
+0029     size(aux, 2) * 3);
+0030 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.Quality)
+0031     <span class="comment">% Replace value for outliers only</span>
+0032     this.Quality(newQual ~= 0) = newQual(newQual ~= 0);
+0033 <span class="keyword">else</span>
+0034     this.Quality = newQual;
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; verbose
+0037     fprintf([<span class="string">'Outlier data in '</span> num2str(sum(any(out, 1))) <span class="string">'/'</span> <span class="keyword">...</span>
+0038         num2str(size(out, 2)) <span class="string">' frames, avg. '</span> <span class="keyword">...</span>
+0039         num2str(sum(out(:)) / sum(any(out, 1))) <span class="string">' per frame.\n'</span>]);
+0040     <span class="keyword">for</span> j = 1:size(out, 1)
+0041         <span class="keyword">if</span> sum(out(j, :) == 1) &gt; 0
+0042             disp([l{j} <span class="string">': '</span> num2str(sum(out(j, :) == 1)) <span class="string">' frames'</span>]);
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

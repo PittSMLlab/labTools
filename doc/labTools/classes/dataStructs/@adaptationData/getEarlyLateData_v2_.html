@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; getEarlyLateData_v2_.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>getEarlyLateData_v2_
 </h1>
@@ -54,7 +54,7 @@ EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -100,21 +100,21 @@ This function is called by:
 0035             <span class="keyword">if</span> nargin&lt;2 || ~(isa(labels,<span class="string">'char'</span>) || (isa(labels,<span class="string">'cell'</span>) &amp;&amp; all(cellfun(@(x) isa(x,<span class="string">'char'</span>),labels)) ))
 0036                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Labels must be a string or a cell array containing strings.'</span>)
 0037             <span class="keyword">end</span>
-0038             <span class="keyword">if</span> nargin&lt;5 || isempty(numberOfStrides)
+0038             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(numberOfStrides)
 0039                 numberOfStrides=[-5,20];
 0040             <span class="keyword">end</span>
 0041             dataPoints=cell(size(numberOfStrides));
-0042             <span class="keyword">if</span> nargin&lt;6 || isempty(exemptLast)
+0042             <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
 0043                 Ne=5;
 0044             <span class="keyword">else</span>
 0045                 Ne=exemptLast;
 0046             <span class="keyword">end</span>
-0047             <span class="keyword">if</span> nargin&lt;7 || isempty(exemptFirst)
+0047             <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptFirst)
 0048                 Nf=0;
 0049             <span class="keyword">else</span>
 0050                 Nf=exemptFirst;
 0051             <span class="keyword">end</span>
-0052             <span class="keyword">if</span> nargin&lt;4 || isempty(removeBiasFlag) || removeBiasFlag==1
+0052             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBiasFlag) || removeBiasFlag==1
 0053                 this=this.removeBadStrides; 
 0054                 removeBiasFlag=1; <span class="comment">%Default</span>
 0055             <span class="keyword">else</span>
@@ -133,7 +133,7 @@ This function is called by:
 0068                     condIdx=conditionIdxs(i);
 0069                     aux=this.getParamInCond(labels,conditionIdxs(i),0); <span class="comment">%No bias removal, it was already done</span>
 0070                     N=size(aux,1);
-0071                     <span class="keyword">if</span> ~isempty(condIdx) &amp;&amp; ~isempty(aux)
+0071                     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condIdx) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux)
 0072                         data=nan(abs(numberOfStrides(j)),length(labels));
 0073                         <span class="keyword">if</span> numberOfStrides(j)&lt;=0 <span class="comment">%Last N strides</span>
 0074                             data(1:min([N-Ne,abs(numberOfStrides(j))]),:)=aux(max([1,end-Ne+numberOfStrides(j)+1]):end-Ne,:); <span class="comment">%Gets the last numberOfStrides(j) strides, exempting the very last Ne, and considers the possibility that there are less strides available than requested.</span>
@@ -148,6 +148,6 @@ This function is called by:
 0083                 <span class="keyword">end</span>
 0084             <span class="keyword">end</span>
 0085         <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

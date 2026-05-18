@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of drawsegment</title>
+  <meta name="keywords" content="drawsegment">
+  <meta name="description" content="drawsegment  Draws 3D ellipsoid segment">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; drawsegment.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>drawsegment
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>drawsegment  Draws 3D ellipsoid segment</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function drawsegment(h_axes, X1, Y1, Z1, a, color) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">drawsegment  Draws 3D ellipsoid segment
+
+   drawsegment(h_axes, X1, Y1, Z1, a, color) draws ellipsoid aligned
+   to line between two points
+
+   Inputs:
+       h_axes - axes handle
+       X1 - x-coordinates of endpoints [x1 x2]
+       Y1 - y-coordinates of endpoints [y1 y2]
+       Z1 - z-coordinates of endpoints [z1 z2]
+       a - relative radii [1 a2 a3] defining ellipsoid shape
+       color - RGB color vector
+
+   Note: Helper function for animate methods
+
+   See also: <a href="drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>, <a href="drawcylinder.html" class="code" title="function drawcylinder(h_axes, X1, Y1, Z1, radius, color)">drawcylinder</a>, animate</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/misc/hmhFun/gaitMovieHH.html" class="code" title="function  gaitMovieHH(subject,trial,start,stop)">gaitMovieHH</a>	GAITMOVIE  Make .avi movie of bilateral gait</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function drawsegment(h_axes, X1, Y1, Z1, a, color)</a>
+0002 <span class="comment">%drawsegment  Draws 3D ellipsoid segment</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   drawsegment(h_axes, X1, Y1, Z1, a, color) draws ellipsoid aligned</span>
+0005 <span class="comment">%   to line between two points</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       h_axes - axes handle</span>
+0009 <span class="comment">%       X1 - x-coordinates of endpoints [x1 x2]</span>
+0010 <span class="comment">%       Y1 - y-coordinates of endpoints [y1 y2]</span>
+0011 <span class="comment">%       Z1 - z-coordinates of endpoints [z1 z2]</span>
+0012 <span class="comment">%       a - relative radii [1 a2 a3] defining ellipsoid shape</span>
+0013 <span class="comment">%       color - RGB color vector</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Helper function for animate methods</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: drawball, drawcylinder, animate</span>
+0018 
+0019 <span class="comment">% Hidden Static</span>
+0020 <span class="comment">% Auxiliar functions for this.animate()</span>
+0021 <span class="comment">% draw an ellipsoid aligned to line defined by 2 points a defines</span>
+0022 <span class="comment">% relative length of the ellipsoid radii</span>
+0023 O = [X1(1) Y1(1) Z1(1)]; <span class="comment">% vector origin</span>
+0024 V = [X1(2) - X1(1) Y1(2) - Y1(1) Z1(2) - Z1(1)]; <span class="comment">% vector</span>
+0025 <span class="comment">% theta is angle with x-axis, phi is angle with z-axis, r is length of</span>
+0026 <span class="comment">% segment</span>
+0027 [theta, phi, r] = cart2sph(V(1), V(2), V(3));
+0028 <span class="comment">% build segment surface and rotate/translate build segment surface</span>
+0029 <span class="comment">% about origin</span>
+0030 [X, Y, Z] = ellipsoid(r / 2, 0, 0, r / 2, r / 2 * a(2) / a(1), <span class="keyword">...</span>
+0031     r / 2 * a(3) / a(1));
+0032 h = surf(X, Y, Z, <span class="string">'FaceColor'</span>, color, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+0033 t = hgtransform(<span class="string">'Parent'</span>, h_axes);
+0034 set(h, <span class="string">'Parent'</span>, t);
+0035 Ry = makehgtform(<span class="string">'yrotate'</span>, -phi);
+0036 Rz = makehgtform(<span class="string">'zrotate'</span>, theta);
+0037 Tx = makehgtform(<span class="string">'translate'</span>, O);
+0038 set(t, <span class="string">'Matrix'</span>, Tx * Rz * Ry);
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

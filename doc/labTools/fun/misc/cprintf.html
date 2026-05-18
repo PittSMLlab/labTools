@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; cprintf.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>cprintf
 </h1>
@@ -142,10 +142,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSL_c3d.html" class="code" title="">BiofeedbackSL_c3d</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>	COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.</li><li><a href="compareExperimentData.html" class="code" title="function report = compareExperimentData(refInput, newInput, options)">compareExperimentData</a>	COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.</li><li><a href="../../../labTools/fun/misc/hmhFun/getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)">getResultsBF</a>	</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -272,7 +272,7 @@ This function is called by:
 0117 <span class="comment">% $Revision: 1.10 $  $Date: 2015/06/24 01:29:18 $</span>
 0118 
 0119   <span class="keyword">persistent</span> majorVersion minorVersion
-0120   <span class="keyword">if</span> isempty(majorVersion)
+0120   <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(majorVersion)
 0121       <span class="comment">%v = version; if str2double(v(1:3)) &lt;= 7.1</span>
 0122       <span class="comment">%majorVersion = str2double(regexprep(version,'^(\d+).*','$1'));</span>
 0123       <span class="comment">%minorVersion = str2double(regexprep(version,'^\d+\.(\d+).*','$1'));</span>
@@ -284,9 +284,9 @@ This function is called by:
 0129 
 0130   <span class="comment">% The following is for debug use only:</span>
 0131   <span class="comment">%global docElement txt el</span>
-0132   <span class="keyword">if</span> ~exist(<span class="string">'el'</span>,<span class="string">'var'</span>) || isempty(el),  el=handle([]);  <span class="keyword">end</span>  <span class="comment">%#ok mlint short-circuit error (&quot;used before defined&quot;)</span>
+0132   <span class="keyword">if</span> ~exist(<span class="string">'el'</span>,<span class="string">'var'</span>) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(el),  el=handle([]);  <span class="keyword">end</span>  <span class="comment">%#ok mlint short-circuit error (&quot;used before defined&quot;)</span>
 0133   <span class="keyword">if</span> nargin&lt;1, <a href="#_sub8" class="code" title="subfunction showDemo(majorVersion,minorVersion)">showDemo</a>(majorVersion,minorVersion); <span class="keyword">return</span>;  <span class="keyword">end</span>
-0134   <span class="keyword">if</span> isempty(style),  <span class="keyword">return</span>;  <span class="keyword">end</span>
+0134   <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(style),  <span class="keyword">return</span>;  <span class="keyword">end</span>
 0135   <span class="keyword">if</span> all(ishandle(style)) &amp;&amp; length(style)~=3
 0136       <a href="#_sub6" class="code" title="subfunction dumpElement(docElements)">dumpElement</a>(style);
 0137       <span class="keyword">return</span>;
@@ -356,7 +356,7 @@ This function is called by:
 0201       cw = mde.getClient(<span class="string">'Command Window'</span>);
 0202 
 0203       <span class="comment">% Fix: if command window isn't defined yet (startup), use standard fprintf()</span>
-0204       <span class="keyword">if</span> (isempty(cw))
+0204       <span class="keyword">if</span> (<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(cw))
 0205          count1 = fprintf(format,varargin{:});
 0206          <span class="keyword">if</span> nargout
 0207              count = count1;
@@ -490,7 +490,7 @@ This function is called by:
 0335       matches = find(strncmpi(style,validStyles,length(style)));
 0336 
 0337       <span class="comment">% No match - error</span>
-0338       <span class="keyword">if</span> isempty(matches)
+0338       <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(matches)
 0339           error(<span class="string">'YMA:cprintf:InvalidStyle'</span>,<span class="string">'Invalid style - see help section for a list of valid style values'</span>)
 0340 
 0341       <span class="comment">% Too many matches (ambiguous) - error</span>
@@ -553,7 +553,7 @@ This function is called by:
 0398           <span class="keyword">if</span> strcmp(styles(idx).char,<span class="string">'Colors_M_Errors'</span>)
 0399               character = char(doc.getText(offsets(idx)+docElement.getStartOffset,1));
 0400               <span class="keyword">if</span> strcmp(character,<span class="string">' '</span>)
-0401                   <span class="keyword">if</span> isempty(urls(idx)) &amp;&amp; links(idx)==0
+0401                   <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(urls(idx)) &amp;&amp; links(idx)==0
 0402                       <span class="comment">% Revert the style color to the CW background color (i.e., hide it!)</span>
 0403                       styles(idx) = java.lang.String(<span class="string">'CW_BG_Color'</span>);
 0404                   <span class="keyword">end</span>
@@ -583,12 +583,12 @@ This function is called by:
 0428           strcmp(<span class="string">'CWLink'</span>,char(styles(end-hyperlinkFlag-1)))
 0429          extraInd = 0;<span class="comment">%1;</span>
 0430       <span class="keyword">end</span>
-0431       hyperlinkFlag = ~isempty(strmatch(<span class="string">'CWLink'</span>,tokens(2)));
-0432       hyperlinkFlag = 0 + any(cellfun(@(c)(~isempty(c)&amp;&amp;strcmp(c,<span class="string">'CWLink'</span>)),cell(tokens(2))));
+0431       hyperlinkFlag = ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strmatch(<span class="string">'CWLink'</span>,tokens(2)));
+0432       hyperlinkFlag = 0 + any(cellfun(@(c)(~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(c)&amp;&amp;strcmp(c,<span class="string">'CWLink'</span>)),cell(tokens(2))));
 0433       <span class="comment">%}</span>
 0434 
 0435       jStyle = java.lang.String(style);
-0436       <span class="keyword">if</span> numel(styles)==4 &amp;&amp; isempty(char(styles(2)))
+0436       <span class="keyword">if</span> numel(styles)==4 &amp;&amp; <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(char(styles(2)))
 0437           <span class="comment">% Attempt to fix discoloration issues - NOT SURE THAT THIS IS OK! - 24/6/2015</span>
 0438           styles(1) = jStyle;
 0439       <span class="keyword">end</span>
@@ -606,7 +606,7 @@ This function is called by:
 0451   <span class="comment">% Underlines (hyperlinks):</span>
 0452   <span class="comment">%{</span>
 0453   links = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
-0454   <span class="keyword">if</span> isempty(links)
+0454   <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(links)
 0455       <span class="comment">%docElement.addAttribute('LinkStartTokens',repmat(int32(-1),length(tokens(2)),1));</span>
 0456   <span class="keyword">else</span>
 0457       <span class="comment">%TODO: remove hyperlink by setting the value to -1</span>
@@ -615,7 +615,7 @@ This function is called by:
 0460 
 0461   <span class="comment">% Correct empty URLs to be un-hyperlinkable (only underlined)</span>
 0462   urls = docElement.getAttribute(<span class="string">'HtmlLink'</span>);
-0463   <span class="keyword">if</span> ~isempty(urls)
+0463   <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(urls)
 0464       urlTargets = urls(2);
 0465       <span class="keyword">for</span> urlIdx = 1 : length(urlTargets)
 0466           <span class="keyword">try</span>
@@ -634,7 +634,7 @@ This function is called by:
 0479   <span class="keyword">try</span>
 0480       <span class="comment">%hasBold = docElement.isDefined('BoldStartTokens');</span>
 0481       bolds = docElement.getAttribute(<span class="string">'BoldStartTokens'</span>);
-0482       <span class="keyword">if</span> ~isempty(bolds)
+0482       <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(bolds)
 0483           <span class="comment">%docElement.addAttribute('BoldStartTokens',repmat(int32(1),length(bolds),1));</span>
 0484       <span class="keyword">end</span>
 0485   <span class="keyword">catch</span>
@@ -658,7 +658,7 @@ This function is called by:
 0503       <span class="comment">%docElement.dump(java.lang.System.out,1)</span>
 0504       disp(docElement)
 0505       tokens = docElement.getAttribute(<span class="string">'SyntaxTokens'</span>);
-0506       <span class="keyword">if</span> isempty(tokens),  <span class="keyword">continue</span>;  <span class="keyword">end</span>
+0506       <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tokens),  <span class="keyword">continue</span>;  <span class="keyword">end</span>
 0507       links = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
 0508       urls  = docElement.getAttribute(<span class="string">'HtmlLink'</span>);
 0509       <span class="keyword">try</span> bolds = docElement.getAttribute(<span class="string">'BoldStartTokens'</span>); <span class="keyword">catch</span>, bolds = []; <span class="keyword">end</span>
@@ -743,6 +743,6 @@ This function is called by:
 0588 <span class="comment">% - Fix: Non-\n-terminated segments are displayed as black</span>
 0589 <span class="comment">% - Fix: Check whether the hyperlink fix for 7.1 is also needed on 7.2 etc.</span>
 0590 <span class="comment">% - Enh: Add font support</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

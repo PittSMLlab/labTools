@@ -4,7 +4,7 @@
 <head>
   <title>Description of c3d2mat</title>
   <meta name="keywords" content="c3d2mat">
-  <meta name="description" content="c3d2mat -- The main script for parsing .c3d files into a subject .mat file.">
+  <meta name="description" content="c3d2mat  Main script for parsing C3D session files into a MAT file.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,32 +15,35 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; c3d2mat.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>c3d2mat
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</strong></div>
+<div class="box"><strong>c3d2mat  Main script for parsing C3D session files into a MAT file.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">c3d2mat -- The main script for parsing .c3d files into a subject .mat file.
+<div class="fragment"><pre class="comment"> c3d2mat  Main script for parsing C3D session files into a MAT file.
 
-This script collects information regarding the experiment conducted,
-transforms the data from .c3d format into labTools objects,
-and then processes that data to give HS and TO events, limb angles,
-adaptation parameters, and processed EMG data (if EMG data are present)
+ This script collects information regarding the experiment conducted and
+ transforms data from the C3D format into 'labTools' objects. It then
+ processes that data to compute heel strike and toe off events, limb
+ angles, adaptation parameters, and processed EMG data (if present).
 
-See also: <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, <a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a></pre></div>
+ Toolbox Dependencies:
+   None
+
+ See also: <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a></pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>	GETINFOGUI  Graphical user interface used to collect information regarding</li><li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>	GetInfoGUI  GUI for collecting experimental session information.</li><li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -49,37 +52,53 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</span>
+<div class="fragment"><pre>0001 <span class="comment">% c3d2mat  Main script for parsing C3D session files into a MAT file.</span>
 0002 <span class="comment">%</span>
-0003 <span class="comment">%This script collects information regarding the experiment conducted,</span>
-0004 <span class="comment">%transforms the data from .c3d format into labTools objects,</span>
-0005 <span class="comment">%and then processes that data to give HS and TO events, limb angles,</span>
-0006 <span class="comment">%adaptation parameters, and processed EMG data (if EMG data are present)</span>
+0003 <span class="comment">% This script collects information regarding the experiment conducted and</span>
+0004 <span class="comment">% transforms data from the C3D format into 'labTools' objects. It then</span>
+0005 <span class="comment">% processes that data to compute heel strike and toe off events, limb</span>
+0006 <span class="comment">% angles, adaptation parameters, and processed EMG data (if present).</span>
 0007 <span class="comment">%</span>
-0008 <span class="comment">%See also: GetInfoGUI, loadSubject</span>
-0009 
-0010 <span class="comment">% Begin by running the GetInfoGUI, this will collect subject data,</span>
-0011 <span class="comment">% experiment data and notes, as well as trial conditions.</span>
-0012 info = <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>;
-0013 
-0014 <span class="comment">%Ask which event class to use</span>
-0015 <span class="keyword">if</span> ~isempty(info)
-0016     eventClass={<span class="string">''</span>,<span class="string">'kin'</span>,<span class="string">'force'</span>};<span class="comment">%possible methods to determine gait events, 'kin' for over ground, 'force' for treadmill. '' is use trial type or default</span>
-0017     answer=menu(<span class="string">'Which events should be used to compute parameters?'</span>,<span class="string">'default (use force for TM trials, kinematics otherwise)'</span>,<span class="string">'strictly from kinematics'</span>,<span class="string">'strictly from forces'</span>);
-0018     <span class="keyword">if</span> answer==0
-0019         answer=1;
-0020     <span class="keyword">end</span>
-0021 
-0022     <span class="comment">%Do the actual loading</span>
-0023     <span class="keyword">if</span> ~isempty(info)
-0024         [expData,rawExpData,adaptData]=<a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>(info,eventClass{answer});
-0025     <span class="keyword">end</span>
-0026 
-0027     clear answer eventClass
-0028 <span class="keyword">else</span>
-0029     <span class="keyword">return</span>
-0030 <span class="keyword">end</span>
-0031</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0008 <span class="comment">% Toolbox Dependencies:</span>
+0009 <span class="comment">%   None</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% See also: GetInfoGUI, loadSubject</span>
+0012 
+0013 <span class="comment">%% Collect Experimental Session Information</span>
+0014 
+0015 <span class="comment">% Launch the GetInfoGUI to collect participant data, experiment metadata,</span>
+0016 <span class="comment">% notes, and trial conditions from the user.</span>
+0017 info = <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>();
+0018 
+0019 <span class="comment">%% Process Experimental Data</span>
+0020 
+0021 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info)   <span class="comment">% if experimental information was provided, proceed</span>
+0022     <span class="comment">% Available methods for determining gait events:</span>
+0023     <span class="comment">%   ''      - default (forces for TM trials, kinematics otherwise)</span>
+0024     <span class="comment">%   'kin'   - strictly from kinematics (overground trials with</span>
+0025     <span class="comment">%             limited or no force plate data)</span>
+0026     <span class="comment">%   'force' - strictly from forces (treadmill trials with</span>
+0027     <span class="comment">%             consistent, reliable force plate data)</span>
+0028     eventClass = {<span class="string">''</span>, <span class="string">'kin'</span>, <span class="string">'force'</span>};
+0029 
+0030     answer = menu(<span class="string">'Which events should be used to compute parameters?'</span>, <span class="keyword">...</span>
+0031         <span class="string">'default (use forces for TM trials, kinematics otherwise)'</span>, <span class="keyword">...</span>
+0032         <span class="string">'strictly from kinematics'</span>, <span class="keyword">...</span>
+0033         <span class="string">'strictly from forces'</span>);
+0034 
+0035     <span class="keyword">if</span> answer == 0      <span class="comment">% if the menu window was closed with 'X', ...</span>
+0036         answer = 1;     <span class="comment">% default to the standard event detection method</span>
+0037     <span class="keyword">end</span>
+0038 
+0039     <span class="comment">% Main processing call for the participant's experimental data</span>
+0040     [expData, rawExpData, adaptData] = <span class="keyword">...</span>
+0041         <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>(info, eventClass{answer});
+0042 
+0043     clear answer eventClass;
+0044 <span class="keyword">else</span>    <span class="comment">% if no experimental information was provided, abort</span>
+0045     <span class="keyword">return</span>;
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

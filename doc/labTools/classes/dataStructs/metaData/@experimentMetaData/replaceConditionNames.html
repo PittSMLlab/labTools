@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of replaceConditionNames</title>
+  <meta name="keywords" content="replaceConditionNames">
+  <meta name="description" content="replaceConditionNames  Replaces condition names">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../../index.html">dataStructs</a> &gt; <a href="../index.html">metaData</a> &gt; <a href="index.html">@experimentMetaData</a> &gt; replaceConditionNames.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\metaData\@experimentMetaData&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>replaceConditionNames
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>replaceConditionNames  Replaces condition names</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [newThis, change] = replaceConditionNames(this, currentName,newName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">replaceConditionNames  Replaces condition names
+
+   [newThis, change] = replaceConditionNames(this, currentName,
+   newName) looks for conditions whose names match options in
+   currentName and changes them to newName
+
+   Inputs:
+       this - experimentMetaData object
+       currentName - cell array of current condition names to replace
+       newName - cell array of new condition names (same length as
+                 currentName)
+
+   Outputs:
+       newThis - experimentMetaData object with replaced names
+       change - logical flag indicating if any changes were made
+
+   Note: Only exact matches are replaced, partial matches ignored
+
+   See also: <a href="numerateRepeatedConditionNames.html" class="code" title="function [newThis, change] = numerateRepeatedConditionNames(this)">numerateRepeatedConditionNames</a>,
+             <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis, change] = replaceConditionNames(this, currentName, </a><span class="keyword">...</span>
+0002     newName)
+0003 <span class="comment">%replaceConditionNames  Replaces condition names</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [newThis, change] = replaceConditionNames(this, currentName,</span>
+0006 <span class="comment">%   newName) looks for conditions whose names match options in</span>
+0007 <span class="comment">%   currentName and changes them to newName</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - experimentMetaData object</span>
+0011 <span class="comment">%       currentName - cell array of current condition names to replace</span>
+0012 <span class="comment">%       newName - cell array of new condition names (same length as</span>
+0013 <span class="comment">%                 currentName)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       newThis - experimentMetaData object with replaced names</span>
+0017 <span class="comment">%       change - logical flag indicating if any changes were made</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Note: Only exact matches are replaced, partial matches ignored</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: numerateRepeatedConditionNames,</span>
+0022 <span class="comment">%             getConditionIdxsFromName</span>
+0023 
+0024 change = false;
+0025 <span class="comment">% Check currentName and newName are cell arrays of same length</span>
+0026 <span class="comment">% Exact matches only, but allows not finding matches (does not accept</span>
+0027 <span class="comment">% partial matches)</span>
+0028 conditionIdxs = this.getConditionIdxsFromName(currentName, 1, 1);
+0029 <span class="comment">% this.conditionName(conditionIdxs) = newName;</span>
+0030 <span class="keyword">for</span> i = 1:length(currentName)
+0031     <span class="keyword">if</span> ~isnan(conditionIdxs(i)) &amp;&amp; <span class="keyword">...</span>
+0032             ~strcmp(this.conditionName{conditionIdxs(i)}, newName{i})
+0033         this.conditionName{conditionIdxs(i)} = newName{i};
+0034         change = true;
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 newThis = this;
+0038 <span class="keyword">end</span>
+0039</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

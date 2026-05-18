@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot3</title>
+  <meta name="keywords" content="plot3">
+  <meta name="description" content="plot3  Plots 3D trajectories">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; plot3.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plot3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plot3  Plots 3D trajectories</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function fh = plot3(this, fh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plot3  Plots 3D trajectories
+
+   fh = plot3(this) plots 3D trajectories for all markers
+
+   fh = plot3(this, fh) plots in existing figure
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       fh - figure handle (optional)
+
+   Outputs:
+       fh - figure handle
+
+   Note: Plots all 3 components of all variables in OTS instance, with
+         outliers marked in red if Quality field exists
+
+   See also: animate, <a href="animate2.html" class="code" title="function mov = animate2(this, t0, t1, frameRate, writeFileFlag,filename, mode)">animate2</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>	getOrientedData  Returns data as 3D tensor</li><li><a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	checkMarkerDataHealth  Diagnoses issues with marker data</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fh = plot3(this, fh)</a>
+0002 <span class="comment">%plot3  Plots 3D trajectories</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   fh = plot3(this) plots 3D trajectories for all markers</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   fh = plot3(this, fh) plots in existing figure</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0010 <span class="comment">%       fh - figure handle (optional)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       fh - figure handle</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Plots all 3 components of all variables in OTS instance, with</span>
+0016 <span class="comment">%         outliers marked in red if Quality field exists</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: animate, animate2</span>
+0019 
+0020 <span class="comment">% -------------------</span>
+0021 <span class="comment">% plots all 3 components of all variables in OTS instance</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% INPUTS:</span>
+0024 <span class="comment">% fh, figure handle. If none passed in, a new one is created</span>
+0025 <span class="comment">% OUTPUTS:</span>
+0026 <span class="comment">% fh, figure handle to figure that shows 3D plot of each data variable</span>
+0027 <span class="comment">% (e.g. marker data or GRFdata)</span>
+0028 
+0029 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fh)
+0030     fh = figure; <span class="comment">% return handle to a figure</span>
+0031 <span class="keyword">else</span>
+0032     figure(fh);
+0033 <span class="keyword">end</span>
+0034 [data, labelPref] = <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>(this);
+0035 hold on;
+0036 
+0037 <span class="keyword">for</span> i = 1:length(labelPref)
+0038     <a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(:, i, 1), data(:, i, 2), data(:, i, 3), <span class="string">'.'</span>);
+0039     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.Quality)
+0040         aux = this.Quality(:, i) == 1;
+0041         <a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(aux, i, 1), data(aux, i, 2), data(aux, i, 3), <span class="keyword">...</span>
+0042             <span class="string">'rx'</span>);
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 hold off;
+0046 axis equal;
+0047 legend(labelPref);
+0048 <span class="keyword">end</span>
+0049</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

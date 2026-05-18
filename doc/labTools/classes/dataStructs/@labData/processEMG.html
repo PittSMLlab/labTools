@@ -4,7 +4,7 @@
 <head>
   <title>Description of processEMG</title>
   <meta name="keywords" content="processEMG">
-  <meta name="description" content="">
+  <meta name="description" content="processEMG  Extracts processed and filtered EMG amplitude envelopes">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,151 +15,313 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; processEMG.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>processEMG
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>processEMG  Extracts processed and filtered EMG amplitude envelopes</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag) </strong></div>
+<div class="box"><strong>function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment"> processEMG  Extracts processed and filtered EMG amplitude envelopes
+   from raw trial EMG data.
+
+   Performs quality checks, outlier clipping, optional template-based
+ spike removal, NaN interpolation, and bandpass/envelope amplitude
+ extraction on the EMG time series in trialData. Returns both a
+ filtered envelope and a fully processed (smoothed) envelope.
+
+   If the EMG data already has a processingInfo property, the function
+ returns the existing processed data unchanged to avoid over-smoothing.
+ To re-process, retrieve the original raw EMG before calling.
+
+   Inputs:
+     trialData - labData object whose EMGData property contains the
+                 raw EMG time series to process
+     spikeFlag - (optional) Logical flag to enable template-based spike
+                 removal. Default: false
+
+   Outputs:
+     procEMGData     - processedEMGTimeSeries with fully processed
+                       amplitude envelope
+     filteredEMGData - processedEMGTimeSeries with filtered (not fully
+                       smoothed) EMG data
+
+   Toolbox Dependencies:
+     Signal Processing Toolbox  (used in extractMuscleActivityFromEMG)
+
+   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,
+     processingInfo, labData/process</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/extractMuscleActivityFromEMG.html" class="code" title="function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)">extractMuscleActivityFromEMG</a>	Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/findTemplate.html" class="code" title="function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag)">findTemplate</a>	findTemplate implements a simple cross-correlation search to find for</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001  <a name="_sub0" href="#_subfunctions" class="code">function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)</a>
-0002 
-0003 emg=trialData.EMGData;
-0004 <span class="keyword">if</span> isprop(emg,<span class="string">'processingInfo'</span>)
-0005     warning(<span class="string">'Trying to re-process already processed EMG data, this can lead to over-smoothing. Skipping.'</span>)
-0006     filteredEMGData=emg;
-0007     procEMGData=trialData.procEMGData;
-0008     <span class="keyword">return</span>
-0009     <span class="comment">%If you really want to re-process EMG data, you should get the RAW EMG!</span>
-0010 <span class="keyword">end</span>
-0011 
-0012 <span class="keyword">if</span> ~isempty(emg)
-0013     quality=sparse([],[],[],size(emg.Data,1),size(emg.Data,2),round(.1*numel(emg.Data)));<span class="comment">%Pre-allocating for 1% spikes total.</span>
-0014 
-0015     <span class="comment">%Step 0: remove samples outside the [-5,5]e-3 range (+- 5mv): this was</span>
-0016     <span class="comment">%included on March 12th because P0011 was presenting huge (1e5) spikes</span>
-0017     <span class="comment">%that are obviously caused by some data corruption. We may want to go</span>
-0018     <span class="comment">%back and re-process from scratch, but it was only in a short time</span>
-0019     <span class="comment">%period (~200ms) so decided to clip, issue warning, and add new quality</span>
-0020     <span class="comment">%category.</span>
-0021     aaux=sparse(abs(emg.Data)&gt;=5e-3); <span class="comment">%Set +-5mV as normal range, although good EMG signals rarely go above 2mV</span>
-0022     badSamples=sum(aaux)./size(aaux,1);
-0023     tt=badSamples&gt;.01;
-0024     <span class="keyword">if</span> any(tt) <span class="comment">%More than 1% bad samples on single channel, NOT GOOD</span>
-0025         disp(<span class="string">'Channels with more than 1% bad samples (!):'</span>)
-0026         <span class="keyword">for</span> i=find(tt)
-0027             disp([emg.labels{i} <span class="string">'('</span> num2str(round(badSamples(i)*1000)/10) <span class="string">'% bad)'</span>])
-0028             <span class="keyword">if</span> abs(nanmean(emg.Data(:,i)))&gt;0.01
-0029                 warning(<span class="string">'Check raw data. non-zero Signal offset. To continue, mean value will be remove mean of the dataß'</span>)
-0030                 emg.Data(:,i)=emg.Data(:,i)-nanmean(emg.Data(:,i));
-0031                 aaux2=sparse(abs(emg.Data)&gt;=5e-3); <span class="comment">%Set +-5mV as normal range, although good EMG signals rarely go above 2mV</span>
-0032                 badSamples2=sum(aaux2)./size(aaux2,1);
-0033                 tt2=badSamples2&gt;.01;
-0034                 disp([emg.labels{i} <span class="string">'('</span> num2str(round(badSamples2(i)*1000)/10) <span class="string">'% bad after mean adjustment)'</span>])
-0035             <span class="keyword">end</span>
-0036         <span class="keyword">end</span>
-0037         <span class="comment">%error('Some channels showed more than 1% bad samples, that is NOT GOOD. Please review the data')</span>
-0038     <span class="keyword">end</span>
-0039     <span class="keyword">if</span> any(any(aaux))
-0040         quality=4*aaux+quality;
-0041         warning([<span class="string">'Found samples outside the normal range (+-5e-3 mV), sensor '</span>  <span class="string">' was probably loose.'</span>])
-0042     <span class="keyword">end</span>
-0043     aaux=sparse(abs(emg.Data)&gt;=6e-3); <span class="comment">%Delsys claims the sensor range is +-5.5mV, but samples up to 5.9mV do appear</span>
-0044     <span class="keyword">if</span> any(any(aaux))
-0045         quality=4*aaux+quality;
-0046         emg.Data(aaux)=0;
-0047         warning(<span class="string">'Found samples outside the valid range (+-6e-3 mV). Clipping.'</span>)
-0048     <span class="keyword">end</span>
-0049     
-0050     
-0051     <span class="comment">%Step 1: interpolate missing samples</span>
-0052     emg=emg.substituteNaNs(<span class="string">'linear'</span>);
-0053     
-0054     <span class="keyword">if</span> any(isnan(emg.Data(:)))
-0055         error(<span class="string">'processEMG:isNaN'</span>,<span class="string">'Some samples in the EMG data are NaN, the filters will fail'</span>); <span class="comment">%FIXME!</span>
-0056     <span class="keyword">end</span>
-0057     
-0058     
-0059     <span class="comment">%Step 1.5: Find spikes and remove them by setting them to 0</span>
-0060     <span class="comment">%load('../matData/subP0001.mat')</span>
-0061     <span class="comment">%template=expData.data{1}.EMGData.getPartialDataAsVector('LGLU',235.695,235.755);</span>
-0062 
-0063     <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(spikeFlag) &amp;&amp; spikeFlag==1
-0064         load(<span class="string">'template.mat'</span>);
-0065         <span class="keyword">for</span> j=1:length(emg.labels)
-0066             whitenFlag=0; <span class="comment">%Not used until the whitening mechanism is further tested</span>
-0067             [c,k,~,~] = findTemplate(template,emg.Data(:,j),whitenFlag);
-0068             beta=.95; <span class="comment">%Define threshold</span>
-0069             t=find(abs(c)&gt;beta);
-0070             <span class="keyword">if</span> ~isempty(t)
-0071             t_=t(diff(t)==1 &amp; diff(diff([-Inf;t]))&lt;0); <span class="comment">%Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).</span>
-0072             <span class="keyword">if</span> numel(t_)&gt;round(.01*size(emg.Data,1)/length(template))
-0073                warning(<span class="string">'Found spikes in more than 1% total signal length. Probably not good.'</span>) 
-0074             <span class="keyword">end</span>
-0075             k=k(t_);
-0076             <span class="keyword">else</span>
-0077                 t_=[];
-0078             <span class="keyword">end</span>
-0079             <span class="keyword">for</span> i=1:length(t_)
-0080                 <span class="comment">%Setting to 0s</span>
-0081                 t2=min([t_(i)+length(template)-1,size(emg.Data,1)]);
-0082                 quality(t_(i):t2,j)=2;
-0083                 emg.Data(t_(i):t2,j)=0;
-0084             <span class="keyword">end</span>
-0085         <span class="keyword">end</span>
-0086     <span class="keyword">end</span>
-0087 
-0088     <span class="comment">%Step 2: do amplitude extraction</span>
-0089     f_cut=10; <span class="comment">%Hz</span>
-0090     [procEMG,filteredEMG,filterList,procList] = extractMuscleActivityFromEMG(emg.Data,emg.sampFreq,f_cut);
-0091     
-0092     <span class="comment">%Step 3: create processedEMGTimeSeries object</span>
-0093     procInfo=processingInfo([filterList, procList]);
-0094     procEMGData=processedEMGTimeSeries(procEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-0095     procInfo=processingInfo(filterList);
-0096     filteredEMGData=processedEMGTimeSeries(filteredEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-0097     
-0098     <span class="comment">%Step 4: update quality info on timeseries, incorporating previously</span>
-0099     <span class="comment">%existing quality info</span>
-0100     <span class="keyword">if</span> ~isempty(emg.Quality) <span class="comment">%Case where there was pre-existing quality info</span>
-0101         filteredEMGData.Quality=emg.Quality;
-0102         filteredEMGData.Quality(quality==2)=2;
-0103         filteredEMGData.Quality(quality==3)=4;
-0104         filteredEMGData.Quality(quality==3)=8;
-0105         filteredEMGData.QualityInfo.Code=[emg.QualityInfo.Code 2 4 8];
-0106         filteredEMGData.QualityInfo.Description=[emg.QualityInfo.Description, <span class="string">'spike'</span>, <span class="string">'sensorLoose'</span> ,<span class="string">'outsideValidRange'</span>];
-0107     <span class="keyword">else</span>
-0108         filteredEMGData.Quality=int8(quality); <span class="comment">%Need to cast as int8 because Matlab's timeseries forces this for the quality property</span>
-0109         filteredEMGData.QualityInfo.Code=[0 2 4 8];
-0110         filteredEMGData.QualityInfo.Description={<span class="string">'good'</span>, <span class="string">'spike'</span>, <span class="string">'sensorLoose'</span>,<span class="string">'outsideValidRange'</span>};
-0111     <span class="keyword">end</span>
-0112     procEMGData.Quality= filteredEMGData.Quality;
-0113     procEMGData.QualityInfo=filteredEMGData.QualityInfo;
-0114     
-0115 <span class="keyword">else</span> <span class="comment">%Case of empty emg data</span>
-0116     procEMGData=[];
-0117     filteredEMGData = [];
-0118 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)</a>
+0002 <span class="comment">% processEMG  Extracts processed and filtered EMG amplitude envelopes</span>
+0003 <span class="comment">%   from raw trial EMG data.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Performs quality checks, outlier clipping, optional template-based</span>
+0006 <span class="comment">% spike removal, NaN interpolation, and bandpass/envelope amplitude</span>
+0007 <span class="comment">% extraction on the EMG time series in trialData. Returns both a</span>
+0008 <span class="comment">% filtered envelope and a fully processed (smoothed) envelope.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   If the EMG data already has a processingInfo property, the function</span>
+0011 <span class="comment">% returns the existing processed data unchanged to avoid over-smoothing.</span>
+0012 <span class="comment">% To re-process, retrieve the original raw EMG before calling.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Inputs:</span>
+0015 <span class="comment">%     trialData - labData object whose EMGData property contains the</span>
+0016 <span class="comment">%                 raw EMG time series to process</span>
+0017 <span class="comment">%     spikeFlag - (optional) Logical flag to enable template-based spike</span>
+0018 <span class="comment">%                 removal. Default: false</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Outputs:</span>
+0021 <span class="comment">%     procEMGData     - processedEMGTimeSeries with fully processed</span>
+0022 <span class="comment">%                       amplitude envelope</span>
+0023 <span class="comment">%     filteredEMGData - processedEMGTimeSeries with filtered (not fully</span>
+0024 <span class="comment">%                       smoothed) EMG data</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   Toolbox Dependencies:</span>
+0027 <span class="comment">%     Signal Processing Toolbox  (used in extractMuscleActivityFromEMG)</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,</span>
+0030 <span class="comment">%     processingInfo, labData/process</span>
+0031 
+0032 arguments
+0033     this       (1,1) <a href="labData.html" class="code" title="">labData</a>
+0034     spikeFlag  (1,1) logical = false
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%% Named Constants</span>
+0038 <span class="comment">% EMG amplitude thresholds (V).</span>
+0039 <span class="comment">% Note: Delsys claims a +-5.5 mV max sensor range, but values up to</span>
+0040 <span class="comment">% 5.9 mV can appear, so the hardware limit is set conservatively at 6 mV.</span>
+0041 normalRangeLimit   = 5e-3;  <span class="comment">% samples &gt;= this indicate a loose sensor</span>
+0042 hardwareRangeLimit = 6e-3;  <span class="comment">% samples &gt;= this exceed the hardware range</span>
+0043 
+0044 <span class="comment">% Fraction of samples per channel above normalRangeLimit that triggers</span>
+0045 <span class="comment">% a bad-sample report to the command window</span>
+0046 badSampleFracThreshold = 0.01;  <span class="comment">% 1%</span>
+0047 
+0048 <span class="comment">% Signal mean magnitude above which mean subtraction is applied when a</span>
+0049 <span class="comment">% channel shows a non-zero DC offset</span>
+0050 meanOffsetThreshold = 0.01;     <span class="comment">% V</span>
+0051 
+0052 <span class="comment">% Low-pass cutoff frequency (Hz) for EMG amplitude envelope extraction</span>
+0053 envelopeCutoffFreq = 10;
+0054 
+0055 <span class="comment">% Cross-correlation threshold for template-based spike detection</span>
+0056 spikeCorrelThreshold = 0.95;
+0057 
+0058 <span class="comment">% Whitening flag for template matching (disabled until further tested)</span>
+0059 spikeWhitenFlag = false;
+0060 
+0061 <span class="comment">% Fraction of total signal length above which the detected spike count</span>
+0062 <span class="comment">% triggers a warning</span>
+0063 spikeHighFracThreshold = 0.01;  <span class="comment">% 1%</span>
+0064 
+0065 <span class="comment">% Estimated fraction of non-zero entries for sparse quality matrix</span>
+0066 <span class="comment">% pre-allocation (conservative upper bound)</span>
+0067 qualitySparseDensity = 0.1;
+0068 
+0069 <span class="comment">% Full path to the EMG spike template file; resolved via the MATLAB path so</span>
+0070 <span class="comment">% the location is explicit without hardcoding a user-specific absolute path</span>
+0071 templateFilePath = which(<span class="string">'template.mat'</span>);
+0072 
+0073 <span class="comment">%% Process EMG Data</span>
+0074 emg = this.EMGData;
+0075 <span class="keyword">if</span> isprop(emg, <span class="string">'processingInfo'</span>)
+0076     warning([<span class="string">'Trying to re-process already processed EMG data, '</span> <span class="keyword">...</span>
+0077         <span class="string">'this can lead to over-smoothing. Skipping.'</span>]);
+0078     filteredEMGData = emg;
+0079     procEMGData     = this.procEMGData;
+0080     <span class="keyword">return</span>;
+0081     <span class="comment">% If you really want to re-process EMG data, you should use RAW EMG!</span>
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(emg)
+0085     <span class="comment">% Quality matrix values are the final QualityInfo codes used throughout</span>
+0086     <span class="comment">% this function. Using final codes directly avoids a remapping step and</span>
+0087     <span class="comment">% keeps the pre-existing and no-quality branches in Step 4 consistent:</span>
+0088     <span class="comment">%   0 (not set) - good sample</span>
+0089     <span class="comment">%   2           - spike (detected by template matching)</span>
+0090     <span class="comment">%   4           - loose sensor (|data| in [5, 6) mV)</span>
+0091     <span class="comment">%   8           - outside hardware range (|data| &gt;= 6 mV, clipped)</span>
+0092     quality = sparse([], [], [], size(emg.Data, 1), size(emg.Data, 2), <span class="keyword">...</span>
+0093         round(qualitySparseDensity * numel(emg.Data)));
+0094 
+0095     <span class="comment">% ---- Step 0: Flag and handle samples outside expected ranges -------</span>
+0096     <span class="comment">% Included March 12th: P0011 had huge (1e5) spikes from data</span>
+0097     <span class="comment">% corruption. Only ~200 ms were affected, so clipping was preferred</span>
+0098     <span class="comment">% over reprocessing from scratch.</span>
+0099 
+0100     <span class="comment">% Compute fraction of samples above normalRangeLimit per channel</span>
+0101     badSampleFrac         = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(abs(emg.Data) &gt;= normalRangeLimit, 1);
+0102     highBadSampleChanMask = badSampleFrac &gt; badSampleFracThreshold;
+0103 
+0104     <span class="keyword">if</span> any(highBadSampleChanMask)
+0105         disp(<span class="string">'Channels with more than 1% bad samples (!):'</span>);
+0106         <span class="keyword">for</span> chan = find(highBadSampleChanMask)
+0107             fprintf(<span class="string">'  %s (%.1f%% bad)\n'</span>, emg.labels{chan}, <span class="keyword">...</span>
+0108                 badSampleFrac(chan) * 100);
+0109             <span class="keyword">if</span> abs(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(emg.Data(:,chan), <span class="string">'omitnan'</span>)) &gt; meanOffsetThreshold
+0110                 warning([<span class="string">'Check raw data: non-zero signal offset '</span> <span class="keyword">...</span>
+0111                     <span class="string">'detected. The channel mean will be subtracted '</span> <span class="keyword">...</span>
+0112                     <span class="string">'to continue.'</span>]);
+0113                 emg.Data(:, chan) = emg.Data(:, chan) - <span class="keyword">...</span>
+0114                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(emg.Data(:, chan), <span class="string">'omitnan'</span>);
+0115                 <span class="comment">% Re-check this channel only after mean subtraction;</span>
+0116                 <span class="comment">% scoped to avoid a full recompute across all channels</span>
+0117                 badSampleFrac(chan) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>( <span class="keyword">...</span>
+0118                     abs(emg.Data(:, chan)) &gt;= normalRangeLimit);
+0119                 fprintf(<span class="string">'  %s (%.1f%% bad after mean adjustment)\n'</span>, <span class="keyword">...</span>
+0120                     emg.labels{chan}, badSampleFrac(chan) * 100);
+0121             <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123         <span class="comment">% error(['Some channels showed more than 1% bad samples, ' ...</span>
+0124         <span class="comment">%     'that is NOT GOOD. Please review the data']);</span>
+0125     <span class="keyword">end</span>
+0126 
+0127     <span class="comment">% Build mutually exclusive quality masks after any mean corrections</span>
+0128     <span class="comment">% so that they reflect the corrected data.</span>
+0129     <span class="comment">% 'looseSensorOnlyMask' covers [normalRangeLimit, hardwareRangeLimit)</span>
+0130     <span class="comment">% and maps to quality value 3; 'saturationMask' covers</span>
+0131     <span class="comment">% [hardwareRangeLimit, Inf) and maps to quality value 4.</span>
+0132     looseSensorOnlyMask = sparse(abs(emg.Data) &gt;= normalRangeLimit &amp; <span class="keyword">...</span>
+0133         abs(emg.Data) &lt;  hardwareRangeLimit);
+0134     saturationMask = sparse(abs(emg.Data) &gt;= hardwareRangeLimit);
+0135 
+0136     <span class="keyword">if</span> any(looseSensorOnlyMask, <span class="string">'all'</span>)
+0137         quality = 4 * looseSensorOnlyMask + quality;
+0138         warning([<span class="string">'Found samples outside the normal range (+-%.0f mV). '</span> <span class="keyword">...</span>
+0139             <span class="string">'Sensor may have been loose.'</span>], normalRangeLimit * 1e3);
+0140     <span class="keyword">end</span>
+0141 
+0142     <span class="comment">% Delsys claims +-5.5 mV max; samples up to 5.9 mV do appear.</span>
+0143     <span class="comment">% Clip samples at or above hardwareRangeLimit and mark as saturated.</span>
+0144     <span class="keyword">if</span> any(saturationMask, <span class="string">'all'</span>)
+0145         quality                  = 8 * saturationMask + quality;
+0146         emg.Data(saturationMask) = 0;
+0147         warning([<span class="string">'Found samples outside the hardware range (+-%.0f mV).'</span><span class="keyword">...</span>
+0148             <span class="string">' Clipping affected samples.'</span>], hardwareRangeLimit * 1e3);
+0149     <span class="keyword">end</span>
+0150 
+0151     <span class="comment">% ---- Step 1: Interpolate missing samples ---------------------------</span>
+0152     emg = emg.substituteNaNs(<span class="string">'linear'</span>);
+0153 
+0154     <span class="keyword">if</span> any(isnan(emg.Data), <span class="string">'all'</span>)
+0155         error(<span class="string">'processEMG:isNaN'</span>, [<span class="string">'Some samples in the EMG data are '</span> <span class="keyword">...</span>
+0156             <span class="string">'NaN, the filters will fail'</span>]); <span class="comment">% FIXME!</span>
+0157     <span class="keyword">end</span>
+0158 
+0159     <span class="comment">% ---- Step 1.5: Find spikes and remove by setting them to zero ------</span>
+0160     <span class="comment">% load('../matData/subP0001.mat')</span>
+0161     <span class="comment">% template = expData.data{1}.EMGData.getPartialDataAsVector( ...</span>
+0162     <span class="comment">%     'LGLU', 235.695, 235.755);</span>
+0163     <span class="keyword">if</span> spikeFlag
+0164         load(templateFilePath, <span class="string">'template'</span>);
+0165 
+0166         <span class="comment">% Accumulate all spike row and column indices across channels for</span>
+0167         <span class="comment">% a single bulk quality update after the loop; this avoids the</span>
+0168         <span class="comment">% slow sparse range-assignment warning that results from indexing</span>
+0169         <span class="comment">% into a sparse matrix with a colon range inside an inner loop</span>
+0170         spikeRowIdx = [];
+0171         spikeColIdx = [];
+0172         <span class="keyword">for</span> chan = 1:length(emg.labels)
+0173             [corrCoeff, templateMatchIdx, ~, ~] = <a href="../../../../labTools/fun/ext/pitools/signalProcessing/findTemplate.html" class="code" title="function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag)">findTemplate</a>( <span class="keyword">...</span>
+0174                 template, emg.Data(:, chan), spikeWhitenFlag);
+0175             threshExceededIdx = <span class="keyword">...</span>
+0176                 find(abs(corrCoeff) &gt; spikeCorrelThreshold);
+0177             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(threshExceededIdx)
+0178                 <span class="comment">% Keep only the first event in each consecutive run;</span>
+0179                 <span class="comment">% isolated single-sample events are discarded as spurious</span>
+0180                 spikeStartIdx = threshExceededIdx( <span class="keyword">...</span>
+0181                     diff(threshExceededIdx) == 1 &amp; <span class="keyword">...</span>
+0182                     diff(diff([-Inf; threshExceededIdx])) &lt; 0);
+0183                 <span class="keyword">if</span> numel(spikeStartIdx) &gt; round(spikeHighFracThreshold *<span class="keyword">...</span>
+0184                         size(emg.Data, 1) / length(template))
+0185                     warning([<span class="string">'Found spikes in more than 1% of '</span> <span class="keyword">...</span>
+0186                         <span class="string">'total signal length. Probably not good.'</span>]);
+0187                 <span class="keyword">end</span>
+0188                 templateMatchIdx = <span class="keyword">...</span>
+0189                     templateMatchIdx(spikeStartIdx); <span class="comment">%#ok&lt;NASGU&gt;</span>
+0190             <span class="keyword">else</span>
+0191                 spikeStartIdx = [];
+0192             <span class="keyword">end</span>
+0193             <span class="keyword">for</span> spike = 1:length(spikeStartIdx)
+0194                 <span class="comment">% Set spike region to zero</span>
+0195                 spikeEndIdx = min([spikeStartIdx(spike) + <span class="keyword">...</span>
+0196                     length(template) - 1, size(emg.Data, 1)]);
+0197                 newRows = (spikeStartIdx(spike):spikeEndIdx)';
+0198                 spikeRowIdx = [spikeRowIdx; newRows]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0199                 spikeColIdx = [spikeColIdx; <span class="keyword">...</span>
+0200                     repmat(chan, length(newRows), 1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0201                 emg.Data(spikeStartIdx(spike):spikeEndIdx, chan) = 0;
+0202             <span class="keyword">end</span>
+0203         <span class="keyword">end</span>
+0204 
+0205         <span class="comment">% Update quality matrix for all spike samples in one operation</span>
+0206         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(spikeRowIdx)
+0207             quality = quality + sparse(spikeRowIdx, spikeColIdx, 2, <span class="keyword">...</span>
+0208                 size(quality, 1), size(quality, 2));
+0209         <span class="keyword">end</span>
+0210     <span class="keyword">end</span>
+0211 
+0212     <span class="comment">% ---- Step 2: Extract amplitude envelope ----------------------------</span>
+0213     [procEMG, filteredEMG, filterList, procList] = <span class="keyword">...</span>
+0214         <a href="../../../../labTools/fun/EMGanalysis/extractMuscleActivityFromEMG.html" class="code" title="function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)">extractMuscleActivityFromEMG</a>( <span class="keyword">...</span>
+0215         emg.Data, emg.sampFreq, envelopeCutoffFreq);
+0216 
+0217     <span class="comment">% ---- Step 3: Create processedEMGTimeSeries objects -----------------</span>
+0218     procInfo    = <a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>([filterList, procList]);
+0219     procEMGData = <a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>( <span class="keyword">...</span>
+0220         procEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
+0221     procInfo        = <a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>(filterList);
+0222     filteredEMGData = <a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>( <span class="keyword">...</span>
+0223         filteredEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
+0224 
+0225     <span class="comment">% ---- Step 4: Update quality info, incorporating pre-existing -------</span>
+0226     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(emg.Quality)    <span class="comment">% if pre-existing quality info exists, ...</span>
+0227         filteredEMGData.Quality               = emg.Quality;
+0228         filteredEMGData.Quality(quality == 2) = 2;  <span class="comment">% spike</span>
+0229         filteredEMGData.Quality(quality == 4) = 4;  <span class="comment">% sensorLoose</span>
+0230         filteredEMGData.Quality(quality == 8) = 8;  <span class="comment">% outsideValidRange</span>
+0231         filteredEMGData.QualityInfo.Code = [emg.QualityInfo.Code 2 4 8];
+0232         filteredEMGData.QualityInfo.Description = <span class="keyword">...</span>
+0233             [emg.QualityInfo.Description, <span class="keyword">...</span>
+0234             <span class="string">'spike'</span>, <span class="string">'sensorLoose'</span>, <span class="string">'outsideValidRange'</span>];
+0235     <span class="keyword">else</span>
+0236         <span class="comment">% Cast as int8: MATLAB's timeseries enforces this type for</span>
+0237         <span class="comment">% the Quality property</span>
+0238         filteredEMGData.Quality             = int8(quality);
+0239         filteredEMGData.QualityInfo.Code    = [0 2 4 8];
+0240         filteredEMGData.QualityInfo.Description = <span class="keyword">...</span>
+0241             {<span class="string">'good'</span>, <span class="string">'spike'</span>, <span class="string">'sensorLoose'</span>, <span class="string">'outsideValidRange'</span>};
+0242     <span class="keyword">end</span>
+0243     procEMGData.Quality     = filteredEMGData.Quality;
+0244     procEMGData.QualityInfo = filteredEMGData.QualityInfo;
+0245 
+0246 <span class="keyword">else</span>    <span class="comment">% if EMG data is empty, return empty outputs</span>
+0247     procEMGData     = [];
+0248     filteredEMGData = [];
+0249 <span class="keyword">end</span>
+0250 
+0251 <span class="keyword">end</span>
+0252</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getaSym</title>
+  <meta name="keywords" content="getaSym">
+  <meta name="description" content="getaSym  Computes asymmetric components">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; getaSym.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getaSym
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getaSym  Computes asymmetric components</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [this, iC, iI] = getaSym(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getaSym  Computes asymmetric components
+
+   [this, iC, iI] = getaSym(this) computes asymmetric (difference)
+   components of bilateral data
+
+   Inputs:
+       this - alignedTimeSeries object
+
+   Outputs:
+       this - alignedTimeSeries with asymmetric components
+       iC - indices of contralateral labels
+       iI - indices of ipsilateral labels
+
+   Note: Computes slow - fast
+
+   See also: <a href="getSym.html" class="code" title="function [this, iC, iI] = getSym(this)">getSym</a>, <a href="flipLR.html" class="code" title="function [this, iC, iI] = flipLR(this)">flipLR</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [this, iC, iI] = getaSym(this)</a>
+0002 <span class="comment">%getaSym  Computes asymmetric components</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [this, iC, iI] = getaSym(this) computes asymmetric (difference)</span>
+0005 <span class="comment">%   components of bilateral data</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - alignedTimeSeries object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       this - alignedTimeSeries with asymmetric components</span>
+0012 <span class="comment">%       iC - indices of contralateral labels</span>
+0013 <span class="comment">%       iI - indices of ipsilateral labels</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Computes slow - fast</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: getSym, flipLR</span>
+0018 
+0019 [this, iC, iI] = this.flipLR; <span class="comment">% First, flip the non-aligned side.</span>
+0020 <span class="comment">% Then: compute asym data and replace it.</span>
+0021 this.Data = [this.Data(:, iI) - this.Data(:, iC)]; <span class="comment">% we do slow - fast</span>
+0022 <span class="comment">% Update labels:</span>
+0023 this.labels = [regexprep(this.labels(iI), <span class="keyword">...</span>
+0024     [<span class="string">'^'</span> this.labels{iI(1)}(1)], <span class="string">'a'</span>)];
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

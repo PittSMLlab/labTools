@@ -1,0 +1,694 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of orientedLabTimeSeries</title>
+  <meta name="keywords" content="orientedLabTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; orientedLabTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>orientedLabTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@labData/split.html" class="code" title="function newThis = split(this, t0, t1, newClass)">split</a>	split  Splits data into time-delimited segments</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/assessMissing.html" class="code" title="function [fh, ph, missing] = assessMissing(this, labels, fh, ph)">assessMissing</a>	assessMissing  Assesses and plots missing data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivate.html" class="code" title="function newThis = derivate(this)">derivate</a>	derivate  Differentiates timeseries (legacy)</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	derivative  Numerical differentiation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/findOutliers.html" class="code" title="function [newThis, logL] = findOutliers(this, model, verbose)">findOutliers</a>	findOutliers  Detects outliers using model</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns new labTimeSeries with given label(s)</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples over same time range</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Returns timeseries between two timepoints</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/substituteNaNs.html" class="code" title="function this = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Replaces NaN by interpolation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a>	thresholdByChannel  Zeros data based on threshold</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">addLabelSuffix</a>	addLabelSuffix  Adds x/y/z suffix to labels</li><li><a href="alignRotate.html" class="code" title="function newThis = alignRotate(this, newX, newZ)">alignRotate</a>	alignRotate  Aligns to new coordinate system</li><li><a href="animate2.html" class="code" title="function mov = animate2(this, t0, t1, frameRate, writeFileFlag,filename, mode)">animate2</a>	animate2  Creates animation with balloon model</li><li><a href="assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>	assessMissing  Assesses missing data</li><li><a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>	buildNaiveDistancesModel  Builds statistical marker model</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="checkLabelSanity.html" class="code" title="function labelSane = checkLabelSanity(labels)">checkLabelSanity</a>	checkLabelSanity  Validates label format</li><li><a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	computeDifferenceMatrix  Computes inter-marker differences</li><li><a href="computeDifferenceOTS.html" class="code" title="function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)">computeDifferenceOTS</a>	computeDifferenceOTS  Difference matrix as OTS</li><li><a href="computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="derivate.html" class="code" title="function newThis = derivate(this)">derivate</a>	derivate  Differentiates (override)</li><li><a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	derivative  Numerical derivative (override)</li><li><a href="drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>	drawball  Draws 3D sphere</li><li><a href="drawcylinder.html" class="code" title="function drawcylinder(h_axes, X1, Y1, Z1, radius, color)">drawcylinder</a>	drawcylinder  Draws 3D cylinder</li><li><a href="drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>	drawsegment  Draws 3D ellipsoid segment</li><li><a href="fillGaps.html" class="code" title="function newThis = fillGaps(this, model)">fillGaps</a>	fillGaps  Fills missing marker data</li><li><a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a>	findOutliers  Detects outliers using model</li><li><a href="fixBadLabels.html" class="code" title="function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList)">fixBadLabels</a>	fixBadLabels  Detects and fixes label swaps</li><li><a href="flipAxis.html" class="code" title="function newThis = flipAxis(this, axis)">flipAxis</a>	flipAxis  Flips specified axis</li><li><a href="getDataAsOTS.html" class="code" title="function newThis = getDataAsOTS(this, label)">getDataAsOTS</a>	getDataAsOTS  Returns subset as orientedLabTimeSeries</li><li><a href="getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns labTimeSeries (override)</li><li><a href="getLabelPrefix.html" class="code" title="function labelPref = getLabelPrefix(this)">getLabelPrefix</a>	getLabelPrefix  Returns label prefixes without x/y/z</li><li><a href="getOTSfromOrientedData.html" class="code" title="function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,orientation)">getOTSfromOrientedData</a>	getOTSfromOrientedData  Creates OTS from 3D data array</li><li><a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>	getOrientedData  Returns data as 3D tensor</li><li><a href="getVirtualOTS.html" class="code" title="function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)">getVirtualOTS</a>	getVirtualOTS  Computes virtual markers from model</li><li><a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter (override)</li><li><a href="isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">isaLabelPrefix</a>	isaLabelPrefix  Checks if prefix exists</li><li><a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter (override)</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="referenceToMarker.html" class="code" title="function newThis = referenceToMarker(this, marker)">referenceToMarker</a>	referenceToMarker  References data to marker position</li><li><a href="removeOutliers.html" class="code" title="function newThis = removeOutliers(this, model)">removeOutliers</a>	removeOutliers  Removes outlier data points</li><li><a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples (override)</li><li><a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>	rotate  Rotates data by matrix</li><li><a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries (override)</li><li><a href="substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Fills NaN values (override)</li><li><a href="threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a>	thresholdByChannel  Thresholds by channel (override)</li><li><a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="translate.html" class="code" title="function newThis = translate(this, vector)">translate</a>	translate  Translates data by vector</li><li><a href="vectorNorm.html" class="code" title="function newThis = vectorNorm(this)">vectorNorm</a>	vectorNorm  Computes 2-norm of vectors</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Fills NaN values, preserving fixed params</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns processedEMGTimeSeries with specified label(s)</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN)">resampleN</a>	resampleN  Resamples to N samples, preserving processing info</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries, preserving processing info</li><li><a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@labData/computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a>	computeHemiCOP  Computes center of pressure for one leg</li><li><a href="../../../../labTools/classes/dataStructs/@labData/mergeHemiCOPs.html" class="code" title="function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)">mergeHemiCOPs</a>	mergeHemiCOPs  Merges left and right center of pressure data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/castAsOTS.html" class="code" title="function newThis = castAsOTS(this, orientation)">castAsOTS</a>	castAsOTS  Converts to orientedLabTimeSeries</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="computeDifferenceOTS.html" class="code" title="function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)">computeDifferenceOTS</a>	computeDifferenceOTS  Difference matrix as OTS</li><li><a href="derivate.html" class="code" title="function newThis = derivate(this)">derivate</a>	derivate  Differentiates (override)</li><li><a href="getDataAsOTS.html" class="code" title="function newThis = getDataAsOTS(this, label)">getDataAsOTS</a>	getDataAsOTS  Returns subset as orientedLabTimeSeries</li><li><a href="getOTSfromOrientedData.html" class="code" title="function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,orientation)">getOTSfromOrientedData</a>	getOTSfromOrientedData  Creates OTS from 3D data array</li><li><a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter (override)</li><li><a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter (override)</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples (override)</li><li><a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>	rotate  Rotates data by matrix</li><li><a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries (override)</li><li><a href="thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a>	thresholdByChannel  Thresholds by channel (override)</li><li><a href="translate.html" class="code" title="function newThis = translate(this, vector)">translate</a>	translate  Translates data by vector</li><li><a href="../../../../labTools/fun/biomechAnalysis/COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>	COMCALCULATOR Compute segment center-of-mass time series from marker data.</li><li><a href="../../../../labTools/fun/biomechAnalysis/COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>	COPCALCULATOR Calculate the center of pressure time series from GRF data</li><li><a href="../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li><li><a href="../../../../labTools/gui/importc3d/processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">processGRFData</a>	PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = orientedLabTimeSeries(data, t0, Ts, labels,</a></li><li><a href="#_sub2" class="code">function this=renameLabels(this,originalPrefixes,newPrefixes)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a> &lt; <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>
+0002     <span class="comment">%orientedLabTimeSeries  Time series for 3D oriented/vector data</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   orientedLabTimeSeries extends labTimeSeries for data with spatial</span>
+0005     <span class="comment">%   orientation (e.g., marker positions, forces). Each variable has</span>
+0006     <span class="comment">%   three components (x, y, z) and the class maintains orientation</span>
+0007     <span class="comment">%   information for coordinate transformations.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%orientedLabTimeSeries properties:</span>
+0010     <span class="comment">%   orientation - orientationInfo object defining coordinate system</span>
+0011     <span class="comment">%   (inherits all properties from labTimeSeries)</span>
+0012     <span class="comment">%</span>
+0013     <span class="comment">%orientedLabTimeSeries methods:</span>
+0014     <span class="comment">%   orientedLabTimeSeries - constructor</span>
+0015     <span class="comment">%   getDataAsTS - returns labTimeSeries (override)</span>
+0016     <span class="comment">%   getOrientedData - returns data as 3D tensor</span>
+0017     <span class="comment">%   getDataAsOTS - returns subset as orientedLabTimeSeries</span>
+0018     <span class="comment">%   getLabelPrefix - returns label prefixes without x/y/z</span>
+0019     <span class="comment">%   isaLabelPrefix - checks if prefix exists</span>
+0020     <span class="comment">%   computeDifferenceMatrix - computes inter-marker differences</span>
+0021     <span class="comment">%   computeDifferenceOTS - difference matrix as OTS</span>
+0022     <span class="comment">%   computeDistanceMatrix - computes inter-marker distances</span>
+0023     <span class="comment">%   vectorNorm - computes 2-norm of vectors</span>
+0024     <span class="comment">%   buildNaiveDistancesModel - builds statistical marker model</span>
+0025     <span class="comment">%   getVirtualOTS - computes virtual markers from model</span>
+0026     <span class="comment">%   findOutliers - detects outliers using model</span>
+0027     <span class="comment">%   fixBadLabels - detects and fixes label swaps</span>
+0028     <span class="comment">%   fillGaps - fills missing marker data</span>
+0029     <span class="comment">%   removeOutliers - removes outlier data points</span>
+0030     <span class="comment">%   assessMissing - assesses missing data</span>
+0031     <span class="comment">%   translate - translates data by vector</span>
+0032     <span class="comment">%   rotate - rotates data by matrix</span>
+0033     <span class="comment">%   flipAxis - flips specified axis</span>
+0034     <span class="comment">%   alignRotate - aligns to new coordinate system</span>
+0035     <span class="comment">%   referenceToMarker - references data to marker position</span>
+0036     <span class="comment">%   threshold - thresholds by vector magnitude</span>
+0037     <span class="comment">%   thresholdByChannel - thresholds by channel (override)</span>
+0038     <span class="comment">%   cat - concatenates (override)</span>
+0039     <span class="comment">%   resample - resamples (override)</span>
+0040     <span class="comment">%   resampleN - resamples to N samples (override)</span>
+0041     <span class="comment">%   split - splits timeseries (override)</span>
+0042     <span class="comment">%   derivate - differentiates (override)</span>
+0043     <span class="comment">%   derivative - numerical derivative (override)</span>
+0044     <span class="comment">%   lowPassFilter - applies low-pass filter (override)</span>
+0045     <span class="comment">%   highPassFilter - applies high-pass filter (override)</span>
+0046     <span class="comment">%   substituteNaNs - fills NaN values (override)</span>
+0047     <span class="comment">%   plus - adds two OTS (override)</span>
+0048     <span class="comment">%   times - multiplies by constant (override)</span>
+0049     <span class="comment">%   plot3 - plots 3D trajectories</span>
+0050     <span class="comment">%   animate2 - creates animation with balloon model</span>
+0051     <span class="comment">%   animate - creates animation (alternate version)</span>
+0052     <span class="comment">%</span>
+0053     <span class="comment">%See also: labTimeSeries, orientationInfo, naiveDistances</span>
+0054 
+0055     <span class="comment">%% Properties</span>
+0056     properties (SetAccess = private)
+0057         orientation <span class="comment">% orientationInfo object</span>
+0058     <span class="keyword">end</span>
+0059 
+0060     <span class="comment">% properties (Dependent)</span>
+0061     <span class="comment">%     labelPrefixes</span>
+0062     <span class="comment">%     labelSuffixes</span>
+0063     <span class="comment">% end</span>
+0064 
+0065     <span class="comment">%% Constructor</span>
+0066     methods
+0067         <a name="_sub0" href="#_subfunctions" class="code">function this = orientedLabTimeSeries(data, t0, Ts, labels, </a><span class="keyword">...</span>
+0068                 orientation)
+0069             <span class="comment">%orientedLabTimeSeries  Constructor for orientedLabTimeSeries</span>
+0070             <span class="comment">%class</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">%   this = orientedLabTimeSeries(data, t0, Ts, labels,</span>
+0073             <span class="comment">%   orientation) creates oriented timeseries with specified</span>
+0074             <span class="comment">%   data and orientation</span>
+0075             <span class="comment">%</span>
+0076             <span class="comment">%   Inputs:</span>
+0077             <span class="comment">%       data - matrix of data values (samples x 3*channels),</span>
+0078             <span class="comment">%              organized as [x1 y1 z1 x2 y2 z2 ...]</span>
+0079             <span class="comment">%       t0 - initial time in seconds</span>
+0080             <span class="comment">%       Ts - sampling period in seconds</span>
+0081             <span class="comment">%       labels - cell array of labels ending in 'x', 'y', 'z'</span>
+0082             <span class="comment">%       orientation - orientationInfo object defining</span>
+0083             <span class="comment">%                     coordinate system</span>
+0084             <span class="comment">%</span>
+0085             <span class="comment">%   Outputs:</span>
+0086             <span class="comment">%       this - orientedLabTimeSeries object</span>
+0087             <span class="comment">%</span>
+0088             <span class="comment">%   Note: Necessarily uniformly sampled. Labels must pass</span>
+0089             <span class="comment">%         sanity check.</span>
+0090             <span class="comment">%</span>
+0091             <span class="comment">%   See also: labTimeSeries, orientationInfo</span>
+0092 
+0093             <span class="keyword">if</span> nargin &lt; 1
+0094                 data = [];
+0095                 t0 = 0;
+0096                 Ts = [];
+0097                 labels = {};
+0098                 orientation = <a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>();
+0099             <span class="keyword">end</span>
+0100             <span class="keyword">if</span> ~orientedLabTimeSeries.checkLabelSanity(labels)
+0101                 error(<span class="string">'orientedLabTimeSeries:Constructor'</span>, <span class="keyword">...</span>
+0102                     [<span class="string">'Provided labels do not pass the sanity check. '</span> <span class="keyword">...</span>
+0103                     <span class="string">'See issued warnings.'</span>]);
+0104             <span class="keyword">end</span>
+0105             this@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(data, t0, Ts, labels);
+0106             <span class="keyword">if</span> isa(orientation, <span class="string">'orientationInfo'</span>)
+0107                 this.orientation = orientation;
+0108             <span class="keyword">else</span>
+0109                 ME = MException(<span class="string">'orientedLabTimeSeries:Constructor'</span>, <span class="keyword">...</span>
+0110                     <span class="string">'Orientation parameter is not an OrientationInfo object.'</span>);
+0111                 throw(ME);
+0112             <span class="keyword">end</span>
+0113         <span class="keyword">end</span>
+0114     <span class="keyword">end</span>
+0115 
+0116     <span class="comment">%% Data Access Methods</span>
+0117     methods
+0118         [newTS, auxLabel] = <a href="getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>(this, label)
+0119 
+0120         [data, label] = <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>(this, label)
+0121 
+0122         newThis = <a href="getDataAsOTS.html" class="code" title="function newThis = getDataAsOTS(this, label)">getDataAsOTS</a>(this, label)
+0123 
+0124         labelPref = <a href="getLabelPrefix.html" class="code" title="function labelPref = getLabelPrefix(this)">getLabelPrefix</a>(this)
+0125 
+0126         [boolFlag, labelIdx] = <a href="isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">isaLabelPrefix</a>(this, label)
+0127     <span class="keyword">end</span>
+0128 
+0129     <span class="comment">%% Distance and Difference Computation Methods</span>
+0130     methods
+0131         [diffMatrix, labels, labels2, Time] = <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>( <span class="keyword">...</span>
+0132             this, t0, t1, labels, labels2)
+0133 
+0134         diffOTS = <a href="computeDifferenceOTS.html" class="code" title="function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)">computeDifferenceOTS</a>(this, t0, t1, labels, labels2)
+0135 
+0136         [distMatrix, labels, labels2, Time] = <a href="computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(<span class="keyword">...</span>
+0137             this, t0, t1, labels, labels2)
+0138 
+0139         newThis = <a href="vectorNorm.html" class="code" title="function newThis = vectorNorm(this)">vectorNorm</a>(this)
+0140     <span class="keyword">end</span>
+0141 
+0142     <span class="comment">%% Model and Quality Methods</span>
+0143     methods
+0144         model = <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>(this)
+0145 
+0146         virtualOTS = <a href="getVirtualOTS.html" class="code" title="function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)">getVirtualOTS</a>(this, ww, meanDiff, stdDiff)
+0147 
+0148         [this, logL] = <a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a>(this, model, verbose)
+0149 
+0150         [this, m, permuteList, modelScore, badFlag, modelScore2] = <span class="keyword">...</span>
+0151             <a href="fixBadLabels.html" class="code" title="function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList)">fixBadLabels</a>(this, permuteList)
+0152 
+0153         newThis = <a href="fillGaps.html" class="code" title="function newThis = fillGaps(this, model)">fillGaps</a>(this, model)
+0154 
+0155         newThis = <a href="removeOutliers.html" class="code" title="function newThis = removeOutliers(this, model)">removeOutliers</a>(this, model)
+0156 
+0157         [fh, ph, this] = <a href="assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>(this, labelPrefixes, fh, ph)
+0158     <span class="keyword">end</span>
+0159 
+0160     <span class="comment">%% Spatial Transformation Methods</span>
+0161     methods
+0162         newThis = <a href="translate.html" class="code" title="function newThis = translate(this, vector)">translate</a>(this, vector)
+0163 
+0164         newThis = <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>(this, matrix)
+0165 
+0166         newThis = <a href="flipAxis.html" class="code" title="function newThis = flipAxis(this, axis)">flipAxis</a>(this, axis)
+0167 
+0168         newThis = <a href="alignRotate.html" class="code" title="function newThis = alignRotate(this, newX, newZ)">alignRotate</a>(this, newX, newZ)
+0169 
+0170         newThis = <a href="referenceToMarker.html" class="code" title="function newThis = referenceToMarker(this, marker)">referenceToMarker</a>(this, marker)
+0171     <span class="keyword">end</span>
+0172 
+0173     <span class="comment">%% Thresholding Methods</span>
+0174     methods
+0175         newThis = <a href="threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>(this, th)
+0176 
+0177         newThis = <a href="thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a>(this, th, label, moreThanFlag)
+0178     <span class="keyword">end</span>
+0179 
+0180     <span class="comment">%% Override Methods - Type Preservation</span>
+0181     methods
+0182         newThis = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(this, other)
+0183 
+0184         newThis = <a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(this, newTs, newT0, hiddenFlag)
+0185 
+0186         newThis = <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>(this, newN, method)
+0187 
+0188         newThis = <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>(this, t0, t1)
+0189 
+0190         newThis = <a href="derivate.html" class="code" title="function newThis = derivate(this)">derivate</a>(this)
+0191 
+0192         newThis = <a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>(this, diffOrder)
+0193 
+0194         newThis = <a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>(this, fcut)
+0195 
+0196         newThis = <a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>(this, fcut)
+0197 
+0198         newThis = <a href="substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>(this, method)
+0199 
+0200         newThis = <a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>(this, other)
+0201 
+0202         newThis = <a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>(this, constant)
+0203 
+0204         <a name="_sub1" href="#_subfunctions" class="code">function this=renameLabels(this,originalPrefixes,newPrefixes)</a>
+0205             warning(<span class="string">'You should not be renaming the labels. You have been warned. Also, in OTS you can only rename the prefixes.'</span>)
+0206             <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(originalPrefixes)
+0207                 originalPrefixes=this.getLabelPrefix;
+0208             <span class="keyword">end</span>
+0209             <span class="keyword">if</span> size(newPrefixes)~=size(originalPrefixes)
+0210                 error(<span class="string">'Inconsistent label sizes'</span>)
+0211             <span class="keyword">end</span>
+0212             <span class="keyword">if</span> ~isa(originalPrefixes,<span class="string">'cell'</span>)
+0213                 originalPrefixes={originalPrefixes};
+0214                 newPrefixes={newPrefixes};
+0215             <span class="keyword">end</span>
+0216             <span class="keyword">for</span> i=1:length(originalPrefixes)
+0217                 this=this.renameLabels@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(strcat(originalPrefixes{i},{<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>}),strcat(newPrefixes{i},{<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>}));
+0218             <span class="keyword">end</span>
+0219         <span class="keyword">end</span>
+0220     <span class="keyword">end</span>
+0221 
+0222     <span class="comment">%% Visualization Methods</span>
+0223     methods
+0224         fh = <a href="plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(this, fh)
+0225         <span class="comment">% function fh=plot3(this,fh)</span>
+0226         <span class="comment">%     %plots all 3 components of all variables in OTS instance</span>
+0227         <span class="comment">%     %</span>
+0228         <span class="comment">%     %INPUTS:</span>
+0229         <span class="comment">%     %fh, figure handle. If none passed in, a new one is created</span>
+0230         <span class="comment">%     %OUTPUTS:</span>
+0231         <span class="comment">%     %fh, figure handle to figure that shows 3D plot of each data</span>
+0232         <span class="comment">%     %variable (e.g. marker data or GRFdata)</span>
+0233         <span class="comment">%</span>
+0234         <span class="comment">%     if nargin&lt;2 || isempty(fh)</span>
+0235         <span class="comment">%         fh=figure;%return handle to a figure</span>
+0236         <span class="comment">%     else</span>
+0237         <span class="comment">%         figure(fh);</span>
+0238         <span class="comment">%     end</span>
+0239         <span class="comment">%     [data,labelPref]=getOrientedData(this);</span>
+0240         <span class="comment">%     hold on</span>
+0241         <span class="comment">%</span>
+0242         <span class="comment">%     for i=1:length(labelPref)</span>
+0243         <span class="comment">%         plot3(data(:,i,1),data(:,i,2),data(:,i,3),'.')</span>
+0244         <span class="comment">%         if ~isempty(this.Quality)</span>
+0245         <span class="comment">%             aux=this.Quality(:,i)==1;</span>
+0246         <span class="comment">%             plot3(data(aux,i,1),data(aux,i,2),data(aux,i,3),'rx')</span>
+0247         <span class="comment">%         end</span>
+0248         <span class="comment">%     end</span>
+0249         <span class="comment">%     hold off</span>
+0250         <span class="comment">%     axis equal</span>
+0251         <span class="comment">%     legend(labelPref)</span>
+0252         <span class="comment">% end</span>
+0253 
+0254         mov = <a href="animate2.html" class="code" title="function mov = animate2(this, t0, t1, frameRate, writeFileFlag,filename, mode)">animate2</a>( <span class="keyword">...</span>
+0255             this, t0, t1, frameRate, writeFileFlag, filename, mode)
+0256         <span class="comment">% function mov=animate2(this,t0,t1,frameRate,writeFileFlag,filename,mode)</span>
+0257         <span class="comment">%     %This function renders a movie of the 3-D position stored in the orientedLabData object.</span>
+0258         <span class="comment">%     %It only makes sense for markerData type objects.</span>
+0259         <span class="comment">%</span>
+0260         <span class="comment">%     if nargin&lt;2 || isempty(t0) || isempty(t1)</span>
+0261         <span class="comment">%         t0=this.Time(1);</span>
+0262         <span class="comment">%         t1=this.Time(end);</span>
+0263         <span class="comment">%     end</span>
+0264         <span class="comment">%     if nargin&lt;7 || isempty(mode)</span>
+0265         <span class="comment">%         mode=2;</span>
+0266         <span class="comment">%     end</span>
+0267         <span class="comment">%     if nargin&lt;5 || isempty(writeFileFlag)</span>
+0268         <span class="comment">%         writeFileFlag=0;</span>
+0269         <span class="comment">%     end</span>
+0270         <span class="comment">%     if nargin&lt;4 || isempty(frameRate)</span>
+0271         <span class="comment">%         frameRate=25;</span>
+0272         <span class="comment">%     end</span>
+0273         <span class="comment">%     if nargin&lt;6 || isempty(filename)</span>
+0274         <span class="comment">%         filename=['anim_t=[' num2str(round(t0*10)/10) ',' num2str(round(t1*10)/10) '].avi'];</span>
+0275         <span class="comment">%     end</span>
+0276         <span class="comment">%     f=round(this.sampFreq/frameRate);</span>
+0277         <span class="comment">%     frameRate=this.sampFreq/f;</span>
+0278         <span class="comment">%     this=this.split(t0,t1); %Keeping the requested data only</span>
+0279         <span class="comment">%</span>
+0280         <span class="comment">%     if writeFileFlag==1</span>
+0281         <span class="comment">%</span>
+0282         <span class="comment">%         %mov = VideoWriter(filename,'Archival');</span>
+0283         <span class="comment">%         mov = VideoWriter(filename,'Uncompressed AVI');</span>
+0284         <span class="comment">%         mov.FrameRate=frameRate;</span>
+0285         <span class="comment">%         %mov.Quality=100;</span>
+0286         <span class="comment">%         open(mov)</span>
+0287         <span class="comment">%     end</span>
+0288         <span class="comment">%</span>
+0289         <span class="comment">%     list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};</span>
+0290         <span class="comment">%     [b,~]=this.isaLabelPrefix(strcat('L',list));</span>
+0291         <span class="comment">%     list=list(b);</span>
+0292         <span class="comment">%     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^L'),'UniformOutput',false)));</span>
+0293         <span class="comment">%     ll=this.getOrientedData(strcat('L',list));</span>
+0294         <span class="comment">%     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^R'),'UniformOutput',false)));</span>
+0295         <span class="comment">%     rr=this.getOrientedData(strcat('R',list));</span>
+0296         <span class="comment">%     dd=this.getOrientedData;</span>
+0297         <span class="comment">%     fh=figure;</span>
+0298         <span class="comment">%     h_axes=gca;</span>
+0299         <span class="comment">%     %drawnow limitrate</span>
+0300         <span class="comment">%     %u = uicontrol('Style','slider','Position',[10 50 20 340],'Min',1,'Max',size(ll,1),'Value',1);</span>
+0301         <span class="comment">%</span>
+0302         <span class="comment">%</span>
+0303         <span class="comment">%     axis equal</span>
+0304         <span class="comment">%     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:,:,3)))-50 max(max(dd(:,:,3)))+900])</span>
+0305         <span class="comment">%     view(90,0)</span>
+0306         <span class="comment">%     hold on</span>
+0307         <span class="comment">%     switch mode</span>
+0308         <span class="comment">%         case 1</span>
+0309         <span class="comment">%             %Option 1: plain lines</span>
+0310         <span class="comment">%</span>
+0311         <span class="comment">%             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');</span>
+0312         <span class="comment">%             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');</span>
+0313         <span class="comment">%             %set(gca,'NextPlot','replacechildren')</span>
+0314         <span class="comment">%             for k = 1:f:size(ll,1)</span>
+0315         <span class="comment">%                 %</span>
+0316         <span class="comment">%                 %hold on</span>
+0317         <span class="comment">%                 %axes(ax)</span>
+0318         <span class="comment">%                 clearpoints(L)</span>
+0319         <span class="comment">%                 addpoints(L,ll(k,:,1),ll(k,:,2),ll(k,:,3));</span>
+0320         <span class="comment">%                 clearpoints(R)</span>
+0321         <span class="comment">%                 addpoints(R,rr(k,:,1),rr(k,:,2),rr(k,:,3));</span>
+0322         <span class="comment">%                 %hold off</span>
+0323         <span class="comment">%                 u.Value=k;</span>
+0324         <span class="comment">%                 M(k) = getframe(gcf);</span>
+0325         <span class="comment">%             end</span>
+0326         <span class="comment">%</span>
+0327         <span class="comment">%         case 2</span>
+0328         <span class="comment">%             %set mannequin color</span>
+0329         <span class="comment">%             color = [0.2 0.2 0.2]; %gray</span>
+0330         <span class="comment">%             %Option 2: balloon cartoon (GTO style)</span>
+0331         <span class="comment">%             for k = 1:f:size(ll,1)</span>
+0332         <span class="comment">%                 cla</span>
+0333         <span class="comment">%                 for side = 1:2 %For each side</span>
+0334         <span class="comment">%                     switch side</span>
+0335         <span class="comment">%                         case 1</span>
+0336         <span class="comment">%                             s = rr; %Right side</span>
+0337         <span class="comment">%                             colorLegs=[0 160 198]/255;</span>
+0338         <span class="comment">%                         case 2</span>
+0339         <span class="comment">%                             s = ll; %Left side</span>
+0340         <span class="comment">%                             colorLegs=[255 153 0]/255;</span>
+0341         <span class="comment">%                     end</span>
+0342         <span class="comment">%                     for seg = 1:3</span>
+0343         <span class="comment">%                         switch seg</span>
+0344         <span class="comment">%                             case 1</span>
+0345         <span class="comment">%                                 ind1=1; %Toe</span>
+0346         <span class="comment">%                                 ind2=3; %Ank</span>
+0347         <span class="comment">%                                 radius = [1 .5 .5];</span>
+0348         <span class="comment">%                             case 2</span>
+0349         <span class="comment">%                                 ind1=3; %Ank</span>
+0350         <span class="comment">%                                 ind2=5; %Knee</span>
+0351         <span class="comment">%                                 radius = [1 .25 .25];</span>
+0352         <span class="comment">%                             case 3</span>
+0353         <span class="comment">%                                 ind1=5; %Knee</span>
+0354         <span class="comment">%                                 ind2=7; %hip</span>
+0355         <span class="comment">%                                 radius = [1 .35 .35];</span>
+0356         <span class="comment">%                         end</span>
+0357         <span class="comment">%                         X = s(k,[ind1 ind2],1);</span>
+0358         <span class="comment">%                         Y = s(k,[ind1 ind2],2);</span>
+0359         <span class="comment">%                         Z = s(k,[ind1 ind2],3);</span>
+0360         <span class="comment">%                         orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,radius,colorLegs)</span>
+0361         <span class="comment">%                     end</span>
+0362         <span class="comment">%                     %draw hip joints</span>
+0363         <span class="comment">%                     X = s(k,7,1);</span>
+0364         <span class="comment">%                     Y = s(k,7,2);</span>
+0365         <span class="comment">%                     Z = s(k,7,3);</span>
+0366         <span class="comment">%                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)</span>
+0367         <span class="comment">%                     %draw shoulder joints: using hip data by default</span>
+0368         <span class="comment">%                     X = s(k,7,1);</span>
+0369         <span class="comment">%                     Y = s(k,7,2);</span>
+0370         <span class="comment">%                     Z = s(k,7,3)+530;</span>
+0371         <span class="comment">%                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)</span>
+0372         <span class="comment">%                 end</span>
+0373         <span class="comment">%                 %Draw pelvis</span>
+0374         <span class="comment">%                 X = [rr(k,7,1) ll(k,7,1)];</span>
+0375         <span class="comment">%                 Y = [rr(k,7,2) ll(k,7,2)];</span>
+0376         <span class="comment">%                 Z = [rr(k,7,3) ll(k,7,3)];</span>
+0377         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)</span>
+0378         <span class="comment">%                 %Draw shoulder</span>
+0379         <span class="comment">%                 X = [rr(k,7,1) ll(k,7,1)];</span>
+0380         <span class="comment">%                 Y = [rr(k,7,2) ll(k,7,2)];</span>
+0381         <span class="comment">%                 Z = [rr(k,7,3) ll(k,7,3)]+530;</span>
+0382         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .35 .35],color)</span>
+0383         <span class="comment">%                 %Draw torso</span>
+0384         <span class="comment">%                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];</span>
+0385         <span class="comment">%                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];</span>
+0386         <span class="comment">%                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso height</span>
+0387         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)</span>
+0388         <span class="comment">%                 %Draw head</span>
+0389         <span class="comment">%                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];</span>
+0390         <span class="comment">%                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];</span>
+0391         <span class="comment">%                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake head height</span>
+0392         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .75 .75],color)</span>
+0393         <span class="comment">%</span>
+0394         <span class="comment">%                 %Save frame</span>
+0395         <span class="comment">%                 camlight headlight</span>
+0396         <span class="comment">%                 set(findobj(gca,'type','surface'),...</span>
+0397         <span class="comment">%                     'FaceLighting','gouraud',...</span>
+0398         <span class="comment">%                     'AmbientStrength',.3,...</span>
+0399         <span class="comment">%                     'DiffuseStrength',.8,...</span>
+0400         <span class="comment">%                     'SpecularStrength',.8,...</span>
+0401         <span class="comment">%                     'SpecularExponent',25,...</span>
+0402         <span class="comment">%                     'BackFaceLighting','reverselit')</span>
+0403         <span class="comment">%                 currFrame = getframe;</span>
+0404         <span class="comment">%                 if writeFileFlag==1</span>
+0405         <span class="comment">%                     writeVideo(mov,currFrame);</span>
+0406         <span class="comment">%                 end</span>
+0407         <span class="comment">%             end</span>
+0408         <span class="comment">%     end</span>
+0409         <span class="comment">%     hold off</span>
+0410         <span class="comment">%     if writeFileFlag==1</span>
+0411         <span class="comment">%         close(mov)</span>
+0412         <span class="comment">%     end</span>
+0413         <span class="comment">% end</span>
+0414 
+0415         mov = animate( <span class="keyword">...</span>
+0416             this, t0, t1, frameRate, writeFileFlag, filename, mode)
+0417         <span class="comment">% function mov=animate(this,t0,t1,frameRate,writeFileFlag,filename,mode)</span>
+0418         <span class="comment">%     %This function renders a movie of the 3-D position stored in the orientedLabData object.</span>
+0419         <span class="comment">%     %It only makes sense for markerData type objects.</span>
+0420         <span class="comment">%</span>
+0421         <span class="comment">%     if nargin&lt;2 || isempty(t0) || isempty(t1)</span>
+0422         <span class="comment">%         t0=this.Time(1);</span>
+0423         <span class="comment">%         t1=this.Time(end);</span>
+0424         <span class="comment">%     end</span>
+0425         <span class="comment">%     if nargin&lt;7 || isempty(mode)</span>
+0426         <span class="comment">%         mode=2;</span>
+0427         <span class="comment">%     end</span>
+0428         <span class="comment">%     if nargin&lt;5 || isempty(writeFileFlag)</span>
+0429         <span class="comment">%         writeFileFlag=0;</span>
+0430         <span class="comment">%     end</span>
+0431         <span class="comment">%     if nargin&lt;4 || isempty(frameRate)</span>
+0432         <span class="comment">%         frameRate=25;</span>
+0433         <span class="comment">%     end</span>
+0434         <span class="comment">%     if nargin&lt;6 || isempty(filename)</span>
+0435         <span class="comment">%         filename=['anim_t=[' num2str(round(t0*10)/10) ',' num2str(round(t1*10)/10) '].avi'];</span>
+0436         <span class="comment">%     end</span>
+0437         <span class="comment">%     f=round(this.sampFreq/frameRate);</span>
+0438         <span class="comment">%     frameRate=this.sampFreq/f;</span>
+0439         <span class="comment">%     this=this.split(t0,t1); %Keeping the requested data only</span>
+0440         <span class="comment">%</span>
+0441         <span class="comment">%     if writeFileFlag==1</span>
+0442         <span class="comment">%</span>
+0443         <span class="comment">%         %mov = VideoWriter(filename,'Archival');</span>
+0444         <span class="comment">%         mov = VideoWriter(filename,'Uncompressed AVI');</span>
+0445         <span class="comment">%         mov.FrameRate=frameRate;</span>
+0446         <span class="comment">%         %mov.Quality=100;</span>
+0447         <span class="comment">%         open(mov)</span>
+0448         <span class="comment">%     end</span>
+0449         <span class="comment">%</span>
+0450         <span class="comment">%     %             list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};</span>
+0451         <span class="comment">%     list={'ANK','HIP'};</span>
+0452         <span class="comment">%     [b,~]=this.isaLabelPrefix(strcat('L',list));</span>
+0453         <span class="comment">%     list=list(b);</span>
+0454         <span class="comment">%     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^L'),'UniformOutput',false)));</span>
+0455         <span class="comment">%     ll=this.getOrientedData(strcat('L',list));</span>
+0456         <span class="comment">%     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^R'),'UniformOutput',false)));</span>
+0457         <span class="comment">%     rr=this.getOrientedData(strcat('R',list));</span>
+0458         <span class="comment">%     dd=this.getOrientedData;</span>
+0459         <span class="comment">%     fh=figure;</span>
+0460         <span class="comment">%     h_axes=gca;</span>
+0461         <span class="comment">%     %drawnow limitrate</span>
+0462         <span class="comment">%     %u = uicontrol('Style','slider','Position',[10 50 20 340],'Min',1,'Max',size(ll,1),'Value',1);</span>
+0463         <span class="comment">%</span>
+0464         <span class="comment">%</span>
+0465         <span class="comment">%     axis equal</span>
+0466         <span class="comment">%     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:,:,3)))-50 max(max(dd(:,:,3)))+900])</span>
+0467         <span class="comment">%     view(90,0)</span>
+0468         <span class="comment">%     hold on</span>
+0469         <span class="comment">%     switch mode</span>
+0470         <span class="comment">%         case 1</span>
+0471         <span class="comment">%             %Option 1: plain lines</span>
+0472         <span class="comment">%</span>
+0473         <span class="comment">%             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');</span>
+0474         <span class="comment">%             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');</span>
+0475         <span class="comment">%             %set(gca,'NextPlot','replacechildren')</span>
+0476         <span class="comment">%             for k = 1:f:size(ll,1)</span>
+0477         <span class="comment">%                 %</span>
+0478         <span class="comment">%                 %hold on</span>
+0479         <span class="comment">%                 %axes(ax)</span>
+0480         <span class="comment">%                 clearpoints(L)</span>
+0481         <span class="comment">%                 addpoints(L,ll(k,:,1),ll(k,:,2),ll(k,:,3));</span>
+0482         <span class="comment">%                 clearpoints(R)</span>
+0483         <span class="comment">%                 addpoints(R,rr(k,:,1),rr(k,:,2),rr(k,:,3));</span>
+0484         <span class="comment">%                 %hold off</span>
+0485         <span class="comment">%                 u.Value=k;</span>
+0486         <span class="comment">%                 M(k) = getframe(gcf);</span>
+0487         <span class="comment">%             end</span>
+0488         <span class="comment">%</span>
+0489         <span class="comment">%         case 2</span>
+0490         <span class="comment">%             %set mannequin color</span>
+0491         <span class="comment">%             color = [0.2 0.2 0.2]; %gray</span>
+0492         <span class="comment">%             %Option 2: balloon cartoon (GTO style)</span>
+0493         <span class="comment">%             for k = 1:f:size(ll,1)</span>
+0494         <span class="comment">%                 cla</span>
+0495         <span class="comment">%                 for side = 1:2 %For each side</span>
+0496         <span class="comment">%                     switch side</span>
+0497         <span class="comment">%                         case 1</span>
+0498         <span class="comment">%                             s = rr; %Right side</span>
+0499         <span class="comment">%                             colorLegs=[0 160 198]/255;</span>
+0500         <span class="comment">%                         case 2</span>
+0501         <span class="comment">%                             s = ll; %Left side</span>
+0502         <span class="comment">%                             colorLegs=[255 153 0]/255;</span>
+0503         <span class="comment">%                     end</span>
+0504         <span class="comment">%                     for seg = 1%:3</span>
+0505         <span class="comment">%                         switch seg</span>
+0506         <span class="comment">%                             case 1</span>
+0507         <span class="comment">%                                 ind1=1; %Toe</span>
+0508         <span class="comment">%                                 ind2=2; %Ank</span>
+0509         <span class="comment">%                                 radius = [1 .5 .5];</span>
+0510         <span class="comment">%                             case 2</span>
+0511         <span class="comment">%                                 ind1=3; %Ank</span>
+0512         <span class="comment">%                                 ind2=5; %Knee</span>
+0513         <span class="comment">%                                 radius = [1 .25 .25];</span>
+0514         <span class="comment">%                             case 3</span>
+0515         <span class="comment">%                                 ind1=5; %Knee</span>
+0516         <span class="comment">%                                 ind2=7; %hip</span>
+0517         <span class="comment">%                                 radius = [1 .35 .35];</span>
+0518         <span class="comment">%                         end</span>
+0519         <span class="comment">%                         X = s(k,[ind1 ind2],1);</span>
+0520         <span class="comment">%                         Y = s(k,[ind1 ind2],2);</span>
+0521         <span class="comment">%                         Z = s(k,[ind1 ind2],3);</span>
+0522         <span class="comment">%                         orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,radius,colorLegs)</span>
+0523         <span class="comment">%                     end</span>
+0524         <span class="comment">%                     %draw hip joints</span>
+0525         <span class="comment">%                     X = s(k,7,1);</span>
+0526         <span class="comment">%                     Y = s(k,7,2);</span>
+0527         <span class="comment">%                     Z = s(k,7,3);</span>
+0528         <span class="comment">%                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)</span>
+0529         <span class="comment">%                     %draw shoulder joints: using hip data by default</span>
+0530         <span class="comment">%                     X = s(k,7,1);</span>
+0531         <span class="comment">%                     Y = s(k,7,2);</span>
+0532         <span class="comment">%                     Z = s(k,7,3)+530;</span>
+0533         <span class="comment">%                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)</span>
+0534         <span class="comment">%                 end</span>
+0535         <span class="comment">%                 %Draw pelvis</span>
+0536         <span class="comment">%                 X = [rr(k,7,1) ll(k,7,1)];</span>
+0537         <span class="comment">%                 Y = [rr(k,7,2) ll(k,7,2)];</span>
+0538         <span class="comment">%                 Z = [rr(k,7,3) ll(k,7,3)];</span>
+0539         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)</span>
+0540         <span class="comment">%                 %Draw shoulder</span>
+0541         <span class="comment">%                 X = [rr(k,7,1) ll(k,7,1)];</span>
+0542         <span class="comment">%                 Y = [rr(k,7,2) ll(k,7,2)];</span>
+0543         <span class="comment">%                 Z = [rr(k,7,3) ll(k,7,3)]+530;</span>
+0544         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .35 .35],color)</span>
+0545         <span class="comment">%                 %Draw torso</span>
+0546         <span class="comment">%                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];</span>
+0547         <span class="comment">%                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];</span>
+0548         <span class="comment">%                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso height</span>
+0549         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)</span>
+0550         <span class="comment">%                 %Draw head</span>
+0551         <span class="comment">%                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];</span>
+0552         <span class="comment">%                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];</span>
+0553         <span class="comment">%                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake head height</span>
+0554         <span class="comment">%                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .75 .75],color)</span>
+0555         <span class="comment">%</span>
+0556         <span class="comment">%                 %Save frame</span>
+0557         <span class="comment">%                 camlight headlight</span>
+0558         <span class="comment">%                 set(findobj(gca,'type','surface'),...</span>
+0559         <span class="comment">%                     'FaceLighting','gouraud',...</span>
+0560         <span class="comment">%                     'AmbientStrength',.3,...</span>
+0561         <span class="comment">%                     'DiffuseStrength',.8,...</span>
+0562         <span class="comment">%                     'SpecularStrength',.8,...</span>
+0563         <span class="comment">%                     'SpecularExponent',25,...</span>
+0564         <span class="comment">%                     'BackFaceLighting','reverselit')</span>
+0565         <span class="comment">%                 currFrame = getframe;</span>
+0566         <span class="comment">%                 if writeFileFlag==1</span>
+0567         <span class="comment">%                     writeVideo(mov,currFrame);</span>
+0568         <span class="comment">%                 end</span>
+0569         <span class="comment">%             end</span>
+0570         <span class="comment">%     end</span>
+0571         <span class="comment">%     hold off</span>
+0572         <span class="comment">%     if writeFileFlag==1</span>
+0573         <span class="comment">%         close(mov)</span>
+0574         <span class="comment">%     end</span>
+0575         <span class="comment">% end</span>
+0576     <span class="keyword">end</span>
+0577 
+0578     <span class="comment">%% Static Methods</span>
+0579     methods (Static)
+0580         OTS = <a href="getOTSfromOrientedData.html" class="code" title="function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,orientation)">getOTSfromOrientedData</a>( <span class="keyword">...</span>
+0581             data, t0, Ts, labelPrefixes, orientation)
+0582 
+0583         extendedLabels = <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">addLabelSuffix</a>(labels)
+0584 
+0585         labelSane = <a href="checkLabelSanity.html" class="code" title="function labelSane = checkLabelSanity(labels)">checkLabelSanity</a>(labels)
+0586     <span class="keyword">end</span>
+0587 
+0588     <span class="comment">%% Hidden Static Methods</span>
+0589     methods (Hidden, Static)
+0590         <span class="comment">% Auxiliar functions for this.animate()</span>
+0591         <a href="drawsegment.html" class="code" title="function drawsegment(h_axes, X1, Y1, Z1, a, color)">drawsegment</a>(h_axes, X1, Y1, Z1, a, color)
+0592         <span class="comment">% function drawsegment(h_axes,X1,Y1,Z1,a,color)</span>
+0593         <span class="comment">%     %draw an ellipsoid aligned to line defined by 2 points</span>
+0594         <span class="comment">%     %a defines relative length of the ellipsoid radii</span>
+0595         <span class="comment">%     O = [X1(1) Y1(1) Z1(1)]; %vector origin</span>
+0596         <span class="comment">%     V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector</span>
+0597         <span class="comment">%     [theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment</span>
+0598         <span class="comment">%     %build segment surface and rotate/translate</span>
+0599         <span class="comment">%     [X,Y,Z] = ellipsoid(r/2,0,0,r/2,r/2*a(2)/a(1),r/2*a(3)/a(1)); %build segment surface about origin</span>
+0600         <span class="comment">%     h = surf(X,Y,Z,'FaceColor',color,'EdgeColor','none');</span>
+0601         <span class="comment">%     t = hgtransform('Parent',h_axes);</span>
+0602         <span class="comment">%     set(h,'Parent',t)</span>
+0603         <span class="comment">%     Ry = makehgtform('yrotate',-phi);</span>
+0604         <span class="comment">%     Rz = makehgtform('zrotate',theta);</span>
+0605         <span class="comment">%     Tx = makehgtform('translate',O);</span>
+0606         <span class="comment">%     set(t,'Matrix',Tx*Rz*Ry)</span>
+0607         <span class="comment">% end</span>
+0608 
+0609         <a href="drawball.html" class="code" title="function drawball(h_axes, X1, Y1, Z1, radius, color)">drawball</a>(h_axes, X1, Y1, Z1, radius, color)
+0610         <span class="comment">% function drawball(h_axes,X1,Y1,Z1,radius,color)</span>
+0611         <span class="comment">%     %draw a ball centered at a defined point</span>
+0612         <span class="comment">%     O = [X1 Y1 Z1]; %vector origin</span>
+0613         <span class="comment">%     %build ball surface and translate</span>
+0614         <span class="comment">%     [X,Y,Z] = sphere; %build segment surface about origin</span>
+0615         <span class="comment">%     h = surf(X,Y,Z,'FaceColor',color,'EdgeColor','none');</span>
+0616         <span class="comment">%     t = hgtransform('Parent',h_axes);</span>
+0617         <span class="comment">%     set(h,'Parent',t)</span>
+0618         <span class="comment">%     S = makehgtform('scale',radius);</span>
+0619         <span class="comment">%     Tx = makehgtform('translate',O);</span>
+0620         <span class="comment">%     set(t,'Matrix',Tx*S)</span>
+0621         <span class="comment">% end</span>
+0622 
+0623         <a href="drawcylinder.html" class="code" title="function drawcylinder(h_axes, X1, Y1, Z1, radius, color)">drawcylinder</a>(h_axes, X1, Y1, Z1, radius, color)
+0624         <span class="comment">% function drawcylinder(h_axes,X1,Y1,Z1,radius,color)</span>
+0625         <span class="comment">%     %draw a cylinder centered around line defined by 2 points</span>
+0626         <span class="comment">%     %radius defines the radii of the coned-cylinder</span>
+0627         <span class="comment">%     O = [X1(1) Y1(1) Z1(1)]; %vector origin</span>
+0628         <span class="comment">%     V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector</span>
+0629         <span class="comment">%     %build surface and rotate/translate</span>
+0630         <span class="comment">%     [theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment</span>
+0631         <span class="comment">%     [X,Y,Z] = cylinder(radius); %build segment surface about origin</span>
+0632         <span class="comment">%     h = surf(X,Y,Z,'FaceColor',color,'EdgeColor','none');</span>
+0633         <span class="comment">%     t = hgtransform('Parent',h_axes);</span>
+0634         <span class="comment">%     set(h,'Parent',t)</span>
+0635         <span class="comment">%     Sz = makehgtform('scale',[1,1,r]);</span>
+0636         <span class="comment">%     Ry1 = makehgtform('yrotate',pi/2);</span>
+0637         <span class="comment">%     Ry2 = makehgtform('yrotate',-phi);</span>
+0638         <span class="comment">%     Rz = makehgtform('zrotate',theta);</span>
+0639         <span class="comment">%     Tx = makehgtform('translate',O);</span>
+0640         <span class="comment">%     set(t,'Matrix',Tx*Rz*Ry2*Ry1*Sz)</span>
+0641         <span class="comment">% end</span>
+0642     <span class="keyword">end</span>
+0643 
+0644 <span class="keyword">end</span>
+0645</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotCheckerboard</title>
+  <meta name="keywords" content="plotCheckerboard">
+  <meta name="description" content="plotCheckerboard  Displays data as heatmap">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; plotCheckerboard.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotCheckerboard
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plotCheckerboard  Displays data as heatmap</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [fh, ph] = plotCheckerboard(this, fh, ph) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotCheckerboard  Displays data as heatmap
+
+   [fh, ph] = plotCheckerboard(this) creates heatmap visualization of
+   mean aligned data
+
+   [fh, ph] = plotCheckerboard(this, fh, ph) uses existing handles
+
+   Inputs:
+       this - alignedTimeSeries object
+       fh - figure handle (optional)
+       ph - plot handle (optional)
+
+   Outputs:
+       fh - figure handle
+       ph - plot handle
+
+   Note: To do - check if events exist and add DS/STANCE/DS/SWING
+         labels
+
+   See also: <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fh, ph] = plotCheckerboard(this, fh, ph)</a>
+0002 <span class="comment">%plotCheckerboard  Displays data as heatmap</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [fh, ph] = plotCheckerboard(this) creates heatmap visualization of</span>
+0005 <span class="comment">%   mean aligned data</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [fh, ph] = plotCheckerboard(this, fh, ph) uses existing handles</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - alignedTimeSeries object</span>
+0011 <span class="comment">%       fh - figure handle (optional)</span>
+0012 <span class="comment">%       ph - plot handle (optional)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       fh - figure handle</span>
+0016 <span class="comment">%       ph - plot handle</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Note: To do - check if events exist and add DS/STANCE/DS/SWING</span>
+0019 <span class="comment">%         labels</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: plot</span>
+0022 
+0023 <span class="keyword">if</span> nargin &lt; 2
+0024     fh = figure();
+0025 <span class="keyword">else</span>
+0026     figure(fh);
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 3
+0029     ph = gca;
+0030 <span class="keyword">else</span>
+0031     axes(ph);
+0032 <span class="keyword">end</span>
+0033 m = this.mean;
+0034 <span class="comment">% imagesc(m.Data')</span>
+0035 surf([this.Time, 2 * this.Time(end) - this.Time(end - 1)], <span class="keyword">...</span>
+0036     [0:size(m.Data, 2)], [[m.Data'; m.Data(:, end)'], <span class="keyword">...</span>
+0037     [m.Data(<span class="keyword">end</span>, :)'; 0]], <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+0038 view(2);
+0039 ax = gca;
+0040 ax.YTick = [1:length(this.labels)] - 0.5;
+0041 ax.YTickLabels = this.labels;
+0042 ax.XTick = [0.5 0.5 + cumsum(this.alignmentVector)] / <span class="keyword">...</span>
+0043     sum(this.alignmentVector) * this.Time(end);
+0044 ax.XTickLabel = this.alignmentLabels;
+0045 axis([this.Time(1) 2 * this.Time(end) - this.Time(end - 1) <span class="keyword">...</span>
+0046     0 size(m.Data, 2)]);
+0047 <span class="comment">% Colormap:</span>
+0048 ex2 = [0.2314    0.2980    0.7529];
+0049 ex1 = [0.7255    0.0863    0.1608];
+0050 gamma = 0.5;
+0051 map = [bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, ex1.^(1 / gamma), bsxfun(@<a href="times.html" class="code" title="function this = times(this, constant)">times</a>, <span class="keyword">...</span>
+0052     1 - ex1.^(1 / gamma), [0:0.01:1]')); <span class="keyword">...</span>
+0053     bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, ex2.^(1 / gamma), bsxfun(@<a href="times.html" class="code" title="function this = times(this, constant)">times</a>, <span class="keyword">...</span>
+0054     1 - ex2.^(1 / gamma), [1:-0.01:0]'))].^gamma;
+0055 colormap(flipud(map));
+0056 <span class="keyword">try</span>
+0057     caxis([-1 1] * max(abs(m.Data(:)))); <span class="comment">% Fails if plotted data is NaN</span>
+0058     colorbar;
+0059 <span class="keyword">catch</span>
+0060 
+0061 <span class="keyword">end</span>
+0062 <span class="comment">% TODO: check if the events exist, and add DS/STANCE/DS/SWING labels</span>
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

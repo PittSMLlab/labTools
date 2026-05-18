@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getDataAsOTS</title>
+  <meta name="keywords" content="getDataAsOTS">
+  <meta name="description" content="getDataAsOTS  Returns subset as orientedLabTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; getDataAsOTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getDataAsOTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getDataAsOTS  Returns subset as orientedLabTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = getDataAsOTS(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getDataAsOTS  Returns subset as orientedLabTimeSeries
+
+   newThis = getDataAsOTS(this) returns all data as OTS
+
+   newThis = getDataAsOTS(this, label) returns data for specified
+   marker prefixes
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       label - cell array of marker prefixes (optional, default: all)
+
+   Outputs:
+       newThis - orientedLabTimeSeries with requested data
+
+   See also: <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>, <a href="getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>	getOrientedData  Returns data as 3D tensor</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = getDataAsOTS(this, label)</a>
+0002 <span class="comment">%getDataAsOTS  Returns subset as orientedLabTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = getDataAsOTS(this) returns all data as OTS</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   newThis = getDataAsOTS(this, label) returns data for specified</span>
+0007 <span class="comment">%   marker prefixes</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0011 <span class="comment">%       label - cell array of marker prefixes (optional, default: all)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       newThis - orientedLabTimeSeries with requested data</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: getOrientedData, getDataAsTS</span>
+0017 
+0018 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(label)
+0019     label = [];
+0020 <span class="keyword">end</span>
+0021 [data, label] = <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>(this, label);
+0022 data = permute(data, [1, 3, 2]);
+0023 newThis = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(data(:, :), this.Time(1), <span class="keyword">...</span>
+0024     this.sampPeriod, <span class="keyword">...</span>
+0025     orientedLabTimeSeries.addLabelSuffix(label), this.orientation);
+0026 <span class="keyword">end</span>
+0027</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

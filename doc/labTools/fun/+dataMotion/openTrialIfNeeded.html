@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of openTrialIfNeeded</title>
+  <meta name="keywords" content="openTrialIfNeeded">
+  <meta name="description" content="OPENTRIALIFNECESSARY Check if the trial is open, open if not, close others">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; openTrialIfNeeded.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>openTrialIfNeeded
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>OPENTRIALIFNECESSARY Check if the trial is open, open if not, close others</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function isOpen = openTrialIfNeeded(pathTrial,vicon) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">OPENTRIALIFNECESSARY Check if the trial is open, open if not, close others
+   This helper function checks if a specified trial is already open, and
+ if not, it closes any other open trial and opens the desired one.
+
+ input(s):
+   pathTrial: full path to the trial file (e.g., .x2d or folder path)
+   vicon: Vicon Nexus SDK object
+
+ output(s):
+   isOpen: logical, true if the specified trial is open, false otherwise</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function isOpen = openTrialIfNeeded(pathTrial,vicon)</a>
+0002 <span class="comment">%OPENTRIALIFNECESSARY Check if the trial is open, open if not, close others</span>
+0003 <span class="comment">%   This helper function checks if a specified trial is already open, and</span>
+0004 <span class="comment">% if not, it closes any other open trial and opens the desired one.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% input(s):</span>
+0007 <span class="comment">%   pathTrial: full path to the trial file (e.g., .x2d or folder path)</span>
+0008 <span class="comment">%   vicon: Vicon Nexus SDK object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% output(s):</span>
+0011 <span class="comment">%   isOpen: logical, true if the specified trial is open, false otherwise</span>
+0012 
+0013 narginchk(2,2);                 <span class="comment">% verify correct number of input arguments</span>
+0014 
+0015 isOpen = false;
+0016 <span class="keyword">try</span>
+0017     [dirCurrentTrial,nameCurrentTrial] = vicon.GetTrialName();
+0018     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(nameCurrentTrial)
+0019         pathCurrentTrial = fullfile(dirCurrentTrial,nameCurrentTrial);
+0020         <span class="keyword">if</span> strcmpi(pathCurrentTrial,pathTrial)
+0021             fprintf(<span class="string">'Trial is already open: %s\n'</span>,pathTrial);
+0022             isOpen = true;
+0023             <span class="keyword">return</span>;
+0024         <span class="keyword">else</span>
+0025             fprintf(<span class="string">'Another trial is open. Closing current trial...\n'</span>);
+0026             vicon.CloseTrial(200);
+0027         <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">catch</span> ME
+0030     warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% open the trial if not already open</span>
+0034 <span class="keyword">if</span> ~isOpen
+0035     fprintf(<span class="string">'Opening trial from %s...\n'</span>,pathTrial);
+0036     <span class="keyword">try</span>
+0037         vicon.OpenTrial(pathTrial,200);
+0038         fprintf(<span class="string">'Trial opened successfully.\n'</span>);
+0039         isOpen = true;
+0040     <span class="keyword">catch</span> ME
+0041         warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

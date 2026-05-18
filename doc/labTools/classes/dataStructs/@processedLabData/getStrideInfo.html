@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getStrideInfo</title>
+  <meta name="keywords" content="getStrideInfo">
+  <meta name="description" content="getStrideInfo  Returns stride count and timing information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@processedLabData</a> &gt; getStrideInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@processedLabData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getStrideInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getStrideInfo  Returns stride count and timing information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getStrideInfo  Returns stride count and timing information
+
+   [numStrides, initTime, endTime] = getStrideInfo(this) returns stride
+   information using the reference leg heel strike as the default trigger
+   event
+
+   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent)
+   returns stride information using the specified trigger event
+
+   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent,
+   endEvent) returns stride information where each stride is defined from
+   triggerEvent to endEvent
+
+   Inputs:
+       this - processedLabData object
+       triggerEvent - event label for stride start
+                      (default: [refLeg 'HS'])
+       endEvent - event label for stride end
+                  (default: same as triggerEvent)
+
+   Outputs:
+       numStrides - number of complete strides
+       initTime - vector of stride start times
+       endTime - vector of stride end times
+
+   See also: <a href="getStepInfo.html" class="code" title="function [numSteps, initTime, endTime, initEventSide] =getStepInfo(this, triggerEvent)">getStepInfo</a>, <a href="separateIntoStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoStrides(this, triggerEvent)">separateIntoStrides</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getArrayedEvents.html" class="code" title="function [arrayedEvents] = getArrayedEvents(this, eventList)">getArrayedEvents</a>	getArrayedEvents  Retrieves events organized as an array</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/getArrayedEvents.html" class="code" title="function eventTimes = getArrayedEvents(eventTS, eventLabel)">getArrayedEvents</a>	getArrayedEvents  Extracts event times as array</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="getStridedField.html" class="code" title="function [stridedField, bad, initTime, events] =getStridedField(this, field, events)">getStridedField</a>	getStridedField  Extracts field data organized by stride</li><li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li><li><a href="separateIntoDoubleStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoDoubleStrides(this, triggerEvent)">separateIntoDoubleStrides</a>	separateIntoDoubleStrides  Splits data into 2-stride segments</li><li><a href="separateIntoStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoStrides(this, triggerEvent)">separateIntoStrides</a>	separateIntoStrides  Splits data into individual stride segments</li><li><a href="separateIntoSuperStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoSuperStrides(this, triggerEvent)">separateIntoSuperStrides</a>	separateIntoSuperStrides  Splits data into 1.5-stride segments</li><li><a href="../../../../labTools/fun/parameterCalculation/calcExperimentalParams.html" class="code" title="function out = calcExperimentalParams(trialData, subData, eventClass, initEventSide)">calcExperimentalParams</a>	CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [numStrides, initTime, endTime] = getStrideInfo(this, </a><span class="keyword">...</span>
+0002     triggerEvent, endEvent)
+0003 <span class="comment">%getStrideInfo  Returns stride count and timing information</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [numStrides, initTime, endTime] = getStrideInfo(this) returns stride</span>
+0006 <span class="comment">%   information using the reference leg heel strike as the default trigger</span>
+0007 <span class="comment">%   event</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent)</span>
+0010 <span class="comment">%   returns stride information using the specified trigger event</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent,</span>
+0013 <span class="comment">%   endEvent) returns stride information where each stride is defined from</span>
+0014 <span class="comment">%   triggerEvent to endEvent</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Inputs:</span>
+0017 <span class="comment">%       this - processedLabData object</span>
+0018 <span class="comment">%       triggerEvent - event label for stride start</span>
+0019 <span class="comment">%                      (default: [refLeg 'HS'])</span>
+0020 <span class="comment">%       endEvent - event label for stride end</span>
+0021 <span class="comment">%                  (default: same as triggerEvent)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   Outputs:</span>
+0024 <span class="comment">%       numStrides - number of complete strides</span>
+0025 <span class="comment">%       initTime - vector of stride start times</span>
+0026 <span class="comment">%       endTime - vector of stride end times</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%   See also: getStepInfo, separateIntoStrides</span>
+0029 
+0030 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(triggerEvent)
+0031     triggerEvent = [this.metaData.refLeg <span class="string">'HS'</span>];
+0032     <span class="comment">% Using refLeg's HS as default event for striding.</span>
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">% TODO: call onto arrayedEvents, for uniformity:</span>
+0036 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(endEvent)
+0037     <span class="comment">% using triggerEvent for endEvent</span>
+0038     arrayedEvents = <a href="getArrayedEvents.html" class="code" title="function [arrayedEvents] = getArrayedEvents(this, eventList)">getArrayedEvents</a>(this, {triggerEvent});
+0039     initTime = arrayedEvents(1:end - 1, 1);
+0040     endTime = arrayedEvents(2:<span class="keyword">end</span>, 1);
+0041 <span class="keyword">else</span>
+0042     arrayedEvents = <a href="getArrayedEvents.html" class="code" title="function [arrayedEvents] = getArrayedEvents(this, eventList)">getArrayedEvents</a>(this, {triggerEvent, endEvent});
+0043     <span class="keyword">if</span> ~isnan(arrayedEvents(<span class="keyword">end</span>, 2)) <span class="comment">% Last stride is incomplete</span>
+0044         arrayedEvents = arrayedEvents(1:end - 1, :);
+0045     <span class="keyword">end</span>
+0046     initTime = arrayedEvents(:, 1);
+0047     endTime = arrayedEvents(:, 2);
+0048 <span class="keyword">end</span>
+0049 numStrides = size(initTime, 1);
+0050 
+0051 <span class="comment">% refLegEventList = this.getPartialGaitEvents(triggerEvent);</span>
+0052 <span class="comment">% refIdxLst = find(refLegEventList == 1);</span>
+0053 <span class="comment">% auxTime = this.gaitEvents.Time;</span>
+0054 <span class="comment">% initTime = auxTime(refIdxLst(1:end - 1));</span>
+0055 <span class="comment">% numStrides = length(initTime);</span>
+0056 <span class="comment">% if nargin &lt; 3 || isempty(endEvent) % using triggerEvent for endEvent</span>
+0057 <span class="comment">%     endTime = auxTime(refIdxLst(2:end));</span>
+0058 <span class="comment">% else % End of interval depends on another event</span>
+0059 <span class="comment">%     endEventList = this.getPartialGaitEvents(endEvent);</span>
+0060 <span class="comment">%     endIdxLst = find(endEventList == 1);</span>
+0061 <span class="comment">%     i = 0;</span>
+0062 <span class="comment">%     noEnd = true;</span>
+0063 <span class="comment">%     while i &lt; numStrides &amp;&amp; noEnd % This is an infinite loop...</span>
+0064 <span class="comment">%         i = i + 1;</span>
+0065 <span class="comment">%         aux = auxTime(find(endIdxLst &gt; refIdxLst(i), 1, 'first'));</span>
+0066 <span class="comment">%         if ~isempty(aux)</span>
+0067 <span class="comment">%             endTime(i) = aux;</span>
+0068 <span class="comment">%         else</span>
+0069 <span class="comment">%             endTime(i) = NaN;</span>
+0070 <span class="comment">%         end</span>
+0071 <span class="comment">%     end</span>
+0072 <span class="comment">% end</span>
+0073 <span class="keyword">end</span>
+0074</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

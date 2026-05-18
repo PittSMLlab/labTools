@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SSTauPostAdapt</title>
+  <meta name="keywords" content="SSTauPostAdapt">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">SteadyStateTau</a> &gt; SSTauPostAdapt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\SteadyStateTau&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SSTauPostAdapt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function results = SSTauPostAdapt(adaptDataList,params,groups,plotFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	this version was my first attempt to plot the postadaptation stuff,</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 
+0003 <span class="comment">%%</span>
+0004 <a name="_sub0" href="#_subfunctions" class="code">function results = SSTauPostAdapt(adaptDataList,params,groups,plotFlag)</a>
+0005 
+0006 <span class="comment">% define number of points to use for calculating values</span>
+0007 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0008 transientNumPts = 5; <span class="comment">%OG and Washout</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% if nargin&lt;3 || isempty(groups)</span>
+0011 <span class="comment">%     groups=fields(SMatrix);  %default</span>
+0012 <span class="comment">% end</span>
+0013 <span class="comment">% ngroups=length(groups);</span>
+0014 
+0015 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0016     <span class="keyword">if</span> ~isa(adaptDataList{1},<span class="string">'cell'</span>)
+0017         adaptDataList={adaptDataList};
+0018     <span class="keyword">end</span>
+0019 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>) || isa(adaptDataList,<span class="string">'adaptationData'</span>)
+0020     adaptDataList={{adaptDataList}};
+0021 <span class="keyword">end</span>
+0022 ngroups=length(adaptDataList);
+0023 
+0024 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0025 
+0026 results.SSpersub= [];
+0027 results.Strides2SS= [];
+0028 
+0029 
+0030 <span class="comment">%   steadystate_sub = cell(6,1);</span>
+0031 <span class="comment">%   Strides2SS_sub = cell(6,1);</span>
+0032 
+0033  steadystate_all = cell(6,1);
+0034   Strides2SS_all = cell(6,1);
+0035 <span class="keyword">for</span> group=1:ngroups
+0036     
+0037     OGbase=[];
+0038     TMbase=[];
+0039     steadystate=[];    
+0040     ogafter=[];
+0041     washout=[];
+0042     washout2=[];
+0043             <span class="comment">%~~~~~~~~~~~</span>
+0044     Strides2SS=[];
+0045     <span class="comment">%~~~~~~~~~~~</span>
+0046   
+0047 
+0048 
+0049     <span class="keyword">for</span> subject=1:length(adaptDataList{group})
+0050         <span class="comment">% load subject</span>
+0051         adaptData=adaptDataList{group}{subject};      
+0052         
+0053         <span class="comment">% remove baseline bias</span>
+0054         adaptData=adaptData.removeBadStrides;
+0055         adaptData=adaptData.removeBias;        
+0056           
+0057 
+0058         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(cellfun(@(x) strcmp(x, <span class="string">'Post 1'</span>), adaptData.metaData.conditionName))==0
+0059             <span class="comment">% compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)</span>
+0060         adapt2Data=adaptData.getParamInCond(params,<span class="string">'Post 1'</span>);
+0061         steadystate=[steadystate; nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:))];
+0062         
+0063         <span class="keyword">end</span>
+0064        
+0065         steadystate_all{group} = steadystate;
+0066     <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0067         <span class="comment">%Compute the %Forgetting, added 07/2015 CJ</span>
+0068         idxNET = find(strcmp(params, <span class="string">'netContributionnorm2'</span>));
+0069         idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
+0070         idxGOOD = find(strcmp(params, <span class="string">'good'</span>));
+0071 
+0072     <span class="comment">%Compute the Strides2SS, added 07/2015 CJS</span>
+0073 
+0074     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNET)==0
+0075         Strides2SS=[Strides2SS; <a href="CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>(adapt2Data,steadystate(subject,:), params, plotFlag, adaptData.subData.ID)];
+0076          
+0077     <span class="keyword">else</span>
+0078         Strides2SS=[Strides2SS; NaN.*ones(1, length(params))];
+0079     <span class="keyword">end</span>
+0080      Strides2SS_all{group} =  Strides2SS;
+0081 
+0082     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxGOOD)==0
+0083         Strides2SS=steadystate;
+0084     <span class="keyword">end</span>
+0085 
+0086    
+0087     <span class="keyword">end</span>
+0088 results.SSpersub  =  steadystate_all;
+0089 results.Strides2SS =  Strides2SS_all;
+0090   
+0091 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

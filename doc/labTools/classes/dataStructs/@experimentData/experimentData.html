@@ -1,0 +1,515 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of experimentData</title>
+  <meta name="keywords" content="experimentData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; experimentData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>experimentData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="checkMarkerHealth.html" class="code" title="function this = checkMarkerHealth(this, refTrial)">checkMarkerHealth</a>	checkMarkerHealth  Validates marker data quality</li><li><a href="computeAngles.html" class="code" title="function this = computeAngles(this)">computeAngles</a>	computeAngles  Calculates joint angles for all trials</li><li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="extractMarkerModels.html" class="code" title="function [allTrialModels, modelScore, badFlag] =extractMarkerModels(this)">extractMarkerModels</a>	extractMarkerModels  Builds marker position models from data</li><li><a href="flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">flushAndRecomputeParameters</a>	FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.</li><li><a href="getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>	getAlignedField  Extracts time-aligned field data across</li><li><a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Gets condition indices from names</li><li><a href="getNonRefLeg.html" class="code" title="function fL = getNonRefLeg(this)">getNonRefLeg</a>	getNonRefLeg  Returns non-reference leg</li><li><a href="getRefLeg.html" class="code" title="function refLeg = getRefLeg(this)">getRefLeg</a>	getRefLeg  Returns reference leg for parameter computations</li><li><a href="getSlowLeg.html" class="code" title="function slowLeg = getSlowLeg(this)">getSlowLeg</a>	getSlowLeg  Returns leg that was on slow belt</li><li><a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>	getStridedField  Extracts stride-segmented field data across</li><li><a href="getSubjectAgeAtExperimentDate.html" class="code" title="function ageInMonths = getSubjectAgeAtExperimentDate(this)">getSubjectAgeAtExperimentDate</a>	getSubjectAgeAtExperimentDate  Computes subject age at experiment time</li><li><a href="makeDataObj.html" class="code" title="function adaptData = makeDataObj(this, filename, experimentalFlag,contraLateralFlag)">makeDataObj</a>	makeDataObj  Creates an adaptationData object</li><li><a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li><li><a href="parameterEvolutionPlot.html" class="code" title="function [h, adaptDataObject] = parameterEvolutionPlot(this, field)">parameterEvolutionPlot</a>	parameterEvolutionPlot  Plots parameter evolution across conditions</li><li><a href="parameterTimeCourse.html" class="code" title="function [h, adaptDataObject] = parameterTimeCourse(this, field)">parameterTimeCourse</a>	parameterTimeCourse  Plots parameter time course</li><li><a href="process.html" class="code" title="function processedThis = process(this, eventClass)">process</a>	process  Processes raw data for all trials in the experimental session.</li><li><a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	recomputeEvents  Recalculates gait events and parameters</li><li><a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>	RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</li><li><a href="reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">reduce</a>	reduce  Creates reducedLabData for all trials</li><li><a href="splitIntoStrides.html" class="code" title="function stridedExp = splitIntoStrides(this, refEvent)">splitIntoStrides</a>	splitIntoStrides  Separates trials into individual strides</li><li><a href="../../../../labTools/classes/dataStructs/@labData/process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li><li><a href="../../../../labTools/classes/dataStructs/@labData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-calculates gait events from angle data</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getAlignedField.html" class="code" title="function [alignedField, bad] = getAlignedField(this, field, events,alignmentLengths)">getAlignedField</a>	getAlignedField  Time-aligns field data to gait events</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	getStrideInfo  Returns stride count and timing information</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStridedField.html" class="code" title="function [stridedField, bad, initTime, events] =getStridedField(this, field, events)">getStridedField</a>	getStridedField  Extracts field data organized by stride</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-computes gait events and adaptation parameters</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">reduce</a>	reduce  Aligns and resamples all timeseries to the same indexes and puts</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Returns condition indices from names</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="process.html" class="code" title="function processedThis = process(this, eventClass)">process</a>	process  Processes raw data for all trials in the experimental session.</li><li><a href="reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">reduce</a>	reduce  Creates reducedLabData for all trials</li><li><a href="../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = experimentData(meta, sub, data)</a></li><li><a href="#_sub2" class="code">function this = set.metaData(this, meta)</a></li><li><a href="#_sub3" class="code">function this = set.subData(this, sub)</a></li><li><a href="#_sub4" class="code">function this = set.data(this, data)</a></li><li><a href="#_sub5" class="code">function a = get.isProcessed(this)</a></li><li><a href="#_sub6" class="code">function a = get.isStepped(this)</a></li><li><a href="#_sub7" class="code">function a = get.isRaw(this)</a></li><li><a href="#_sub8" class="code">function fastLeg = get.fastLeg(this)</a></li><li><a href="#_sub9" class="code">function this = loadobj(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="experimentData.html" class="code" title="">experimentData</a>
+0002     <span class="comment">% experimentData  Contains all information for a single</span>
+0003     <span class="comment">%   experimental session.</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%   experimentData organizes all data, metadata, and subject</span>
+0006     <span class="comment">% information for a complete experimental session. It provides</span>
+0007     <span class="comment">% methods for data processing, analysis, visualization, and</span>
+0008     <span class="comment">% parameter extraction.</span>
+0009     <span class="comment">%</span>
+0010     <span class="comment">% Toolbox Dependencies:</span>
+0011     <span class="comment">%   None</span>
+0012     <span class="comment">%</span>
+0013     <span class="comment">% experimentData properties:</span>
+0014     <span class="comment">%   metaData    - experimentMetaData object with experimental</span>
+0015     <span class="comment">%                 conditions and trial organization</span>
+0016     <span class="comment">%   subData     - subjectData object with subject demographics</span>
+0017     <span class="comment">%                 and anthropometrics</span>
+0018     <span class="comment">%   data        - cell array of labData objects or any objects</span>
+0019     <span class="comment">%                 that extend labData</span>
+0020     <span class="comment">%   isRaw       - true if data contains rawLabData objects (dependent)</span>
+0021     <span class="comment">%   isProcessed - true if data contains processedLabData objects</span>
+0022     <span class="comment">%                 (dependent)</span>
+0023     <span class="comment">%   isStepped   - true if data contains strideData objects (dependent)</span>
+0024     <span class="comment">%   fastLeg     - leg on the fast belt, 'L' or 'R' (dependent)</span>
+0025     <span class="comment">%</span>
+0026     <span class="comment">% experimentData methods:</span>
+0027     <span class="comment">%   experimentData                - constructor</span>
+0028     <span class="comment">%   getSubjectAgeAtExperimentDate - subject age at experiment date</span>
+0029     <span class="comment">%   getSlowLeg                    - slow-belt leg identifier</span>
+0030     <span class="comment">%   getRefLeg                     - reference leg identifier</span>
+0031     <span class="comment">%   getNonRefLeg                  - non-reference leg identifier</span>
+0032     <span class="comment">%   process                       - processes all raw trial data</span>
+0033     <span class="comment">%   extractMarkerModels           - builds marker position models</span>
+0034     <span class="comment">%   checkMarkerHealth             - validates marker data quality</span>
+0035     <span class="comment">%   computeAngles                 - computes joint angles</span>
+0036     <span class="comment">%   makeDataObj                   - creates adaptationData object</span>
+0037     <span class="comment">%   reduce                        - creates reducedLabData objects</span>
+0038     <span class="comment">%   parameterEvolutionPlot        - plots parameter evolution</span>
+0039     <span class="comment">%   parameterTimeCourse           - plots parameter time course</span>
+0040     <span class="comment">%   recomputeParameters           - recalculates adaptation params</span>
+0041     <span class="comment">%   flushAndRecomputeParameters   - fully recalculates parameters</span>
+0042     <span class="comment">%   recomputeEvents               - recalculates gait events</span>
+0043     <span class="comment">%   splitIntoStrides              - splits trials into strides</span>
+0044     <span class="comment">%   getStridedField               - extracts strided field data</span>
+0045     <span class="comment">%   getAlignedField               - extracts time-aligned data</span>
+0046     <span class="comment">%   getConditionIdxsFromName      - condition indices from names</span>
+0047     <span class="comment">%   getStrideInfo                 - stride timing information</span>
+0048     <span class="comment">%</span>
+0049     <span class="comment">% experimentData static methods:</span>
+0050     <span class="comment">%   loadobj - backward-compatible object loading (removes DOB)</span>
+0051     <span class="comment">%</span>
+0052     <span class="comment">% See also: experimentMetaData, subjectData, labData, adaptationData</span>
+0053 
+0054     <span class="comment">%% Properties</span>
+0055     properties
+0056         metaData = [] <span class="comment">% experimentMetaData object with experiment info</span>
+0057         subData  = [] <span class="comment">% subjectData object</span>
+0058         data     = {} <span class="comment">% cell array of labData or subclass objects</span>
+0059     <span class="keyword">end</span>
+0060 
+0061     properties (Dependent)
+0062         isRaw       <span class="comment">% true if data is rawLabData class</span>
+0063         isProcessed <span class="comment">% true if data is processedLabData class</span>
+0064         isStepped   <span class="comment">% true if data is strideData class (or strided)</span>
+0065         fastLeg
+0066     <span class="keyword">end</span>
+0067 
+0068     <span class="comment">%% Constructor</span>
+0069     methods
+0070         <a name="_sub0" href="#_subfunctions" class="code">function this = experimentData(meta, sub, data)</a>
+0071             <span class="comment">%experimentData  Constructor for experimentData class.</span>
+0072             <span class="comment">%</span>
+0073             <span class="comment">%   this = experimentData(meta, sub, data) creates an</span>
+0074             <span class="comment">%   experiment data object with specified metadata, subject</span>
+0075             <span class="comment">%   data, and trial data. All arguments are optional.</span>
+0076             <span class="comment">%</span>
+0077             <span class="comment">%   Inputs:</span>
+0078             <span class="comment">%       meta - (optional) experimentMetaData object</span>
+0079             <span class="comment">%       sub  - (optional) subjectData object</span>
+0080             <span class="comment">%       data - (optional) cell array of labData objects</span>
+0081             <span class="comment">%</span>
+0082             <span class="comment">%   Outputs:</span>
+0083             <span class="comment">%       this - experimentData object</span>
+0084             <span class="comment">%</span>
+0085             <span class="comment">%   See also: experimentMetaData, subjectData, labData</span>
+0086 
+0087             arguments
+0088                 meta = []
+0089                 sub  = []
+0090                 data = {}
+0091             <span class="keyword">end</span>
+0092 
+0093             <span class="comment">% Only assign non-empty arguments to avoid triggering</span>
+0094             <span class="comment">% property validators with the default empty values</span>
+0095             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(meta)
+0096                 this.metaData = meta;
+0097             <span class="keyword">end</span>
+0098             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sub)
+0099                 this.subData = sub;
+0100             <span class="keyword">end</span>
+0101             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(data)
+0102                 this.data = data;
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105     <span class="keyword">end</span>
+0106 
+0107     <span class="comment">%% Property Setters</span>
+0108     methods
+0109         <a name="_sub1" href="#_subfunctions" class="code">function this = set.metaData(this, meta)</a>
+0110             <span class="comment">%set.metaData  Validates and sets experiment metadata.</span>
+0111             <span class="comment">%</span>
+0112             <span class="comment">%   Property-block validators (mustBeA) were not used here</span>
+0113             <span class="comment">%   because MATLAB evaluates them against the declared</span>
+0114             <span class="comment">%   default value at class load time, causing an immediate</span>
+0115             <span class="comment">%   error since the default [] is a double, not an</span>
+0116             <span class="comment">%   experimentMetaData. The constructor's if ~isempty()</span>
+0117             <span class="comment">%   guard prevents this setter from being reached with the</span>
+0118             <span class="comment">%   default empty value.</span>
+0119             <span class="comment">%</span>
+0120             <span class="comment">%   Inputs:</span>
+0121             <span class="comment">%       this - experimentData object</span>
+0122             <span class="comment">%       meta - experimentMetaData object</span>
+0123 
+0124             <span class="keyword">if</span> isa(meta, <span class="string">'experimentMetaData'</span>)
+0125                 this.metaData = meta;
+0126             <span class="keyword">else</span>
+0127                 ME = MException(<span class="string">'experimentData:Constructor'</span>, <span class="keyword">...</span>
+0128                     [<span class="string">'Experiment metaData is not an '</span> <span class="keyword">...</span>
+0129                     <span class="string">'experimentMetaData type object.'</span>]);
+0130                 throw(ME);
+0131             <span class="keyword">end</span>
+0132         <span class="keyword">end</span>
+0133 
+0134         <a name="_sub2" href="#_subfunctions" class="code">function this = set.subData(this, sub)</a>
+0135             <span class="comment">%set.subData  Validates and sets subject data.</span>
+0136             <span class="comment">%</span>
+0137             <span class="comment">%   Property-block validators (mustBeA) were not used here</span>
+0138             <span class="comment">%   because MATLAB evaluates them against the declared</span>
+0139             <span class="comment">%   default value at class load time, causing an immediate</span>
+0140             <span class="comment">%   error since the default [] is a double, not a</span>
+0141             <span class="comment">%   subjectData. The constructor's if ~isempty() guard</span>
+0142             <span class="comment">%   prevents this setter from being reached with the</span>
+0143             <span class="comment">%   default empty value.</span>
+0144             <span class="comment">%</span>
+0145             <span class="comment">%   isa() returns true for subclasses of subjectData (e.g.,</span>
+0146             <span class="comment">%   strokeSubjectData), so this validator correctly accepts</span>
+0147             <span class="comment">%   both healthy and stroke participant data objects.</span>
+0148             <span class="comment">%</span>
+0149             <span class="comment">%   Inputs:</span>
+0150             <span class="comment">%       this - experimentData object</span>
+0151             <span class="comment">%       sub  - subjectData object</span>
+0152 
+0153             <span class="keyword">if</span> isa(sub, <span class="string">'subjectData'</span>)
+0154                 this.subData = sub;
+0155             <span class="keyword">else</span>
+0156                 ME = MException(<span class="string">'experimentData:Constructor'</span>, <span class="keyword">...</span>
+0157                     <span class="string">'Subject data is not a subjectData type object.'</span>);
+0158                 throw(ME);
+0159             <span class="keyword">end</span>
+0160         <span class="keyword">end</span>
+0161 
+0162         <a name="_sub3" href="#_subfunctions" class="code">function this = set.data(this, data)</a>
+0163             <span class="comment">%set.data  Validates and sets experimental trial data.</span>
+0164             <span class="comment">%</span>
+0165             <span class="comment">%   Element-level validation (each non-empty cell must</span>
+0166             <span class="comment">%   contain a labData or reducedLabData object) cannot be</span>
+0167             <span class="comment">%   expressed in the properties block, so all three</span>
+0168             <span class="comment">%   property setters are retained as explicit methods.</span>
+0169             <span class="comment">%</span>
+0170             <span class="comment">%   Inputs:</span>
+0171             <span class="comment">%       this - experimentData object</span>
+0172             <span class="comment">%       data - cell array of labData objects</span>
+0173 
+0174             <span class="keyword">if</span> isa(data, <span class="string">'cell'</span>)  <span class="comment">% Has to be array of labData cells</span>
+0175                 aux = find(cellfun(<span class="string">'isempty'</span>, data) ~= 1);
+0176                 <span class="keyword">for</span> i = 1:length(aux)
+0177                     <span class="keyword">if</span> ~isa(data{aux(i)}, <span class="string">'labData'</span>) &amp;&amp; <span class="keyword">...</span>
+0178                             ~isa(data{aux(i)}, <span class="string">'reducedLabData'</span>)
+0179                         ME = MException(<span class="string">'experimentData:Constructor'</span>, <span class="keyword">...</span>
+0180                             [<span class="string">'Data is not a cell array of labData '</span> <span class="keyword">...</span>
+0181                             <span class="string">'(or one of its subclasses) objects.'</span>]);
+0182                         throw(ME);
+0183                     <span class="keyword">end</span>
+0184                 <span class="keyword">end</span>
+0185                 this.data = data;
+0186             <span class="keyword">else</span>
+0187                 ME = MException(<span class="string">'experimentData:Constructor'</span>, <span class="keyword">...</span>
+0188                     <span class="string">'Data is not a cell array.'</span>);
+0189                 throw(ME);
+0190             <span class="keyword">end</span>
+0191         <span class="keyword">end</span>
+0192     <span class="keyword">end</span>
+0193 
+0194     <span class="comment">%% Dependent Property Getters</span>
+0195     methods
+0196         <a name="_sub4" href="#_subfunctions" class="code">function a = get.isProcessed(this)</a>
+0197             <span class="comment">%get.isProcessed  Checks if trials have been processed.</span>
+0198             <span class="comment">%</span>
+0199             <span class="comment">%   Returns true if the trials have been processed (i.e.,</span>
+0200             <span class="comment">%   parameters have been calculated through labData.process()),</span>
+0201             <span class="comment">%   and false if they contain only rawData.</span>
+0202             <span class="comment">%</span>
+0203             <span class="comment">%   Inputs:</span>
+0204             <span class="comment">%       this - experimentData object</span>
+0205             <span class="comment">%</span>
+0206             <span class="comment">%   Outputs:</span>
+0207             <span class="comment">%       a - boolean indicating if data is processed</span>
+0208 
+0209             aux = cellfun(<span class="string">'isempty'</span>, this.data);
+0210             idx = find(aux ~= 1);       <span class="comment">% not empty</span>
+0211             a   = true;
+0212             <span class="keyword">for</span> i = idx
+0213                 <span class="keyword">if</span> ~isa(this.data{i}, <span class="string">'processedLabData'</span>)
+0214                     a = false;
+0215                 <span class="keyword">end</span>
+0216             <span class="keyword">end</span>
+0217         <span class="keyword">end</span>
+0218 
+0219         <a name="_sub5" href="#_subfunctions" class="code">function a = get.isStepped(this)</a>
+0220             <span class="comment">%get.isStepped  Checks if data is strided.</span>
+0221             <span class="comment">%</span>
+0222             <span class="comment">%   Returns true if data is an object of the strideData class.</span>
+0223             <span class="comment">%</span>
+0224             <span class="comment">%   Inputs:</span>
+0225             <span class="comment">%       this - experimentData object</span>
+0226             <span class="comment">%</span>
+0227             <span class="comment">%   Outputs:</span>
+0228             <span class="comment">%       a - boolean indicating if data is strided</span>
+0229 
+0230             aux = cellfun(<span class="string">'isempty'</span>, this.data);
+0231             idx = find(aux ~= 1, 1);
+0232             a   = isa(this.data{idx}, <span class="string">'strideData'</span>);
+0233         <span class="keyword">end</span>
+0234 
+0235         <a name="_sub6" href="#_subfunctions" class="code">function a = get.isRaw(this)</a>
+0236             <span class="comment">%get.isRaw  Checks if data is raw.</span>
+0237             <span class="comment">%</span>
+0238             <span class="comment">%   Returns true if data is an object of the rawLabData class.</span>
+0239             <span class="comment">%</span>
+0240             <span class="comment">%   Inputs:</span>
+0241             <span class="comment">%       this - experimentData object</span>
+0242             <span class="comment">%</span>
+0243             <span class="comment">%   Outputs:</span>
+0244             <span class="comment">%       a - boolean indicating if data is raw</span>
+0245 
+0246             aux = cellfun(<span class="string">'isempty'</span>, this.data);
+0247             idx = find(aux ~= 1, 1);
+0248             a   = isa(this.data{idx}, <span class="string">'rawLabData'</span>);
+0249         <span class="keyword">end</span>
+0250 
+0251         <a name="_sub7" href="#_subfunctions" class="code">function fastLeg = get.fastLeg(this)</a>
+0252             <span class="comment">%get.fastLeg  Determines which leg was on the fast belt.</span>
+0253             <span class="comment">%</span>
+0254             <span class="comment">%   Based on each trial, determines from the data (not</span>
+0255             <span class="comment">%   metadata, which could be wrong) which leg is the fast</span>
+0256             <span class="comment">%   leg, even if there is no belt data.</span>
+0257             <span class="comment">%</span>
+0258             <span class="comment">%   Inputs:</span>
+0259             <span class="comment">%       this - experimentData object</span>
+0260             <span class="comment">%</span>
+0261             <span class="comment">%   Outputs:</span>
+0262             <span class="comment">%       fastLeg - 'R' or 'L'</span>
+0263             <span class="comment">%</span>
+0264             <span class="comment">%   Note: Currently unimplemented. Try getRefLeg, which</span>
+0265             <span class="comment">%         reads slow/fast leg labels from trial metaData.</span>
+0266 
+0267             <span class="comment">% NOTE: The error below makes all code in this method</span>
+0268             <span class="comment">% body unreachable. See suggestion to either remove the</span>
+0269             <span class="comment">% dead code or complete the implementation.</span>
+0270             error([<span class="string">'Unimplemented. Try getRefLeg, which reads '</span> <span class="keyword">...</span>
+0271                 <span class="string">'slow/fast leg labels from trial metaData.'</span>]);
+0272             <span class="comment">% -- Dead code below this line ---------------------------</span>
+0273             vR     = [];
+0274             vL     = [];
+0275             trials = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.metaData.trialsInCondition);
+0276             <span class="keyword">for</span> i = 1:length(trials)
+0277                 trial = trials(i);
+0278                 <span class="keyword">if</span> ~this.isStepped
+0279                     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{trial}.beltSpeedReadData)
+0280                         <span class="comment">% Old version: Need to fix, as we are not</span>
+0281                         <span class="comment">% really populating the beltSpeedReadData</span>
+0282                         <span class="comment">% field.</span>
+0283                         <span class="comment">% vR(end+1) = mean( ...</span>
+0284                         <span class="comment">%     this.data{trial} ...</span>
+0285                         <span class="comment">%     .beltSpeedReadData ...</span>
+0286                         <span class="comment">%     .getDataAsVector('R'), 'omitnan');</span>
+0287                         <span class="comment">% vL(end+1) = mean( ...</span>
+0288                         <span class="comment">%     this.data{trial} ...</span>
+0289                         <span class="comment">%     .beltSpeedReadData ...</span>
+0290                         <span class="comment">%     .getDataAsVector('L'), 'omitnan');</span>
+0291                         <span class="comment">% New version:</span>
+0292                         <span class="comment">% TODO: Need to come up with an appropriate</span>
+0293                         <span class="comment">% velocity measurement if we want this</span>
+0294                         <span class="comment">% function to work properly.</span>
+0295                     <span class="keyword">end</span>
+0296                 <span class="keyword">else</span> <span class="comment">% Stepped trial</span>
+0297                     <span class="keyword">for</span> step = 1:length(this.data{trial})
+0298                         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>( <span class="keyword">...</span>
+0299                                 this.data{trial}{step}.beltSpeedReadData)
+0300                             <span class="comment">% vR(end+1) = mean( ...</span>
+0301                             <span class="comment">%     this.data{trial}{step} ...</span>
+0302                             <span class="comment">%     .beltSpeedReadData ...</span>
+0303                             <span class="comment">%     .getDataAsVector('R'), 'omitnan');</span>
+0304                             <span class="comment">% vL(end+1) = mean( ...</span>
+0305                             <span class="comment">%     this.data{trial}{step} ...</span>
+0306                             <span class="comment">%     .beltSpeedReadData ...</span>
+0307                             <span class="comment">%     .getDataAsVector('L'), 'omitnan');</span>
+0308                         <span class="keyword">end</span>
+0309                     <span class="keyword">end</span>
+0310                 <span class="keyword">end</span>
+0311             <span class="keyword">end</span>
+0312             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vR) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vL)
+0313                 <span class="keyword">if</span> <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(vR, <span class="string">'omitnan'</span>) &lt; <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(vL, <span class="string">'omitnan'</span>)
+0314                     fastLeg = <span class="string">'L'</span>;
+0315                 <span class="keyword">elseif</span> <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(vR, <span class="string">'omitnan'</span>) &gt; <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(vL, <span class="string">'omitnan'</span>)
+0316                     <span class="comment">% Defaults to this, even if there is no beltSpeedData</span>
+0317                     fastLeg = <span class="string">'R'</span>;
+0318                 <span class="keyword">else</span>
+0319                     error(<span class="string">'experimentData:fastLeg'</span>, <span class="keyword">...</span>
+0320                         <span class="string">'Both legs are moving at the same speed'</span>);
+0321                 <span class="keyword">end</span>
+0322             <span class="keyword">else</span>
+0323                 error(<span class="string">'experimentData:fastLeg'</span>, <span class="keyword">...</span>
+0324                     [<span class="string">'No data to compute fastest leg, try using '</span> <span class="keyword">...</span>
+0325                     <span class="string">'expData.getRefLeg which reads from each '</span> <span class="keyword">...</span>
+0326                     <span class="string">'trial''s metaData.'</span>]);
+0327             <span class="keyword">end</span>
+0328         <span class="keyword">end</span>
+0329     <span class="keyword">end</span>
+0330 
+0331     <span class="comment">%% Subject Information Methods</span>
+0332     methods
+0333         ageInMonths = <a href="getSubjectAgeAtExperimentDate.html" class="code" title="function ageInMonths = getSubjectAgeAtExperimentDate(this)">getSubjectAgeAtExperimentDate</a>(this)
+0334     <span class="keyword">end</span>
+0335 
+0336     <span class="comment">%% Leg Identification Methods</span>
+0337     methods
+0338         slowLeg = <a href="getSlowLeg.html" class="code" title="function slowLeg = getSlowLeg(this)">getSlowLeg</a>(this)
+0339 
+0340         refLeg = <a href="getRefLeg.html" class="code" title="function refLeg = getRefLeg(this)">getRefLeg</a>(this)
+0341 
+0342         fL = <a href="getNonRefLeg.html" class="code" title="function fL = getNonRefLeg(this)">getNonRefLeg</a>(this)
+0343     <span class="keyword">end</span>
+0344 
+0345     <span class="comment">%% Data Processing Methods</span>
+0346     methods
+0347         processedThis = <a href="process.html" class="code" title="function processedThis = process(this, eventClass)">process</a>(this, eventClass)
+0348 
+0349         [allTrialModels, modelScore, badFlag] = <a href="extractMarkerModels.html" class="code" title="function [allTrialModels, modelScore, badFlag] =extractMarkerModels(this)">extractMarkerModels</a>(this)
+0350 
+0351         this = <a href="checkMarkerHealth.html" class="code" title="function this = checkMarkerHealth(this, refTrial)">checkMarkerHealth</a>(this, refTrial)
+0352 
+0353         this = <a href="computeAngles.html" class="code" title="function this = computeAngles(this)">computeAngles</a>(this)
+0354     <span class="keyword">end</span>
+0355 
+0356     <span class="comment">%% Data Reduction and Object Creation</span>
+0357     methods
+0358         adaptData = <a href="makeDataObj.html" class="code" title="function adaptData = makeDataObj(this, filename, experimentalFlag,contraLateralFlag)">makeDataObj</a>( <span class="keyword">...</span>
+0359             this, filename, experimentalFlag, contraLateralFlag)
+0360 
+0361         reducedThis = <a href="reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">reduce</a>(this, eventLabels, N)
+0362     <span class="keyword">end</span>
+0363 
+0364     <span class="comment">%% Visualization Methods</span>
+0365     methods
+0366         <span class="comment">%% Display</span>
+0367         <span class="comment">% HH: I don't like either of these functions. They take way too</span>
+0368         <span class="comment">% long to run, and at the time being they assume that if a field</span>
+0369         <span class="comment">% isn't a label of the adaptParams property, then it must be a</span>
+0370         <span class="comment">% label of experimentalParams (which is a bad assumption because it</span>
+0371         <span class="comment">% could result in 5+ minutes of waiting just to find out the</span>
+0372         <span class="comment">% parameter doesn't exist.)</span>
+0373         <span class="comment">% PI, 5/26/2015: Agreed. Is there any other way to do it if someone</span>
+0374         <span class="comment">% asks for a label that does not exist? Do note that these</span>
+0375         <span class="comment">% functions are here for flexibility of the code, but the really</span>
+0376         <span class="comment">% efficient way to do it is generate an adaptData object (and save</span>
+0377         <span class="comment">% it) and use its plotting functions (which is what these do).</span>
+0378         <span class="comment">% Perhaps we could issue a warning or a disclaimer telling the user</span>
+0379         <span class="comment">% that this takes TOO long.</span>
+0380         [h, adaptDataObject] = <a href="parameterEvolutionPlot.html" class="code" title="function [h, adaptDataObject] = parameterEvolutionPlot(this, field)">parameterEvolutionPlot</a>(this, field)
+0381 
+0382         [h, adaptDataObject] = <a href="parameterTimeCourse.html" class="code" title="function [h, adaptDataObject] = parameterTimeCourse(this, field)">parameterTimeCourse</a>(this, field)
+0383     <span class="keyword">end</span>
+0384 
+0385     <span class="comment">%% Parameter and Event Methods</span>
+0386     methods
+0387         this = <a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>( <span class="keyword">...</span>
+0388             this, eventClass, initEventSide, parameterClasses, <span class="keyword">...</span>
+0389             shouldComputeEMGNorm,muscleLabels, <span class="keyword">...</span>
+0390             normalizationRefCond, biasRemovalCond)
+0391 
+0392         this = <a href="flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">flushAndRecomputeParameters</a>(this, eventClass, initEventSide,<span class="keyword">...</span>
+0393             shouldComputeEMGNorm,muscleLabels, <span class="keyword">...</span>
+0394             normalizationRefCond, biasRemovalCond)
+0395 
+0396         this = <a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>(this, eventClass, initEventSide)
+0397     <span class="keyword">end</span>
+0398 
+0399     <span class="comment">%% Stride Analysis Methods</span>
+0400     methods
+0401         stridedExp = <a href="splitIntoStrides.html" class="code" title="function stridedExp = splitIntoStrides(this, refEvent)">splitIntoStrides</a>(this, refEvent)
+0402 
+0403         [stridedField, bad, originalTrial, originalInitTime, <span class="keyword">...</span>
+0404             gaitEventLabel] = <a href="getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>(this, field, <span class="keyword">...</span>
+0405             conditions, gaitEventLabel)
+0406 
+0407         [alignedField, originalTrial, bad] = <a href="getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>( <span class="keyword">...</span>
+0408             this, field, conditions, gaitEventLabel, alignmentLengths)
+0409     <span class="keyword">end</span>
+0410 
+0411     <span class="comment">%% Auxiliary Methods</span>
+0412     methods
+0413         conditionIdxs = <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>(this, conditionNames)
+0414 
+0415         [numStrides, trials, initTimes, endTimes] = <a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>( <span class="keyword">...</span>
+0416             this, eventClass)
+0417     <span class="keyword">end</span>
+0418 
+0419     <span class="comment">%% Private Methods</span>
+0420     methods (Hidden = true, Access = private)
+0421         adaptData = <a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>( <span class="keyword">...</span>
+0422             this, filename, experimentalFlag, contraLateralFlag)
+0423     <span class="keyword">end</span>
+0424 
+0425     <span class="comment">%% Static Methods</span>
+0426     methods (Static)
+0427         <a name="_sub8" href="#_subfunctions" class="code">function this = loadobj(this)</a>
+0428             <span class="comment">%loadobj  Object loading method for backward compatibility.</span>
+0429             <span class="comment">%</span>
+0430             <span class="comment">%   this = loadobj(this) scrubs date of birth information</span>
+0431             <span class="comment">%   when loading saved experimentData objects for privacy.</span>
+0432             <span class="comment">%</span>
+0433             <span class="comment">%   Inputs:</span>
+0434             <span class="comment">%       this - experimentData object being loaded</span>
+0435             <span class="comment">%</span>
+0436             <span class="comment">%   Outputs:</span>
+0437             <span class="comment">%       this - experimentData object with DOB removed</span>
+0438             <span class="comment">%</span>
+0439             <span class="comment">%   See also: saveobj, subjectData</span>
+0440 
+0441             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.subData.dateOfBirth)
+0442                 warning(<span class="string">'expData:subjectDOB'</span>, <span class="keyword">...</span>
+0443                     [<span class="string">'Subject data contains DOB information for '</span> <span class="keyword">...</span>
+0444                     <span class="string">'subject '</span> this.subData.ID <span class="string">'. Data will be '</span> <span class="keyword">...</span>
+0445                     <span class="string">'hidden. You should overwrite (save) your file '</span> <span class="keyword">...</span>
+0446                     <span class="string">'with this new version to prevent this warning '</span> <span class="keyword">...</span>
+0447                     <span class="string">'in the future. Please check that all other '</span> <span class="keyword">...</span>
+0448                     <span class="string">'information is intact before overwriting.'</span>]);
+0449                 <span class="comment">% Determine age (in months):</span>
+0450                 age = round(this.metaData.date.timeSince( <span class="keyword">...</span>
+0451                     this.subData.dateOfBirth));
+0452                 <span class="comment">% Scrub DOB from subject meta data, save age at</span>
+0453                 <span class="comment">% experiment time (in years):</span>
+0454                 this.subData = <a href="../../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>([], <span class="keyword">...</span>
+0455                     this.subData.sex, <span class="keyword">...</span>
+0456                     this.subData.dominantLeg, <span class="keyword">...</span>
+0457                     this.subData.dominantArm, <span class="keyword">...</span>
+0458                     this.subData.height, <span class="keyword">...</span>
+0459                     this.subData.weight, <span class="keyword">...</span>
+0460                     age / 12, this.subData.ID);
+0461             <span class="keyword">end</span>
+0462         <span class="keyword">end</span>
+0463     <span class="keyword">end</span>
+0464 
+0465 <span class="keyword">end</span>
+0466</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

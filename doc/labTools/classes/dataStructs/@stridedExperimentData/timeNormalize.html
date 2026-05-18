@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of timeNormalize</title>
+  <meta name="keywords" content="timeNormalize">
+  <meta name="description" content="timeNormalize  Resamples all strides to uniform length">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@stridedExperimentData</a> &gt; timeNormalize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@stridedExperimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>timeNormalize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>timeNormalize  Resamples all strides to uniform length</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = timeNormalize(this, N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">timeNormalize  Resamples all strides to uniform length
+
+   newThis = timeNormalize(this, N) resamples all stride data to N
+   samples, creating time-normalized strides
+
+   Inputs:
+       this - stridedExperimentData object
+       N - target number of samples for each stride
+
+   Outputs:
+       newThis - stridedExperimentData object with time-normalized
+                 strides
+
+   See also: strideData/timeNormalize</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@strideData/timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N, newClass)">timeNormalize</a>	timeNormalize  Resamples all data to uniform length</li><li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li><li><a href="timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N)">timeNormalize</a>	timeNormalize  Resamples all strides to uniform length</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a>	</li><li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li><li><a href="timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N)">timeNormalize</a>	timeNormalize  Resamples all strides to uniform length</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = timeNormalize(this, N)</a>
+0002 <span class="comment">%timeNormalize  Resamples all strides to uniform length</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = timeNormalize(this, N) resamples all stride data to N</span>
+0005 <span class="comment">%   samples, creating time-normalized strides</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - stridedExperimentData object</span>
+0009 <span class="comment">%       N - target number of samples for each stride</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - stridedExperimentData object with time-normalized</span>
+0013 <span class="comment">%                 strides</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: strideData/timeNormalize</span>
+0016 
+0017 <span class="comment">% Lstrides</span>
+0018 newStrides = cell(1, length(this.stridedTrials));
+0019 <span class="keyword">for</span> trial = 1:length(this.stridedTrials)
+0020     thisTrial = this.stridedTrials{trial};
+0021     newTrial = cell(1, length(thisTrial));
+0022     <span class="keyword">for</span> stride = 1:length(thisTrial)
+0023         thisStride = thisTrial{stride};
+0024         newTrial{stride} = <a href="timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N)">timeNormalize</a>(thisStride, N);
+0025     <span class="keyword">end</span>
+0026     newStrides{trial} = newTrial;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Construct newTrial</span>
+0030 newThis = <a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>(this.metaData, this.subData, newStrides);
+0031 newThis.isTimeNormalized = true;
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

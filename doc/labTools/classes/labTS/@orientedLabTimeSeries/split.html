@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of split</title>
+  <meta name="keywords" content="split">
+  <meta name="description" content="split  Splits timeseries (override)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; split.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>split
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>split  Splits timeseries (override)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = split(this, t0, t1) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">split  Splits timeseries (override)
+
+   newThis = split(this, t0, t1) splits and preserves
+   orientedLabTimeSeries type
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       t0 - start time
+       t1 - end time
+
+   Outputs:
+       newThis - split orientedLabTimeSeries
+
+   See also: labTimeSeries/split</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/getPartialDataAsVector.html" class="code" title="function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1)">getPartialDataAsVector</a>	getPartialDataAsVector  Returns data for labels and time range</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = split(this, t0, t1)</a>
+0002 <span class="comment">%split  Splits timeseries (override)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = split(this, t0, t1) splits and preserves</span>
+0005 <span class="comment">%   orientedLabTimeSeries type</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       t0 - start time</span>
+0010 <span class="comment">%       t1 - end time</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       newThis - split orientedLabTimeSeries</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: labTimeSeries/split</span>
+0016 
+0017 auxThis = this.split@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(t0, t1);
+0018 newThis = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(auxThis.Data, t0, auxThis.sampPeriod, <span class="keyword">...</span>
+0019     auxThis.labels, this.orientation);
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

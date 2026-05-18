@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of assessMissing</title>
+  <meta name="keywords" content="assessMissing">
+  <meta name="description" content="assessMissing  Assesses and plots missing data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; assessMissing.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>assessMissing
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>assessMissing  Assesses and plots missing data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [fh, ph, missing] = assessMissing(this, labels, fh, ph) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">assessMissing  Assesses and plots missing data
+
+   [fh, ph, missing] = assessMissing(this) creates plot showing
+   missing data patterns
+
+   [fh, ph, missing] = assessMissing(this, labels, fh, ph) plots
+   specified labels in existing figure
+
+   Inputs:
+       this - labTimeSeries object
+       labels - labels to assess (optional, default: all)
+       fh - figure handle (optional, -1 to suppress display)
+       ph - plot handle (optional)
+
+   Outputs:
+       fh - figure handle
+       ph - plot handle
+       missing - logical matrix indicating missing samples
+
+   See also: <a href="substituteNaNs.html" class="code" title="function this = substituteNaNs(this, method)">substituteNaNs</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fh, ph, missing] = assessMissing(this, labels, fh, ph)</a>
+0002 <span class="comment">%assessMissing  Assesses and plots missing data</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [fh, ph, missing] = assessMissing(this) creates plot showing</span>
+0005 <span class="comment">%   missing data patterns</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [fh, ph, missing] = assessMissing(this, labels, fh, ph) plots</span>
+0008 <span class="comment">%   specified labels in existing figure</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       labels - labels to assess (optional, default: all)</span>
+0013 <span class="comment">%       fh - figure handle (optional, -1 to suppress display)</span>
+0014 <span class="comment">%       ph - plot handle (optional)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Outputs:</span>
+0017 <span class="comment">%       fh - figure handle</span>
+0018 <span class="comment">%       ph - plot handle</span>
+0019 <span class="comment">%       missing - logical matrix indicating missing samples</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: substituteNaNs</span>
+0022 
+0023 noDisp = false;
+0024 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fh)
+0025     fh = figure();
+0026 <span class="keyword">elseif</span> fh == -1
+0027     noDisp = true;
+0028 <span class="keyword">else</span>
+0029     figure(fh);
+0030     <span class="keyword">if</span> nargin &lt; 4
+0031         ph = gca;
+0032     <span class="keyword">else</span>
+0033         axes(ph);
+0034     <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> nargin &lt; 2
+0038     labels = this.labels;
+0039 <span class="keyword">end</span>
+0040 data = this.getDataAsVector(labels);
+0041 missing = isnan(data);
+0042 miss = missing(:, any(missing));
+0043 
+0044 <span class="keyword">if</span> ~noDisp
+0045     pp = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(miss, <span class="string">'o'</span>);
+0046     aux = labels(any(missing));
+0047     <span class="keyword">for</span> i = 1:length(pp)
+0048         set(pp(i), <span class="string">'DisplayName'</span>, [aux{i} <span class="string">' ('</span> num2str(sum(miss(:, i))) <span class="keyword">...</span>
+0049             <span class="string">' frames)'</span>]);
+0050     <span class="keyword">end</span>
+0051     legend(pp);
+0052     title(<span class="string">'Missing markers'</span>);
+0053     xlabel(<span class="string">'Time (frames)'</span>);
+0054     set(gca, <span class="string">'YTick'</span>, [0 1], <span class="string">'YTickLabel'</span>, {<span class="string">'Present'</span>, <span class="string">'Missing'</span>});
+0055 <span class="keyword">else</span>
+0056     fprintf([<span class="string">'Missing data in '</span> num2str(sum(any(missing, 2))) <span class="string">'/'</span> <span class="keyword">...</span>
+0057         num2str(size(missing, 1)) <span class="string">' frames, avg. '</span> <span class="keyword">...</span>
+0058         num2str(sum(missing(:)) / sum(any(missing, 2)), 3) <span class="keyword">...</span>
+0059         <span class="string">' per frame.\n'</span>]);
+0060 <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

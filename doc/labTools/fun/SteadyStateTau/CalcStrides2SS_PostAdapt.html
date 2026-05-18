@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CalcStrides2SS_PostAdapt</title>
+  <meta name="keywords" content="CalcStrides2SS_PostAdapt">
+  <meta name="description" content="this version was my first attempt to plot the postadaptation stuff,">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">SteadyStateTau</a> &gt; CalcStrides2SS_PostAdapt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\SteadyStateTau&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>CalcStrides2SS_PostAdapt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>this version was my first attempt to plot the postadaptation stuff,</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> this version was my first attempt to plot the postadaptation stuff,
+ AND DO SO WITHOUT CROPPING THE DATA
+adaptDataList must be cell array of 'param.mat' file names
+params is cell array of parameters to plot. List with commas to
+plot on separate graphs or with semicolons to plot on same graph.
+conditions is cell array of conditions to plot
+binwidth is the number of data points to average in time
+indivFlag - set to true to plot individual subject time courses
+indivSubs - must be a cell array of 'param.mat' file names that is
+a subset of those in the adaptDataList. Plots specific subjects
+instead of all subjects.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SSTauPostAdapt.html" class="code" title="function results = SSTauPostAdapt(adaptDataList,params,groups,plotFlag)">SSTauPostAdapt</a>	%</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)</a>
+0002 <span class="comment">% this version was my first attempt to plot the postadaptation stuff,</span>
+0003 <span class="comment">% AND DO SO WITHOUT CROPPING THE DATA</span>
+0004 <span class="comment">%adaptDataList must be cell array of 'param.mat' file names</span>
+0005 <span class="comment">%params is cell array of parameters to plot. List with commas to</span>
+0006 <span class="comment">%plot on separate graphs or with semicolons to plot on same graph.</span>
+0007 <span class="comment">%conditions is cell array of conditions to plot</span>
+0008 <span class="comment">%binwidth is the number of data points to average in time</span>
+0009 <span class="comment">%indivFlag - set to true to plot individual subject time courses</span>
+0010 <span class="comment">%indivSubs - must be a cell array of 'param.mat' file names that is</span>
+0011 <span class="comment">%a subset of those in the adaptDataList. Plots specific subjects</span>
+0012 <span class="comment">%instead of all subjects.</span>
+0013 
+0014 
+0015 <span class="comment">% %%%How to calculate strides to ss</span>
+0016 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag)~=0 || plotFlag==1
+0017     figure
+0018 <span class="keyword">end</span>
+0019 
+0020 idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
+0021 idxNET = find(strcmp(params, <span class="string">'netContributionnorm2'</span>));
+0022 
+0023 <span class="comment">%Smooth the data:</span>
+0024 allValuesALL=<a href="../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(allValues,20); SmoothType=<span class="string">'Whole, BW=20, first not before raw min'</span>;
+0025 ss=SSraw;
+0026 
+0027 <span class="keyword">for</span> var=1:length(params)
+0028     
+0029     <span class="comment">%Here I am using the final steady state that subjects reached to</span>
+0030     <span class="comment">%shift the net</span>
+0031      whereIS=find(allValues(:,var)==nanmin(allValues(1:20,var)),1, <span class="string">'first'</span>);<span class="comment">%use the non-smoothed data to shift the curves to identify the minimum value that crossess the threshod</span>
+0032     
+0033      <span class="comment">%Finding the initial quantity</span>
+0034     whereNo=find(~isnan(allValues(:,var)),1, <span class="string">'first'</span>);   
+0035     NewQ = allValuesALL(whereNo,var);
+0036    
+0037     <span class="comment">%Finding the new quantity by subtracting the initial quantity and the steady state</span>
+0038     NewQ(var) = (NewQ(var)-SSraw(var));
+0039     
+0040     <span class="comment">%Finding the maximum point to shift the data by</span>
+0041     whereIM=find(allValues(:,var)==nanmax(allValues(1:20,var)),1, <span class="string">'first'</span>);
+0042     maxmax=allValues(whereIM,var);
+0043 
+0044     whereIMall = find(allValuesALL(:, var)== nanmax(allValuesALL(1:20,var)),1,<span class="string">'first'</span>);
+0045     
+0046     <span class="comment">%%</span>
+0047 
+0048     <span class="comment">%shifting  the steady state by the maximum value of the postadaptation decay curve</span>
+0049     shifter= SSraw(var)+maxmax; 
+0050          
+0051     <span class="comment">%shift all the values by the first maximum value</span>
+0052    <span class="comment">% allValuesALL(:,var)=allValuesALL(:,var)+abs(shifter);</span>
+0053 
+0054      <span class="comment">%shift the steady state value by the shifter which is the maxmax+steadystate value</span>
+0055     ss(var)=SSraw(var);<span class="comment">%+abs(shifter);</span>
+0056 
+0057     <span class="comment">% Calculate the threshold value for steady state (1/e decay)</span>
+0058      thresholdValue = (NewQ) * exp(-1)+ SSraw;
+0059 
+0060     
+0061 <span class="comment">%find the index of the values that are less than the threshold</span>
+0062 t_indx= find(allValuesALL(:,var)&lt;= thresholdValue);
+0063 
+0064 <span class="comment">%make sure that the indexes that are extracted are not above the any value greater than the maximum value in allValues or allValuesAll</span>
+0065 tfinal = t_indx((t_indx &gt;= whereIMall) &amp; (t_indx &gt;= whereIM));
+0066 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tfinal)== 1
+0067     tfinal = t;
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%%alternative withot finding the 5 consecutive numbers</span>
+0071 <span class="comment">%  tconsecutive = find(diff(tfinal));</span>
+0072 <span class="comment">% first_t = tfinal(tconsecutive(1));</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">% if isempty(first_t)== 1</span>
+0075 <span class="comment">%    Stride2SS(1, var)=NaN</span>
+0076 <span class="comment">% else</span>
+0077 <span class="comment">%  Stride2SS(1, var)=first_t;</span>
+0078 <span class="comment">% end</span>
+0079 
+0080  <span class="comment">% Initialize the variable to store the first five consecutive numbers</span>
+0081 N=5;
+0082 first_consecutive_set = [];
+0083 
+0084 <span class="comment">% Loop through tfinal to find the first set of N consecutive numbers</span>
+0085  <span class="keyword">for</span> i =  1:length(tfinal)-N+1   <span class="comment">%loop through the length of tfinal because beyond that, there wont be any sequence to form</span>
+0086      <span class="keyword">if</span> all(diff(tfinal(i:i+N-1))==1) 
+0087          first_consecutive_set = tfinal(i:i+N-1); <span class="comment">%find the index of the first 5 consecutive numbers</span>
+0088          <span class="keyword">break</span>;
+0089      <span class="keyword">end</span>
+0090  <span class="keyword">end</span>
+0091  
+0092  <span class="comment">% If a consecutive set of N numbers is found, set first_t</span>
+0093  first_t = first_consecutive_set(1);
+0094  
+0095     
+0096  Stride2SS(1, var)=first_t;
+0097 
+0098 <span class="comment">%%</span>
+0099     <span class="comment">%optional plotting to see where the Tau is being identified</span>
+0100     <span class="keyword">if</span> plotFlag == 1
+0101         subplot(1, length(params), var)
+0102         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([allValuesALL(:, var)], <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
+0103         
+0104 <span class="comment">%         plot(whereIM:whereIM+9, allValuesALL(whereIM:whereIM+9, var), 'c.', 'MarkerSize', 25);hold on</span>
+0105         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(first_t, allValuesALL(first_t, var) , <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25); hold on
+0106         xline(first_t,<span class="string">'Color'</span>, <span class="string">'r'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>,<span class="string">':'</span>)
+0107 
+0108         line([0 400], [ss(var) ss(var)],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1)<span class="comment">%plotting mean steady state value</span>
+0109         text(400,  ss(var), num2str(ss(var)), <span class="string">'HorizontalAlignment'</span>, <span class="string">'right'</span>, <span class="string">'VerticalAlignment'</span>, <span class="string">'bottom'</span>);
+0110 
+0111         line([0 400], [thresholdValue thresholdValue],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>,<span class="string">':'</span>)<span class="comment">%plotting line showing the threshold</span>
+0112         text(400,  thresholdValue, num2str(thresholdValue), <span class="string">'HorizontalAlignment'</span>, <span class="string">'right'</span>, <span class="string">'VerticalAlignment'</span>, <span class="string">'bottom'</span>);
+0113         
+0114         <span class="keyword">if</span> subID
+0115             title([subID <span class="string">': Stride to SS = '</span> num2str(first_t)]);
+0116         <span class="keyword">else</span>
+0117         title([<span class="string">'Stride to SS = '</span> num2str(first_t)]);
+0118         <span class="keyword">end</span>
+0119         
+0120         ylabel([params(var)])
+0121         xlabel([<span class="string">'Strides ('</span> SmoothType <span class="string">')'</span>])
+0122         axis tight
+0123         hold on
+0124     <span class="keyword">end</span>
+0125 <span class="keyword">end</span>
+0126 
+0127 <span class="comment">%display('everything is awesome')</span>
+0128 
+0129 <span class="keyword">end</span>
+0130</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

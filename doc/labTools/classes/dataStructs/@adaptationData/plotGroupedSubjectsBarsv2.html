@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotGroupedSubjectsBarsv2.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>plotGroupedSubjectsBarsv2
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	Define color scheme</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -46,7 +46,7 @@ This function is called by:
 0002             mode=1; <span class="comment">%1 is bars +- std, 2 is lines +- std, 3 is boxplots</span>
 0003             
 0004             
-0005             <span class="keyword">if</span> nargin&lt;4 || isempty(plotIndividualsFlag)
+0005             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotIndividualsFlag)
 0006                 plotIndividualsFlag=true;
 0007             <span class="keyword">end</span>
 0008             <span class="keyword">if</span> nargin&lt;9 
@@ -55,10 +55,10 @@ This function is called by:
 0011             <span class="comment">%if ~plotIndividualsFlag</span>
 0012             <span class="comment">%    legendNames={};</span>
 0013             <span class="comment">%end</span>
-0014             <span class="keyword">if</span> nargin&lt;3 || isempty(removeBiasFlag)
+0014             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBiasFlag)
 0015                 removeBiasFlag=1;
 0016             <span class="keyword">end</span>
-0017             <span class="keyword">if</span> nargin&lt;5 || isempty(condList)
+0017             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condList)
 0018                condList=[]; 
 0019             <span class="keyword">end</span>
 0020             
@@ -73,33 +73,33 @@ This function is called by:
 0029             <span class="keyword">end</span>
 0030                 
 0031             Ngroups=length(auxList);
-0032             <span class="keyword">if</span> nargin&lt;12 || isempty(colors) || size(colors,1)&lt;Ngroups
-0033                 colorScheme
+0032             <span class="keyword">if</span> nargin&lt;12 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colors) || size(colors,1)&lt;Ngroups
+0033                 <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
 0034                 <span class="keyword">for</span> i=1:Ngroups
 0035                     colors(i,:)=colorGroups{mod(i-1,length(colorGroups))+1};
 0036                 <span class="keyword">end</span>
 0037             <span class="keyword">end</span>
-0038             <span class="keyword">if</span> nargin&lt;13 || isempty(medianFlag)
+0038             <span class="keyword">if</span> nargin&lt;13 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(medianFlag)
 0039                 medianFlag=0;
 0040             <span class="keyword">end</span>
 0041             
 0042             <span class="comment">%Default number of strides to average:</span>
-0043             <span class="keyword">if</span> nargin&lt;6 || isempty(numberOfStrides)
+0043             <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(numberOfStrides)
 0044                 N2=[5,-20];
 0045             <span class="keyword">else</span>
 0046                 N2=numberOfStrides;
 0047             <span class="keyword">end</span>
-0048             <span class="keyword">if</span> nargin&lt;7 || isempty(exemptFirst)
+0048             <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptFirst)
 0049                 Nf=0; 
 0050             <span class="keyword">else</span>
 0051                 Nf=exemptFirst;
 0052             <span class="keyword">end</span>
-0053             <span class="keyword">if</span> nargin&lt;8 || isempty(exemptLast)
+0053             <span class="keyword">if</span> nargin&lt;8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
 0054                 Ne=5;
 0055             <span class="keyword">else</span>
 0056                 Ne=exemptLast;
 0057             <span class="keyword">end</span>
-0058             <span class="keyword">if</span> nargin&lt;10 || isempty(significanceThreshold)
+0058             <span class="keyword">if</span> nargin&lt;10 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(significanceThreshold)
 0059                 significanceThreshold=[];
 0060             <span class="keyword">end</span>
 0061             
@@ -117,8 +117,8 @@ This function is called by:
 0073             <span class="keyword">end</span>
 0074             
 0075             <span class="comment">%Do plot:</span>
-0076             <span class="keyword">if</span> nargin&lt;11 || isempty(plotHandles) || numel(plotHandles)~=length(label)
-0077                 [ah,figHandle]=optimizedSubPlot(length(label),2,2);
+0076             <span class="keyword">if</span> nargin&lt;11 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles) || numel(plotHandles)~=length(label)
+0077                 [ah,figHandle]=<a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(length(label),2,2);
 0078                 figure(figHandle)
 0079             <span class="keyword">else</span>
 0080                 figHandle=figure(gcf);
@@ -129,7 +129,7 @@ This function is called by:
 0085                 subplot(ah(i))
 0086                 <span class="keyword">for</span> j=1:Ngroups <span class="comment">%For each group</span>
 0087                     nSubs=size(allData.group{j},4);
-0088                     <span class="keyword">if</span> isempty(legendNames)
+0088                     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(legendNames)
 0089                         gName{j}=[<span class="string">'Group '</span> num2str(j) <span class="string">'(n='</span> num2str(nSubs) <span class="string">')'</span>];
 0090                     <span class="keyword">else</span>
 0091                         gName{j}=legendNames{j};
@@ -141,7 +141,7 @@ This function is called by:
 0097                         <span class="keyword">else</span>
 0098                         relevantMean=nanmedian(allData.group{j}(:,k,i,:),4); <span class="comment">%Median  across subjects. We end up with: conditionsxStrideSetxGroups</span>
 0099                         <span class="comment">%relevantSte=.5*iqr(allData.group{j}(:,k,i,:),4);%/sqrt(nSubs); %.5 times Interquartile range across subjects, normalized to sqrt(Number of subjects) to be consistent with STE</span>
-0100                         relevantSte=.5*diff(prctile(allData.group{j}(:,k,i,:),[16,84],4),[],4); <span class="comment">%Using half of the 16-84 percentile (which in a normal dist corresponds to 1 stdev)</span>
+0100                         relevantSte=.5*diff(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(allData.group{j}(:,k,i,:),[16,84],4),[],4); <span class="comment">%Using half of the 16-84 percentile (which in a normal dist corresponds to 1 stdev)</span>
 0101                         <span class="keyword">end</span>
 0102                         xPos=(j+(k-1)*(Ngroups+1)):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
 0103                         <span class="keyword">if</span> N2(k)&lt;0
@@ -166,7 +166,7 @@ This function is called by:
 0122                         <span class="keyword">end</span>
 0123                         <span class="keyword">if</span> plotIndividualsFlag==1
 0124                             indivColors=[];
-0125                            hC=plot(xPos-.1,reshape(allData.group{j}(:,k,i,:),nConds,nSubs),<span class="string">'r.'</span>);
+0125                            hC=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(xPos-.1,reshape(allData.group{j}(:,k,i,:),nConds,nSubs),<span class="string">'r.'</span>);
 0126                            <span class="comment">%Exclude from legend:</span>
 0127                            hCGroup = hggroup; <span class="comment">%Create group</span>
 0128                            set(hC,<span class="string">'Parent'</span>,hCGroup)<span class="comment">%Grouping all lines plotted</span>
@@ -206,6 +206,6 @@ This function is called by:
 0162             <span class="keyword">end</span>
 0163 
 0164 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

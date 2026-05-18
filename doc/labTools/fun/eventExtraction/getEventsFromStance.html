@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEventsFromStance</title>
   <meta name="keywords" content="getEventsFromStance">
-  <meta name="description" content="First step:">
+  <meta name="description" content="GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,19 +15,36 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromStance.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getEventsFromStance
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>First step:</strong></div>
+<div class="box"><strong>GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR) </strong></div>
+<div class="box"><strong>function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">First step:</pre></div>
+<div class="fragment"><pre class="comment">GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.
+
+   Detects heel-strike (HS) and toe-off (TO) events for left and right
+ legs by finding rising and falling edges of the stance phase signals.
+
+ Inputs:
+   stanceL - N×1 logical, left stance phase (true = stance)
+   stanceR - N×1 logical, right stance phase (true = stance)
+
+ Outputs:
+   LHS - N×1 logical, left heel-strike events
+   RHS - N×1 logical, right heel-strike events
+   LTO - N×1 logical, left toe-off events
+   RTO - N×1 logical, right toe-off events
+
+ Toolbox Dependencies: None
+
+ See also <a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">GETEVENTSFROMFORCES</a>, GETEVENTSFROMTOENANDHEEL.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -36,22 +53,38 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getEventsFromForces.html" class="code" title="function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)">getEventsFromForces</a>	% Get stance phases</li><li><a href="getEventsFromSwitches.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromSwitches(Lft_sw,Rft_sw,fsample)">getEventsFromSwitches</a>	% Get stance phases</li><li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample)">getEventsFromToeAndHeel</a>	% Get stance phases</li></ul>
+<li><a href="../../../labTools/fun/eventExtraction/deprecated/getEventsFromSwitches.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromSwitches(Lft_sw,Rft_sw,fsample)">getEventsFromSwitches</a>	retrieve left and right leg stance phases</li><li><a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)</a>
-0002 
-0003 <span class="comment">%First step:</span>
-0004 LTO=([false;diff(double(stanceL))==-1]);<span class="comment">%&amp; stanceR;</span>
-0005 LHS=([false;diff(double(stanceL))==1]) ;<span class="comment">%&amp; stanceR;</span>
-0006 RTO=([false;diff(double(stanceR))==-1]) ;<span class="comment">%&amp; stanceL;</span>
-0007 RHS=([false;diff(double(stanceR))==1]) ;<span class="comment">%&amp; stanceL;</span>
-0008 
-0009 <span class="keyword">end</span>
-0010</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)</a>
+0002 <span class="comment">%GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Detects heel-strike (HS) and toe-off (TO) events for left and right</span>
+0005 <span class="comment">% legs by finding rising and falling edges of the stance phase signals.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   stanceL - N×1 logical, left stance phase (true = stance)</span>
+0009 <span class="comment">%   stanceR - N×1 logical, right stance phase (true = stance)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   LHS - N×1 logical, left heel-strike events</span>
+0013 <span class="comment">%   RHS - N×1 logical, right heel-strike events</span>
+0014 <span class="comment">%   LTO - N×1 logical, left toe-off events</span>
+0015 <span class="comment">%   RTO - N×1 logical, right toe-off events</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also GETEVENTSFROMFORCES, GETEVENTSFROMTOENANDHEEL.</span>
+0020 
+0021 LTO = [false; diff(double(stanceL)) == -1];  <span class="comment">% &amp; stanceR;</span>
+0022 LHS = [false; diff(double(stanceL)) == 1];   <span class="comment">% &amp; stanceR;</span>
+0023 RTO = [false; diff(double(stanceR)) == -1];  <span class="comment">% &amp; stanceL;</span>
+0024 RHS = [false; diff(double(stanceR)) == 1];   <span class="comment">% &amp; stanceL;</span>
+0025 
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

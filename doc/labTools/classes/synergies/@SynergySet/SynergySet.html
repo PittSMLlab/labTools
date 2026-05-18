@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@SynergySet</a> &gt; SynergySet.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/synergies/@SynergySet&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\synergies\@SynergySet&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>SynergySet
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
+<li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/classes/synergies/@Synergy/Synergy.html" class="code" title="">Synergy</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/xticklabel_rotate90_cell.html" class="code" title="function xticklabel_rotate90(XTick,xTickLabels,varargin)">xticklabel_rotate90_cell</a>	XTICKLABEL_ROTATE90 - Rotate numeric Xtick labels by 90 degrees</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
+<li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/classes/synergies/@Synergy/Synergy.html" class="code" title="">Synergy</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleClusteredSynergySetCollection.html" class="code" title="">exampleClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleSynergySet.html" class="code" title="">exampleSynergySet</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleSynergySetCollection.html" class="code" title="">exampleSynergySetCollection</a>	Test example of SynergySetCollection</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -91,7 +91,7 @@ This function is called by:
 0045             content=this.content(indexes,:);
 0046         <span class="keyword">end</span>
 0047         <a name="_sub4" href="#_subfunctions" class="code">function s=getSingleSynergy(this,index)</a>
-0048             s = Synergy(this.content(index,:),this.muscleList);
+0048             s = <a href="../../../../labTools/classes/synergies/@Synergy/Synergy.html" class="code" title="">Synergy</a>(this.content(index,:),this.muscleList);
 0049         <span class="keyword">end</span>
 0050         content=getContentAsCollection(this)
 0051         <a name="_sub5" href="#_subfunctions" class="code">function this=set.name(this,name)</a>
@@ -118,7 +118,7 @@ This function is called by:
 0072                 hold on
 0073                 bar(this.content(i,:))
 0074                 <span class="comment">%set(gca,'XTick',[1:this.getDim],'XTickLabel',this.muscleList)</span>
-0075                 xticklabel_rotate90_cell([1:this.getDim],this.muscleList,<span class="string">'FontSize'</span>,6,<span class="string">'Color'</span>,[0 0 0]);
+0075                 <a href="../../../../labTools/fun/ext/pitools/usefulCode/xticklabel_rotate90_cell.html" class="code" title="function xticklabel_rotate90(XTick,xTickLabels,varargin)">xticklabel_rotate90_cell</a>([1:this.getDim],this.muscleList,<span class="string">'FontSize'</span>,6,<span class="string">'Color'</span>,[0 0 0]);
 0076                 <span class="keyword">if</span> length(varargin)&lt;2
 0077                     colormap(this.colors{mod(i,10)+1}); <span class="comment">%Fixed colors</span>
 0078                 <span class="keyword">else</span>
@@ -168,6 +168,6 @@ This function is called by:
 0122     
 0123 <span class="keyword">end</span>
 0124</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

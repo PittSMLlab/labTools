@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cell2mat</title>
+  <meta name="keywords" content="cell2mat">
+  <meta name="description" content="cell2mat  Converts cell array of strideData to matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; cell2mat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@strideData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>cell2mat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>cell2mat  Converts cell array of strideData to matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function strideMat = cell2mat(strides, field, N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">cell2mat  Converts cell array of strideData to matrix
+
+   strideMat = cell2mat(strides, field, N) converts a cell
+   array of strideData objects to a 3D matrix by extracting and
+   resampling the specified field
+
+   Inputs:
+       strides - cell array of strideData objects
+       field - name of property to extract (e.g.,
+               'markerData', 'procEMGData')
+       N - number of samples for resampling
+
+   Outputs:
+       strideMat - 3D matrix (samples x channels x strides)
+                   containing resampled data
+
+   See also: <a href="plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>, <a href="plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cell,type)">cellisa</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL_c3d.html" class="code" title="">BiofeedbackSL_c3d</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">flushAndRecomputeParameters</a>	FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>	getAlignedField  Extracts time-aligned field data across</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>	getStridedField  Extracts stride-segmented field data across</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	recomputeEvents  Recalculates gait events and parameters</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>	RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="strideData.html" class="code" title="">strideData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/getEpochData.html" class="code" title="function data = getEpochData(this, epochs, labels, summaryFlag)">getEpochData</a>	getEpochData  Returns data from all subjects in all groups for each epoch</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Returns condition indices from names</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/getTrialsInCondition.html" class="code" title="function trialNums = getTrialsInCondition(this, conditionNames)">getTrialsInCondition</a>	getTrialsInCondition  Returns trial numbers in each condition</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/validateTrialsInCondition.html" class="code" title="function conditionOrder = validateTrialsInCondition(this)">validateTrialsInCondition</a>	validateTrialsInCondition  Validates trial organization</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/discretize.html" class="code" title="function newThis = discretize(this, averagingVector)">discretize</a>	discretize  Averages data across phases</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/discretize.html" class="code" title="function [DTS, bad] = discretize(this, eventTS, eventLabel, N,summaryFunction)">discretize</a>	discretize  Discretizes by averaging across phases</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>	anova  Performs one-way ANOVA on parameters</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li><li><a href="../../../../labTools/fun/misc/compareExperimentData.html" class="code" title="function report = compareExperimentData(refInput, newInput, options)">compareExperimentData</a>	COMPAREEXPERIMENTDATA Compare structure of two experimentData objects.</li><li><a href="../../../../labTools/fun/misc/generateHreflexRecruitmentCurves.html" class="code" title="">generateHreflexRecruitmentCurves</a>	% Generate H-Reflex Calibration Recruitment Curves & Other Figures</li><li><a href="../../../../labTools/fun/misc/getOGspeed.html" class="code" title="function OGspeed = getOGspeed(expData)">getOGspeed</a>	must load subject before running function</li><li><a href="../../../../labTools/fun/parameterCalculation/extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</li><li><a href="../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../../labTools/gui/importc3d/GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>	GetInfoGUI  GUI for collecting experimental session information.</li><li><a href="../../../../labTools/gui/importc3d/SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="../../../../labTools/gui/importc3d/deprecated/GetInfoGUIbeta.html" class="code" title="function varargout = GetInfoGUIbeta(varargin)">GetInfoGUIbeta</a>	GETINFOGUIBETA MATLAB code for GetInfoGUIbeta.fig</li><li><a href="../../../../labTools/gui/importc3d/deprecated/errorProofInfobeta.html" class="code" title="function out = errorProofInfobeta(handles,ignoreErrors)">errorProofInfobeta</a>	Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.</li><li><a href="../../../../labTools/gui/importc3d/errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a>	errorProofInfo  Validates and extracts all fields from GetInfoGUI.</li><li><a href="../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function strideMat = cell2mat(strides, field, N)</a>
+0002 <span class="comment">%cell2mat  Converts cell array of strideData to matrix</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   strideMat = cell2mat(strides, field, N) converts a cell</span>
+0005 <span class="comment">%   array of strideData objects to a 3D matrix by extracting and</span>
+0006 <span class="comment">%   resampling the specified field</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       strides - cell array of strideData objects</span>
+0010 <span class="comment">%       field - name of property to extract (e.g.,</span>
+0011 <span class="comment">%               'markerData', 'procEMGData')</span>
+0012 <span class="comment">%       N - number of samples for resampling</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       strideMat - 3D matrix (samples x channels x strides)</span>
+0016 <span class="comment">%                   containing resampled data</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: plotCell, plotCellAvg</span>
+0019 
+0020 strideMat = [];
+0021 <span class="keyword">if</span> isa(strides, <span class="string">'cell'</span>) &amp;&amp; all(<a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cell,type)">cellisa</a>(strides, <span class="string">'strideData'</span>))
+0022     auxLst = properties(<span class="string">'strideData'</span>);
+0023     <span class="keyword">if</span> any(strcmp(auxLst, field))
+0024         eval([<span class="string">'testField = strides{1}.'</span> field <span class="string">';'</span>]);
+0025         <span class="keyword">if</span> isa(testField, <span class="string">'labTimeSeries'</span>)
+0026             M = length(strides);
+0027             <span class="keyword">for</span> i = 1:M
+0028                 eval([<span class="string">'testField = strides{i}.'</span> field <span class="string">';'</span>]);
+0029                 strideMat(:, :, i) = testField.resampleN(N)<span class="keyword">...</span>
+0030                     .getDataAsVector(testField.getLabels);
+0031             <span class="keyword">end</span>
+0032         <span class="keyword">elseif</span> ~isa(testField, <span class="string">'double'</span>)
+0033             <span class="keyword">for</span> i = 1:length(strides)
+0034                 eval([<span class="string">'testField = strides{i}.'</span> field <span class="string">';'</span>]);
+0035                 strideMat(:, :, i) = testField;
+0036             <span class="keyword">end</span>
+0037         <span class="keyword">end</span>
+0038 
+0039     <span class="keyword">else</span>
+0040         ME = MException(<span class="string">'strideDataCell2mat:unknownField'</span>, <span class="keyword">...</span>
+0041             [<span class="string">'The provided fieldname is not a property of '</span> <span class="keyword">...</span>
+0042             <span class="string">'strideData objects, or is not of labTS type.'</span>]);
+0043         throw(ME);
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">else</span>
+0046     ME = MException(<span class="string">'strideDataCell2mat:wrongInput'</span>, <span class="keyword">...</span>
+0047         <span class="string">'Input needs to be a cell array of strideData objects.'</span>);
+0048     throw(ME);
+0049 <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

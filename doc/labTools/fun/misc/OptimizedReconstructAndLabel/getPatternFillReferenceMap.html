@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPatternFillReferenceMap</title>
+  <meta name="keywords" content="getPatternFillReferenceMap">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">OptimizedReconstructAndLabel</a> &gt; getPatternFillReferenceMap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\OptimizedReconstructAndLabel&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getPatternFillReferenceMap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function refMap = getPatternFillReferenceMap() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="OptimizedReconstructAndLabel.html" class="code" title="">OptimizedReconstructAndLabel</a>	% Take 1 at Optimizing Reconstruct & Label Pipeline</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function refMap = getPatternFillReferenceMap()</a>
+0002 
+0003     refMap = containers.Map;
+0004 
+0005     refMap(<span class="string">'RPSIS'</span>) = <span class="string">'RGT'</span>;
+0006     refMap(<span class="string">'RASIS'</span>) = <span class="string">'RGT'</span>;
+0007     refMap(<span class="string">'LPSIS'</span>) = <span class="string">'LGT'</span>;
+0008     refMap(<span class="string">'LASIS'</span>) = <span class="string">'LGT'</span>;
+0009     refMap(<span class="string">'RGT'</span>) = <span class="string">'RKNEE'</span>;
+0010     refMap(<span class="string">'RTHI'</span>) = <span class="string">'RGT'</span>;
+0011     refMap(<span class="string">'RKNEE'</span>) = <span class="string">'RGT'</span>;
+0012     refMap(<span class="string">'RSHANK'</span>) = <span class="string">'RKNEE'</span>;
+0013     refMap(<span class="string">'RANK'</span>) = <span class="string">'RKNEE'</span>;
+0014     refMap(<span class="string">'RHEEL'</span>) = <span class="string">'RANK'</span>;
+0015     refMap(<span class="string">'RTOE'</span>) = <span class="string">'RANK'</span>;
+0016     refMap(<span class="string">'LGT'</span>) = <span class="string">'LKNEE'</span>;
+0017     refMap(<span class="string">'LTHI'</span>) = <span class="string">'LGT'</span>;
+0018     refMap(<span class="string">'LKNEE'</span>) = <span class="string">'LGT'</span>;
+0019     refMap(<span class="string">'LSHANK'</span>) = <span class="string">'LKNEE'</span>;
+0020     refMap(<span class="string">'LANK'</span>) = <span class="string">'LKNEE'</span>;
+0021     refMap(<span class="string">'LHEEL'</span>) = <span class="string">'LANK'</span>;
+0022     refMap(<span class="string">'LTOE'</span>) = <span class="string">'LANK'</span>;
+0023 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

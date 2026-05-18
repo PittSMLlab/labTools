@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of integrate</title>
+  <meta name="keywords" content="integrate">
+  <meta name="description" content="integrate  Numerical integration">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; integrate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>integrate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>integrate  Numerical integration</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = integrate(this, initValues) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">integrate  Numerical integration
+
+   newThis = integrate(this) integrates data using zero initial
+   conditions
+
+   newThis = integrate(this, initValues) uses specified initial values
+
+   Inputs:
+       this - labTimeSeries object
+       initValues - initial conditions for integration (optional,
+                    default: zeros)
+
+   Outputs:
+       newThis - integrated labTimeSeries
+
+   Note: This is inverse operator of derivative when used with
+         diffOrder = 1. Initial values represent the integrated data
+         values HALF A SAMPLE before the first sample of this.
+
+   See also: <a href="derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = integrate(this, initValues)</a>
+0002 <span class="comment">%integrate  Numerical integration</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = integrate(this) integrates data using zero initial</span>
+0005 <span class="comment">%   conditions</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   newThis = integrate(this, initValues) uses specified initial values</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - labTimeSeries object</span>
+0011 <span class="comment">%       initValues - initial conditions for integration (optional,</span>
+0012 <span class="comment">%                    default: zeros)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       newThis - integrated labTimeSeries</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Note: This is inverse operator of derivative when used with</span>
+0018 <span class="comment">%         diffOrder = 1. Initial values represent the integrated data</span>
+0019 <span class="comment">%         values HALF A SAMPLE before the first sample of this.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: derivative</span>
+0022 
+0023 <span class="comment">% This is the inverse operator of derivative when used with</span>
+0024 <span class="comment">% diffOrder = 1;</span>
+0025 M = size(this.Data, 2);
+0026 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(initValues)
+0027     <span class="comment">% Default initial condition = 0</span>
+0028     <span class="comment">% Initial values represent the integrated data values HALF A SAMPLE</span>
+0029     <span class="comment">% before the first sample of this.</span>
+0030     initValues = zeros(1, M);
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> numel(initValues) ~= M
+0033     error(<span class="string">'labTS:integrate'</span>, <span class="keyword">...</span>
+0034         <span class="string">'Initial values mismatch between Data and initValues'</span>);
+0035 <span class="keyword">end</span>
+0036 newData = bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, initValues(:)', <span class="keyword">...</span>
+0037     cumsum([zeros(1, M); this.Data], 1) * this.sampPeriod);
+0038 lag = -0.5;
+0039 newLabels = strcat(<span class="string">'\int'</span>, {<span class="string">' '</span>}, this.labels, {<span class="string">' '</span>}, <span class="string">'dt'</span>);
+0040 newT0 = this.Time(1) + lag * this.sampPeriod;
+0041 newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, newT0, this.sampPeriod, newLabels);
+0042 <span class="keyword">end</span>
+0043</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

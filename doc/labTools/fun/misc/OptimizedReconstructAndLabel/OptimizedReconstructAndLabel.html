@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of OptimizedReconstructAndLabel</title>
+  <meta name="keywords" content="OptimizedReconstructAndLabel">
+  <meta name="description" content="% Take 1 at Optimizing Reconstruct &amp; Label Pipeline">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">OptimizedReconstructAndLabel</a> &gt; OptimizedReconstructAndLabel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\OptimizedReconstructAndLabel&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>OptimizedReconstructAndLabel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Take 1 at Optimizing Reconstruct &amp; Label Pipeline</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Take 1 at Optimizing Reconstruct &amp; Label Pipeline
+ author: SB
+ date (created): 13 May 2025</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getPatternFillReferenceMap.html" class="code" title="function refMap = getPatternFillReferenceMap()">getPatternFillReferenceMap</a>	</li><li><a href="runCustomPatternFill.html" class="code" title="function runCustomPatternFill(vicon, refMap)">runCustomPatternFill</a>	runCustomPatternFill: applies pattern fill using marker specific</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Take 1 at Optimizing Reconstruct &amp; Label Pipeline</span>
+0002 <span class="comment">% author: SB</span>
+0003 <span class="comment">% date (created): 13 May 2025</span>
+0004 
+0005 <span class="comment">%% 1) Define Paths &amp; Trial List</span>
+0006 pathSess   = <span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\'</span>;
+0007 pathOutCSV = <span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\ShanthiTry_Results.csv'</span>;
+0008 
+0009 <span class="comment">% get all trial files that start with 'Trial' and end in '.x1d'</span>
+0010 trialFiles = dir(fullfile(pathSess,<span class="string">'**'</span>, <span class="string">'Trial*.x1d'</span>));
+0011 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)                      <span class="comment">% if no trial files found, ...</span>
+0012     error(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% extract numeric trial indices from filenames (assumes 'TrialXX.x1d')</span>
+0016 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, <span class="keyword">...</span>
+0017     <span class="string">'UniformOutput'</span>,false);
+0018 indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+0019 
+0020 <span class="comment">%% 2) Initialize Vicon Nexus SDK &amp; Prepare the Results Container Structure</span>
+0021 <span class="keyword">try</span> 
+0022     vicon = ViconNexus();   <span class="comment">% assumes ViconNexus() is on the MATLAB path</span>
+0023 <span class="keyword">catch</span> ME
+0024     error(<span class="string">'Could not initialize Vicon Nexus SDK. \n%s'</span>, ME.message);
+0025 <span class="keyword">end</span>
+0026 <span class="comment">% preallocate a struct array to hold summary results:</span>
+0027 <span class="comment">%   • ParticipantName               (string)</span>
+0028 <span class="comment">%   • TrialID                       (e.g., 1, 2, …)</span>
+0029 <span class="comment">%   • Use3DPredictions              (logical)</span>
+0030 <span class="comment">%   • EnvironmentalDriftTolerance    (numeric)</span>
+0031 <span class="comment">%   • MinCamerasToStartTraj         (unsigned integer)</span>
+0032 <span class="comment">%   • MinCamerasToContTraj          (unsigned integer)</span>
+0033 <span class="comment">%   • PercentMissing_All            (numeric)</span>
+0034 <span class="comment">%   • NumGapsPerMarker_All          (numeric)</span>
+0035 <span class="comment">%   • MaxGapLength_All              (numeric)</span>
+0036 <span class="comment">%   • MedianGapLength_All           (numeric)</span>
+0037 <span class="comment">%   • PercentMissing_Subset         (numeric)</span>
+0038 <span class="comment">%   • NumGapsPerMarker_Subset       (numeric)</span>
+0039 <span class="comment">%   • MaxGapLength_Subset           (numeric)</span>
+0040 <span class="comment">%   • MedianGapLength_Subset        (numeric)</span>
+0041 results = struct( <span class="keyword">...</span>
+0042     <span class="string">'ParticipantName'</span>,              {}, <span class="keyword">...</span>
+0043     <span class="string">'TrialID'</span>,                      {}, <span class="keyword">...</span>
+0044     <span class="string">'Use3DPredictions'</span>,             {}, <span class="keyword">...</span>
+0045     <span class="string">'EnvironmentalDriftTolerance'</span>,    {}, <span class="keyword">...</span>
+0046     <span class="string">'MinCamerasToStartTraj'</span>,        {}, <span class="keyword">...</span>
+0047     <span class="string">'MinCamerasToContTraj'</span>,         {}, <span class="keyword">...</span>
+0048     <span class="string">'PercentMissing_All'</span>,           {}, <span class="keyword">...</span>
+0049     <span class="string">'NumGapsPerMarker_All'</span>,         {}, <span class="keyword">...</span>
+0050     <span class="string">'MaxGapLength_All'</span>,             {}, <span class="keyword">...</span>
+0051     <span class="string">'MedianGapLength_All'</span>,          {}, <span class="keyword">...</span>
+0052     <span class="string">'PercentMissing_Subset'</span>,        {}, <span class="keyword">...</span>
+0053     <span class="string">'NumGapsPerMarker_Subset'</span>,      {}, <span class="keyword">...</span>
+0054     <span class="string">'MaxGapLength_Subset'</span>,          {}, <span class="keyword">...</span>
+0055     <span class="string">'MedianGapLength_Subset'</span>,          {} <span class="keyword">...</span>
+0056     );
+0057 
+0058 <span class="comment">%% 3) Loop through Trials and Apply Pre-Pattern Nexus Pipeline</span>
+0059 
+0060 <span class="keyword">for</span> i = 1:numel(trialFiles)
+0061     trialName = trialFiles(i).name;
+0062     trialPath = fullfile(trialFiles(i).folder, trialFiles(i).name);
+0063     
+0064     fprintf(<span class="string">'---Running RLPrePatternFill on %s ---\n'</span>, trialName);
+0065     <span class="keyword">try</span> 
+0066         <span class="comment">%Open Trial</span>
+0067         <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(trialPath, vicon)
+0068             warning(<span class="string">'  • Could not open %s. Skipping.\n'</span>, trialName);
+0069             <span class="keyword">continue</span>;
+0070         <span class="keyword">end</span>
+0071         <span class="comment">%vicon.OpenTrial(trialPath);</span>
+0072         <span class="comment">%pause(2);</span>
+0073 
+0074         pipelinePath = fullfile(<span class="string">'C:'</span>, <span class="string">'Users'</span>, <span class="string">'Public'</span>, <span class="string">'Documents'</span>, <span class="keyword">...</span>
+0075             <span class="string">'Vicon'</span>, <span class="string">'Nexus2.x'</span>, <span class="string">'Configurations'</span>, <span class="string">'Pipelines'</span>, <span class="keyword">...</span>
+0076             <span class="string">'RLPrePatternFill.Pipeline'</span>);
+0077         vicon.RunPipeline(pipelinePath, <span class="string">''</span>, 200);
+0078         pause(1);
+0079 
+0080         vicon.SaveTrial;
+0081         vicon.CloseTrial;
+0082         fprintf(<span class="string">'Trial %s processed and saved successfully.\n'</span>, trialName);
+0083     
+0084     <span class="keyword">catch</span> ME
+0085         warning(<span class="string">'Error processing trial %s: %s'</span>, trialName, ME.message);
+0086         <span class="keyword">continue</span>
+0087     <span class="keyword">end</span>
+0088 <span class="keyword">end</span>
+0089 
+0090 <span class="comment">%% 4) Custom Pattern Fill via MATLAB</span>
+0091 
+0092 refMap = <a href="getPatternFillReferenceMap.html" class="code" title="function refMap = getPatternFillReferenceMap()">getPatternFillReferenceMap</a>();
+0093 
+0094 <span class="keyword">for</span> i = 1:numel(trialFiles)
+0095     trialName = trialFiles(i).name;
+0096     trialPath = fullfile(trialFiles(i).folder, trialFiles(i).name);
+0097     
+0098     fprintf(<span class="string">'---Running custom Pattern Fill on %s ---\n'</span>, trialName);
+0099     <span class="keyword">try</span>
+0100         <span class="comment">%Open trial again if not already open</span>
+0101         vicon.OpenTrial(trialPath);
+0102         pause(1);
+0103         
+0104         <a href="runCustomPatternFill.html" class="code" title="function runCustomPatternFill(vicon, refMap)">runCustomPatternFill</a>(vicon, refMap);
+0105         pause(1)
+0106         
+0107         vicon.SaveTrial(200);
+0108         vicon.CloseTrial;
+0109         fprintf(<span class="string">'Pattern fill completed and trial saved: %s\n'</span>, trialName);
+0110     <span class="keyword">catch</span> ME
+0111         warning(<span class="string">'Error during pattern fill for trial %s: %s'</span>, trialName, ME.message);
+0112         <span class="keyword">continue</span>;
+0113     <span class="keyword">end</span>
+0114 <span class="keyword">end</span>
+0115 
+0116 <span class="comment">%% 5) Post-Pattern Processing</span>
+0117 
+0118 <span class="keyword">for</span> i = 1:numel(trialFiles)
+0119     trialName = trialFiles(i).name;
+0120     trialPath = fullfile(trialFiles(i).folder, trialFiles(i).name);
+0121     
+0122     fprintf(<span class="string">'---Running post-pattern pipeline on %s ---\n'</span>, trialName);
+0123     <span class="keyword">try</span>
+0124         vicon.OpenTrial(trialPath);
+0125         pause(1);
+0126         
+0127         vicon.RunPipeline(<span class="string">'RLPostPatternFill'</span>, <span class="string">''</span>, 200);
+0128         pause(1);
+0129         
+0130         vicon.SaveTrial;
+0131         vicon.CloseTrial;
+0132         fprintf(<span class="string">'Post-pattern pipeline complete %s\n'</span>, trialName);
+0133     <span class="keyword">catch</span> ME
+0134         warning(<span class="string">'Error during post pattern processing for %s: %s'</span>, trialName, ME.message);
+0135         <span class="keyword">continue</span>;
+0136     <span class="keyword">end</span>
+0137 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

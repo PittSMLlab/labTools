@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of makeDataObjNew</title>
+  <meta name="keywords" content="makeDataObjNew">
+  <meta name="description" content="makeDataObjNew  Internal method to create adaptationData object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; makeDataObjNew.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>makeDataObjNew
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>makeDataObjNew  Internal method to create adaptationData object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">makeDataObjNew  Internal method to create adaptationData object
+
+   adaptData = makeDataObjNew(this, filename, experimentalFlag,
+   contraLateralFlag) creates adaptationData object with full control
+   over parameters
+
+   Inputs:
+       this - experimentData object
+       filename - string for saving (optional)
+       experimentalFlag - if false, excludes experimental parameters
+                          (optional)
+       contraLateralFlag - if true, uses non-reference leg for computation
+                           (optional)
+
+   Outputs:
+       adaptData - adaptationData object
+
+   Note: This function may not be compatible with certain methods of
+         the adaptationData class
+
+   See also: <a href="makeDataObj.html" class="code" title="function adaptData = makeDataObj(this, filename, experimentalFlag,contraLateralFlag)">makeDataObj</a>, adaptationData</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>	RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="makeDataObj.html" class="code" title="function adaptData = makeDataObj(this, filename, experimentalFlag,contraLateralFlag)">makeDataObj</a>	makeDataObj  Creates an adaptationData object</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function adaptData = makeDataObjNew(this, filename, experimentalFlag, </a><span class="keyword">...</span>
+0002     contraLateralFlag)
+0003 <span class="comment">%makeDataObjNew  Internal method to create adaptationData object</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   adaptData = makeDataObjNew(this, filename, experimentalFlag,</span>
+0006 <span class="comment">%   contraLateralFlag) creates adaptationData object with full control</span>
+0007 <span class="comment">%   over parameters</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - experimentData object</span>
+0011 <span class="comment">%       filename - string for saving (optional)</span>
+0012 <span class="comment">%       experimentalFlag - if false, excludes experimental parameters</span>
+0013 <span class="comment">%                          (optional)</span>
+0014 <span class="comment">%       contraLateralFlag - if true, uses non-reference leg for computation</span>
+0015 <span class="comment">%                           (optional)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       adaptData - adaptationData object</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: This function may not be compatible with certain methods of</span>
+0021 <span class="comment">%         the adaptationData class</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: makeDataObj, adaptationData</span>
+0024 
+0025 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(contraLateralFlag) || contraLateralFlag == 0
+0026     <span class="comment">% Normal parameters</span>
+0027     <span class="comment">% nop</span>
+0028 <span class="keyword">else</span>
+0029     <span class="comment">% Computing all parameters on a contraLateral way (this is, we compute</span>
+0030     <span class="comment">% parameters using the NON reference leg as the 'slow' one, opposite to</span>
+0031     <span class="comment">% the default computation)</span>
+0032     <span class="keyword">if</span> strcmp(this.getRefLeg, <span class="string">'R'</span>)
+0033         initEventSide = <span class="string">'L'</span>;
+0034     <span class="keyword">elseif</span> strcmp(this.getRefLeg, <span class="string">'L'</span>)
+0035         initEventSide = <span class="string">'R'</span>;
+0036     <span class="keyword">else</span>
+0037         ME = MException(<span class="string">'makeDataObject:ContralateralComputation'</span>, <span class="keyword">...</span>
+0038             [<span class="string">'Could not determine proper reference leg for this '</span> <span class="keyword">...</span>
+0039             <span class="string">'experiment.'</span>]);
+0040         throw(ME);
+0041     <span class="keyword">end</span>
+0042     <span class="comment">% Using default event class ('', as opposed to 'force' or 'kin')</span>
+0043     this = <a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>(this, [], initEventSide);
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="keyword">for</span> i = 1:length(this.data) <span class="comment">% Trials</span>
+0047     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{i}) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{i}.adaptParams)
+0048         <span class="comment">% Get data from this trial:</span>
+0049         aux = this.data{i}.adaptParams;
+0050         trialTypes{i} = this.data{i}.metaData.type;
+0051         <span class="keyword">if</span> ~(nargin &gt; 2 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(experimentalFlag) &amp;&amp; <span class="keyword">...</span>
+0052                 experimentalFlag == 0)
+0053             aux = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(aux, this.data{i}.experimentalParams);
+0054         <span class="keyword">end</span>
+0055         <span class="comment">% Concatenate with other trials:</span>
+0056         <span class="comment">% Case in which no strides were detected for a trial, it</span>
+0057         <span class="comment">% could happen. Not concatenating those</span>
+0058         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux.Data)
+0059             <span class="keyword">if</span> ~exist(<span class="string">'paramData'</span>, <span class="string">'var'</span>)
+0060                 <a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a> = aux;
+0061             <span class="keyword">else</span>
+0062                 <a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a> = <a href="../../../../labTools/classes/labTS/@parameterSeries/addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>(<a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>, aux);
+0063             <span class="keyword">end</span>
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066 <span class="keyword">end</span>
+0067 <span class="comment">% HH: remove all bad strides completely</span>
+0068 <span class="comment">% paramData = parameterSeries(paramData.Data(paramData.bad == 0, :), paramData.labels, paramData.hiddenTime(paramData.bad == 0), paramData.description);</span>
+0069 <a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a> = paramData.setTrialTypes(trialTypes);
+0070 adaptData = <a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(this.metaData, this.subData, <a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>);
+0071 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(filename)
+0072     <span class="comment">% HH edit 2/12 - added 'params' to file name so experimentData</span>
+0073     <span class="comment">% file isn't overwritten</span>
+0074     save([filename <span class="string">'params.mat'</span>], <span class="string">'adaptData'</span>, <span class="string">'-v7.3'</span>);
+0075 <span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

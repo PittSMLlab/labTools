@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot</title>
+  <meta name="keywords" content="plot">
+  <meta name="description" content="plot  Plots data in subplots">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; plot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plot  Plots data in subplots</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plot  Plots data in subplots
+
+   [h, plotHandles] = plot(this) plots all labels in separate subplots
+
+   [h, plotHandles] = plot(this, h, labels, plotHandles, events,
+   color, lineWidth) plots with specified options
+
+   Inputs:
+       this - labTimeSeries object
+       h - figure handle (optional, creates new if empty)
+       labels - cell array of labels to plot (optional, default: all)
+       plotHandles - subplot handles (optional, creates if empty)
+       events - labTimeSeries with events to mark (optional)
+       color - line color (optional)
+       lineWidth - line width (optional, default: 2)
+
+   Outputs:
+       h - figure handle
+       plotHandles - array of subplot handles
+
+   Note: Alternative plot - all traces go in different axes
+
+   See also: <a href="bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>, <a href="plotAligned.html" class="code" title="function [h, plotHandles] = plotAligned(this, h, labels, plotHandles,events, color, lineWidth)">plotAligned</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>	tight_subplot creates "subplot" axes with adjustable gaps and margins</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotBars.html" class="code" title="function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>	TODO: Should check that numberOfStrides groups are given in</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	This function replaces plotMultipleGroupBars</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	checkMarkerDataHealth  Diagnoses issues with marker data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>	plotCell  Plots cell array of stride data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="assessMissing.html" class="code" title="function [fh, ph, missing] = assessMissing(this, labels, fh, ph)">assessMissing</a>	assessMissing  Assesses and plots missing data</li><li><a href="bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	bilateralPlot  Plots bilateral comparison</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="plotStridedTimeSeries.html" class="code" title="function [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle, plotHandles)">plotStridedTimeSeries</a>	plotStridedTimeSeries  Plots strided timeseries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>	assessMissing  Assesses missing data</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergyAnalysis/SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/+Hreflex/plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">plotSnippets</a>	PLOTSNIPPETS Plot H-reflex snippets with GRFs if available.</li><li><a href="../../../../labTools/fun/+Hreflex/plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin)">plotStimArtifactPeaks</a>	PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</li><li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</li><li><a href="../../../../labTools/fun/+dataMotion/processAndFillMarkerGapsSession.html" class="code" title="function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)">processAndFillMarkerGapsSession</a>	PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li><li><a href="../../../../labTools/fun/EMGanalysis/procEMGhealthCheck.html" class="code" title="function [h] = procEMGhealthCheck(procExperimentData)">procEMGhealthCheck</a>	</li><li><a href="../../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	this version was my first attempt to plot the postadaptation stuff,</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/CompareTrajectory_RL.html" class="code" title="">CompareTrajectory_RL</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajectoryCheckOptimizedRL.html" class="code" title="">TrajectoryCheckOptimizedRL</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/V2P_tester.html" class="code" title="">V2P_tester</a>	</li><li><a href="../../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>	this version was my first attempt to plot the readaptation stuff,</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="../../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa,Li] = nanJackKnife(varargin)">nanJackKnife</a>	JACKKNIFE plots jackknife errorbars around a given curve</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li><li><a href="../../../../labTools/gui/eventReview/ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li><li><a href="../../../../labTools/gui/importc3d/SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h, plotHandles] = plot(this, h, labels, plotHandles, events, </a><span class="keyword">...</span>
+0002     color, lineWidth)
+0003 <span class="comment">%plot  Plots data in subplots</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [h, plotHandles] = plot(this) plots all labels in separate subplots</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [h, plotHandles] = plot(this, h, labels, plotHandles, events,</span>
+0008 <span class="comment">%   color, lineWidth) plots with specified options</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       h - figure handle (optional, creates new if empty)</span>
+0013 <span class="comment">%       labels - cell array of labels to plot (optional, default: all)</span>
+0014 <span class="comment">%       plotHandles - subplot handles (optional, creates if empty)</span>
+0015 <span class="comment">%       events - labTimeSeries with events to mark (optional)</span>
+0016 <span class="comment">%       color - line color (optional)</span>
+0017 <span class="comment">%       lineWidth - line width (optional, default: 2)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Outputs:</span>
+0020 <span class="comment">%       h - figure handle</span>
+0021 <span class="comment">%       plotHandles - array of subplot handles</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   Note: Alternative plot - all traces go in different axes</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   See also: bilateralPlot, plotAligned</span>
+0026 
+0027 <span class="comment">% Alternative plot: all the traces go in different axes</span>
+0028 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(h)
+0029     h = figure;
+0030 <span class="keyword">else</span>
+0031     figure(h);
+0032 <span class="keyword">end</span>
+0033 N = length(this.labels);
+0034 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
+0035     relData = this.Data;
+0036     relLabels = this.labels;
+0037     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.Quality)
+0038         relQual = this.Quality == 1;
+0039     <span class="keyword">else</span>
+0040         relQual = true(size(relData));
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">else</span>
+0043     [relData, ~, relLabels] = this.getDataAsVector(labels);
+0044     N = size(relData, 2);
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles) || <span class="keyword">...</span>
+0047         length(plotHandles) &lt; length(relLabels)
+0048     [b, a] = <a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(length(relLabels));
+0049     <span class="comment">% External function</span>
+0050     plotHandles = <a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>(b, a, [.05 .05], [.05 .05], <span class="keyword">...</span>
+0051         [.05 .05]);
+0052 <span class="keyword">end</span>
+0053 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lineWidth)
+0054     lineWidth = 2;
+0055 <span class="keyword">end</span>
+0056 ax2 = [];
+0057 h1 = [];
+0058 <span class="keyword">if</span> any(~isreal(relData(:)))
+0059     warning(<span class="string">'labTimeSeries:plot'</span>, <span class="keyword">...</span>
+0060         <span class="string">'Data is complex, plotting the modulus only.'</span>);
+0061     relData = abs(relData);
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">for</span> i = 1:N
+0064     h1(i) = plotHandles(i);
+0065     subplot(h1(i));
+0066     hold on;
+0067     <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(color)
+0068         pp = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(this.Time, relData(:, i), <span class="string">'LineWidth'</span>, lineWidth);
+0069     <span class="keyword">else</span>
+0070         pp = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(this.Time, relData(:, i), <span class="string">'LineWidth'</span>, lineWidth, <span class="keyword">...</span>
+0071             <span class="string">'Color'</span>, color);
+0072     <span class="keyword">end</span>
+0073     <span class="comment">% plot(this.Time(relQual(:, i)), relData(relQual(:, i), i), 'rx')</span>
+0074     uistack(pp, <span class="string">'top'</span>);
+0075     ylabel(relLabels{i});
+0076     <span class="comment">% if i == ceil(N / 2)</span>
+0077     <span class="comment">%     xlabel('Time (s)')</span>
+0078     <span class="comment">% end</span>
+0079     hold off;
+0080     <span class="keyword">if</span> nargin &gt; 4 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0081         lls = {<span class="string">'LHS'</span>, <span class="string">'RTO'</span>, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>};
+0082         [ii, jj] = find(events.getDataAsTS(lls).Data);
+0083         [ii, iaux] = sort(ii);
+0084         jj = jj(iaux);
+0085         ax1 = gca;
+0086         <span class="comment">% ax2(i) = axes('Position', ax1.Position, ...</span>
+0087         <span class="comment">%     'XAxisLocation', 'top', ...</span>
+0088         <span class="comment">%     'YAxisLocation', 'right', ...</span>
+0089         <span class="comment">%     'Color', 'none'); %, 'XColor', 'r', 'YColor', 'r');</span>
+0090         <span class="comment">% [tt, i2] = unique(events.Time(ii));</span>
+0091         set(ax1, <span class="string">'XTick'</span>, events.Time(ii), <span class="string">'XTickLabel'</span>, lls(jj));
+0092         grid on;
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 <span class="comment">% linkaxes([h1, ax2], 'x')</span>
+0096 plotHandles = h1;
+0097 <span class="keyword">end</span>
+0098</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

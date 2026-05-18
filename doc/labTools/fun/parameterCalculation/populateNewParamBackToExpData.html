@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of populateNewParamBackToExpData</title>
+  <meta name="keywords" content="populateNewParamBackToExpData">
+  <meta name="description" content="POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; populateNewParamBackToExpData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>populateNewParamBackToExpData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function expData = populateNewParamBackToExpData(expData, adaptData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.
+
+   Copies parameters that exist in adaptData but not yet in expData back
+ into each trial's adaptParams field. The primary use case is
+ synchronizing EMG normalization parameters that were appended to
+ adaptData after the initial processing run. Also propagates DataInfo
+ UserData from adaptData, merging any additional fields unique to the
+ existing trial. Parameters already present in adaptParams or
+ experimentalParams for a given trial are skipped to avoid downstream
+ collisions when makeDataObj later rebuilds adaptData from expData
+ (e.g., fakeParam is always in experimentalParams and must not be
+ duplicated).
+
+ Inputs:
+   expData   - experimentData object; each trial's adaptParams will
+               be updated with new parameters from adaptData
+   adaptData - adaptationData object containing the new parameters
+               to back-populate (e.g., after EMG normalization)
+
+ Outputs:
+   expData - updated experimentData object with new parameters
+             appended to each trial's adaptParams
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">APPENDEMGNORMPARAMETERS</a>, LOADSUBJECT,
+   EXPERIMENTDATA.RECOMPUTEPARAMETERS,
+   EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS.
+
+ Author: Shuqi Liu, 2026-04-02</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/dataStructs/@experimentData/flushAndRecomputeParameters.html" class="code" title="function this = flushAndRecomputeParameters(this, eventClass,initEventSide, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">flushAndRecomputeParameters</a>	FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">recomputeParameters</a>	RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.</li><li><a href="../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function expData = populateNewParamBackToExpData(expData, adaptData)</a>
+0002 <span class="comment">%POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Copies parameters that exist in adaptData but not yet in expData back</span>
+0005 <span class="comment">% into each trial's adaptParams field. The primary use case is</span>
+0006 <span class="comment">% synchronizing EMG normalization parameters that were appended to</span>
+0007 <span class="comment">% adaptData after the initial processing run. Also propagates DataInfo</span>
+0008 <span class="comment">% UserData from adaptData, merging any additional fields unique to the</span>
+0009 <span class="comment">% existing trial. Parameters already present in adaptParams or</span>
+0010 <span class="comment">% experimentalParams for a given trial are skipped to avoid downstream</span>
+0011 <span class="comment">% collisions when makeDataObj later rebuilds adaptData from expData</span>
+0012 <span class="comment">% (e.g., fakeParam is always in experimentalParams and must not be</span>
+0013 <span class="comment">% duplicated).</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Inputs:</span>
+0016 <span class="comment">%   expData   - experimentData object; each trial's adaptParams will</span>
+0017 <span class="comment">%               be updated with new parameters from adaptData</span>
+0018 <span class="comment">%   adaptData - adaptationData object containing the new parameters</span>
+0019 <span class="comment">%               to back-populate (e.g., after EMG normalization)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   expData - updated experimentData object with new parameters</span>
+0023 <span class="comment">%             appended to each trial's adaptParams</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies:</span>
+0026 <span class="comment">%   None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also APPENDEMGNORMPARAMETERS, LOADSUBJECT,</span>
+0029 <span class="comment">%   EXPERIMENTDATA.RECOMPUTEPARAMETERS,</span>
+0030 <span class="comment">%   EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% Author: Shuqi Liu, 2026-04-02</span>
+0033 
+0034 arguments
+0035     expData   (1,1)
+0036     adaptData (1,1)
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">%% Identify Trials and Trial Column Index</span>
+0040 trials   = find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, expData.data));
+0041 trialCol = ismember(adaptData.data.labels, <span class="string">'trial'</span>);
+0042 
+0043 <span class="comment">%% Populate New Parameters Per Trial</span>
+0044 <span class="keyword">for</span> tr = trials
+0045     trialAdapt     = expData.data{tr}.adaptParams;
+0046     trialExpParams = expData.data{tr}.experimentalParams;
+0047 
+0048     <span class="comment">% Identify parameters in adaptData not already in this trial</span>
+0049     newDataCol = ~ismember(adaptData.data.labels, <span class="keyword">...</span>
+0050         [trialAdapt.labels; trialExpParams.labels]);
+0051     newData         = adaptData.data.Data( <span class="keyword">...</span>
+0052         adaptData.data.Data(:, trialCol) == tr, newDataCol);
+0053     newLabels       = adaptData.data.labels(newDataCol);
+0054     newDescriptions = adaptData.data.description(newDataCol);
+0055     trialAdapt = trialAdapt.appendData( <span class="keyword">...</span>
+0056         newData, newLabels, newDescriptions);
+0057 
+0058     <span class="comment">% Propagate DataInfo UserData from adaptData</span>
+0059     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialAdapt.DataInfo.UserData)
+0060         <span class="comment">% Previously empty: replace entirely with adaptData's UserData</span>
+0061         trialAdapt.DataInfo.UserData = adaptData.data.DataInfo.UserData;
+0062     <span class="keyword">else</span>
+0063         <span class="comment">% Merge: adaptData fields take precedence; preserve fields</span>
+0064         <span class="comment">% unique to the old expData trial</span>
+0065         newUserData = adaptData.data.DataInfo.UserData;
+0066         <span class="keyword">if</span> isstruct(trialAdapt.DataInfo.UserData)
+0067             uniqueFields = setdiff( <span class="keyword">...</span>
+0068                 fieldnames(trialAdapt.DataInfo.UserData), <span class="keyword">...</span>
+0069                 fieldnames(newUserData));
+0070             <span class="keyword">for</span> fld = uniqueFields'
+0071                 newUserData.(fld{1}) = <span class="keyword">...</span>
+0072                     trialAdapt.DataInfo.UserData.(fld{1});
+0073             <span class="keyword">end</span>
+0074         <span class="keyword">else</span>
+0075             <span class="comment">% Not a struct: preserve old info in a single field</span>
+0076             newUserData.prevUserData = trialAdapt.DataInfo.UserData;
+0077         <span class="keyword">end</span>
+0078         trialAdapt.DataInfo.UserData = newUserData;
+0079     <span class="keyword">end</span>
+0080 
+0081     expData.data{tr}.adaptParams = trialAdapt;
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="keyword">end</span>
+0085</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

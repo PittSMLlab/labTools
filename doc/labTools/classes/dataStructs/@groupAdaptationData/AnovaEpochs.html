@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; AnovaEpochs.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>AnovaEpochs
 </h1>
@@ -58,7 +58,7 @@ Output variables:                                              %%
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>	anova  Performs ANOVA comparing groups across epochs</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>	anova  Performs one-way ANOVA on parameters</li><li><a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>	Performs the Benjamini-Hochberg procedure to determine significance in</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
@@ -138,13 +138,13 @@ This function is called by:
 0069     c = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'lsd'</span>);
 0070     c2 = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'bonferroni'</span>);
 0071     c3 = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'hsd'</span>);
-0072     F=cell2mat(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'F'</span>)==1)));
-0073     p=cell2mat(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'Prob&gt;F'</span>)==1)));
+0072     F=<a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'F'</span>)==1)));
+0073     p=<a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'Prob&gt;F'</span>)==1)));
 0074     maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[F;NaN;NaN;NaN];maineff.p=[p;NaN;NaN;pval];<span class="comment">%table with main effects</span>
 0075     posthocGroup.groups1=groupsNames(c(:,1))';posthocGroup.groups2=groupsNames(c(:,2))';<span class="comment">%groups to compare</span>
 0076     posthocGroup.meandiff=c(:,4);posthocGroup.lowerbound=c(:,3);posthocGroup.upperbound=c(:,5);posthocGroup.pvalLSD=c(:,6);
 0077     posthocGroup.pvalBonferroni=c2(:,6);posthocGroup.pvalTukey=c3(:,6);
-0078     [posthocGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(c(:,6),significanceThreshold);<span class="comment">%FDR of 0.05 seems reasonable;</span>
+0078     [posthocGroup.hBenHoch,dt1,dt2] = <a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(c(:,6),significanceThreshold);<span class="comment">%FDR of 0.05 seems reasonable;</span>
 0079     clear F p pval c c2 c3 dt1 dt2; 
 0080     
 0081 <span class="keyword">elseif</span> length(groups) == 1 <span class="comment">%Oneway RM ANOVA</span>
@@ -173,7 +173,7 @@ This function is called by:
 0104                 posthocEpoch.ep1(comp)=eps.Properties.ObsNames(e);
 0105                 posthocEpoch.ep2(comp)=eps.Properties.ObsNames(e2);
 0106                 [H,P,CI] = ttest(t.([<span class="string">'ep'</span>,num2str(e)]),t.([<span class="string">'ep'</span>,num2str(e2)]));
-0107                 posthocEpoch.meandiff(comp)=mean(CI);
+0107                 posthocEpoch.meandiff(comp)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(CI);
 0108                 posthocEpoch.lowerbound(comp)=CI(1);
 0109                 posthocEpoch.upperbound(comp)=CI(2);
 0110                 posthocEpoch.pval(comp)=P;
@@ -183,7 +183,7 @@ This function is called by:
 0114             <span class="keyword">end</span>
 0115         <span class="keyword">end</span>
 0116     <span class="keyword">end</span>
-0117     [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
+0117     [posthocEpoch.hBenHoch,dt1,dt2] = <a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
 0118      model=rm;
 0119     
 0120     
@@ -194,7 +194,7 @@ This function is called by:
 0125    posthocEpochByGroup=table;
 0126     
 0127     rm=fitrm(t,[<span class="string">'ep1-ep'</span>,num2str(length(eps)),<span class="string">'~group'</span>],<span class="string">'WithinDesign'</span>,Meas,<span class="string">'WithinModel'</span>,<span class="string">'epoch'</span>);
-0128     wtab=ranova(rm); btab=anova(rm);
+0128     wtab=ranova(rm); btab=<a href="../../../../labTools/classes/dataStructs/@studyData/anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>(rm);
 0129     <span class="keyword">if</span> rm.mauchly.pValue&gt;.05<span class="comment">%spherecity can be assumed</span>
 0130         maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[btab.F(2);wtab.F(1);wtab.F(2);NaN];maineff.p=[btab.pValue(2);wtab.pValue(1);wtab.pValue(2);NaN];<span class="comment">%table with main effects</span>
 0131     <span class="keyword">else</span> <span class="comment">%use greenhouse geisser</span>
@@ -211,7 +211,7 @@ This function is called by:
 0142                 posthocEpoch.ep1(comp)=eps.Properties.ObsNames(e);
 0143                 posthocEpoch.ep2(comp)=eps.Properties.ObsNames(e2);
 0144                 [H,P,CI] = ttest(t.([<span class="string">'ep'</span>,num2str(e)]),t.([<span class="string">'ep'</span>,num2str(e2)]));
-0145                 posthocEpoch.meandiff(comp)=mean(CI);
+0145                 posthocEpoch.meandiff(comp)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(CI);
 0146                 posthocEpoch.lowerbound(comp)=CI(1);
 0147                 posthocEpoch.upperbound(comp)=CI(2);
 0148                 posthocEpoch.pval(comp)=P;
@@ -221,7 +221,7 @@ This function is called by:
 0152             <span class="keyword">end</span>
 0153         <span class="keyword">end</span>
 0154     <span class="keyword">end</span>
-0155     [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
+0155     [posthocEpoch.hBenHoch,dt1,dt2] = <a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
 0156     
 0157     <span class="comment">%perform pairwise comparisons between groups for each epoch</span>
 0158     <span class="comment">%first create subtable for each group</span>
@@ -241,7 +241,7 @@ This function is called by:
 0172                     posthocGroupByEpoch.group_1(comp)=groupsNames(g1);
 0173                     posthocGroupByEpoch.group_2(comp)=groupsNames(g2);
 0174                     [H,P,CI] = ttest2(t2{g1}.([<span class="string">'ep'</span>,num2str(e)]),t2{g2}.([<span class="string">'ep'</span>,num2str(e)]));
-0175                     posthocGroupByEpoch.meandiff(comp)=mean(CI);
+0175                     posthocGroupByEpoch.meandiff(comp)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(CI);
 0176                     posthocGroupByEpoch.lowerbound(comp)=CI(1);
 0177                     posthocGroupByEpoch.upperbound(comp)=CI(2);
 0178                     posthocGroupByEpoch.pval(comp)=P;
@@ -252,7 +252,7 @@ This function is called by:
 0183             <span class="keyword">end</span>
 0184         <span class="keyword">end</span>
 0185     <span class="keyword">end</span>
-0186     [posthocGroupByEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocGroupByEpoch.pval,significanceThreshold);clear dt1 dt2
+0186     [posthocGroupByEpoch.hBenHoch,dt1,dt2] = <a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(posthocGroupByEpoch.pval,significanceThreshold);clear dt1 dt2
 0187     
 0188     <span class="comment">%perform pairwise comparisons between epochs for each group</span>
 0189     ncomp=([length(eps)*(length(eps)-1)]/2)*length(groups);
@@ -266,7 +266,7 @@ This function is called by:
 0197                     posthocEpochByGroup.ep1(comp)=eps.Properties.ObsNames(e);
 0198                     posthocEpochByGroup.ep2(comp)=eps.Properties.ObsNames(e2);
 0199                     [H,P,CI] = ttest(t2{g}.([<span class="string">'ep'</span>,num2str(e)]),t2{g}.([<span class="string">'ep'</span>,num2str(e2)]));
-0200                     posthocEpochByGroup.meandiff(comp)=mean(CI);
+0200                     posthocEpochByGroup.meandiff(comp)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(CI);
 0201                     posthocEpochByGroup.lowerbound(comp)=CI(1);
 0202                     posthocEpochByGroup.upperbound(comp)=CI(2);
 0203                     posthocEpochByGroup.pval(comp)=P;
@@ -277,12 +277,12 @@ This function is called by:
 0208             <span class="keyword">end</span>
 0209         <span class="keyword">end</span>
 0210     <span class="keyword">end</span>
-0211     [posthocEpochByGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpochByGroup.pval,significanceThreshold);clear dt1 dt2
+0211     [posthocEpochByGroup.hBenHoch,dt1,dt2] = <a href="../../../../labTools/fun/ext/pitools/statTest/BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(posthocEpochByGroup.pval,significanceThreshold);clear dt1 dt2
 0212     model=rm;
 0213 <span class="keyword">end</span>   
 0214     
 0215     
 0216 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

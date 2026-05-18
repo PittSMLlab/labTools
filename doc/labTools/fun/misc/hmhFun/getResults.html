@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getResults.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc\hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>getResults
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>	SMOOTHEDMAX finds the maximum value of an N-pt running average</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>	SMOOTHEDMAX finds the maximum value of an N-pt running average</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
 <!-- crossreference -->
 
 
@@ -51,12 +51,12 @@ This function is called by:
 0007 
 0008 nParams=length(params);
 0009 
-0010 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0010 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groups)
 0011     groups=fields(Study);  <span class="comment">%default</span>
 0012 <span class="keyword">end</span>
 0013 nGroups=length(groups);
 0014 
-0015 <span class="keyword">if</span> nargin&lt;5 || isempty(plotFlag)
+0015 <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag)
 0016     plotFlag=1;
 0017 <span class="keyword">end</span>
 0018 
@@ -122,7 +122,7 @@ This function is called by:
 0078             
 0079             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'TM base'</span>);
 0080             TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
-0081             <span class="keyword">if</span> isempty(TMbaseData)
+0081             <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(TMbaseData)
 0082                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
 0083                 TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
 0084             <span class="keyword">end</span>
@@ -162,7 +162,7 @@ This function is called by:
 0118             
 0119             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'TM base'</span>), adaptData.metaData.conditionName))==1
 0120                 TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
-0121                 <span class="keyword">if</span> isempty(TMbaseData)
+0121                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(TMbaseData)
 0122                     TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
 0123                 <span class="keyword">end</span>
 0124                 TMbase(s,:)=nanmean(TMbaseData(1:transientNumPts,:));
@@ -171,7 +171,7 @@ This function is called by:
 0127             <span class="comment">% compute catch</span>
 0128             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), lower(adaptData.metaData.conditionName)))==1
 0129                 tmcatchData=adaptData.getParamInCond(params,<span class="string">'catch'</span>);
-0130                 <span class="keyword">if</span> isempty(tmcatchData)
+0130                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tmcatchData)
 0131                     newtmcatchData=NaN(1,nParams);
 0132                 <span class="keyword">elseif</span> size(tmcatchData,1)&lt;3
 0133                     newtmcatchData=nanmean(tmcatchData);
@@ -190,7 +190,7 @@ This function is called by:
 0146                 OGafterLate(s,:)=nanmean(ogafterData((end-5)-steadyNumPts+1:(end-5),:)); <span class="comment">%Last strides</span>
 0147                 
 0148                 <span class="comment">%Sum of OG after-effects</span>
-0149                 AvgOGafter(s,:)=mean(ogafterData(1:min([end 50])));
+0149                 AvgOGafter(s,:)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(ogafterData(1:min([end 50])));
 0150             <span class="keyword">end</span>
 0151             
 0152             <span class="comment">% compute TM post</span>
@@ -213,10 +213,10 @@ This function is called by:
 0169             
 0170             <span class="comment">%start of step length = end of velocityCont</span>
 0171             idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
-0172             <span class="keyword">if</span> isempty(idx)
+0172             <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0173                 idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
 0174             <span class="keyword">end</span>
-0175             <span class="keyword">if</span> ~isempty(idx)
+0175             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0176                 AdaptExtentBeforeCatch(s,idx)=AdaptExtentBeforeCatch(s,idx)-nanmean(adapt1Velocity((end-2)-transientNumPts+1:(end-2),:));
 0177             <span class="keyword">end</span>
 0178             
@@ -232,7 +232,7 @@ This function is called by:
 0188             adapt2Data=adaptData.getParamInCond(params,<span class="string">'re-adaptation'</span>);
 0189             adapt2Sasym=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'re-adaptation'</span>);
 0190             adapt2Velocity=adaptData.getParamInCond(<span class="string">'velocityContributionNorm2'</span>,<span class="string">'re-adaptation'</span>);
-0191         <span class="keyword">elseif</span> isempty(adapt2Data)
+0191         <span class="keyword">elseif</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(adapt2Data)
 0192             adapt2Data=adaptData.getParamInCond(params,{<span class="string">'adaptation'</span>});
 0193             adapt2Sasym=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'adaptation'</span>);
 0194             adapt2Velocity=adaptData.getParamInCond(<span class="string">'velocityContributionNorm2'</span>,<span class="string">'adaptation'</span>);
@@ -242,10 +242,10 @@ This function is called by:
 0198         AdaptIndex(s,:)= nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:)); <span class="comment">%last 40 straides of adaptation</span>
 0199         
 0200         idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
-0201         <span class="keyword">if</span> isempty(idx)
+0201         <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0202             idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
 0203         <span class="keyword">end</span>
-0204         <span class="keyword">if</span> ~isempty(idx)
+0204         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0205             AdaptIndex(s,idx)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
 0206         <span class="keyword">end</span>
 0207         
@@ -279,10 +279,10 @@ This function is called by:
 0235 <span class="comment">%calculate relative after-effects</span>
 0236 <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==1 &amp;&amp; nansum(cellfun(@(x) strcmp(x, <span class="string">'adaptation'</span>), lower(adaptData.metaData.conditionName)))==1 || nansum(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), lower(adaptData.metaData.conditionName)))==1
 0237     idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
-0238     <span class="keyword">if</span> isempty(idx)
+0238     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0239         idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
 0240     <span class="keyword">end</span>
-0241     <span class="keyword">if</span> ~isempty(idx)
+0241     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0242         Transfer= 100*(OGafter./(Catch(:,idx)*ones(1,nParams)));
 0243     <span class="keyword">else</span>
 0244         Transfer= 100*(OGafter./Catch);
@@ -292,10 +292,10 @@ This function is called by:
 0248 
 0249 <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'adaptation'</span>), lower(adaptData.metaData.conditionName)))==1 || nansum(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), lower(adaptData.metaData.conditionName)))==1
 0250     idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
-0251     <span class="keyword">if</span> isempty(idx)
+0251     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0252         idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
 0253     <span class="keyword">end</span>
-0254     <span class="keyword">if</span> ~isempty(idx)
+0254     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idx)
 0255         Washout= 100*(1-(TMafter./(Catch(:,idx)*ones(1,nParams))));
 0256     <span class="keyword">else</span>
 0257         Washout = 100*(1-(TMafter./Catch));
@@ -372,6 +372,6 @@ This function is called by:
 0328 
 0329 
 0330</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

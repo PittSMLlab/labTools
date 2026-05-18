@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; rawLabData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>rawLabData
 </h1>
@@ -33,38 +33,80 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="rawLabData.html" class="code" title="">rawLabData</a>	</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="rawLabData.html" class="code" title="">rawLabData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="rawLabData.html" class="code" title="">rawLabData</a>	</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="rawLabData.html" class="code" title="">rawLabData</a>	</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=rawLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)</a></li></ul>
+<li><a href="#_sub1" class="code">function this = rawLabData(metaData, markerData, EMGData,</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 classdef <a href="rawLabData.html" class="code" title="">rawLabData</a> &lt; labData
-0002     <span class="comment">%rawLabData  Does nothing at the moment.</span>
+<div class="fragment"><pre>0001 classdef <a href="rawLabData.html" class="code" title="">rawLabData</a> &lt; <a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>
+0002     <span class="comment">%rawLabData  Raw data container extending labData</span>
 0003     <span class="comment">%</span>
-0004     <span class="comment">%See also: labData</span>
-0005     
-0006     <span class="comment">%%</span>
-0007     properties (SetAccess=private)
-0008 
-0009     <span class="keyword">end</span>
-0010     
-0011     <span class="comment">%%</span>
-0012     methods
-0013         
-0014         <span class="comment">%Constructor:</span>
-0015         <a name="_sub0" href="#_subfunctions" class="code">function this=rawLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)</a>
-0016            this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin);
-0017         <span class="keyword">end</span>
-0018     <span class="keyword">end</span>
-0019     
-0020 <span class="keyword">end</span>
-0021</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0004     <span class="comment">%   rawLabData extends labData to provide a specific class for raw,</span>
+0005     <span class="comment">%   unprocessed data. Currently this class does not add functionality</span>
+0006     <span class="comment">%   beyond labData, but serves as a type identifier for data that has</span>
+0007     <span class="comment">%   not been processed.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%rawLabData properties:</span>
+0010     <span class="comment">%   (inherits all properties from labData)</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">%rawLabData methods:</span>
+0013     <span class="comment">%   rawLabData - constructor for raw lab data</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">%See also: labData, processedLabData, rawTrialData</span>
+0016 
+0017     <span class="comment">%% Properties</span>
+0018     properties (SetAccess = private)
+0019     <span class="keyword">end</span>
+0020 
+0021     <span class="comment">%% Constructor</span>
+0022     methods
+0023         <a name="_sub0" href="#_subfunctions" class="code">function this = rawLabData(metaData, markerData, EMGData, </a><span class="keyword">...</span>
+0024                 GRFData, beltSpeedSetData, beltSpeedReadData, accData, <span class="keyword">...</span>
+0025                 EEGData, footSwitches, HreflexPin)
+0026             <span class="comment">%rawLabData  Constructor for rawLabData class</span>
+0027             <span class="comment">%</span>
+0028             <span class="comment">%   this = rawLabData(metaData, markerData, EMGData, GRFData,</span>
+0029             <span class="comment">%   beltSpeedSetData, beltSpeedReadData, accData, EEGData,</span>
+0030             <span class="comment">%   footSwitches, HreflexPin) creates a raw lab data object</span>
+0031             <span class="comment">%   with specified data and metadata</span>
+0032             <span class="comment">%</span>
+0033             <span class="comment">%   Inputs:</span>
+0034             <span class="comment">%       metaData - labMetaData or subclass object</span>
+0035             <span class="comment">%       markerData - orientedLabTimeSeries with marker</span>
+0036             <span class="comment">%                    trajectories</span>
+0037             <span class="comment">%       EMGData - labTimeSeries with raw EMG signals</span>
+0038             <span class="comment">%       GRFData - orientedLabTimeSeries with ground reaction</span>
+0039             <span class="comment">%                 forces</span>
+0040             <span class="comment">%       beltSpeedSetData - labTimeSeries with commanded belt</span>
+0041             <span class="comment">%                          speeds</span>
+0042             <span class="comment">%       beltSpeedReadData - labTimeSeries with actual belt</span>
+0043             <span class="comment">%                           speeds</span>
+0044             <span class="comment">%       accData - orientedLabTimeSeries with acceleration</span>
+0045             <span class="comment">%                 data</span>
+0046             <span class="comment">%       EEGData - labTimeSeries with EEG signals</span>
+0047             <span class="comment">%       footSwitches - labTimeSeries with foot switch data</span>
+0048             <span class="comment">%       HreflexPin - labTimeSeries with H-reflex stimulus</span>
+0049             <span class="comment">%                    timing</span>
+0050             <span class="comment">%</span>
+0051             <span class="comment">%   Outputs:</span>
+0052             <span class="comment">%       this - rawLabData object</span>
+0053             <span class="comment">%</span>
+0054             <span class="comment">%   See also: labData, processedLabData, rawTrialData</span>
+0055 
+0056             this@<a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>(metaData, markerData, EMGData, GRFData, <span class="keyword">...</span>
+0057                 beltSpeedSetData, beltSpeedReadData, accData, EEGData, <span class="keyword">...</span>
+0058                 footSwitches, HreflexPin);
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061 
+0062 <span class="keyword">end</span>
+0063</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

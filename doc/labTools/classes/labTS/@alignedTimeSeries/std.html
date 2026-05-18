@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of std</title>
+  <meta name="keywords" content="std">
+  <meta name="description" content="std  Computes standard deviation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; std.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>std
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>std  Computes standard deviation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function stdTS = std(this, strideIdxs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">std  Computes standard deviation
+
+   stdTS = std(this) computes standard deviation across all strides
+
+   stdTS = std(this, strideIdxs) computes for specified strides
+
+   Inputs:
+       this - alignedTimeSeries object
+       strideIdxs - vector of stride indices (optional, default: all)
+
+   Outputs:
+       stdTS - alignedTimeSeries with standard deviation (for numeric)
+               or vector (for logical)
+
+   See also: <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>, <a href="stdRobust.html" class="code" title="function stdTS = stdRobust(this, strideIdxs)">stdRobust</a>, <a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>	logicalHist  Generates histogram from logical event data</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">fitCal</a>	FITCAL Fit M- and H-wave recruitment curves.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function lag=circCorr(trace1,trace2)">circCorr</a>	Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/polyfit1PCA.html" class="code" title="function [pp] = polyfit1PCA(x,y,varNormalizeFlag)">polyfit1PCA</a>	Finding best-fit line through PCA</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/hmhFun/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/fun/misc/matchControlsFixedGUI.html" class="code" title="function matchControlsFixedGUI(demoFile)">matchControlsFixedGUI</a>	matchControlsFixedGUI  Fixed GUI to choose demographic matching factors</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stdTS = std(this, strideIdxs)</a>
+0002 <span class="comment">%std  Computes standard deviation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   stdTS = std(this) computes standard deviation across all strides</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   stdTS = std(this, strideIdxs) computes for specified strides</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - alignedTimeSeries object</span>
+0010 <span class="comment">%       strideIdxs - vector of stride indices (optional, default: all)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       stdTS - alignedTimeSeries with standard deviation (for numeric)</span>
+0014 <span class="comment">%               or vector (for logical)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: mean, stdRobust, iqr</span>
+0017 
+0018 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
+0019     this.Data = this.Data(:, :, strideIdxs);
+0020 <span class="keyword">end</span>
+0021 <span class="keyword">if</span> ~islogical(this.Data(1))
+0022     <span class="comment">% stdTS = labTimeSeries(nanstd(this.Data, [], 3), this.Time(1),</span>
+0023     <span class="comment">%     this.Time(2) - this.Time(1), this.labels);</span>
+0024     stdTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
+0025         this.Time(2) - this.Time(1), nanstd(this.Data, [], 3), <span class="keyword">...</span>
+0026         this.labels, this.alignmentVector, this.alignmentLabels);
+0027 <span class="keyword">else</span>
+0028     <span class="comment">% Logical timeseries. Will find events and average appropriately.</span>
+0029     <span class="comment">% Assuming the SAME number of events per stride, and in the same</span>
+0030     <span class="comment">% ORDER. % FIXME: check event order.</span>
+0031     histogram = <a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>(this);
+0032     stdTS = <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(histogram); <span class="comment">% Not really a tS</span>
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

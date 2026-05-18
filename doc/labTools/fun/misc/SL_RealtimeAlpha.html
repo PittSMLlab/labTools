@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; SL_RealtimeAlpha.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>SL_RealtimeAlpha
 </h1>
@@ -46,7 +46,7 @@ WDA 4/11/2016</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogs.html" class="code" title="function [analogs analogsInfo] = btkGetAnalogs(h) %#ok">btkGetAnalogs</a>	BTKGETANALOGS Extract analogs from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>	BTKGETMARKERS Extract markers from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@IO/btkReadAcquisition.html" class="code" title="function h = btkReadAcquisition(filename) %#ok">btkReadAcquisition</a>	BTKREADACQUISITION Read an acquisition's file (C3D, TRC, ...)</li><li><a href="../../../labTools/gui/importc3d/findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>	function to deal with different marker labels from vicon. For the code to</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -82,10 +82,10 @@ This function is called by:
 0025 <span class="comment">% commandwindow()</span>
 0026 <span class="comment">% [filename,path] = uigetfile('*.c3d','Please select the c3d file of interest:');</span>
 0027 
-0028 H = btkReadAcquisition([path filename]);
+0028 H = <a href="../../../labTools/fun/ext/BTK/matlab/@IO/btkReadAcquisition.html" class="code" title="function h = btkReadAcquisition(filename) %#ok">btkReadAcquisition</a>([path filename]);
 0029 
 0030 <span class="comment">%Using same method as Labtools, determine analog data</span>
-0031 [analogs,analogsInfo] = btkGetAnalogs(H);
+0031 [analogs,analogsInfo] = <a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogs.html" class="code" title="function [analogs analogsInfo] = btkGetAnalogs(h) %#ok">btkGetAnalogs</a>(H);
 0032 
 0033 relData=[];
 0034 forceLabels ={};
@@ -94,7 +94,7 @@ This function is called by:
 0037 showWarning = false;
 0038 <span class="keyword">for</span> j=1:length(fieldList);<span class="comment">%parse analog channels by force, moment, cop</span>
 0039     <span class="comment">%if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only</span>
-0040     <span class="keyword">if</span> strcmp(fieldList{j}(1),<span class="string">'F'</span>) || strcmp(fieldList{j}(1),<span class="string">'M'</span>) || ~isempty(strfind(fieldList{j},<span class="string">'Force'</span>)) || ~isempty(strfind(fieldList{j},<span class="string">'Moment'</span>))
+0040     <span class="keyword">if</span> strcmp(fieldList{j}(1),<span class="string">'F'</span>) || strcmp(fieldList{j}(1),<span class="string">'M'</span>) || ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(fieldList{j},<span class="string">'Force'</span>)) || ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(fieldList{j},<span class="string">'Moment'</span>))
 0041         <span class="keyword">if</span> ~strcmpi(<span class="string">'x'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'y'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'z'</span>,fieldList{j}(end-1))
 0042             warning([<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel '</span> fieldList{j}])
 0043         <span class="keyword">else</span>
@@ -130,7 +130,7 @@ This function is called by:
 0073 
 0074 
 0075 <span class="comment">%Get marker data</span>
-0076 [markers,markerInfo]=btkGetMarkers(H);
+0076 [markers,markerInfo]=<a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>(H);
 0077 relData=[];
 0078 fieldList=fields(markers);
 0079 markerList={};
@@ -139,13 +139,13 @@ This function is called by:
 0082 mustHaveLabels={<span class="string">'LHIP'</span>,<span class="string">'RHIP'</span>,<span class="string">'LANK'</span>,<span class="string">'RANK'</span>,<span class="string">'RHEE'</span>,<span class="string">'LHEE'</span>,<span class="string">'LTOE'</span>,<span class="string">'RTOE'</span>,<span class="string">'RKNE'</span>,<span class="string">'LKNE'</span>};<span class="comment">%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really</span>
 0083 labelPresent=false(1,length(mustHaveLabels));
 0084 <span class="keyword">for</span> i=1:length(fieldList)
-0085     newFieldList{i}=findLabel(fieldList{i});
+0085     newFieldList{i}=<a href="../../../labTools/gui/importc3d/findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{i});
 0086     labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
 0087 <span class="keyword">end</span>
 0088 <span class="keyword">for</span> j=1:length(fieldList);
 0089     <span class="keyword">if</span> length(fieldList{j})&gt;2 &amp;&amp; ~strcmp(fieldList{j}(1:2),<span class="string">'C_'</span>)  <span class="comment">%Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)</span>
 0090         relData=[relData,markers.(fieldList{j})];
-0091         markerLabel=findLabel(fieldList{j});<span class="comment">%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)</span>
+0091         markerLabel=<a href="../../../labTools/gui/importc3d/findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{j});<span class="comment">%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)</span>
 0092         markerList{end+1}=[markerLabel <span class="string">'x'</span>];
 0093         markerList{end+1}=[markerLabel <span class="string">'y'</span>];
 0094         markerList{end+1}=[markerLabel <span class="string">'z'</span>];
@@ -161,7 +161,7 @@ This function is called by:
 0104 [~,~,lfz] = intersect(<span class="string">'LFz'</span>,forceLabels);
 0105 [~,~,rfz] = intersect(<span class="string">'RFz'</span>,forceLabels);
 0106 
-0107 [LHS,RHS,LTO,RTO] = getEventsFromForces(forces(:,lfz),forces(:,rfz),100);
+0107 [LHS,RHS,LTO,RTO] = <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(forces(:,lfz),forces(:,rfz),100);
 0108 
 0109 <span class="comment">%% Compute parameters</span>
 0110 
@@ -221,10 +221,10 @@ This function is called by:
 0164 
 0165 figure(2)
 0166 subplot(6,1,1)
-0167 plot(Rgamma,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0167 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Rgamma,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
 0168 title(<span class="string">'Right Leg Step Lengths (mm)'</span>);
 0169 subplot(6,1,2)
-0170 plot(Lgamma,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0170 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Lgamma,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
 0171 title(<span class="string">'Left Leg Step Lengths (mm)'</span>);
 0172 
 0173 <span class="comment">%alpha *********************************************</span>
@@ -342,17 +342,17 @@ This function is called by:
 0285 
 0286 figure(2)
 0287 subplot(6,1,3)
-0288 plot(Rcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0288 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Rcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
 0289 title(<span class="string">'Right Leg Cadence (steps/min)'</span>);
 0290 subplot(6,1,4)
-0291 plot(Lcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0291 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Lcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
 0292 title(<span class="string">'Left Leg Cadence (steps/min)'</span>);
 0293 subplot(6,1,5)
-0294 plot(Rsteptime,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0294 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Rsteptime,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
 0295 title(<span class="string">'Right Leg Step Time (s)'</span>);
 0296 ylim([0 1]);
 0297 subplot(6,1,6)
-0298 plot(Lsteptime,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0298 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(Lsteptime,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
 0299 title(<span class="string">'Left Leg Step Time (s)'</span>);
 0300 ylim([0 1]);
 0301 
@@ -437,6 +437,6 @@ This function is called by:
 0380 
 0381 
 0382</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

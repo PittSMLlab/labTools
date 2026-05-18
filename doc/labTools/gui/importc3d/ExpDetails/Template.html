@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Template</title>
+  <meta name="keywords" content="Template">
+  <meta name="description" content="expDesTemplate  Template script for generating an experiment description.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="../index.html">importc3d</a> &gt; <a href="index.html">ExpDetails</a> &gt; Template.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d\ExpDetails&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>Template
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>expDesTemplate  Template script for generating an experiment description.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> expDesTemplate  Template script for generating an experiment description.
+
+   Defines an experiment description structure (expDes) and saves it as a
+ MAT file in the ExpDetails folder, where it becomes available as a
+ selectable option in the GetInfoGUI experiment description dropdown.
+
+   How to use this template:
+     1. Save a copy of this file under a new, descriptive name that
+        reflects your experiment (e.g., 'myStudyOlderAdults.m'). The
+        saved MAT file will share this name.
+     2. Edit all fields in Sections 1-6 to match your experimental design.
+        Follow the inline guidance for each field.
+     3. Run the script once. The expDes struct will be saved automatically
+        to the ExpDetails folder and will appear in GetInfoGUI.
+     4. Re-run the script any time you need to update the description.
+        The existing MAT file will be overwritten.
+
+   Toolbox Dependencies:
+     None
+
+   See also: GetInfoGUI, errorProofInfo, setExpDescription</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% expDesTemplate  Template script for generating an experiment description.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Defines an experiment description structure (expDes) and saves it as a</span>
+0004 <span class="comment">% MAT file in the ExpDetails folder, where it becomes available as a</span>
+0005 <span class="comment">% selectable option in the GetInfoGUI experiment description dropdown.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   How to use this template:</span>
+0008 <span class="comment">%     1. Save a copy of this file under a new, descriptive name that</span>
+0009 <span class="comment">%        reflects your experiment (e.g., 'myStudyOlderAdults.m'). The</span>
+0010 <span class="comment">%        saved MAT file will share this name.</span>
+0011 <span class="comment">%     2. Edit all fields in Sections 1-6 to match your experimental design.</span>
+0012 <span class="comment">%        Follow the inline guidance for each field.</span>
+0013 <span class="comment">%     3. Run the script once. The expDes struct will be saved automatically</span>
+0014 <span class="comment">%        to the ExpDetails folder and will appear in GetInfoGUI.</span>
+0015 <span class="comment">%     4. Re-run the script any time you need to update the description.</span>
+0016 <span class="comment">%        The existing MAT file will be overwritten.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Toolbox Dependencies:</span>
+0019 <span class="comment">%     None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: GetInfoGUI, errorProofInfo, setExpDescription</span>
+0022 
+0023 <span class="comment">% EDIT THIS COMMENT: INCLUDE A BRIEF DESCRIPTION OF THE STUDY</span>
+0024 <span class="comment">% EXAMPLE: OG Study: older participants adapted abruptly</span>
+0025 
+0026 <span class="comment">% ============================================================</span>
+0027 <span class="comment">% ===================== 1. Group Name ========================</span>
+0028 <span class="comment">% ============================================================</span>
+0029 
+0030 <span class="comment">% Define the display name for this experiment group. This is the label</span>
+0031 <span class="comment">% that will appear in the GetInfoGUI experiment description dropdown, and</span>
+0032 <span class="comment">% is stored in info.ExpDescription for all sessions using this template.</span>
+0033 <span class="comment">% The MAT file will be saved using only the alphabetic characters of this</span>
+0034 <span class="comment">% string (see the save step at the bottom of this script).</span>
+0035 expDes.group = <span class="string">'New Group'</span>;             <span class="comment">% EDIT: descriptive group name</span>
+0036 
+0037 <span class="comment">% ============================================================</span>
+0038 <span class="comment">% ================ 2. Number of Conditions ===================</span>
+0039 <span class="comment">% ============================================================</span>
+0040 
+0041 <span class="comment">% Define the total number of experimental conditions. All subsequent</span>
+0042 <span class="comment">% sections (trial types, names, descriptions, and trial numbers) must</span>
+0043 <span class="comment">% define exactly this many entries.</span>
+0044 maxConds          = 10;                 <span class="comment">% EDIT: total number of conditions</span>
+0045 expDes.numofconds = maxConds;           <span class="comment">% stored as double</span>
+0046 
+0047 <span class="comment">% ============================================================</span>
+0048 <span class="comment">% =================== 3. Condition Numbers ===================</span>
+0049 <span class="comment">% ============================================================</span>
+0050 
+0051 <span class="comment">% Condition numbers are assigned sequentially and should not need editing.</span>
+0052 <span class="comment">% They are used internally to index into condition-specific fields.</span>
+0053 <span class="keyword">for</span> cond = 1:maxConds
+0054     expDes.([<span class="string">'condition'</span> num2str(cond)]) = num2str(cond);
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="comment">% ============================================================</span>
+0058 <span class="comment">% ==================== 4. Trial Types ========================</span>
+0059 <span class="comment">% ============================================================</span>
+0060 
+0061 <span class="comment">% Trial types describe the general locomotion context of each condition.</span>
+0062 <span class="comment">% They are used to group conditions that share the same baseline for bias</span>
+0063 <span class="comment">% removal during data processing. Common types are:</span>
+0064 <span class="comment">%   'OG' - overground walking</span>
+0065 <span class="comment">%   'TM' - treadmill walking</span>
+0066 <span class="comment">%   'IN' - inclined treadmill walking</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">% IMPORTANT: Only distinguish types if they require a separate baseline for</span>
+0069 <span class="comment">% bias removal. For example, if slow, medium, and fast treadmill conditions</span>
+0070 <span class="comment">% all use the same baseline, they should all be assigned 'TM' even though</span>
+0071 <span class="comment">% they differ in speed.</span>
+0072 <span class="comment">%</span>
+0073 <span class="comment">% EDIT: replace the index vectors below with the condition indices for each</span>
+0074 <span class="comment">% type in your experiment.</span>
+0075 
+0076 <span class="keyword">for</span> t = [1 9]                               <span class="comment">% EDIT: OG condition indices</span>
+0077     expDes.([<span class="string">'type'</span> num2str(t)]) = <span class="string">'OG'</span>;    <span class="comment">% overground walking</span>
+0078 <span class="keyword">end</span>
+0079 <span class="keyword">for</span> t = [2:8 10]                            <span class="comment">% EDIT: TM condition indices</span>
+0080     expDes.([<span class="string">'type'</span> num2str(t)]) = <span class="string">'TM'</span>;    <span class="comment">% treadmill walking</span>
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="comment">% ============================================================</span>
+0084 <span class="comment">% ================== 5. Condition Names ======================</span>
+0085 <span class="comment">% ============================================================</span>
+0086 
+0087 <span class="comment">% Condition names should be short but descriptive and follow lab naming</span>
+0088 <span class="comment">% conventions where possible.</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">% IMPORTANT: The condition used as the bias-removal baseline for all other</span>
+0091 <span class="comment">% conditions of the same type MUST have a name that includes both the type</span>
+0092 <span class="comment">% string (e.g., 'OG' or 'TM') and the string 'base'. For example, a</span>
+0093 <span class="comment">% treadmill baseline condition could be named 'TM base'.</span>
+0094 <span class="comment">%</span>
+0095 <span class="comment">% EDIT: update the cell array entries below to match your conditions. Add</span>
+0096 <span class="comment">% or remove entries as needed — the total must equal maxConds.</span>
+0097 
+0098 condNames = { <span class="keyword">...</span>
+0099     <span class="string">'OG base'</span>,       <span class="keyword">...</span><span class="comment">    % condition 1  — OG bias removal baseline</span>
+0100     <span class="string">'slow base'</span>,     <span class="keyword">...</span><span class="comment">    % condition 2</span>
+0101     <span class="string">'short split'</span>,   <span class="keyword">...</span><span class="comment">    % condition 3</span>
+0102     <span class="string">'fast base'</span>,     <span class="keyword">...</span><span class="comment">    % condition 4</span>
+0103     <span class="string">'TM base'</span>,       <span class="keyword">...</span><span class="comment">    % condition 5  — TM bias removal baseline</span>
+0104     <span class="string">'adaptation'</span>,    <span class="keyword">...</span><span class="comment">    % condition 6</span>
+0105     <span class="string">'catch'</span>,         <span class="keyword">...</span><span class="comment">    % condition 7</span>
+0106     <span class="string">'re-adaptation'</span>, <span class="keyword">...</span><span class="comment">    % condition 8</span>
+0107     <span class="string">'OG post'</span>,       <span class="keyword">...</span><span class="comment">    % condition 9</span>
+0108     <span class="string">'TM post'</span>};             <span class="comment">% condition 10</span>
+0109 
+0110 <span class="comment">% ============================================================</span>
+0111 <span class="comment">% ================ 6. Condition Descriptions =================</span>
+0112 <span class="comment">% ============================================================</span>
+0113 
+0114 <span class="comment">% Descriptions should provide enough detail for someone unfamiliar with</span>
+0115 <span class="comment">% the protocol to understand what occurred in each condition. Include the</span>
+0116 <span class="comment">% number of strides (or duration) and any relevant speed or belt ratio</span>
+0117 <span class="comment">% information. Format: '&lt;N&gt; strides at &lt;speed(s)&gt;', '&lt;duration&gt; on &lt;N&gt;m</span>
+0118 <span class="comment">% walkway', or similar as appropriate.</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% EDIT: update the cell array entries below to match your conditions.</span>
+0121 
+0122 condDescriptions = { <span class="keyword">...</span>
+0123     <span class="string">'8 m walkway for 6 min'</span>,                <span class="keyword">...</span><span class="comment">    % condition 1</span>
+0124     <span class="string">'150 strides at 0.5 m/s'</span>,               <span class="keyword">...</span><span class="comment">    % condition 2</span>
+0125     <span class="string">'10 strides 2:1, 1 m/s and 0.5 m/s'</span>,    <span class="keyword">...</span><span class="comment">    % condition 3</span>
+0126     <span class="string">'150 strides at 1 m/s'</span>,                 <span class="keyword">...</span><span class="comment">    % condition 4</span>
+0127     <span class="string">'150 strides at 0.75 m/s'</span>,              <span class="keyword">...</span><span class="comment">    % condition 5</span>
+0128     <span class="string">'600 strides 2:1, 1 m/s and 0.5 m/s'</span>,   <span class="keyword">...</span><span class="comment">    % condition 6</span>
+0129     <span class="string">'10 strides at 0.75 m/s'</span>,               <span class="keyword">...</span><span class="comment">    % condition 7</span>
+0130     <span class="string">'300 strides 2:1, 1 m/s and 0.5 m/s'</span>,   <span class="keyword">...</span><span class="comment">    % condition 8</span>
+0131     <span class="string">'8 m walkway for 6 min'</span>,                <span class="keyword">...</span><span class="comment">    % condition 9</span>
+0132     <span class="string">'450 strides at 0.75 m/s'</span>};                    <span class="comment">% condition 10</span>
+0133 
+0134 <span class="comment">% ============================================================</span>
+0135 <span class="comment">% ================== 7. Trial Numbers ========================</span>
+0136 <span class="comment">% ============================================================</span>
+0137 
+0138 <span class="comment">% Trial numbers correspond to the numeric suffixes of the Vicon Nexus</span>
+0139 <span class="comment">% C3D files recorded during the session (e.g., 'basename07.c3d').</span>
+0140 <span class="comment">%</span>
+0141 <span class="comment">% Multiple trials per condition can be specified as:</span>
+0142 <span class="comment">%   '1:5'   - trials 1 through 5 (contiguous range)</span>
+0143 <span class="comment">%   '1 2 3' - trials 1, 2, and 3 (space-separated list)</span>
+0144 <span class="comment">%   '1,2,3' - trials 1, 2, and 3 (comma-separated list)</span>
+0145 <span class="comment">% NOTE: '1-5' is NOT a supported format.</span>
+0146 <span class="comment">%</span>
+0147 <span class="comment">% These are default values that may be adjusted for each individual session</span>
+0148 <span class="comment">% in GetInfoGUI after the experiment description is loaded.</span>
+0149 <span class="comment">%</span>
+0150 <span class="comment">% EDIT: update the cell array entries below to match your expected trial</span>
+0151 <span class="comment">% numbering.</span>
+0152 
+0153 trialNums = { <span class="keyword">...</span>
+0154     <span class="string">'1:6'</span>,   <span class="keyword">...</span><span class="comment">    % condition 1</span>
+0155     <span class="string">'7'</span>,     <span class="keyword">...</span><span class="comment">    % condition 2</span>
+0156     <span class="string">'8'</span>,     <span class="keyword">...</span><span class="comment">    % condition 3</span>
+0157     <span class="string">'9'</span>,     <span class="keyword">...</span><span class="comment">    % condition 4</span>
+0158     <span class="string">'10'</span>,    <span class="keyword">...</span><span class="comment">    % condition 5</span>
+0159     <span class="string">'11:14'</span>, <span class="keyword">...</span><span class="comment">    % condition 6</span>
+0160     <span class="string">'15'</span>,    <span class="keyword">...</span><span class="comment">    % condition 7</span>
+0161     <span class="string">'16 17'</span>, <span class="keyword">...</span><span class="comment">    % condition 8</span>
+0162     <span class="string">'18:23'</span>, <span class="keyword">...</span><span class="comment">    % condition 9</span>
+0163     <span class="string">'24:26'</span>};       <span class="comment">% condition 10</span>
+0164 
+0165 <span class="comment">% ============================================================</span>
+0166 <span class="comment">% ==================== Save expDes File ======================</span>
+0167 <span class="comment">% ============================================================</span>
+0168 <span class="comment">% --------------- DO NOT EDIT BELOW THIS LINE ----------------</span>
+0169 
+0170 <span class="comment">% Validate that each cell array contains exactly maxConds entries before</span>
+0171 <span class="comment">% populating the struct and saving.</span>
+0172 <span class="keyword">if</span> length(condNames) ~= maxConds
+0173     error([<span class="string">'expDesTemplate: %d condName entries defined, but '</span> <span class="keyword">...</span>
+0174         <span class="string">'maxConds = %d. Add or remove entries to match.'</span>], <span class="keyword">...</span>
+0175         length(condNames), maxConds);
+0176 <span class="keyword">end</span>
+0177 <span class="keyword">if</span> length(condDescriptions) ~= maxConds
+0178     error([<span class="string">'expDesTemplate: %d description entries defined, but '</span> <span class="keyword">...</span>
+0179         <span class="string">'maxConds = %d. Add or remove entries to match.'</span>], <span class="keyword">...</span>
+0180         length(condDescriptions), maxConds);
+0181 <span class="keyword">end</span>
+0182 <span class="keyword">if</span> length(trialNums) ~= maxConds
+0183     error([<span class="string">'expDesTemplate: %d trialnum entries defined, but '</span> <span class="keyword">...</span>
+0184         <span class="string">'maxConds = %d. Add or remove entries to match.'</span>], <span class="keyword">...</span>
+0185         length(trialNums), maxConds);
+0186 <span class="keyword">end</span>
+0187 
+0188 <span class="comment">% Populate expDes struct fields from validated cell arrays</span>
+0189 <span class="keyword">for</span> cond = 1:maxConds
+0190     expDes.([<span class="string">'condName'</span>     num2str(cond)]) = condNames{cond};
+0191     expDes.([<span class="string">'description'</span>  num2str(cond)]) = condDescriptions{cond};
+0192     expDes.([<span class="string">'trialnum'</span>     num2str(cond)]) = trialNums{cond};
+0193 <span class="keyword">end</span>
+0194 
+0195 <span class="comment">% Derive the MAT filename from the group name (alphabetic characters only)</span>
+0196 <span class="comment">% and resolve paths for ExpDetails and its Archive subfolder.</span>
+0197 groupName   = expDes.group;
+0198 groupName   = groupName(ismember(groupName, [<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>]));
+0199 detailsPath = which(<span class="string">'GetInfoGUI'</span>);
+0200 detailsPath = strrep(detailsPath, <span class="string">'GetInfoGUI.m'</span>, <span class="string">'ExpDetails'</span>);
+0201 archivePath = fullfile(detailsPath, <span class="string">'Archive'</span>);
+0202 matFileName = [groupName <span class="string">'.mat'</span>];
+0203 
+0204 <span class="comment">% Check for a naming conflict in ExpDetails/ — throw an error so the user</span>
+0205 <span class="comment">% can make an explicit decision (rename the new file, or manually archive</span>
+0206 <span class="comment">% the existing one) before any file is overwritten.</span>
+0207 <span class="keyword">if</span> isfile(fullfile(detailsPath, matFileName))
+0208     error([<span class="string">'expDesTemplate: ''%s'' already exists in ExpDetails/. '</span> <span class="keyword">...</span>
+0209         <span class="string">'To overwrite it, delete or archive the existing file manually '</span><span class="keyword">...</span>
+0210         <span class="string">'and then re-run this script.'</span>], matFileName);
+0211 <span class="keyword">end</span>
+0212 
+0213 <span class="comment">% Check for a naming conflict in the Archive subfolder — issue a warning</span>
+0214 <span class="comment">% so the user is aware, but do not block the save.</span>
+0215 <span class="keyword">if</span> isfolder(archivePath) &amp;&amp; isfile(fullfile(archivePath, matFileName))
+0216     warning([<span class="string">'expDesTemplate: ''%s'' also exists in '</span> <span class="keyword">...</span>
+0217         <span class="string">'ExpDetails/Archive/. The new file will be saved to ExpDetails/'</span><span class="keyword">...</span>
+0218         <span class="string">' without affecting the archived copy.'</span>], matFileName);
+0219 <span class="keyword">end</span>
+0220 
+0221 save(fullfile(detailsPath, groupName), <span class="string">'expDes'</span>);
+0222 fprintf(<span class="string">'Experiment description saved: %s\n'</span>, <span class="keyword">...</span>
+0223     fullfile(detailsPath, matFileName));
+0224</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

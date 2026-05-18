@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotCal</title>
+  <meta name="keywords" content="plotCal">
+  <meta name="description" content="PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; plotCal.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotCal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.
+
+   Plot the calibration curve (H-wave and M-wave recruitment or H-to-M
+ ratio) for a single leg.
+
+ Inputs:
+   amplitudesStim - 1 x number of stimuli array of stimulation current
+                    intensities (mA)
+   values         - 2 x 1 or 1 x 1 cell of number of stimuli x 1 arrays
+                    of H-wave and M-wave amplitudes (mV) or ratios
+   yLabel         - string or character array for the y-axis label
+   leg            - 'Right Leg' or 'Left Leg'
+   id             - string or character array of participant/session ID
+   trialNum       - string or character array of the trial number
+
+ Optional Name-Value Inputs:
+   fit             - struct of M-wave and H-wave model fits from FITCAL;
+                     if provided with shouldNormalize, data are normalized
+                     to Mmax (default: empty struct)
+   shouldNormalize - logical; whether to normalize data by Mmax
+                     (default: false)
+   noise           - background noise level for eligibility threshold
+                     (default: NaN, not shown)
+   pathFig         - path for saving figures; not saved if empty
+                     (default: '')
+   shouldAnnotate  - logical; whether to add annotations (default: true)
+   nameFile        - custom filename string; auto-generated if empty
+                     (default: '')
+
+ Outputs:
+   fig - handle to the figure generated
+
+ Toolbox Dependencies:
+   Signal Processing Toolbox (findpeaks)
+
+ See also HREFLEX.<a href="fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">FITCAL</a>, GENERATEHREFLEXRECRUITMENTCURVES.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fig = plotCal(amplitudesStim, values, yLabel, leg, id, </a><span class="keyword">...</span>
+0002     trialNum, options)
+0003 <span class="comment">%PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Plot the calibration curve (H-wave and M-wave recruitment or H-to-M</span>
+0006 <span class="comment">% ratio) for a single leg.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   amplitudesStim - 1 x number of stimuli array of stimulation current</span>
+0010 <span class="comment">%                    intensities (mA)</span>
+0011 <span class="comment">%   values         - 2 x 1 or 1 x 1 cell of number of stimuli x 1 arrays</span>
+0012 <span class="comment">%                    of H-wave and M-wave amplitudes (mV) or ratios</span>
+0013 <span class="comment">%   yLabel         - string or character array for the y-axis label</span>
+0014 <span class="comment">%   leg            - 'Right Leg' or 'Left Leg'</span>
+0015 <span class="comment">%   id             - string or character array of participant/session ID</span>
+0016 <span class="comment">%   trialNum       - string or character array of the trial number</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Optional Name-Value Inputs:</span>
+0019 <span class="comment">%   fit             - struct of M-wave and H-wave model fits from FITCAL;</span>
+0020 <span class="comment">%                     if provided with shouldNormalize, data are normalized</span>
+0021 <span class="comment">%                     to Mmax (default: empty struct)</span>
+0022 <span class="comment">%   shouldNormalize - logical; whether to normalize data by Mmax</span>
+0023 <span class="comment">%                     (default: false)</span>
+0024 <span class="comment">%   noise           - background noise level for eligibility threshold</span>
+0025 <span class="comment">%                     (default: NaN, not shown)</span>
+0026 <span class="comment">%   pathFig         - path for saving figures; not saved if empty</span>
+0027 <span class="comment">%                     (default: '')</span>
+0028 <span class="comment">%   shouldAnnotate  - logical; whether to add annotations (default: true)</span>
+0029 <span class="comment">%   nameFile        - custom filename string; auto-generated if empty</span>
+0030 <span class="comment">%                     (default: '')</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% Outputs:</span>
+0033 <span class="comment">%   fig - handle to the figure generated</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% Toolbox Dependencies:</span>
+0036 <span class="comment">%   Signal Processing Toolbox (findpeaks)</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% See also HREFLEX.FITCAL, GENERATEHREFLEXRECRUITMENTCURVES.</span>
+0039 
+0040 arguments
+0041     amplitudesStim  (1,:) double
+0042     values          (:,1) cell
+0043     yLabel          (1,:) {mustBeText}
+0044     leg             (1,:) {mustBeText}
+0045     id              (1,:) {mustBeText}
+0046     trialNum        (1,:) {mustBeText}
+0047     options.fit             (1,1) struct  = struct()
+0048     options.shouldNormalize (1,1) logical = false
+0049     options.noise           (1,1) double  = NaN
+0050     options.pathFig         (1,:) char    = <span class="string">''</span>
+0051     options.shouldAnnotate  (1,1) logical = true
+0052     options.nameFile        (1,:) char    = <span class="string">''</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">% extract options to local variables for readability</span>
+0056 fit             = options.fit;
+0057 shouldNormalize = options.shouldNormalize;
+0058 noise           = options.noise;
+0059 pathFig         = options.pathFig;
+0060 shouldAnnotate  = options.shouldAnnotate;
+0061 nameFile        = options.nameFile;
+0062 
+0063 <span class="comment">%% Determine Plot Type &amp; Leg Identifier</span>
+0064 isRatio = contains(yLabel, <span class="string">'ratio'</span>, <span class="string">'IgnoreCase'</span>, true); <span class="comment">% is ratio plot?</span>
+0065 legID   = leg(1);   <span class="comment">% 1st character selects struct field (e.g., 'R' or 'L')</span>
+0066 
+0067 <span class="comment">%% Normalize Data if Requested &amp; Fit Provided</span>
+0068 <span class="keyword">if</span> shouldNormalize &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(fit)) &amp;&amp; <span class="keyword">...</span>
+0069         isfield(fit, <span class="string">'M'</span>) &amp;&amp; isfield(fit.M, legID)
+0070     values = cellfun(@(x) x ./ fit.M.(legID).Mmax, values, <span class="keyword">...</span>
+0071         <span class="string">'UniformOutput'</span>, false);
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">%% Compute Unique Stimulation Intensities &amp; Averages</span>
+0075 amplitudesStimU = unique(amplitudesStim);   <span class="comment">% unique stimulation amplitudes</span>
+0076 <span class="comment">% calculate average values at each intensity</span>
+0077 avgs = cellfun(@(x) arrayfun(@(u) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x(amplitudesStim == u), <span class="keyword">...</span>
+0078     <span class="string">'omitnan'</span>), amplitudesStimU), values, <span class="string">'UniformOutput'</span>, false);
+0079 hasVals = cellfun(@(x) ~isnan(x), avgs, <span class="string">'UniformOutput'</span>, false);
+0080 <span class="comment">% compute maximum values and corresponding stimulation amplitudes</span>
+0081 [valMax, indMax] = max(avgs{end});
+0082 I_max = amplitudesStimU(indMax);
+0083 
+0084 gray = [0.5 0.5 0.5];                  <span class="comment">% define color for convenience</span>
+0085 
+0086 <span class="comment">%% Create Figure &amp; Plot</span>
+0087 fig = figure;
+0088 hold on;
+0089 <span class="keyword">if</span> ~isnan(noise) &amp;&amp; ~shouldNormalize    <span class="comment">% if noise threshold provided, ...</span>
+0090     yline(noise, <span class="string">'r--'</span>, <span class="string">'LineWidth'</span>, 1.5);          <span class="comment">% plot it</span>
+0091     yline(4 * noise, <span class="string">'r'</span>, <span class="string">'H-Wave V_{pp} Threshold'</span>);
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="keyword">if</span> isRatio  <span class="comment">% if this is an H:M ratio curve, ...</span>
+0095     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStim, values{1}, <span class="string">'ok'</span>, <span class="string">'MarkerSize'</span>, 10);
+0096     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStimU(hasVals{1}), avgs{1}(hasVals{1}), <span class="string">'k'</span>, <span class="keyword">...</span>
+0097         <span class="string">'LineWidth'</span>, 2);
+0098 <span class="keyword">else</span>        <span class="comment">% otherwise, this is an H- and M-wave recruitment curve</span>
+0099     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStim, values{1}, <span class="string">'x'</span>, <span class="string">'Color'</span>, gray, <span class="string">'MarkerSize'</span>, 10);
+0100     p1 = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStimU(hasVals{1}), avgs{1}(hasVals{1}), <span class="string">'--'</span>, <span class="keyword">...</span>
+0101         <span class="string">'LineWidth'</span>, 2, <span class="string">'Color'</span>, gray);         <span class="comment">% averaged M-wave</span>
+0102     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStim, values{2}, <span class="string">'ok'</span>, <span class="string">'MarkerSize'</span>, 10);
+0103     p2 = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(amplitudesStimU(hasVals{2}), avgs{2}(hasVals{2}), <span class="string">'k--'</span>, <span class="keyword">...</span>
+0104         <span class="string">'LineWidth'</span>, 2);                        <span class="comment">% averaged H-wave</span>
+0105     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(fit))                <span class="comment">% if fit provided, ...</span>
+0106         I_fit = linspace(min(amplitudesStim), max(amplitudesStim), 1000);
+0107         <span class="keyword">if</span> isfield(fit.M.(legID), <span class="string">'R2'</span>) &amp;&amp; fit.M.(legID).R2 &gt; 0.8
+0108             M_fit = fit.M.modHyperbolic(fit.M.(legID).params, I_fit);
+0109             <span class="keyword">if</span> shouldNormalize
+0110                 M_fit = M_fit ./ fit.M.(legID).Mmax;
+0111             <span class="keyword">end</span>
+0112             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(I_fit, M_fit, <span class="string">'LineWidth'</span>, 2, <span class="string">'Color'</span>, gray);
+0113         <span class="keyword">else</span>
+0114             <span class="comment">% TODO: display warning that fit quality is low not adding</span>
+0115         <span class="keyword">end</span>
+0116         <span class="keyword">if</span> isfield(fit.H.(legID), <span class="string">'R2'</span>) &amp;&amp; fit.H.(legID).R2 &gt; 0.5
+0117             H_fit = fit.H.asymGaussian(fit.H.(legID).params, I_fit);
+0118             <span class="keyword">if</span> shouldNormalize
+0119                 H_fit = H_fit ./ fit.M.(legID).Mmax;
+0120             <span class="keyword">end</span>
+0121             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(I_fit, H_fit, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 2);
+0122         <span class="keyword">end</span>
+0123     <span class="keyword">end</span>
+0124 <span class="keyword">end</span>
+0125 
+0126 <span class="comment">% highlight maximum values with lines and labels</span>
+0127 maxYOffset = 0.05 * max(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(values), [], <span class="string">'omitnan'</span>);
+0128 <span class="comment">% plot([I_max I_max],[0 valMax],'k-.');  % vertical line I_max to valMax</span>
+0129 <span class="comment">% add label to vertical line (I_max) shifted up from x-axis by 5% of max y</span>
+0130 <span class="comment">% value and over from the line by 0.1 mA</span>
+0131 <span class="comment">% TODO: add handle of title</span>
+0132 <span class="comment">% if isRatio</span>
+0133 <span class="comment">%     text(I_max + 0.1,maxYOffset, ...</span>
+0134 <span class="comment">%         sprintf('I_{Ratio_{max}} = %.1f mA',I_max));</span>
+0135 <span class="comment">% else</span>
+0136 <span class="comment">%     text(I_max + 0.1,maxYOffset, ...</span>
+0137 <span class="comment">%         sprintf('I_{H_{max}} = %.1f mA',I_max));</span>
+0138 <span class="comment">% end</span>
+0139 
+0140 <span class="comment">% horizontal line to valMax</span>
+0141 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([min(amplitudesStim)-1 I_max], [valMax valMax], <span class="string">'k-.'</span>);
+0142 <span class="keyword">if</span> isRatio
+0143     text(min(amplitudesStim)-0.9, valMax + maxYOffset, <span class="keyword">...</span>
+0144         sprintf(<span class="string">'Ratio_{max} = %.2f'</span>, valMax));
+0145 <span class="keyword">else</span>
+0146     <span class="keyword">if</span> shouldNormalize
+0147         text(min(amplitudesStim)-0.9, valMax + maxYOffset, <span class="keyword">...</span>
+0148             sprintf(<span class="string">'H_{max} = %.2f'</span>, valMax));
+0149     <span class="keyword">else</span>
+0150         text(min(amplitudesStim)-0.9, valMax + maxYOffset, <span class="keyword">...</span>
+0151             sprintf(<span class="string">'H_{max} = %.2f mV'</span>, valMax));
+0152     <span class="keyword">end</span>
+0153 <span class="keyword">end</span>
+0154 
+0155 <span class="comment">% optional: annotate additional features if fit quality is high</span>
+0156 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(fit)) &amp;&amp; isfield(fit.M.(legID), <span class="string">'R2'</span>) &amp;&amp; <span class="keyword">...</span>
+0157         fit.M.(legID).R2 &gt; 0.8 &amp;&amp; shouldAnnotate
+0158     <span class="comment">% find third derivative maximum index as a feature (M*)</span>
+0159     [~, ind3rdDeriv] = findpeaks(diff(diff(diff(M_fit))), <span class="string">'NPeaks'</span>, 1);
+0160     I_star = I_fit(ind3rdDeriv);
+0161     M_star = M_fit(ind3rdDeriv);
+0162     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([I_star I_star], [0 M_star], <span class="string">'k-.'</span>);               <span class="comment">% vertical line</span>
+0163     text(I_star + 0.1, maxYOffset, sprintf(<span class="string">'I* = %.1f mA'</span>, I_star));
+0164     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([min(amplitudesStim)-1 I_star], [M_star M_star], <span class="string">'k-.'</span>);
+0165     <span class="keyword">if</span> shouldNormalize
+0166         text(min(amplitudesStim)-0.9, M_star + maxYOffset, <span class="keyword">...</span>
+0167             sprintf(<span class="string">'M* = %.2f'</span>, M_star));
+0168     <span class="keyword">else</span>
+0169         text(min(amplitudesStim)-0.9, M_star + maxYOffset, <span class="keyword">...</span>
+0170             sprintf(<span class="string">'M* = %.2f mV'</span>, M_star));
+0171     <span class="keyword">end</span>
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="keyword">if</span> ~isRatio &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(fit)) &amp;&amp; <span class="keyword">...</span>
+0175         isfield(fit.M.(legID), <span class="string">'R2'</span>) &amp;&amp; isfield(fit.H.(legID), <span class="string">'R2'</span>) &amp;&amp; <span class="keyword">...</span>
+0176         shouldAnnotate
+0177     text(max(amplitudesStim)-3.0, max(values{1})*0.75, <span class="keyword">...</span>
+0178         sprintf(<span class="string">'{R^{2}}_{H} = %.2f'</span>, fit.H.(legID).R2));
+0179     text(max(amplitudesStim)-3.0, max(values{1})*0.65, <span class="keyword">...</span>
+0180         sprintf(<span class="string">'{R^{2}}_{M} = %.2f'</span>, fit.M.(legID).R2));
+0181 <span class="keyword">end</span>
+0182 
+0183 <span class="keyword">if</span> ~isRatio &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(fit)) &amp;&amp; ~shouldNormalize
+0184     <span class="comment">% display additional metrics if available</span>
+0185     <span class="comment">% TODO: should use H-wave curve fit if good R2?</span>
+0186     text(min(amplitudesStim)-0.9, max(values{1})*0.75, <span class="keyword">...</span>
+0187         sprintf(<span class="string">'H_{max}/M_{max} = %.2f'</span>, valMax/fit.M.(legID).Mmax));
+0188     <span class="keyword">if</span> exist(<span class="string">'M_star'</span>, <span class="string">'var'</span>)
+0189         text(min(amplitudesStim)-0.9, max(values{1})*0.65, <span class="keyword">...</span>
+0190             sprintf(<span class="string">'M*/M_{max} = %.2f'</span>, M_star/fit.M.(legID).Mmax));
+0191     <span class="keyword">end</span>
+0192 <span class="keyword">end</span>
+0193 hold off;
+0194 xlim([min(amplitudesStim)-1 max(amplitudesStim)+1]);
+0195 xlabel(<span class="string">'Stimulation Amplitude (mA)'</span>);
+0196 ylabel(yLabel);
+0197 <span class="keyword">if</span> isRatio              <span class="comment">% if ratio curve, ...</span>
+0198     type = <span class="string">'Ratio'</span>;     <span class="comment">% update title and file name accordingly</span>
+0199 <span class="keyword">else</span>
+0200     type = <span class="string">'Recruitment'</span>;
+0201 <span class="keyword">end</span>
+0202 
+0203 <span class="keyword">if</span> shouldNormalize
+0204     txtTitle = sprintf(<span class="string">'%s - Trial %s - %s - Normalized %s Curve'</span>, <span class="keyword">...</span>
+0205         id, trialNum, leg, type);
+0206 <span class="keyword">else</span>
+0207     txtTitle = sprintf(<span class="string">'%s - Trial %s - %s - %s Curve'</span>, <span class="keyword">...</span>
+0208         id, trialNum, leg, type);
+0209 <span class="keyword">end</span>
+0210 title(txtTitle);
+0211 
+0212 <span class="keyword">if</span> ~isRatio                             <span class="comment">% if not ratio curve, ...</span>
+0213     legend([p1 p2], <span class="string">'M-wave'</span>, <span class="string">'H-wave'</span>, <span class="string">'Location'</span>, <span class="string">'best'</span>, <span class="string">'Box'</span>, <span class="string">'off'</span>);
+0214 <span class="keyword">end</span>
+0215 
+0216 <span class="comment">%% Save Figure</span>
+0217 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(pathFig)                    <span class="comment">% if figure saving path provided, ...</span>
+0218     legNoSpace = regexprep(leg, <span class="string">'\s+'</span>, <span class="string">''</span>);
+0219     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(nameFile)
+0220         <span class="keyword">if</span> shouldNormalize
+0221             nameFile = sprintf(<span class="string">'%s_Hreflex%sCurveNormalized_Trial%s_%s'</span>, <span class="keyword">...</span>
+0222                 id, type, trialNum, legNoSpace);
+0223         <span class="keyword">else</span>
+0224             nameFile = sprintf(<span class="string">'%s_Hreflex%sCurve_Trial%s_%s'</span>, <span class="keyword">...</span>
+0225                 id, type, trialNum, legNoSpace);
+0226         <span class="keyword">end</span>
+0227     <span class="keyword">end</span>
+0228     saveas(fig, fullfile(pathFig, nameFile + &quot;.png&quot;)); <span class="comment">% save figure</span>
+0229     saveas(fig, fullfile(pathFig, nameFile + &quot;.fig&quot;));
+0230 <span class="keyword">end</span>
+0231 
+0232 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

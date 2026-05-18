@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkMarkerHealth</title>
+  <meta name="keywords" content="checkMarkerHealth">
+  <meta name="description" content="checkMarkerHealth  Validates marker data quality">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; checkMarkerHealth.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>checkMarkerHealth
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>checkMarkerHealth  Validates marker data quality</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function this = checkMarkerHealth(this, refTrial) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">checkMarkerHealth  Validates marker data quality
+
+   this = checkMarkerHealth(this) analyzes marker data across all trials
+   for missing data, label errors, and outliers
+
+   this = checkMarkerHealth(this, refTrial) optionally specifies which
+   trial to use for model training
+
+   Inputs:
+       this - experimentData object
+       refTrial - trial number to use for reference model (optional,
+                  automatically selected if not provided)
+
+   Outputs:
+       this - experimentData object with quality flags added to marker
+              data
+
+   See also: <a href="extractMarkerModels.html" class="code" title="function [allTrialModels, modelScore, badFlag] =extractMarkerModels(this)">extractMarkerModels</a>, orientedLabTimeSeries/findOutliers</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="extractMarkerModels.html" class="code" title="function [allTrialModels, modelScore, badFlag] =extractMarkerModels(this)">extractMarkerModels</a>	extractMarkerModels  Builds marker position models from data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function this = checkMarkerHealth(this, refTrial)</a>
+0002 <span class="comment">%checkMarkerHealth  Validates marker data quality</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   this = checkMarkerHealth(this) analyzes marker data across all trials</span>
+0005 <span class="comment">%   for missing data, label errors, and outliers</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   this = checkMarkerHealth(this, refTrial) optionally specifies which</span>
+0008 <span class="comment">%   trial to use for model training</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - experimentData object</span>
+0012 <span class="comment">%       refTrial - trial number to use for reference model (optional,</span>
+0013 <span class="comment">%                  automatically selected if not provided)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       this - experimentData object with quality flags added to marker</span>
+0017 <span class="comment">%              data</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: extractMarkerModels, orientedLabTimeSeries/findOutliers</span>
+0020 
+0021 disp(<span class="string">'Checking marker health...'</span>);
+0022 
+0023 <span class="comment">% First: build models</span>
+0024 [allTrialModels, modelScore, badFlag] = <a href="extractMarkerModels.html" class="code" title="function [allTrialModels, modelScore, badFlag] =extractMarkerModels(this)">extractMarkerModels</a>(this);
+0025 
+0026 <span class="comment">% Second: select best model</span>
+0027 <span class="comment">% TODO: move this chunk to its own function?</span>
+0028 noOutlierTest = false;
+0029 <span class="keyword">if</span> (nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refTrial)) &amp;&amp; ~all(badFlag)
+0030     modelScore(badFlag) = Inf;
+0031     [~, refTrial] = nanmin(modelScore);
+0032 <span class="keyword">elseif</span> all(badFlag) <span class="comment">% Undefined refTrial but all trials are bad</span>
+0033     warning([<span class="string">'Could not find suitable data for model training. '</span> <span class="keyword">...</span>
+0034         <span class="string">'Not testing for outliers.'</span>]);
+0035     <span class="comment">% This flag prevents the testing for outliers later on.</span>
+0036     noOutlierTest = true;
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">try</span> <span class="comment">% If there is a model</span>
+0039     mm = allTrialModels{refTrial};
+0040     fprintf([<span class="string">'Using trial '</span> num2str(refTrial) <span class="string">' to train outlier '</span> <span class="keyword">...</span>
+0041         <span class="string">'detection model...\n'</span>]);
+0042     mm.seeModel;
+0043 <span class="keyword">catch</span>
+0044     <span class="comment">% nop</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% Third: for each trial, get missing markers, analyze fitted model</span>
+0048 <span class="comment">% and find outliers through best model</span>
+0049 <span class="keyword">for</span> trial = 1:length(this.data)
+0050     disp([<span class="string">'Checking trial '</span> num2str(trial) <span class="string">'...'</span>]);
+0051     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{trial})
+0052         aux = this.data{trial}.markerData;
+0053 
+0054         <span class="comment">% A: check missing data &amp; fill gaps</span>
+0055         [~, ~, missing] = aux.assessMissing([], -1);
+0056 
+0057         <span class="comment">% B: analyze fitted models</span>
+0058         validateMarkerModel(allTrialModels{trial}, true);
+0059 
+0060         <span class="comment">% C: find outliers</span>
+0061         <span class="keyword">if</span> ~noOutlierTest
+0062             aux = aux.findOutliers(mm, true);
+0063             this.data{trial}.markerData = aux;
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066 <span class="keyword">end</span>
+0067 disp(<span class="string">'Outlier data added in Quality field'</span>);
+0068 <span class="keyword">end</span>
+0069</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

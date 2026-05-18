@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotStridedTimeSeries</title>
+  <meta name="keywords" content="plotStridedTimeSeries">
+  <meta name="description" content="plotStridedTimeSeries  Plots strided timeseries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; plotStridedTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotStridedTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plotStridedTimeSeries  Plots strided timeseries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle, plotHandles) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plotStridedTimeSeries  Plots strided timeseries
+
+   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS) plots
+   strided timeseries data
+
+   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS,
+   figHandle, plotHandles) uses existing handles
+
+   Inputs:
+       stridedTS - cell array of strided timeseries
+       figHandle - figure handle (optional)
+       plotHandles - subplot handles (optional)
+
+   Outputs:
+       figHandle - figure handle
+       plotHandles - array of subplot handles
+
+   See also: <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>, <a href="stridedTSToAlignedTS.html" class="code" title="function [alignedTS, originalDurations] =stridedTSToAlignedTS(stridedTS, N)">stridedTSToAlignedTS</a>, alignedTimeSeries/plot</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle, plotHandles] = plotStridedTimeSeries( </a><span class="keyword">...</span>
+0002     stridedTS, figHandle, plotHandles)
+0003 <span class="comment">%plotStridedTimeSeries  Plots strided timeseries</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS) plots</span>
+0006 <span class="comment">%   strided timeseries data</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS,</span>
+0009 <span class="comment">%   figHandle, plotHandles) uses existing handles</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       stridedTS - cell array of strided timeseries</span>
+0013 <span class="comment">%       figHandle - figure handle (optional)</span>
+0014 <span class="comment">%       plotHandles - subplot handles (optional)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Outputs:</span>
+0017 <span class="comment">%       figHandle - figure handle</span>
+0018 <span class="comment">%       plotHandles - array of subplot handles</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   See also: plot, stridedTSToAlignedTS, alignedTimeSeries/plot</span>
+0021 
+0022 <span class="keyword">if</span> nargin &lt; 2
+0023     figHandle = [];
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin &lt; 3
+0026     plotHandles = [];
+0027 <span class="keyword">end</span>
+0028 N = 2^ceil(log2(1.5 / stridedTS{1}.sampPeriod));
+0029 structure = labTimeSeries.stridedTSToAlignedTS(stridedTS, N);
+0030 <span class="comment">% Using the alignedTimeSeries plot function</span>
+0031 [figHandle, plotHandles] = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(structure, figHandle, plotHandles);
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

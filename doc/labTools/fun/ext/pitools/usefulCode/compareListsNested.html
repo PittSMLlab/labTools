@@ -15,7 +15,7 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">usefulCode</a> &gt; compareListsNested.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/usefulCode&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\usefulCode&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>compareListsNested
 </h1>
@@ -43,10 +43,10 @@ If there are many matches, idxs will point to the LAST match found</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>	Searches for strings in list2 to match any string in list1.</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="../../../../../labTools/fun/SeparateConditions.html" class="code" title="function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask)">SeparateConditions</a>	Chagingparams, create new conditions in 1 trial, currently only need to</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>	Searches for strings in list2 to match any string in list1.</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
 <!-- crossreference -->
 
 
@@ -72,7 +72,7 @@ This function is called by:
 0018     error(<span class="string">'List2 has to be a cell array containing strings.'</span>);
 0019 <span class="keyword">end</span>
 0020 <span class="keyword">if</span> all(cellfun(@(x) isa(x,<span class="string">'char'</span>),list1)) <span class="comment">%Shortcut for when list1 and list2 are both cells of strings:</span>
-0021     [bool,idxs] = <a href="compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(list1,list2);
+0021     [bool,idxs] = <a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(list1,list2);
 0022 <span class="keyword">else</span>
 0023 <span class="comment">%TO DO: make this more efficient by running as the first part (above this line) for all the</span>
 0024 <span class="comment">%chars in list1, and only doing the second part (from this line on) for the non-chars in list1</span>
@@ -96,6 +96,6 @@ This function is called by:
 0042 
 0043 <span class="keyword">end</span>
 0044</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

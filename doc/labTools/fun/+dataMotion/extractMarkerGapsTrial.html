@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractMarkerGapsTrial</title>
+  <meta name="keywords" content="extractMarkerGapsTrial">
+  <meta name="description" content="EXTRACTMARKERGAPSTRIAL Extract indices of all marker gaps to be filled">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; extractMarkerGapsTrial.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>extractMarkerGapsTrial
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EXTRACTMARKERGAPSTRIAL Extract indices of all marker gaps to be filled</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function markerGaps = extractMarkerGapsTrial(pathTrial,vicon) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EXTRACTMARKERGAPSTRIAL Extract indices of all marker gaps to be filled
+   This function accepts as input the full path to the trial and
+ identifies gaps in all markers' trajectories. Make sure the Vicon Nexus
+ SDK is installed and added to the MATLAB path.
+
+ input(s):
+   pathTrial: string or character array of the full path of the trial on
+       which to run the reconstruct and label processing pipeline
+   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.
+ output:
+   markerGaps: struct of arrays with start and end frame indices of the
+       gaps in each marker's trajectory, ...
+       formatted as [startsGaps endsGaps]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerGaps = extractMarkerGapsTrial(pathTrial,vicon)</a>
+0002 <span class="comment">%EXTRACTMARKERGAPSTRIAL Extract indices of all marker gaps to be filled</span>
+0003 <span class="comment">%   This function accepts as input the full path to the trial and</span>
+0004 <span class="comment">% identifies gaps in all markers' trajectories. Make sure the Vicon Nexus</span>
+0005 <span class="comment">% SDK is installed and added to the MATLAB path.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% input(s):</span>
+0008 <span class="comment">%   pathTrial: string or character array of the full path of the trial on</span>
+0009 <span class="comment">%       which to run the reconstruct and label processing pipeline</span>
+0010 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.</span>
+0011 <span class="comment">% output:</span>
+0012 <span class="comment">%   markerGaps: struct of arrays with start and end frame indices of the</span>
+0013 <span class="comment">%       gaps in each marker's trajectory, ...</span>
+0014 <span class="comment">%       formatted as [startsGaps endsGaps]</span>
+0015 
+0016 <span class="comment">% TODO: add a GUI input option if helpful</span>
+0017 narginchk(1,2);         <span class="comment">% verify correct number of input arguments</span>
+0018 
+0019 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
+0020 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0021     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0022         <span class="string">'Nexus...\n'</span>]);
+0023     <span class="keyword">try</span>
+0024         vicon = ViconNexus();
+0025     <span class="keyword">catch</span>
+0026         error([<span class="string">'Failed to initialize Vicon Nexus SDK. Ensure SDK is '</span> <span class="keyword">...</span>
+0027             <span class="string">'properly installed.'</span>]);
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">% open the trial if needed</span>
+0032 <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0033     <span class="keyword">return</span>;     <span class="comment">% exit if the trial could not be opened</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">% get subject name (assuming only one subject in the trial)</span>
+0037 subject = vicon.GetSubjectNames();
+0038 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subject)
+0039     error(<span class="string">'No subject found in the trial.'</span>);
+0040 <span class="keyword">end</span>
+0041 subject = subject{1};
+0042 
+0043 <span class="comment">% initialize structure to store marker trajectory gaps</span>
+0044 markerGaps = struct();
+0045 markers = vicon.GetMarkerNames(subject);
+0046 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markers)     <span class="comment">% if empty array of markers, ...</span>
+0047     warning(<span class="string">'No markers found for the subject in the trial.'</span>);
+0048     <span class="keyword">return</span>;
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="keyword">for</span> mrkr = 1:length(markers)        <span class="comment">% for each marker, ...</span>
+0052     nameMarker = markers{mrkr};     <span class="comment">% get marker name</span>
+0053     <span class="keyword">try</span>                             <span class="comment">% get marker trajectory existence flags</span>
+0054         [~,~,~,existsTraj] = vicon.GetTrajectory(subject,nameMarker);
+0055     <span class="keyword">catch</span>
+0056         warning([<span class="string">'Failed to retrieve trajectory for marker %s. '</span> <span class="keyword">...</span>
+0057             <span class="string">'Skipping...'</span>],nameMarker);
+0058         <span class="keyword">continue</span>;
+0059     <span class="keyword">end</span>
+0060 
+0061     <span class="comment">% identify gaps as sequences where trajExists is false</span>
+0062     indsGap = find(~existsTraj);
+0063     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsGap)             <span class="comment">% if no gaps for a marker, ...</span>
+0064         <span class="keyword">continue</span>;
+0065     <span class="keyword">end</span>
+0066 
+0067     <span class="comment">% identify start and end indices of each trajectory gap</span>
+0068     gapsStarts = indsGap([true diff(indsGap) &gt; 1])';    <span class="comment">% start of gaps</span>
+0069     gapsEnds = indsGap([diff(indsGap) &gt; 1 true])';      <span class="comment">% end of gaps</span>
+0070 
+0071     <span class="comment">% store gap data for this marker in the output structure</span>
+0072     markerGaps.(nameMarker) = [gapsStarts gapsEnds];
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="keyword">end</span>
+0076</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

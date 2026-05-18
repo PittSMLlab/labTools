@@ -4,7 +4,7 @@
 <head>
   <title>Description of getTrialMetaData</title>
   <meta name="keywords" content="getTrialMetaData">
-  <meta name="description" content="getTrialMetaData  generates trialMetaData objects for each trial of a">
+  <meta name="description" content="getTrialMetaData creates trialMetaData object for each trial of experiment">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,124 +15,152 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; getTrialMetaData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getTrialMetaData
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>getTrialMetaData  generates trialMetaData objects for each trial of a</strong></div>
+<div class="box"><strong>getTrialMetaData creates trialMetaData object for each trial of experiment</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [trialMD,fileList,secFileList, datlogExist] = getTrialMetaData(info) </strong></div>
+<div class="box"><strong>function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getTrialMetaData  generates trialMetaData objects for each trial of a
-given experiment.
+<div class="fragment"><pre class="comment">getTrialMetaData creates trialMetaData object for each trial of experiment
 
-INPUTS:
+INPUT:
 info: structured array output from GetInfoGUI
 
-OUTPUT:
-trialMD: cell array of trialMetaData objects where the cell index corresponds
-to the trial number
-fileList: list of .c3d files containing kinematic and force data for a given experiment
+OUTPUTS:
+trialMD: cell array of trialMetaData objects where the cell index
+corresponds to the trial number
+fileList: list of .c3d files containing kinematic and force data for a
+given experiment
 secFileList: list of files containing EMG data for a given experiment
-datlogExist: boolean indicating if datlog folder exists (if so will sync it later)
+datlogExist: boolean indicating if datlog folder exists (if so will sync
+it later)
+
 See also: trialMetaData</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/metaData/trialMetaData.html" class="code" title="">trialMetaData</a>	</li><li><a href="autoRenameDatlog.html" class="code" title="function autoRenameDatlog(datlogFolder, viconDataFolder)">autoRenameDatlog</a>	autoRenameDatlog using timestamps and trial names from .x1d files in the viconDataFolder</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [trialMD,fileList,secFileList, datlogExist] = getTrialMetaData(info)</a>
-0002 <span class="comment">%getTrialMetaData  generates trialMetaData objects for each trial of a</span>
-0003 <span class="comment">%given experiment.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%INPUTS:</span>
-0006 <span class="comment">%info: structured array output from GetInfoGUI</span>
-0007 <span class="comment">%</span>
-0008 <span class="comment">%OUTPUT:</span>
-0009 <span class="comment">%trialMD: cell array of trialMetaData objects where the cell index corresponds</span>
-0010 <span class="comment">%to the trial number</span>
-0011 <span class="comment">%fileList: list of .c3d files containing kinematic and force data for a given experiment</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)</a>
+0002 <span class="comment">%getTrialMetaData creates trialMetaData object for each trial of experiment</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%INPUT:</span>
+0005 <span class="comment">%info: structured array output from GetInfoGUI</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%OUTPUTS:</span>
+0008 <span class="comment">%trialMD: cell array of trialMetaData objects where the cell index</span>
+0009 <span class="comment">%corresponds to the trial number</span>
+0010 <span class="comment">%fileList: list of .c3d files containing kinematic and force data for a</span>
+0011 <span class="comment">%given experiment</span>
 0012 <span class="comment">%secFileList: list of files containing EMG data for a given experiment</span>
-0013 <span class="comment">%datlogExist: boolean indicating if datlog folder exists (if so will sync it later)</span>
-0014 <span class="comment">%See also: trialMetaData</span>
-0015 
-0016 dirStr = info.dir_location;
-0017 basename = info.basename;
-0018 
-0019 fileList={};
-0020 secFileList={};
-0021 trialMD={};
-0022 
-0023 <span class="comment">%check if datalog directory exists (exist in either save or dir_folder and in format datalog or datlog.</span>
-0024 <span class="comment">% if exists, load it later</span>
-0025 datlogExist = false;
-0026 filesInDir = [dir(info.dir_location);dir(info.save_folder)];
-0027 <span class="keyword">for</span> i = 1:numel(filesInDir)
-0028     <span class="comment">% search for alternative naming conventions.</span>
-0029     datlogExist = ismember(lower(filesInDir(i).name), {<span class="string">'datalog'</span>,<span class="string">'datalogs'</span>,<span class="string">'datlog'</span>,<span class="string">'datlogs'</span>});
-0030     <span class="keyword">if</span> datlogExist
-0031         datalogFolder = [filesInDir(i).folder filesep filesInDir(i).name];
-0032         <span class="keyword">break</span>
-0033     <span class="keyword">end</span>
-0034 <span class="keyword">end</span>
-0035 
-0036 <span class="keyword">for</span> cond = sort(info.cond) 
-0037     <span class="keyword">for</span> t = info.trialnums{cond}
-0038         <span class="comment">%This assumes that the .c3d files are named basename01, basename02,..., basename10,</span>
-0039         <span class="comment">%basename11,...</span>
-0040         filename = [dirStr filesep basename sprintf(<span class="string">'%02d'</span>,t)];
-0041        
-0042         <span class="keyword">if</span> datlogExist <span class="comment">%datalog folder found, load it.</span>
-0043             filenameDatlog = [datalogFolder filesep basename sprintf(<span class="string">'%02d'</span>,t)];
-0044             <span class="keyword">try</span>
-0045                 <span class="comment">% Upload the datalog for the specifica condition</span>
-0046                 info.datlog{cond} = load([filenameDatlog <span class="string">'.mat'</span>]);
-0047             <span class="keyword">catch</span> ME
-0048                 error(<span class="string">'Datalog folder exists (%s) but could not find datalog file for trial: %s. Maybe forget to rename them? Will ignore this trial.'</span>,datalogFolder,[basename sprintf(<span class="string">'%02d'</span>,t)])
-0049             <span class="keyword">end</span>
-0050         <span class="keyword">end</span>
-0051                 
-0052         fileList{t}=filename;
-0053                
-0054         <span class="keyword">if</span> ~isempty(info.secdir_location) <span class="comment">%Pablo changed on 7/16/2015 to consider the case where there is EMG from a single file.</span>
-0055             <span class="keyword">if</span> t&lt;10
-0056                 secFileList{t} = [info.secdir_location filesep basename <span class="string">'0'</span> num2str(t)];
-0057             <span class="keyword">else</span>
-0058                 secFileList{t} = [info.secdir_location filesep basename num2str(t)];
-0059             <span class="keyword">end</span>
-0060         <span class="keyword">else</span>
-0061             secFileList{t}=<span class="string">''</span>;
-0062         <span class="keyword">end</span>       
-0063         
-0064         
-0065         <span class="keyword">if</span> ~isfield(info,<span class="string">'trialObs'</span>)
-0066             info.trialObs=cell(info.numoftrials,1);
+0013 <span class="comment">%datlogExist: boolean indicating if datlog folder exists (if so will sync</span>
+0014 <span class="comment">%it later)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%See also: trialMetaData</span>
+0017 
+0018 dirStr = info.dir_location;
+0019 basename = info.basename;
+0020 
+0021 <span class="comment">% initialize output parameters to empty cell arrays</span>
+0022 fileList = {};
+0023 secFileList = {};
+0024 trialMD = {};
+0025 
+0026 <span class="comment">% check if 'datalog' folder exists in 'save_folder' or 'dir_location'</span>
+0027 datlogExist = false;                    <span class="comment">% boolean for data log existance</span>
+0028 filesInDir = [dir(info.dir_location);dir(info.save_folder)];
+0029 <span class="keyword">for</span> fi = 1:numel(filesInDir)            <span class="comment">% for each file in directory, ...</span>
+0030     <span class="comment">% search data logs with various naming conventions</span>
+0031     datlogExist = ismember(lower(filesInDir(fi).name), <span class="keyword">...</span>
+0032         {<span class="string">'datalog'</span>,<span class="string">'datalogs'</span>,<span class="string">'datlog'</span>,<span class="string">'datlogs'</span>});
+0033     <span class="keyword">if</span> datlogExist                      <span class="comment">% if data log files exist, ...</span>
+0034         datalogFolder = <span class="keyword">...</span><span class="comment">               retrieve folder for later loading</span>
+0035             [filesInDir(fi).folder filesep filesInDir(fi).name];
+0036         <span class="keyword">break</span>;
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039           
+0040 <span class="keyword">for</span> cond = sort(info.cond)              <span class="comment">% for each exp. condition, ...</span>
+0041     <span class="keyword">for</span> t = info.trialnums{cond}        <span class="comment">% for each trial in condition, ...</span>
+0042         <span class="comment">% assumes C3D files are named basename01, ..., basename10, ...</span>
+0043         filename = [dirStr filesep basename sprintf(<span class="string">'%02d'</span>,t)];
+0044 
+0045         <span class="keyword">if</span> datlogExist                  <span class="comment">% if data logs exist, ...</span>
+0046             filenameDatlog = <span class="keyword">...</span>
+0047                 [datalogFolder filesep basename sprintf(<span class="string">'%02d'</span>,t) <span class="string">'.mat'</span>];
+0048              <span class="keyword">if</span> ~isfile(filenameDatlog) 
+0049                 <span class="comment">%datlog folder exists but file name for a given trial doesn't,</span>
+0050                 <span class="comment">%first try to rename the datlogs to see if that helps.</span>
+0051                 fprintf([<span class="string">'\nDatalog folder exists (%s) but could not find '</span> <span class="keyword">...</span>
+0052                         <span class="string">'datalog file for trial: %s. Attempt to rename all the datlog files now.\n'</span>], <span class="keyword">...</span>
+0053                         datalogFolder,[basename sprintf(<span class="string">'%02d'</span>,t)]);
+0054                 <a href="autoRenameDatlog.html" class="code" title="function autoRenameDatlog(datlogFolder, viconDataFolder)">autoRenameDatlog</a>(datalogFolder,info.dir_location)
+0055                 fprintf(<span class="string">'\nAuto renaming datlog complete. Check the matchResults to validate if it matches your intuition\n'</span>)
+0056              <span class="keyword">end</span>
+0057             
+0058             <span class="keyword">try</span> <span class="comment">% now try loading data log</span>
+0059                 <span class="comment">% open data log for this specific condition</span>
+0060                 info.datlog{cond} = load(filenameDatlog);
+0061             <span class="keyword">catch</span> ME
+0062                 error([<span class="string">'Datalog folder exists (%s) but could not find '</span> <span class="keyword">...</span>
+0063                     <span class="string">'datalog file for trial: %s even after renaming attempt. Maybe this datlog file was not copied? '</span> <span class="keyword">...</span>
+0064                     <span class="string">'Check your Vicon x1d files and datlog files for this participant.'</span>], <span class="keyword">...</span>
+0065                     datalogFolder,[basename sprintf(<span class="string">'%02d'</span>,t)]);
+0066             <span class="keyword">end</span>
 0067         <span class="keyword">end</span>
-0068         
-0069          <span class="keyword">if</span> info.perceptualTasks ==1 || datlogExist
-0070                <span class="comment">% constructor: (name,desc,obs,refLeg,cond,filename,type)</span>
-0071             trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},<span class="keyword">...</span>
-0072                 info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.datlog{cond});   
-0073          <span class="keyword">else</span>
-0074             trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},<span class="keyword">...</span>
-0075                 info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks); 
-0076          <span class="keyword">end</span>
-0077     <span class="keyword">end</span> 
-0078    
-0079 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0068         fileList{t} = filename;
+0069 
+0070         <span class="comment">% Pablo I. changed 07/16/2015 to consider case of EMG from one file</span>
+0071         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(info.secdir_location)   <span class="comment">% if no second directory, ...</span>
+0072             <span class="keyword">if</span> t &lt; 10                       <span class="comment">% if fewer than ten trials, ...</span>
+0073                 secFileList{t} = <span class="keyword">...</span><span class="comment">          append '0' to file name</span>
+0074                     [info.secdir_location filesep basename <span class="string">'0'</span> num2str(t)];
+0075             <span class="keyword">else</span>                            <span class="comment">% otherwise, ...</span>
+0076                 secFileList{t} = <span class="keyword">...</span>
+0077                     [info.secdir_location filesep basename num2str(t)];
+0078             <span class="keyword">end</span>
+0079         <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
+0080             secFileList{t} = <span class="string">''</span>;            <span class="comment">% set to empty string</span>
+0081         <span class="keyword">end</span>
+0082 
+0083         <span class="keyword">if</span> ~isfield(info,<span class="string">'trialObs'</span>)        <span class="comment">% if no trial observations, ...</span>
+0084             info.trialObs = cell(info.numoftrials,1);
+0085         <span class="keyword">end</span>
+0086 
+0087         <span class="comment">% if this is a perceptual task and the data log files exist, ...</span>
+0088         <span class="keyword">if</span> info.perceptualTasks == 1 || datlogExist
+0089             <span class="comment">% constructor: (name,desc,obs,refLeg,cond,filename,type)</span>
+0090             trialMD{t} = <a href="../../../labTools/classes/dataStructs/metaData/trialMetaData.html" class="code" title="">trialMetaData</a>(info.conditionNames{cond}, <span class="keyword">...</span>
+0091                 info.conditionDescriptions{cond},info.trialObs{t}, <span class="keyword">...</span>
+0092                 info.refLeg,cond,filename,info.type{cond}, <span class="keyword">...</span>
+0093                 info.schenleyLab,info.perceptualTasks, <span class="keyword">...</span>
+0094                 info.ExpDescription,info.datlog{cond});
+0095         <span class="keyword">else</span>
+0096             trialMD{t} = <a href="../../../labTools/classes/dataStructs/metaData/trialMetaData.html" class="code" title="">trialMetaData</a>(info.conditionNames{cond}, <span class="keyword">...</span>
+0097                 info.conditionDescriptions{cond},info.trialObs{t}, <span class="keyword">...</span>
+0098                 info.refLeg,cond,filename,info.type{cond}, <span class="keyword">...</span>
+0099                 info.schenleyLab,info.perceptualTasks,info.ExpDescription);
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
+0102 <span class="keyword">end</span>
+0103 
+0104 <span class="keyword">end</span>
+0105</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

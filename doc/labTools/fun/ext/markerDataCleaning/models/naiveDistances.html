@@ -15,7 +15,7 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">models</a> &gt; naiveDistances.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/models&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\markerDataCleaning\models&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>naiveDistances
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
@@ -67,7 +67,7 @@ This function is called by:
 0021             g=[];
 0022         <span class="keyword">end</span>
 0023         <a name="_sub2" href="#_subfunctions" class="code">function i = indicatrix(this,fullFlag,M) </a><span class="comment">%MxP</span>
-0024             <span class="keyword">if</span> nargin&lt;3 || isempty(M)
+0024             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(M)
 0025                 M=this.Nmarkers;
 0026             <span class="keyword">end</span>
 0027             ind=triu(true(M),1);
@@ -78,7 +78,7 @@ This function is called by:
 0032                 aux(j,:)=1;
 0033                 i(j,:)=aux(ind(:));
 0034             <span class="keyword">end</span>
-0035             <span class="keyword">if</span> nargin&lt;2 || isempty(fullFlag) || fullFlag==false
+0035             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fullFlag) || fullFlag==false
 0036                 i=i(:,this.activeStats); <span class="comment">%Default</span>
 0037             <span class="keyword">end</span>
 0038         <span class="keyword">end</span>
@@ -94,9 +94,9 @@ This function is called by:
 0048                 <span class="keyword">for</span> j=1:size(i,2)
 0049                     <span class="comment">%if this.activeStats(j)</span>
 0050                     aux=find(i(:,j));
-0051                     n=mean(m(aux,:));
+0051                     n=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(m(aux,:));
 0052                     <span class="keyword">for</span> k=1:length(aux)
-0053                        plot3([n(1) m(aux(k),1)],[n(2) m(aux(k),2)],[n(3) m(aux(k),3)],<span class="string">'k'</span>)
+0053                        <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>([n(1) m(aux(k),1)],[n(2) m(aux(k),2)],[n(3) m(aux(k),3)],<span class="string">'k'</span>)
 0054                     <span class="keyword">end</span>
 0055                     text(n(1),n(2),n(3),[<span class="string">'mu='</span> num2str(mu(j),3) <span class="string">', sigma='</span> num2str(sigma(j),2)])
 0056                     <span class="comment">%end</span>
@@ -112,7 +112,7 @@ This function is called by:
 0066             <span class="comment">%issues. It is meant to be used as a diagnostics tool to detect</span>
 0067             <span class="comment">%bad models (possibly caused by bad training data).</span>
 0068             outOfBoundsOutlier=false(size(this.trainingData,1),1);
-0069             <span class="keyword">if</span> nargin&lt;2 || isempty(verbose)
+0069             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
 0070                 verbose=true;
 0071             <span class="keyword">end</span>
 0072             badFlag=false;
@@ -131,14 +131,14 @@ This function is called by:
 0085             D=[mu2&lt;mu1,zeros(size(mu1));zeros(size(mu1)),mu4&lt;mu3] &amp; mu([firstHalf secondHalf],[firstHalf secondHalf])&lt;700; <span class="comment">%Using 700mm as a threshold for distances to look at</span>
 0086             <span class="comment">%otherwise we compare something like RPSIS to RTOE and LTOE, which by geometry are almost equally far from RPSIS, and any movement or placement asymmetry will raise an alarm.</span>
 0087             <span class="comment">%Excluding SHANK and THIGH from this, since markers are not meant to be placed symmetrically</span>
-0088             [bool,idxs] = compareListsNested(this.markerLabels,{<span class="string">'RTHI'</span>,<span class="string">'LTHI'</span>,<span class="string">'LTHIGH'</span>,<span class="string">'RTHIGH'</span>,<span class="string">'RSHANK'</span>,<span class="string">'LSHANK'</span>,<span class="string">'LSHA'</span>,<span class="string">'RSHA'</span>,<span class="string">'LSHNK'</span>,<span class="string">'RSHNK'</span>});
+0088             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(this.markerLabels,{<span class="string">'RTHI'</span>,<span class="string">'LTHI'</span>,<span class="string">'LTHIGH'</span>,<span class="string">'RTHIGH'</span>,<span class="string">'RSHANK'</span>,<span class="string">'LSHANK'</span>,<span class="string">'LSHA'</span>,<span class="string">'RSHA'</span>,<span class="string">'LSHNK'</span>,<span class="string">'RSHNK'</span>});
 0089             D(idxs(bool),:)=false;
 0090             D(:,idxs(bool))=false;
 0091             [outMarkers1]=markerModel.untangleOutliers( naiveDistances.distMatrix2stat(D),this.indicatrix(true));
 0092             <span class="keyword">if</span> any(outMarkers1)
 0093                 <span class="keyword">if</span> verbose
 0094                 fprintf([<span class="string">'Mislabeled markers. Contralat. distances &gt; ipsilat. for: '</span>])
-0095                 fprintf([cell2mat(strcat(this.markerLabels(outMarkers1),<span class="string">', '</span>)) <span class="string">'\n'</span>])
+0095                 fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(this.markerLabels(outMarkers1),<span class="string">', '</span>)) <span class="string">'\n'</span>])
 0096                 <span class="keyword">end</span>
 0097                 badFlag=true;
 0098             <span class="keyword">end</span>
@@ -155,7 +155,7 @@ This function is called by:
 0109 
 0110             <span class="comment">%3) No marker pair has a distance outside the admissible bounds</span>
 0111             load distanceModelReferenceData.mat
-0112             [bool,idxs] = compareListsNested(this.markerLabels,markerLabels);
+0112             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(this.markerLabels,markerLabels);
 0113             list1=this.markerLabels(idxs(bool));
 0114             list2=markerLabels(bool);
 0115             <span class="keyword">if</span> ~all(strcmp(list1,list2))
@@ -171,7 +171,7 @@ This function is called by:
 0125                 [outMarkers2]=markerModel.untangleOutliers(naiveDistances.distMatrix2stat(D),in);
 0126                 <span class="keyword">if</span> verbose
 0127                 fprintf([<span class="string">'Marker distances above or below the allowed limits for markers: '</span>])
-0128                 fprintf([cell2mat(strcat(this.markerLabels(outMarkers2),<span class="string">', '</span>)) <span class="string">'\n'</span>])
+0128                 fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(this.markerLabels(outMarkers2),<span class="string">', '</span>)) <span class="string">'\n'</span>])
 0129                 <span class="keyword">end</span>
 0130             <span class="comment">%                             [ii,jj]=find(reducedMu&lt;lowerBound | reducedMu&gt;upperBound);</span>
 0131             <span class="comment">%                             for i1=1:length(ii)</span>
@@ -247,12 +247,12 @@ This function is called by:
 0201             <span class="comment">%data: M (markers) x3(dim) xN (frames)</span>
 0202             <span class="comment">%priors: MxN or Mx1 matrix containing the uncertainty (std) in positions we think we have: assumes spherical uncertainty</span>
 0203             [M,D,N]=size(data);
-0204             <span class="keyword">if</span> nargin&lt;3 || isempty(dataPriors)
+0204             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dataPriors)
 0205                <span class="comment">%Assume that priors are each marker's score according to this same model</span>
 0206                <span class="comment">%priors=...</span>
 0207                dataPriors=ones(M,N);
 0208             <span class="keyword">end</span>
-0209             <span class="keyword">if</span> nargin&lt;4 || isempty(fastFlag)
+0209             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
 0210                 fastFlag=false;
 0211             <span class="keyword">end</span>
 0212             mleData=nan(size(data));
@@ -322,7 +322,7 @@ This function is called by:
 0276         <a name="_sub8" href="#_subfunctions" class="code">function dataFrame=invertAndAnchor(ss,anchorFrame,anchorWeights,distanceWeights,initGuess,fastFlag)</a>
 0277             knownDistances=naiveDistances.stat2DistMatrix(ss);
 0278             distanceWeights=naiveDistances.stat2DistMatrix(distanceWeights);
-0279             <span class="keyword">if</span> nargin&lt;6 || isempty(fastFlag)
+0279             <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
 0280                 fastFlag=false;
 0281             <span class="keyword">end</span>
 0282             <span class="keyword">if</span> ~fastFlag
@@ -342,7 +342,7 @@ This function is called by:
 0296                     knownDistances=knownDistances(fixedMarkers,~fixedMarkers);
 0297                     distanceWeights=distanceWeights(fixedMarkers,~fixedMarkers);
 0298                     anchorWeights=anchorWeights(~fixedMarkers);
-0299                     <span class="keyword">if</span> ~isempty(initGuess)
+0299                     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(initGuess)
 0300                         initGuess=initGuess(~fixedMarkers,:);
 0301                     <span class="keyword">end</span>
 0302                     <span class="comment">%TODO:</span>
@@ -357,7 +357,7 @@ This function is called by:
 0311     methods(Static)
 0312         <span class="comment">%Implementing superclass required methods:</span>
 0313         <a name="_sub9" href="#_subfunctions" class="code">function [ss,g] = summaryStats(data)</a>
-0314            D=computeDistanceMatrix(data);
+0314            D=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(data);
 0315            ss=naiveDistances.distMatrix2stat(D);
 0316            <span class="keyword">if</span> nargout&gt;2
 0317               g=[]; <span class="comment">%TODO</span>
@@ -368,7 +368,7 @@ This function is called by:
 0322                 labels={};
 0323             <span class="keyword">end</span>
 0324             this=<a href="naiveDistances.html" class="code" title="">naiveDistances</a>(data,labels);
-0325             <span class="keyword">if</span> nargin&lt;3 || isempty(noDisp) || ~noDisp
+0325             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(noDisp) || ~noDisp
 0326                 this.seeModel()
 0327             <span class="keyword">end</span>
 0328 
@@ -409,6 +409,6 @@ This function is called by:
 0363         <span class="keyword">end</span>
 0364     <span class="keyword">end</span>
 0365 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@studyData</a> &gt; studyData.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@studyData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@studyData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>studyData
 </h1>
@@ -33,114 +33,137 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="studyData.html" class="code" title="">studyData</a>	</li></ul>
+<li><a href="anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>	anova  Performs ANOVA comparing groups across epochs</li><li><a href="barPlot.html" class="code" title="function out = barPlot(this, epochs)">barPlot</a>	barPlot  Creates bar plot comparing groups across epochs</li><li><a href="createStudyData.html" class="code" title="function this = createStudyData(groupAdaptationDataList)">createStudyData</a>	createStudyData  Creates studyData from list of data files</li><li><a href="getCommonConditions.html" class="code" title="function out = getCommonConditions(this)">getCommonConditions</a>	getCommonConditions  Returns conditions common to all groups</li><li><a href="getCommonParameters.html" class="code" title="function out = getCommonParameters(this)">getCommonParameters</a>	getCommonParameters  Returns parameters common to all groups</li><li><a href="getEpochData.html" class="code" title="function data = getEpochData(this, epochs, labels, summaryFlag)">getEpochData</a>	getEpochData  Returns data from all subjects in all groups for each epoch</li><li><a href="studyData.html" class="code" title="">studyData</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>	anova  Performs one-way ANOVA on parameters</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="studyData.html" class="code" title="">studyData</a>	</li></ul>
+<li><a href="createStudyData.html" class="code" title="function this = createStudyData(groupAdaptationDataList)">createStudyData</a>	createStudyData  Creates studyData from list of data files</li><li><a href="studyData.html" class="code" title="">studyData</a>	</li><li><a href="../../../../labTools/gui/createStudy/uiCreateStudy.html" class="code" title="function varargout = uiCreateStudy(varargin)">uiCreateStudy</a>	UICREATESTUDY GUI for assembling groups of subjects into a study.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this = studyData(varargin)</a></li><li><a href="#_sub2" class="code">function outputArg = get.groupNames(this)</a></li><li><a href="#_sub3" class="code">function out = getCommonConditions(this)</a></li><li><a href="#_sub4" class="code">function out = getCommonParameters(this)</a></li><li><a href="#_sub5" class="code">function data=getEpochData(this,epochs,labels,summaryFlag)</a></li><li><a href="#_sub6" class="code">function out = barPlot(this,epochs)</a></li><li><a href="#_sub7" class="code">function out = anova(this,epochs,contrasts)</a></li><li><a href="#_sub8" class="code">function this = createStudyData(groupAdaptationDataList)</a></li></ul>
+<li><a href="#_sub1" class="code">function this = studyData(varargin)</a></li><li><a href="#_sub2" class="code">function outputArg = get.groupNames(this)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 classdef <a href="studyData.html" class="code" title="">studyData</a> <span class="comment">%&lt; dynamicprops</span>
-0002 
-0003     properties
-0004         groupData
-0005     <span class="keyword">end</span>
-0006     properties(Dependent)
-0007        groupNames 
-0008     <span class="keyword">end</span>
-0009     
-0010     methods
-0011         <a name="_sub0" href="#_subfunctions" class="code">function this = studyData(varargin)</a>
-0012             <span class="keyword">if</span> nargin==1 &amp;&amp; isa(varargin,<span class="string">'cell'</span>)
-0013                 V=varargin{1};
-0014                 N=numel(varargin);
-0015             <span class="keyword">else</span>
-0016                 V=varargin;
-0017                 N=nargin;
-0018             <span class="keyword">end</span>
-0019             <span class="keyword">for</span> i=1:N
-0020                 <span class="keyword">if</span> isa(V{i},<span class="string">'groupAdaptationData'</span>)
-0021                     this.groupData{i}=V{i};
-0022                     <span class="comment">%An attempt at making dot notation a thing:</span>
-0023                     <span class="comment">%P=addprop(this,V{i}.groupID);</span>
-0024                     <span class="comment">%P.Dependent=true;</span>
-0025                 <span class="keyword">else</span>
-0026                     error(<span class="string">'All input arguments must be groupAdaptationData objects'</span>)
-0027                 <span class="keyword">end</span>
-0028             <span class="keyword">end</span>
-0029         <span class="keyword">end</span>
-0030         
-0031         <a name="_sub1" href="#_subfunctions" class="code">function outputArg = get.groupNames(this)</a>
-0032             outputArg=cell(size(this.groupData));
-0033             <span class="keyword">for</span> i=1:length(this.groupData)
-0034                 outputArg{i} = this.groupData{i}.groupID;
-0035             <span class="keyword">end</span>
-0036         <span class="keyword">end</span>
-0037         
-0038         <a name="_sub2" href="#_subfunctions" class="code">function out = getCommonConditions(this)</a>
-0039             out = []; <span class="comment">%Doxy</span>
-0040         <span class="keyword">end</span>
-0041         
-0042         <a name="_sub3" href="#_subfunctions" class="code">function out = getCommonParameters(this)</a>
-0043             out = []; <span class="comment">%Doxy</span>
-0044         <span class="keyword">end</span>
-0045         
-0046        <a name="_sub4" href="#_subfunctions" class="code">function data=getEpochData(this,epochs,labels,summaryFlag)</a>
-0047             <span class="comment">%getEpochData returns data from all subjects in all groups for each epoch</span>
-0048             <span class="comment">%See also: adaptationData.getEpochData</span>
-0049             
-0050             <span class="comment">%Manage inputs:</span>
-0051             <span class="keyword">if</span> nargin&lt;4 
-0052                 summaryFlag=[]; <span class="comment">%Respect default in adaptationData.getEpochData</span>
-0053             <span class="keyword">end</span>
-0054             <span class="keyword">if</span> isa(labels,<span class="string">'char'</span>)
-0055                 labels={labels};
-0056             <span class="keyword">end</span>
-0057             
-0058             data=cell(size(this.groupData));
-0059             allSameSize=true;
-0060             N=length(this.groupData{1}.ID);
-0061             <span class="keyword">for</span> i=1:length(this.groupData)
-0062                 data{i}=this.groupData{i}.getEpochData(epochs,labels,summaryFlag);
-0063                 allSameSize=allSameSize &amp;&amp; N==size(data{i},3);
-0064             <span class="keyword">end</span>
-0065             
-0066             <span class="keyword">if</span> allSameSize <span class="comment">%If all groups are same size, catting into a matrix for easier manipulation (this is probably a bad idea)</span>
-0067                 data=reshape(cell2mat(data),length(labels),length(epochs),length(this.groupData),N); <span class="comment">%Cats along dim 2 by default</span>
-0068             <span class="keyword">end</span>
-0069         <span class="keyword">end</span>
-0070         
-0071         <a name="_sub5" href="#_subfunctions" class="code">function out = barPlot(this,epochs)</a>
-0072            out = []; <span class="comment">%Doxy</span>
-0073         <span class="keyword">end</span>
-0074         
-0075         <a name="_sub6" href="#_subfunctions" class="code">function out = anova(this,epochs,contrasts)</a>
-0076             out = []; <span class="comment">%Doxy</span>
-0077         <span class="keyword">end</span>
-0078     <span class="keyword">end</span>
-0079     
-0080     methods(Static)
-0081         <a name="_sub7" href="#_subfunctions" class="code">function this = createStudyData(groupAdaptationDataList)</a>
-0082            <span class="comment">%This function creates a studyData object  from a list of</span>
-0083            <span class="comment">%filenames, each containing a groupAdaptation object</span>
-0084            
-0085            <span class="comment">%Check: groupAdaptationDataList is a cell of strings</span>
-0086            <span class="comment">%Doxy</span>
-0087            
-0088            aux=cell(size(groupAdaptationDataList));
-0089            <span class="keyword">for</span> i=1:length(groupAdaptationDataList)
-0090                aux{i}=load(groupAdaptationDataList{i});
-0091            <span class="keyword">end</span>
-0092            this = <a href="studyData.html" class="code" title="">studyData</a>(aux);
-0093         <span class="keyword">end</span>
-0094         
-0095     <span class="keyword">end</span>
-0096 <span class="keyword">end</span>
-0097</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 classdef <a href="studyData.html" class="code" title="">studyData</a> <span class="comment">% &lt; dynamicprops</span>
+0002     <span class="comment">%studyData  Container for multiple group adaptation data sets</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   studyData organizes and manages data from multiple experimental</span>
+0005     <span class="comment">%   groups, enabling cross-group comparisons and statistical analyses.</span>
+0006     <span class="comment">%   Each group is represented by a groupAdaptationData object.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">%studyData properties:</span>
+0009     <span class="comment">%   groupData - cell array of groupAdaptationData objects</span>
+0010     <span class="comment">%   groupNames - cell array of group identifier strings (dependent)</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">%studyData methods:</span>
+0013     <span class="comment">%   studyData - constructor for study data</span>
+0014     <span class="comment">%   getCommonConditions - returns conditions common to all groups</span>
+0015     <span class="comment">%   getCommonParameters - returns parameters common to all groups</span>
+0016     <span class="comment">%   getEpochData - extracts epoch data from all groups</span>
+0017     <span class="comment">%   barPlot - creates bar plot comparing groups across epochs</span>
+0018     <span class="comment">%   anova - performs ANOVA comparing groups across epochs</span>
+0019     <span class="comment">%</span>
+0020     <span class="comment">%studyData static methods:</span>
+0021     <span class="comment">%   createStudyData - creates studyData from list of data files</span>
+0022     <span class="comment">%</span>
+0023     <span class="comment">%See also: groupAdaptationData, adaptationData</span>
+0024 
+0025     <span class="comment">%% Properties</span>
+0026     properties
+0027         groupData
+0028     <span class="keyword">end</span>
+0029 
+0030     properties (Dependent)
+0031         groupNames
+0032     <span class="keyword">end</span>
+0033 
+0034     <span class="comment">%% Constructor</span>
+0035     methods
+0036         <a name="_sub0" href="#_subfunctions" class="code">function this = studyData(varargin)</a>
+0037             <span class="comment">%studyData  Constructor for studyData class</span>
+0038             <span class="comment">%</span>
+0039             <span class="comment">%   this = studyData(group1, group2, ...) creates a study data</span>
+0040             <span class="comment">%   object from multiple groupAdaptationData objects</span>
+0041             <span class="comment">%</span>
+0042             <span class="comment">%   this = studyData(groupCell) creates a study data object</span>
+0043             <span class="comment">%   from a cell array of groupAdaptationData objects</span>
+0044             <span class="comment">%</span>
+0045             <span class="comment">%   Inputs:</span>
+0046             <span class="comment">%       varargin - variable number of groupAdaptationData</span>
+0047             <span class="comment">%                  objects or single cell array of</span>
+0048             <span class="comment">%                  groupAdaptationData objects</span>
+0049             <span class="comment">%</span>
+0050             <span class="comment">%   Outputs:</span>
+0051             <span class="comment">%       this - studyData object</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">%   See also: groupAdaptationData, createStudyData</span>
+0054 
+0055             <span class="keyword">if</span> nargin == 1 &amp;&amp; isa(varargin, <span class="string">'cell'</span>)
+0056                 V = varargin{1};
+0057                 N = numel(varargin);
+0058             <span class="keyword">else</span>
+0059                 V = varargin;
+0060                 N = nargin;
+0061             <span class="keyword">end</span>
+0062 
+0063             <span class="keyword">for</span> i = 1:N
+0064                 <span class="keyword">if</span> isa(V{i}, <span class="string">'groupAdaptationData'</span>)
+0065                     this.groupData{i} = V{i};
+0066                     <span class="comment">% An attempt at making dot notation a thing:</span>
+0067                     <span class="comment">% P = addprop(this, V{i}.groupID);</span>
+0068                     <span class="comment">% P.Dependent = true;</span>
+0069                 <span class="keyword">else</span>
+0070                     error([<span class="string">'All input arguments must be '</span> <span class="keyword">...</span>
+0071                         <span class="string">'groupAdaptationData objects'</span>]);
+0072                 <span class="keyword">end</span>
+0073             <span class="keyword">end</span>
+0074         <span class="keyword">end</span>
+0075     <span class="keyword">end</span>
+0076 
+0077     <span class="comment">%% Dependent Property Getters</span>
+0078     methods
+0079         <a name="_sub1" href="#_subfunctions" class="code">function outputArg = get.groupNames(this)</a>
+0080             <span class="comment">%get.groupNames  Returns group identifier names</span>
+0081             <span class="comment">%</span>
+0082             <span class="comment">%   groupNames = get.groupNames(this) returns a cell array of</span>
+0083             <span class="comment">%   group identifier strings</span>
+0084             <span class="comment">%</span>
+0085             <span class="comment">%   Inputs:</span>
+0086             <span class="comment">%       this - studyData object</span>
+0087             <span class="comment">%</span>
+0088             <span class="comment">%   Outputs:</span>
+0089             <span class="comment">%       outputArg - cell array of group ID strings</span>
+0090 
+0091             outputArg = cell(size(this.groupData));
+0092             <span class="keyword">for</span> i = 1:length(this.groupData)
+0093                 outputArg{i} = this.groupData{i}.groupID;
+0094             <span class="keyword">end</span>
+0095         <span class="keyword">end</span>
+0096     <span class="keyword">end</span>
+0097 
+0098     <span class="comment">%% Data Access Methods</span>
+0099     methods
+0100         out = <a href="getCommonConditions.html" class="code" title="function out = getCommonConditions(this)">getCommonConditions</a>(this)
+0101 
+0102         out = <a href="getCommonParameters.html" class="code" title="function out = getCommonParameters(this)">getCommonParameters</a>(this)
+0103 
+0104         data = <a href="getEpochData.html" class="code" title="function data = getEpochData(this, epochs, labels, summaryFlag)">getEpochData</a>(this, epochs, labels, summaryFlag)
+0105     <span class="keyword">end</span>
+0106 
+0107     <span class="comment">%% Visualization and Analysis Methods</span>
+0108     methods
+0109         out = <a href="barPlot.html" class="code" title="function out = barPlot(this, epochs)">barPlot</a>(this, epochs)
+0110 
+0111         out = <a href="anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>(this, epochs, contrasts)
+0112     <span class="keyword">end</span>
+0113 
+0114     <span class="comment">%% Static Methods</span>
+0115     methods (Static)
+0116         this = <a href="createStudyData.html" class="code" title="function this = createStudyData(groupAdaptationDataList)">createStudyData</a>(groupAdaptationDataList)
+0117     <span class="keyword">end</span>
+0118 
+0119 <span class="keyword">end</span>
+0120</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

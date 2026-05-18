@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of assessMissing</title>
+  <meta name="keywords" content="assessMissing">
+  <meta name="description" content="assessMissing  Assesses missing data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; assessMissing.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>assessMissing
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>assessMissing  Assesses missing data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">assessMissing  Assesses missing data
+
+   [fh, ph, this] = assessMissing(this) creates plot showing missing
+   markers
+
+   [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph) uses
+   specified labels and handles
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       labelPrefixes - marker prefixes to assess (optional, currently
+                       ignored - uses all)
+       fh - figure handle (optional, -1 to suppress display)
+       ph - plot handle (optional)
+
+   Outputs:
+       fh - figure handle
+       ph - plot handle
+       this - orientedLabTimeSeries with Quality field updated
+
+   See also: labTimeSeries/assessMissing</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)</a>
+0002 <span class="comment">%assessMissing  Assesses missing data</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [fh, ph, this] = assessMissing(this) creates plot showing missing</span>
+0005 <span class="comment">%   markers</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph) uses</span>
+0008 <span class="comment">%   specified labels and handles</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0012 <span class="comment">%       labelPrefixes - marker prefixes to assess (optional, currently</span>
+0013 <span class="comment">%                       ignored - uses all)</span>
+0014 <span class="comment">%       fh - figure handle (optional, -1 to suppress display)</span>
+0015 <span class="comment">%       ph - plot handle (optional)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       fh - figure handle</span>
+0019 <span class="comment">%       ph - plot handle</span>
+0020 <span class="comment">%       this - orientedLabTimeSeries with Quality field updated</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: labTimeSeries/assessMissing</span>
+0023 
+0024 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fh)
+0025     fh = figure();
+0026 <span class="keyword">elseif</span> fh == -1
+0027     noDisp = true;
+0028     ph = [];
+0029 <span class="keyword">else</span>
+0030     figure(fh);
+0031     <span class="keyword">if</span> nargin &lt; 4
+0032         ph = gca;
+0033     <span class="keyword">else</span>
+0034         axes(ph);
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="comment">% if nargin &lt; 2</span>
+0038 labelPrefixes = this.getLabelPrefix; <span class="comment">% Ignoring labelPrefixes input</span>
+0039 <span class="comment">% end</span>
+0040 data = this.getOrientedData(labelPrefixes);
+0041 missing = any(isnan(data), 3);
+0042 miss = missing(:, any(missing));
+0043 <span class="keyword">if</span> ~noDisp
+0044     pp = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(miss, <span class="string">'o'</span>);
+0045     aux = labelPrefixes(any(missing));
+0046     <span class="keyword">for</span> i = 1:length(pp)
+0047         set(pp(i), <span class="string">'DisplayName'</span>, [aux{i} <span class="string">' ('</span> <span class="keyword">...</span>
+0048             num2str(sum(miss(:, i))) <span class="string">' frames)'</span>]);
+0049     <span class="keyword">end</span>
+0050     legend(pp);
+0051     title(<span class="string">'Missing markers'</span>);
+0052     xlabel(<span class="string">'Time (frames)'</span>);
+0053     set(gca, <span class="string">'YTick'</span>, [0 1], <span class="string">'YTickLabel'</span>, {<span class="string">'Present'</span>, <span class="string">'Missing'</span>});
+0054 <span class="keyword">else</span>
+0055     fprintf([<span class="string">'Missing data in '</span> num2str(sum(any(missing, 2))) <span class="string">'/'</span> <span class="keyword">...</span>
+0056         num2str(size(missing, 1)) <span class="string">' frames, avg. '</span> <span class="keyword">...</span>
+0057         num2str(sum(missing(:)) / sum(any(missing, 2)), 3) <span class="keyword">...</span>
+0058         <span class="string">' per frame.\n'</span>]);
+0059 <span class="keyword">end</span>
+0060 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.Quality)
+0061     this.Quality = zeros(size(this.Data));
+0062 <span class="keyword">end</span>
+0063 Q = zeros(size(missing));
+0064 Q(missing) = -1;
+0065 <span class="keyword">for</span> j = 1:3 <span class="comment">% x, y, z</span>
+0066     this.Quality(:, j:3:end) = Q;
+0067 <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

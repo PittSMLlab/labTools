@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; getVarianceDecomposition.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getVarianceDecomposition
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/energyDecomposition.html" class="code" title="function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this)">energyDecomposition</a>	energyDecomposition  Decomposes variance</li></ul>
 <!-- crossreference -->
 
 
@@ -44,10 +44,10 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)</a>
 0002 
-0003 avgStride=mean(alignedData,3);
-0004 meanValue=mean(avgStride,1);
-0005 trial2trialVariability=bsxfun(@minus,alignedData,avgStride);
-0006 avgStride=bsxfun(@minus,avgStride,meanValue);
+0003 avgStride=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(alignedData,3);
+0004 meanValue=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(avgStride,1);
+0005 trial2trialVariability=bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,alignedData,avgStride);
+0006 avgStride=bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,avgStride,meanValue);
 0007 
 0008 
 0009 decomposition(1,:)=meanValue.^2 * size(alignedData,3) * size(alignedData,1);
@@ -66,6 +66,6 @@ This function is called by:
 0022 decomposition=sqrt(decomposition/(size(alignedData,3)*size(alignedData,1)));
 0023 <span class="keyword">end</span>
 0024</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

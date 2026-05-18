@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getSample</title>
+  <meta name="keywords" content="getSample">
+  <meta name="description" content="getSample  Samples timeseries at arbitrary timepoints">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; getSample.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getSample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getSample  Samples timeseries at arbitrary timepoints</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function data = getSample(this, timePoints, method) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getSample  Samples timeseries at arbitrary timepoints
+
+   data = getSample(this, timePoints) samples the timeseries at
+   specified time points using linear interpolation
+
+   data = getSample(this, timePoints, method) uses specified
+   interpolation method
+
+   Inputs:
+       this - labTimeSeries object
+       timePoints - vector or array of time points to sample
+       method - interpolation method: 'linear' or 'closest'
+                (optional, default: 'linear' for numeric, 'closest'
+                for logical)
+
+   Outputs:
+       data - sampled data with same dimensions as timePoints in
+              first dimensions, followed by number of labels
+
+   Note: NaN and Inf timepoints return NaN. Out-of-range points
+         return NaN.
+
+   See also: <a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>, <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>, <a href="synchTo.html" class="code" title="function newTS = synchTo(this, otherTS)">synchTo</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = getSample(this, timePoints, method)</a>
+0002 <span class="comment">%getSample  Samples timeseries at arbitrary timepoints</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   data = getSample(this, timePoints) samples the timeseries at</span>
+0005 <span class="comment">%   specified time points using linear interpolation</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   data = getSample(this, timePoints, method) uses specified</span>
+0008 <span class="comment">%   interpolation method</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       timePoints - vector or array of time points to sample</span>
+0013 <span class="comment">%       method - interpolation method: 'linear' or 'closest'</span>
+0014 <span class="comment">%                (optional, default: 'linear' for numeric, 'closest'</span>
+0015 <span class="comment">%                for logical)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       data - sampled data with same dimensions as timePoints in</span>
+0019 <span class="comment">%              first dimensions, followed by number of labels</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   Note: NaN and Inf timepoints return NaN. Out-of-range points</span>
+0022 <span class="comment">%         return NaN.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   See also: resample, resampleN, synchTo</span>
+0025 
+0026 <span class="comment">% This does not seem efficient: we are creating a timeseries object</span>
+0027 <span class="comment">% (from native Matlab) and using its resample method.</span>
+0028 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(method)
+0029     <span class="keyword">if</span> isa(this.Data(1, 1), <span class="string">'logical'</span>)
+0030         method = <span class="string">'closest'</span>;
+0031     <span class="keyword">else</span>
+0032         method = <span class="string">'linear'</span>;
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timePoints)
+0037     M = length(this.labels);
+0038     <span class="keyword">switch</span> method
+0039         <span class="keyword">case</span> <span class="string">'linear'</span>
+0040             data = nan(numel(timePoints), M);
+0041             <span class="comment">% Excluding NaNs, Infs, &amp; out-of-range times from interpolation</span>
+0042             notNaNIdxs = ~isnan(timePoints) &amp; ~isinf(timePoints) &amp; <span class="keyword">...</span>
+0043                 timePoints &lt; this.Time(end) &amp; timePoints &gt; this.Time(1);
+0044             [notNaNTimes, sorting] = <span class="keyword">...</span>
+0045                 sort(timePoints(notNaNIdxs), <span class="string">'ascend'</span>);
+0046             <span class="comment">% Using timeseres.resample which does linear interp by default</span>
+0047             newTS = <a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(this, notNaNTimes, this.Time(1), 1);
+0048             newTS.Data(sorting, :) = newTS.Data;
+0049             data(notNaNIdxs, :) = newTS.Data;
+0050         <span class="keyword">case</span> <span class="string">'closest'</span>
+0051             data = nan(numel(timePoints), M);
+0052             aux = this.getIndexClosestToTimePoint(timePoints(:));
+0053             inds = ~isnan(aux);
+0054             aux = aux(inds); <span class="comment">% Eliminating NaNs</span>
+0055             <span class="comment">% This would be the new data in the simplest case.</span>
+0056             newData = this.Data(aux, :);
+0057             initData = newData;
+0058             <span class="comment">% But, if two samples map to the same timePoint (sub-sampling)</span>
+0059             <span class="comment">% and that timePoint corresponds to an event, just keep the</span>
+0060             <span class="comment">% closest one, to avoid repeating events.</span>
+0061             <span class="comment">% Unique samples that contain an event</span>
+0062             trueEventSamples = <span class="keyword">...</span>
+0063                 unique(aux(any(newData, 2) &amp; [diff(aux); 1] == 0));
+0064             tt = this.Time(trueEventSamples);
+0065             <span class="keyword">for</span> i = 1:length(trueEventSamples)
+0066                 mappedInds = find(aux == trueEventSamples(i));
+0067                 relevantTimePoints = timePoints(mappedInds);
+0068                 Dt = abs(tt(i) - relevantTimePoints);
+0069                 <span class="comment">% The find() is needed to resolve ties</span>
+0070                 jj = find(Dt == min(Dt), 1, <span class="string">'first'</span>);
+0071                 mappedInds(jj) = [];
+0072                 newData(mappedInds, :) = 0;
+0073             <span class="keyword">end</span>
+0074             data(inds, :) = newData;
+0075             <span class="comment">% % Sanity check, this can be deprecated if no errors found by</span>
+0076             <span class="comment">% % Jan 1st 2018. [implemented Sept 11 2017]</span>
+0077             <span class="comment">% % Check that #events did not change:</span>
+0078             <span class="comment">% if any(sum(newData) ~= sum(this.split(min(timePoints(:)) - ...</span>
+0079             <span class="comment">%         this.sampPeriod / 2, max(timePoints(:)) + ...</span>
+0080             <span class="comment">%         this.sampPeriod).Data))</span>
+0081             <span class="comment">%     error(['Something went wrong when resampling: number ' ...</span>
+0082             <span class="comment">%         'of events changed']);</span>
+0083             <span class="comment">% end</span>
+0084             <span class="comment">% % Check that no event is present at a sample</span>
+0085             <span class="comment">% % where it was previously not:</span>
+0086             <span class="comment">% if any(any(newData &amp; ~initData))</span>
+0087             <span class="comment">%     error(['Something went wrong when resampling: event ' ...</span>
+0088             <span class="comment">%         'location changed']);</span>
+0089             <span class="comment">% end</span>
+0090             <span class="comment">% TODO: add interpft1 interpolation as possible method,</span>
+0091             <span class="comment">% provided that the timepoints are equally spaced.</span>
+0092     <span class="keyword">end</span>
+0093     <span class="comment">% Can't have sparse ND matrices (WHY??)</span>
+0094     data = reshape(full(data), [size(timePoints), M]);
+0095 <span class="keyword">else</span>
+0096     data = [];
+0097 <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

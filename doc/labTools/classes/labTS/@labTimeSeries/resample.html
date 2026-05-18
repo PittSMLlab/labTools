@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of resample</title>
+  <meta name="keywords" content="resample">
+  <meta name="description" content="resample  Resamples timeseries to different sampling period">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; resample.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>resample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>resample  Resamples timeseries to different sampling period</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = resample(this, newTs, newT0, hiddenFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">resample  Resamples timeseries to different sampling period
+
+   newThis = resample(this, newTs, newT0) resamples the timeseries to
+   new sampling period starting at newT0
+
+   newThis = resample(this, newTs, newT0, hiddenFlag) allows
+   non-uniform resampling when hiddenFlag = 1
+
+   Inputs:
+       this - labTimeSeries object
+       newTs - new sampling period (or time vector if hiddenFlag = 1)
+       newT0 - new initial time
+       hiddenFlag - if 1, allows non-uniform resampling (optional,
+                    default: 0)
+
+   Outputs:
+       newThis - resampled labTimeSeries
+
+   Note: Resampling using only the new sampling period is no longer
+         supported. Use resampleN to interpolate keeping exact same
+         time range.
+
+   See also: <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>, <a href="getSample.html" class="code" title="function data = getSample(this, timePoints, method)">getSample</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="resampleLogical.html" class="code" title="function newThis = resampleLogical(this, newTs, newT0, newN)">resampleLogical</a>	resampleLogical  Resamples logical timeseries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="getSample.html" class="code" title="function data = getSample(this, timePoints, method)">getSample</a>	getSample  Samples timeseries at arbitrary timepoints</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = resample(this, newTs, newT0, hiddenFlag)</a>
+0002 <span class="comment">%resample  Resamples timeseries to different sampling period</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = resample(this, newTs, newT0) resamples the timeseries to</span>
+0005 <span class="comment">%   new sampling period starting at newT0</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   newThis = resample(this, newTs, newT0, hiddenFlag) allows</span>
+0008 <span class="comment">%   non-uniform resampling when hiddenFlag = 1</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       newTs - new sampling period (or time vector if hiddenFlag = 1)</span>
+0013 <span class="comment">%       newT0 - new initial time</span>
+0014 <span class="comment">%       hiddenFlag - if 1, allows non-uniform resampling (optional,</span>
+0015 <span class="comment">%                    default: 0)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       newThis - resampled labTimeSeries</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: Resampling using only the new sampling period is no longer</span>
+0021 <span class="comment">%         supported. Use resampleN to interpolate keeping exact same</span>
+0022 <span class="comment">%         time range.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   See also: resampleN, getSample</span>
+0025 
+0026 this.Quality = []; <span class="comment">% So Quality is not resampled if it exists</span>
+0027 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newT0)
+0028     error(<span class="string">'labTS:resample'</span>, <span class="keyword">...</span>
+0029         [<span class="string">'Resampling using only the new sampling period as argument '</span> <span class="keyword">...</span>
+0030         <span class="string">'is no longer supported. Use resampleN if you want to '</span> <span class="keyword">...</span>
+0031         <span class="string">'interpolate keeping the exact same time range.'</span>]);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(hiddenFlag) || hiddenFlag == 0
+0034     <span class="comment">% hiddenFlag allows to do non-uniform sampling</span>
+0035     <span class="keyword">if</span> newTs &gt; this.sampPeriod
+0036         warning(<span class="string">'labTS:resample'</span>, <span class="keyword">...</span>
+0037             <span class="string">'Under-sampling data, be careful of aliasing!'</span>);
+0038     <span class="keyword">end</span>
+0039     <span class="comment">% Pablo I. (4/4/2015) No longer think this is a good idea. If we are</span>
+0040     <span class="comment">% explicitly trying to do uniform resampling on the same range, should</span>
+0041     <span class="comment">% use resampleN. Otherwise, if we try to synch two signals, and there</span>
+0042     <span class="comment">% is an offset in initial time, this returns something else.</span>
+0043     newN = ceil(this.timeRange / newTs) + 1;
+0044     <span class="comment">% newThis = resampleN(this, newN);</span>
+0045     newTime = newT0:newTs:this.Time(end);
+0046     <span class="keyword">if</span> ~isa(this.Data(1, 1), <span class="string">'logical'</span>)
+0047         newThis = this.resample@timeseries(newTime);
+0048         newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
+0049             newThis.Data, newThis.Time(1), newTs, this.labels);
+0050     <span class="keyword">else</span> <span class="comment">% logical timeseries</span>
+0051         newThis = <a href="resampleLogical.html" class="code" title="function newThis = resampleLogical(this, newTs, newT0, newN)">resampleLogical</a>(this, newTs, newT0, newN);
+0052         <span class="comment">% Can be this deprecated in favor of just using getSample()</span>
+0053         <span class="comment">% for a logical TS?</span>
+0054     <span class="keyword">end</span>
+0055     <span class="comment">% this allows for non-uniform resampling, and returns timeseries object</span>
+0056 <span class="keyword">elseif</span> hiddenFlag == 1
+0057     <span class="comment">% Warning: Treating newTs argument as vector containing timepoints, not</span>
+0058     <span class="comment">% sampling period. Super-class resampling returns super-class object.</span>
+0059     newThis = this.resample@timeseries(newTs);
+0060 <span class="keyword">else</span>
+0061     error(<span class="string">'labTS:resample'</span>, <span class="string">'HiddenFlag argument has to be 0 or 1'</span>);
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of addStrides</title>
+  <meta name="keywords" content="addStrides">
+  <meta name="description" content="addStrides  Adds strides from another parameterSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; addStrides.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>addStrides
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>addStrides  Adds strides from another parameterSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = addStrides(this, other) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">addStrides  Adds strides from another parameterSeries
+
+   newThis = addStrides(this, other) concatenates strides from two
+   parameterSeries, handling mismatched parameter lists
+
+   Inputs:
+       this - parameterSeries object
+       other - parameterSeries object to add
+
+   Outputs:
+       newThis - combined parameterSeries
+
+   Note: If parameter lists don't match, merges lists and fills NaN
+         for missing parameters. You should fix this issue.
+
+   See also: <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>, <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li><li><a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = addStrides(this, other)</a>
+0002 <span class="comment">%addStrides  Adds strides from another parameterSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = addStrides(this, other) concatenates strides from two</span>
+0005 <span class="comment">%   parameterSeries, handling mismatched parameter lists</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - parameterSeries object</span>
+0009 <span class="comment">%       other - parameterSeries object to add</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - combined parameterSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Note: If parameter lists don't match, merges lists and fills NaN</span>
+0015 <span class="comment">%         for missing parameters. You should fix this issue.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: cat, appendData</span>
+0018 
+0019 <span class="comment">% TODO: Check that the labels are actually the same</span>
+0020 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(other.Data)
+0021     aux = other.getDataAsVector(this.labels);
+0022     <span class="keyword">if</span> size(this.Data, 2) == size(other.Data, 2)
+0023         newThis = <a href="parameterSeries.html" class="code" title="">parameterSeries</a>([this.Data; aux], this.labels(:), <span class="keyword">...</span>
+0024             [this.hiddenTime; other.hiddenTime], this.description(:));
+0025     <span class="keyword">else</span>
+0026         warning(<span class="string">'parameterSeries:addStrides'</span>, <span class="keyword">...</span>
+0027             [<span class="string">'Concatenating parameterSeries with different number '</span> <span class="keyword">...</span>
+0028             <span class="string">'of parameters. Merging parameter lists &amp; filling NaNs '</span> <span class="keyword">...</span>
+0029             <span class="string">'for missing parameters. You (yes, YOU, the current '</span> <span class="keyword">...</span>
+0030             <span class="string">'user) SHOULD FIX THIS. Ask Pablo for guidance.'</span>]);
+0031         <span class="comment">% Labels present in other but NOT in this</span>
+0032         bool2 = <a href="../../../../labTools/fun/ext/pitools/usefulCode/compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>(this.labels, other.labels);
+0033         <span class="comment">% Labels present in this but NOT in other</span>
+0034         bool1 = <a href="../../../../labTools/fun/ext/pitools/usefulCode/compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>(other.labels, this.labels);
+0035         <span class="keyword">if</span> any(~bool2)
+0036             <span class="comment">% Expanding this</span>
+0037             newThis = this.appendData(<span class="keyword">...</span>
+0038                 nan(size(this.Data, 1), sum(~bool2)), <span class="keyword">...</span>
+0039                 other.labels(~bool2), other.description(~bool2));
+0040         <span class="keyword">else</span>
+0041             newThis = this; <span class="comment">% digna added this, review</span>
+0042         <span class="keyword">end</span>
+0043         <span class="keyword">if</span> any(~bool1)
+0044             <span class="comment">% Expanding other</span>
+0045             newOther = other.appendData(<span class="keyword">...</span>
+0046                 nan(size(other.Data, 1), sum(~bool1)), <span class="keyword">...</span>
+0047                 this.labels(~bool1), this.description(~bool1));
+0048         <span class="keyword">else</span>
+0049             newOther = other; <span class="comment">% Digna added this, review</span>
+0050         <span class="keyword">end</span>
+0051         newThis = <a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>(newThis, newOther);
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">else</span>
+0054     newThis = this; <span class="comment">% Empty second arg., adding nothing.</span>
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

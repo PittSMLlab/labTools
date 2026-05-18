@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fitCal</title>
+  <meta name="keywords" content="fitCal">
+  <meta name="description" content="FITCAL Fit M- and H-wave recruitment curves.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; fitCal.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>fitCal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>FITCAL Fit M- and H-wave recruitment curves.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function fit = fitCal(intensitiesStim, amplitudesWaves) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">FITCAL Fit M- and H-wave recruitment curves.
+
+   Accept stimulation intensities and H- and M-wave amplitudes for the
+ right and left legs and fit a modified hyperbolic function to the M-wave
+ data (equation 1) and an asymmetric Gaussian to the H-wave data
+ (modified from equation 2), based on Brinkworth et al.
+ (J. Neurosci. Methods, 2007), Section 2.4 Curve Fitting.
+
+ Inputs:
+   intensitiesStim - 2 x 1 cell of number of stimuli x 1 arrays for
+                     right (cell 1) and left (cell 2) leg stimulation
+                     amplitudes in mA
+   amplitudesWaves - 2 x 2 cell of number of stimuli x 1 arrays for
+                     right (row 1) and left (row 2) leg H-reflex
+                     amplitudes: M-wave (col 1), H-wave (col 2)
+
+ Outputs:
+   fit - struct of M-wave and H-wave fit function, optimized parameters,
+         and maximum fit M value for normalization
+
+ Toolbox Dependencies:
+   Statistics and Machine Learning Toolbox (nlinfit)
+   Signal Processing Toolbox (findpeaks)
+
+ See also HREFLEX.<a href="plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">PLOTCAL</a>, GENERATEHREFLEXRECRUITMENTCURVES.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fit = fitCal(intensitiesStim, amplitudesWaves)</a>
+0002 <span class="comment">%FITCAL Fit M- and H-wave recruitment curves.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Accept stimulation intensities and H- and M-wave amplitudes for the</span>
+0005 <span class="comment">% right and left legs and fit a modified hyperbolic function to the M-wave</span>
+0006 <span class="comment">% data (equation 1) and an asymmetric Gaussian to the H-wave data</span>
+0007 <span class="comment">% (modified from equation 2), based on Brinkworth et al.</span>
+0008 <span class="comment">% (J. Neurosci. Methods, 2007), Section 2.4 Curve Fitting.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   intensitiesStim - 2 x 1 cell of number of stimuli x 1 arrays for</span>
+0012 <span class="comment">%                     right (cell 1) and left (cell 2) leg stimulation</span>
+0013 <span class="comment">%                     amplitudes in mA</span>
+0014 <span class="comment">%   amplitudesWaves - 2 x 2 cell of number of stimuli x 1 arrays for</span>
+0015 <span class="comment">%                     right (row 1) and left (row 2) leg H-reflex</span>
+0016 <span class="comment">%                     amplitudes: M-wave (col 1), H-wave (col 2)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   fit - struct of M-wave and H-wave fit function, optimized parameters,</span>
+0020 <span class="comment">%         and maximum fit M value for normalization</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies:</span>
+0023 <span class="comment">%   Statistics and Machine Learning Toolbox (nlinfit)</span>
+0024 <span class="comment">%   Signal Processing Toolbox (findpeaks)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also HREFLEX.PLOTCAL, GENERATEHREFLEXRECRUITMENTCURVES.</span>
+0027 
+0028 <span class="comment">% TODO:</span>
+0029 <span class="comment">%   1. compare fits using only the averages at each intensity with all data</span>
+0030 <span class="comment">%   2. compare fits using weighted least squares (by variance at each</span>
+0031 <span class="comment">%   amplitude) with a mixed effects model approach</span>
+0032 <span class="comment">%   3. compare fits of modified hyperbolic, standard hyperbolic, and</span>
+0033 <span class="comment">%   logistic sigmoid for M-wave recruitment data</span>
+0034 <span class="comment">%   4. compare fits of standard Gaussian, asymmetric Gaussian (power on</span>
+0035 <span class="comment">%   intensities), and asymmetric Gaussian (shift of denominator) for H-wave</span>
+0036 
+0037 <span class="comment">%% Define Curve-Fitting Functions</span>
+0038 <span class="comment">% define the modified hyperbolic function for M-wave fitting: p(1) = Mmax,</span>
+0039 <span class="comment">% p(2) = I_50 (half-saturation intensity), p(3) = c (slope parameter)</span>
+0040 modHyperbolic = @(p,I) (p(1) * (p(3).^I)) ./ (p(2) + (p(3).^I));
+0041 
+0042 <span class="comment">% define the asymmetric Gaussian function for H-wave fitting: p(1) = Hmax,</span>
+0043 <span class="comment">% p(2) = Ipeak (mu/mean), p(3) = sigma, p(4) = c (asymmetry slope parameter)</span>
+0044 asymGaussian = @(p,I) <span class="keyword">...</span>
+0045     p(1) * exp(-((I - p(2)).^2) ./ (2 * (p(3) + (I - p(2)).^2 * p(4))));
+0046 <span class="comment">% NOTE: Brinkworth et al. (J. Neurosci. Methods, 2007) uses the below</span>
+0047 <span class="comment">% asymmetric Gaussian, which does not appear to fit the data as well</span>
+0048 <span class="comment">% asymGaussian = @(p,I) p(1) * exp(-((I.^p(4) - p(2)).^2) / (2 * p(3)^2));</span>
+0049 <span class="comment">% p(1) = Hmax, p(2) = Ipeak, p(3) = width, p(4) = asymmetry (c)</span>
+0050 
+0051 <span class="comment">%% Initialize Output Structure</span>
+0052 fit                 = struct;
+0053 fit.M.modHyperbolic = modHyperbolic;
+0054 fit.H.asymGaussian  = asymGaussian;
+0055 
+0056 <span class="comment">%% Fit Recruitment Curves for Each Leg</span>
+0057 <span class="keyword">for</span> leg = 1:2                       <span class="comment">% for each leg, ...</span>
+0058     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(intensitiesStim{leg}) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(amplitudesWaves{leg,1})
+0059         warning(<span class="string">'No data available for leg %d. Skipping.'</span>, leg);
+0060         <span class="keyword">continue</span>;                   <span class="comment">% advance to next leg</span>
+0061     <span class="keyword">end</span>
+0062 
+0063     <span class="keyword">if</span> leg == 1                     <span class="comment">% if right leg, ...</span>
+0064         idLeg = <span class="string">'R'</span>;
+0065     <span class="keyword">else</span>                            <span class="comment">% otherwise, left leg</span>
+0066         idLeg = <span class="string">'L'</span>;
+0067     <span class="keyword">end</span>
+0068 
+0069     I = intensitiesStim{leg};       <span class="comment">% stimulation intensities (mA)</span>
+0070     M = amplitudesWaves{leg,1};     <span class="comment">% M-wave amplitudes</span>
+0071     H = amplitudesWaves{leg,2};     <span class="comment">% H-wave amplitudes</span>
+0072 
+0073     <span class="comment">% fit M-wave data using non-linear least squares</span>
+0074     <span class="keyword">try</span>
+0075         p0M = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% initialize: Mmax, I_50, c</span>
+0076         paramsM = nlinfit(I, M, modHyperbolic, p0M);
+0077     <span class="keyword">catch</span>
+0078         warning(<span class="string">'M-wave fitting failed for leg %d. Using defaults.'</span>, leg);
+0079         paramsM = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% default fallback params</span>
+0080     <span class="keyword">end</span>
+0081 
+0082     MmaxFit = paramsM(1);           <span class="comment">% extract fit Mmax for normalization</span>
+0083     fit.M.(idLeg).params = paramsM;
+0084     fit.M.(idLeg).Mmax   = MmaxFit;
+0085     [fit.M.(idLeg).R2, fit.M.(idLeg).AIC, fit.M.(idLeg).BIC] = <span class="keyword">...</span>
+0086         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, M, modHyperbolic, paramsM);
+0087 
+0088     <span class="comment">% fit H-wave data using non-linear least squares</span>
+0089     <span class="keyword">try</span>
+0090         IU = unique(I);             <span class="comment">% find unique stimulation amplitudes</span>
+0091         avgsH = arrayfun(@(x) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(H(I == x), <span class="string">'omitnan'</span>), IU);
+0092         [valHmax, locHmax, width] = findpeaks(avgsH, IU, <span class="string">'NPeaks'</span>, 1);
+0093         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(valHmax)         <span class="comment">% if no peak found, ...</span>
+0094             [valHmax, indHmax] = max(H);        <span class="comment">% compute maximum</span>
+0095             locHmax = I(indHmax);               <span class="comment">% intensity at maximum</span>
+0096             width = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I);
+0097         <span class="keyword">end</span>
+0098         p0H = [valHmax locHmax width 1]; <span class="comment">% initialize: Hmax, Ipeak, sigma, c</span>
+0099         paramsH = nlinfit(I, H, asymGaussian, p0H);
+0100     <span class="keyword">catch</span>
+0101         warning(<span class="string">'H-wave fitting failed for leg %d. Using defaults.'</span>, leg);
+0102         paramsH = [max(H) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I) 1];  <span class="comment">% default fallback params</span>
+0103     <span class="keyword">end</span>
+0104 
+0105     fit.H.(idLeg).params = paramsH;
+0106     [fit.H.(idLeg).R2, fit.H.(idLeg).AIC, fit.H.(idLeg).BIC] = <span class="keyword">...</span>
+0107         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, H, asymGaussian, paramsH);
+0108 
+0109 <span class="keyword">end</span>
+0110 
+0111 <span class="keyword">end</span>
+0112 
+0113 <span class="comment">%% Helper Functions</span>
+0114 
+0115 <a name="_sub1" href="#_subfunctions" class="code">function [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)</a>
+0116 <span class="comment">%COMPUTEFITQUALITY Compute goodness-of-fit metrics for a recruitment curve.</span>
+0117 <span class="comment">%</span>
+0118 <span class="comment">%   Compute R-squared, Akaike information criterion (AIC), and Bayesian</span>
+0119 <span class="comment">% information criterion (BIC) for a fitted recruitment curve model.</span>
+0120 <span class="comment">%</span>
+0121 <span class="comment">% Inputs:</span>
+0122 <span class="comment">%   intensities - number of data points x 1 array of stimulation</span>
+0123 <span class="comment">%                 intensities (mA)</span>
+0124 <span class="comment">%   amps        - number of data points x 1 array of wave amplitudes (mV)</span>
+0125 <span class="comment">%   func        - function handle for the model: func(params, intensities)</span>
+0126 <span class="comment">%   params      - 1 x numParams vector of fitted model parameters</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">% Outputs:</span>
+0129 <span class="comment">%   R2  - coefficient of determination</span>
+0130 <span class="comment">%   AIC - Akaike information criterion</span>
+0131 <span class="comment">%   BIC - Bayesian information criterion</span>
+0132 <span class="comment">%</span>
+0133 <span class="comment">% Toolbox Dependencies:</span>
+0134 <span class="comment">%   None</span>
+0135 
+0136 numParams = numel(params);                      <span class="comment">% number of parameters</span>
+0137 numPnts   = numel(amps);                        <span class="comment">% number of data points</span>
+0138 pred      = func(params, intensities);          <span class="comment">% model-predicted values</span>
+0139 residuals = amps - pred;
+0140 SSR = sum(residuals.^2);                        <span class="comment">% sum of squared residuals</span>
+0141 R2  = 1 - (SSR / sum((amps - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(amps)).^2)); <span class="comment">% R^2 calculation</span>
+0142 <span class="comment">% Akaike information criterion</span>
+0143 AIC = numPnts * log(SSR / numPnts) + 2 * numParams;
+0144 <span class="comment">% Bayesian information criterion</span>
+0145 BIC = numPnts * log(SSR / numPnts) + numParams * log(numPnts);
+0146 
+0147 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

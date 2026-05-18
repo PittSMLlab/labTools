@@ -4,7 +4,7 @@
 <head>
   <title>Description of uiCreateStudy</title>
   <meta name="keywords" content="uiCreateStudy">
-  <meta name="description" content="UICREATESTUDY comments go here">
+  <meta name="description" content="UICREATESTUDY GUI for assembling groups of subjects into a study.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,27 +15,34 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">createStudy</a> &gt; uiCreateStudy.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/gui/createStudy&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\gui\createStudy&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>uiCreateStudy
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>UICREATESTUDY comments go here</strong></div>
+<div class="box"><strong>UICREATESTUDY GUI for assembling groups of subjects into a study.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function varargout = uiCreateStudy(varargin) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> UICREATESTUDY comments go here
+<div class="fragment"><pre class="comment">UICREATESTUDY GUI for assembling groups of subjects into a study.
 
- See also:</pre></div>
+   Launches a graphical interface that scans the current working directory
+ for subject parameter (.mat) files, lets the user assign them to named
+ groups, and saves the resulting studyData object to disk.
+
+ Toolbox Dependencies:
+   None
+
+ See also: groupAdaptationData</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -47,230 +54,251 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = uiCreateStudy(varargin)</a>
-0002 <span class="comment">% UICREATESTUDY comments go here</span>
+0002 <span class="comment">%UICREATESTUDY GUI for assembling groups of subjects into a study.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">% See also:</span>
-0005 
-0006 <span class="comment">% Last Modified by GUIDE v2.5 22-Jun-2015 10:26:29</span>
-0007 
-0008 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
-0009 gui_Singleton = 1;
-0010 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
-0011                    <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
-0012                    <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)">uiCreateStudy_OpeningFcn</a>, <span class="keyword">...</span>
-0013                    <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles)">uiCreateStudy_OutputFcn</a>, <span class="keyword">...</span>
-0014                    <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
-0015                    <span class="string">'gui_Callback'</span>,   []);
-0016 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
-0017     gui_State.gui_Callback = str2func(varargin{1});
-0018 <span class="keyword">end</span>
-0019 
-0020 <span class="keyword">if</span> nargout
-0021     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-0022 <span class="keyword">else</span>
-0023     gui_mainfcn(gui_State, varargin{:});
-0024 <span class="keyword">end</span>
-0025 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0004 <span class="comment">%   Launches a graphical interface that scans the current working directory</span>
+0005 <span class="comment">% for subject parameter (.mat) files, lets the user assign them to named</span>
+0006 <span class="comment">% groups, and saves the resulting studyData object to disk.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Toolbox Dependencies:</span>
+0009 <span class="comment">%   None</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% See also: groupAdaptationData</span>
+0012 
+0013 <span class="comment">% Last Modified by GUIDE v2.5 22-Jun-2015 10:26:29</span>
+0014 
+0015 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0016 gui_Singleton = 1;
+0017 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0018     <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0019     <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)">uiCreateStudy_OpeningFcn</a>, <span class="keyword">...</span>
+0020     <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles)">uiCreateStudy_OutputFcn</a>, <span class="keyword">...</span>
+0021     <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0022     <span class="string">'gui_Callback'</span>,   []);
+0023 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0024     gui_State.gui_Callback = str2func(varargin{1});
+0025 <span class="keyword">end</span>
 0026 
-0027 
-0028 <span class="comment">% --- Executes just before uiCreateStudy is made visible.</span>
-0029 <a name="_sub1" href="#_subfunctions" class="code">function uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)</a>
-0030 <span class="comment">% This function has no output args, see OutputFcn.</span>
-0031 <span class="comment">% hObject    handle to figure</span>
-0032 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0033 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0034 <span class="comment">% varargin   command line arguments to uiCreateStudy (see VARARGIN)</span>
-0035 
-0036 <span class="comment">% Choose default command line output for uiCreateStudy</span>
-0037 handles.output = hObject;
-0038 handles.studyData=struct;
-0039 
-0040 <span class="comment">%find all files in pwd</span>
-0041 files=what(<span class="string">'./'</span>); 
-0042 fileList=files.mat;
-0043 paramFiles={};
+0027 <span class="keyword">if</span> nargout
+0028     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0029 <span class="keyword">else</span>
+0030     gui_mainfcn(gui_State, varargin{:});
+0031 <span class="keyword">end</span>
+0032 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0033 
+0034 <span class="comment">% ============================================================</span>
+0035 <span class="comment">% --- Executes just before uiCreateStudy is made visible.</span>
+0036 <a name="_sub1" href="#_subfunctions" class="code">function uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0037 <span class="comment">% uiCreateStudy_OpeningFcn  Initializes GUI state before it is shown.</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%   Inputs:</span>
+0040 <span class="comment">%     hObject   - handle to figure</span>
+0041 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0042 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
+0043 <span class="comment">%     varargin  - command line arguments to uiCreateStudy (see VARARGIN)</span>
 0044 
-0045 <span class="keyword">for</span> i=1:length(fileList)
-0046     <span class="comment">%find files in pwd that are (Subject)param.mat files</span>
-0047     aux1=strfind(lower(fileList{i}),<span class="string">'params'</span>);
-0048     <span class="keyword">if</span> ~isempty(aux1)
-0049         paramFiles{end+1}=fileList{i};
-0050     <span class="keyword">end</span>    
-0051 <span class="keyword">end</span>
+0045 handles.output    = hObject;
+0046 handles.studyData = struct;
+0047 
+0048 <span class="comment">% Scan the current directory for subject params files</span>
+0049 files    = what(<span class="string">'./'</span>);
+0050 fileList = files.mat;
+0051 paramFiles = {};
 0052 
-0053 set(handles.allSubList,<span class="string">'string'</span>,paramFiles')
-0054 set(handles.allSubList,<span class="string">'max'</span>,length(paramFiles))
-0055 
-0056 <span class="comment">% Update handles structure</span>
-0057 guidata(hObject, handles);
+0053 <span class="keyword">for</span> ii = 1:length(fileList)
+0054     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(lower(fileList{ii}), <span class="string">'params'</span>))
+0055         paramFiles{end + 1} = fileList{ii};
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
 0058 
-0059 <span class="comment">% UIWAIT makes uiCreateStudy wait for user response (see UIRESUME)</span>
-0060 <span class="comment">% uiwait(handles.figure1);</span>
+0059 set(handles.allSubList, <span class="string">'String'</span>, paramFiles');
+0060 set(handles.allSubList, <span class="string">'Max'</span>,    length(paramFiles));
 0061 
-0062 
-0063 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
-0064 <a name="_sub2" href="#_subfunctions" class="code">function varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles) </a>
-0065 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
-0066 <span class="comment">% hObject    handle to figure</span>
-0067 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0068 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0069 
-0070 <span class="comment">% Get default command line output from handles structure</span>
-0071 varargout{1} = handles.output;
-0072 
-0073 
-0074 <span class="comment">% --- Executes on selection change in allSubList.</span>
-0075 <a name="_sub3" href="#_subfunctions" class="code">function allSubList_Callback(hObject, eventdata, handles)</a>
-0076 <span class="comment">% hObject    handle to allSubList (see GCBO)</span>
-0077 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0078 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0062 guidata(hObject, handles);
+0063 
+0064 <span class="comment">% UIWAIT makes uiCreateStudy wait for user response (see UIRESUME)</span>
+0065 <span class="comment">% uiwait(handles.figure1);</span>
+0066 
+0067 <span class="comment">% ============================================================</span>
+0068 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0069 <a name="_sub2" href="#_subfunctions" class="code">function varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles)</a>
+0070 <span class="comment">% uiCreateStudy_OutputFcn  Returns GUI output to the calling workspace.</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">%   Inputs:</span>
+0073 <span class="comment">%     hObject   - handle to figure</span>
+0074 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0075 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">%   Outputs:</span>
+0078 <span class="comment">%     varargout{1} - handle to the figure</span>
 0079 
-0080 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns allSubList contents as cell array</span>
-0081 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from allSubList</span>
-0082 
-0083 
-0084 <span class="comment">% --- Executes on selection change in selectSubList.</span>
-0085 <a name="_sub4" href="#_subfunctions" class="code">function selectSubList_Callback(hObject, eventdata, handles)</a>
-0086 <span class="comment">% hObject    handle to selectSubList (see GCBO)</span>
-0087 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0088 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0089 
-0090 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns selectSubList contents as cell array</span>
-0091 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from selectSubList</span>
-0092 
-0093 <span class="comment">% --- Executes on selection change in groupList.</span>
-0094 <a name="_sub5" href="#_subfunctions" class="code">function groupList_Callback(hObject, eventdata, handles)</a>
-0095 <span class="comment">% hObject    handle to groupList (see GCBO)</span>
-0096 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0097 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0098 
-0099 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns groupList contents as cell array</span>
-0100 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from groupList</span>
-0101 
+0080 varargout{1} = handles.output;
+0081 
+0082 <span class="comment">% ============================================================</span>
+0083 <span class="comment">%% Listbox Callbacks</span>
+0084 
+0085 <span class="comment">% --- Executes on selection change in allSubList.</span>
+0086 <a name="_sub3" href="#_subfunctions" class="code">function allSubList_Callback(hObject, eventdata, handles)</a>
+0087 <span class="comment">% allSubList_Callback  Executes on selection change in allSubList.</span>
+0088 <span class="comment">%</span>
+0089 <span class="comment">%   Inputs:</span>
+0090 <span class="comment">%     hObject   - handle to allSubList (see GCBO)</span>
+0091 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0092 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
+0093 
+0094 <span class="comment">% --- Executes on selection change in selectSubList.</span>
+0095 <a name="_sub4" href="#_subfunctions" class="code">function selectSubList_Callback(hObject, eventdata, handles)</a>
+0096 <span class="comment">% selectSubList_Callback  Executes on selection change in selectSubList.</span>
+0097 <span class="comment">%</span>
+0098 <span class="comment">%   Inputs:</span>
+0099 <span class="comment">%     hObject   - handle to selectSubList (see GCBO)</span>
+0100 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0101 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0102 
-0103 <a name="_sub6" href="#_subfunctions" class="code">function groupNameEdit_Callback(hObject, eventdata, handles)</a>
-0104 <span class="comment">% hObject    handle to groupNameEdit (see GCBO)</span>
-0105 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0106 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
-0107 
-0108 <span class="comment">% Hints: get(hObject,'String') returns contents of groupNameEdit as text</span>
-0109 <span class="comment">%        str2double(get(hObject,'String')) returns contents of groupNameEdit as a double</span>
-0110 
+0103 <span class="comment">% --- Executes on selection change in groupList.</span>
+0104 <a name="_sub5" href="#_subfunctions" class="code">function groupList_Callback(hObject, eventdata, handles)</a>
+0105 <span class="comment">% groupList_Callback  Executes on selection change in groupList.</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">%   Inputs:</span>
+0108 <span class="comment">%     hObject   - handle to groupList (see GCBO)</span>
+0109 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0110 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0111 
-0112 
-0113 <span class="comment">% -------------------- Add/Remove Subject Buttons ----------------------- %</span>
-0114 
-0115 <a name="_sub7" href="#_subfunctions" class="code">function addButton_Callback(hObject, eventdata, handles)</a>
-0116 <span class="comment">% hObject    handle to addButton (see GCBO)</span>
-0117 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
-0118 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0112 <a name="_sub6" href="#_subfunctions" class="code">function groupNameEdit_Callback(hObject, eventdata, handles)</a>
+0113 <span class="comment">% groupNameEdit_Callback  Executes on content change in groupNameEdit.</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">%   Inputs:</span>
+0116 <span class="comment">%     hObject   - handle to groupNameEdit (see GCBO)</span>
+0117 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0118 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0119 
-0120 <span class="comment">%get current state of selected sub list</span>
-0121 selectSubContents = get(handles.selectSubList,<span class="string">'string'</span>);
+0120 <span class="comment">% ============================================================</span>
+0121 <span class="comment">%% Add / Remove Subject Buttons</span>
 0122 
-0123 <span class="comment">%get new subjects to add to list</span>
-0124 contents=get(handles.allSubList,<span class="string">'String'</span>);
-0125 inds=get(handles.allSubList,<span class="string">'value'</span>);
-0126 newSelectSubs=contents(inds);
-0127 contents(inds)=[]; <span class="comment">%remove subjects from all sub list</span>
-0128 
-0129 newSelectSubList=sort([selectSubContents; newSelectSubs]);
-0130 
-0131 set(handles.selectSubList,<span class="string">'String'</span>,newSelectSubList)
-0132 set(handles.allSubList,<span class="string">'String'</span>,contents)
-0133 set(handles.allSubList,<span class="string">'Value'</span>,[])
-0134 
-0135 guidata(hObject, handles);
-0136 
-0137 <span class="comment">% --- Executes on button press in removeButton.</span>
-0138 <a name="_sub8" href="#_subfunctions" class="code">function removeButton_Callback(hObject, eventdata, handles)</a>
-0139 
-0140 <span class="comment">%get current state of all sub list</span>
-0141 allSubContents = get(handles.allSubList,<span class="string">'string'</span>);
-0142 
-0143 <span class="comment">%get subjects to remove from selected list</span>
-0144 contents=get(handles.selectSubList,<span class="string">'String'</span>);
-0145 inds=get(handles.selectSubList,<span class="string">'Value'</span>);
-0146 removeSubs=contents(inds);
-0147 contents(inds)=[]; <span class="comment">%remove subjects from select sub list</span>
-0148 
-0149 newAllSubList=sort([allSubContents; removeSubs]);
-0150 
-0151 set(handles.allSubList,<span class="string">'String'</span>,newAllSubList)
-0152 set(handles.selectSubList,<span class="string">'String'</span>,contents)
-0153 set(handles.selectSubList,<span class="string">'Value'</span>,[])
-0154 
-0155 guidata(hObject, handles);
+0123 <a name="_sub7" href="#_subfunctions" class="code">function addButton_Callback(hObject, eventdata, handles)</a>
+0124 <span class="comment">% addButton_Callback  Moves selected subjects from the all-subjects list</span>
+0125 <span class="comment">%   to the selected-subjects list.</span>
+0126 <span class="comment">%</span>
+0127 <span class="comment">%   Inputs:</span>
+0128 <span class="comment">%     hObject   - handle to addButton (see GCBO)</span>
+0129 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0130 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
+0131 
+0132 selectSubContents = get(handles.selectSubList, <span class="string">'String'</span>);
+0133 
+0134 contents = get(handles.allSubList, <span class="string">'String'</span>);
+0135 inds     = get(handles.allSubList, <span class="string">'Value'</span>);
+0136 newSelectSubs = contents(inds);
+0137 contents(inds) = [];
+0138 
+0139 newSelectSubList = sort([selectSubContents; newSelectSubs]);
+0140 
+0141 set(handles.selectSubList, <span class="string">'String'</span>, newSelectSubList);
+0142 set(handles.allSubList,    <span class="string">'String'</span>, contents);
+0143 set(handles.allSubList,    <span class="string">'Value'</span>,  []);
+0144 
+0145 guidata(hObject, handles);
+0146 
+0147 <span class="comment">% --- Executes on button press in removeButton.</span>
+0148 <a name="_sub8" href="#_subfunctions" class="code">function removeButton_Callback(hObject, eventdata, handles)</a>
+0149 <span class="comment">% removeButton_Callback  Moves selected subjects from the selected list</span>
+0150 <span class="comment">%   back to the all-subjects list.</span>
+0151 <span class="comment">%</span>
+0152 <span class="comment">%   Inputs:</span>
+0153 <span class="comment">%     hObject   - handle to removeButton (see GCBO)</span>
+0154 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0155 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0156 
-0157 
+0157 allSubContents = get(handles.allSubList, <span class="string">'String'</span>);
 0158 
-0159 <span class="comment">% --- Executes on button press in addGroupButton.</span>
-0160 <a name="_sub9" href="#_subfunctions" class="code">function addGroupButton_Callback(hObject, eventdata, handles)</a>
-0161 
-0162 fileList=get(handles.selectSubList,<span class="string">'String'</span>);
-0163 nSubs=length(fileList);
-0164 sub=struct;
-0165 <span class="comment">%get group</span>
-0166 group=get(handles.groupNameEdit,<span class="string">'string'</span>);
-0167 abbrevGroup=group(ismember(group,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span> <span class="string">'1'</span>:<span class="string">'9'</span>])); <span class="comment">%remove non-alphanumeric characters</span>
-0168 <span class="keyword">if</span> isempty(abbrevGroup)
-0169     abbrevGroup=<span class="string">'NoDescription'</span>;
-0170 <span class="keyword">end</span>
+0159 contents   = get(handles.selectSubList, <span class="string">'String'</span>);
+0160 inds       = get(handles.selectSubList, <span class="string">'Value'</span>);
+0161 removeSubs = contents(inds);
+0162 contents(inds) = [];
+0163 
+0164 newAllSubList = sort([allSubContents; removeSubs]);
+0165 
+0166 set(handles.allSubList,    <span class="string">'String'</span>, newAllSubList);
+0167 set(handles.selectSubList, <span class="string">'String'</span>, contents);
+0168 set(handles.selectSubList, <span class="string">'Value'</span>,  []);
+0169 
+0170 guidata(hObject, handles);
 0171 
-0172 <span class="keyword">for</span> i=1:nSubs   
-0173 <span class="comment">%     aux1=strfind(lower(fileList{i}),'params');</span>
-0174 <span class="comment">%     subID=fileList{i}(1:(aux1-1));</span>
-0175     load(fileList{i}); 
-0176     subID=adaptData.subData.ID; <span class="comment">%I think this is more appropriate.-Pablo</span>
-0177 
-0178     sub.IDs(i)= {subID};
-0179     sub.adaptData(i)={adaptData};    
-0180 <span class="keyword">end</span>
+0172 <span class="comment">% --- Executes on button press in addGroupButton.</span>
+0173 <a name="_sub9" href="#_subfunctions" class="code">function addGroupButton_Callback(hObject, eventdata, handles)</a>
+0174 <span class="comment">% addGroupButton_Callback  Creates a group from the selected subjects and</span>
+0175 <span class="comment">%   adds it to the study.</span>
+0176 <span class="comment">%</span>
+0177 <span class="comment">%   Inputs:</span>
+0178 <span class="comment">%     hObject   - handle to addGroupButton (see GCBO)</span>
+0179 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0180 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0181 
-0182 handles.studyData.(abbrevGroup)=groupAdaptationData(sub.IDs,sub.adaptData);
-0183 
-0184 set(handles.selectSubList,<span class="string">'String'</span>,[])
+0182 fileList = get(handles.selectSubList, <span class="string">'String'</span>);
+0183 nSubs    = length(fileList);
+0184 subGroup = struct;
 0185 
-0186 groupContents=get(handles.groupList,<span class="string">'String'</span>);
-0187 newGroupContents=[groupContents; {group}];
-0188 set(handles.groupList,<span class="string">'String'</span>,newGroupContents)
-0189 
-0190 guidata(hObject, handles);
+0186 group       = get(handles.groupNameEdit, <span class="string">'String'</span>);
+0187 abbrevGroup = group(ismember(group, [<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span> <span class="string">'0'</span>:<span class="string">'9'</span>]));
+0188 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(abbrevGroup)
+0189     abbrevGroup = <span class="string">'NoDescription'</span>;
+0190 <span class="keyword">end</span>
 0191 
-0192 
-0193 <a name="_sub10" href="#_subfunctions" class="code">function saveButton_Callback(hObject, eventdata, handles)</a>
-0194 
-0195 [file,path] = uiputfile(<span class="string">'*.mat'</span>,<span class="string">'Save Study As'</span>);
-0196 studyData=handles.studyData;
-0197 save([path file],<span class="string">'studyData'</span>,<span class="string">'-v7.3'</span>)
-0198 
-0199 close(handles.figure1)
-0200 
-0201 
+0192 <span class="keyword">for</span> ii = 1:nSubs
+0193     load(fileList{ii});
+0194     subID = adaptData.subData.ID;
+0195 
+0196     subGroup.IDs(ii)       = {subID};
+0197     subGroup.adaptData(ii) = {adaptData};
+0198 <span class="keyword">end</span>
+0199 
+0200 handles.studyData.(abbrevGroup) = <span class="keyword">...</span>
+0201     <a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>(subGroup.IDs, subGroup.adaptData);
 0202 
-0203 
+0203 set(handles.selectSubList, <span class="string">'String'</span>, []);
 0204 
-0205 
-0206 
-0207 <a name="_sub11" href="#_subfunctions" class="code">function allSubList_CreateFcn(hObject, eventdata, handles)</a>
-0208 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0209     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0210 <span class="keyword">end</span>
-0211 
-0212 <a name="_sub12" href="#_subfunctions" class="code">function groupNameEdit_CreateFcn(hObject, eventdata, handles)</a>
-0213 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0214     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0215 <span class="keyword">end</span>
-0216 
-0217 <a name="_sub13" href="#_subfunctions" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a>
-0218 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0219     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0220 <span class="keyword">end</span>
+0205 groupContents    = get(handles.groupList, <span class="string">'String'</span>);
+0206 newGroupContents = [groupContents; {group}];
+0207 set(handles.groupList, <span class="string">'String'</span>, newGroupContents);
+0208 
+0209 guidata(hObject, handles);
+0210 
+0211 <span class="comment">% ============================================================</span>
+0212 <span class="comment">%% Save and CreateFcn Callbacks</span>
+0213 
+0214 <a name="_sub10" href="#_subfunctions" class="code">function saveButton_Callback(hObject, eventdata, handles)</a>
+0215 <span class="comment">% saveButton_Callback  Saves the assembled study to a MAT file.</span>
+0216 <span class="comment">%</span>
+0217 <span class="comment">%   Inputs:</span>
+0218 <span class="comment">%     hObject   - handle to saveButton (see GCBO)</span>
+0219 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0220 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
 0221 
-0222 <a name="_sub14" href="#_subfunctions" class="code">function selectSubList_CreateFcn(hObject, eventdata, handles)</a>
-0223 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0224     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
-0225 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0222 [file, path] = uiputfile(<span class="string">'*.mat'</span>, <span class="string">'Save Study As'</span>);
+0223 <a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>    = handles.studyData;
+0224 save([path file], <span class="string">'studyData'</span>, <span class="string">'-v7.3'</span>);
+0225 
+0226 close(handles.figure1);
+0227 
+0228 <a name="_sub11" href="#_subfunctions" class="code">function allSubList_CreateFcn(hObject, eventdata, handles)</a>
+0229 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0230     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0231 <span class="keyword">end</span>
+0232 
+0233 <a name="_sub12" href="#_subfunctions" class="code">function groupNameEdit_CreateFcn(hObject, eventdata, handles)</a>
+0234 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0235     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0236 <span class="keyword">end</span>
+0237 
+0238 <a name="_sub13" href="#_subfunctions" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a>
+0239 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0240     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0241 <span class="keyword">end</span>
+0242 
+0243 <a name="_sub14" href="#_subfunctions" class="code">function selectSubList_CreateFcn(hObject, eventdata, handles)</a>
+0244 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0245     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0246 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

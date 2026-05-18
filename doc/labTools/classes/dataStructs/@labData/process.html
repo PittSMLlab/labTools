@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of process</title>
+  <meta name="keywords" content="process">
+  <meta name="description" content="process  Processes raw trial data to compute angles, gait events,">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; process.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>process
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>process  Processes raw trial data to compute angles, gait events,</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function processedData = process(this, subData, eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> process  Processes raw trial data to compute angles, gait events,
+   and adaptation parameters.
+
+   processedData = process(this, subData) processes the raw trial
+   data and returns a processedTrialData object with computed limb
+   angles, gait events, filtered EMG, COP, COM, and joint moments.
+
+   processedData = process(this, subData, eventClass) uses the
+   specified gait event detection method.
+
+   Inputs:
+     this       - labData object
+     subData    - subjectData object containing subject weight and
+                  other anthropometric information
+     eventClass - (optional) String specifying the gait event
+                  detection method. Defaults to '' if omitted:
+                    ''      - default (forces for TM trials,
+                              kinematics otherwise)
+                    'kin'   - strictly from kinematics
+                    'force' - strictly from forces
+
+   Outputs:
+     processedData - processedTrialData object containing all
+                     processed data
+
+   Note: This function must be idempotent, i.e.,
+           labData.process().process() == labData.process()
+         Otherwise re-processing data may lead to double or
+         triple filtering.
+
+   Toolbox Dependencies:
+     None
+
+   See also: processedTrialData, calcParameters, experimentData/process</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(this)">calcLimbAngles</a>	calcLimbAngles  Calculates limb and joint angles from marker data.</li><li><a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>	</li><li><a href="getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li><li><a href="processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li><li><a href="../../../../labTools/classes/dataStructs/processedTrialData.html" class="code" title="">processedTrialData</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function processedData = process(this, subData, eventClass)</a>
+0002 <span class="comment">% process  Processes raw trial data to compute angles, gait events,</span>
+0003 <span class="comment">%   and adaptation parameters.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   processedData = process(this, subData) processes the raw trial</span>
+0006 <span class="comment">%   data and returns a processedTrialData object with computed limb</span>
+0007 <span class="comment">%   angles, gait events, filtered EMG, COP, COM, and joint moments.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   processedData = process(this, subData, eventClass) uses the</span>
+0010 <span class="comment">%   specified gait event detection method.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Inputs:</span>
+0013 <span class="comment">%     this       - labData object</span>
+0014 <span class="comment">%     subData    - subjectData object containing subject weight and</span>
+0015 <span class="comment">%                  other anthropometric information</span>
+0016 <span class="comment">%     eventClass - (optional) String specifying the gait event</span>
+0017 <span class="comment">%                  detection method. Defaults to '' if omitted:</span>
+0018 <span class="comment">%                    ''      - default (forces for TM trials,</span>
+0019 <span class="comment">%                              kinematics otherwise)</span>
+0020 <span class="comment">%                    'kin'   - strictly from kinematics</span>
+0021 <span class="comment">%                    'force' - strictly from forces</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   Outputs:</span>
+0024 <span class="comment">%     processedData - processedTrialData object containing all</span>
+0025 <span class="comment">%                     processed data</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   Note: This function must be idempotent, i.e.,</span>
+0028 <span class="comment">%           labData.process().process() == labData.process()</span>
+0029 <span class="comment">%         Otherwise re-processing data may lead to double or</span>
+0030 <span class="comment">%         triple filtering.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   Toolbox Dependencies:</span>
+0033 <span class="comment">%     None</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%   See also: processedTrialData, calcParameters, experimentData/process</span>
+0036 
+0037 arguments
+0038     this
+0039     subData    (1,1) <a href="../../../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>
+0040     eventClass (1,:) char        = <span class="string">''</span>
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% 1) Extract amplitude from EMG data if present</span>
+0044 spikeRemovalFlag = false;
+0045 [procEMGData, filteredEMGData] = <a href="processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>(this, spikeRemovalFlag);
+0046 
+0047 <span class="comment">% 2) Interpolate marker data if there is missing data</span>
+0048 <span class="comment">%    (make into function once we have a method to do this)</span>
+0049 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.markerData)
+0050     <span class="comment">% function goes here: check marker data health</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">% 3) Calculate limb angles</span>
+0054 angleData = <a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(this)">calcLimbAngles</a>(this);
+0055 
+0056 <span class="comment">% 4) Calculate gait events from kinematics or forces if available;</span>
+0057 <span class="comment">%    last argument is the perceptual task flag</span>
+0058 gaitEvents = <a href="getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>(this, angleData,  this.metaData.perceptualTasks);
+0059 
+0060 <span class="comment">% 5) If 'beltSpeedReadData' is empty, try to generate it from</span>
+0061 <span class="comment">%    foot markers, if existent</span>
+0062 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.beltSpeedReadData)
+0063     this.beltSpeedReadData = <a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>(this,gaitEvents);
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% 6) Compute COP, COM, and joint torque data; COP from</span>
+0067 <span class="comment">%    computeTorques is discarded in favor of computeCOPAlt below</span>
+0068 [jointMomentsData, ~, COMData] = this.computeTorques(subData.weight);
+0069 <span class="comment">% Replacing COPData with alternative computation</span>
+0070 COPData = this.computeCOPAlt();
+0071 <span class="comment">% COMData = this.CarlysCOMData(); % CJS: you should do this!</span>
+0072 
+0073 <span class="comment">% 7) Generate processedTrialData object</span>
+0074 processedData = <a href="../../../../labTools/classes/dataStructs/processedTrialData.html" class="code" title="">processedTrialData</a>(this.metaData, this.markerData, <span class="keyword">...</span>
+0075     filteredEMGData, this.GRFData, this.beltSpeedSetData, <span class="keyword">...</span>
+0076     this.beltSpeedReadData, this.accData, this.EEGData, <span class="keyword">...</span>
+0077     this.footSwitchData, gaitEvents, procEMGData, angleData, COPData, <span class="keyword">...</span>
+0078     COMData, jointMomentsData, this.HreflexPin);
+0079 
+0080 <span class="comment">% 8) Calculate adaptation parameters (to be recalculated later)</span>
+0081 processedData.adaptParams = <span class="keyword">...</span>
+0082     <a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>(processedData, subData, eventClass);
+0083 
+0084 <span class="keyword">end</span>
+0085</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

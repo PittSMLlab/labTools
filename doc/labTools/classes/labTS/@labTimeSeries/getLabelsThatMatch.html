@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getLabelsThatMatch</title>
+  <meta name="keywords" content="getLabelsThatMatch">
+  <meta name="description" content="getLabelsThatMatch  Returns labels matching regular expression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; getLabelsThatMatch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getLabelsThatMatch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getLabelsThatMatch  Returns labels matching regular expression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function labelList = getLabelsThatMatch(this, exp) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getLabelsThatMatch  Returns labels matching regular expression
+
+   labelList = getLabelsThatMatch(this, exp) returns labels on this
+   labTS that match the regular expression exp
+
+   Inputs:
+       this - labTimeSeries object
+       exp - any regular expression (as string)
+
+   Outputs:
+       labelList - cell array containing matching labels
+
+   See also: regexp, <a href="isaLabel.html" class="code" title="function [boolFlag, labelIdx] = isaLabel(this, label)">isaLabel</a>, getLabels</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function labelList = getLabelsThatMatch(this, exp)</a>
+0002 <span class="comment">%getLabelsThatMatch  Returns labels matching regular expression</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   labelList = getLabelsThatMatch(this, exp) returns labels on this</span>
+0005 <span class="comment">%   labTS that match the regular expression exp</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       exp - any regular expression (as string)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       labelList - cell array containing matching labels</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: regexp, isaLabel, getLabels</span>
+0015 
+0016 labelList = this.labels;
+0017 flags = cellfun(@(x) ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp(labelList, exp));
+0018 labelList = labelList(flags);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SeparateConditions</title>
+  <meta name="keywords" content="SeparateConditions">
+  <meta name="description" content="Chagingparams, create new conditions in 1 trial, currently only need to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">fun</a> &gt; SeparateConditions.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>SeparateConditions
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Chagingparams, create new conditions in 1 trial, currently only need to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Chagingparams, create new conditions in 1 trial, currently only need to
+use it fors the first block for preintervention trials.
+ Separate 1 condition given by oldConditionName into 2: {oldConditionName, newConditionName}
+ the newConditionName needs to happen after the oldConditionName
+ chronologically, otherwise it doesn't make sense and the code is not handling that right now.
+ The trial numbers after the current trial being separated will be shifted by 1. 
+ 
+ [input]
+   - adaptDataToSep: an adaptationData object that contains conditiosn to be separated. 
+   - oldConditionName: string of the name of the condition that will be separated into 2
+   - newConditionName: string of the condition name of the new trial that was
+           separated out. If newConditionName already exists, will assign the strides in the
+           oldConditionName a new trial number and put them into part of the
+           newConditionName, but this basically only works if the
+           newConditionName is immediately after the oldConditionName
+   - speedDiff: integer representing the speed difference in mm/s that we
+           should use as a cutoff to separate conditions. Should be the upper bound of 
+           the speed difference measured with noise in the tied condition
+           so that anything above this uppder bound of tied will be
+           considered split. A good starting value is 75
+   - Tied2SplitOrSplit2Tied: true if the conditions split is from tied to
+           split. False if it's from split to tied walking. OPTIONAL,
+           default true (from split to tied)
+   - newDecription: string description of the new condition that will be
+           added after the split. OPTIONAL, default &quot;Separated
+           oldConditionName&quot;
+   - plotSpeed: OPTIONAL. boolean indicating if before and after condition
+           separating speed figures should be plotted. Default false.
+   - containsPercTask: OPTIONAL. boolean indicating if perceptual task is
+           present, default to false.
+
+ [output]
+   - adaptDataToSep: an adaptationData object that contains the new conditions that have been separated. 
+ Examples: 
+adaptData = AddingConditionsNirs(adaptData, 'TMMidThenAdapt', 'Adaptation', speedDiff, true, [], plotSpeed);
+ The above example will separate TMMidThenAdapt in to {TMMidThenAdapt, 'Adaptation'} and group the
+ 2nd half of TMMidThenAdapt in split into Adaptation condition that
+ already exists:      
+ 
+ See also: Github: DulceMariscal/Generalization_Regressions/AddingConditions.m
+
+ $Author: Shuqi Liu $    $Date: 2024/11/26 14:58:55 $    $Revision: 0.1 $
+ Copyright: Sensorimotor Learning Laboratory 2024</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Chagingparams, create new conditions in 1 trial, currently only need to</span>
+0002 <span class="comment">%use it fors the first block for preintervention trials.</span>
+0003 <a name="_sub0" href="#_subfunctions" class="code">function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask)</a>
+0004 <span class="comment">% Separate 1 condition given by oldConditionName into 2: {oldConditionName, newConditionName}</span>
+0005 <span class="comment">% the newConditionName needs to happen after the oldConditionName</span>
+0006 <span class="comment">% chronologically, otherwise it doesn't make sense and the code is not handling that right now.</span>
+0007 <span class="comment">% The trial numbers after the current trial being separated will be shifted by 1.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% [input]</span>
+0010 <span class="comment">%   - adaptDataToSep: an adaptationData object that contains conditiosn to be separated.</span>
+0011 <span class="comment">%   - oldConditionName: string of the name of the condition that will be separated into 2</span>
+0012 <span class="comment">%   - newConditionName: string of the condition name of the new trial that was</span>
+0013 <span class="comment">%           separated out. If newConditionName already exists, will assign the strides in the</span>
+0014 <span class="comment">%           oldConditionName a new trial number and put them into part of the</span>
+0015 <span class="comment">%           newConditionName, but this basically only works if the</span>
+0016 <span class="comment">%           newConditionName is immediately after the oldConditionName</span>
+0017 <span class="comment">%   - speedDiff: integer representing the speed difference in mm/s that we</span>
+0018 <span class="comment">%           should use as a cutoff to separate conditions. Should be the upper bound of</span>
+0019 <span class="comment">%           the speed difference measured with noise in the tied condition</span>
+0020 <span class="comment">%           so that anything above this uppder bound of tied will be</span>
+0021 <span class="comment">%           considered split. A good starting value is 75</span>
+0022 <span class="comment">%   - Tied2SplitOrSplit2Tied: true if the conditions split is from tied to</span>
+0023 <span class="comment">%           split. False if it's from split to tied walking. OPTIONAL,</span>
+0024 <span class="comment">%           default true (from split to tied)</span>
+0025 <span class="comment">%   - newDecription: string description of the new condition that will be</span>
+0026 <span class="comment">%           added after the split. OPTIONAL, default &quot;Separated</span>
+0027 <span class="comment">%           oldConditionName&quot;</span>
+0028 <span class="comment">%   - plotSpeed: OPTIONAL. boolean indicating if before and after condition</span>
+0029 <span class="comment">%           separating speed figures should be plotted. Default false.</span>
+0030 <span class="comment">%   - containsPercTask: OPTIONAL. boolean indicating if perceptual task is</span>
+0031 <span class="comment">%           present, default to false.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% [output]</span>
+0034 <span class="comment">%   - adaptDataToSep: an adaptationData object that contains the new conditions that have been separated.</span>
+0035 <span class="comment">% Examples:</span>
+0036 <span class="comment">%adaptData = AddingConditionsNirs(adaptData, 'TMMidThenAdapt', 'Adaptation', speedDiff, true, [], plotSpeed);</span>
+0037 <span class="comment">% The above example will separate TMMidThenAdapt in to {TMMidThenAdapt, 'Adaptation'} and group the</span>
+0038 <span class="comment">% 2nd half of TMMidThenAdapt in split into Adaptation condition that</span>
+0039 <span class="comment">% already exists:</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% See also: Github: DulceMariscal/Generalization_Regressions/AddingConditions.m</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% $Author: Shuqi Liu $    $Date: 2024/11/26 14:58:55 $    $Revision: 0.1 $</span>
+0044 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2024</span>
+0045 
+0046     <span class="keyword">if</span> nargin &lt; 4 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Tied2Split)
+0047         Tied2Split = true; <span class="comment">%default separate tied - split transition</span>
+0048     <span class="keyword">end</span>
+0049     
+0050     <span class="keyword">if</span> nargin &lt; 5 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(speedDiff)
+0051         speedDiff = 75; <span class="comment">%default 75, tied belt speed difference usually is not perfectly 0, has some noise, 75mm/s (0.075m/s) is a somewhat ok estimation of the noise.</span>
+0052     <span class="keyword">end</span>
+0053 
+0054     <span class="keyword">if</span> nargin &lt; 6 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newDecription)
+0055         newDecription = [<span class="string">'Separated '</span> oldConditionName];
+0056     <span class="keyword">end</span>
+0057     
+0058     <span class="keyword">if</span> nargin &lt; 7 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotSpeed)
+0059         plotSpeed = false;
+0060     <span class="keyword">end</span>
+0061     
+0062     <span class="keyword">if</span> nargin &lt; 8 || <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(containsPercTask)
+0063         containsPercTask = false;
+0064     <span class="keyword">end</span>
+0065   
+0066     <span class="comment">%check if input is valid</span>
+0067     [condExist, loc] = ismember({oldConditionName, newConditionName}, adaptDataToSep.metaData.conditionName);
+0068     <span class="keyword">if</span> ~condExist(1) <span class="comment">%oldCondition doesn't exist, error</span>
+0069         error(<span class="string">'oldConditionName does not exist. Check your input.'</span>)
+0070     <span class="keyword">elseif</span> condExist(2) &amp;&amp; (loc(2)-loc(1)~=1) <span class="comment">%newCondition already exists, but it happens before oldCondition, this is an undefined and unreasonable situation</span>
+0071         error(<span class="string">'newConditionName need to happen right after oldConditionName. Check your input.'</span>)
+0072     <span class="keyword">end</span>
+0073     newCondExist = condExist(2);
+0074     newCondLoc = loc(2);
+0075     
+0076     <span class="keyword">if</span> plotSpeed
+0077         adaptDataToSep.plotAvgTimeCourse(adaptDataToSep,{<span class="string">'singleStanceSpeedFastAbsANK'</span>,<span class="string">'singleStanceSpeedSlowAbsANK'</span>})
+0078         title(<span class="string">'Before Changing Conditions'</span>);  
+0079     <span class="keyword">end</span>
+0080     
+0081     <span class="comment">% find the index for the label singleStanceSpeedFastAbsANK</span>
+0082     idxfast=<a href="../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>({<span class="string">'singleStanceSpeedFastAbsANK'</span>},adaptDataToSep.data.labels)==1;
+0083     idxslow=<a href="../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>({<span class="string">'singleStanceSpeedSlowAbsANK'</span>},adaptDataToSep.data.labels)==1;
+0084     
+0085     trialNum = adaptDataToSep.metaData.trialsInCondition{strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};
+0086     columnIdxForTrialNum=find(<a href="../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>({<span class="string">'Trial'</span>},adaptDataToSep.data.labels));
+0087 
+0088     fast=adaptDataToSep.data.Data(:,idxfast);
+0089     slow=adaptDataToSep.data.Data(:,idxslow);
+0090     difference=fast-slow;
+0091 
+0092     <span class="comment">% find the index with speed difference or speed at 1 but also within the</span>
+0093     <span class="comment">% current condition of interes</span>
+0094     diffMask = (abs(difference)&gt;speedDiff &amp; adaptDataToSep.data.Data(:,columnIdxForTrialNum) == trialNum)'; <span class="comment">%find all cases where diff in speed &gt; speedDiff</span>
+0095     thresholdStrides = 4; <span class="comment">%if happens continuously for 4 strides: speed did change instead of noise in speed</span>
+0096     
+0097     <span class="comment">%perceptual task, index out non-percep, then find idx with speed change, then find out</span>
+0098     <span class="comment">%original idx of the speed change</span>
+0099     <span class="keyword">if</span> containsPercTask
+0100         percepCol = ismember(adaptDataToSep.data.labels,<span class="string">'percTask'</span>);
+0101         nonpercepStrides = find(~logical(adaptDataToSep.data.Data(:,percepCol)));
+0102         diffMask = diffMask(nonpercepStrides);
+0103     <span class="keyword">end</span>
+0104     
+0105     <span class="keyword">if</span> Tied2Split
+0106         <span class="comment">%get the 1st stride that have [0 1 1 1 1 ..] pattern where speed</span>
+0107         <span class="comment">%difference is &lt;speedDiffThreshold, then continuously &gt;</span>
+0108         <span class="comment">%speedDiffThreshold for n strides. (went from tied to split)</span>
+0109         thresholdFramesMask = [0, ones(1, thresholdStrides)]; <span class="comment">%build a mask to find out continuous steps with speed difference matching the threshold.</span>
+0110         <span class="comment">%TODO: this can be more robust probably by checking continuos strides at speeddiff= 0 then continuous stride at diff &gt; speeddiff</span>
+0111         <span class="comment">%TODO: i don't think the 0 padding in diffmask is needed because speed change shouldn't happen at the first or last stride of the</span>
+0112         <span class="comment">%condition, that will separate a new condition that includes only 1 strides which doesn't make sense.</span>
+0113         
+0114         idxSplit = strfind([0,diffMask],[thresholdFramesMask]); <span class="comment">%get the first stride that speeds changed</span>
+0115         <span class="comment">% strfind is a pattern matching algorithm. pad 0 to diffMask in case started difference at frame 1, the 2nd argument is the pattern</span>
+0116         <span class="comment">% to match, find the index where the previous frame didn't have speed diff &gt; speedDiff and the</span>
+0117         <span class="comment">% next 150 frames have speed diff &gt; speedDiff</span>
+0118     <span class="keyword">else</span>
+0119         <span class="comment">%get the 1st stride that have [1 1 1 1 .. 0 ] pattern where speed</span>
+0120         <span class="comment">%difference continuously &gt; speedDiffThreshold for n strides, then</span>
+0121         <span class="comment">%&lt; diffThreshold (went from split to tied)</span>
+0122         thresholdFramesMask = [ones(1, thresholdStrides),0]; 
+0123         idxSplit = strfind([diffMask,0],[thresholdFramesMask]); <span class="comment">%get the first stride where 4 stride later speed changed</span>
+0124         idxSplit = idxSplit + thresholdStrides; <span class="comment">%shift to the first stride where speed is tied now.</span>
+0125     <span class="keyword">end</span>
+0126     
+0127     <span class="comment">%perceptual task, return the idxSplit in the original data frame (where</span>
+0128     <span class="comment">%indices included the perceptual trials)</span>
+0129     <span class="keyword">if</span> containsPercTask
+0130         idxSplit = nonpercepStrides(idxSplit);
+0131     <span class="keyword">end</span>
+0132 
+0133     <span class="comment">% trialNum = adaptDataToSep.metaData.trialsInCondition{strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};</span>
+0134     
+0135     
+0136     <span class="keyword">if</span> newCondExist
+0137         <span class="comment">%if the new condition name given already exist, add this separated</span>
+0138         <span class="comment">%new trial into the existing trials in the existing newCondition,</span>
+0139         <span class="comment">%and shift all the trial numbers after this separated trial by 1.</span>
+0140         <span class="comment">%TODO: both approaches seem convoluted, the for loop can be</span>
+0141         <span class="comment">%improved for readability.</span>
+0142         newTrialsInConds = adaptDataToSep.metaData.trialsInCondition;
+0143         newTrialsInConds{newCondLoc} = [trialNum+1 newTrialsInConds{newCondLoc}+1]; <span class="comment">%shift original trialNumbers by 1 and add the new separated trial</span>
+0144         newTrialsInConds(newCondLoc+1:end) = cellfun(@(x) x+1,newTrialsInConds(newCondLoc+1:end),<span class="string">'UniformOutput'</span>,false);
+0145         adaptDataToSep.metaData.trialsInCondition = newTrialsInConds;
+0146     <span class="keyword">else</span>
+0147         <span class="comment">%a new condition name is given, shift all trials after the current old condition name by 1,</span>
+0148         <span class="comment">%increase the total # of conditions</span>
+0149         [condExist, oldCondLoc] = ismember(oldConditionName, adaptDataToSep.metaData.conditionName);
+0150         
+0151         newTrialsInConds = adaptDataToSep.metaData.trialsInCondition(1:oldCondLoc); <span class="comment">%keep the trials till oldConditionName</span>
+0152         newTrialsInConds = [newTrialsInConds, {[trialNum+1]}]; <span class="comment">%insert the new trial as its own condition</span>
+0153         newTrialsInConds = [newTrialsInConds, cellfun(@(x) x+1,adaptDataToSep.metaData.trialsInCondition(oldCondLoc+1:end),<span class="string">'UniformOutput'</span>,false)];
+0154         <span class="comment">%shift everything after by 1</span>
+0155         
+0156         adaptDataToSep.metaData.trialsInCondition = newTrialsInConds;
+0157         adaptDataToSep.metaData.conditionName = [adaptDataToSep.metaData.conditionName{1:oldCondLoc}, {newConditionName}, adaptDataToSep.metaData.conditionName{oldCondLoc+1:end}];
+0158         adaptDataToSep.metaData.conditionDescription = [adaptDataToSep.metaData.conditionDescription{1:oldCondLoc}, {newDecription}, adaptDataToSep.metaData.conditionDescription{oldCondLoc+1:end}];
+0159         
+0160         <span class="comment">%Alt approach, just use a branch new trial number of the splitted</span>
+0161         <span class="comment">%trials, this should also work just that the trial numbers won't be</span>
+0162         <span class="comment">%sorted.</span>
+0163 <span class="comment">%         adaptDataToSep.metaData.conditionName{currConditionLength+1}=newConditions;</span>
+0164 <span class="comment">%         adaptDataToSep.metaData.trialsInCondition{currConditionLength+1}=currMaxTrial+1;</span>
+0165 <span class="comment">%         adaptDataToSep.metaData.conditionDescription{currConditionLength+1}= newDecription;</span>
+0166 <span class="comment">%         adaptDataToSep.data.trialTypes{currConditionLength+1}=newTrialType;</span>
+0167 <span class="comment">%         adaptDataToSep.data.Data(idxSplit,columnIdxForTrialNum)=currMaxTrial+1;</span>
+0168     <span class="keyword">end</span>
+0169     <span class="comment">%now update the data</span>
+0170     adaptDataToSep.metaData.Ntrials = adaptDataToSep.metaData.Ntrials+1; <span class="comment">%increment Ntrials by 1</span>
+0171     adaptDataToSep.data = adaptDataToSep.data.setTrialTypes({adaptDataToSep.data.trialTypes{1:trialNum} adaptDataToSep.data.trialTypes{trialNum} adaptDataToSep.data.trialTypes{trialNum+1:end}});
+0172     adaptDataToSep.data.Data(idxSplit:<span class="keyword">end</span>,columnIdxForTrialNum) = adaptDataToSep.data.Data(idxSplit:<span class="keyword">end</span>,columnIdxForTrialNum) +1; <span class="comment">%shift all trial numbers after the idx to split by 1</span>
+0173         
+0174     <span class="keyword">if</span> plotSpeed
+0175         adaptDataToSep.plotAvgTimeCourse(adaptDataToSep,{<span class="string">'singleStanceSpeedFastAbsANK'</span>,<span class="string">'singleStanceSpeedSlowAbsANK'</span>})
+0176         title(<span class="string">'After Adding Conditions'</span>)
+0177     <span class="keyword">end</span>
+0178 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

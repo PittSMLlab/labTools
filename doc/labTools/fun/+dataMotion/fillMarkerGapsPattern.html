@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fillMarkerGapsPattern</title>
+  <meta name="keywords" content="fillMarkerGapsPattern">
+  <meta name="description" content="FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; fillMarkerGapsPattern.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>fillMarkerGapsPattern
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function markerGapsUpdated =fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon,shouldSave) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern
+   This function fills gaps in all marker trajectories identified in
+ markerGaps by applying a transformed pattern from a specified reference
+ marker's trajectory over the gap range.
+
+ input(s):
+   markerGaps: struct with start and end frame indices of gaps in each
+       marker's trajectory, as obtained from extractMarkerGapsTrial
+   pathTrial: string or character array of the full path to the trial
+   refMarker: name of the reference marker to use for gap filling pattern
+   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
+   shouldSave: (optional) logical, whether to save changes (default: true)
+ output(s):
+   updatedMarkerGaps: struct with only remaining gaps after processing</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerGapsUpdated = </a><span class="keyword">...</span>
+0002     fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon,shouldSave)
+0003 <span class="comment">%FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern</span>
+0004 <span class="comment">%   This function fills gaps in all marker trajectories identified in</span>
+0005 <span class="comment">% markerGaps by applying a transformed pattern from a specified reference</span>
+0006 <span class="comment">% marker's trajectory over the gap range.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% input(s):</span>
+0009 <span class="comment">%   markerGaps: struct with start and end frame indices of gaps in each</span>
+0010 <span class="comment">%       marker's trajectory, as obtained from extractMarkerGapsTrial</span>
+0011 <span class="comment">%   pathTrial: string or character array of the full path to the trial</span>
+0012 <span class="comment">%   refMarker: name of the reference marker to use for gap filling pattern</span>
+0013 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied</span>
+0014 <span class="comment">%   shouldSave: (optional) logical, whether to save changes (default: true)</span>
+0015 <span class="comment">% output(s):</span>
+0016 <span class="comment">%   updatedMarkerGaps: struct with only remaining gaps after processing</span>
+0017 
+0018 narginchk(3,5);                 <span class="comment">% verify correct number of input arguments</span>
+0019 
+0020 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(shouldSave)        <span class="comment">% if no 'shouldSave' input</span>
+0021     shouldSave = true;                      <span class="comment">% default to saving changes</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">% validate 'markerGaps' structure format</span>
+0025 markers = fieldnames(markerGaps);
+0026 <span class="keyword">for</span> mrkr = 1:numel(markers)                 <span class="comment">% for each marker, ...</span>
+0027     gaps = markerGaps.(markers{mrkr});      <span class="comment">% retrieve the 'gaps' array</span>
+0028     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(gaps) || size(gaps,2) ~= 2   <span class="comment">% if empty or bad size, ...</span>
+0029         error([<span class="string">'Invalid format in markerGaps for marker %s. Expecting '</span> <span class="keyword">...</span>
+0030             <span class="string">'a non-empty Nx2 matrix.'</span>],markers{mrkr});
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
+0035 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0036     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0037         <span class="string">'Nexus...\n'</span>]);
+0038     vicon = ViconNexus();
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% open the trial if not already open</span>
+0042 <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0043     <span class="keyword">return</span>;  <span class="comment">% exit if the trial could not be opened</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">% get subject name (assuming only one subject in the trial)</span>
+0047 subject = vicon.GetSubjectNames();
+0048 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subject)
+0049     error(<span class="string">'No subject found in the trial.'</span>);
+0050 <span class="keyword">end</span>
+0051 subject = subject{1};
+0052 
+0053 <span class="keyword">try</span>                                 <span class="comment">% get reference marker trajectory data</span>
+0054     [refX,refY,refZ,refExists] = vicon.GetTrajectory(subject,refMarker);
+0055 <span class="keyword">catch</span>
+0056     warning([<span class="string">'Failed to retrieve reference marker (%s) trajectory. '</span> <span class="keyword">...</span>
+0057         <span class="string">'Exiting...'</span>],refMarker);
+0058     markerGapsUpdated = markerGaps;
+0059     <span class="keyword">return</span>;
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="comment">% process each marker gap in the 'markerGaps' struct</span>
+0063 fprintf([<span class="string">'Filling marker gaps using reference marker %s pattern '</span> <span class="keyword">...</span>
+0064     <span class="string">'fill...\n'</span>],refMarker);
+0065 wasChanged = false;                     <span class="comment">% track whether changes were made</span>
+0066 
+0067 <span class="keyword">for</span> mrkr = 1:numel(markers)
+0068     nameMarker = markers{mrkr};         <span class="comment">% get marker name</span>
+0069     gaps = markerGaps.(nameMarker);     <span class="comment">% retrieve gap indices for marker</span>
+0070 
+0071     <span class="keyword">try</span>                                 <span class="comment">% get marker trajectory data</span>
+0072         [trajX,trajY,trajZ,existsTraj] = <span class="keyword">...</span>
+0073             vicon.GetTrajectory(subject,nameMarker);
+0074     <span class="keyword">catch</span>
+0075         warning([<span class="string">'Failed to retrieve trajectory for marker %s. '</span> <span class="keyword">...</span>
+0076             <span class="string">'Skipping...'</span>],nameMarker);
+0077         <span class="keyword">continue</span>;
+0078     <span class="keyword">end</span>
+0079 
+0080     gapsRemaining = gaps;               <span class="comment">% preallocate remaining gaps array</span>
+0081     indNextGap = 1;
+0082 
+0083     <span class="keyword">for</span> indGap = 1:size(gaps,1)         <span class="comment">% for each target marker gap, ...</span>
+0084         gapStart = gaps(indGap,1);
+0085         gapEnd = gaps(indGap,2);
+0086         indPreGap = gapStart - 1;       <span class="comment">% frame before gap</span>
+0087         indPostGap = gapEnd + 1;        <span class="comment">% frame after gap</span>
+0088 
+0089         <span class="comment">% skip gap if 'indPreGap' or 'indPostGap' is invalid</span>
+0090         <span class="keyword">if</span> (indPreGap &lt;= 1) || (indPostGap &gt;= length(refExists))
+0091             fprintf([<span class="string">'Skipping gap from frame %d to %d as pre- or '</span> <span class="keyword">...</span>
+0092                 <span class="string">'post-gap index is invalid.\n'</span>],gapStart,gapEnd);
+0093             <span class="comment">% keep gaps that can't be filled with reference pattern</span>
+0094             gapsRemaining(indNextGap,:) = gaps(indGap,:);
+0095             indNextGap = indNextGap + 1;
+0096             <span class="keyword">continue</span>;
+0097         <span class="keyword">end</span>
+0098 
+0099         <span class="comment">% check if reference trajectory exists over the entire gap range</span>
+0100         <span class="keyword">if</span> ~all(refExists(indPreGap:indPostGap))
+0101             fprintf([<span class="string">'Skipping gap from frame %d to %d as reference '</span> <span class="keyword">...</span>
+0102                 <span class="string">'marker data does not exist for this range.\n'</span>], <span class="keyword">...</span>
+0103                 gapStart,gapEnd);
+0104             gapsRemaining(indNextGap,:) = gaps(indGap,:);
+0105             indNextGap = indNextGap + 1;
+0106             <span class="keyword">continue</span>;
+0107         <span class="keyword">end</span>
+0108 
+0109         <span class="comment">% get reference trajectory values at pre- and post-gap indices</span>
+0110         refPreGapX = refX(indPreGap); refPostGapX = refX(indPostGap);
+0111         refPreGapY = refY(indPreGap); refPostGapY = refY(indPostGap);
+0112         refPreGapZ = refZ(indPreGap); refPostGapZ = refZ(indPostGap);
+0113 
+0114         <span class="comment">% get scaling and offset based on target pre- &amp; post-gap data</span>
+0115         preGapX = trajX(indPreGap); postGapX = trajX(indPostGap);
+0116         preGapY = trajY(indPreGap); postGapY = trajY(indPostGap);
+0117         preGapZ = trajZ(indPreGap); postGapZ = trajZ(indPostGap);
+0118 
+0119         <span class="comment">% calculate scale and offset for pattern adjustment</span>
+0120         scaleX = (postGapX - preGapX) / (refPostGapX - refPreGapX);
+0121         scaleY = (postGapY - preGapY) / (refPostGapY - refPreGapY);
+0122         scaleZ = (postGapZ - preGapZ) / (refPostGapZ - refPreGapZ);
+0123 
+0124         offsetX = preGapX - refPreGapX * scaleX;
+0125         offsetY = preGapY - refPreGapY * scaleY;
+0126         offsetZ = preGapZ - refPreGapZ * scaleZ;
+0127 
+0128         <span class="comment">% fill gap with adjusted pattern from the reference marker</span>
+0129         refPatternX = refX(gapStart:gapEnd);
+0130         refPatternY = refY(gapStart:gapEnd);
+0131         refPatternZ = refZ(gapStart:gapEnd);
+0132 
+0133         trajX(gapStart:gapEnd) = refPatternX * scaleX + offsetX;
+0134         trajY(gapStart:gapEnd) = refPatternY * scaleY + offsetY;
+0135         trajZ(gapStart:gapEnd) = refPatternZ * scaleZ + offsetZ;
+0136         existsTraj(gapStart:gapEnd) = true;     <span class="comment">% update existence</span>
+0137         wasChanged = true;                      <span class="comment">% mark changes made</span>
+0138     <span class="keyword">end</span>
+0139 
+0140     <span class="comment">% remove any excess preallocated rows in 'gapsRemaining'</span>
+0141     gapsRemaining(indNextGap:<span class="keyword">end</span>,:) = [];
+0142     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(gapsRemaining)          <span class="comment">% if there are gaps remaining, ...</span>
+0143         <span class="comment">% update 'markerGaps' with only the remaining gaps</span>
+0144         markerGaps.(nameMarker) = gapsRemaining;
+0145     <span class="keyword">else</span>                                <span class="comment">% otherwise, remove marker field</span>
+0146         markerGaps = rmfield(markerGaps,nameMarker);
+0147     <span class="keyword">end</span>
+0148 
+0149     <span class="comment">% update trajectory in Vicon Nexus</span>
+0150     vicon.SetTrajectory(subject,nameMarker,trajX,trajY,trajZ,existsTraj);
+0151 <span class="keyword">end</span>
+0152 fprintf(<span class="string">'%s reference pattern-based marker gap filling complete.\n'</span>, <span class="keyword">...</span>
+0153     refMarker);
+0154 
+0155 <span class="comment">% save the trial if changes were made and 'shouldSave' is true</span>
+0156 <span class="keyword">if</span> wasChanged &amp;&amp; shouldSave
+0157     fprintf(<span class="string">'Saving the trial with changes...\n'</span>);
+0158     <span class="keyword">try</span>
+0159         vicon.SaveTrial(200);
+0160         fprintf(<span class="string">'Trial saved successfully.\n'</span>);
+0161     <span class="keyword">catch</span> ME
+0162         warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
+0163     <span class="keyword">end</span>
+0164 <span class="keyword">elseif</span> ~wasChanged
+0165     fprintf(<span class="string">'No changes made; trial not saved.\n'</span>);
+0166 <span class="keyword">elseif</span> ~shouldSave
+0167     fprintf(<span class="string">'Save option is disabled; trial not saved.\n'</span>);
+0168 <span class="keyword">end</span>
+0169 
+0170 <span class="comment">% output the updated markerGaps with only remaining gaps</span>
+0171 markerGapsUpdated = markerGaps;
+0172 
+0173 <span class="keyword">end</span>
+0174</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

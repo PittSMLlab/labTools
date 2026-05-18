@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotMarkerProcessingTrajectories</title>
+  <meta name="keywords" content="plotMarkerProcessingTrajectories">
+  <meta name="description" content="PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; plotMarkerProcessingTrajectories.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotMarkerProcessingTrajectories
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.
+
+   Iterates over trial paths and runs the OLD or NEW marker processing
+ pipeline on each trial (selected by trial ID prefix), then saves all
+ trajectory results to a .mat file.
+
+ Inputs:
+   trialPaths - cell array of full trial folder paths
+   savePath   - full .mat file path to save the result
+
+ Outputs:
+   mrkrData - struct with per-subject/trial trajectory data from the
+ OLD or NEW pipeline
+
+ Toolbox Dependencies:
+   None
+
+ See also PROCESSANDFILLMARKERGAPSTRIAL, PART1RL.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>	pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</li><li><a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/processAndFillMarkerGapsTrial.html" class="code" title="function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)">processAndFillMarkerGapsTrial</a>	PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)</a>
+0002 <span class="comment">%PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Iterates over trial paths and runs the OLD or NEW marker processing</span>
+0005 <span class="comment">% pipeline on each trial (selected by trial ID prefix), then saves all</span>
+0006 <span class="comment">% trajectory results to a .mat file.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   trialPaths - cell array of full trial folder paths</span>
+0010 <span class="comment">%   savePath   - full .mat file path to save the result</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   mrkrData - struct with per-subject/trial trajectory data from the</span>
+0014 <span class="comment">% OLD or NEW pipeline</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies:</span>
+0017 <span class="comment">%   None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also PROCESSANDFILLMARKERGAPSTRIAL, PART1RL.</span>
+0020 
+0021 mrkrData = struct();
+0022 
+0023 <span class="comment">%% Process trials</span>
+0024 <span class="keyword">for</span> tr = 1:numel(trialPaths)
+0025     trialPath = trialPaths{tr};
+0026     [parentDir, trialID] = fileparts(trialPath);
+0027     [~, subjectID]       = fileparts(parentDir);
+0028 
+0029     fprintf(<span class="string">'\n--- Processing %s/%s ---\n'</span>, subjectID, trialID);
+0030 
+0031     <span class="keyword">if</span> startsWith(trialID, <span class="string">'Old_'</span>)
+0032         <span class="keyword">try</span>
+0033             fprintf(<span class="string">'Running OLD Pipeline on: %s\n'</span>, trialID);
+0034             trajsOld = <a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/processAndFillMarkerGapsTrial.html" class="code" title="function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)">processAndFillMarkerGapsTrial</a>(trialPath);
+0035             mrkrData.(subjectID).(trialID).Old.trajectories = trajsOld;
+0036         <span class="keyword">catch</span> ME
+0037             warning(ME.identifier, <span class="keyword">...</span>
+0038                 <span class="string">'OLD pipeline failed for %s/%s: %s'</span>, <span class="keyword">...</span>
+0039                 subjectID, trialID, ME.message);
+0040         <span class="keyword">end</span>
+0041     <span class="keyword">else</span>
+0042         <span class="keyword">try</span>
+0043             fprintf(<span class="string">'Running NEW Pipeline on: %s\n'</span>, trialID);
+0044             trajsNew = <a href="../../../labTools/fun/misc/OptimizedReconstructAndLabel/Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>(trialPath);
+0045             mrkrData.(subjectID).(trialID).New.trajectories = trajsNew;
+0046         <span class="keyword">catch</span> ME
+0047             warning(ME.identifier, <span class="keyword">...</span>
+0048                 <span class="string">'NEW pipeline failed for %s/%s: %s'</span>, <span class="keyword">...</span>
+0049                 subjectID, trialID, ME.message);
+0050         <span class="keyword">end</span>
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%% Save</span>
+0055 fprintf(<span class="string">'\nSaving all trajectory data to: %s\n'</span>, savePath);
+0056 <span class="keyword">try</span>
+0057     save(savePath, <span class="string">'mrkrData'</span>, <span class="string">'-v7.3'</span>);
+0058     fprintf(<span class="string">'Saved successfully.\n'</span>);
+0059 <span class="keyword">catch</span> ME
+0060     warning(ME.identifier, <span class="string">'Failed to save results: %s'</span>, ME.message);
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">% function plotMarkerProcessingTrajectories(mrkrTrajs)</span>
+0066 <span class="comment">%     steps = fieldnames(mrkrTrajs);</span>
+0067 <span class="comment">%     markers = fieldnames(mrkrTrajs.Step1RandL);</span>
+0068 <span class="comment">%     components = {'X','Y','Z'};</span>
+0069 <span class="comment">%     colors = lines(numel(steps));</span>
+0070 <span class="comment">%     for m = 1:numel(markers)</span>
+0071 <span class="comment">%         marker = markers{m};</span>
+0072 <span class="comment">%</span>
+0073 <span class="comment">%         figure('Name', ['Trajectory - ' marker], 'NumberTitle', 'off');</span>
+0074 <span class="comment">%         tiledlayout(3,1);</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">%         for dim = 1:3  % X, Y, Z</span>
+0077 <span class="comment">%             nexttile;</span>
+0078 <span class="comment">%             hold on;</span>
+0079 <span class="comment">%</span>
+0080 <span class="comment">%             for s = 1:numel(steps)</span>
+0081 <span class="comment">%                 stepName = steps{s};</span>
+0082 <span class="comment">%                 traj = mrkrTrajs.(stepName).(marker);</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">%                 if size(traj,2) &lt; 3</span>
+0085 <span class="comment">%                     warning('Trajectory for %s in %s is incomplete.', marker, stepName);</span>
+0086 <span class="comment">%                     continue;</span>
+0087 <span class="comment">%                 end</span>
+0088 <span class="comment">%</span>
+0089 <span class="comment">%                 plot(traj(:,dim), 'DisplayName', stepName, ...</span>
+0090 <span class="comment">%                     'Color', colors(s,:), 'LineWidth', 1.2);</span>
+0091 <span class="comment">%             end</span>
+0092 <span class="comment">%</span>
+0093 <span class="comment">%             title([marker ' - ' components{dim}]);</span>
+0094 <span class="comment">%             xlabel('Frame'); ylabel('Position (mm)');</span>
+0095 <span class="comment">%             legend('Location', 'best');</span>
+0096 <span class="comment">%             grid on;</span>
+0097 <span class="comment">%         end</span>
+0098 <span class="comment">%     end</span>
+0099 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

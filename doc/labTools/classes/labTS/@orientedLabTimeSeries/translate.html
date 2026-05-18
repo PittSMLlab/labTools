@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of translate</title>
+  <meta name="keywords" content="translate">
+  <meta name="description" content="translate  Translates data by vector">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; translate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>translate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>translate  Translates data by vector</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = translate(this, vector) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">translate  Translates data by vector
+
+   newThis = translate(this, vector) applies vector translation to all
+   oriented data
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       vector - 1x3 or Tx3 translation vector
+
+   Outputs:
+       newThis - translated orientedLabTimeSeries
+
+   Note: Vector has to be size 3 on second dim, and singleton or of
+         length(time) in first
+
+   See also: <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>, <a href="referenceToMarker.html" class="code" title="function newThis = referenceToMarker(this, marker)">referenceToMarker</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>	getOrientedData  Returns data as 3D tensor</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="referenceToMarker.html" class="code" title="function newThis = referenceToMarker(this, marker)">referenceToMarker</a>	referenceToMarker  References data to marker position</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = translate(this, vector)</a>
+0002 <span class="comment">%translate  Translates data by vector</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = translate(this, vector) applies vector translation to all</span>
+0005 <span class="comment">%   oriented data</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       vector - 1x3 or Tx3 translation vector</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - translated orientedLabTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Note: Vector has to be size 3 on second dim, and singleton or of</span>
+0015 <span class="comment">%         length(time) in first</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: rotate, referenceToMarker</span>
+0018 
+0019 <span class="comment">% Check: vector is 1x3 or Tx3</span>
+0020 [M, N] = size(vector);
+0021 <span class="keyword">if</span> N ~= 3 || (M ~= 1 &amp;&amp; M ~= numel(this.Time))
+0022     error(<span class="string">'orientedLabTS:translate'</span>, <span class="keyword">...</span>
+0023         [<span class="string">'Translation vector has to be size 3 on second dim, and '</span> <span class="keyword">...</span>
+0024         <span class="string">'singleton or of length(time) in the first.'</span>]);
+0025 <span class="keyword">end</span>
+0026 data = <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>(this);
+0027 vector = reshape(vector, M, 1, 3);
+0028 newData = permute(bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, data, vector), [1 3 2]);
+0029 newThis = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newData(:, :), this.Time(1), <span class="keyword">...</span>
+0030     this.sampPeriod, this.labels, this.orientation);
+0031 <span class="comment">% newThis.UserData.translation = ; % TODO: store the translation info</span>
+0032 <span class="comment">% in some structure so that it can be backtracked</span>
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

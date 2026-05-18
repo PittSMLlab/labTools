@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of buildNaiveDistancesModel</title>
+  <meta name="keywords" content="buildNaiveDistancesModel">
+  <meta name="description" content="buildNaiveDistancesModel  Builds statistical marker model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; buildNaiveDistancesModel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>buildNaiveDistancesModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>buildNaiveDistancesModel  Builds statistical marker model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function model = buildNaiveDistancesModel(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">buildNaiveDistancesModel  Builds statistical marker model
+
+   model = buildNaiveDistancesModel(this) creates naive Bayes model
+   of inter-marker distances
+
+   Inputs:
+       this - orientedLabTimeSeries object
+
+   Outputs:
+       model - naiveDistances model object
+
+   Note: Assumes data is bilateral and sorts L/R by magnitude of third
+         component
+
+   See also: naiveDistances, <a href="fixBadLabels.html" class="code" title="function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList)">fixBadLabels</a>, <a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="fixBadLabels.html" class="code" title="function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList)">fixBadLabels</a>	fixBadLabels  Detects and fixes label swaps</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/example/testMarkerHealthCheck.html" class="code" title="">testMarkerHealthCheck</a>	TESTMARKERHEALTHCHECK Example: validate marker data integrity.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function model = buildNaiveDistancesModel(this)</a>
+0002 <span class="comment">%buildNaiveDistancesModel  Builds statistical marker model</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   model = buildNaiveDistancesModel(this) creates naive Bayes model</span>
+0005 <span class="comment">%   of inter-marker distances</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       model - naiveDistances model object</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Note: Assumes data is bilateral and sorts L/R by magnitude of third</span>
+0014 <span class="comment">%         component</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   See also: naiveDistances, fixBadLabels, findOutliers</span>
+0017 
+0018 labels = this.getLabelPrefix;
+0019 data = this.getOrientedData;
+0020 <span class="comment">% Assuming the data is bilateral &amp; sorting L/R and by magnitude of</span>
+0021 <span class="comment">% third component</span>
+0022 iL = cellfun(@(x) ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp(labels, <span class="string">'^L*'</span>));
+0023 iR = cellfun(@(x) ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), regexp(labels, <span class="string">'^R*'</span>));
+0024 <span class="comment">% Can only have paired markers for the model to work</span>
+0025 <span class="keyword">if</span> sum(iL) ~= sum(iR)
+0026     <span class="keyword">if</span> sum(iL) &gt; sum(iR)
+0027         aux = regexprep(labels(iR), <span class="string">'^R*'</span>, <span class="string">'L'</span>);
+0028         [b, iL] = this.isaLabelPrefix(aux);
+0029         iL = iL(b);
+0030         [~, iR] = this.isaLabelPrefix(labels(iR));
+0031         iR = iR(b);
+0032     <span class="keyword">else</span>
+0033         aux = regexprep(labels(iL), <span class="string">'^L*'</span>, <span class="string">'R'</span>);
+0034         [b, iR] = this.isaLabelPrefix(aux);
+0035         iR = iR(b);
+0036         [~, iL] = this.isaLabelPrefix(labels(iL));
+0037         iL = iL(b);
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 dL = data(:, iL, :);
+0041 lL = labels(iL);
+0042 dR = data(:, iR, :);
+0043 lR = labels(iR);
+0044 [~, idx1] = sort(nanmean(dL(:, :, 3)), <span class="string">'ascend'</span>);
+0045 [~, idx2] = sort(nanmean(dR(:, :, 3)), <span class="string">'descend'</span>);
+0046 labels = [lL(idx1) lR(idx2)];
+0047 data = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(2, dL(:, idx1, :), dR(:, idx2, :));
+0048 d = permute(data, [2, 3, 1]);
+0049 model = naiveDistances.learn(d, labels, true);
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

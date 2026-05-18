@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getStrideInfo</title>
+  <meta name="keywords" content="getStrideInfo">
+  <meta name="description" content="getStrideInfo  Returns stride timing information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; getStrideInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getStrideInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getStrideInfo  Returns stride timing information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getStrideInfo  Returns stride timing information
+
+   [numStrides, trials, initTimes, endTimes] = getStrideInfo(this)
+   returns stride count and timing for all trials
+
+   [numStrides, trials, initTimes, endTimes] = getStrideInfo(this,
+   eventClass) uses specified event class
+
+   Inputs:
+       this - experimentData object
+       eventClass - event classification parameter (optional)
+
+   Outputs:
+       numStrides - total number of strides across all trials
+       trials - vector indicating source trial for each stride
+       initTimes - vector of stride start times
+       endTimes - vector of stride end times
+
+   See also: processedLabData/getStrideInfo</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	getStrideInfo  Returns stride count and timing information</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStridedField.html" class="code" title="function [stridedField, bad, initTime, events] =getStridedField(this, field, events)">getStridedField</a>	getStridedField  Extracts field data organized by stride</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/separateIntoDoubleStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoDoubleStrides(this, triggerEvent)">separateIntoDoubleStrides</a>	separateIntoDoubleStrides  Splits data into 2-stride segments</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/separateIntoStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoStrides(this, triggerEvent)">separateIntoStrides</a>	separateIntoStrides  Splits data into individual stride segments</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/separateIntoSuperStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoSuperStrides(this, triggerEvent)">separateIntoSuperStrides</a>	separateIntoSuperStrides  Splits data into 1.5-stride segments</li><li><a href="../../../../labTools/fun/parameterCalculation/calcExperimentalParams.html" class="code" title="function out = calcExperimentalParams(trialData, subData, eventClass, initEventSide)">calcExperimentalParams</a>	CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [numStrides, trials, initTimes, endTimes] = </a><span class="keyword">...</span>
+0002     <a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>(this, eventClass)
+0003 <span class="comment">%getStrideInfo  Returns stride timing information</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [numStrides, trials, initTimes, endTimes] = getStrideInfo(this)</span>
+0006 <span class="comment">%   returns stride count and timing for all trials</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [numStrides, trials, initTimes, endTimes] = getStrideInfo(this,</span>
+0009 <span class="comment">%   eventClass) uses specified event class</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       this - experimentData object</span>
+0013 <span class="comment">%       eventClass - event classification parameter (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       numStrides - total number of strides across all trials</span>
+0017 <span class="comment">%       trials - vector indicating source trial for each stride</span>
+0018 <span class="comment">%       initTimes - vector of stride start times</span>
+0019 <span class="comment">%       endTimes - vector of stride end times</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: processedLabData/getStrideInfo</span>
+0022 
+0023 numStrides = 0;
+0024 initTimes = [];
+0025 endTimes = [];
+0026 trials = [];
+0027 <span class="keyword">for</span> t = 1:length(this.data)
+0028     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{t})
+0029         [numStrides_, initTimes_, endTimes_] = <span class="keyword">...</span>
+0030             <a href="getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>(this.data{t}, eventClass);
+0031         numStrides = numStrides + numStrides_;
+0032         initTimes = [initTimes; initTimes_];
+0033         endTimes = [endTimes; endTimes_];
+0034         trials = [trials; t * ones(numStrides_, 1)];
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

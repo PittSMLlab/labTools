@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">Biofeedback</a> &gt; SombricTaiChi.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>SombricTaiChi
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li></ul>
+<li><a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li><li><a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li></ul>
@@ -71,7 +71,7 @@ This function is called by:
 0025             
 0026             <span class="keyword">if</span> nargin ~= 10
 0027                 <span class="comment">%                 disp('Error, incorrect # of input arguments provided');</span>
-0028                 cprintf(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
+0028                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
 0029             <span class="keyword">else</span>
 0030             <span class="keyword">end</span>
 0031             
@@ -79,69 +79,69 @@ This function is called by:
 0033                 this.subjectcode=ID;
 0034             <span class="keyword">else</span>
 0035                 this.subjectcode=<span class="string">''</span>;
-0036                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
+0036                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
 0037             <span class="keyword">end</span>
 0038             
 0039             <span class="keyword">if</span> ischar(sex)
 0040                 this.sex = sex;
 0041             <span class="keyword">else</span>
-0042                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input for subject gender must be a string\n'</span>);
+0042                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input for subject gender must be a string\n'</span>);
 0043                 this.sex=<span class="string">''</span>;
 0044             <span class="keyword">end</span>
 0045             
 0046             <span class="keyword">if</span> ischar(dleg)
 0047                 this.dominantleg=dleg;
 0048             <span class="keyword">else</span>
-0049                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
+0049                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
 0050                 this.dominantleg=<span class="string">''</span>;
 0051             <span class="keyword">end</span>
 0052             
 0053             <span class="keyword">if</span> ischar(dhand)
 0054                 this.dominanthand=dhand;
 0055             <span class="keyword">else</span>
-0056                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
+0056                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
 0057                 this.dominanthand=<span class="string">''</span>;
 0058             <span class="keyword">end</span>
 0059             
 0060             <span class="keyword">if</span> ischar(fastleg)
 0061                 this.fastleg=fastleg;
 0062             <span class="keyword">else</span>
-0063                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
+0063                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
 0064                 this.fastleg=<span class="string">''</span>;
 0065             <span class="keyword">end</span>
 0066             
 0067             <span class="keyword">if</span> isnumeric(height)
 0068                 this.height = height;
 0069             <span class="keyword">else</span>
-0070                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
+0070                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
 0071                 this.height=[];
 0072             <span class="keyword">end</span>
 0073             
 0074             <span class="keyword">if</span> isnumeric(weight)
 0075                 this.weight = weight;
 0076             <span class="keyword">else</span>
-0077                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
+0077                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
 0078                 this.weight=[];
 0079             <span class="keyword">end</span>
 0080             
 0081             <span class="keyword">if</span> iscell(triallist)
 0082                 this.triallist=triallist;
 0083             <span class="keyword">else</span>
-0084                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
+0084                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
 0085                 this.triallist={};
 0086             <span class="keyword">end</span>
 0087             
 0088             <span class="keyword">if</span> isnumeric(Rtarget)
 0089                 this.Rtarget = Rtarget;
 0090             <span class="keyword">else</span>
-0091                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
+0091                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
 0092                 this.Rtarget = [];
 0093             <span class="keyword">end</span>
 0094             
 0095             <span class="keyword">if</span> isnumeric(Ltarget)
 0096                 this.Ltarget = Ltarget;
 0097             <span class="keyword">else</span>
-0098                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
+0098                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
 0099                 this.Ltarget = [];
 0100             <span class="keyword">end</span>
 0101                 
@@ -225,7 +225,7 @@ This function is called by:
 0179                 scatter(h+[1:length(temps)],temps,<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
 0180                 title(<span class="string">'Saggital Target Errors'</span>);
 0181                 h = h+length(temps);
-0182                 plot([h h],[-1 1],<span class="string">'k'</span>);
+0182                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h h],[-1 1],<span class="string">'k'</span>);
 0183                 
 0184                 
 0185                 subplot(2,1,2)
@@ -233,7 +233,7 @@ This function is called by:
 0187                 scatter(h2+[1:length(templ)],templ,<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
 0188                 title(<span class="string">'Lateral Target Errors'</span>);
 0189                 h2 = h2+length(templ);
-0190                 plot([h2 h2],[-1 1],<span class="string">'k'</span>);
+0190                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h2 h2],[-1 1],<span class="string">'k'</span>);
 0191 <span class="comment">%                 plot([0 h2],[0.01 0.01],'--k');</span>
 0192 <span class="comment">%                 plot([0 h2],[-0.01 -0.01],'--k');</span>
 0193 <span class="comment">% %                 grid on</span>
@@ -246,15 +246,15 @@ This function is called by:
 0200                 scatter(h3+[1:length(Ysag{z})],Ysag{z},<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
 0201                 title(<span class="string">'Saggital Landing Positions'</span>)
 0202                 h3 = h3+length(Ysag{z});
-0203                 plot([h3 h3],[-1 1],<span class="string">'k'</span>);
+0203                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3 h3],[-1 1],<span class="string">'k'</span>);
 0204                 <span class="keyword">if</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
-0205                     plot([h3-length(Ysag{z}) h3],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
-0206                     plot([h3-length(Ysag{z}) h3],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
-0207                     plot([h3-length(Ysag{z}) h3],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
+0205                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
+0206                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
+0207                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
 0208                 <span class="keyword">elseif</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
-0209                     plot([h3-length(Ysag{z}) h3],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
-0210                     plot([h3-length(Ysag{z}) h3],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
-0211                     plot([h3-length(Ysag{z}) h3],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
+0209                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
+0210                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
+0211                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h3-length(Ysag{z}) h3],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
 0212                 <span class="keyword">end</span>
 0213 
 0214                 
@@ -263,15 +263,15 @@ This function is called by:
 0217                 scatter(h4+[1:length(Xlat{z})],Xlat{z},<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
 0218                 title(<span class="string">'Lateral Landing Positions'</span>)
 0219                 h4 = h4+length(Xlat{z});
-0220                 plot([h4 h4],[-1 1],<span class="string">'k'</span>);
+0220                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4 h4],[-1 1],<span class="string">'k'</span>);
 0221                 <span class="keyword">if</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
-0222                     plot([h4-length(Xlat{z}) h4],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
-0223                     plot([h4-length(Xlat{z}) h4],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
-0224                     plot([h4-length(Xlat{z}) h4],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
+0222                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
+0223                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
+0224                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
 0225                 <span class="keyword">elseif</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
-0226                     plot([h4-length(Xlat{z}) h4],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
-0227                     plot([h4-length(Xlat{z}) h4],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
-0228                     plot([h4-length(Xlat{z}) h4],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
+0226                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
+0227                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
+0228                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h4-length(Xlat{z}) h4],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
 0229                 <span class="keyword">end</span>
 0230 
 0231                 
@@ -284,13 +284,13 @@ This function is called by:
 0238             ylim([-0.1 0.1]);
 0239             ylabel(<span class="string">'Step Error (m)'</span>);
 0240 <span class="comment">%             legend('Training','Map','Base Map','Pre train','Post Map');</span>
-0241             plot([0 h],[0 0],<span class="string">'k'</span>);
-0242             plot([0 h],[0.01 0.01],<span class="string">'--k'</span>);
-0243             plot([0 h],[-0.01 -0.01],<span class="string">'--k'</span>);
+0241             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h],[0 0],<span class="string">'k'</span>);
+0242             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h],[0.01 0.01],<span class="string">'--k'</span>);
+0243             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h],[-0.01 -0.01],<span class="string">'--k'</span>);
 0244             subplot(2,1,2)
-0245             plot([0 h2],[0 0],<span class="string">'k'</span>);
-0246             plot([0 h2],[0.01 0.01],<span class="string">'--k'</span>);
-0247             plot([0 h2],[-0.01 -0.01],<span class="string">'--k'</span>);
+0245             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h2],[0 0],<span class="string">'k'</span>);
+0246             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h2],[0.01 0.01],<span class="string">'--k'</span>);
+0247             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h2],[-0.01 -0.01],<span class="string">'--k'</span>);
 0248             ylim([-0.1 0.1]);
 0249             ylabel(<span class="string">'Step Error (m)'</span>);
 0250             
@@ -312,7 +312,7 @@ This function is called by:
 0266             <span class="keyword">global</span> ID
 0267             ID = this.subjectcode;
 0268             
-0269             <span class="keyword">if</span> isempty(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
+0269             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
 0270                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
 0271                 this.data = cell(length(filenames),1);
 0272                 <span class="keyword">if</span> iscell(filenames)
@@ -381,8 +381,8 @@ This function is called by:
 0335         
 0336         <a name="_sub3" href="#_subfunctions" class="code">function []=saveit(this)</a><span class="comment">%save instance as the &quot;subjectcode_SLBF&quot;</span>
 0337             
-0338             <span class="keyword">if</span> isempty(this.subjectcode)
-0339                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
+0338             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.subjectcode)
+0339                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
 0340             <span class="keyword">else</span>
 0341                 savename = [this.subjectcode <span class="string">'_PerceptionBF_day.mat'</span>];
 0342                 eval([this.subjectcode <span class="string">'=this;'</span>]);
@@ -433,7 +433,7 @@ This function is called by:
 0387                         fclose(f);
 0388                         
 0389                         <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
-0390                             [header,data] = JSONtxt2cell(filename{z});
+0390                             [header,data] = <a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>(filename{z});
 0391                             this.data{z} = data;
 0392                             this.dataheader = header;
 0393                         <span class="keyword">else</span>
@@ -443,7 +443,7 @@ This function is called by:
 0397                             this.dataheader = S.textdata;
 0398                         <span class="keyword">end</span>
 0399                     <span class="keyword">else</span>
-0400                         data = cell2mat(this.data(z));
+0400                         data = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.data(z));
 0401                         header = this.dataheader;
 0402                     <span class="keyword">end</span>
 0403                     
@@ -452,7 +452,7 @@ This function is called by:
 0406                     
 0407                     <span class="comment">%check for monotonicity</span>
 0408                     checkers = find(diff(data2(:,1))&lt;1);
-0409                     <span class="keyword">while</span> ~isempty(checkers)
+0409                     <span class="keyword">while</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(checkers)
 0410                         disp(<span class="string">'WARNING repeated frames present in data, removing...'</span>);
 0411                         <span class="keyword">for</span> y=1:length(checkers)
 0412                             data2(checkers(y),:)=[];
@@ -581,6 +581,6 @@ This function is called by:
 0535     <span class="keyword">end</span>
 0536 <span class="keyword">end</span>
 0537</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

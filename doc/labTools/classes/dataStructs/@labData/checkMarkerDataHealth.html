@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkMarkerDataHealth</title>
+  <meta name="keywords" content="checkMarkerDataHealth">
+  <meta name="description" content="checkMarkerDataHealth  Diagnoses issues with marker data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; checkMarkerDataHealth.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>checkMarkerDataHealth
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>checkMarkerDataHealth  Diagnoses issues with marker data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function checkMarkerDataHealth(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">checkMarkerDataHealth  Diagnoses issues with marker data
+
+   checkMarkerDataHealth(this) analyzes marker data for missing frames,
+   gap distributions, and potential outliers. Generates diagnostic plots.
+
+   Inputs:
+       this - labData object
+
+   Outputs:
+       None - generates diagnostic figures
+
+   See also: orientedLabTimeSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	UNTITLED6 Summary of this function goes here</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function checkMarkerDataHealth(this)</a>
+0002 <span class="comment">%checkMarkerDataHealth  Diagnoses issues with marker data</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   checkMarkerDataHealth(this) analyzes marker data for missing frames,</span>
+0005 <span class="comment">%   gap distributions, and potential outliers. Generates diagnostic plots.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labData object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       None - generates diagnostic figures</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   See also: orientedLabTimeSeries</span>
+0014 
+0015 ts = this.markerData;
+0016 
+0017 <span class="comment">% First: diagnose missing markers</span>
+0018 ll = ts.getLabelPrefix;
+0019 dd = ts.getOrientedData;
+0020 aux = zeros(size(dd, 1), size(dd, 2));
+0021 <span class="keyword">for</span> i = 1:length(ll)
+0022     l = ll{i};
+0023     aux(:, i) = any(isnan(dd(:, i, :)), 3);
+0024     <span class="keyword">if</span> any(aux(i, :))
+0025         warning(<span class="string">'labData:checkMarkerDataHealth'</span>, [<span class="string">'Marker '</span> l <span class="keyword">...</span>
+0026             <span class="string">' is missing for '</span> num2str(sum(aux) * ts.sampPeriod) <span class="string">' secs.'</span>]);
+0027         <span class="keyword">for</span> j = 1:3
+0028             <span class="comment">% Filling gaps just for healthCheck purposes</span>
+0029             dd(aux, i, j) = nanmean(dd(:, i, j));
+0030         <span class="keyword">end</span>
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 figure;
+0035 subplot(2, 2, 1); <span class="comment">% Missing frames as % of total</span>
+0036 hold on;
+0037 c = sum(aux, 1) / size(aux, 1);
+0038 bar(c);
+0039 set(gca, <span class="string">'XTick'</span>, 1:numel(ll), <span class="string">'XTickLabel'</span>, ll, <span class="string">'XTickLabelRotation'</span>, 90);
+0040 ylabel(<span class="string">'Missing frames (%)'</span>);
+0041 
+0042 subplot(2, 2, 2); <span class="comment">% Distribution of gap lengths</span>
+0043 hold on;
+0044 h = [];
+0045 s = {};
+0046 <span class="keyword">for</span> i = 1:length(ll)
+0047     <span class="keyword">if</span> c(i) &gt; 0.01
+0048         w = [0; aux(:, i); 0]; <span class="comment">% auxiliary vector</span>
+0049         runs_ones = find(diff(w) == -1) - find(diff(w) == 1);
+0050         h(end + 1) = histogram(runs_ones, .5:1:50, <span class="string">'DisplayName'</span>, ll{i});
+0051         s{end + 1} = ll{i};
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span>
+0054 legend(h, s);
+0055 title(<span class="string">'Distribution of gap lenghts'</span>);
+0056 ylabel(<span class="string">'Gap count'</span>);
+0057 xlabel(<span class="string">'Gap length'</span>);
+0058 axis tight;
+0059 
+0060 subplot(2, 2, 3);
+0061 hold on;
+0062 d = sum(aux, 2);
+0063 histogram(d, -.5:1:5.5, <span class="string">'Normalization'</span>, <span class="string">'probability'</span>);
+0064 title(<span class="string">'Distribution of # missing in each frame'</span>);
+0065 ylabel(<span class="string">'% of frames with missing markers'</span>);
+0066 xlabel(<span class="string">'# missing markers'</span>);
+0067 axis tight;
+0068 
+0069 <span class="comment">% Two: create a model to determine if outliers are present</span>
+0070 dd = permute(dd, [2, 3, 1]);
+0071 [D, sD] = <a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>(dd);
+0072 [lp, ~] = <a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>(dd, D, sD);
+0073 subplot(2, 2, 4);
+0074 hold on;
+0075 minLike = min(lp, [], 1);
+0076 <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(minLike);
+0077 medLike = nanmedian(lp, 1);
+0078 <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(medLike, <span class="string">'r'</span>);
+0079 legend(ll);
+0080 ii = find(medLike &lt; -1);
+0081 <span class="keyword">for</span> j = 1:length(ii)
+0082     figure;
+0083     <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(dd(:, 1, ii(j)), dd(:, 2, ii(j)), dd(:, 3, ii(j)), <span class="string">'o'</span>);
+0084     text(dd(:, 1, ii(j)), dd(:, 2, ii(j)), dd(:, 3, ii(j)), ll);
+0085     hold on;
+0086     [~, zz] = min(lp(:, ii(j)));
+0087     <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(dd(zz, 1, ii(j)), dd(zz, 2, ii(j)), dd(zz, 3, ii(j)), <span class="string">'ro'</span>);
+0088     title([<span class="string">'median likeli = '</span> num2str(medLike(ii(j))) <span class="string">', frame '</span> <span class="keyword">...</span>
+0089         num2str(ii(j))]);
+0090     pause;
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">% % Check for outliers:</span>
+0094 <span class="comment">% % Do a data translation:</span>
+0095 <span class="comment">% % refMarker = squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}), 2)); % Assuming these markers exist</span>
+0096 <span class="comment">% % Do a label-agnostic data translation:</span>
+0097 <span class="comment">% refMarker = squeeze(nanmean(dd, 2));</span>
+0098 <span class="comment">% newTS = ts.translate([-refMarker(:, 1:2), zeros(size(refMarker, 1), 1)]); % Assuming z is a known fixed axis</span>
+0099 <span class="comment">% % Not agnostic rotation:</span>
+0100 <span class="comment">% % relData = squeeze(markerData.getOrientedData('RHIP'));</span>
+0101 <span class="comment">% % Label agnostic data rotation:</span>
+0102 <span class="comment">% newTS = newTS.alignRotate([refMarker(:, 2), -refMarker(:, 1), zeros(size(refMarker, 1), 1)], [0, 0, 1]);</span>
+0103 <span class="comment">% medianTS = newTS.median; % Gets the median skeleton of the markers</span>
+0104 <span class="comment">%</span>
+0105 <span class="comment">% % With this median skeleton, a minimization can be done to</span>
+0106 <span class="comment">% % find another label agnostic data rotation that does not</span>
+0107 <span class="comment">% % depend on estimating the translation velocity:</span>
+0108 <span class="comment">%</span>
+0109 <span class="comment">% % Another attempt at label agnostic rotation (not using</span>
+0110 <span class="comment">% % velocity, but actually some info about the skeleton</span>
+0111 <span class="comment">% % having Left and Right)</span>
+0112 <span class="comment">% % l1 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^L'), 'UniformOutput', false);</span>
+0113 <span class="comment">% % l2 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^R'), 'UniformOutput', false);</span>
+0114 <span class="comment">% % relDataOTS = newTS.computeDifferenceOTS([], [], l1(1:3:end), l2(1:3:end));</span>
+0115 <span class="comment">% % relData = squeeze(nanmedian(relDataOTS.getOrientedData, 2)); % Need to work on this</span>
+0116 <span class="comment">%</span>
+0117 <span class="comment">% % Try to fit a 2-cluster model, to see if some marker</span>
+0118 <span class="comment">% % labels are switched at some point during experiment</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% % Assuming single mode/cluster, find outliers by getting</span>
+0121 <span class="comment">% % stats on distribution of positions/distance and</span>
+0122 <span class="comment">% % velocities.</span>
+0123 <span class="keyword">end</span>
+0124</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

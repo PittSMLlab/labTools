@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of bilateralPlot</title>
+  <meta name="keywords" content="bilateralPlot">
+  <meta name="description" content="bilateralPlot  Plots bilateral comparison">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; bilateralPlot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>bilateralPlot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>bilateralPlot  Plots bilateral comparison</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">bilateralPlot  Plots bilateral comparison
+
+   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled
+   data overlaid for comparison
+
+   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles,
+   events, color, lineWidth) plots with specified options
+
+   Inputs:
+       this - labTimeSeries object
+       h - figure handle (optional, creates new if empty)
+       labels - labels to plot (optional, default: all)
+       plotHandles - subplot handles (optional, creates if empty)
+       events - labTimeSeries with events to mark (optional)
+       color - line color (optional)
+       lineWidth - line width (optional, default: 2)
+
+   Outputs:
+       h - figure handle
+       plotHandles - array of subplot handles
+
+   Note: Ideally plots 'L' and 'R' timeseries on top of each other
+         for bilateral comparison
+
+   See also: <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>, <a href="plotAligned.html" class="code" title="function [h, plotHandles] = plotAligned(this, h, labels, plotHandles,events, color, lineWidth)">plotAligned</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>	tight_subplot creates "subplot" axes with adjustable gaps and margins</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h, plotHandles] = bilateralPlot(this, h, labels, </a><span class="keyword">...</span>
+0002     plotHandles, events, color, lineWidth)
+0003 <span class="comment">%bilateralPlot  Plots bilateral comparison</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled</span>
+0006 <span class="comment">%   data overlaid for comparison</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles,</span>
+0009 <span class="comment">%   events, color, lineWidth) plots with specified options</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       this - labTimeSeries object</span>
+0013 <span class="comment">%       h - figure handle (optional, creates new if empty)</span>
+0014 <span class="comment">%       labels - labels to plot (optional, default: all)</span>
+0015 <span class="comment">%       plotHandles - subplot handles (optional, creates if empty)</span>
+0016 <span class="comment">%       events - labTimeSeries with events to mark (optional)</span>
+0017 <span class="comment">%       color - line color (optional)</span>
+0018 <span class="comment">%       lineWidth - line width (optional, default: 2)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Outputs:</span>
+0021 <span class="comment">%       h - figure handle</span>
+0022 <span class="comment">%       plotHandles - array of subplot handles</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   Note: Ideally plots 'L' and 'R' timeseries on top of each other</span>
+0025 <span class="comment">%         for bilateral comparison</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   See also: plot, plotAligned</span>
+0028 
+0029 <span class="comment">% Ideally we would plot 'L' and 'R' timeseries on top of each other,</span>
+0030 <span class="comment">% to do a bilateral comparison. Need to implement.</span>
+0031 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(h)
+0032     h = figure;
+0033 <span class="keyword">else</span>
+0034     figure(h);
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0037     events = [];
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(color)
+0040     color = [];
+0041 <span class="keyword">end</span>
+0042 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
+0043     labels = this.labels;
+0044 <span class="keyword">end</span>
+0045 suffix = unique(cellfun(@(x) x(2:end), labels, <span class="string">'UniformOutput'</span>, <span class="keyword">...</span>
+0046     false));
+0047 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles) || <span class="keyword">...</span>
+0048         length(plotHandles) &lt; length(suffix)
+0049     [b, a] = <a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(length(suffix));
+0050     <span class="comment">% External function</span>
+0051     plotHandles = <a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>(b, a, [.05 .05], [.05 .05], <span class="keyword">...</span>
+0052         [.05 .05]);
+0053 <span class="keyword">end</span>
+0054 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lineWidth)
+0055     lineWidth = 2;
+0056 <span class="keyword">end</span>
+0057 [h, plotHandles] = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(this, h, strcat(<span class="string">'L'</span>, suffix), plotHandles, <span class="keyword">...</span>
+0058     events, color, lineWidth);
+0059 [h, plotHandles] = <a href="plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>(this, h, strcat(<span class="string">'R'</span>, suffix), plotHandles, <span class="keyword">...</span>
+0060     events, color, lineWidth);
+0061 <span class="keyword">for</span> i = 1:length(suffix)
+0062     subplot(plotHandles(i));
+0063     ylabel(suffix{i});
+0064     <span class="keyword">if</span> i == length(suffix)
+0065         legend(<span class="string">'L'</span>, <span class="string">'R'</span>);
+0066     <span class="keyword">end</span>
+0067 <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

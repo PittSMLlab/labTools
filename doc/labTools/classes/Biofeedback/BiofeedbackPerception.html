@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">Biofeedback</a> &gt; BiofeedbackPerception.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>BiofeedbackPerception
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li></ul>
+<li><a href="BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li><li><a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li></ul>
@@ -118,97 +118,97 @@ This function is called by:
 0072             
 0073             <span class="keyword">if</span> nargin ~= 13
 0074                 <span class="comment">%                 disp('Error, incorrect # of input arguments provided');</span>
-0075                 cprintf(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
+0075                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
 0076             <span class="keyword">else</span>
 0077                 
 0078                 <span class="keyword">if</span> ischar(ID)
 0079                     this.subjectcode=ID;
 0080                 <span class="keyword">else</span>
 0081                     this.subjectcode=<span class="string">''</span>;
-0082                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
+0082                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
 0083                 <span class="keyword">end</span>
 0084                 
 0085                 <span class="keyword">if</span> isa(date,<span class="string">'labDate'</span>)
 0086                     this.date = date;
 0087                 <span class="keyword">else</span>
-0088                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect experiment date format provided, must be class labDate\n'</span>);
+0088                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect experiment date format provided, must be class labDate\n'</span>);
 0089                     this.date=<span class="string">''</span>;
 0090                 <span class="keyword">end</span>
 0091                 
 0092                 <span class="keyword">if</span> ischar(sex)
 0093                     this.sex = sex;
 0094                 <span class="keyword">else</span>
-0095                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input for sex must be a string\n'</span>);
+0095                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input for sex must be a string\n'</span>);
 0096                     this.sex=<span class="string">''</span>;
 0097                 <span class="keyword">end</span>
 0098                 
 0099                 <span class="keyword">if</span> isa(dob,<span class="string">'labDate'</span>)
 0100                     this.dob=dob;
 0101                 <span class="keyword">else</span>
-0102                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: date of birth is not the correct format\n'</span>);
+0102                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: date of birth is not the correct format\n'</span>);
 0103                     this.dob=[];
 0104                 <span class="keyword">end</span>
 0105                 
 0106                 <span class="keyword">if</span> ischar(dleg)
 0107                     this.dominantleg=dleg;
 0108                 <span class="keyword">else</span>
-0109                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
+0109                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
 0110                     this.dominantleg=<span class="string">''</span>;
 0111                 <span class="keyword">end</span>
 0112                 
 0113                 <span class="keyword">if</span> ischar(dhand)
 0114                     this.dominanthand=dhand;
 0115                 <span class="keyword">else</span>
-0116                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
+0116                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
 0117                     this.dominanthand=<span class="string">''</span>;
 0118                 <span class="keyword">end</span>
 0119                 
 0120                 <span class="keyword">if</span> ischar(fastleg)
 0121                     this.fastleg=fastleg;
 0122                 <span class="keyword">else</span>
-0123                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
+0123                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
 0124                     this.fastleg=<span class="string">''</span>;
 0125                 <span class="keyword">end</span>
 0126                 
 0127                 <span class="keyword">if</span> isnumeric(height)
 0128                     this.height = height;
 0129                 <span class="keyword">else</span>
-0130                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
+0130                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
 0131                     this.height=[];
 0132                 <span class="keyword">end</span>
 0133                 
 0134                 <span class="keyword">if</span> isnumeric(weight)
 0135                     this.weight = weight;
 0136                 <span class="keyword">else</span>
-0137                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
+0137                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
 0138                     this.weight=[];
 0139                 <span class="keyword">end</span>
 0140                 
 0141                 <span class="keyword">if</span> isa(age,<span class="string">'labDate'</span>)
 0142                     this.age = age;
 0143                 <span class="keyword">else</span>
-0144                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input age is not class labDate\n'</span>);
+0144                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: input age is not class labDate\n'</span>);
 0145                     this.age=[];
 0146                 <span class="keyword">end</span>
 0147                 
 0148                 <span class="keyword">if</span> iscell(triallist)
 0149                     this.triallist=triallist;
 0150                 <span class="keyword">else</span>
-0151                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
+0151                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
 0152                     this.triallist={};
 0153                 <span class="keyword">end</span>
 0154                 
 0155                 <span class="keyword">if</span> isnumeric(Rtarget)
 0156                     this.Rtmtarget = Rtarget;
 0157                 <span class="keyword">else</span>
-0158                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
+0158                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
 0159                     this.Rtmtarget = [];
 0160                 <span class="keyword">end</span>
 0161                 
 0162                 <span class="keyword">if</span> isnumeric(Ltarget)
 0163                     this.Ltmtarget = Ltarget;
 0164                 <span class="keyword">else</span>
-0165                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
+0165                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
 0166                     this.Ltmtarget = [];
 0167                 <span class="keyword">end</span>
 0168             <span class="keyword">end</span>
@@ -219,8 +219,8 @@ This function is called by:
 0173             <span class="keyword">global</span> rhits
 0174             <span class="keyword">global</span> lhits
 0175             
-0176             <span class="keyword">if</span> isempty(this.triallist)
-0177                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: no trial information available to analyze'</span>);
+0176             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.triallist)
+0177                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: no trial information available to analyze'</span>);
 0178             <span class="keyword">else</span>
 0179                 
 0180                 filename = this.triallist(:,1);
@@ -290,7 +290,7 @@ This function is called by:
 0244                                 RR{z}(r, RDATA(t))=nanmean(rhits{z}(t:end));
 0245                             <span class="keyword">end</span>
 0246                             t=find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-1;
-0247                             <span class="keyword">if</span> isempty(t)
+0247                             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
 0248                                 t=length(rts{z});
 0249                             <span class="keyword">end</span>
 0250                             <span class="keyword">if</span>  RR{z}(r, RDATA(t))~=0;
@@ -310,7 +310,7 @@ This function is called by:
 0264                                 LL{z}(r, LDATA(t))=nanmean(lhits{z}(t:end));
 0265                             <span class="keyword">end</span>
 0266                             t=find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-1;
-0267                             <span class="keyword">if</span> isempty(t)
+0267                             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
 0268                                 t=length(lts{z});
 0269                             <span class="keyword">end</span>
 0270                             <span class="keyword">if</span>  LL{z}(r,LDATA(t))~=0;
@@ -322,13 +322,13 @@ This function is called by:
 0276                     <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
 0277                     <span class="comment">%DDR{1}=RR{wash}-RR{adapt};%Tit4tat:base subtraction</span>
 0278                     <span class="comment">%DDR{1}=RR{wash}-repmat(RR{adapt}(end, :), size(RR{wash}, 1), 1);% Use the Baseline SS</span>
-0279                     DDR{1}=RR{wash}-repmat([mean(RR{adapt}(:, 1)) RR{adapt}(<span class="keyword">end</span>, 2) mean(RR{adapt}(:, 3))], size(RR{wash}, 1), 1);DDR{1}(1:end-1, 2)=0;<span class="comment">% Use the whole Baseline, mean</span>
+0279                     DDR{1}=RR{wash}-repmat([<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 1)) RR{adapt}(<span class="keyword">end</span>, 2) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 3))], size(RR{wash}, 1), 1);DDR{1}(1:end-1, 2)=0;<span class="comment">% Use the whole Baseline, mean</span>
 0280                     <span class="comment">%DDR{1}=RR{wash}-repmat([median(RR{adapt}(:, 1)) RR{adapt}(end, 2) median(RR{adapt}(:, 3))], size(RR{wash}, 1), 1);DDR{1}(1:end-1, 2)=0;% Use the whole Baseline, median</span>
 0281                     DDR{2}=nanmean(RR{wash2}-RR{base});
 0282                     
 0283                     <span class="comment">%DDL{1}=LL{wash}-LL{adapt};%Tit4tat:base subtraction</span>
 0284                     <span class="comment">%DDL{1}=LL{wash}-repmat(LL{adapt}(end, :), size(LL{wash}, 1), 1);% Use the Baseline SS</span>
-0285                     DDL{1}=LL{wash}-repmat([mean(LL{adapt}(:, 1)) LL{adapt}(<span class="keyword">end</span>, 2) mean(LL{adapt}(:, 3))], size(LL{wash}, 1), 1);DDL{1}(1:end-1, 2)=0;<span class="comment">% Use the whole Baseline, mean</span>
+0285                     DDL{1}=LL{wash}-repmat([<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 1)) LL{adapt}(<span class="keyword">end</span>, 2) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 3))], size(LL{wash}, 1), 1);DDL{1}(1:end-1, 2)=0;<span class="comment">% Use the whole Baseline, mean</span>
 0286                     <span class="comment">%DDL{1}=LL{wash}-repmat([median(LL{adapt}(:, 1)) LL{adapt}(end, 2) median(LL{adapt}(:, 3))], size(LL{wash}, 1), 1);DDL{1}(1:end-1, 2)=0;% Use the whole Baseline, median</span>
 0287                     DDL{2}=nanmean(LL{wash2}-LL{base});
 0288                     <span class="comment">% % %                     end</span>
@@ -347,7 +347,7 @@ This function is called by:
 0301             <span class="keyword">global</span> ID
 0302             ID = this.subjectcode;
 0303             
-0304             <span class="keyword">if</span> isempty(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
+0304             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
 0305                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
 0306                 this.data = cell(length(filenames),1);
 0307                 <span class="keyword">if</span> iscell(filenames)
@@ -415,8 +415,8 @@ This function is called by:
 0369         
 0370         <a name="_sub3" href="#_subfunctions" class="code">function []=saveit(this)</a><span class="comment">%save instance as the &quot;subjectcode_SLBF&quot;</span>
 0371             
-0372             <span class="keyword">if</span> isempty(this.subjectcode)
-0373                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
+0372             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.subjectcode)
+0373                 <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
 0374             <span class="keyword">else</span>
 0375                 savename = [this.subjectcode <span class="string">'_PerceptionBF_day.mat'</span>];
 0376                 eval([this.subjectcode <span class="string">'=this;'</span>]);
@@ -427,8 +427,8 @@ This function is called by:
 0381         <a name="_sub4" href="#_subfunctions" class="code">function [dataCol]=getDataCol(this, dataname)</a>
 0382             <span class="keyword">for</span> z=1:length(this.triallist)
 0383                 col=find(cellfun(@(x) strcmp(x, dataname), this.dataheader));
-0384                 <span class="keyword">if</span> isempty(col)
-0385                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: no data with requested name found'</span>);
+0384                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(col)
+0385                     <a href="../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: no data with requested name found'</span>);
 0386                     <span class="keyword">break</span>
 0387                 <span class="keyword">end</span>
 0388                 dataCol{z}=this.data{1, z}(:, col);
@@ -473,7 +473,7 @@ This function is called by:
 0427                         fclose(f);
 0428                         
 0429                         <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
-0430                             [header,data] = JSONtxt2cell(filename{z});
+0430                             [header,data] = <a href="../../../labTools/fun/misc/JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>(filename{z});
 0431                             this.data{z} = data;
 0432                             this.dataheader = header;
 0433                         <span class="keyword">else</span>
@@ -483,7 +483,7 @@ This function is called by:
 0437                             this.dataheader = S.textdata;
 0438                         <span class="keyword">end</span>
 0439                     <span class="keyword">else</span>
-0440                         data = cell2mat(this.data(z));
+0440                         data = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.data(z));
 0441                         header = this.dataheader;
 0442                     <span class="keyword">end</span>
 0443                     
@@ -492,7 +492,7 @@ This function is called by:
 0446                     
 0447                     <span class="comment">%check for monotonicity</span>
 0448                     checkers = find(diff(data2(:,1))&lt;1);
-0449                     <span class="keyword">while</span> ~isempty(checkers)
+0449                     <span class="keyword">while</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(checkers)
 0450                         <span class="comment">%                         disp('WARNING repeated frames present in data, removing...');</span>
 0451                         <span class="keyword">for</span> y=1:length(checkers)
 0452                             data2(checkers(y),:)=[];
@@ -532,7 +532,7 @@ This function is called by:
 0486 <span class="comment">%                     LHS(tlhs) = 1;</span>
 0487 
 0488                     <span class="comment">%Labtools method of detecting events</span>
-0489                     [LHS,RHS,~,~]=getEventsFromForces(Lz2,Rz2,100);
+0489                     [LHS,RHS,~,~]=<a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(Lz2,Rz2,100);
 0490                     
 0491                     
 0492                     
@@ -641,48 +641,48 @@ This function is called by:
 0595                 rtrain = 0;
 0596                 ltrain = 0;
 0597                 <span class="keyword">for</span> c = 1:length(train)
-0598                     rtrain = rtrain+length(cell2mat(rhits(train(c))));
-0599                     ltrain = ltrain+length(cell2mat(lhits(train(c))));
+0598                     rtrain = rtrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train(c))));
+0599                     ltrain = ltrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train(c))));
 0600                 <span class="keyword">end</span>
 0601             <span class="keyword">else</span>
-0602                 rtrain = length(cell2mat(rhits(train)));
-0603                 ltrain = length(cell2mat(lhits(train)));
+0602                 rtrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train)));
+0603                 ltrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train)));
 0604             <span class="keyword">end</span>
 0605             
 0606             <span class="keyword">if</span> length(base)&gt;1
 0607                 rbase = 0;
 0608                 lbase = 0;
 0609                 <span class="keyword">for</span> c = 1:length(base)
-0610                     rbase = rbase+length(cell2mat(rhits(base(c))));
-0611                     lbase = lbase+length(cell2mat(lhits(base(c))));
+0610                     rbase = rbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base(c))));
+0611                     lbase = lbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base(c))));
 0612                 <span class="keyword">end</span>
 0613             <span class="keyword">else</span>
-0614                 rbase = length(cell2mat(rhits(base)));
-0615                 lbase = length(cell2mat(lhits(base)));
+0614                 rbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base)));
+0615                 lbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base)));
 0616             <span class="keyword">end</span>
 0617             
 0618             <span class="keyword">if</span> length(adapt)&gt;1
 0619                 radapt = 0;
 0620                 ladapt = 0;
 0621                 <span class="keyword">for</span> c = 1:length(adapt)
-0622                     radapt = radapt+length(cell2mat(rhits(adapt(c))));
-0623                     ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+0622                     radapt = radapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt(c))));
+0623                     ladapt = ladapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt(c))));
 0624                 <span class="keyword">end</span>
 0625             <span class="keyword">else</span>
-0626                 radapt = length(cell2mat(rhits(adapt)));
-0627                 ladapt = length(cell2mat(lhits(adapt)));
+0626                 radapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt)));
+0627                 ladapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt)));
 0628             <span class="keyword">end</span>
 0629             
 0630             <span class="keyword">if</span> length(wash)&gt;1
 0631                 rwash = 0;
 0632                 lwash = 0;
 0633                 <span class="keyword">for</span> c = 1:length(wash)
-0634                     rwash = rwash+length(cell2mat(rhits(wash(c))));
-0635                     lwash = lwash+length(cell2mat(lhits(wash(c))));
+0634                     rwash = rwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash(c))));
+0635                     lwash = lwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash(c))));
 0636                 <span class="keyword">end</span>
 0637             <span class="keyword">else</span>
-0638                 rwash = length(cell2mat(rhits(wash)));
-0639                 lwash = length(cell2mat(lhits(wash)));
+0638                 rwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash)));
+0639                 lwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash)));
 0640             <span class="keyword">end</span>
 0641             
 0642             figure(2)
@@ -732,8 +732,8 @@ This function is called by:
 0686                 <span class="keyword">end</span>
 0687                 h = h+length(rhits{z});
 0688             <span class="keyword">end</span>
-0689             plot([0 h+length(rhits{z})],[0.02 0.02],<span class="string">'k'</span>);<span class="comment">%tolerance lines</span>
-0690             plot([0 h+length(rhits{z})],[-0.02 -0.02],<span class="string">'k'</span>);
+0689             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h+length(rhits{z})],[0.02 0.02],<span class="string">'k'</span>);<span class="comment">%tolerance lines</span>
+0690             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 h+length(rhits{z})],[-0.02 -0.02],<span class="string">'k'</span>);
 0691             figure(2)
 0692             <span class="keyword">if</span> this.fastleg == <span class="string">'r'</span>
 0693                 subplot(2,1,1)
@@ -793,8 +793,8 @@ This function is called by:
 0747                     <span class="keyword">end</span>
 0748                 <span class="keyword">end</span>
 0749                 
-0750                 plot([h h+length(lhits{z})],[0.02 0.02],<span class="string">'k'</span>);<span class="comment">%tolerance lines</span>
-0751                 plot([h h+length(lhits{z})],[-0.02 -0.02],<span class="string">'k'</span>);
+0750                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h h+length(lhits{z})],[0.02 0.02],<span class="string">'k'</span>);<span class="comment">%tolerance lines</span>
+0751                 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([h h+length(lhits{z})],[-0.02 -0.02],<span class="string">'k'</span>);
 0752                 h = h+length(lhits{z});
 0753             <span class="keyword">end</span>
 0754             figure(2)
@@ -827,48 +827,48 @@ This function is called by:
 0781                 rtrain = 0;
 0782                 ltrain = 0;
 0783                 <span class="keyword">for</span> c = 1:length(train)
-0784                     rtrain = rtrain+length(cell2mat(rhits(train(c))));
-0785                     ltrain = ltrain+length(cell2mat(lhits(train(c))));
+0784                     rtrain = rtrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train(c))));
+0785                     ltrain = ltrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train(c))));
 0786                 <span class="keyword">end</span>
 0787             <span class="keyword">else</span>
-0788                 rtrain = length(cell2mat(rhits(train)));
-0789                 ltrain = length(cell2mat(lhits(train)));
+0788                 rtrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train)));
+0789                 ltrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train)));
 0790             <span class="keyword">end</span>
 0791             
 0792             <span class="keyword">if</span> length(base)&gt;1
 0793                 rbase = 0;
 0794                 lbase = 0;
 0795                 <span class="keyword">for</span> c = 1:length(base)
-0796                     rbase = rbase+length(cell2mat(rhits(base(c))));
-0797                     lbase = lbase+length(cell2mat(lhits(base(c))));
+0796                     rbase = rbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base(c))));
+0797                     lbase = lbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base(c))));
 0798                 <span class="keyword">end</span>
 0799             <span class="keyword">else</span>
-0800                 rbase = length(cell2mat(rhits(base)));
-0801                 lbase = length(cell2mat(lhits(base)));
+0800                 rbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base)));
+0801                 lbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base)));
 0802             <span class="keyword">end</span>
 0803             
 0804             <span class="keyword">if</span> length(adapt)&gt;1
 0805                 radapt = 0;
 0806                 ladapt = 0;
 0807                 <span class="keyword">for</span> c = 1:length(adapt)
-0808                     radapt = radapt+length(cell2mat(rhits(adapt(c))));
-0809                     ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+0808                     radapt = radapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt(c))));
+0809                     ladapt = ladapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt(c))));
 0810                 <span class="keyword">end</span>
 0811             <span class="keyword">else</span>
-0812                 radapt = length(cell2mat(rhits(adapt)));
-0813                 ladapt = length(cell2mat(lhits(adapt)));
+0812                 radapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt)));
+0813                 ladapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt)));
 0814             <span class="keyword">end</span>
 0815             
 0816             <span class="keyword">if</span> length(wash)&gt;1
 0817                 rwash = 0;
 0818                 lwash = 0;
 0819                 <span class="keyword">for</span> c = 1:length(wash)
-0820                     rwash = rwash+length(cell2mat(rhits(wash(c))));
-0821                     lwash = lwash+length(cell2mat(lhits(wash(c))));
+0820                     rwash = rwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash(c))));
+0821                     lwash = lwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash(c))));
 0822                 <span class="keyword">end</span>
 0823             <span class="keyword">else</span>
-0824                 rwash = length(cell2mat(rhits(wash)));
-0825                 lwash = length(cell2mat(lhits(wash)));
+0824                 rwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash)));
+0825                 lwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash)));
 0826             <span class="keyword">end</span>
 0827             <span class="keyword">for</span> z = base <span class="comment">%2%1:length(filename)</span>
 0828                 figure(4)
@@ -988,48 +988,48 @@ This function is called by:
 0942                 rtrain = 0;
 0943                 ltrain = 0;
 0944                 <span class="keyword">for</span> c = 1:length(train)
-0945                     rtrain = rtrain+length(cell2mat(rhits(train(c))));
-0946                     ltrain = ltrain+length(cell2mat(lhits(train(c))));
+0945                     rtrain = rtrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train(c))));
+0946                     ltrain = ltrain+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train(c))));
 0947                 <span class="keyword">end</span>
 0948             <span class="keyword">else</span>
-0949                 rtrain = length(cell2mat(rhits(train)));
-0950                 ltrain = length(cell2mat(lhits(train)));
+0949                 rtrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(train)));
+0950                 ltrain = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(train)));
 0951             <span class="keyword">end</span>
 0952             
 0953             <span class="keyword">if</span> length(base)&gt;1
 0954                 rbase = 0;
 0955                 lbase = 0;
 0956                 <span class="keyword">for</span> c = 1:length(base)
-0957                     rbase = rbase+length(cell2mat(rhits(base(c))));
-0958                     lbase = lbase+length(cell2mat(lhits(base(c))));
+0957                     rbase = rbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base(c))));
+0958                     lbase = lbase+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base(c))));
 0959                 <span class="keyword">end</span>
 0960             <span class="keyword">else</span>
-0961                 rbase = length(cell2mat(rhits(base)));
-0962                 lbase = length(cell2mat(lhits(base)));
+0961                 rbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(base)));
+0962                 lbase = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(base)));
 0963             <span class="keyword">end</span>
 0964             
 0965             <span class="keyword">if</span> length(adapt)&gt;1
 0966                 radapt = 0;
 0967                 ladapt = 0;
 0968                 <span class="keyword">for</span> c = 1:length(adapt)
-0969                     radapt = radapt+length(cell2mat(rhits(adapt(c))));
-0970                     ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+0969                     radapt = radapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt(c))));
+0970                     ladapt = ladapt+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt(c))));
 0971                 <span class="keyword">end</span>
 0972             <span class="keyword">else</span>
-0973                 radapt = length(cell2mat(rhits(adapt)));
-0974                 ladapt = length(cell2mat(lhits(adapt)));
+0973                 radapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(adapt)));
+0974                 ladapt = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(adapt)));
 0975             <span class="keyword">end</span>
 0976             
 0977             <span class="keyword">if</span> length(wash)&gt;1
 0978                 rwash = 0;
 0979                 lwash = 0;
 0980                 <span class="keyword">for</span> c = 1:length(wash)
-0981                     rwash = rwash+length(cell2mat(rhits(wash(c))));
-0982                     lwash = lwash+length(cell2mat(lhits(wash(c))));
+0981                     rwash = rwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash(c))));
+0982                     lwash = lwash+length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash(c))));
 0983                 <span class="keyword">end</span>
 0984             <span class="keyword">else</span>
-0985                 rwash = length(cell2mat(rhits(wash)));
-0986                 lwash = length(cell2mat(lhits(wash)));
+0985                 rwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(rhits(wash)));
+0986                 lwash = length(<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(lhits(wash)));
 0987             <span class="keyword">end</span>
 0988             h=0;
 0989             <span class="keyword">for</span> z = adapt(1) <span class="comment">% for z = 3%1:length(filename)</span>
@@ -1047,8 +1047,8 @@ This function is called by:
 1001                 legend({<span class="string">'Short'</span>, <span class="string">'Medium'</span>, <span class="string">'Long'</span>})
 1002                 xlabel(<span class="string">'Set'</span>)
 1003                 ylim([-0.255 0.255])
-1004                 line([0 6.3 ], [mean(RR{adapt}(:, 1)) mean(RR{adapt}(:, 1))])
-1005                 line([0 6.3 ], [mean(RR{adapt}(:, 3)) mean(RR{adapt}(:, 3))])
+1004                 line([0 6.3 ], [<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 1)) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 1))])
+1005                 line([0 6.3 ], [<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 3)) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{adapt}(:, 3))])
 1006             <span class="keyword">end</span>
 1007             
 1008             <span class="keyword">for</span> z = adapt(1) <span class="comment">%for z = 3%1:length(filename)</span>
@@ -1065,8 +1065,8 @@ This function is called by:
 1019                 ylabel(<span class="string">'Error (m)'</span>)
 1020                 h = h+length(lhits{z});
 1021                 ylim([-0.255 0.255])
-1022                 line([0 6.3 ], [mean(LL{adapt}(:, 1)) mean(LL{adapt}(:, 1))])
-1023                 line([0 6.3 ], [mean(LL{adapt}(:, 3)) mean(LL{adapt}(:, 3))])
+1022                 line([0 6.3 ], [<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 1)) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 1))])
+1023                 line([0 6.3 ], [<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 3)) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{adapt}(:, 3))])
 1024             <span class="keyword">end</span>
 1025             
 1026             <span class="keyword">for</span> z = wash(1) <span class="comment">%for z = 4%1:length(filename)</span>
@@ -1141,6 +1141,6 @@ This function is called by:
 1095         
 1096     <span class="keyword">end</span>
 1097 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

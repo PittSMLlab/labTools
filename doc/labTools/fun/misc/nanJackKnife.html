@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; nanJackKnife.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>nanJackKnife
 </h1>
@@ -102,10 +102,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li></ul>
 <!-- crossreference -->
 
 
@@ -270,7 +270,7 @@ This function is called by:
 0157     Pa = patch(Xcoords,Ycoords,PatchColor);
 0158     set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
 0159     <span class="keyword">end</span>
-0160     Li = plot(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0160     Li = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
 0161 <span class="keyword">elseif</span> nargin&gt;=7
 0162     <span class="comment">% Pa = patch(Xcoords,Ycoords,'w');</span>
 0163 
@@ -280,10 +280,10 @@ This function is called by:
 0167     <span class="keyword">end</span>
 0168     <span class="keyword">for</span> l=1:length(x)        
 0169         <span class="keyword">if</span> w(l)==0;
-0170             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0170             Li = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
 0171             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);</span>
 0172         <span class="keyword">else</span>
-0173             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0173             Li = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
 0174             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);</span>
 0175         <span class="keyword">end</span>
 0176     <span class="keyword">end</span>
@@ -294,6 +294,6 @@ This function is called by:
 0181 
 0182 
 0183</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

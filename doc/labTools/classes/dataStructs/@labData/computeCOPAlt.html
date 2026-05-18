@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeCOPAlt</title>
+  <meta name="keywords" content="computeCOPAlt">
+  <meta name="description" content="computeCOPAlt  Alternative method to compute center of pressure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; computeCOPAlt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>computeCOPAlt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>computeCOPAlt  Alternative method to compute center of pressure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">computeCOPAlt  Alternative method to compute center of pressure
+
+   [COPData, COPL, COPR] = computeCOPAlt(this) computes center of pressure
+   for left and right legs separately, then merges them. Uses default
+   filtering.
+
+   [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag) optionally
+   disables filtering when noFilterFlag is true
+
+   Inputs:
+       this - labData object
+       noFilterFlag - flag to disable filtering (default: 1)
+
+   Outputs:
+       COPData - merged center of pressure data
+       COPL - left leg center of pressure
+       COPR - right leg center of pressure
+
+   Note: Only works for GRFData from Bertec instrumented treadmill
+
+   See also: <a href="computeCOP.html" class="code" title="function COPData = computeCOP(this)">computeCOP</a>, <a href="computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a>, <a href="mergeHemiCOPs.html" class="code" title="function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)">mergeHemiCOPs</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a>	computeHemiCOP  Computes center of pressure for one leg</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)</a>
+0002 <span class="comment">%computeCOPAlt  Alternative method to compute center of pressure</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [COPData, COPL, COPR] = computeCOPAlt(this) computes center of pressure</span>
+0005 <span class="comment">%   for left and right legs separately, then merges them. Uses default</span>
+0006 <span class="comment">%   filtering.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag) optionally</span>
+0009 <span class="comment">%   disables filtering when noFilterFlag is true</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       this - labData object</span>
+0013 <span class="comment">%       noFilterFlag - flag to disable filtering (default: 1)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       COPData - merged center of pressure data</span>
+0017 <span class="comment">%       COPL - left leg center of pressure</span>
+0018 <span class="comment">%       COPR - right leg center of pressure</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: Only works for GRFData from Bertec instrumented treadmill</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: computeCOP, computeHemiCOP, mergeHemiCOPs</span>
+0023 
+0024 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(noFilterFlag)
+0025     noFilterFlag = 1;
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% warning('orientedLabTimeSeries:computeCOP', 'This only works for GRFData</span>
+0029 <span class="comment">% that was obtained from the Bertec instrumented treadmill');</span>
+0030 [COPL, FL, ~] = <a href="computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a>(this, <span class="string">'L'</span>, noFilterFlag);
+0031 <span class="comment">% To avoid repeat warnings, which are annoying</span>
+0032 warning(<span class="string">'off'</span>, <span class="string">'orientedLabTimeSeries:computeCOP'</span>);
+0033 [COPR, FR, ~] = <a href="computeHemiCOP.html" class="code" title="function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)">computeHemiCOP</a>(this, <span class="string">'R'</span>, noFilterFlag);
+0034 warning(<span class="string">'on'</span>, <span class="string">'orientedLabTimeSeries:computeCOP'</span>);
+0035 COPL.Data(any(isinf(COPL.Data) | isnan(COPL.Data), 2), :) = 0;
+0036 COPR.Data(any(isinf(COPR.Data) | isnan(COPR.Data), 2), :) = 0;
+0037 COPData = labData.mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag);
+0038 <span class="keyword">end</span>
+0039</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of expandEventTimes</title>
+  <meta name="keywords" content="expandEventTimes">
+  <meta name="description" content="expandEventTimes  Computes sample times for all events">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; expandEventTimes.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>expandEventTimes
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>expandEventTimes  Computes sample times for all events</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function expEventTimes = expandEventTimes(eventTimes, alignmentVector) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">expandEventTimes  Computes sample times for all events
+
+   expEventTimes = expandEventTimes(eventTimes, alignmentVector)
+   computes corresponding time for each sample in alignedTimeSeries
+
+   Inputs:
+       eventTimes - matrix of event times (events x strides+1)
+       alignmentVector - vector specifying samples per phase
+
+   Outputs:
+       expEventTimes - matrix of sample times (samples x strides)
+
+   Note: Sampling should be uniform between events. This method cannot be
+         hidden because it is used in labTS.
+
+   See also: <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>, labTimeSeries/align</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function expEventTimes = expandEventTimes(eventTimes, alignmentVector)</a>
+0002 <span class="comment">%expandEventTimes  Computes sample times for all events</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   expEventTimes = expandEventTimes(eventTimes, alignmentVector)</span>
+0005 <span class="comment">%   computes corresponding time for each sample in alignedTimeSeries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       eventTimes - matrix of event times (events x strides+1)</span>
+0009 <span class="comment">%       alignmentVector - vector specifying samples per phase</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       expEventTimes - matrix of sample times (samples x strides)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Note: Sampling should be uniform between events. This method cannot be</span>
+0015 <span class="comment">%         hidden because it is used in labTS.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: alignedTimeSeries, labTimeSeries/align</span>
+0018 
+0019 <span class="comment">% This should be 0+ for the old-style alignment</span>
+0020 refTime = 1 + [0 cumsum(alignmentVector)]';
+0021 M = size(eventTimes, 2) - 1;
+0022 N = sum(alignmentVector);
+0023 allEventTimes = eventTimes(:);
+0024 refTime2 = bsxfun(@<a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, refTime(1:end - 1), N * [0:M]);
+0025 allExpEventTimes = interp1(refTime2(:), allEventTimes(:), [1:N * M]');
+0026 expEventTimes = reshape(allExpEventTimes, N, M);
+0027 <span class="keyword">end</span>
+0028</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of thresholdByChannel</title>
+  <meta name="keywords" content="thresholdByChannel">
+  <meta name="description" content="thresholdByChannel  Zeros data based on threshold">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; thresholdByChannel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>thresholdByChannel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>thresholdByChannel  Zeros data based on threshold</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = thresholdByChannel(this, th, label, moreThanFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">thresholdByChannel  Zeros data based on threshold
+
+   newThis = thresholdByChannel(this, th, label) zeros all samples
+   where specified label is less than threshold
+
+   newThis = thresholdByChannel(this, th, label, moreThanFlag) zeros
+   where label is greater than threshold if moreThanFlag = 1
+
+   Inputs:
+       this - labTimeSeries object
+       th - threshold value
+       label - label to use for thresholding
+       moreThanFlag - if 1, zeros when greater than threshold
+                      (optional, default: 0)
+
+   Outputs:
+       newThis - thresholded labTimeSeries
+
+   See also: <a href="substituteNaNs.html" class="code" title="function this = substituteNaNs(this, method)">substituteNaNs</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a>	thresholdByChannel  Thresholds by channel (override)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = thresholdByChannel(this, th, label, moreThanFlag)</a>
+0002 <span class="comment">%thresholdByChannel  Zeros data based on threshold</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = thresholdByChannel(this, th, label) zeros all samples</span>
+0005 <span class="comment">%   where specified label is less than threshold</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   newThis = thresholdByChannel(this, th, label, moreThanFlag) zeros</span>
+0008 <span class="comment">%   where label is greater than threshold if moreThanFlag = 1</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       th - threshold value</span>
+0013 <span class="comment">%       label - label to use for thresholding</span>
+0014 <span class="comment">%       moreThanFlag - if 1, zeros when greater than threshold</span>
+0015 <span class="comment">%                      (optional, default: 0)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       newThis - thresholded labTimeSeries</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   See also: substituteNaNs</span>
+0021 
+0022 newThis = this;
+0023 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(moreThanFlag) || moreThanFlag == 0
+0024     newThis.Data(newThis.getDataAsVector(label) &lt; th, :) = 0;
+0025 <span class="keyword">elseif</span> moreThanFlag == 1
+0026     newThis.Data(newThis.getDataAsVector(label) &gt; th, :) = 0;
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

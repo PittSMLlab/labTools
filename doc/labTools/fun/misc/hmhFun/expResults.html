@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; expResults.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc\hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>expResults
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/@paramData/isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>	isaParameter  Checks if parameter(s) exist in dataset</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -47,7 +47,7 @@ This function is called by:
 0003 
 0004 
 0005 <span class="comment">% Set colors</span>
-0006 poster_colors;
+0006 <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
 0007 <span class="comment">% Set colors order</span>
 0008 GreyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.1 0.1 0.1;0.7 0.7 0.7;0.2 0.2 0.2;0.8 0.8 0.8;0.3 0.3 0.3;0.9 0.9 0.9];
 0009 ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; p_gray; p_black;p_red];
@@ -56,7 +56,7 @@ This function is called by:
 0012 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
 0013 transientNumPts = 5; <span class="comment">% OG and Washout</span>
 0014 
-0015 <span class="keyword">if</span> nargin&lt;2 || isempty(groups)
+0015 <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groups)
 0016     groups=fields(SMatrix);          
 0017 <span class="keyword">end</span>
 0018 ngroups=length(groups);
@@ -95,7 +95,7 @@ This function is called by:
 0051         SLs=adaptData.data.getParameter(<span class="string">'stepLengthSlow'</span>);
 0052         Dist=SLf+SLs;
 0053         contLabels={<span class="string">'spatialContribution'</span>,<span class="string">'stepTimeContribution'</span>,<span class="string">'velocityContribution'</span>,<span class="string">'netContribution'</span>};
-0054         [~,dataCols]=isaParameter(adaptData.data,contLabels);
+0054         [~,dataCols]=<a href="../../../../labTools/classes/auxData/@paramData/isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>(adaptData.data,contLabels);
 0055         <span class="keyword">for</span> c=1:length(contLabels)
 0056             contData=adaptData.data.getParameter(contLabels(c));
 0057             contData=contData./Dist;
@@ -119,7 +119,7 @@ This function is called by:
 0075         relSpatial=[relSpatial; spatialSteady(end)/abs(velocitySteady(end))*100];
 0076         relStepTime=[relStepTime; stepTimeSteady(end)/abs(velocitySteady(end))*100];
 0077         
-0078         expSpeed=[expSpeed; mean(adaptData.getParamInCond(<span class="string">'equivalentSpeed'</span>,<span class="string">'TM base'</span>))];
+0078         expSpeed=[expSpeed; <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(adaptData.getParamInCond(<span class="string">'equivalentSpeed'</span>,<span class="string">'TM base'</span>))];
 0079         
 0080         params={<span class="string">'spatialContribution'</span>,<span class="string">'stepTimeContribution'</span>};
 0081         <span class="comment">%calculate OG after as mean values during strides which cause a</span>
@@ -127,8 +127,8 @@ This function is called by:
 0083         <span class="comment">%'transientNumPts' consecutive steps within first 10 strides</span>
 0084         stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG post'</span>);
 0085         transferData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
-0086         [newStepAsymData,~]=bin_dataV1(stepAsymData(1:10,:),transientNumPts);
-0087         [newTransferData,~]=bin_dataV1(transferData(1:10,:),transientNumPts);
+0086         [newStepAsymData,~]=<a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(stepAsymData(1:10,:),transientNumPts);
+0087         [newTransferData,~]=<a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(transferData(1:10,:),transientNumPts);
 0088         [~,maxLoc]=max(abs(newStepAsymData),[],1);
 0089 <span class="comment">%             ind=sub2ind(size(newTransferData),maxLoc*ones(1,length(params)),1:length(params));</span>
 0090         ogafter=[ogafter; newTransferData(maxLoc,:)];
@@ -165,13 +165,13 @@ This function is called by:
 0121 
 0122 <span class="comment">%plot stuff</span>
 0123 
-0124 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(plotFlag)
+0124 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag)
 0125     
 0126     figure
 0127     hold on
 0128     
 0129     <span class="keyword">for</span> b=1:ngroups
-0130         ph(b)=plot(results.stepTimeSteady.indiv.(groups{b}),results.spatialSteady.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0130         ph(b)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(results.stepTimeSteady.indiv.(groups{b}),results.spatialSteady.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
 0131     <span class="keyword">end</span>
 0132     
 0133     title(<span class="string">'Treadmill Steady State'</span>)
@@ -184,7 +184,7 @@ This function is called by:
 0140     hold on
 0141     
 0142     <span class="keyword">for</span> b=1:ngroups
-0143         ph2(b)=plot(results.OGafter.indiv.(groups{b})(:,2),results.OGafter.indiv.(groups{b})(:,1),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0143         ph2(b)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(results.OGafter.indiv.(groups{b})(:,2),results.OGafter.indiv.(groups{b})(:,1),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
 0144     <span class="keyword">end</span>
 0145     
 0146     title(<span class="string">'OG after'</span>)
@@ -197,10 +197,10 @@ This function is called by:
 0153     hold on
 0154     
 0155     <span class="keyword">for</span> b=1:ngroups
-0156         ph3(b)=plot(results.relStepTime.indiv.(groups{b}),results.relSpatial.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0156         ph3(b)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(results.relStepTime.indiv.(groups{b}),results.relSpatial.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
 0157     <span class="keyword">end</span>
 0158     
-0159     plot([0 100],[100 0],<span class="string">'k'</span>,<span class="string">'linewidth'</span>,2)
+0159     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([0 100],[100 0],<span class="string">'k'</span>,<span class="string">'linewidth'</span>,2)
 0160     
 0161     set(gca,<span class="string">'Ylim'</span>,[0 120])
 0162     set(gca,<span class="string">'Xlim'</span>,[0 80])           
@@ -215,10 +215,10 @@ This function is called by:
 0171     
 0172     <span class="keyword">for</span> b=1:ngroups
 0173         nSubs=length(SMatrix.(groups{b}).IDs(:,1));
-0174         <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(indivFlag)
+0174         <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indivFlag)
 0175             bar(b,results.expSpeed.avg(b),<span class="string">'facecolor'</span>,GreyOrder(b,:));
 0176             <span class="keyword">for</span> s=1:nSubs
-0177                 plot(b,results.expSpeed.indiv.(groups{b})(s),<span class="string">'*'</span>,<span class="string">'Color'</span>,ColorOrder(s,:))
+0177                 <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(b,results.expSpeed.indiv.(groups{b})(s),<span class="string">'*'</span>,<span class="string">'Color'</span>,ColorOrder(s,:))
 0178             <span class="keyword">end</span>
 0179         <span class="keyword">else</span>
 0180             bar(b,results.expSpeed.avg(b),<span class="string">'facecolor'</span>,ColorOrder(b,:));
@@ -229,6 +229,6 @@ This function is called by:
 0185     set(gca,<span class="string">'Xtick'</span>,1:ngroups,<span class="string">'XTickLabel'</span>,groups,<span class="string">'fontSize'</span>,12,<span class="string">'Ylim'</span>,[0 1500])   
 0186     
 0187 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

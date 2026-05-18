@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; getOGspeed.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getOGspeed
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/fun/eventExtraction/deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -46,7 +46,7 @@ This function is called by:
 0002 <span class="comment">%must load subject before running function</span>
 0003 
 0004 <span class="comment">%detemine overground baseline trials</span>
-0005 OGtrials=cell2mat(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName(<span class="string">'OG base'</span>)))
+0005 OGtrials=<a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName(<span class="string">'OG base'</span>)))
 0006 
 0007 speeds=[];
 0008 
@@ -71,13 +71,13 @@ This function is called by:
 0027     midHipVel = nanmedian(abs(HipVel));
 0028     walking = abs(HipVel)&gt;midHipVel;
 0029     <span class="comment">% Eliminate walking or turn around phases shorter than 0.5 seconds</span>
-0030     [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.5);
+0030     [walking] = <a href="../../../labTools/fun/eventExtraction/deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(walking,trialData.markerData.sampFreq,0.5);
 0031 
 0032     <span class="comment">% split walking into individual bouts</span>
 0033     walkingSamples = find(walking);
 0034 
 0035     <span class="comment">%find samples when subject starts and stops walking</span>
-0036     <span class="keyword">if</span> ~isempty(walkingSamples)
+0036     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(walkingSamples)
 0037         start= [walkingSamples(1) walkingSamples(find(diff(walkingSamples)~=1)+1)'];
 0038         stop = [walkingSamples(diff(walkingSamples)~=1)' walkingSamples(end)];
 0039     <span class="keyword">else</span>
@@ -92,6 +92,6 @@ This function is called by:
 0048 <span class="keyword">end</span>
 0049 
 0050 OGspeed=nanmean(abs(speeds));</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

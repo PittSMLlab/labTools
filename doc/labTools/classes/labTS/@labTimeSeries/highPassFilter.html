@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of highPassFilter</title>
+  <meta name="keywords" content="highPassFilter">
+  <meta name="description" content="highPassFilter  Applies high-pass filter">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; highPassFilter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>highPassFilter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>highPassFilter  Applies high-pass filter</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = highPassFilter(this, fcut) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">highPassFilter  Applies high-pass filter
+
+   newThis = highPassFilter(this, fcut) applies Butterworth high-pass
+   filter with specified cutoff frequency
+
+   Inputs:
+       this - labTimeSeries object
+       fcut - cutoff frequency in Hz
+
+   Outputs:
+       newThis - filtered labTimeSeries
+
+   See also: <a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>, <a href="medianFilter.html" class="code" title="function this = medianFilter(this, N)">medianFilter</a>, filtfilthd_short</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter (override)</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">filtfilthd_short</a>	FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = highPassFilter(this, fcut)</a>
+0002 <span class="comment">%highPassFilter  Applies high-pass filter</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = highPassFilter(this, fcut) applies Butterworth high-pass</span>
+0005 <span class="comment">%   filter with specified cutoff frequency</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       fcut - cutoff frequency in Hz</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - filtered labTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: lowPassFilter, medianFilter, filtfilthd_short</span>
+0015 
+0016 Wn = fcut * 2 / this.sampFreq;
+0017 filterList{1} = fdesign.highpass(<span class="string">'Fst,Fp,Ast,Ap'</span>, Wn / 2, Wn, 10, 3);
+0018 <a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a> = design(filterList{1}, <span class="string">'butter'</span>);
+0019 newData = <span class="keyword">...</span>
+0020     <a href="../../../../labTools/fun/ext/pitools/signalProcessing/filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">filtfilthd_short</a>(<a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>, this.Data, <span class="string">'reflect'</span>, this.sampFreq);
+0021 newThis = <span class="keyword">...</span>
+0022     <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, this.Time(1), this.sampPeriod, this.labels);
+0023 <span class="keyword">if</span> ~isfield(this.UserData, <span class="string">'processingInfo'</span>)
+0024     this.UserData.processingInfo = {};
+0025 <span class="keyword">end</span>
+0026 newThis.UserData = this.UserData;
+0027 newThis.UserData.processingInfo{end + 1} = filterList{1};
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

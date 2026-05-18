@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of indsInTrial</title>
+  <meta name="keywords" content="indsInTrial">
+  <meta name="description" content="indsInTrial  Returns indices for specified trial(s)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; indsInTrial.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>indsInTrial
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>indsInTrial  Returns indices for specified trial(s)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function inds = indsInTrial(this, t) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">indsInTrial  Returns indices for specified trial(s)
+
+   inds = indsInTrial(this, t) returns stride indices belonging to
+   specified trial number(s)
+
+   Inputs:
+       this - parameterSeries object
+       t - trial number or vector of trial numbers (optional, returns
+           empty if not provided)
+
+   Outputs:
+       inds - cell array of index vectors, one per trial
+
+   See also: stridesTrial</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function inds = indsInTrial(this, t)</a>
+0002 <span class="comment">%indsInTrial  Returns indices for specified trial(s)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   inds = indsInTrial(this, t) returns stride indices belonging to</span>
+0005 <span class="comment">%   specified trial number(s)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - parameterSeries object</span>
+0009 <span class="comment">%       t - trial number or vector of trial numbers (optional, returns</span>
+0010 <span class="comment">%           empty if not provided)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       inds - cell array of index vectors, one per trial</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: stridesTrial</span>
+0016 
+0017 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
+0018     inds = [];
+0019 <span class="keyword">else</span>
+0020     inds = cell(length(t), 1);
+0021     <span class="keyword">for</span> ii = 1:length(t)
+0022         inds{ii, 1} = find(this.stridesTrial == t(ii));
+0023     <span class="keyword">end</span>
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

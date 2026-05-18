@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cat</title>
+  <meta name="keywords" content="cat">
+  <meta name="description" content="cat  Concatenates (override)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; cat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>cat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>cat  Concatenates (override)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = cat(this, other) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">cat  Concatenates (override)
+
+   newThis = cat(this, other) concatenates and preserves
+   orientedLabTimeSeries type
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       other - orientedLabTimeSeries to concatenate
+
+   Outputs:
+       newThis - concatenated orientedLabTimeSeries
+
+   See also: labTimeSeries/cat</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	derivative  Numerical differentiation</li><li><a href="alignRotate.html" class="code" title="function newThis = alignRotate(this, newX, newZ)">alignRotate</a>	alignRotate  Aligns to new coordinate system</li><li><a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>	buildNaiveDistancesModel  Builds statistical marker model</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a>	findOutliers  Detects outliers using model</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	This function swaps the first and second half of EMGdata along phaseDim,</li><li><a href="../../../../labTools/fun/misc/allcomb/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>	ALLCOMB - All combinations</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeAngleParameters.html" class="code" title="function out = computeAngleParameters(angleData, gaitEvents, slowLeg,eventTypes)">computeAngleParameters</a>	COMPUTEANGLEPARAMETERS Compute joint angle parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeEMGParameters.html" class="code" title="function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)">computeEMGParameters</a>	COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHSParameters.html" class="code" title="function out = computeHSParameters(tsData, gaitEvents, eventTypes)">computeHSParameters</a>	COMPUTEHSPARAMETERS Compute heel-strike-aligned parameters per stride.</li><li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = cat(this, other)</a>
+0002 <span class="comment">%cat  Concatenates (override)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = cat(this, other) concatenates and preserves</span>
+0005 <span class="comment">%   orientedLabTimeSeries type</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       other - orientedLabTimeSeries to concatenate</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - concatenated orientedLabTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: labTimeSeries/cat</span>
+0015 
+0016 newThis = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this, other);
+0017 newThis = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newThis.Data, this.Time(1), <span class="keyword">...</span>
+0018     this.sampPeriod, newThis.labels, this.orientation);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEventsFromAngles</title>
   <meta name="keywords" content="getEventsFromAngles">
-  <meta name="description" content="">
+  <meta name="description" content="GETEVENTSFROMANGLES Detect gait events from limb angle data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,264 +15,328 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromAngles.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\eventExtraction&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getEventsFromAngles
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETEVENTSFROMANGLES Detect gait events from limb angle data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation) </strong></div>
+<div class="box"><strong>function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETEVENTSFROMANGLES Detect gait events from limb angle data.
+
+   Estimates heel-strike (HS) and toe-off (TO) events for left and right
+ legs from limb angle trajectories. For overground (OG) and NIM trials,
+ the walking direction is determined from hip velocity and angles are
+ reversed when the subject walks toward the lab door. Events are then
+ found as local angle maxima (HS) and minima (TO). Outlier events based
+ on global hip position and angle range are removed.
+
+ Inputs:
+   trialData   - rawTrialData, contains markerData and metaData
+   angleData   - labTimeSeries with labels 'RLimb' and 'LLimb'
+   orientation - orientationInfo, axis sign and label conventions
+
+ Outputs:
+   LHSevent - N×1 logical, left heel-strike events
+   RHSevent - N×1 logical, right heel-strike events
+   LTOevent - N×1 logical, left toe-off events
+   RTOevent - N×1 logical, right toe-off events
+
+ Toolbox Dependencies: None
+
+ See also GETEVENTS, <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">DELETESHORTPHASES</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function HS = FindKinHS(start,stop,ankdata,n)</a></li><li><a href="#_sub2" class="code">function TO = FindKinTO(start,stop,ankdata,n)</a></li></ul>
+<li><a href="#_sub1" class="code">function HS = FindKinHS(start, stop, ankdata, n)</a></li><li><a href="#_sub2" class="code">function TO = FindKinTO(start, stop, ankdata, n)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation)</a>
-0002 
-0003 pad = 25; <span class="comment">%this is the minimum number of samples two events can be apart</span>
-0004 nsamples = trialData.markerData.Length;
-0005 [LHSevent,RHSevent,LTOevent,RTOevent]=deal(false(nsamples,1));
-0006 
-0007 <span class="comment">%Get angle traces</span>
-0008 rdata = angleData.getDataAsVector({<span class="string">'RLimb'</span>});
-0009 ldata = angleData.getDataAsVector({<span class="string">'LLimb'</span>});
-0010 
-0011 <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'OG'</span>) || strcmpi(trialData.metaData.type,<span class="string">'NIM'</span>)
-0012     <span class="comment">%Get fore-aft hip positions</span>
-0013     newMarkerData = trialData.markerData.getDataAsVector({[<span class="string">'RHIP'</span> orientation.foreaftAxis],[<span class="string">'LHIP'</span> orientation.foreaftAxis]});
-0014     rhip=newMarkerData(:,1);
-0015     lhip=newMarkerData(:,2);
-0016     
-0017     avghip = (rhip+lhip)./2;
-0018     
-0019     <span class="comment">%Get hip velocity</span>
-0020     HipVel = diff(avghip);
-0021     
-0022     <span class="comment">%Clean up velocities to remove artifacts of marker drop-outs</span>
-0023     HipVel(abs(HipVel)&gt;50) = 0;
-0024     
-0025     <span class="comment">%Use hip velocity to determine when subject is walking</span>
-0026     midHipVel = nanmedian(abs(HipVel));
-0027     walking = abs(HipVel)&gt;0.5*midHipVel;
-0028     
-0029     <span class="comment">% Eliminate walking or turn around phases shorter than 0.25 seconds</span>
-0030     [walking] = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(walking,trialData.markerData.sampFreq,0.25);
-0031     
-0032     <span class="comment">% split walking into individual bouts</span>
-0033     walkingSamples = find(walking);
-0034     
-0035     <span class="keyword">if</span> ~isempty(walkingSamples)
-0036         StartStop = [walkingSamples(1) walkingSamples(diff(walkingSamples)~=1)'<span class="keyword">...</span>
-0037             walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
-0038         StartStop = sort(StartStop);
-0039     <span class="keyword">else</span>
-0040         warning(<span class="string">'Subject was not walking during one of the overground trials'</span>);
-0041         <span class="keyword">return</span>
-0042     <span class="keyword">end</span>
-0043 <span class="keyword">else</span>
-0044      StartStop= [1 length(rdata)];
-0045 <span class="keyword">end</span>
-0046 
-0047 
-0048 RightTO = [];
-0049 RightHS = [];
-0050 LeftHS = [];
-0051 LeftTO = [];
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSevent, RHSevent, LTOevent, RTOevent] = </a><span class="keyword">...</span>
+0002     getEventsFromAngles(trialData, angleData, orientation)
+0003 <span class="comment">%GETEVENTSFROMANGLES Detect gait events from limb angle data.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Estimates heel-strike (HS) and toe-off (TO) events for left and right</span>
+0006 <span class="comment">% legs from limb angle trajectories. For overground (OG) and NIM trials,</span>
+0007 <span class="comment">% the walking direction is determined from hip velocity and angles are</span>
+0008 <span class="comment">% reversed when the subject walks toward the lab door. Events are then</span>
+0009 <span class="comment">% found as local angle maxima (HS) and minima (TO). Outlier events based</span>
+0010 <span class="comment">% on global hip position and angle range are removed.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   trialData   - rawTrialData, contains markerData and metaData</span>
+0014 <span class="comment">%   angleData   - labTimeSeries with labels 'RLimb' and 'LLimb'</span>
+0015 <span class="comment">%   orientation - orientationInfo, axis sign and label conventions</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   LHSevent - N×1 logical, left heel-strike events</span>
+0019 <span class="comment">%   RHSevent - N×1 logical, right heel-strike events</span>
+0020 <span class="comment">%   LTOevent - N×1 logical, left toe-off events</span>
+0021 <span class="comment">%   RTOevent - N×1 logical, right toe-off events</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also GETEVENTS, DELETESHORTPHASES.</span>
+0026 
+0027 minInterEventSpacing = 25; <span class="comment">% min inter-event spacing (samples)</span>
+0028 nsamples             = trialData.markerData.Length;
+0029 [LHSevent, RHSevent, LTOevent, RTOevent] = deal(false(nsamples, 1));
+0030 
+0031 <span class="comment">%% Get angle traces</span>
+0032 rdata = angleData.getDataAsVector({<span class="string">'RLimb'</span>});
+0033 ldata = angleData.getDataAsVector({<span class="string">'LLimb'</span>});
+0034 
+0035 <span class="keyword">if</span> strcmpi(trialData.metaData.type, <span class="string">'OG'</span>) <span class="keyword">...</span>
+0036         || strcmpi(trialData.metaData.type, <span class="string">'NIM'</span>)
+0037     <span class="comment">% get fore-aft hip positions</span>
+0038     newMarkerData = trialData.markerData.getDataAsVector( <span class="keyword">...</span>
+0039         {[<span class="string">'RHIP'</span> orientation.foreaftAxis], <span class="keyword">...</span>
+0040          [<span class="string">'LHIP'</span> orientation.foreaftAxis]});
+0041     rhip = newMarkerData(:, 1);
+0042     lhip = newMarkerData(:, 2);
+0043 
+0044     avghip = (rhip + lhip) ./ 2;
+0045 
+0046     <span class="comment">% get hip velocity</span>
+0047     hipVel = diff(avghip);
+0048 
+0049     <span class="comment">% clean up velocities to remove artifacts of marker drop-outs</span>
+0050     velArtifactThresh           = 50; <span class="comment">% threshold above which velocity is a dropout artifact (mm/frame)</span>
+0051     hipVel(abs(hipVel) &gt; velArtifactThresh) = 0;
 0052 
-0053 <span class="keyword">for</span> i = 1:2:(length(StartStop))
-0054     
-0055     <span class="comment">%find HS/TO for right leg</span>
-0056     <span class="comment">%Finds local minimums and maximums.</span>
-0057     start = StartStop(i);
-0058     stop = StartStop(i+1);
-0059     
-0060     <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'OG'</span>) &amp;&amp; median(HipVel(start:stop))&gt;0 <span class="comment">% in our lab, walking towards door</span>
-0061         <span class="comment">% Reverse angles for walking towards lab door (this is to make angle</span>
-0062         <span class="comment">% maximums HS and minimums TO, as they are when on treadmill)</span>
-0063         rdata(start:stop) = -rdata(start:stop);
-0064         ldata(start:stop) = -ldata(start:stop);
-0065     <span class="keyword">end</span>
-0066     
-0067      <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'NIM'</span>) &amp;&amp; median(HipVel(start:stop))&gt;0 <span class="comment">% in our lab, walking towards door</span>
-0068         <span class="comment">% Reverse angles for walking towards lab door (this is to make angle</span>
-0069         <span class="comment">% maximums HS and minimums TO, as they are when on treadmill)</span>
-0070         rdata(start:stop) = -rdata(start:stop);
-0071         ldata(start:stop) = -ldata(start:stop);
-0072     <span class="keyword">end</span>
-0073     
-0074     
-0075     
-0076     startHS = start;
-0077     startTO  = start;
-0078     
-0079     <span class="comment">%Find all maximum (HS)</span>
-0080     <span class="keyword">while</span> (startHS&lt;stop)
-0081         RHS = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start,stop,ankdata,n)">FindKinHS</a>(startHS,stop,rdata,pad);
-0082         RightHS = [RightHS RHS];
-0083         startHS = RHS+1;
-0084     <span class="keyword">end</span>
-0085     
-0086     <span class="comment">%Find all minimum (TO)</span>
-0087     <span class="keyword">while</span> (startTO&lt;stop)
-0088         RTO = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start,stop,ankdata,n)">FindKinTO</a>(startTO,stop,rdata,pad);
-0089         RightTO = [RightTO RTO];
-0090         startTO = RTO+1;
-0091     <span class="keyword">end</span>
-0092     
-0093      RightTO(RightTO == start | RightTO == stop) = [];
-0094      RightHS(RightHS == start | RightHS == stop) = [];
-0095     
-0096     <span class="comment">%% find HS/TO for left leg</span>
-0097     startHS = start;
-0098     startTO  = start;
-0099     
-0100     <span class="comment">%find all maximum (HS)</span>
-0101     <span class="keyword">while</span> (startHS&lt;stop)
-0102         LHS = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start,stop,ankdata,n)">FindKinHS</a>(startHS,stop,ldata,pad);
-0103         LeftHS = [LeftHS LHS];
-0104         startHS = LHS+pad;
-0105     <span class="keyword">end</span>
-0106     
-0107     <span class="comment">%find all minimum (TO)</span>
-0108     <span class="keyword">while</span> (startTO&lt;stop)
-0109         LTO = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start,stop,ankdata,n)">FindKinTO</a>(startTO,stop,ldata,pad);
-0110         LeftTO = [LeftTO LTO];
-0111         startTO = LTO+pad;
-0112     <span class="keyword">end</span>
-0113     
-0114      LeftTO(LeftTO == start | LeftTO == stop)=[];
-0115      LeftHS(LeftHS == start | LeftHS == stop)=[];
-0116 <span class="keyword">end</span>
-0117 
-0118 <span class="comment">% Remove any events due to marker dropouts</span>
-0119 RightTO(rdata(RightTO)==0)=[];
-0120 RightHS(rdata(RightHS)==0)=[];
-0121 LeftTO(rdata(LeftTO)==0)=[];
-0122 LeftHS(rdata(LeftHS)==0)=[];
-0123 
-0124 <span class="comment">%% added by Yashar on 10/8/2019 to remove the end of OG walking based on</span>
-0125 <span class="comment">% global postion in the right Hip y direction</span>
-0126 
-0127 RightHip = trialData.markerData.getDataAsVector({<span class="string">'RHIPy'</span>});
-0128 LeftHip = trialData.markerData.getDataAsVector({<span class="string">'LHIPy'</span>});
-0129 body_yPos = (RightHip+LeftHip)/2;
+0053     <span class="comment">% use hip velocity to determine when subject is walking</span>
+0054     walkVelFrac = 0.5; <span class="comment">% fraction of median absolute hip velocity to threshold walking</span>
+0055     midhipVel   = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(abs(hipVel), <span class="string">'omitnan'</span>);
+0056     walking     = abs(hipVel) &gt; walkVelFrac * midhipVel;
+0057 
+0058     <span class="comment">% eliminate walking or turn-around phases shorter than 0.25 seconds</span>
+0059     walking = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(walking, trialData.markerData.sampFreq, 0.25); <span class="comment">% min bout duration (s)</span>
+0060 
+0061     <span class="comment">% split walking into individual bouts</span>
+0062     walkingSamples = find(walking);
+0063 
+0064     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(walkingSamples)
+0065         StartStop = [walkingSamples(1) <span class="keyword">...</span>
+0066             walkingSamples(diff(walkingSamples) ~= 1)' <span class="keyword">...</span>
+0067             walkingSamples(find(diff(walkingSamples) ~= 1) + 1)' <span class="keyword">...</span>
+0068             walkingSamples(end)];
+0069         StartStop = sort(StartStop);
+0070     <span class="keyword">else</span>
+0071         warning(<span class="string">'Subject was not walking during one of the overground trials'</span>);
+0072         <span class="keyword">return</span>
+0073     <span class="keyword">end</span>
+0074 <span class="keyword">else</span>
+0075     StartStop = [1 length(rdata)];
+0076 <span class="keyword">end</span>
+0077 
+0078 RightTO = [];
+0079 RightHS = [];
+0080 LeftHS  = [];
+0081 LeftTO  = [];
+0082 
+0083 <span class="keyword">for</span> ii = 1:2:(length(StartStop))
+0084     segStart = StartStop(ii);
+0085     segStop  = StartStop(ii + 1);
+0086 
+0087     <span class="keyword">if</span> (strcmpi(trialData.metaData.type, <span class="string">'OG'</span>) <span class="keyword">...</span>
+0088             || strcmpi(trialData.metaData.type, <span class="string">'NIM'</span>)) <span class="keyword">...</span>
+0089             &amp;&amp; <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(hipVel(segStart:segStop), <span class="string">'omitnan'</span>) &gt; 0
+0090         <span class="comment">% walking towards lab door — reverse angles so maxima = HS,</span>
+0091         <span class="comment">% minima = TO (consistent with treadmill convention)</span>
+0092         rdata(segStart:segStop) = -rdata(segStart:segStop);
+0093         ldata(segStart:segStop) = -ldata(segStart:segStop);
+0094     <span class="keyword">end</span>
+0095 
+0096     startHS = segStart;
+0097     startTO = segStart;
+0098 
+0099     <span class="comment">%% Find HS and TO for right leg</span>
+0100     <span class="keyword">while</span> (startHS &lt; segStop)
+0101         RHS     = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start, stop, ankdata, n)">FindKinHS</a>(startHS, segStop, rdata, minInterEventSpacing);
+0102         RightHS = [RightHS RHS]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0103         startHS = RHS + 1;
+0104     <span class="keyword">end</span>
+0105 
+0106     <span class="keyword">while</span> (startTO &lt; segStop)
+0107         RTO     = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start, stop, ankdata, n)">FindKinTO</a>(startTO, segStop, rdata, minInterEventSpacing);
+0108         RightTO = [RightTO RTO]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0109         startTO = RTO + 1;
+0110     <span class="keyword">end</span>
+0111 
+0112     RightTO(RightTO == segStart | RightTO == segStop) = [];
+0113     RightHS(RightHS == segStart | RightHS == segStop) = [];
+0114 
+0115     <span class="comment">%% Find HS and TO for left leg</span>
+0116     startHS = segStart;
+0117     startTO = segStart;
+0118 
+0119     <span class="keyword">while</span> (startHS &lt; segStop)
+0120         LHS    = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start, stop, ankdata, n)">FindKinHS</a>(startHS, segStop, ldata, minInterEventSpacing);
+0121         LeftHS = [LeftHS LHS]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0122         startHS = LHS + minInterEventSpacing;
+0123     <span class="keyword">end</span>
+0124 
+0125     <span class="keyword">while</span> (startTO &lt; segStop)
+0126         LTO    = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start, stop, ankdata, n)">FindKinTO</a>(startTO, segStop, ldata, minInterEventSpacing);
+0127         LeftTO = [LeftTO LTO]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0128         startTO = LTO + minInterEventSpacing;
+0129     <span class="keyword">end</span>
 0130 
-0131 <span class="keyword">if</span> trialData.metaData.schenleyLab == 1
-0132     y_max = 4500;
-0133     y_min = -2500;
-0134 <span class="keyword">else</span>
-0135     y_max = 7000;
-0136     y_min = 0;
-0137 <span class="keyword">end</span>
-0138 y_up_ind = find(body_yPos &gt;= y_max);
-0139 y_low_ind = find(body_yPos &lt;= y_min);
+0131     LeftTO(LeftTO == segStart | LeftTO == segStop) = [];
+0132     LeftHS(LeftHS == segStart | LeftHS == segStop) = [];
+0133 <span class="keyword">end</span>
+0134 
+0135 <span class="comment">%% Remove events at marker dropout frames</span>
+0136 RightTO(rdata(RightTO) == 0) = [];
+0137 RightHS(rdata(RightHS) == 0) = [];
+0138 LeftTO(rdata(LeftTO) == 0)   = [];
+0139 LeftHS(rdata(LeftHS) == 0)   = [];
 0140 
-0141 
-0142 RightTO_up = ismember(RightTO,intersect(RightTO,y_up_ind));
-0143 RightTO(RightTO_up)=[];
-0144 RightHS_up = ismember(RightHS,intersect(RightHS,y_up_ind));
-0145 RightHS(RightHS_up)=[];
-0146 LeftTO_up = ismember(LeftTO,intersect(LeftTO,y_up_ind));
-0147 LeftTO(LeftTO_up)=[];
-0148 LeftHS_up = ismember(LeftHS,intersect(LeftHS,y_up_ind));
-0149 LeftHS(LeftHS_up)=[];
-0150 
-0151 
-0152 
-0153 RightTO_low = ismember(RightTO,intersect(RightTO,y_low_ind));
-0154 RightTO(RightTO_low)=[];
-0155 RightHS_low = ismember(RightHS,intersect(RightHS,y_low_ind));
-0156 RightHS(RightHS_low)=[];
-0157 LeftTO_low = ismember(LeftTO,intersect(LeftTO,y_low_ind));
-0158 LeftTO(LeftTO_low)=[];
-0159 LeftHS_low = ismember(LeftHS,intersect(LeftHS,y_low_ind));
-0160 LeftHS(LeftHS_low)=[];
-0161 <span class="comment">%%</span>
+0141 <span class="comment">%% Remove events outside valid y-position range</span>
+0142 <span class="comment">% added by Yashar on 10/8/2019 to remove end-of-OG-walking events based</span>
+0143 <span class="comment">% on global position in the right hip y direction</span>
+0144 RightHip = trialData.markerData.getDataAsVector({<span class="string">'RHIPy'</span>});
+0145 LeftHip  = trialData.markerData.getDataAsVector({<span class="string">'LHIPy'</span>});
+0146 bodyYPos = (RightHip + LeftHip) / 2;
+0147 
+0148 <span class="comment">% y-position limits (mm) depend on lab; Schenley lab has different range</span>
+0149 <span class="keyword">if</span> trialData.metaData.schenleyLab == 1
+0150     SCHENLEY_Y_MAX =  4500; <span class="comment">% Schenley lab walkway upper limit (mm)</span>
+0151     SCHENLEY_Y_MIN = -2500; <span class="comment">% Schenley lab walkway lower limit (mm)</span>
+0152     y_max = SCHENLEY_Y_MAX;
+0153     y_min = SCHENLEY_Y_MIN;
+0154 <span class="keyword">else</span>
+0155     OTHER_Y_MAX = 7000; <span class="comment">% other lab walkway upper limit (mm)</span>
+0156     OTHER_Y_MIN =    0; <span class="comment">% other lab walkway lower limit (mm)</span>
+0157     y_max = OTHER_Y_MAX;
+0158     y_min = OTHER_Y_MIN;
+0159 <span class="keyword">end</span>
+0160 y_up_ind  = find(bodyYPos &gt;= y_max);
+0161 y_low_ind = find(bodyYPos &lt;= y_min);
 0162 
-0163 <span class="comment">% Remove any events that don't make sense</span>
-0164 RightTO(rdata(RightTO)&gt;5 | abs(rdata(RightTO))&gt;40)=[];
-0165 RightHS(rdata(RightHS)&lt;0 | abs(rdata(RightHS))&gt;40)=[];
-0166 LeftTO(ldata(LeftTO)&gt;5 | abs(ldata(LeftTO))&gt;40)=[];
-0167 LeftHS(ldata(LeftHS)&lt;0 | abs(ldata(LeftHS))&gt;40)=[];
-0168 
-0169 
-0170 LHSevent(LeftHS)=true;
-0171 RTOevent(RightTO)=true;
-0172 RHSevent(RightHS)=true;
-0173 LTOevent(LeftTO)=true;
-0174 
-0175 
-0176 <span class="comment">%[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);</span>
-0177 
-0178 <span class="comment">%These functions are similar to the built-in 'findpeaks' matlab function.</span>
-0179 
-0180 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0181 <a name="_sub1" href="#_subfunctions" class="code">function HS = FindKinHS(start,stop,ankdata,n)</a>
-0182 <span class="comment">% find max of limb angle trace</span>
-0183 
-0184 <span class="keyword">for</span> i = start:stop
-0185     <span class="keyword">if</span> i == 1
-0186         a = 1;
-0187     <span class="keyword">elseif</span> (i-n) &lt; 1
-0188         a = 1:i-1;
-0189     <span class="keyword">else</span>
-0190         a = i-n:i-1;
-0191     <span class="keyword">end</span>
-0192     <span class="keyword">if</span> i == stop
-0193         b = stop;
-0194     <span class="keyword">elseif</span> (i+n) &gt; stop
-0195         b = i+1:stop;
-0196     <span class="keyword">else</span>
-0197         b = i+1:i+n;
-0198     <span class="keyword">end</span>
-0199     <span class="keyword">if</span> all(ankdata(i)&gt;=ankdata(a)) &amp;&amp; all(ankdata(i)&gt;=ankdata(b)) <span class="comment">%HH added &quot;=&quot; for the very rare case where the two max/min are the same value.</span>
-0200         <span class="keyword">break</span>;
-0201     <span class="keyword">end</span>
-0202 <span class="keyword">end</span>
-0203 HS = i;
-0204 
-0205 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0206 <a name="_sub2" href="#_subfunctions" class="code">function TO = FindKinTO(start,stop,ankdata,n)</a>
-0207 <span class="comment">% find mmin of limb angle trace</span>
-0208 
-0209 <span class="keyword">for</span> i = start:stop
-0210     <span class="keyword">if</span> i == 1
-0211         a = 1;
-0212     <span class="keyword">elseif</span> (i-n) &lt; 1
-0213         a = 1:i-1;
-0214     <span class="keyword">else</span>
-0215         a = i-n:i-1;
-0216     <span class="keyword">end</span>
-0217     <span class="keyword">if</span> i == stop
-0218         b = stop;
-0219     <span class="keyword">elseif</span> (i+n) &gt; stop
-0220         b = i+1:stop;
-0221     <span class="keyword">else</span>
-0222         b = i+1:i+n;
-0223     <span class="keyword">end</span>
-0224     <span class="keyword">if</span> all(ankdata(i)&lt;= ankdata(a)) &amp;&amp; all(ankdata(i)&lt;=ankdata(b))
-0225         <span class="keyword">break</span>;
-0226     <span class="keyword">end</span>
-0227 <span class="keyword">end</span>
-0228 TO = i;
-0229 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0163 RightTO(ismember(RightTO, y_up_ind))  = [];
+0164 RightHS(ismember(RightHS, y_up_ind))  = [];
+0165 LeftTO(ismember(LeftTO,   y_up_ind))  = [];
+0166 LeftHS(ismember(LeftHS,   y_up_ind))  = [];
+0167 
+0168 RightTO(ismember(RightTO, y_low_ind)) = [];
+0169 RightHS(ismember(RightHS, y_low_ind)) = [];
+0170 LeftTO(ismember(LeftTO,   y_low_ind)) = [];
+0171 LeftHS(ismember(LeftHS,   y_low_ind)) = [];
+0172 
+0173 <span class="comment">%% Remove events with implausible angle values</span>
+0174 angleToThresh    =  5; <span class="comment">% max angle at TO (deg); above this indicates swing</span>
+0175 angleRangeThresh = 40; <span class="comment">% max absolute angle for any valid event (deg)</span>
+0176 RightTO(rdata(RightTO) &gt; angleToThresh <span class="keyword">...</span>
+0177     | abs(rdata(RightTO)) &gt; angleRangeThresh) = [];
+0178 RightHS(rdata(RightHS) &lt; 0 <span class="keyword">...</span>
+0179     | abs(rdata(RightHS)) &gt; angleRangeThresh) = [];
+0180 LeftTO(ldata(LeftTO) &gt; angleToThresh <span class="keyword">...</span>
+0181     | abs(ldata(LeftTO)) &gt; angleRangeThresh) = [];
+0182 LeftHS(ldata(LeftHS) &lt; 0 <span class="keyword">...</span>
+0183     | abs(ldata(LeftHS)) &gt; angleRangeThresh) = [];
+0184 
+0185 LHSevent(LeftHS)  = true;
+0186 RTOevent(RightTO) = true;
+0187 RHSevent(RightHS) = true;
+0188 LTOevent(LeftTO)  = true;
+0189 
+0190 <span class="comment">%[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);</span>
+0191 <span class="comment">%These functions are similar to the built-in 'findpeaks' matlab function.</span>
+0192 
+0193 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0194 <a name="_sub1" href="#_subfunctions" class="code">function HS = FindKinHS(start, stop, ankdata, n)</a>
+0195 <span class="comment">%FINDKINHS Find the first local maximum of a limb angle trace.</span>
+0196 <span class="comment">%</span>
+0197 <span class="comment">%   Scans forward from start to stop and returns the index of the first</span>
+0198 <span class="comment">% sample that is a local maximum within a window of n samples on each</span>
+0199 <span class="comment">% side.</span>
+0200 <span class="comment">%</span>
+0201 <span class="comment">% Inputs:</span>
+0202 <span class="comment">%   start   - scalar integer, search start index</span>
+0203 <span class="comment">%   stop    - scalar integer, search end index</span>
+0204 <span class="comment">%   ankdata - N×1 double, limb angle trace</span>
+0205 <span class="comment">%   n       - scalar integer, neighborhood half-width (samples)</span>
+0206 <span class="comment">%</span>
+0207 <span class="comment">% Outputs:</span>
+0208 <span class="comment">%   HS - scalar integer, index of the detected heel-strike</span>
+0209 
+0210 <span class="keyword">for</span> ii = start:stop
+0211     <span class="keyword">if</span> ii == 1
+0212         prevWin = 1;
+0213     <span class="keyword">elseif</span> (ii - n) &lt; 1
+0214         prevWin = 1:ii-1;
+0215     <span class="keyword">else</span>
+0216         prevWin = ii-n:ii-1;
+0217     <span class="keyword">end</span>
+0218     <span class="keyword">if</span> ii == stop
+0219         nextWin = stop;
+0220     <span class="keyword">elseif</span> (ii + n) &gt; stop
+0221         nextWin = ii+1:stop;
+0222     <span class="keyword">else</span>
+0223         nextWin = ii+1:ii+n;
+0224     <span class="keyword">end</span>
+0225     <span class="comment">% &quot;=&quot; included for the rare case where two adjacent samples share the max</span>
+0226     <span class="keyword">if</span> all(ankdata(ii) &gt;= ankdata(prevWin)) <span class="keyword">...</span>
+0227             &amp;&amp; all(ankdata(ii) &gt;= ankdata(nextWin))
+0228         <span class="keyword">break</span>;
+0229     <span class="keyword">end</span>
+0230 <span class="keyword">end</span>
+0231 HS = ii;
+0232 
+0233 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0234 <a name="_sub2" href="#_subfunctions" class="code">function TO = FindKinTO(start, stop, ankdata, n)</a>
+0235 <span class="comment">%FINDKINTO Find the first local minimum of a limb angle trace.</span>
+0236 <span class="comment">%</span>
+0237 <span class="comment">%   Scans forward from start to stop and returns the index of the first</span>
+0238 <span class="comment">% sample that is a local minimum within a window of n samples on each</span>
+0239 <span class="comment">% side.</span>
+0240 <span class="comment">%</span>
+0241 <span class="comment">% Inputs:</span>
+0242 <span class="comment">%   start   - scalar integer, search start index</span>
+0243 <span class="comment">%   stop    - scalar integer, search end index</span>
+0244 <span class="comment">%   ankdata - N×1 double, limb angle trace</span>
+0245 <span class="comment">%   n       - scalar integer, neighborhood half-width (samples)</span>
+0246 <span class="comment">%</span>
+0247 <span class="comment">% Outputs:</span>
+0248 <span class="comment">%   TO - scalar integer, index of the detected toe-off</span>
+0249 
+0250 <span class="keyword">for</span> ii = start:stop
+0251     <span class="keyword">if</span> ii == 1
+0252         prevWin = 1;
+0253     <span class="keyword">elseif</span> (ii - n) &lt; 1
+0254         prevWin = 1:ii-1;
+0255     <span class="keyword">else</span>
+0256         prevWin = ii-n:ii-1;
+0257     <span class="keyword">end</span>
+0258     <span class="keyword">if</span> ii == stop
+0259         nextWin = stop;
+0260     <span class="keyword">elseif</span> (ii + n) &gt; stop
+0261         nextWin = ii+1:stop;
+0262     <span class="keyword">else</span>
+0263         nextWin = ii+1:ii+n;
+0264     <span class="keyword">end</span>
+0265     <span class="keyword">if</span> all(ankdata(ii) &lt;= ankdata(prevWin)) <span class="keyword">...</span>
+0266             &amp;&amp; all(ankdata(ii) &lt;= ankdata(nextWin))
+0267         <span class="keyword">break</span>;
+0268     <span class="keyword">end</span>
+0269 <span class="keyword">end</span>
+0270 TO = ii;
+0271 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

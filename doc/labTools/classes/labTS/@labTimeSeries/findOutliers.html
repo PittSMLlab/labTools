@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findOutliers</title>
+  <meta name="keywords" content="findOutliers">
+  <meta name="description" content="findOutliers  Detects outliers using model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; findOutliers.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>findOutliers
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>findOutliers  Detects outliers using model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [newThis, logL] = findOutliers(this, model, verbose) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findOutliers  Detects outliers using model
+
+   [newThis, logL] = findOutliers(this, model) uses marker model to
+   detect outliers
+
+   [newThis, logL] = findOutliers(this, model, verbose) controls
+   output verbosity
+
+   Inputs:
+       this - labTimeSeries object
+       model - marker model for outlier detection
+       verbose - if true, displays detailed results (optional)
+
+   Outputs:
+       newThis - labTimeSeries with Quality field indicating outliers
+       logL - log likelihood values
+
+   See also: checkMarkerDataHealth</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis, logL] = findOutliers(this, model, verbose)</a>
+0002 <span class="comment">%findOutliers  Detects outliers using model</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [newThis, logL] = findOutliers(this, model) uses marker model to</span>
+0005 <span class="comment">%   detect outliers</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [newThis, logL] = findOutliers(this, model, verbose) controls</span>
+0008 <span class="comment">%   output verbosity</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - labTimeSeries object</span>
+0012 <span class="comment">%       model - marker model for outlier detection</span>
+0013 <span class="comment">%       verbose - if true, displays detailed results (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       newThis - labTimeSeries with Quality field indicating outliers</span>
+0017 <span class="comment">%       logL - log likelihood values</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: checkMarkerDataHealth</span>
+0020 
+0021 d = this.getDataAsVector(model.markerLabels)';
+0022 l = this.labels;
+0023 [out, logL] = model.outlierDetect(d, -4);
+0024 [boolF, idx] = this.isaLabel(model.markerLabels);
+0025 aux(:, idx(boolF)) = (out == 1)';
+0026 this.Quality = aux;
+0027 <span class="keyword">if</span> verbose
+0028     fprintf([<span class="string">'Outlier data in '</span> num2str(sum(any(out, 1))) <span class="string">'/'</span> <span class="keyword">...</span>
+0029         num2str(size(out, 2)) <span class="string">' frames, avg. '</span> <span class="keyword">...</span>
+0030         num2str(sum(out(:)) / sum(any(out, 1))) <span class="string">' per frame.\n'</span>]);
+0031     <span class="keyword">for</span> j = 1:size(out, 1)
+0032         <span class="keyword">if</span> sum(out(j, :) == 1) &gt; 0
+0033             disp([l{j} <span class="string">': '</span> num2str(sum(out(j, :) == 1)) <span class="string">' frames'</span>]);
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="comment">% s = naiveDistances.summaryStats(d);</span>
+0038 <span class="comment">% s = s(model.activeStats, :)';</span>
+0039 <span class="comment">% m = model.statMedian;</span>
+0040 <span class="comment">% m = m(model.activeStats);</span>
+0041 <span class="comment">% ss = model.getRobustStd(.94);</span>
+0042 <span class="comment">% ss = 3 * ss(model.activeStats); % 3 standard devs</span>
+0043 <span class="comment">% aux = model.loglikelihood(d) &lt; -4^2 / 2;</span>
+0044 <span class="comment">% figure; pp = plot(s); axis tight; hold on;</span>
+0045 <span class="comment">% for j = 1:size(s, 2)</span>
+0046 <span class="comment">%     patch([1 size(s, 1) size(s, 1) 1], [m(j) - ss(j) m(j) - ss(j) m(j) + ss(j) m(j) + ss(j)], pp(j).Color, 'FaceAlpha', .3, 'EdgeColor', 'None')</span>
+0047 <span class="comment">%     plot(find(aux(j, :)), s(aux(j, :), j), 'x', 'Color', pp(j).Color, 'MarkerSize', 4);</span>
+0048 <span class="comment">% end</span>
+0049 newThis = this;
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

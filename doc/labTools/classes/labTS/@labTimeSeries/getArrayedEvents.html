@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getArrayedEvents</title>
+  <meta name="keywords" content="getArrayedEvents">
+  <meta name="description" content="getArrayedEvents  Extracts event times as array">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; getArrayedEvents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getArrayedEvents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getArrayedEvents  Extracts event times as array</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function eventTimes = getArrayedEvents(eventTS, eventLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getArrayedEvents  Extracts event times as array
+
+   eventTimes = getArrayedEvents(eventTS) extracts times of all
+   events in first column
+
+   eventTimes = getArrayedEvents(eventTS, eventLabel) extracts times
+   for specified event labels
+
+   Inputs:
+       eventTS - labTimeSeries with boolean event data
+       eventLabel - cell array of event label strings (optional,
+                    default: first column)
+
+   Outputs:
+       eventTimes - matrix of event times (strides + 1) x events,
+                    with NaN for missing events
+
+   See also: <a href="splitByEvents.html" class="code" title="function [steppedDataArray, bad, initTime, eventTimes] =splitByEvents(this, eventTS, eventLabel, timeMargin)">splitByEvents</a>, <a href="align.html" class="code" title="function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)">align</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@processedLabData/getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	getStrideInfo  Returns stride count and timing information</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function eventTimes = getArrayedEvents(eventTS, eventLabel)</a>
+0002 <span class="comment">%getArrayedEvents  Extracts event times as array</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   eventTimes = getArrayedEvents(eventTS) extracts times of all</span>
+0005 <span class="comment">%   events in first column</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   eventTimes = getArrayedEvents(eventTS, eventLabel) extracts times</span>
+0008 <span class="comment">%   for specified event labels</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       eventTS - labTimeSeries with boolean event data</span>
+0012 <span class="comment">%       eventLabel - cell array of event label strings (optional,</span>
+0013 <span class="comment">%                    default: first column)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       eventTimes - matrix of event times (strides + 1) x events,</span>
+0017 <span class="comment">%                    with NaN for missing events</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: splitByEvents, align</span>
+0020 
+0021 <span class="keyword">if</span> nargin &gt; 1
+0022     eventList = eventTS.getDataAsVector(eventLabel);
+0023 <span class="keyword">else</span>
+0024     eventList = eventTS.Data(:, 1);
+0025 <span class="keyword">end</span>
+0026 <span class="comment">% Check needed: is eventList binary?</span>
+0027 N = size(eventList, 2); <span class="comment">% Number of events &amp; intervals to be found</span>
+0028 <span class="comment">% List all events in a single vector, by numbering them differently.</span>
+0029 <span class="comment">% auxList = double(eventList) * 2.^[0:N - 1]';</span>
+0030 <span class="comment">% refIdxLst = find(auxList == 1);</span>
+0031 <span class="comment">% Alt definition, to match what is returned if a single event was provided</span>
+0032 refIdxLst = find(eventList(:, 1));
+0033 M = length(refIdxLst) - 1;
+0034 auxTime = eventTS.Time;
+0035 initTime = auxTime(refIdxLst); <span class="comment">% Initial time of each interval identified</span>
+0036 eventTimes = nan(M + 1, N); <span class="comment">% Duration of each interval</span>
+0037 eventTimes(:, 1) = initTime;
+0038 <span class="keyword">for</span> i = 1:M <span class="comment">% Going over strides</span>
+0039     t0 = auxTime(refIdxLst(i));
+0040     lastEventIdx = refIdxLst(i);
+0041     <span class="keyword">for</span> j = 1:N - 1 <span class="comment">% Going over events</span>
+0042         <span class="comment">% nextEventIdx = lastEventIdx +</span>
+0043         <span class="comment">%     find(auxList(lastEventIdx + 1:refIdxLst(i + 1) - 1) ==</span>
+0044         <span class="comment">%     2^mod(j, N), 1, 'first');</span>
+0045         nextEventIdx = lastEventIdx + find(eventList( <span class="keyword">...</span>
+0046             lastEventIdx + 1:refIdxLst(i + 1) - 1, j + 1), 1, <span class="string">'first'</span>);
+0047         t1 = auxTime(nextEventIdx); <span class="comment">% Look for next event</span>
+0048         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t1) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t0)
+0049             eventTimes(i, j + 1) = t1;
+0050             lastEventIdx = nextEventIdx;
+0051         <span class="keyword">end</span>
+0052 
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cat</title>
+  <meta name="keywords" content="cat">
+  <meta name="description" content="cat  Concatenates alignedTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; cat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>cat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>cat  Concatenates alignedTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = cat(this, other, dim, forceFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">cat  Concatenates alignedTimeSeries
+
+   newThis = cat(this, other) concatenates strides (dim = 3)
+
+   newThis = cat(this, other, dim, forceFlag) concatenates along
+   specified dimension with optional force flag
+
+   Inputs:
+       this - alignedTimeSeries object
+       other - alignedTimeSeries to concatenate
+       dim - dimension: 2 (labels) or 3 (strides) (optional, default:
+             3)
+       forceFlag - if true, ignores label/alignment mismatches
+                   (optional, default: false)
+
+   Outputs:
+       newThis - concatenated alignedTimeSeries
+
+   Note: Cat-ting strides loses consecutive event timing
+
+   See also: <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>, <a href="getPartialDataAsATS.html" class="code" title="function newThis = getPartialDataAsATS(this, labels)">getPartialDataAsATS</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	derivative  Numerical differentiation</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/alignRotate.html" class="code" title="function newThis = alignRotate(this, newX, newZ)">alignRotate</a>	alignRotate  Aligns to new coordinate system</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>	buildNaiveDistancesModel  Builds statistical marker model</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a>	findOutliers  Detects outliers using model</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	This function swaps the first and second half of EMGdata along phaseDim,</li><li><a href="../../../../labTools/fun/misc/allcomb/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>	ALLCOMB - All combinations</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeAngleParameters.html" class="code" title="function out = computeAngleParameters(angleData, gaitEvents, slowLeg,eventTypes)">computeAngleParameters</a>	COMPUTEANGLEPARAMETERS Compute joint angle parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeEMGParameters.html" class="code" title="function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)">computeEMGParameters</a>	COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHSParameters.html" class="code" title="function out = computeHSParameters(tsData, gaitEvents, eventTypes)">computeHSParameters</a>	COMPUTEHSPARAMETERS Compute heel-strike-aligned parameters per stride.</li><li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = cat(this, other, dim, forceFlag)</a>
+0002 <span class="comment">%cat  Concatenates alignedTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = cat(this, other) concatenates strides (dim = 3)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   newThis = cat(this, other, dim, forceFlag) concatenates along</span>
+0007 <span class="comment">%   specified dimension with optional force flag</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - alignedTimeSeries object</span>
+0011 <span class="comment">%       other - alignedTimeSeries to concatenate</span>
+0012 <span class="comment">%       dim - dimension: 2 (labels) or 3 (strides) (optional, default:</span>
+0013 <span class="comment">%             3)</span>
+0014 <span class="comment">%       forceFlag - if true, ignores label/alignment mismatches</span>
+0015 <span class="comment">%                   (optional, default: false)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   Outputs:</span>
+0018 <span class="comment">%       newThis - concatenated alignedTimeSeries</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Note: Cat-ting strides loses consecutive event timing</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   See also: getPartialStridesAsATS, getPartialDataAsATS</span>
+0023 
+0024 <span class="keyword">if</span> nargin &lt; 4
+0025     forceFlag = false;
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dim)
+0028     dim = 3; <span class="comment">% Cat-ting strides</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">% Check alignment vectors coincide &amp; alignment labels coincide</span>
+0032 <span class="keyword">if</span> any(this.alignmentVector ~= other.alignmentVector)
+0033     ME = MException(<span class="string">'ATS:cat'</span>, <span class="string">'Alignment vector mismatch'</span>);
+0034     throw(ME);
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> ~forceFlag &amp;&amp; ~all(strcmp(this.alignmentLabels, <span class="keyword">...</span>
+0037         other.alignmentLabels))
+0038     ME = MException(<span class="string">'ATS:cat'</span>, [<span class="string">'Alignment labels mismatch, this check '</span><span class="keyword">...</span>
+0039         <span class="string">'can be ignored by setting forceFlag = true'</span>]);
+0040     throw(ME);
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">if</span> dim == 3
+0044     <span class="comment">% Check dimensions coincide</span>
+0045     s1 = size(this.Data);
+0046     s2 = size(other.Data);
+0047     <span class="keyword">if</span> any(s1(1:2) ~= s2(1:2))
+0048         ME = MException(<span class="string">'ATS:cat'</span>, <span class="string">'Data dimension mismatch.'</span>);
+0049         throw(ME);
+0050     <span class="keyword">end</span>
+0051 
+0052     <span class="comment">% Check labels coincide (unless forced)</span>
+0053     <span class="keyword">if</span> ~forceFlag &amp;&amp; ~all(strcmp(this.labels, other.labels))
+0054         ME = MException(<span class="string">'ATS:cat'</span>, [<span class="string">'Label mismatch, this check can be '</span><span class="keyword">...</span>
+0055             <span class="string">'ignored by setting forceFlag = true'</span>]);
+0056         throw(ME);
+0057     <span class="keyword">end</span>
+0058 
+0059     <span class="comment">% Do the cat:</span>
+0060     newThis = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), diff(this.Time(1:2)), <span class="keyword">...</span>
+0061         <a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(3, this.Data, other.Data), this.labels, <span class="keyword">...</span>
+0062         this.alignmentVector, this.alignmentLabels, <span class="keyword">...</span>
+0063         <a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(2, this.eventTimes(:, 1:end - 1), other.eventTimes));
+0064     warning(<span class="string">'ATS:catStridesLostEvents'</span>, [<span class="string">'Cat-ting strides of '</span> <span class="keyword">...</span>
+0065         <span class="string">'alignedTimeSeries, events are no longer consecutive.'</span>]);
+0066 <span class="keyword">elseif</span> dim == 2 <span class="comment">% Cat-ting labels</span>
+0067     <span class="comment">% Check dimensions coincide</span>
+0068     s1 = size(this.Data);
+0069     s2 = size(other.Data);
+0070     <span class="keyword">if</span> any(s1([1, 3]) ~= s2([1, 3]))
+0071         ME = MException(<span class="string">'ATS:cat'</span>, <span class="string">'Data dimension mismatch.'</span>);
+0072         throw(ME);
+0073     <span class="keyword">end</span>
+0074     <span class="comment">% Check no repeated labels</span>
+0075 
+0076     <span class="comment">% Check alignmentVector &amp; Labels</span>
+0077 
+0078     <span class="comment">% Check that all eventTimes match</span>
+0079     <span class="keyword">if</span> any(size(this.eventTimes) ~= size(other.eventTimes)) || <span class="keyword">...</span>
+0080             any(abs(this.eventTimes(:) - other.eventTimes(:)) &gt; 1e-9)
+0081         ME = MException(<span class="string">'ATS:cat'</span>, [<span class="string">'Trying to cat labels, but event '</span> <span class="keyword">...</span>
+0082             <span class="string">'times are different'</span>]);
+0083         throw(ME);
+0084     <span class="keyword">end</span>
+0085 
+0086     <span class="comment">% Do the cat</span>
+0087     newThis = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), diff(this.Time(1:2)), <span class="keyword">...</span>
+0088         <a href="cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(2, this.Data, other.Data), [this.labels, other.labels], <span class="keyword">...</span>
+0089         this.alignmentVector, this.alignmentLabels, this.eventTimes);
+0090 <span class="keyword">else</span>
+0091     ME = MException(<span class="string">'ATS:cat'</span>, <span class="string">'Invalid dimension for concatenation'</span>);
+0092     throw(ME);
+0093 <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

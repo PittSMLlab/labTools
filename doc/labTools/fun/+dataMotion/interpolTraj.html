@@ -1,0 +1,569 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of interpolTraj</title>
+  <meta name="keywords" content="interpolTraj">
+  <meta name="description" content="%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+dataMotion</a> &gt; interpolTraj.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+dataMotion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>interpolTraj
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function interpolTraj(pathSess,indsTrials,vicon) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> %INTERPOLTRAJ Interpolates trajectories to fill in marker gaps 
+ %   This function fills in the marker gaps by interpolating the trajectory of each X,Y,Z direction. 
+ %   Make sure the Vicon Nexus SDK is installed and added to the MATLAB path.
+ %
+ % input(s):
+ %   pathSess: path to the session folder where all trial data is stored.
+ %   nameMarker: marker of choice for which trajectory you want to fill
+ %   indsTrials: (optional) array of indices indicating which trials to
+ %       process. By default, all files starting with 'Trial' are processed.
+ %   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
+ %       object will be created and connected.
+ 
+ narginchk(1,4);                 % verify correct number of input arguments
+ 
+ % ensure session folder path exists
+ if ~isfolder(pathSess)
+     error('The session folder path specified does not exist: %s',pathSess);
+ end
+ 
+ % get all trial files that start with 'Trial'
+ trialFiles = dir(fullfile(pathSess,'Trial*.x1d'));
+ if isempty(trialFiles)      % if no trial files found, ...
+     fprintf('No trials found in session folder: %s\n',pathSess);
+     return;
+ end
+ 
+ % extract trial indices from filenames
+ [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
+     'UniformOutput',false);
+ indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+ 
+ % select trials to process
+ if nargin &lt; 2 || isempty(indsTrials)    % if 'indsTrials' not provided, ...
+     indsTrials = indsTrialsAll;         % process all trials
+ else    % otherwise, ensure no values provided as input do not exist
+     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
+ end
+ 
+ % initialize the Vicon Nexus object if not provided
+ if nargin &lt; 3 || isempty(vicon)
+     fprintf(['No Vicon SDK object provided. Connecting to Vicon ' ...
+         'Nexus...\n']);
+     vicon = ViconNexus();
+ end
+ 
+ for tr = indsTrials     % for each trial specified, ...
+     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
+     fprintf('Processing trial %d: %s\n',tr,pathTrial);
+ 
+     % run reconstruct and label pipeline on the trial
+     dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+ 
+ end
+ 
+ if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+     return;                         % exit if the trial could not be opened
+ end
+ 
+ 
+ fprintf('All specified trials have been processed.\n');
+ 
+ 
+ % get subject name (assuming only one subject in the trial)
+ subject = vicon.GetSubjectNames();
+ 
+ if isempty(subject)
+     error('No subject found in the trial.');
+ end
+ subject = subject{1};
+ % get trajectory of each direction of the marker of choice 
+ nameMarker = input('Enter the marker name (e.g., RGT, RKNEE, RANK, etc): ', 's');
+ 
+ [X,Y,Z,existsTraj] = vicon.GetTrajectory(subject,nameMarker);
+ 
+ %% Loop 
+ % Example of data for X, Y, Z
+ X_exist = X; 
+ Y_exist = Y;
+ Z_exist = Z;
+ 
+ % Assume existsTraj contains the binary data for the existence of trajectory data (1 for existing data, 0 for missing data)
+ X_exist(existsTraj == 0) = nan; 
+ Y_exist(existsTraj == 0) = nan; 
+ Z_exist(existsTraj == 0) = nan;
+ 
+ % Set cycle 
+ cycle_test=1:length(X);
+     
+ variables = {'X', 'Y', 'Z'};
+ for trajvar = variables
+     % Extract the variable name from the cell
+     var_name = trajvar{1};
+     
+     % Get the corresponding variable data
+     data_exist = eval([var_name, '_exist']);  % Get the variable data dynamically
+ 
+     % Cut the trajectory array to match the size of the cycle
+     data_exist_test = data_exist(cycle_test);
+     
+     % Cut the cycle and trajectory array to start from the first non-NaN value
+     idx = find(~isnan(data_exist_test), 1);
+     cycle_test_cut = cycle_test(cycle_test(1) + idx:end);
+     data_exist_test_cut = data_exist(cycle_test_cut);
+ 
+     % Find known (non-NaN) data indices
+     known_idx = ~isnan(data_exist_test_cut);
+ 
+     % Interpolate the trajectory of the cycle using the known data
+     data_filled = interp1(cycle_test_cut(known_idx), data_exist_test_cut(known_idx), cycle_test_cut, 'makima');
+    
+     % Dynamically create the filled data variable names (e.g., data_filled_X, data_filled_Y, etc.)
+     eval([var_name, '_data_filled = data_filled;']);
+     
+     % Plot the interpolated trajectory over the original data
+     figure;
+     plot(cycle_test_cut, data_exist_test_cut, 'bo', 'LineWidth', 1, 'MarkerSize', 2, 'DisplayName', [var_name, ' - Original Data (with NaNs)']);
+     hold on;
+     plot(cycle_test_cut, data_filled, 'ro-', 'MarkerSize', 1, 'DisplayName', [var_name, ' - Interpolated Data']);
+     hold off;
+     title([var_name, ' - Interpolation']);
+     xlabel('Cycle');
+     ylabel('Value');
+     legend('Location', 'best');;
+     
+     % Update the interpolated trajectory on Vicon
+     vicon.SetTrajectory(subject,nameMarker,X_data_filled,Y_data_filled,Z_data_filled,existsTraj);
+     
+ end
+% 
+INTERPOLTRAJ Interpolates trajectories to fill in marker gaps 
+   This function fills in the marker gaps by interpolating the trajectory of each X,Y,Z direction. 
+   Make sure the Vicon Nexus SDK is installed and added to the MATLAB path.
+
+ input(s):
+   pathSess: path to the session folder where all trial data is stored.
+   nameMarkers: cell array of marker names for which trajectories you want to fill (e.g., {'RGT', 'RKNEE', 'RANK'})
+   indsTrials: (optional) array of indices indicating which trials to process. By default, all files starting with 'Trial' are processed.
+   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon object will be created and connected.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function interpolTraj(pathSess,indsTrials,vicon)</a>
+0002 <span class="comment">% %INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</span>
+0003 <span class="comment">% %   This function fills in the marker gaps by interpolating the trajectory of each X,Y,Z direction.</span>
+0004 <span class="comment">% %   Make sure the Vicon Nexus SDK is installed and added to the MATLAB path.</span>
+0005 <span class="comment">% %</span>
+0006 <span class="comment">% % input(s):</span>
+0007 <span class="comment">% %   pathSess: path to the session folder where all trial data is stored.</span>
+0008 <span class="comment">% %   nameMarker: marker of choice for which trajectory you want to fill</span>
+0009 <span class="comment">% %   indsTrials: (optional) array of indices indicating which trials to</span>
+0010 <span class="comment">% %       process. By default, all files starting with 'Trial' are processed.</span>
+0011 <span class="comment">% %   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon</span>
+0012 <span class="comment">% %       object will be created and connected.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% narginchk(1,4);                 % verify correct number of input arguments</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% % ensure session folder path exists</span>
+0017 <span class="comment">% if ~isfolder(pathSess)</span>
+0018 <span class="comment">%     error('The session folder path specified does not exist: %s',pathSess);</span>
+0019 <span class="comment">% end</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% % get all trial files that start with 'Trial'</span>
+0022 <span class="comment">% trialFiles = dir(fullfile(pathSess,'Trial*.x1d'));</span>
+0023 <span class="comment">% if isempty(trialFiles)      % if no trial files found, ...</span>
+0024 <span class="comment">%     fprintf('No trials found in session folder: %s\n',pathSess);</span>
+0025 <span class="comment">%     return;</span>
+0026 <span class="comment">% end</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% % extract trial indices from filenames</span>
+0029 <span class="comment">% [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...</span>
+0030 <span class="comment">%     'UniformOutput',false);</span>
+0031 <span class="comment">% indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% % select trials to process</span>
+0034 <span class="comment">% if nargin &lt; 2 || isempty(indsTrials)    % if 'indsTrials' not provided, ...</span>
+0035 <span class="comment">%     indsTrials = indsTrialsAll;         % process all trials</span>
+0036 <span class="comment">% else    % otherwise, ensure no values provided as input do not exist</span>
+0037 <span class="comment">%     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));</span>
+0038 <span class="comment">% end</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% % initialize the Vicon Nexus object if not provided</span>
+0041 <span class="comment">% if nargin &lt; 3 || isempty(vicon)</span>
+0042 <span class="comment">%     fprintf(['No Vicon SDK object provided. Connecting to Vicon ' ...</span>
+0043 <span class="comment">%         'Nexus...\n']);</span>
+0044 <span class="comment">%     vicon = ViconNexus();</span>
+0045 <span class="comment">% end</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">% for tr = indsTrials     % for each trial specified, ...</span>
+0048 <span class="comment">%     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));</span>
+0049 <span class="comment">%     fprintf('Processing trial %d: %s\n',tr,pathTrial);</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%     % run reconstruct and label pipeline on the trial</span>
+0052 <span class="comment">%     dataMotion.reconstructAndLabelTrial(pathTrial,vicon);</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">% end</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">% if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)</span>
+0057 <span class="comment">%     return;                         % exit if the trial could not be opened</span>
+0058 <span class="comment">% end</span>
+0059 <span class="comment">%</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">% fprintf('All specified trials have been processed.\n');</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">% % get subject name (assuming only one subject in the trial)</span>
+0065 <span class="comment">% subject = vicon.GetSubjectNames();</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">% if isempty(subject)</span>
+0068 <span class="comment">%     error('No subject found in the trial.');</span>
+0069 <span class="comment">% end</span>
+0070 <span class="comment">% subject = subject{1};</span>
+0071 <span class="comment">% % get trajectory of each direction of the marker of choice</span>
+0072 <span class="comment">% nameMarker = input('Enter the marker name (e.g., RGT, RKNEE, RANK, etc): ', 's');</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">% [X,Y,Z,existsTraj] = vicon.GetTrajectory(subject,nameMarker);</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">% %% Loop</span>
+0077 <span class="comment">% % Example of data for X, Y, Z</span>
+0078 <span class="comment">% X_exist = X;</span>
+0079 <span class="comment">% Y_exist = Y;</span>
+0080 <span class="comment">% Z_exist = Z;</span>
+0081 <span class="comment">%</span>
+0082 <span class="comment">% % Assume existsTraj contains the binary data for the existence of trajectory data (1 for existing data, 0 for missing data)</span>
+0083 <span class="comment">% X_exist(existsTraj == 0) = nan;</span>
+0084 <span class="comment">% Y_exist(existsTraj == 0) = nan;</span>
+0085 <span class="comment">% Z_exist(existsTraj == 0) = nan;</span>
+0086 <span class="comment">%</span>
+0087 <span class="comment">% % Set cycle</span>
+0088 <span class="comment">% cycle_test=1:length(X);</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">% variables = {'X', 'Y', 'Z'};</span>
+0091 <span class="comment">% for trajvar = variables</span>
+0092 <span class="comment">%     % Extract the variable name from the cell</span>
+0093 <span class="comment">%     var_name = trajvar{1};</span>
+0094 <span class="comment">%</span>
+0095 <span class="comment">%     % Get the corresponding variable data</span>
+0096 <span class="comment">%     data_exist = eval([var_name, '_exist']);  % Get the variable data dynamically</span>
+0097 <span class="comment">%</span>
+0098 <span class="comment">%     % Cut the trajectory array to match the size of the cycle</span>
+0099 <span class="comment">%     data_exist_test = data_exist(cycle_test);</span>
+0100 <span class="comment">%</span>
+0101 <span class="comment">%     % Cut the cycle and trajectory array to start from the first non-NaN value</span>
+0102 <span class="comment">%     idx = find(~isnan(data_exist_test), 1);</span>
+0103 <span class="comment">%     cycle_test_cut = cycle_test(cycle_test(1) + idx:end);</span>
+0104 <span class="comment">%     data_exist_test_cut = data_exist(cycle_test_cut);</span>
+0105 <span class="comment">%</span>
+0106 <span class="comment">%     % Find known (non-NaN) data indices</span>
+0107 <span class="comment">%     known_idx = ~isnan(data_exist_test_cut);</span>
+0108 <span class="comment">%</span>
+0109 <span class="comment">%     % Interpolate the trajectory of the cycle using the known data</span>
+0110 <span class="comment">%     data_filled = interp1(cycle_test_cut(known_idx), data_exist_test_cut(known_idx), cycle_test_cut, 'makima');</span>
+0111 <span class="comment">%</span>
+0112 <span class="comment">%     % Dynamically create the filled data variable names (e.g., data_filled_X, data_filled_Y, etc.)</span>
+0113 <span class="comment">%     eval([var_name, '_data_filled = data_filled;']);</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">%     % Plot the interpolated trajectory over the original data</span>
+0116 <span class="comment">%     figure;</span>
+0117 <span class="comment">%     plot(cycle_test_cut, data_exist_test_cut, 'bo', 'LineWidth', 1, 'MarkerSize', 2, 'DisplayName', [var_name, ' - Original Data (with NaNs)']);</span>
+0118 <span class="comment">%     hold on;</span>
+0119 <span class="comment">%     plot(cycle_test_cut, data_filled, 'ro-', 'MarkerSize', 1, 'DisplayName', [var_name, ' - Interpolated Data']);</span>
+0120 <span class="comment">%     hold off;</span>
+0121 <span class="comment">%     title([var_name, ' - Interpolation']);</span>
+0122 <span class="comment">%     xlabel('Cycle');</span>
+0123 <span class="comment">%     ylabel('Value');</span>
+0124 <span class="comment">%     legend('Location', 'best');;</span>
+0125 <span class="comment">%</span>
+0126 <span class="comment">%     % Update the interpolated trajectory on Vicon</span>
+0127 <span class="comment">%     vicon.SetTrajectory(subject,nameMarker,X_data_filled,Y_data_filled,Z_data_filled,existsTraj);</span>
+0128 <span class="comment">%</span>
+0129 <span class="comment">% end</span>
+0130 <span class="comment">%%</span>
+0131 <span class="comment">%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</span>
+0132 <span class="comment">%   This function fills in the marker gaps by interpolating the trajectory of each X,Y,Z direction.</span>
+0133 <span class="comment">%   Make sure the Vicon Nexus SDK is installed and added to the MATLAB path.</span>
+0134 <span class="comment">%</span>
+0135 <span class="comment">% input(s):</span>
+0136 <span class="comment">%   pathSess: path to the session folder where all trial data is stored.</span>
+0137 <span class="comment">%   nameMarkers: cell array of marker names for which trajectories you want to fill (e.g., {'RGT', 'RKNEE', 'RANK'})</span>
+0138 <span class="comment">%   indsTrials: (optional) array of indices indicating which trials to process. By default, all files starting with 'Trial' are processed.</span>
+0139 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon object will be created and connected.</span>
+0140 
+0141 narginchk(1,4);                 <span class="comment">% verify correct number of input arguments</span>
+0142 
+0143 <span class="comment">% ensure session folder path exists</span>
+0144 <span class="keyword">if</span> ~isfolder(pathSess)
+0145     error(<span class="string">'The session folder path specified does not exist: %s'</span>,pathSess);
+0146 <span class="keyword">end</span>
+0147 
+0148 <span class="comment">% get all trial files that start with 'Trial'</span>
+0149 trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
+0150 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)      <span class="comment">% if no trial files found, ...</span>
+0151     fprintf(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
+0152     <span class="keyword">return</span>;
+0153 <span class="keyword">end</span>
+0154 
+0155 <span class="comment">% extract trial indices from filenames</span>
+0156 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, <span class="keyword">...</span>
+0157     <span class="string">'UniformOutput'</span>,false);
+0158 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+0159 
+0160 <span class="comment">% select trials to process</span>
+0161 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsTrials)    <span class="comment">% if 'indsTrials' not provided, ...</span>
+0162     indsTrials = indsTrialsAll;         <span class="comment">% process all trials</span>
+0163 <span class="keyword">else</span>    <span class="comment">% otherwise, ensure no values provided as input do not exist</span>
+0164     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
+0165 <span class="keyword">end</span>
+0166 
+0167 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
+0168 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0169     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0170         <span class="string">'Nexus...\n'</span>]);
+0171     vicon = ViconNexus();
+0172 <span class="keyword">end</span>
+0173 
+0174 reconstruct_y = input(<span class="string">'Run Reconstruct and Label? &quot;Y&quot; or &quot;N&quot;: '</span>);
+0175 
+0176 
+0177 
+0178 fprintf(<span class="string">'All specified trials have been processed.\n'</span>);
+0179 
+0180 <span class="comment">% get subject name (assuming only one subject in the trial)</span>
+0181 subject = vicon.GetSubjectNames();
+0182 
+0183 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subject)
+0184     error(<span class="string">'No subject found in the trial.'</span>);
+0185 <span class="keyword">end</span>
+0186 subject = subject{1};
+0187 
+0188 <span class="comment">% Input for multiple markers (this can be given as a cell array)</span>
+0189 nameMarkers = input(<span class="string">'Enter the marker names (e.g., {''RGT'', ''RKNEE'', ''RANK''}): '</span>);
+0190 
+0191 <span class="keyword">for</span> tr = indsTrials     <span class="comment">% for each trial specified, ...</span>
+0192     pathTrial = fullfile(pathSess,sprintf(<span class="string">'Trial%02d'</span>,tr));
+0193     
+0194     <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0195         <span class="keyword">return</span>;                         <span class="comment">% exit if the trial could not be opened</span>
+0196     <span class="keyword">end</span>
+0197     <span class="keyword">if</span> reconstruct_y == <span class="string">'Y'</span>
+0198         <span class="comment">% run reconstruct and label pipeline on the trial</span>
+0199         dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+0200     <span class="keyword">end</span> 
+0201     fprintf(<span class="string">'Processing trial %d: %s\n'</span>,tr,pathTrial);
+0202     <span class="comment">% Loop over all markers</span>
+0203     <span class="keyword">for</span> markerIdx = 1:length(nameMarkers)
+0204         nameMarker = nameMarkers{markerIdx};
+0205         fprintf(<span class="string">'Processing marker: %s\n'</span>, nameMarker);
+0206         
+0207         <span class="comment">% Get trajectory of each direction of the marker of choice</span>
+0208         data_filled_matrix = []; <span class="comment">% Initialize an empty matrix</span>
+0209         [X, Y, Z, existsTraj] = vicon.GetTrajectory(subject, nameMarker);
+0210         
+0211         <span class="comment">% Example of data for X, Y, Z</span>
+0212         X_exist = X;
+0213         Y_exist = Y;
+0214         Z_exist = Z;
+0215         
+0216         <span class="comment">% Assume existsTraj contains the binary data for the existence of trajectory data (1 for existing data, 0 for missing data)</span>
+0217         X_exist(existsTraj == 0) = nan;
+0218         Y_exist(existsTraj == 0) = nan;
+0219         Z_exist(existsTraj == 0) = nan;
+0220         
+0221         <span class="comment">% Set cycle</span>
+0222         cycle_test = 1:length(X);
+0223         
+0224         <span class="comment">% Process each direction (X, Y, Z)</span>
+0225         variables = {<span class="string">'X'</span>, <span class="string">'Y'</span>, <span class="string">'Z'</span>};
+0226         
+0227         <span class="keyword">for</span> trajvar = variables
+0228             <span class="comment">% Extract the variable name from the cell</span>
+0229             var_name = trajvar{1};
+0230             
+0231             <span class="comment">% Get the corresponding variable data</span>
+0232             data_exist = eval([var_name, <span class="string">'_exist'</span>]);  <span class="comment">% Get the variable data dynamically</span>
+0233             
+0234             <span class="comment">% Cut the trajectory array to match the size of the cycle</span>
+0235             data_exist_test = data_exist(cycle_test);
+0236             
+0237 <span class="comment">%             % Find divisors of the given number n</span>
+0238 <span class="comment">%             divisors = [];</span>
+0239 <span class="comment">%             for i = 1:length(data_exist_test)</span>
+0240 <span class="comment">%                 if mod(length(data_exist_test), i) == 0</span>
+0241 <span class="comment">%                     divisors = [divisors, i];  % Store the divisor</span>
+0242 <span class="comment">%                 end</span>
+0243 <span class="comment">%             end</span>
+0244 <span class="comment">%</span>
+0245 <span class="comment">%             % Find the closest divisor to 100</span>
+0246 <span class="comment">%             [~, idx] = min(abs(divisors - 100));  % Find the index with the minimum difference</span>
+0247 <span class="comment">%             closest_divisor = divisors(idx);  % Return the closest divisor</span>
+0248             
+0249             windowSize = 100;  <span class="comment">% Define the moving window size</span>
+0250             <span class="comment">%         data_outlier_loc = ~isoutlier(data_exist_test,&quot;movmedian&quot;,windowSize);</span>
+0251             moving_mean = movmean(data_exist_test, windowSize);
+0252             moving_std = movstd(data_exist_test, windowSize);
+0253             
+0254             <span class="comment">% Define a more conservative threshold (e.g., 2 standard deviations)</span>
+0255             <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> = 1.5;
+0256             
+0257             <span class="comment">% Identify outliers: points that are outside of mean ± threshold * std</span>
+0258             data_outlier_loc = (data_exist_test &lt; moving_mean - <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> * moving_std) | <span class="keyword">...</span>
+0259                 (data_exist_test &gt; moving_mean + <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> * moving_std);
+0260             data_exist_filt = data_exist_test(~data_outlier_loc);
+0261             
+0262             <span class="comment">% Cut the cycle and trajectory array to start from the first non-NaN value</span>
+0263             idx = find(~isnan(data_exist_filt));
+0264             cycle_test_cut = cycle_test(1 + idx(1):idx(end));
+0265             data_exist_filt_cut = data_exist_filt(cycle_test_cut);
+0266             
+0267             
+0268             <span class="comment">% Find known (non-NaN) data indices</span>
+0269             known_idx = ~isnan(data_exist_filt_cut);
+0270             
+0271             <span class="comment">% Interpolate the trajectory of the cycle using the known data</span>
+0272             data_filled = interp1(cycle_test_cut(known_idx), data_exist_filt_cut(known_idx), cycle_test_cut, <span class="string">'makima'</span>);
+0273             
+0274             <span class="comment">% Fill in zeros to match the size of the original data</span>
+0275             data_filled_match = [zeros(1,idx(1)),data_filled,zeros(1,length(cycle_test)-idx(end))];
+0276             
+0277             <span class="comment">% Append the interpolated data for this variable to the matrix</span>
+0278             data_filled_matrix = [data_filled_matrix; data_filled_match];
+0279             existsTraj(idx+1:end) = true;
+0280             
+0281             <span class="comment">% Plot the interpolated trajectory over the original data</span>
+0282             figure;
+0283             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(cycle_test_cut, data_exist_filt_cut, <span class="string">'bo'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'MarkerSize'</span>, 2, <span class="string">'DisplayName'</span>, [var_name, <span class="string">' - Original Data (with NaNs)'</span>]);
+0284             hold on;
+0285             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(cycle_test_cut, data_filled, <span class="string">'ro-'</span>, <span class="string">'MarkerSize'</span>, 1, <span class="string">'DisplayName'</span>, [var_name, <span class="string">' - Interpolated Data'</span>]);
+0286             hold off;
+0287             title([var_name, <span class="string">' - Interpolation; '</span>,nameMarker]);
+0288             xlabel(<span class="string">'Cycle'</span>);
+0289             ylabel(<span class="string">'Value'</span>);
+0290             legend(<span class="string">'Location'</span>, <span class="string">'best'</span>);
+0291             
+0292         <span class="keyword">end</span>
+0293         <span class="comment">% Update trajectory on vicon</span>
+0294         vicon.SetTrajectory(subject,nameMarker,data_filled_matrix(1,:),data_filled_matrix(2,:),data_filled_matrix(3,:),existsTraj);
+0295         fprintf(append(nameMarker, <span class="string">' trajectory interpolation completed.\n'</span>));
+0296         
+0297     <span class="keyword">end</span>
+0298     vicon.SaveTrial(200);
+0299 <span class="keyword">end</span>
+0300 
+0301 
+0302 <span class="comment">%%</span>
+0303 <span class="comment">% Initialize matrix to store the filled data (X, Y, Z)</span>
+0304 
+0305 
+0306 
+0307 <span class="comment">%%</span>
+0308 <span class="comment">% % Loop over all markers</span>
+0309 <span class="comment">% for markerIdx = 1:length(nameMarkers)</span>
+0310 <span class="comment">%     nameMarker = nameMarkers{markerIdx};</span>
+0311 <span class="comment">%     fprintf('Processing marker: %s\n', nameMarker);</span>
+0312 <span class="comment">%</span>
+0313 <span class="comment">%     % Get trajectory of each direction of the marker of choice</span>
+0314 <span class="comment">%     [X, Y, Z, existsTraj] = vicon.GetTrajectory(subject, nameMarker);</span>
+0315 <span class="comment">%</span>
+0316 <span class="comment">%     % Example of data for X, Y, Z</span>
+0317 <span class="comment">%     X_exist = X;</span>
+0318 <span class="comment">%     Y_exist = Y;</span>
+0319 <span class="comment">%     Z_exist = Z;</span>
+0320 <span class="comment">%</span>
+0321 <span class="comment">%     % Assume existsTraj contains the binary data for the existence of trajectory data (1 for existing data, 0 for missing data)</span>
+0322 <span class="comment">%     X_exist(existsTraj == 0) = nan;</span>
+0323 <span class="comment">%     Y_exist(existsTraj == 0) = nan;</span>
+0324 <span class="comment">%     Z_exist(existsTraj == 0) = nan;</span>
+0325 <span class="comment">%</span>
+0326 <span class="comment">%     % Set cycle</span>
+0327 <span class="comment">%     cycle_test = 1:length(X);</span>
+0328 <span class="comment">%</span>
+0329 <span class="comment">%     % Process each direction (X, Y, Z)</span>
+0330 <span class="comment">%     variables = {'X', 'Y', 'Z'};</span>
+0331 <span class="comment">%     for trajvar = variables</span>
+0332 <span class="comment">%         % Extract the variable name from the cell</span>
+0333 <span class="comment">%         var_name = trajvar{1};</span>
+0334 <span class="comment">%</span>
+0335 <span class="comment">%         % Get the corresponding variable data</span>
+0336 <span class="comment">%         data_exist = eval([var_name, '_exist']);  % Get the variable data dynamically</span>
+0337 <span class="comment">%</span>
+0338 <span class="comment">%         % Cut the trajectory array to match the size of the cycle</span>
+0339 <span class="comment">%         data_exist_test = data_exist(cycle_test);</span>
+0340 <span class="comment">%</span>
+0341 <span class="comment">%         % Cut the cycle and trajectory array to start from the first non-NaN value</span>
+0342 <span class="comment">%         idx = find(~isnan(data_exist_test), 1);</span>
+0343 <span class="comment">%         cycle_test_cut = cycle_test(1 + idx:end);</span>
+0344 <span class="comment">%         data_exist_test_cut = data_exist(cycle_test_cut);</span>
+0345 <span class="comment">%</span>
+0346 <span class="comment">%         % Find known (non-NaN) data indices</span>
+0347 <span class="comment">%         known_idx = ~isnan(data_exist_test_cut);</span>
+0348 <span class="comment">%</span>
+0349 <span class="comment">%         % Interpolate the trajectory of the cycle using the known data</span>
+0350 <span class="comment">%         data_filled = interp1(cycle_test_cut(known_idx), data_exist_test_cut(known_idx), cycle_test_cut, 'makima');</span>
+0351 <span class="comment">%</span>
+0352 <span class="comment">%         % Dynamically create the filled data variable names (e.g., data_filled_X, data_filled_Y, etc.)</span>
+0353 <span class="comment">%         eval([var_name, '_data_filled_', nameMarker, ' = data_filled;']);</span>
+0354 <span class="comment">%</span>
+0355 <span class="comment">%         % Plot the interpolated trajectory over the original data</span>
+0356 <span class="comment">%         figure;</span>
+0357 <span class="comment">%         plot(cycle_test_cut, data_exist_test_cut, 'bo', 'LineWidth', 1, 'MarkerSize', 2, 'DisplayName', [var_name, ' - Original Data (with NaNs)']);</span>
+0358 <span class="comment">%         hold on;</span>
+0359 <span class="comment">%         plot(cycle_test_cut, data_filled, 'ro-', 'MarkerSize', 1, 'DisplayName', [var_name, ' - Interpolated Data']);</span>
+0360 <span class="comment">%         hold off;</span>
+0361 <span class="comment">%         title([var_name, ' - Interpolation']);</span>
+0362 <span class="comment">%         xlabel('Cycle');</span>
+0363 <span class="comment">%         ylabel('Value');</span>
+0364 <span class="comment">%         legend('Location', 'best');</span>
+0365 <span class="comment">%</span>
+0366 <span class="comment">%         % Update the interpolated trajectory on Vicon for this marker</span>
+0367 <span class="comment">%         eval(['vicon.SetTrajectory(subject, nameMarker, ', var_name, '_data_filled_', nameMarker, ', existsTraj);']);</span>
+0368 <span class="comment">%     end</span>
+0369 <span class="comment">%     vicon.SetTrajectory(subject,nameMarker,,Y_data_filled,Z_data_filled,existsTraj);</span>
+0370 <span class="comment">% end</span>
+0371 
+0372 <span class="comment">%% Butterworth filter</span>
+0373 
+0374 <span class="comment">% d1 = designfilt(&quot;lowpassiir&quot;,FilterOrder=2, ...</span>
+0375 <span class="comment">%     HalfPowerFrequency=0.15,DesignMethod=&quot;butter&quot;);</span>
+0376 <span class="comment">% [b,a] = butter(6,fc/(fs/2));</span>
+0377 <span class="comment">% X_new_filt = filtfilt(b,a,X_new);</span>
+0378 <span class="comment">%</span>
+0379 <span class="comment">% figure;</span>
+0380 <span class="comment">% plot(cycle_test, X_existtest, 'bo-', 'LineWidth', 1, 'MarkerSize', 2, 'DisplayName', 'Original Data (with NaNs)');</span>
+0381 <span class="comment">% hold on;</span>
+0382 <span class="comment">% plot(cycle_test, X_new_filt,'r-')</span>
+0383 <span class="comment">% hold off;</span>
+0384 
+0385 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

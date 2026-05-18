@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEpochData</title>
+  <meta name="keywords" content="getEpochData">
+  <meta name="description" content="getEpochData  Returns data from all subjects in all groups for each epoch">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@studyData</a> &gt; getEpochData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@studyData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getEpochData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>getEpochData  Returns data from all subjects in all groups for each epoch</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function data = getEpochData(this, epochs, labels, summaryFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getEpochData  Returns data from all subjects in all groups for each epoch
+
+   data = getEpochData(this, epochs, labels) extracts specified
+   parameter data from all groups for the given epochs
+
+   data = getEpochData(this, epochs, labels, summaryFlag) optionally
+   specifies how to summarize the data
+
+   Inputs:
+       this - studyData object
+       epochs - epoch specification (e.g., 'Early Adaptation', 'Late
+                Adaptation')
+       labels - cell array or string of parameter labels to extract
+       summaryFlag - flag controlling data summarization (optional,
+                     respects default in adaptationData.getEpochData)
+
+   Outputs:
+       data - extracted data, organized as cell array or matrix
+              depending on whether all groups have same size. If all
+              groups same size: matrix of size [labels x epochs x
+              groups x subjects]. Otherwise: cell array with one cell
+              per group
+
+   See also: adaptationData.<a href="getEpochData.html" class="code" title="function data = getEpochData(this, epochs, labels, summaryFlag)">getEpochData</a>, groupAdaptationData</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="studyData.html" class="code" title="">studyData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = getEpochData(this, epochs, labels, summaryFlag)</a>
+0002 <span class="comment">%getEpochData  Returns data from all subjects in all groups for each epoch</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   data = getEpochData(this, epochs, labels) extracts specified</span>
+0005 <span class="comment">%   parameter data from all groups for the given epochs</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   data = getEpochData(this, epochs, labels, summaryFlag) optionally</span>
+0008 <span class="comment">%   specifies how to summarize the data</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Inputs:</span>
+0011 <span class="comment">%       this - studyData object</span>
+0012 <span class="comment">%       epochs - epoch specification (e.g., 'Early Adaptation', 'Late</span>
+0013 <span class="comment">%                Adaptation')</span>
+0014 <span class="comment">%       labels - cell array or string of parameter labels to extract</span>
+0015 <span class="comment">%       summaryFlag - flag controlling data summarization (optional,</span>
+0016 <span class="comment">%                     respects default in adaptationData.getEpochData)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   Outputs:</span>
+0019 <span class="comment">%       data - extracted data, organized as cell array or matrix</span>
+0020 <span class="comment">%              depending on whether all groups have same size. If all</span>
+0021 <span class="comment">%              groups same size: matrix of size [labels x epochs x</span>
+0022 <span class="comment">%              groups x subjects]. Otherwise: cell array with one cell</span>
+0023 <span class="comment">%              per group</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   See also: adaptationData.getEpochData, groupAdaptationData</span>
+0026 
+0027 <span class="comment">% Manage inputs:</span>
+0028 <span class="keyword">if</span> nargin &lt; 4
+0029     <span class="comment">% Respect default in adaptationData.getEpochData</span>
+0030     summaryFlag = [];
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="keyword">if</span> isa(labels, <span class="string">'char'</span>)
+0034     labels = {labels};
+0035 <span class="keyword">end</span>
+0036 
+0037 data = cell(size(this.groupData));
+0038 allSameSize = true;
+0039 N = length(this.groupData{1}.ID);
+0040 <span class="keyword">for</span> i = 1:length(this.groupData)
+0041     data{i} = this.groupData{i}.getEpochData(epochs, labels, summaryFlag);
+0042     allSameSize = allSameSize &amp;&amp; N == size(data{i}, 3);
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% If all groups are same size, catting into a matrix for easier</span>
+0045 <span class="comment">% manipulation (this is probably a bad idea)</span>
+0046 <span class="keyword">if</span> allSameSize
+0047     <span class="comment">% Cats along dim 2 by default</span>
+0048     data = reshape(<a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(data), length(labels), length(epochs), <span class="keyword">...</span>
+0049         length(this.groupData), N);
+0050 <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotParamBarsByConditions.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>plotParamBarsByConditions
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -45,26 +45,26 @@ This function is called by:
 <div class="fragment"><pre>0001         <a name="_sub0" href="#_subfunctions" class="code">function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)</a>
 0002             
 0003             N1=3; <span class="comment">%very early number of points</span>
-0004            <span class="keyword">if</span> nargin&lt;3 || isempty(earlyNumber)
+0004            <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(earlyNumber)
 0005                 N2=5; <span class="comment">%early number of points</span>
 0006             <span class="keyword">else</span>
 0007                 N2=earlyNumber;
 0008             <span class="keyword">end</span>
-0009             <span class="keyword">if</span> nargin&lt;4 || isempty(lateNumber)
+0009             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lateNumber)
 0010                 N3=20; <span class="comment">%late number of points</span>
 0011             <span class="keyword">else</span>
 0012                 N3=lateNumber;
 0013             <span class="keyword">end</span>
-0014             <span class="keyword">if</span> nargin&lt;5 || isempty(exemptLast)
+0014             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
 0015                 Ne=5;
 0016             <span class="keyword">else</span>
 0017                 Ne=exemptLast;
 0018             <span class="keyword">end</span>
 0019             
-0020             [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
+0020             [ah,figHandle]=<a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(length(label),4,1);           
 0021             
-0022             <span class="keyword">if</span> nargin&lt;6 || isempty(condList)
-0023                 conds=find(~cellfun(@isempty,this.metaData.conditionName));
+0022             <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condList)
+0023                 conds=find(~cellfun(@<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,this.metaData.conditionName));
 0024             <span class="keyword">else</span>
 0025                 conds=this.getConditionIdxsFromName(condList);
 0026                 conds=conds(~isnan(conds));
@@ -115,6 +115,6 @@ This function is called by:
 0071             <span class="keyword">end</span>
 0072             legend([<span class="string">'First '</span> num2str(N1) <span class="string">' strides'</span>],[<span class="string">'First '</span> num2str(N2) <span class="string">' strides)'</span>],[<span class="string">'Last '</span> num2str(N3) <span class="string">'(-'</span> num2str(Ne) <span class="string">') strides)'</span>]);
 0073         <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

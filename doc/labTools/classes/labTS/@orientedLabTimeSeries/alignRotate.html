@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of alignRotate</title>
+  <meta name="keywords" content="alignRotate">
+  <meta name="description" content="alignRotate  Aligns to new coordinate system">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; alignRotate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>alignRotate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>alignRotate  Aligns to new coordinate system</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = alignRotate(this, newX, newZ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">alignRotate  Aligns to new coordinate system
+
+   newThis = alignRotate(this, newX, newZ) rotates data to align with
+   new coordinate system
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       newX - desired x-axis direction (1x3 or Nx3)
+       newZ - desired z-axis direction (1x3 or Nx3)
+
+   Outputs:
+       newThis - aligned orientedLabTimeSeries
+
+   Note: newX and newZ need to be 1x3 or Nx3 where N =
+         size(this.Data, 1). FIXME - Align z to newZ, and x to newX
+         projected in direction orthogonal to newZ
+
+   See also: <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>, <a href="translate.html" class="code" title="function newThis = translate(this, vector)">translate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>	rotate  Rotates data by matrix</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = alignRotate(this, newX, newZ)</a>
+0002 <span class="comment">%alignRotate  Aligns to new coordinate system</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = alignRotate(this, newX, newZ) rotates data to align with</span>
+0005 <span class="comment">%   new coordinate system</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       newX - desired x-axis direction (1x3 or Nx3)</span>
+0010 <span class="comment">%       newZ - desired z-axis direction (1x3 or Nx3)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       newThis - aligned orientedLabTimeSeries</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: newX and newZ need to be 1x3 or Nx3 where N =</span>
+0016 <span class="comment">%         size(this.Data, 1). FIXME - Align z to newZ, and x to newX</span>
+0017 <span class="comment">%         projected in direction orthogonal to newZ</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: rotate, translate</span>
+0020 
+0021 <span class="comment">% newX and newZ need to be 1x3 or Nx3 where N = size(this.Data, 1)</span>
+0022 <span class="comment">% Check:</span>
+0023 N = size(this.Data, 1);
+0024 <span class="keyword">if</span> (size(newX, 1) ~= 1 &amp;&amp; size(newX, 1) ~= N) || size(newX, 2) ~= 3
+0025     error(<span class="string">'orientedLabTS:alignRotate'</span>, <span class="string">'newX has to be 1x3 or Nx3.'</span>);
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> size(newZ, 1) ~= 1 &amp;&amp; size(newZ, 1) ~= N || size(newZ, 2) ~= 3
+0028     error(<span class="string">'orientedLabTS:alignRotate'</span>, <span class="string">'newZ has to be 1x3 or Nx3.'</span>);
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">% In case of one being 1x3 and the other Nx3, making them both Nx3</span>
+0032 <span class="comment">% FIXME: Align z to newZ, and x to newX projected in a direction</span>
+0033 <span class="comment">% orthogonal to newZ (or check that newX is orthogonal to newZ to</span>
+0034 <span class="comment">% start with)</span>
+0035 <span class="keyword">if</span> size(newX, 1) ~= size(newZ, 1)
+0036     <span class="keyword">if</span> size(newX, 1) == 1
+0037         newX = repmat(newX, N, 1);
+0038     <span class="keyword">else</span>
+0039         newZ = repmat(newZ, N, 1);
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 
+0043 newX = bsxfun(@rdivide, newX, sqrt(sum(newX.^2, 2)));
+0044 newZ = bsxfun(@rdivide, newZ, sqrt(sum(newZ.^2, 2)));
+0045 <span class="comment">% Find rotation matrix</span>
+0046 newY = -cross(newX, newZ); <span class="comment">% orthogonal to the other two</span>
+0047 newY = bsxfun(@rdivide, newY, sqrt(sum(newY.^2, 2)));
+0048 matrix1 = permute(newX, [1, 3, 2]);
+0049 matrix2 = permute(newY, [1, 3, 2]);
+0050 matrix3 = permute(newZ, [1, 3, 2]);
+0051 matrix = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(2, matrix1, matrix2);
+0052 matrix = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(2, matrix, matrix3);
+0053 <span class="keyword">for</span> i = 1:size(matrix, 1)
+0054     <span class="keyword">if</span> ~any(isnan(matrix(i, :, :)))
+0055         <span class="comment">% Very expensive computation</span>
+0056         matrix(i, 1:3, 1:3) = inv(squeeze(matrix(i, :, :)));
+0057     <span class="keyword">else</span>
+0058         matrix(i, 1:3, 1:3) = nan;
+0059     <span class="keyword">end</span>
+0060 <span class="keyword">end</span>
+0061 <span class="comment">% Rotate</span>
+0062 newThis = <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>(this, matrix);
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

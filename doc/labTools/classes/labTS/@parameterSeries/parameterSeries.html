@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parameterSeries</title>
+  <meta name="keywords" content="parameterSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; parameterSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>parameterSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds new parameters to dataset</li><li><a href="../../../../labTools/classes/auxData/@paramData/getParameter.html" class="code" title="function [data, auxLabel] = getParameter(this, label)">getParameter</a>	getParameter  Retrieves data for specified parameter(s)</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/anova.html" class="code" title="function out = anova(this, epochs, contrasts)">anova</a>	anova  Performs ANOVA comparing groups across epochs</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/addNewParameter.html" class="code" title="function [newThis, newData] = addNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">addNewParameter</a>	addNewParameter  Adds computed parameter from existing data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/fourierTransform.html" class="code" title="function Fthis = fourierTransform(this, M)">fourierTransform</a>	fourierTransform  Computes Fourier transform</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/substituteNaNs.html" class="code" title="function this = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Replaces NaN by interpolation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Fills NaN values (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="addNewParameter.html" class="code" title="function newThis = addNewParameter(this, newParamLabel, funHandle,inputParameterLabels, newParamDescription)">addNewParameter</a>	addNewParameter  Computes and adds new parameter from existing parameters</li><li><a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>	anova  Performs one-way ANOVA on parameters</li><li><a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="getDataAsPS.html" class="code" title="function newThis = getDataAsPS(this, labels, strides, skipFixedParams)">getDataAsPS</a>	getDataAsPS  Extracts subset as new parameterSeries</li><li><a href="getParameter.html" class="code" title="function [data, auxLabel] = getParameter(this, label)">getParameter</a>	getParameter  Retrieves parameter data</li><li><a href="incorporateDependentParameters.html" class="code" title="function newThis = incorporateDependentParameters(this, labels)">incorporateDependentParameters</a>	incorporateDependentParameters  Adds computed dependent parameters</li><li><a href="indsInTrial.html" class="code" title="function inds = indsInTrial(this, t)">indsInTrial</a>	indsInTrial  Returns indices for specified trial(s)</li><li><a href="linearStretch.html" class="code" title="function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)">linearStretch</a>	linearStretch  Linearly transforms parameter values</li><li><a href="markBadStridesAsNan.html" class="code" title="function this = markBadStridesAsNan(this)">markBadStridesAsNan</a>	markBadStridesAsNan  Sets bad strides to NaN</li><li><a href="markBadWhenMissingAll.html" class="code" title="function newThis = markBadWhenMissingAll(this, labels)">markBadWhenMissingAll</a>	markBadWhenMissingAll  Marks strides bad if all params missing</li><li><a href="markBadWhenMissingAny.html" class="code" title="function newThis = markBadWhenMissingAny(this, labels)">markBadWhenMissingAny</a>	markBadWhenMissingAny  Marks strides bad if any param missing</li><li><a href="normalizeToBaseline.html" class="code" title="function this = normalizeToBaseline(this, labels, rangeValues)">normalizeToBaseline</a>	normalizeToBaseline  Normalizes parameters (deprecated)</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="plotAlt.html" class="code" title="function [h, h1] = plotAlt(this, h, labels, plotHandles, color)">plotAlt</a>	plotAlt  Plots parameters as scatter</li><li><a href="replaceParams.html" class="code" title="function this = replaceParams(this, other)">replaceParams</a>	replaceParams  Replaces existing parameters</li><li><a href="substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>	substituteNaNs  Fills NaN values, preserving fixed params</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag,padWithNaNFlag,numStrides,medianFlag)">removeBiasV4</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="getDataAsPS.html" class="code" title="function newThis = getDataAsPS(this, labels, strides, skipFixedParams)">getDataAsPS</a>	getDataAsPS  Extracts subset as new parameterSeries</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li><li><a href="../../../../labTools/fun/parameterCalculation/calcExperimentalParams.html" class="code" title="function out = calcExperimentalParams(trialData, subData, eventClass, initEventSide)">calcExperimentalParams</a>	CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">computeCOM</a>	COMPUTECOM Compute stride-by-stride COM kinematics relative to each ankle.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHSParameters.html" class="code" title="function out = computeHSParameters(tsData, gaitEvents, eventTypes)">computeHSParameters</a>	COMPUTEHSPARAMETERS Compute heel-strike-aligned parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHarmonicRatioParameters.html" class="code" title="function out = computeHarmonicRatioParameters(strideEvents, markerData,options)">computeHarmonicRatioParameters</a>	COMPUTEHARMONICRATIOPARAMETERS Compute harmonic ratios per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>	COMPUTEHREFLEXPARAMETERS Compute stride-by-stride H-reflex parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/computePercParameters.html" class="code" title="function out = computePercParameters(trialData, initTime, endTime,slaParam)">computePercParameters</a>	COMPUTEPERCPARAMETERS Compute perceptual task parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">computeSpatialParameters</a>	COMPUTESPATIALPARAMETERS Compute spatial parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>	COMPUTETSDISCRETEPARAMETERS Discretize time series into stride phases.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeTemporalParameters.html" class="code" title="function out = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>	COMPUTETEMPORALPARAMETERS Compute temporal parameters per stride.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = parameterSeries(</a></li><li><a href="#_sub2" class="code">function this = setTrialTypes(this, types)</a></li><li><a href="#_sub3" class="code">function vals = get.bad(this)</a></li><li><a href="#_sub4" class="code">function vals = get.stridesTrial(this)</a></li><li><a href="#_sub5" class="code">function vals = get.stridesInitTime(this)</a></li><li><a href="#_sub6" class="code">function vals = get.description(this)</a></li><li><a href="#_sub7" class="code">function vals = get.trialTypes(this)</a></li><li><a href="#_sub8" class="code">function [bool, idx] = isaParameter(this, labels)</a></li><li><a href="#_sub9" class="code">function F = fourierTransform(this)</a></li><li><a href="#_sub10" class="code">function newThis = resample(this)</a></li><li><a href="#_sub11" class="code">function newThis = resampleN(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="parameterSeries.html" class="code" title="">parameterSeries</a> &lt; <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>
+0002     <span class="comment">%parameterSeries  Extends labTimeSeries to hold adaptation parameters</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   parameterSeries stores stride-by-stride adaptation parameters with</span>
+0005     <span class="comment">%   associated metadata including trial information, timing, and</span>
+0006     <span class="comment">%   parameter descriptions. It provides specialized methods for</span>
+0007     <span class="comment">%   parameter manipulation, normalization, and analysis.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%parameterSeries properties:</span>
+0010     <span class="comment">%   hiddenTime - actual time values for each stride</span>
+0011     <span class="comment">%   trialTypes - cell array of trial type identifiers</span>
+0012     <span class="comment">%   bad - logical vector indicating bad strides (dependent)</span>
+0013     <span class="comment">%   stridesTrial - vector of trial numbers for each stride (dependent)</span>
+0014     <span class="comment">%   stridesInitTime - vector of initial times for each stride</span>
+0015     <span class="comment">%                     (dependent)</span>
+0016     <span class="comment">%   description - cell array of parameter descriptions (dependent)</span>
+0017     <span class="comment">%</span>
+0018     <span class="comment">%parameterSeries methods:</span>
+0019     <span class="comment">%   parameterSeries - constructor for parameter series</span>
+0020     <span class="comment">%   setTrialTypes - sets trial type information</span>
+0021     <span class="comment">%   isaParameter - checks if parameter exists (alias for isaLabel)</span>
+0022     <span class="comment">%   indsInTrial - returns indices for specified trial(s)</span>
+0023     <span class="comment">%   getParameter - retrieves parameter data (backward compatible)</span>
+0024     <span class="comment">%   incorporateDependentParameters - adds computed dependent parameters</span>
+0025     <span class="comment">%   cat - concatenates two parameterSeries</span>
+0026     <span class="comment">%   addStrides - adds strides from another parameterSeries</span>
+0027     <span class="comment">%   addNewParameter - computes and adds new parameter</span>
+0028     <span class="comment">%   getDataAsPS - extracts subset as new parameterSeries</span>
+0029     <span class="comment">%   appendData - appends new parameters</span>
+0030     <span class="comment">%   replaceParams - replaces existing parameters</span>
+0031     <span class="comment">%   markBadWhenMissingAny - marks strides bad if any param missing</span>
+0032     <span class="comment">%   markBadWhenMissingAll - marks strides bad if all params missing</span>
+0033     <span class="comment">%   substituteNaNs - fills NaN values, preserving fixed params</span>
+0034     <span class="comment">%   markBadStridesAsNan - sets bad strides to NaN</span>
+0035     <span class="comment">%   normalizeToBaseline - normalizes parameters (deprecated)</span>
+0036     <span class="comment">%   linearStretch - linearly transforms parameter values</span>
+0037     <span class="comment">%   fourierTransform - computes Fourier transform</span>
+0038     <span class="comment">%   resample - disabled for parameterSeries</span>
+0039     <span class="comment">%   resampleN - disabled for parameterSeries</span>
+0040     <span class="comment">%   plotAlt - plots parameters as scatter</span>
+0041     <span class="comment">%   anova - performs one-way ANOVA on parameters</span>
+0042     <span class="comment">%</span>
+0043     <span class="comment">%See also: labTimeSeries, adaptationData</span>
+0044 
+0045     <span class="comment">%% Properties</span>
+0046     properties
+0047         hiddenTime
+0048         trialTypes <span class="comment">% SL: to support split 1 condition into multiple</span>
+0049     <span class="keyword">end</span>
+0050 
+0051     properties (Dependent)
+0052         bad
+0053         stridesTrial
+0054         stridesInitTime
+0055         description
+0056         <span class="comment">% trialTypes % to support split 1 condition into multiple</span>
+0057     <span class="keyword">end</span>
+0058 
+0059     properties (Hidden)
+0060         description_ = {};
+0061         trialTypes_ = {};
+0062         fixedParams = 5;
+0063     <span class="keyword">end</span>
+0064 
+0065     <span class="comment">%% Constructor</span>
+0066     methods
+0067         <a name="_sub0" href="#_subfunctions" class="code">function this = parameterSeries( </a><span class="keyword">...</span>
+0068                 data, labels, <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, description, types)
+0069             <span class="comment">%parameterSeries  Constructor for parameterSeries class</span>
+0070             <span class="comment">%</span>
+0071             <span class="comment">%   this = parameterSeries(data, labels, times, description)</span>
+0072             <span class="comment">%   creates a parameter series with specified data, labels,</span>
+0073             <span class="comment">%   times, and descriptions</span>
+0074             <span class="comment">%</span>
+0075             <span class="comment">%   this = parameterSeries(data, labels, times, description,</span>
+0076             <span class="comment">%   types) includes trial type information</span>
+0077             <span class="comment">%</span>
+0078             <span class="comment">%   Inputs:</span>
+0079             <span class="comment">%       data - matrix of parameter values (strides x</span>
+0080             <span class="comment">%              parameters)</span>
+0081             <span class="comment">%       labels - cell array of parameter name strings</span>
+0082             <span class="comment">%       times - vector of stride initial times</span>
+0083             <span class="comment">%       description - cell array of parameter descriptions</span>
+0084             <span class="comment">%                     (same length as labels)</span>
+0085             <span class="comment">%       types - cell array of trial type identifiers</span>
+0086             <span class="comment">%               (optional)</span>
+0087             <span class="comment">%</span>
+0088             <span class="comment">%   Outputs:</span>
+0089             <span class="comment">%       this - parameterSeries object</span>
+0090             <span class="comment">%</span>
+0091             <span class="comment">%   See also: labTimeSeries, adaptationData</span>
+0092 
+0093             this@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(data, 1, 1, labels);
+0094             this.hiddenTime = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>;
+0095             <span class="keyword">if</span> length(description) == length(labels)
+0096                 <span class="comment">% Needs to be cell-array of same length as labels</span>
+0097                 this.description_ = description;
+0098             <span class="keyword">else</span>
+0099                 error(<span class="string">'paramtereSeries:constructor'</span>, <span class="keyword">...</span>
+0100                     <span class="string">'Description input needs to be same length as labels'</span>);
+0101             <span class="keyword">end</span>
+0102             <span class="keyword">if</span> nargin &gt; 4
+0103                 this.trialTypes_ = types;
+0104             <span class="keyword">end</span>
+0105         <span class="keyword">end</span>
+0106 
+0107         <a name="_sub1" href="#_subfunctions" class="code">function this = setTrialTypes(this, types)</a>
+0108             <span class="comment">%setTrialTypes  Sets trial type information</span>
+0109             <span class="comment">%</span>
+0110             <span class="comment">%   this = setTrialTypes(this, types) sets the trial types</span>
+0111             <span class="comment">%   for the parameter series</span>
+0112             <span class="comment">%</span>
+0113             <span class="comment">%   Inputs:</span>
+0114             <span class="comment">%       this - parameterSeries object</span>
+0115             <span class="comment">%       types - cell array of trial type identifiers</span>
+0116             <span class="comment">%</span>
+0117             <span class="comment">%   Outputs:</span>
+0118             <span class="comment">%       this - parameterSeries with updated trial types</span>
+0119 
+0120             this.trialTypes_ = types;
+0121         <span class="keyword">end</span>
+0122     <span class="keyword">end</span>
+0123 
+0124     <span class="comment">%% Dependent Property Getters</span>
+0125     methods
+0126         <span class="comment">% this could be made more efficient by fixing the indexes for these</span>
+0127         <span class="comment">% parameters (which is something that already happens in practice)</span>
+0128         <span class="comment">% and doing direct indexing to data</span>
+0129         <a name="_sub2" href="#_subfunctions" class="code">function vals = get.bad(this)</a>
+0130             <span class="comment">%get.bad  Returns bad stride flags</span>
+0131             <span class="comment">%</span>
+0132             <span class="comment">%   Outputs:</span>
+0133             <span class="comment">%       vals - logical vector indicating bad strides</span>
+0134             <span class="comment">%</span>
+0135             <span class="comment">%   Note: This could be made more efficient by fixing the</span>
+0136             <span class="comment">%         indexes for these parameters and doing direct</span>
+0137             <span class="comment">%         indexing to data</span>
+0138 
+0139             <span class="keyword">if</span> this.isaParameter(<span class="string">'bad'</span>)
+0140                 vals = this.getDataAsVector(<span class="string">'bad'</span>);
+0141             <span class="keyword">elseif</span> this.isaParameter(<span class="string">'good'</span>)
+0142                 vals = this.getDataAsVector(<span class="string">'good'</span>);
+0143                 vals = ~vals;
+0144             <span class="keyword">else</span>
+0145                 <span class="comment">% This should never be the case. Setting all values as good</span>
+0146                 vals = false(size(this.Data, 1), 1);
+0147             <span class="keyword">end</span>
+0148         <span class="keyword">end</span>
+0149 
+0150         <a name="_sub3" href="#_subfunctions" class="code">function vals = get.stridesTrial(this)</a>
+0151             <span class="comment">%get.stridesTrial  Returns trial number for each stride</span>
+0152             <span class="comment">%</span>
+0153             <span class="comment">%   Outputs:</span>
+0154             <span class="comment">%       vals - vector of trial numbers</span>
+0155 
+0156             vals = this.getDataAsVector(<span class="string">'trial'</span>);
+0157         <span class="keyword">end</span>
+0158 
+0159         <a name="_sub4" href="#_subfunctions" class="code">function vals = get.stridesInitTime(this)</a>
+0160             <span class="comment">%get.stridesInitTime  Returns initial time for each stride</span>
+0161             <span class="comment">%</span>
+0162             <span class="comment">%   Outputs:</span>
+0163             <span class="comment">%       vals - vector of stride initial times</span>
+0164 
+0165             vals = this.getDataAsVector(<span class="string">'initTime'</span>);
+0166         <span class="keyword">end</span>
+0167 
+0168         <a name="_sub5" href="#_subfunctions" class="code">function vals = get.description(this)</a>
+0169             <span class="comment">%get.description  Returns parameter descriptions</span>
+0170             <span class="comment">%</span>
+0171             <span class="comment">%   Outputs:</span>
+0172             <span class="comment">%       vals - cell array of description strings</span>
+0173 
+0174             <span class="comment">% if isfield(this, 'description_')</span>
+0175             vals = this.description_;
+0176             <span class="comment">% else</span>
+0177             <span class="comment">%     vals = cell(size(this.labels));</span>
+0178             <span class="comment">% end</span>
+0179         <span class="keyword">end</span>
+0180 
+0181         <a name="_sub6" href="#_subfunctions" class="code">function vals = get.trialTypes(this)</a>
+0182             <span class="comment">%get.trialTypes  Returns trial types</span>
+0183             <span class="comment">%</span>
+0184             <span class="comment">%   Outputs:</span>
+0185             <span class="comment">%       vals - cell array of trial type identifiers</span>
+0186 
+0187             <span class="comment">% if isfield(this, 'trialTypes_')</span>
+0188             vals = this.trialTypes_;
+0189             <span class="comment">% else</span>
+0190             <span class="comment">%     disp('trying to access trialTypes');</span>
+0191             <span class="comment">%     vals = {};</span>
+0192             <span class="comment">% end</span>
+0193         <span class="keyword">end</span>
+0194     <span class="keyword">end</span>
+0195 
+0196     <span class="comment">%% Data Access Methods</span>
+0197     methods
+0198         <a name="_sub7" href="#_subfunctions" class="code">function [bool, idx] = isaParameter(this, labels)</a>
+0199             <span class="comment">%isaParameter  Checks if parameter exists</span>
+0200             <span class="comment">%</span>
+0201             <span class="comment">%   [bool, idx] = isaParameter(this, labels) is an alias for</span>
+0202             <span class="comment">%   isaLabel for backward compatibility</span>
+0203             <span class="comment">%</span>
+0204             <span class="comment">%   Inputs:</span>
+0205             <span class="comment">%       this - parameterSeries object</span>
+0206             <span class="comment">%       labels - string or cell array of parameter name(s)</span>
+0207             <span class="comment">%</span>
+0208             <span class="comment">%   Outputs:</span>
+0209             <span class="comment">%       bool - logical vector indicating which parameters exist</span>
+0210             <span class="comment">%       idx - vector of parameter indices</span>
+0211             <span class="comment">%</span>
+0212             <span class="comment">%   Note: Another name for isaLabel, backwards compatibility</span>
+0213             <span class="comment">%</span>
+0214             <span class="comment">%   See also: isaLabel</span>
+0215 
+0216             [bool, idx] = this.isaLabel(labels);
+0217         <span class="keyword">end</span>
+0218 
+0219         inds = <a href="indsInTrial.html" class="code" title="function inds = indsInTrial(this, t)">indsInTrial</a>(this, t)
+0220 
+0221         [data, auxLabel] = <a href="getParameter.html" class="code" title="function [data, auxLabel] = getParameter(this, label)">getParameter</a>(this, label)
+0222 
+0223         newThis = <a href="incorporateDependentParameters.html" class="code" title="function newThis = incorporateDependentParameters(this, labels)">incorporateDependentParameters</a>(this, labels)
+0224 
+0225         newThis = <a href="getDataAsPS.html" class="code" title="function newThis = getDataAsPS(this, labels, strides, skipFixedParams)">getDataAsPS</a>(this, labels, strides, skipFixedParams)
+0226     <span class="keyword">end</span>
+0227 
+0228     <span class="comment">%% Data Modification Methods</span>
+0229     methods
+0230         newThis = <a href="cat.html" class="code" title="function newThis = cat(this, other)">cat</a>(this, other)
+0231 
+0232         newThis = <a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>(this, other)
+0233 
+0234         newThis = <a href="addNewParameter.html" class="code" title="function newThis = addNewParameter(this, newParamLabel, funHandle,inputParameterLabels, newParamDescription)">addNewParameter</a>(this, newParamLabel, funHandle, <span class="keyword">...</span>
+0235             inputParameterLabels, newParamDescription)
+0236 
+0237         newThis = <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>(this, newData, newLabels, newDesc)
+0238 
+0239         this = <a href="replaceParams.html" class="code" title="function this = replaceParams(this, other)">replaceParams</a>(this, other)
+0240     <span class="keyword">end</span>
+0241 
+0242     <span class="comment">%% Bad Stride Handling Methods</span>
+0243     methods
+0244         newThis = <a href="markBadWhenMissingAny.html" class="code" title="function newThis = markBadWhenMissingAny(this, labels)">markBadWhenMissingAny</a>(this, labels)
+0245 
+0246         newThis = <a href="markBadWhenMissingAll.html" class="code" title="function newThis = markBadWhenMissingAll(this, labels)">markBadWhenMissingAll</a>(this, labels)
+0247 
+0248         newThis = <a href="substituteNaNs.html" class="code" title="function newThis = substituteNaNs(this, method)">substituteNaNs</a>(this, method)
+0249 
+0250         this = <a href="markBadStridesAsNan.html" class="code" title="function this = markBadStridesAsNan(this)">markBadStridesAsNan</a>(this)
+0251     <span class="keyword">end</span>
+0252 
+0253     <span class="comment">%% Normalization Methods</span>
+0254     methods
+0255         this = <a href="normalizeToBaseline.html" class="code" title="function this = normalizeToBaseline(this, labels, rangeValues)">normalizeToBaseline</a>(this, labels, rangeValues)
+0256 
+0257         newThis = <a href="linearStretch.html" class="code" title="function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)">linearStretch</a>(this, labels, rangeValues, descriptionSuffix)
+0258     <span class="keyword">end</span>
+0259 
+0260     <span class="comment">% function newThis=EMGnormAllData(this,labels,rangeValues)</span>
+0261     <span class="comment">%     %This get the stride by stide norm</span>
+0262     <span class="comment">%     %It creates NEW parameters with the same name, and the 'Norm' prefix.</span>
+0263     <span class="comment">%     %This will generate collisions if run multiple times for the</span>
+0264     <span class="comment">%     %same parameters</span>
+0265     <span class="comment">%     %See also: adaptationData.normalizeToBaselineEpoch</span>
+0266     <span class="comment">%     if isempty(rangeValues)</span>
+0267     <span class="comment">%         % error('rangeValues has to be a 2 element vector');</span>
+0268     <span class="comment">%         rangeValues=0;</span>
+0269     <span class="comment">%     end</span>
+0270     <span class="comment">%</span>
+0271     <span class="comment">%     % More efficient:</span>
+0272     <span class="comment">%     N=length(labels);</span>
+0273     <span class="comment">%     newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);</span>
+0274     <span class="comment">%     newL=cell(N,1);</span>
+0275     <span class="comment">%     nD=zeros(size(this.Data,1),N);</span>
+0276     <span class="comment">%</span>
+0277     <span class="comment">%     % for i=1:N</span>
+0278     <span class="comment">%     %     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);</span>
+0279     <span class="comment">%     %     funHandle=@(x) vecnorm(x'-rangeValues);</span>
+0280     <span class="comment">%     %     newL=strcat('NormEMG',labels);</span>
+0281     <span class="comment">%     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));</span>
+0282     <span class="comment">%     % end</span>
+0283     <span class="comment">%     newThis=appendData(this,nD,newL,newDesc);</span>
+0284     <span class="comment">% end</span>
+0285 
+0286     <span class="comment">%% Overridden Methods</span>
+0287     methods
+0288         <a name="_sub8" href="#_subfunctions" class="code">function F = fourierTransform(this)</a>
+0289             <span class="comment">%fourierTransform  Computes Fourier transform</span>
+0290             <span class="comment">%</span>
+0291             <span class="comment">%   F = fourierTransform(this) computes Fourier transform with</span>
+0292             <span class="comment">%   appropriate units for stride data</span>
+0293             <span class="comment">%</span>
+0294             <span class="comment">%   Inputs:</span>
+0295             <span class="comment">%       this - parameterSeries object</span>
+0296             <span class="comment">%</span>
+0297             <span class="comment">%   Outputs:</span>
+0298             <span class="comment">%       F - labTimeSeries with Fourier transform</span>
+0299             <span class="comment">%</span>
+0300             <span class="comment">%   See also: labTimeSeries/fourierTransform</span>
+0301 
+0302             <span class="comment">% error('parameterSeries:fourierTransform',</span>
+0303             <span class="comment">%     'You cannot do that!')</span>
+0304             F = <a href="../../../../labTools/classes/labTS/@labTimeSeries/fourierTransform.html" class="code" title="function Fthis = fourierTransform(this, M)">fourierTransform</a>@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this);
+0305             F.TimeInfo.Units = <span class="string">'strides^{-1}'</span>;
+0306         <span class="keyword">end</span>
+0307 
+0308         <a name="_sub9" href="#_subfunctions" class="code">function newThis = resample(this)</a>
+0309             <span class="comment">%resample  Disabled for parameterSeries</span>
+0310             <span class="comment">%</span>
+0311             <span class="comment">%   Note: Resampling is disabled for parameterSeries as time</span>
+0312             <span class="comment">%         is not meaningful (strides are discrete events)</span>
+0313 
+0314             <span class="comment">% the newTS is respected as much as possible, but forcing it</span>
+0315             <span class="comment">% to be a divisor of the total time range</span>
+0316             error(<span class="string">'parameterSeries:resample'</span>, <span class="string">'You cannot do that!'</span>);
+0317             newThis = [];
+0318         <span class="keyword">end</span>
+0319 
+0320         <a name="_sub10" href="#_subfunctions" class="code">function newThis = resampleN(this)</a>
+0321             <span class="comment">%resampleN  Disabled for parameterSeries</span>
+0322             <span class="comment">%</span>
+0323             <span class="comment">%   Note: Resampling is disabled for parameterSeries as time</span>
+0324             <span class="comment">%         is not meaningful (strides are discrete events)</span>
+0325 
+0326             <span class="comment">% Same as resample function, but directly fixing the number of</span>
+0327             <span class="comment">% samples instead of TS</span>
+0328             error(<span class="string">'parameterSeries:resampleN'</span>, <span class="string">'You cannot do that!'</span>);
+0329             newThis = [];
+0330         <span class="keyword">end</span>
+0331     <span class="keyword">end</span>
+0332 
+0333     <span class="comment">%% Visualization Methods</span>
+0334     methods
+0335         [h, h1] = <a href="plotAlt.html" class="code" title="function [h, h1] = plotAlt(this, h, labels, plotHandles, color)">plotAlt</a>(this, h, labels, plotHandles, color)
+0336     <span class="keyword">end</span>
+0337 
+0338     <span class="comment">%% Statistical Analysis Methods</span>
+0339     methods
+0340         [p, postHocMatrix] = <a href="anova.html" class="code" title="function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)">anova</a>(this, params, groupIdxs, dispOpt)
+0341     <span class="keyword">end</span>
+0342 
+0343 <span class="keyword">end</span>
+0344</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

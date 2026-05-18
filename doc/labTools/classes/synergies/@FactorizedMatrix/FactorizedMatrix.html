@@ -15,7 +15,7 @@
 <div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@FactorizedMatrix</a> &gt; FactorizedMatrix.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/synergies/@FactorizedMatrix&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\synergies\@FactorizedMatrix&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
 
 <h1>FactorizedMatrix
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W,C,d] = myNNMF(data,rank,reps,useParallel)">myNNMF</a>	myNNMF Customized call to NNMF to get more consistent results</li><li><a href="../../../../labTools/fun/ext/pitools/dimReduction/ppcaLikelihood.html" class="code" title="function [logL] = ppcaLikelihood(data,coeff,latents,mu)">ppcaLikelihood</a>	ppcaLikelihood Returns the likelihood of the pca result based on the</li><li><a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>	COLUMNNORM Compute the p-norm of matrix elements along a given dimension.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li></ul>
+<li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergyAnalysis/SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleFactorizedMatrix.html" class="code" title="">exampleFactorizedMatrix</a>	Test of FactorizedMatrix class</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -113,7 +113,7 @@ This function is called by:
 0067             size2=size(this.dim2Vectors);
 0068             auxSize=[size1(2:end) size2(2:end)];
 0069             <span class="keyword">try</span>
-0070             <span class="keyword">if</span> ~isempty(originalSize) &amp;&amp; prod(auxSize)~=prod(originalSize)
+0070             <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(originalSize) &amp;&amp; prod(auxSize)~=prod(originalSize)
 0071                 ME=MException(<span class="string">'FactorizedMatrix:ConstructorInconsistentMatrix'</span>,<span class="string">'The sizes of the factors and the provided original matrix are inconsistent.'</span>);
 0072                 throw(ME);
 0073             <span class="keyword">end</span>
@@ -186,14 +186,14 @@ This function is called by:
 0140                 method=2;
 0141             <span class="keyword">end</span>
 0142             eM=this.errorMatrix(originalMatrix);
-0143             errNormC=columnNorm(eM(:,:),method,1);
+0143             errNormC=<a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>(eM(:,:),method,1);
 0144         <span class="keyword">end</span>
 0145         <a name="_sub11" href="#_subfunctions" class="code">function errNormR=errorNormPerRow(this,originalMatrix,method)</a>
 0146             <span class="keyword">if</span> nargin&lt;2
 0147                 method=2;
 0148             <span class="keyword">end</span>
 0149             eM=this.errorMatrix(originalMatrix);
-0150             errNormR=columnNorm(eM(:,:),method,2);
+0150             errNormR=<a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>(eM(:,:),method,2);
 0151         <span class="keyword">end</span>
 0152         <a name="_sub12" href="#_subfunctions" class="code">function errNormPerDim=errorNormPerDim(this,originalMatrix,method,dim)</a>
 0153             eM=this.errorMatrix(originalMatrix);
@@ -204,14 +204,14 @@ This function is called by:
 0158             <span class="keyword">if</span> nargin&lt;2
 0159                 method=2;
 0160             <span class="keyword">end</span>
-0161             percErrC=this.errorNormPerColumn(originalMatrix,method)./columnNorm(originalMatrix(:,:),method,1);
+0161             percErrC=this.errorNormPerColumn(originalMatrix,method)./<a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>(originalMatrix(:,:),method,1);
 0162         <span class="keyword">end</span>
 0163         <a name="_sub14" href="#_subfunctions" class="code">function percErrR=percentErrorPerRow(this,originalMatrix,method)</a>
 0164             <span class="comment">%error('FactorizedMatrix:percentErrorPerRow','This is no longer a supported method of FactorizedMatrix')</span>
 0165             <span class="keyword">if</span> nargin&lt;2
 0166                 method=2;
 0167             <span class="keyword">end</span>
-0168             percErrR=this.errorNormPerRow(method)./columnNorm(originalMatrix(:,:),method,2);
+0168             percErrR=this.errorNormPerRow(method)./<a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>(originalMatrix(:,:),method,2);
 0169         <span class="keyword">end</span>
 0170         <a name="_sub15" href="#_subfunctions" class="code">function percErrPerDim=percErrPerDim(this,originalMatrix,method,dim)</a>
 0171             <span class="comment">%error('FactorizedMatrix:percentErrorPerDim','This is no longer a supported method of FactorizedMatrix')</span>
@@ -256,7 +256,7 @@ This function is called by:
 0210             <span class="comment">%If dim2Vectors is of dim&gt;2 don't know what to do, not plotting</span>
 0211             <span class="comment">%------------</span>
 0212             N=this.reducedDimension;
-0213             <span class="keyword">if</span> nargin&lt;3 || isempty(plotHandles1) || isempty(plotHandles2) <span class="comment">%No handles</span>
+0213             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles1) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles2) <span class="comment">%No handles</span>
 0214                 figHandle=figure();
 0215                 <span class="keyword">for</span> i=1:N
 0216                     plotHandles1(i)=subplot(3,N,[i N+i]);
@@ -273,7 +273,7 @@ This function is called by:
 0227                     <span class="keyword">end</span>
 0228                 <span class="keyword">end</span>
 0229             <span class="keyword">end</span>
-0230             <span class="keyword">if</span> nargin&lt;4 || isempty(colors)
+0230             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colors)
 0231                 colors={[0,.4,1],[0,1,1],[0,1,0],[1,1,0],[1,.2,0],[1,0,1],[.5,.5,.5],[0,.6,0],[0,.5,1]};
 0232             <span class="keyword">end</span>
 0233             <span class="comment">%------------</span>
@@ -286,9 +286,9 @@ This function is called by:
 0240                 subplot(plotHandles2(i))
 0241                 hold on
 0242                 <span class="keyword">for</span> j=1:size(this.dim1Vectors,3)
-0243                     <a href="#_sub20" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)">plot</a>(this.dim1Vectors(i,:,j),<span class="string">'Color'</span>,colors{mod(i,length(colors))+1})
+0243                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.dim1Vectors(i,:,j),<span class="string">'Color'</span>,colors{mod(i,length(colors))+1})
 0244                 <span class="keyword">end</span>
-0245                 <a href="#_sub20" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)">plot</a>(mean(this.dim1Vectors(i,:,:),3),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[.5,.5,.8].*colors{mod(i,length(colors))+1})
+0245                 <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(this.dim1Vectors(i,:,:),3),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[.5,.5,.8].*colors{mod(i,length(colors))+1})
 0246                 hold off
 0247             <span class="keyword">end</span>
 0248             
@@ -299,7 +299,7 @@ This function is called by:
 0253             coeff=this.dim2Vectors(:,:);
 0254             scores=this.dim1Vectors(:,:);
 0255             data=permute(originalMatrix,[3,1,2]);
-0256             [logL] = <a href="#_sub21" class="code" title="subfunction logL=ppcaLikelihood(this,originalMatrix)">ppcaLikelihood</a>(data(:,:)',coeff,scores);
+0256             [logL] = <a href="../../../../labTools/fun/ext/pitools/dimReduction/ppcaLikelihood.html" class="code" title="function [logL] = ppcaLikelihood(data,coeff,latents,mu)">ppcaLikelihood</a>(data(:,:)',coeff,scores);
 0257         <span class="keyword">end</span>
 0258         
 0259     <span class="keyword">end</span> <span class="comment">%Normal methods</span>
@@ -321,7 +321,7 @@ This function is called by:
 0275             
 0276             <span class="keyword">switch</span> method
 0277                 <span class="keyword">case</span> <span class="string">'nnmf'</span>
-0278                     [tensor1,tensor2]=myNNMF(aux,newDim,5,<span class="string">'always'</span>); <span class="comment">%Parallel processing &amp; multiple replicates.</span>
+0278                     [tensor1,tensor2]=<a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W,C,d] = myNNMF(data,rank,reps,useParallel)">myNNMF</a>(aux,newDim,5,<span class="string">'always'</span>); <span class="comment">%Parallel processing &amp; multiple replicates.</span>
 0279                     <span class="comment">%[tensor1,tensor2]=nnmf(aux,newDim);</span>
 0280                     tensor1=reshape(tensor1',[newDim matSize(1:dimInd) ]);
 0281                     tensor2=reshape(tensor2,[newDim matSize(dimInd+1:end)]);
@@ -343,7 +343,7 @@ This function is called by:
 0297         <a name="_sub22" href="#_subfunctions" class="code">function mnpd= matNormPerDim(mat,method,dim)</a>
 0298             aux=permute(mat,[dim, 1:dim-1 ,dim+1:ndims(mat)]);
 0299             aux=aux(:,:);
-0300             mnpd=columnNorm(aux,method,2);
+0300             mnpd=<a href="../../../../labTools/fun/ext/pitools/math/columnNorm.html" class="code" title="function w = columnNorm(X, p, dim)">columnNorm</a>(aux,method,2);
 0301             <span class="comment">%s=size(mat);</span>
 0302             <span class="comment">%mnpd=reshape(mnpd,s([1:dim-1 ,dim+1:ndims(mat)]));</span>
 0303         <span class="keyword">end</span>
@@ -351,6 +351,6 @@ This function is called by:
 0305     
 0306 <span class="keyword">end</span> <span class="comment">%classdef</span>
 0307</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

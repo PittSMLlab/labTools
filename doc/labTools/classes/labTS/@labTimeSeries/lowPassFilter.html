@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of lowPassFilter</title>
+  <meta name="keywords" content="lowPassFilter">
+  <meta name="description" content="lowPassFilter  Applies low-pass filter">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; lowPassFilter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>lowPassFilter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>lowPassFilter  Applies low-pass filter</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = lowPassFilter(this, fcut) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">lowPassFilter  Applies low-pass filter
+
+   newThis = lowPassFilter(this, fcut) applies Butterworth low-pass
+   filter with specified cutoff frequency
+
+   Inputs:
+       this - labTimeSeries object
+       fcut - cutoff frequency in Hz
+
+   Outputs:
+       newThis - filtered labTimeSeries
+
+   See also: <a href="highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>, <a href="medianFilter.html" class="code" title="function this = medianFilter(this, N)">medianFilter</a>, filtfilthd_short</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter (override)</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">filtfilthd_short</a>	FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	Estimation of amplitude of a given EMG signal (envelope detection).</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = lowPassFilter(this, fcut)</a>
+0002 <span class="comment">%lowPassFilter  Applies low-pass filter</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = lowPassFilter(this, fcut) applies Butterworth low-pass</span>
+0005 <span class="comment">%   filter with specified cutoff frequency</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       fcut - cutoff frequency in Hz</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - filtered labTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: highPassFilter, medianFilter, filtfilthd_short</span>
+0015 
+0016 Wn = fcut * 2 / this.sampFreq;
+0017 Wst = min([2 * Wn, Wn + 0.2 * (1 - Wn)]);
+0018 filterList{1} = fdesign.lowpass(<span class="string">'Fp,Fst,Ap,Ast'</span>, Wn, Wst, 3, 10);
+0019 <a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a> = design(filterList{1}, <span class="string">'butter'</span>);
+0020 newData = <span class="keyword">...</span>
+0021     <a href="../../../../labTools/fun/ext/pitools/signalProcessing/filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">filtfilthd_short</a>(<a href="lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>, this.Data, <span class="string">'reflect'</span>, this.sampFreq);
+0022 newThis = <span class="keyword">...</span>
+0023     <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, this.Time(1), this.sampPeriod, this.labels);
+0024 <span class="keyword">if</span> ~isfield(this.UserData, <span class="string">'processingInfo'</span>)
+0025     this.UserData.processingInfo = {};
+0026 <span class="keyword">end</span>
+0027 newThis.UserData = this.UserData;
+0028 newThis.UserData.processingInfo{end + 1} = filterList{1};
+0029 <span class="keyword">end</span>
+0030</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

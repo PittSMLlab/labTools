@@ -4,7 +4,7 @@
 <head>
   <title>Description of idealHPF</title>
   <meta name="keywords" content="idealHPF">
-  <meta name="description" content="Implements an idealHPF with zero lag">
+  <meta name="description" content="IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,26 +15,43 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; idealHPF.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>idealHPF
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Implements an idealHPF with zero lag</strong></div>
+<div class="box"><strong>IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [filteredData] = idealHPF(data,fcut) </strong></div>
+<div class="box"><strong>function filteredData = idealHPF(data, fcut) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Implements an idealHPF with zero lag
-fcut is in normalized freq, needs to be in [0,.5]</pre></div>
+<div class="fragment"><pre class="comment">IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.
+
+   Computes the DTFT of data, zeroes all frequency components with
+ absolute normalized frequency below fcut, then inverts back to the
+ time domain. Because filtering is done in the frequency domain without
+ windowing, this is an ideal (brick-wall) filter with zero phase lag.
+
+ Inputs:
+   data - (N x C) double array of time series; filtering is applied
+          along rows (dimension 1)
+   fcut - cutoff frequency in normalized units [0, 0.5]; components
+          with |f| &lt; fcut are zeroed
+
+ Outputs:
+   filteredData - high-pass filtered signal, same size as data
+
+ Toolbox Dependencies: None
+
+ See also <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DISCRETETIMEFOURIERTRANSFORM</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)">DiscreteTimeFourierTransform</a>	DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns</li></ul>
+<li><a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>	DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 </ul>
@@ -43,18 +60,40 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [filteredData] = idealHPF(data,fcut)</a>
-0002 <span class="comment">%Implements an idealHPF with zero lag</span>
-0003 <span class="comment">%fcut is in normalized freq, needs to be in [0,.5]</span>
-0004 
-0005 [Fdata,fvector] = <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)">DiscreteTimeFourierTransform</a>(data,1);
-0006 Fdata=Fdata.*repmat((abs(fvector)&gt;fcut),1,size(Fdata,2));
-0007 
-0008 filteredData=ifft(ifftshift(Fdata,1));
-0009 
-0010 
-0011 <span class="keyword">end</span>
-0012</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function filteredData = idealHPF(data, fcut)</a>
+0002 <span class="comment">%IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes the DTFT of data, zeroes all frequency components with</span>
+0005 <span class="comment">% absolute normalized frequency below fcut, then inverts back to the</span>
+0006 <span class="comment">% time domain. Because filtering is done in the frequency domain without</span>
+0007 <span class="comment">% windowing, this is an ideal (brick-wall) filter with zero phase lag.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   data - (N x C) double array of time series; filtering is applied</span>
+0011 <span class="comment">%          along rows (dimension 1)</span>
+0012 <span class="comment">%   fcut - cutoff frequency in normalized units [0, 0.5]; components</span>
+0013 <span class="comment">%          with |f| &lt; fcut are zeroed</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   filteredData - high-pass filtered signal, same size as data</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also DISCRETETIMEFOURIERTRANSFORM.</span>
+0021 
+0022 arguments
+0023     data (:,:) double
+0024     fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">%% Apply Ideal High-Pass Filter</span>
+0028 [Fdata, fvector] = <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>(data, 1);
+0029 Fdata = Fdata .* repmat((abs(fvector) &gt; fcut), 1, size(Fdata, 2));
+0030 
+0031 <span class="comment">%% Invert to Time Domain</span>
+0032 filteredData = ifft(ifftshift(Fdata, 1));
+0033 
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

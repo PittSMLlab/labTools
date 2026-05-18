@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeDifferenceOTS</title>
+  <meta name="keywords" content="computeDifferenceOTS">
+  <meta name="description" content="computeDifferenceOTS  Difference matrix as OTS">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; computeDifferenceOTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>computeDifferenceOTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>computeDifferenceOTS  Difference matrix as OTS</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">computeDifferenceOTS  Difference matrix as OTS
+
+   diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)
+   computes difference matrix and returns as orientedLabTimeSeries
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       t0 - start time (optional, default: beginning)
+       t1 - end time (optional, default: end)
+       labels - markers to compute from (optional, default: all)
+       labels2 - markers to compute to (optional, default: all)
+
+   Outputs:
+       diffOTS - orientedLabTimeSeries with difference vectors
+
+   See also: <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>, <a href="computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	computeDifferenceMatrix  Computes inter-marker differences</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)</a>
+0002 <span class="comment">%computeDifferenceOTS  Difference matrix as OTS</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)</span>
+0005 <span class="comment">%   computes difference matrix and returns as orientedLabTimeSeries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       t0 - start time (optional, default: beginning)</span>
+0010 <span class="comment">%       t1 - end time (optional, default: end)</span>
+0011 <span class="comment">%       labels - markers to compute from (optional, default: all)</span>
+0012 <span class="comment">%       labels2 - markers to compute to (optional, default: all)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Outputs:</span>
+0015 <span class="comment">%       diffOTS - orientedLabTimeSeries with difference vectors</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: computeDifferenceMatrix, computeDistanceMatrix</span>
+0018 
+0019 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t0)
+0020     t0 = this.Time(1);
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t1)
+0023     t1 = this.Time(end) + eps;
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
+0026     labels = this.getLabelPrefix;
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels2)
+0029     labels2 = this.getLabelPrefix;
+0030 <span class="keyword">end</span>
+0031 [diffMatrix, labels, labels2, Time] = <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>(this, <span class="keyword">...</span>
+0032     t0, t1, labels, labels2);
+0033 newLabels = cell(1, length(labels) * length(labels2));
+0034 <span class="keyword">for</span> i = 1:length(labels2)
+0035     newLabels((i - 1) * length(labels) + 1:i * length(labels)) = <span class="keyword">...</span>
+0036         strcat(labels, [<span class="string">' - '</span> labels2{i}]);
+0037 <span class="keyword">end</span>
+0038 newLabels2 = [strcat(newLabels, <span class="string">'x'</span>); strcat(newLabels, <span class="string">'y'</span>); <span class="keyword">...</span>
+0039     strcat(newLabels, <span class="string">'z'</span>)];
+0040 aux = reshape(diffMatrix, size(diffMatrix, 1), <span class="keyword">...</span>
+0041     size(diffMatrix, 2) * size(diffMatrix, 3), size(diffMatrix, 4));
+0042 aux = permute(aux, [1, 3, 2]);
+0043 diffOTS = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(aux(:, :), Time(1), this.sampPeriod, <span class="keyword">...</span>
+0044     newLabels2(:), this.orientation);
+0045 
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

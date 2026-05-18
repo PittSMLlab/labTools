@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">synergies</a> &gt; exampleFactorizedMatrix.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/classes/synergies&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\classes\synergies&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>exampleFactorizedMatrix
 </h1>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -50,7 +50,7 @@ This function is called by:
 0006 [dim1vectors,dim2vectors]=nnmf(original,3);
 0007 factMethod=<span class="string">'NNMF'</span>;
 0008 name=<span class="string">'TestFactMatrix1'</span>;
-0009 this=FactorizedMatrix(original,dim1vectors,dim2vectors,factMethod,name) <span class="comment">%Last two are optional</span>
+0009 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors,dim2vectors,factMethod,name) <span class="comment">%Last two are optional</span>
 0010 origDim=this.originalDimension
 0011 matSize=this.matrixSize
 0012 redDim=this.reducedDimension
@@ -71,7 +71,7 @@ This function is called by:
 0027 [dim1vectors,dim2vectors]=nnmf(original(:,:),k);
 0028 factMethod=<span class="string">'NNMF'</span>;
 0029 name=<span class="string">'TestFactMatrix2'</span>;
-0030 this=FactorizedMatrix(original,dim1vectors,reshape(dim2vectors,[k,size(original,2),size(original,3)]),factMethod,name) <span class="comment">%Last two are optional</span>
+0030 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors,reshape(dim2vectors,[k,size(original,2),size(original,3)]),factMethod,name) <span class="comment">%Last two are optional</span>
 0031 origDim=this.originalDimension
 0032 matSize=this.matrixSize
 0033 redDim=this.reducedDimension
@@ -90,7 +90,7 @@ This function is called by:
 0046 original=abs(randn(10,8,9,256,2));
 0047 factMethod=<span class="string">'Fake'</span>;
 0048 name=<span class="string">'TestFactMatrix3'</span>;
-0049 this=FactorizedMatrix(original,abs(randn(5,10,8,9)),abs(randn(5,256,2)),factMethod,name) <span class="comment">%Last two are optional</span>
+0049 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,abs(randn(5,10,8,9)),abs(randn(5,256,2)),factMethod,name) <span class="comment">%Last two are optional</span>
 0050 <span class="comment">%Alt:</span>
 0051 this=FactorizedMatrix.factorize(original,3,<span class="string">'nnmf'</span>,5)
 0052 origDim=this.originalDimension
@@ -105,6 +105,6 @@ This function is called by:
 0061 percErrC=this.percentErrorPerColumn(2);
 0062 percErrR=this.percentErrorPerRow(2);
 0063 newThis=this.transpose <span class="comment">%Should throw waringn</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of findTimeLag</title>
   <meta name="keywords" content="findTimeLag">
-  <meta name="description" content="First: truncate:">
+  <meta name="description" content="FINDTIMELAG Estimate the sample lag between two signals via correlation.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,62 +15,127 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; findTimeLag.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>findTimeLag
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>First: truncate:</strong></div>
+<div class="box"><strong>FINDTIMELAG Estimate the sample lag between two signals via correlation.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal) </strong></div>
+<div class="box"><strong>function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">First: truncate:</pre></div>
+<div class="fragment"><pre class="comment">FINDTIMELAG Estimate the sample lag between two signals via correlation.
+
+   Zero-pads both signals to the same length, computes their cross-
+ correlation in the frequency domain, then interpolates at 100x
+ resolution to obtain a sub-sample lag estimate. Issues a warning
+ when the peak correlation is below 0.3, indicating unreliable
+ synchronization.
+
+ Inputs:
+   referenceSignal  - 1-D reference signal (row or column vector)
+   secondarySignal  - 1-D signal to align to referenceSignal
+
+ Outputs:
+   timeDiff     - reserved; always returns NaN
+   corrCoef     - normalized peak cross-correlation coefficient
+   lagInSamples - sub-sample lag of secondarySignal relative to
+                  referenceSignal (positive = secondarySignal leads)
+
+ Toolbox Dependencies: None
+
+ See also <a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">MATCHSIGNALS</a>, <a href="estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">ESTIMATEDOPPLERSHIFT</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	fftshift  Shifts alignment by half cycle</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="estimateDopplerShift.html" class="code" title="function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)">estimateDopplerShift</a>	Signals need to have a relative delay <<M on any arbitrarily chosen window of time:</li><li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<li><a href="estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">estimateDopplerShift</a>	ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.</li><li><a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Find and apply the transformation that best aligns signal2</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal)</a>
-0002 
-0003 <span class="comment">%First: truncate:</span>
-0004 M=max([length(referenceSignal) length(secondarySignal)]);
-0005 referenceSignal(end+1:M)=0;
-0006 secondarySignal(end+1:M)=0;
-0007 
-0008 <span class="comment">%Second: correlate</span>
-0009 F1=fft(referenceSignal);
-0010 F2=fft(fftshift(secondarySignal));
-0011 F=F1.*conj(F2);
-0012 P=ifft(F);
-0013 
-0014 <span class="comment">%Third: sub-sample:</span>
-0015 aux=0:.01:length(P)-1;
-0016 P2=interp1(0:length(P)-1,P,aux,<span class="string">'spline'</span>)/sqrt(sum(referenceSignal.^2)*sum(secondarySignal.^2)); <span class="comment">%For sub-sample resolution</span>
-0017 
-0018 <span class="comment">%Fourth: find max correlation</span>
-0019 [~,t]=max(abs(P2));
-0020 lagInSamples=aux(t)-floor(M/2); <span class="comment">%The -floor(M/2) term accounts for the fftshift</span>
-0021 corrCoef=P2(t);
-0022 
-0023 <span class="keyword">if</span> abs(corrCoef)&lt;.3
-0024     warning([<span class="string">'Could not synch signals: r^2= '</span> num2str(abs(corrCoef))])
-0025 <span class="keyword">end</span>
-0026 timeDiff = NaN;
-0027 
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [timeDiff, corrCoef, lagInSamples] = findTimeLag( </a><span class="keyword">...</span>
+0002         referenceSignal, secondarySignal)
+0003 <span class="comment">%FINDTIMELAG Estimate the sample lag between two signals via correlation.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Zero-pads both signals to the same length, computes their cross-</span>
+0006 <span class="comment">% correlation in the frequency domain, then interpolates at 100x</span>
+0007 <span class="comment">% resolution to obtain a sub-sample lag estimate. Issues a warning</span>
+0008 <span class="comment">% when the peak correlation is below 0.3, indicating unreliable</span>
+0009 <span class="comment">% synchronization.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   referenceSignal  - 1-D reference signal (row or column vector)</span>
+0013 <span class="comment">%   secondarySignal  - 1-D signal to align to referenceSignal</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   timeDiff     - reserved; always returns NaN</span>
+0017 <span class="comment">%   corrCoef     - normalized peak cross-correlation coefficient</span>
+0018 <span class="comment">%   lagInSamples - sub-sample lag of secondarySignal relative to</span>
+0019 <span class="comment">%                  referenceSignal (positive = secondarySignal leads)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also MATCHSIGNALS, ESTIMATEDOPPLERSHIFT.</span>
+0024 
+0025 arguments
+0026     referenceSignal  (1,:) double
+0027     secondarySignal  (1,:) double
 0028 <span class="keyword">end</span>
-0029</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0029 
+0030 <span class="comment">%% Early Exit for Degenerate Inputs</span>
+0031 <span class="keyword">if</span> ~any(isfinite(referenceSignal) &amp; (referenceSignal ~= 0)) || <span class="keyword">...</span>
+0032         ~any(isfinite(secondarySignal) &amp; (secondarySignal ~= 0))
+0033     warning(<span class="string">'findTimeLag:degenerateInput'</span>, <span class="keyword">...</span>
+0034         [<span class="string">'At least one input signal is all-zero, NaN, or Inf; '</span> <span class="keyword">...</span>
+0035         <span class="string">'returning lagInSamples=0, corrCoef=0.'</span>]);
+0036     timeDiff     = NaN;
+0037     corrCoef     = 0;
+0038     lagInSamples = 0;
+0039     <span class="keyword">return</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 minCorrWarningThresh = 0.3; <span class="comment">% below this, synchronization is unreliable</span>
+0043 
+0044 <span class="comment">%% Zero-Pad to Equal Length</span>
+0045 M = max([length(referenceSignal) length(secondarySignal)]);
+0046 referenceSignal(end+1:M)  = 0;
+0047 secondarySignal(end+1:M)  = 0;
+0048 
+0049 <span class="comment">%% Compute Cross-Correlation</span>
+0050 F1 = fft(referenceSignal);
+0051 F2 = fft(<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>(secondarySignal));
+0052 F  = F1 .* conj(F2);
+0053 P  = ifft(F);
+0054 
+0055 <span class="comment">%% Interpolate for Sub-Sample Resolution</span>
+0056 <span class="comment">% 100× resolution spline interpolation; load-bearing for accuracy —</span>
+0057 <span class="comment">% do not reduce without re-validating sync parameter outputs.</span>
+0058 interpResolution = 0.01; <span class="comment">% sub-sample lag resolution (fraction of a sample)</span>
+0059 fineLags = 0:interpResolution:length(P) - 1;
+0060 P2       = interp1(0:length(P) - 1, P, fineLags, <span class="string">'spline'</span>) <span class="keyword">...</span>
+0061     / sqrt(sum(referenceSignal.^2) * sum(secondarySignal.^2));
+0062 
+0063 <span class="comment">%% Find Peak Correlation</span>
+0064 [~, t]       = max(abs(P2));
+0065 lagInSamples = fineLags(t) - floor(M / 2); <span class="comment">% fftshift offset correction</span>
+0066 corrCoef     = P2(t);
+0067 
+0068 <span class="keyword">if</span> abs(corrCoef) &lt; minCorrWarningThresh
+0069     warning(<span class="string">'findTimeLag:lowCorrelation'</span>, <span class="keyword">...</span>
+0070         <span class="string">'Could not synch signals: r^2= %.3f'</span>, abs(corrCoef));
+0071 <span class="keyword">end</span>
+0072 timeDiff = NaN;
+0073 
+0074 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of isaLabelPrefix</title>
+  <meta name="keywords" content="isaLabelPrefix">
+  <meta name="description" content="isaLabelPrefix  Checks if prefix exists">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; isaLabelPrefix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>isaLabelPrefix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>isaLabelPrefix  Checks if prefix exists</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [boolFlag, labelIdx] = isaLabelPrefix(this, label) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">isaLabelPrefix  Checks if prefix exists
+
+   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if
+   label(s) are valid prefixes
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       label - string or cell array of label prefixes to check
+
+   Outputs:
+       boolFlag - logical vector, true for matches, false if not
+       labelIdx - vector containing indices of matched labels
+
+   See also: <a href="getLabelPrefix.html" class="code" title="function labelPref = getLabelPrefix(this)">getLabelPrefix</a>, isaLabel</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	computeDifferenceMatrix  Computes inter-marker differences</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [boolFlag, labelIdx] = isaLabelPrefix(this, label)</a>
+0002 <span class="comment">%isaLabelPrefix  Checks if prefix exists</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if</span>
+0005 <span class="comment">%   label(s) are valid prefixes</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       label - string or cell array of label prefixes to check</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       boolFlag - logical vector, true for matches, false if not</span>
+0013 <span class="comment">%       labelIdx - vector containing indices of matched labels</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: getLabelPrefix, isaLabel</span>
+0016 
+0017 <span class="keyword">if</span> isa(label, <span class="string">'char'</span>)
+0018     auxLabel{1} = label;
+0019 <span class="keyword">elseif</span> isa(label, <span class="string">'cell'</span>)
+0020     auxLabel = label;
+0021 <span class="keyword">else</span>
+0022     error(<span class="string">'orientedLabTS:isaLabelPrefix'</span>, <span class="keyword">...</span>
+0023         [<span class="string">'label input argument has to be a string or a cell array '</span> <span class="keyword">...</span>
+0024         <span class="string">'containing strings.'</span>]);
+0025 <span class="keyword">end</span>
+0026 
+0027 N = length(auxLabel);
+0028 boolFlag = false(N, 1);
+0029 labelIdx = zeros(N, 1);
+0030 <span class="keyword">for</span> j = 1:N
+0031     <span class="comment">% Alternative efficient formulation:</span>
+0032     boolFlag(j) = any(strcmp(auxLabel{j}, this.getLabelPrefix));
+0033     <span class="keyword">if</span> boolFlag(j)
+0034         labelIdx(j) = find(strcmp(auxLabel{j}, this.getLabelPrefix));
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

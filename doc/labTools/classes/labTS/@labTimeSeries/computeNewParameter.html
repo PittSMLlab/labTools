@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeNewParameter</title>
+  <meta name="keywords" content="computeNewParameter">
+  <meta name="description" content="computeNewParameter  Computes new parameter without adding to data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; computeNewParameter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>computeNewParameter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>computeNewParameter  Computes new parameter without adding to data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newData = computeNewParameter(this, newParamLabel, funHandle, inputParameterLabels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">computeNewParameter  Computes new parameter without adding to data
+
+   newData = computeNewParameter(this, newParamLabel, funHandle,
+   inputParameterLabels) computes new parameter from existing
+   parameters
+
+   Inputs:
+       this - labTimeSeries object
+       newParamLabel - string name for new parameter
+       funHandle - function handle with N input variables
+       inputParameterLabels - cell array of N parameter labels to use
+                              as inputs
+
+   Outputs:
+       newData - computed data for new parameter
+
+   Note: TODO - support many new parameters together, as long as
+         they use the same funHandle, with inputParameterLabels an NxM
+         array, where N is the size of newParamLabel (# parameters to be
+         computed). Use this change in linearStretch(this, labels,
+         rangeValues) for efficiency
+
+   See also: <a href="addNewParameter.html" class="code" title="function [newThis, newData] = addNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">addNewParameter</a>, parameterSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="addNewParameter.html" class="code" title="function [newThis, newData] = addNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">addNewParameter</a>	addNewParameter  Adds computed parameter from existing data</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newData = computeNewParameter( </a><span class="keyword">...</span>
+0002     this, newParamLabel, funHandle, inputParameterLabels)
+0003 <span class="comment">%computeNewParameter  Computes new parameter without adding to data</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   newData = computeNewParameter(this, newParamLabel, funHandle,</span>
+0006 <span class="comment">%   inputParameterLabels) computes new parameter from existing</span>
+0007 <span class="comment">%   parameters</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - labTimeSeries object</span>
+0011 <span class="comment">%       newParamLabel - string name for new parameter</span>
+0012 <span class="comment">%       funHandle - function handle with N input variables</span>
+0013 <span class="comment">%       inputParameterLabels - cell array of N parameter labels to use</span>
+0014 <span class="comment">%                              as inputs</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Outputs:</span>
+0017 <span class="comment">%       newData - computed data for new parameter</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   Note: TODO - support many new parameters together, as long as</span>
+0020 <span class="comment">%         they use the same funHandle, with inputParameterLabels an NxM</span>
+0021 <span class="comment">%         array, where N is the size of newParamLabel (# parameters to be</span>
+0022 <span class="comment">%         computed). Use this change in linearStretch(this, labels,</span>
+0023 <span class="comment">%         rangeValues) for efficiency</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   See also: addNewParameter, parameterSeries</span>
+0026 
+0027 <span class="keyword">if</span> length(inputParameterLabels) ~= nargin(funHandle)
+0028     error(<span class="string">'labTS:addNewParameter'</span>, <span class="keyword">...</span>
+0029         [<span class="string">'Number of input arguments in function handle and number '</span> <span class="keyword">...</span>
+0030         <span class="string">'of labels in inputParameterLabels should be the same'</span>]);
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> <a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(this.labels, newParamLabel)
+0033     error(<span class="string">'labTS:addNewParameter'</span>, <span class="keyword">...</span>
+0034         <span class="string">'Cannot add parameter because it already exists'</span>);
+0035 <span class="keyword">end</span>
+0036 oldData = this.getDataAsVector(inputParameterLabels);
+0037 str = <span class="string">'('</span>;
+0038 <span class="keyword">for</span> i = 1:size(oldData, 2)
+0039     str = [str <span class="string">'oldData(:,'</span> num2str(i) <span class="string">'),'</span>];
+0040 <span class="keyword">end</span>
+0041 str(end) = <span class="string">')'</span>; <span class="comment">% Replacing last comma with parenthesis</span>
+0042 <span class="comment">% Isn't there a way to do this without eval?</span>
+0043 eval([<span class="string">'newData = funHandle'</span> str <span class="string">';'</span>]);
+0044 <span class="keyword">end</span>
+0045</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

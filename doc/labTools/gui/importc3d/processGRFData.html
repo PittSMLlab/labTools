@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processGRFData</title>
+  <meta name="keywords" content="processGRFData">
+  <meta name="description" content="PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; processGRFData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>processGRFData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.
+
+   Extracts force and moment channels from the analog struct returned
+ by btkGetAnalogs, assigns force-plate label prefixes, performs an
+ offset calibration sanity check against the raw pin signals, and
+ packages the result into an orientedLabTimeSeries. Returns an empty
+ GRFData when info.forces is false.
+
+   The analogs struct is returned with all Force/Moment fields removed
+ (via rmfield) to free memory for subsequent EMG and marker extraction.
+
+ Inputs:
+   analogs     - struct of analog channels from btkGetAnalogs
+   analogsInfo - struct with .frequency and .units fields from
+                 btkGetAnalogs
+   info        - session info struct; uses info.forces and
+                 info.backwardCheck
+   tr          - trial number (used in warning messages)
+
+ Outputs:
+   GRFData - orientedLabTimeSeries of GRF data, or [] when
+             info.forces is false
+   analogs - input struct with Force/Moment fields removed
+
+ Toolbox Dependencies:
+   Statistics and Machine Learning Toolbox (zscore)
+
+ See also <a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">LOADTRIALS</a>, ORIENTEDLABTIMESERIES.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [GRFData, analogs] = processGRFData(analogs, analogsInfo, </a><span class="keyword">...</span>
+0002     info, tr)
+0003 <span class="comment">%PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Extracts force and moment channels from the analog struct returned</span>
+0006 <span class="comment">% by btkGetAnalogs, assigns force-plate label prefixes, performs an</span>
+0007 <span class="comment">% offset calibration sanity check against the raw pin signals, and</span>
+0008 <span class="comment">% packages the result into an orientedLabTimeSeries. Returns an empty</span>
+0009 <span class="comment">% GRFData when info.forces is false.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   The analogs struct is returned with all Force/Moment fields removed</span>
+0012 <span class="comment">% (via rmfield) to free memory for subsequent EMG and marker extraction.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   analogs     - struct of analog channels from btkGetAnalogs</span>
+0016 <span class="comment">%   analogsInfo - struct with .frequency and .units fields from</span>
+0017 <span class="comment">%                 btkGetAnalogs</span>
+0018 <span class="comment">%   info        - session info struct; uses info.forces and</span>
+0019 <span class="comment">%                 info.backwardCheck</span>
+0020 <span class="comment">%   tr          - trial number (used in warning messages)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   GRFData - orientedLabTimeSeries of GRF data, or [] when</span>
+0024 <span class="comment">%             info.forces is false</span>
+0025 <span class="comment">%   analogs - input struct with Force/Moment fields removed</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Toolbox Dependencies:</span>
+0028 <span class="comment">%   Statistics and Machine Learning Toolbox (zscore)</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% See also LOADTRIALS, ORIENTEDLABTIMESERIES.</span>
+0031 
+0032 arguments
+0033     analogs     (1,1) struct
+0034     analogsInfo (1,1) struct
+0035     info        (1,1) struct
+0036     tr          (1,1) double
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">% orientationInfo(offset, foreaftAx, sideAx, updownAx, foreaftSign,</span>
+0040 <span class="comment">%     sideSign, updownSign);</span>
+0041 <span class="comment">% check signs! this is used in biomechanics calculations</span>
+0042 orientation = <a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0 0 0], <span class="string">'y'</span>, <span class="string">'x'</span>, <span class="string">'z'</span>, 1, 1, 1);
+0043 
+0044 <span class="comment">% -----------------------------------------------------------------------</span>
+0045 <span class="comment">%  Named constants</span>
+0046 <span class="comment">% -----------------------------------------------------------------------</span>
+0047 <span class="comment">% Tolerance for the offset check: forces in N, scaled to N.mm for moments</span>
+0048 grfOffsetTol             = 10;    <span class="comment">% N or N.m</span>
+0049 <span class="comment">% Multiplier on the 1st-percentile of nonzero samples used as a rough</span>
+0050 <span class="comment">% activity threshold in the offset calibration (empirical)</span>
+0051 prctileThreshMultiplier  = 4;
+0052 <span class="comment">% Zero-threshold = offsetThreshMultiplier × tolerance; must not be &lt; 2×</span>
+0053 <span class="comment">% (comment preserved from original)</span>
+0054 offsetThreshMultiplier   = 4;
+0055 <span class="comment">% Raw pin histogram parameters for mode-based offset estimation</span>
+0056 pinHistBinWidth          = 0.001; <span class="comment">% histogram bin width (V)</span>
+0057 pinHistMin               = -1;    <span class="comment">% ADC lower bound (V)</span>
+0058 pinHistMax               =  1;    <span class="comment">% ADC upper bound (V)</span>
+0059 <span class="comment">% -----------------------------------------------------------------------</span>
+0060 
+0061 <span class="comment">%% Process Ground Reaction Force (GRF) Data</span>
+0062 <span class="keyword">if</span> info.forces          <span class="comment">% if there is force data in the trial, ...</span>
+0063     <span class="comment">% Must be defined to prevent errors when 'otherwise' skipped</span>
+0064     showWarning = false;
+0065     relData     = [];
+0066     forceLabels = {};
+0067     units       = {};
+0068     fieldList   = fieldnames(analogs);
+0069 
+0070     <span class="comment">% Collect all raw analog channels for offset calibration</span>
+0071     rawMask       = startsWith(fieldList, <span class="string">'Raw'</span>);
+0072     rawFieldNames = fieldList(rawMask);
+0073     rawCells = cellfun(@(f) analogs.(f), rawFieldNames, <span class="string">'UniformOutput'</span>, false);
+0074     raws = [rawCells{:}];
+0075     raws = zscore(raws);
+0076 
+0077     <span class="comment">% Fixed force plate label prefixes for channels 3-7;</span>
+0078     <span class="comment">% channels 1 and 2 are belt-dependent (see below)</span>
+0079     fpPrefixMap = containers.Map( <span class="keyword">...</span>
+0080         {<span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'7'</span>}, {<span class="string">'H'</span>, <span class="string">'FP4'</span>, <span class="string">'FP5'</span>, <span class="string">'FP6'</span>, <span class="string">'FP7'</span>});
+0081 
+0082     <span class="comment">% For each force, moment, center of pressure (COP) channel, ...</span>
+0083     <span class="keyword">for</span> jj = 1:length(fieldList)
+0084 
+0085         <span class="comment">% Skip fields that are not force or moment channels</span>
+0086         isForceOrMoment = <span class="keyword">...</span>
+0087             strcmp(fieldList{jj}(1), <span class="string">'F'</span>)    || <span class="keyword">...</span>
+0088             strcmp(fieldList{jj}(1), <span class="string">'M'</span>)    || <span class="keyword">...</span>
+0089             contains(fieldList{jj}, <span class="string">'Force'</span>) || <span class="keyword">...</span>
+0090             contains(fieldList{jj}, <span class="string">'Moment'</span>);
+0091         <span class="keyword">if</span> ~isForceOrMoment
+0092             <span class="keyword">continue</span>;
+0093         <span class="keyword">end</span>
+0094 
+0095         <span class="comment">% Skip and warn for channels without a valid axis label</span>
+0096         hasValidAxis = <span class="keyword">...</span>
+0097             strcmpi(<span class="string">'x'</span>, fieldList{jj}(end-1)) || <span class="keyword">...</span>
+0098             strcmpi(<span class="string">'y'</span>, fieldList{jj}(end-1)) || <span class="keyword">...</span>
+0099             strcmpi(<span class="string">'z'</span>, fieldList{jj}(end-1));
+0100         <span class="keyword">if</span> ~hasValidAxis
+0101             warning(<span class="string">'processGRFData:GRFs'</span>, <span class="keyword">...</span>
+0102                 [<span class="string">'Found force/moment data that does not correspond '</span> <span class="keyword">...</span>
+0103                 <span class="string">'to any expected direction (x, y, or z). '</span> <span class="keyword">...</span>
+0104                 <span class="string">'Discarding channel %s.'</span>], fieldList{jj});
+0105             <span class="keyword">continue</span>;
+0106         <span class="keyword">end</span>
+0107 
+0108         <span class="comment">% Resolve the force plate label prefix from the channel</span>
+0109         <span class="comment">% suffix digit. Channels 1 and 2 are belt-dependent:</span>
+0110         <span class="comment">% normal walking assigns channel 1 to Left and channel 2</span>
+0111         <span class="comment">% to Right; backward walking swaps this assignment.</span>
+0112         <span class="comment">% Channels 3-7 use fixed prefixes from the lookup table.</span>
+0113         chSuffix = fieldList{jj}(end);
+0114         <span class="keyword">if</span> strcmp(chSuffix, <span class="string">'1'</span>)        <span class="comment">% belt FP: left or right</span>
+0115             <span class="keyword">if</span> info.backwardCheck == 1
+0116                 prefix = <span class="string">'R'</span>;           <span class="comment">% backward: ch1 = right</span>
+0117             <span class="keyword">else</span>
+0118                 prefix = <span class="string">'L'</span>;           <span class="comment">% normal:   ch1 = left</span>
+0119             <span class="keyword">end</span>
+0120         <span class="keyword">elseif</span> strcmp(chSuffix, <span class="string">'2'</span>)    <span class="comment">% belt FP: right or left</span>
+0121             <span class="keyword">if</span> info.backwardCheck == 1
+0122                 prefix = <span class="string">'L'</span>;           <span class="comment">% backward: ch2 = left</span>
+0123             <span class="keyword">else</span>
+0124                 prefix = <span class="string">'R'</span>;           <span class="comment">% normal:   ch2 = right</span>
+0125             <span class="keyword">end</span>
+0126         <span class="keyword">elseif</span> isKey(fpPrefixMap, chSuffix)
+0127             prefix = fpPrefixMap(chSuffix);
+0128         <span class="keyword">else</span>
+0129             <span class="comment">% Unrecognized channel suffix; set warning flag and</span>
+0130             <span class="comment">% remove field to keep analogs clean, then skip the</span>
+0131             <span class="comment">% label/data append. Warning is deferred outside the</span>
+0132             <span class="comment">% loop to reduce command window output (HH, 6/3/2015)</span>
+0133             showWarning = true;
+0134             analogs     = rmfield(analogs, fieldList{jj});
+0135             <span class="keyword">continue</span>;
+0136         <span class="keyword">end</span>
+0137 
+0138         <span class="comment">% Append label, units, and data for this valid channel,</span>
+0139         <span class="comment">% then remove the field to free memory</span>
+0140         forceLabels{end+1} = [prefix fieldList{jj}(end-2:end-1)];
+0141         units{end+1}       = analogsInfo.units.(fieldList{jj});
+0142         relData            = [relData analogs.(fieldList{jj})];
+0143         analogs            = rmfield(analogs, fieldList{jj});
+0144     <span class="keyword">end</span>
+0145     <span class="keyword">if</span> showWarning
+0146         warning(<span class="string">'processGRFData:GRFs'</span>, <span class="keyword">...</span>
+0147             [<span class="string">'Found force/moment data in trial %d that does not '</span> <span class="keyword">...</span>
+0148             <span class="string">'correspond to any expected channel '</span> <span class="keyword">...</span>
+0149             <span class="string">'(L=1, R=2, H=4). Data discarded.'</span>], tr);
+0150     <span class="keyword">end</span>
+0151 
+0152     <span class="comment">% Sanity check: offset calibration — verify that force values</span>
+0153     <span class="comment">% from analog pins have zero mode and correct scale/units.</span>
+0154     <span class="keyword">try</span>
+0155         <span class="comment">% map=[1:6,8:13,46:51]; % Forces and moments to</span>
+0156         <span class="comment">% corresponding pin in. Not current. Pablo, 22/11/2019.</span>
+0157         list = {<span class="string">'LFx'</span>, <span class="string">'LFy'</span>, <span class="string">'LFz'</span>, <span class="string">'LMx'</span>, <span class="string">'LMy'</span>, <span class="string">'LMz'</span>, <span class="keyword">...</span>
+0158             <span class="string">'RFx'</span>, <span class="string">'RFy'</span>, <span class="string">'RFz'</span>, <span class="string">'RMx'</span>, <span class="string">'RMy'</span>, <span class="string">'RMz'</span>, <span class="keyword">...</span>
+0159             <span class="string">'HFx'</span>, <span class="string">'HFy'</span>, <span class="string">'HFz'</span>, <span class="string">'HMx'</span>, <span class="string">'HMy'</span>, <span class="string">'HMz'</span>};
+0160         offset                 = nan(size(list));
+0161         gain                   = nan(size(list));
+0162         trueOffset             = nan(size(list));
+0163         differenceInForceUnits = nan(size(list));
+0164         m                      = nan(size(list));
+0165         unitsLabel             = <span class="string">''</span>;  <span class="comment">% default if no channel passes check</span>
+0166         <span class="keyword">for</span> jj = 1:length(list)
+0167             k = find(strcmp(forceLabels, list{jj}));
+0168             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(k)
+0169                 analogFieldNames = fieldnames(analogs);
+0170                 <span class="comment">% idx=num2str(map(k)); % Hardcoded map of input</span>
+0171                 <span class="comment">% pins to forces/moments. Outdated.</span>
+0172                 [~, rawPinColIdx] = max(abs(relData(:, k)' * raws));
+0173                 pinSuffix    = rawFieldNames{rawPinColIdx}(end);
+0174                 pinFieldMask = ~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, <span class="keyword">...</span>
+0175                     regexp(analogFieldNames, [<span class="string">'Pin_'</span> pinSuffix <span class="string">'$'</span>]));
+0176                 raw  = analogs.(analogFieldNames{pinFieldMask});
+0177                 proc = relData(:, k);
+0178                 <span class="comment">% figure; plot(raw,proc,'.') % Finally found</span>
+0179                 <span class="comment">% where c3d2mat plots were coming from</span>
+0180                 rel = find(proc ~= 0);
+0181                 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rel)
+0182                     <span class="comment">% prctileThreshMultiplier × 1st-percentile of</span>
+0183                     <span class="comment">% nonzero samples; used as an activity threshold</span>
+0184                     m(jj)  = prctileThreshMultiplier * <span class="keyword">...</span>
+0185                         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(abs(proc(rel)), 1);
+0186                     coef   = polyfit(raw(rel), proc(rel), 1);
+0187                     <span class="comment">% Could be rounded to 2 sig. figs.</span>
+0188                     gain(jj)   = coef(1);
+0189                     offset(jj) = -coef(2) / coef(1);
+0190                     <span class="comment">% histcounts requires bin edges, not centers;</span>
+0191                     <span class="comment">% shift center vector by half a bin width to</span>
+0192                     <span class="comment">% form edges for equivalent binning behavior.</span>
+0193                     <span class="comment">% find(..., 1) picks the lowest-valued bin</span>
+0194                     <span class="comment">% center deterministically when counts are tied.</span>
+0195                     binCenters = pinHistMin:pinHistBinWidth:pinHistMax;
+0196                     binWidth   = binCenters(2) - binCenters(1);
+0197                     edges      = (binCenters(1) - binWidth/2) : <span class="keyword">...</span>
+0198                         binWidth : (binCenters(end) + binWidth/2);
+0199                     Hh              = histcounts(raw, edges);
+0200                     trueOffset(jj)  = <span class="keyword">...</span>
+0201                         binCenters(find(Hh == max(Hh), 1));
+0202                     differenceInForceUnits(jj) = <span class="keyword">...</span>
+0203                         gain(jj) * (trueOffset(jj) - offset(jj));
+0204                 <span class="keyword">end</span>
+0205                 <span class="keyword">switch</span> list{jj}(2)
+0206                     <span class="keyword">case</span> <span class="string">'F'</span>    <span class="comment">% forces</span>
+0207                         toleranceScaled = grfOffsetTol;
+0208                         unitsLabel      = <span class="string">'N'</span>;
+0209                     <span class="keyword">case</span> <span class="string">'M'</span>    <span class="comment">% moments (in N.mm)</span>
+0210                         toleranceScaled = grfOffsetTol * 1000;
+0211                         unitsLabel      = <span class="string">'N.mm'</span>;
+0212                     <span class="keyword">otherwise</span>
+0213                         error(<span class="string">''</span>);
+0214                 <span class="keyword">end</span>
+0215                 <span class="keyword">if</span> differenceInForceUnits(jj) &gt; toleranceScaled
+0216                     <span class="comment">% figure % Commented out by MGR 01/24/24</span>
+0217                     <span class="comment">% hold on</span>
+0218                     <span class="comment">% plot(raw(rel),proc(rel),'.')</span>
+0219                     <span class="comment">% plot([-0.01 0.01], ...</span>
+0220                     <span class="comment">%     ([-0.01 0.01]+offset(jj))*gain(jj))</span>
+0221                     <span class="comment">% hold off</span>
+0222                     <span class="comment">% a=questdlg(['When loading ' list{jj} ...</span>
+0223                     <span class="comment">%   ' there appears to be a non-zero mode ' ...</span>
+0224                     <span class="comment">%   '(offset). Calculated offset is ' ...</span>
+0225                     <span class="comment">%   num2str(differenceInForceUnits(jj)) ' ' ...</span>
+0226                     <span class="comment">%   unitsLabel '. Please confirm that you want ' ...</span>
+0227                     <span class="comment">%   'to subtract this offset.']);</span>
+0228                     a = <span class="string">'No'</span>;
+0229                     <span class="keyword">switch</span> a
+0230                         <span class="keyword">case</span> <span class="string">'Yes'</span>
+0231                             relData(:, k) = <span class="keyword">...</span>
+0232                                 gain(jj) * (raw - trueOffset(jj));
+0233                             <span class="comment">% Threshold at offsetThreshMultiplier ×</span>
+0234                             <span class="comment">% tolerance; should never be less than 2×</span>
+0235                             relData(abs(relData(:, k)) &lt; <span class="keyword">...</span>
+0236                                 offsetThreshMultiplier * <span class="keyword">...</span>
+0237                                 toleranceScaled, k) = 0;
+0238                         <span class="keyword">case</span> <span class="string">'No'</span>
+0239                             <span class="comment">% nop</span>
+0240                         <span class="keyword">otherwise</span>
+0241                             error(<span class="string">''</span>);
+0242                     <span class="keyword">end</span>
+0243                 <span class="keyword">end</span>
+0244             <span class="keyword">end</span>
+0245         <span class="keyword">end</span>
+0246     <span class="keyword">catch</span> ME
+0247         warning(<span class="string">'processGRFData:GRFs'</span>, <span class="keyword">...</span>
+0248             [<span class="string">'Could not perform offset check for trial '</span> <span class="keyword">...</span>
+0249             num2str(tr) <span class="string">'. Proceeding with data as is. '</span> <span class="keyword">...</span>
+0250             <span class="string">'Error: '</span> ME.message]);
+0251     <span class="keyword">end</span>
+0252 
+0253     <span class="comment">% Create 'labTimeSeries' object</span>
+0254     <span class="comment">% (data, t0, Ts, labels, orientation)</span>
+0255     <span class="comment">% If fewer than three forces and moments per TM FP, warn</span>
+0256     <span class="keyword">if</span> size(relData, 2) &lt; 12
+0257         warning(<span class="string">'processGRFData:GRFs'</span>, <span class="keyword">...</span>
+0258             [<span class="string">'Did not find all GRFs for the two belts '</span> <span class="keyword">...</span>
+0259             <span class="string">'in trial '</span> num2str(tr)]);
+0260     <span class="keyword">end</span>
+0261     GRFData = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(relData, 0, <span class="keyword">...</span>
+0262         1/analogsInfo.frequency, forceLabels, orientation);
+0263     GRFData.DataInfo.Units = unitsLabel;
+0264 <span class="keyword">else</span>
+0265     GRFData = [];
+0266 <span class="keyword">end</span>
+0267 
+0268 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeAmplitudes</title>
+  <meta name="keywords" content="computeAmplitudes">
+  <meta name="description" content="COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; computeAmplitudes.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeAmplitudes
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [amplitudes, rms, usedMedMinMaxInds] =computeAmplitudes(snippets, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.
+
+   Compute the peak-to-peak amplitudes and RMS values of the M-wave,
+ H-wave, and noise floor from EMG signal snippets for both legs.
+
+ Inputs:
+   snippets - 2 x 1 cell of number of stimuli x number of samples arrays
+              for right (cell 1) and left (cell 2) leg EMG signal
+
+ Optional Name-Value Inputs:
+   WindowDefinitions - 3 x 2 array of time (s) for M-, H-wave, and
+                       noise intervals as
+                       [startM endM; startH endH; startNoise endNoise]
+                       (default: [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3])
+   SamplingPeriod    - scalar time (s) between samples (default: 5e-4)
+
+ Outputs:
+   amplitudes       - 2 x 3 cell of number of stimuli x 1 arrays for
+                      right (row 1) and left (row 2) leg H-reflex
+                      amplitudes: M-wave (col 1), H-wave (col 2),
+                      noise (col 3)
+   rms              - 2 x 3 cell of RMS values for each wave
+   usedMedMinMaxInds - 2 x 2 cell indicating stimuli with outlier
+                       durations where median indices were used
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.<a href="extractSnippets.html" class="code" title="function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)">EXTRACTSNIPPETS</a>, COMPUTEHREFLEXPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [amplitudes, isOutlierDur] = computeWaveAmplitudes(windowsEMG)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [amplitudes, rms, usedMedMinMaxInds] = </a><span class="keyword">...</span>
+0002     computeAmplitudes(snippets, options)
+0003 <span class="comment">%COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Compute the peak-to-peak amplitudes and RMS values of the M-wave,</span>
+0006 <span class="comment">% H-wave, and noise floor from EMG signal snippets for both legs.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   snippets - 2 x 1 cell of number of stimuli x number of samples arrays</span>
+0010 <span class="comment">%              for right (cell 1) and left (cell 2) leg EMG signal</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Optional Name-Value Inputs:</span>
+0013 <span class="comment">%   WindowDefinitions - 3 x 2 array of time (s) for M-, H-wave, and</span>
+0014 <span class="comment">%                       noise intervals as</span>
+0015 <span class="comment">%                       [startM endM; startH endH; startNoise endNoise]</span>
+0016 <span class="comment">%                       (default: [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3])</span>
+0017 <span class="comment">%   SamplingPeriod    - scalar time (s) between samples (default: 5e-4)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   amplitudes       - 2 x 3 cell of number of stimuli x 1 arrays for</span>
+0021 <span class="comment">%                      right (row 1) and left (row 2) leg H-reflex</span>
+0022 <span class="comment">%                      amplitudes: M-wave (col 1), H-wave (col 2),</span>
+0023 <span class="comment">%                      noise (col 3)</span>
+0024 <span class="comment">%   rms              - 2 x 3 cell of RMS values for each wave</span>
+0025 <span class="comment">%   usedMedMinMaxInds - 2 x 2 cell indicating stimuli with outlier</span>
+0026 <span class="comment">%                       durations where median indices were used</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Toolbox Dependencies:</span>
+0029 <span class="comment">%   None</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% See also HREFLEX.EXTRACTSNIPPETS, COMPUTEHREFLEXPARAMETERS.</span>
+0032 
+0033 <span class="comment">% TODO:</span>
+0034 <span class="comment">%   3. make window indices optional input argument with default to avoid</span>
+0035 <span class="comment">%   duplication across multiple code locations</span>
+0036 <span class="comment">%   4. consider using noise mean to compute threshold for edge case values</span>
+0037 <span class="comment">%   5. dynamically set the window bounds (especially the noise window)</span>
+0038 <span class="comment">%   based on the H-reflex data (this may allow the noise window to be</span>
+0039 <span class="comment">%   broader than it currently is)</span>
+0040 
+0041 arguments
+0042     snippets cell
+0043     <span class="comment">% M-wave is contained by interval:  4.5 ms – 20 ms after stim artifact</span>
+0044     <span class="comment">% H-wave is contained by interval: 25   ms – 45 ms</span>
+0045     <span class="comment">% Noise is contained by interval:  20   ms – 25 ms</span>
+0046     <span class="comment">% TODO: is noise window correct? GTO requested between M- and H-wave</span>
+0047     options.WindowDefinitions (3,2) double = <span class="keyword">...</span>
+0048         [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3]
+0049     <span class="comment">% NOTE: should always be same across trials and should be same for forces</span>
+0050     options.SamplingPeriod (1,1) double {mustBePositive} = 5e-4
+0051 <span class="keyword">end</span>
+0052 
+0053 windowDefs = options.WindowDefinitions;
+0054 period     = options.SamplingPeriod;
+0055 
+0056 amplitudes        = cell(2, 3);     <span class="comment">% instantiate amplitudes cell array</span>
+0057 rms               = cell(2, 3);     <span class="comment">% instantiate output RMS cell array</span>
+0058 usedMedMinMaxInds = cell(2, 2);     <span class="comment">% used averaged peak-trough method?</span>
+0059 
+0060 <span class="comment">%% Compute Window Sample Indices</span>
+0061 <span class="comment">% convert window definitions from time to sample indices</span>
+0062 indsWindows = round(windowDefs ./ period) + 11; <span class="comment">% offset for -5ms start</span>
+0063 
+0064 <span class="comment">%% Compute Amplitudes &amp; RMS for Each Leg</span>
+0065 <span class="keyword">for</span> leg = 1:2                       <span class="comment">% for each leg, ...</span>
+0066     snips = snippets{leg, 1};       <span class="comment">% extract EMG snippets for current leg</span>
+0067     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(snips)               <span class="comment">% if no snippets for current leg, ...</span>
+0068         warning(<span class="string">'No snippets provided for leg %d.'</span>, leg);
+0069         <span class="keyword">continue</span>;
+0070     <span class="keyword">end</span>
+0071 
+0072     <span class="comment">% extract M-wave, H-wave, and noise windows</span>
+0073     winsMwave = snips(:, indsWindows(1,1):indsWindows(1,2));
+0074     winsHwave = snips(:, indsWindows(2,1):indsWindows(2,2));
+0075     winsNoise = snips(:, indsWindows(3,1):indsWindows(3,2));
+0076 
+0077     [amplitudes{leg,1}, usedMedMinMaxInds{leg,1}] = <span class="keyword">...</span>
+0078         <a href="#_sub1" class="code" title="subfunction [amplitudes, isOutlierDur] = computeWaveAmplitudes(windowsEMG)">computeWaveAmplitudes</a>(winsMwave);       <span class="comment">% M-wave amplitudes</span>
+0079     rms{leg,1} = sqrt(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(winsMwave.^2, 2));   <span class="comment">% M-wave RMS</span>
+0080     [amplitudes{leg,2}, usedMedMinMaxInds{leg,2}] = <span class="keyword">...</span>
+0081         <a href="#_sub1" class="code" title="subfunction [amplitudes, isOutlierDur] = computeWaveAmplitudes(windowsEMG)">computeWaveAmplitudes</a>(winsHwave);       <span class="comment">% H-wave amplitudes</span>
+0082     rms{leg,2} = sqrt(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(winsHwave.^2, 2));   <span class="comment">% H-wave RMS</span>
+0083     amplitudes{leg,3} = max(winsNoise, [], 2) - min(winsNoise, [], 2);
+0084     rms{leg,3} = sqrt(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(winsNoise.^2, 2));   <span class="comment">% noise RMS</span>
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="keyword">end</span>
+0088 
+0089 <span class="comment">%% Helper Functions</span>
+0090 
+0091 <a name="_sub1" href="#_subfunctions" class="code">function [amplitudes, isOutlierDur] = computeWaveAmplitudes(windowsEMG)</a>
+0092 <span class="comment">%COMPUTEWAVEAMPLITUDES Compute amplitudes of an M- or H-wave window.</span>
+0093 <span class="comment">%</span>
+0094 <span class="comment">%   Compute all wave amplitudes as the difference between the maximum and</span>
+0095 <span class="comment">% minimum value, then update for waves with abnormally long or short</span>
+0096 <span class="comment">% durations by using the median index of the minimum and maximum.</span>
+0097 <span class="comment">%</span>
+0098 <span class="comment">% Inputs:</span>
+0099 <span class="comment">%   windowsEMG - numStimuli x numSamples array of M- or H-wave EMG window</span>
+0100 <span class="comment">%</span>
+0101 <span class="comment">% Outputs:</span>
+0102 <span class="comment">%   amplitudes   - numStimuli x 1 array of M- or H-wave amplitudes</span>
+0103 <span class="comment">%   isOutlierDur - numStimuli x 1 logical array; true where waveform</span>
+0104 <span class="comment">%                  duration is an outlier</span>
+0105 <span class="comment">%</span>
+0106 <span class="comment">% Toolbox Dependencies:</span>
+0107 <span class="comment">%   None</span>
+0108 
+0109 [valsMin, indsMin] = min(windowsEMG, [], 2);    <span class="comment">% minimum value and index</span>
+0110 [valsMax, indsMax] = max(windowsEMG, [], 2);    <span class="comment">% maximum value and index</span>
+0111 amplitudes = valsMax - valsMin;                 <span class="comment">% compute all amplitudes</span>
+0112 
+0113 durations  = indsMax - indsMin;                 <span class="comment">% duration from peak to trough</span>
+0114 indMinMed  = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(indsMin));            <span class="comment">% median min. value index</span>
+0115 indMaxMed  = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(indsMax));            <span class="comment">% median max. value index</span>
+0116 <span class="comment">% NOTE: this may be too liberal (or conservative) in the samples it</span>
+0117 <span class="comment">% includes, although it seems to work quite well for calibration trials</span>
+0118 <span class="comment">% (maximum wave duration is ~10ms, which was previous threshold anyway)</span>
+0119 <span class="comment">% may want to check certain indices of indsMin and indsMax if make sense</span>
+0120 <span class="comment">% ensure peak and trough occur within physiologically plausible time range.</span>
+0121 <span class="comment">% confirm their relative amplitude aligns with what is typically observed.</span>
+0122 <span class="comment">% TODO: handle unlikely scenario of all durations identical (i.e., IQR = 0)</span>
+0123 isOutlierDur = isoutlier(durations, <span class="string">'quartiles'</span>); <span class="comment">% 1.5*IQR is threshold</span>
+0124 amplitudes(isOutlierDur) = abs( <span class="keyword">...</span>
+0125     windowsEMG(isOutlierDur, indMaxMed) - <span class="keyword">...</span>
+0126     windowsEMG(isOutlierDur, indMinMed));   <span class="comment">% update amplitude computations</span>
+0127 
+0128 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

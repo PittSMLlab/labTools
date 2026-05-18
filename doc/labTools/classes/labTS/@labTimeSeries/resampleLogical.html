@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of resampleLogical</title>
+  <meta name="keywords" content="resampleLogical">
+  <meta name="description" content="resampleLogical  Resamples logical timeseries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; resampleLogical.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>resampleLogical
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>resampleLogical  Resamples logical timeseries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = resampleLogical(this, newTs, newT0, newN) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">resampleLogical  Resamples logical timeseries
+
+   newThis = resampleLogical(this, newTs, newT0, newN) resamples a
+   logical (event) timeseries to new sampling
+
+   Inputs:
+       this - labTimeSeries object with logical data
+       newTs - new sampling period
+       newT0 - new initial time
+       newN - new number of samples
+
+   Outputs:
+       newThis - resampled labTimeSeries with logical data
+
+   Note: Can this be deprecated in favor of resample with 'logical'
+         method?
+
+   See also: <a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>, <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>, <a href="getSample.html" class="code" title="function data = getSample(this, timePoints, method)">getSample</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples over same time range</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = resampleLogical(this, newTs, newT0, newN)</a>
+0002 <span class="comment">%resampleLogical  Resamples logical timeseries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = resampleLogical(this, newTs, newT0, newN) resamples a</span>
+0005 <span class="comment">%   logical (event) timeseries to new sampling</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object with logical data</span>
+0009 <span class="comment">%       newTs - new sampling period</span>
+0010 <span class="comment">%       newT0 - new initial time</span>
+0011 <span class="comment">%       newN - new number of samples</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       newThis - resampled labTimeSeries with logical data</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Note: Can this be deprecated in favor of resample with 'logical'</span>
+0017 <span class="comment">%         method?</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: resample, resampleN, getSample</span>
+0020 
+0021 <span class="comment">% newN = floor((this.Time(end) - newT0) / newTs + 1);</span>
+0022 <span class="comment">% TODO: Can this be deprecated in favor of resample with 'logical' method?</span>
+0023 newTime = [0:newN - 1] * newTs + newT0;
+0024 newN = length(newTime);
+0025 <span class="comment">% Sparse logical array of size newN x size(this.Data, 2) and room for</span>
+0026 <span class="comment">% up to size(this.Data, 2) true elements.</span>
+0027 newData = sparse([], [], false, newN, size(this.Data, 2), newN);
+0028 <span class="keyword">for</span> i = 1:size(this.Data, 2) <span class="comment">% Go over event labels</span>
+0029     oldEventTimes = this.Time(this.Data(:, i)); <span class="comment">% Find time of old events</span>
+0030     <span class="comment">% Find closest index in new event</span>
+0031     closestNewEventIndexes = round((oldEventTimes - newT0) / newTs) + 1;
+0032     <span class="comment">% It could happen in case of down-sampling that the closest new</span>
+0033     <span class="comment">% index falls outside the range</span>
+0034     <span class="keyword">if</span> any(closestNewEventIndexes &gt; newN)
+0035         <span class="comment">% Option 1: set it to the last available sample (this would no</span>
+0036         <span class="comment">% longer be 'rounding')</span>
+0037         closestNewEventIndexes(closestNewEventIndexes &gt; newN) = newN;
+0038         <span class="comment">% Option 2: eliminate event, as it falls outside range. This may</span>
+0039         <span class="comment">% cause failure of other functions that rely on down-sampling of</span>
+0040         <span class="comment">% events not changing the number of events</span>
+0041         closestNewEventIndexes(closestNewEventIndexes &gt; newN) = [];
+0042     <span class="keyword">end</span>
+0043     newData(closestNewEventIndexes, i) = true;
+0044 <span class="keyword">end</span>
+0045 newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, newT0, newTs, this.labels);
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

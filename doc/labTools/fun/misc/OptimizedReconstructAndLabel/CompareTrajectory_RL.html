@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CompareTrajectory_RL</title>
+  <meta name="keywords" content="CompareTrajectory_RL">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">OptimizedReconstructAndLabel</a> &gt; CompareTrajectory_RL.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc\OptimizedReconstructAndLabel&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>CompareTrajectory_RL
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>	pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 markersToCompare = {<span class="string">'LGT'</span>, <span class="string">'LANK'</span>};
+0002 subject = <span class="string">'C3S24'</span>;
+0003 basePath = <span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1'</span>;
+0004 trialName = <span class="string">'Trial16'</span>;
+0005 trialPath = fullfile(basePath, trialName);
+0006 
+0007 trajData = struct();
+0008 
+0009 <span class="comment">% -----------------------------</span>
+0010 <span class="comment">% Step 1: OLD PIPELINE</span>
+0011 <span class="comment">% -----------------------------</span>
+0012 fprintf(<span class="string">'\n=== Running OLD pipeline ===\n'</span>);
+0013 viconOld = ViconNexus();
+0014 dataMotion.openTrialIfNeeded(trialPath, viconOld);
+0015 pause(2);
+0016 
+0017 disp(viconOld.GetMarkerNames(subject));  <span class="comment">% for old</span>
+0018 disp(viconNew.GetMarkerNames(subject));  <span class="comment">% for new</span>
+0019 
+0020 <span class="keyword">for</span> m = 1:numel(markersToCompare)
+0021     marker = markersToCompare{m};
+0022     <span class="keyword">try</span>
+0023         [trajX, trajY, trajZ, existsTraj] = viconOld.GetTrajectory(subject, marker);
+0024         traj = NaN(length(trajX), 3);
+0025         traj(existsTraj, :) = [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
+0026         trajData.(marker).Old = NaN(0,3);
+0027     <span class="keyword">catch</span>
+0028         warning(<span class="string">'Could not retrieve OLD trajectory for %s.'</span>, marker);
+0029         trajData.(marker).Old = NaN(0,3);
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% -----------------------------</span>
+0034 <span class="comment">% Step 2: NEW (Optimized) PIPELINE</span>
+0035 <span class="comment">% -----------------------------</span>
+0036 fprintf(<span class="string">'\n=== Running NEW (optimized) pipeline ===\n'</span>);
+0037 viconNew = ViconNexus();
+0038 dataMotion.openTrialIfNeeded(trialPath, viconNew);
+0039 pause(2);
+0040 <span class="keyword">try</span>
+0041     viconNew.CloseTrial(200);  <span class="comment">% Close with force</span>
+0042     pause(2);
+0043 <span class="keyword">catch</span>
+0044     warning(<span class="string">'Could not close trial before re-opening.'</span>);
+0045 <span class="keyword">end</span>
+0046 <a href="Part1RL.html" class="code" title="function mrkrTrajs = Part1RL(trialPath)">Part1RL</a>(trialPath);
+0047 <span class="comment">%Part1RL(trialPath);  % Replace with your optimized R&amp;L pipeline</span>
+0048 pause(3);
+0049 
+0050 <span class="keyword">for</span> m = 1:numel(markersToCompare)
+0051     marker = markersToCompare{m};
+0052     <span class="keyword">try</span>
+0053         [trajX, trajY, trajZ, existsTraj] = viconNew.GetTrajectory(subject, marker);
+0054         traj = NaN(length(trajX), 3);
+0055         traj(existsTraj, :) = [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
+0056         trajData.(marker).New = NaN(0,3);
+0057     <span class="keyword">catch</span>
+0058         warning(<span class="string">'Could not retrieve NEW trajectory for %s.'</span>, marker);
+0059         trajData.(marker).New = NaN(0,3);
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="comment">% -----------------------------</span>
+0064 <span class="comment">% Step 3: PLOTTING</span>
+0065 <span class="comment">% -----------------------------</span>
+0066 components = {<span class="string">'X'</span>, <span class="string">'Y'</span>, <span class="string">'Z'</span>};
+0067 
+0068 <span class="keyword">for</span> m = 1:numel(markersToCompare)
+0069     marker = markersToCompare{m};
+0070     trajOld = trajData.(marker).Old;
+0071     trajNew = trajData.(marker).New;
+0072     nFrames = size(trajOld, 1);
+0073     time = (1:nFrames) / 100;  <span class="comment">% 100 Hz</span>
+0074 
+0075     figure(<span class="string">'Name'</span>, [<span class="string">'Trajectory Comparison: '</span> marker], <span class="string">'NumberTitle'</span>, <span class="string">'off'</span>);
+0076     tiledlayout(3,1);
+0077 
+0078     <span class="keyword">for</span> dim = 1:3
+0079         nexttile;
+0080         hold on;
+0081         title(sprintf(<span class="string">'%s - %s trajectory'</span>, marker, components{dim}));
+0082         xlabel(<span class="string">'Time (s)'</span>);
+0083         ylabel(<span class="string">'Position (mm)'</span>);
+0084 
+0085         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trajOld) &amp;&amp; ~all(isnan(trajOld(:,dim)))
+0086             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, trajOld(:,dim), <span class="string">'b'</span>, <span class="string">'DisplayName'</span>, <span class="string">'Old'</span>);
+0087         <span class="keyword">end</span>
+0088         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trajNew) &amp;&amp; ~all(isnan(trajNew(:,dim)))
+0089             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, trajNew(:,dim), <span class="string">'r--'</span>, <span class="string">'DisplayName'</span>, <span class="string">'New'</span>);
+0090         <span class="keyword">end</span>
+0091         legend;
+0092         hold off;
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

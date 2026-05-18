@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of discretize</title>
+  <meta name="keywords" content="discretize">
+  <meta name="description" content="discretize  Averages data across phases">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; discretize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>discretize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>discretize  Averages data across phases</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = discretize(this, averagingVector) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">discretize  Averages data across phases
+
+   newThis = discretize(this, averagingVector) averages data
+   according to specified averaging vector
+
+   Inputs:
+       this - alignedTimeSeries object
+       averagingVector - vector specifying samples to average per new
+                         phase (must sum to total samples)
+
+   Outputs:
+       newThis - discretized alignedTimeSeries
+
+   See also: <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>, labTimeSeries/discretize</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = discretize(this, averagingVector)</a>
+0002 <span class="comment">%discretize  Averages data across phases</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = discretize(this, averagingVector) averages data</span>
+0005 <span class="comment">%   according to specified averaging vector</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - alignedTimeSeries object</span>
+0009 <span class="comment">%       averagingVector - vector specifying samples to average per new</span>
+0010 <span class="comment">%                         phase (must sum to total samples)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       newThis - discretized alignedTimeSeries</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: mean, labTimeSeries/discretize</span>
+0016 
+0017 <span class="keyword">if</span> sum(averagingVector) ~= sum(this.alignmentVector)
+0018     error(<span class="string">'alignedTS:discretize'</span>, [<span class="string">'The averaging vector must sum to '</span> <span class="keyword">...</span>
+0019         <span class="string">'the number of samples of the alignedTS'</span>]);
+0020 <span class="keyword">end</span>
+0021 lastInd = 0;
+0022 newData = nan(length(averagingVector), size(this.Data, 2), <span class="keyword">...</span>
+0023     size(this.Data, 3));
+0024 expEventTimes = alignedTimeSeries.expandEventTimes(this.eventTimes, <span class="keyword">...</span>
+0025     this.alignmentVector);
+0026 newEventTimes = nan(length(averagingVector), size(expEventTimes, 2) + 1);
+0027 auxSamp = 1 + [0 cumsum(this.alignmentVector)];
+0028 <span class="keyword">for</span> i = 1:length(averagingVector)
+0029     inds = lastInd + [1:averagingVector(i)];
+0030     newData(i, :, :) = nanmean(this.Data(inds, :, :));
+0031     <span class="keyword">if</span> ~any(auxSamp == inds(1))
+0032         aux1 = <span class="string">'-'</span>;
+0033     <span class="keyword">else</span>
+0034         aux1 = this.alignmentLabels{auxSamp == inds(1)};
+0035     <span class="keyword">end</span>
+0036     <span class="keyword">if</span> ~any(auxSamp == inds(end))
+0037         aux2 = <span class="string">'-'</span>;
+0038     <span class="keyword">else</span>
+0039         aux2 = this.alignmentLabels{auxSamp == inds(end)};
+0040     <span class="keyword">end</span>
+0041     aux = this.alignmentLabels(auxSamp &gt; inds(1) &amp; auxSamp &lt; inds(end));
+0042     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux)
+0043         auxM = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(aux);
+0044     <span class="keyword">else</span>
+0045         auxM = <span class="string">'-'</span>;
+0046     <span class="keyword">end</span>
+0047     alignLabel{i} = [aux1 aux2];
+0048     <span class="comment">% Beginning of averaged interval</span>
+0049     newEventTimes(i, 1:end - 1) = expEventTimes(lastInd + 1, :);
+0050     lastInd = lastInd + averagingVector(i);
+0051 <span class="keyword">end</span>
+0052 newEventTimes(1, end) = this.eventTimes(1, end);
+0053 newThis = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(0, 1, newData, this.labels, <span class="keyword">...</span>
+0054     ones(size(averagingVector)), alignLabel, newEventTimes);
+0055 <span class="keyword">end</span>
+0056</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

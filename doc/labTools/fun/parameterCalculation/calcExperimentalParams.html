@@ -4,7 +4,7 @@
 <head>
   <title>Description of calcExperimentalParams</title>
   <meta name="keywords" content="calcExperimentalParams">
-  <meta name="description" content="Calculate parameters:">
+  <meta name="description" content="CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,99 +15,147 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; calcExperimentalParams.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>calcExperimentalParams
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Calculate parameters:</strong></div>
+<div class="box"><strong>CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function out = calcExperimentalParams(in,subData,eventClass,initEventSide) </strong></div>
+<div class="box"><strong>function out = calcExperimentalParams(trialData, subData, eventClass, initEventSide) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Calculate parameters: 
+<div class="fragment"><pre class="comment">CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.
 
-INPUTS
-'in' must be an instance of the class &quot;processedlabData&quot;
-'subData' is the instance of subjectData e.g. subject.mat/expData.subData
-'eventClass' 
-'initEventSide' can be either 'R' or 'L', if blank this comes from come from
-subjectRAW.mat/rawExpData.data{i,j}.metaData.refLeg, or the first input
-'in'</pre></div>
+   Computes stride-by-stride experimental parameters from a processed
+ trial. Currently returns a placeholder parameterSeries containing a
+ single NaN parameter; intended to be extended with study-specific
+ parameter calculations.
+
+ Inputs:
+   trialData     - processedLabData object containing gait events,
+                   parameters, and metadata for the trial
+   subData       - (optional) subjectData object containing subject
+                   information; reserved for study-specific use
+   eventClass    - (optional) string specifying the gait event
+                   detection method (e.g., 'kin' or 'force');
+                   defaults to ''
+   initEventSide - (optional) 'L' or 'R'; side for the initial
+                   gait event; defaults to
+                   trialData.metaData.refLeg if omitted or empty
+
+ Outputs:
+   out - parameterSeries object containing computed parameters
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>, PARAMETERSERIES, GETSTRIDEINFO.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="../../../labTools/classes/dataStructs/@processedLabData/getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	getStrideInfo  Returns stride count and timing information</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = calcExperimentalParams(in,subData,eventClass,initEventSide)</a>
-0002 <span class="comment">%Calculate parameters:</span>
-0003 <span class="comment">%</span>
-0004 <span class="comment">%INPUTS</span>
-0005 <span class="comment">%'in' must be an instance of the class &quot;processedlabData&quot;</span>
-0006 <span class="comment">%'subData' is the instance of subjectData e.g. subject.mat/expData.subData</span>
-0007 <span class="comment">%'eventClass'</span>
-0008 <span class="comment">%'initEventSide' can be either 'R' or 'L', if blank this comes from come from</span>
-0009 <span class="comment">%subjectRAW.mat/rawExpData.data{i,j}.metaData.refLeg, or the first input</span>
-0010 <span class="comment">%'in'</span>
-0011 
-0012 <span class="keyword">if</span> nargin&lt;2 || isempty(eventClass)
-0013     eventClass=<span class="string">''</span>;
-0014 <span class="keyword">end</span>
-0015 <span class="keyword">if</span> nargin&lt;3 || isempty(initEventSide)
-0016     refLeg=in.metaData.refLeg;
-0017 <span class="keyword">else</span>
-0018     refLeg=initEventSide; 
-0019 <span class="keyword">end</span>
-0020 
-0021 <span class="keyword">if</span> strcmp(refLeg,<span class="string">'R'</span>)
-0022     s = <span class="string">'R'</span>;    f = <span class="string">'L'</span>;
-0023 <span class="keyword">elseif</span> strcmp(refLeg,<span class="string">'L'</span>)
-0024     s = <span class="string">'L'</span>;    f = <span class="string">'R'</span>;
-0025 <span class="keyword">else</span>
-0026     ME=MException(<span class="string">'MakeParameters:refLegError'</span>,<span class="string">'the refLeg property of metaData must be either ''L'' or ''R''.'</span>);
-0027     throw(ME);
-0028 <span class="keyword">end</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = calcExperimentalParams( </a><span class="keyword">...</span>
+0002     trialData, subData, eventClass, initEventSide)
+0003 <span class="comment">%CALCEXPERIMENTALPARAMS Compute experimental parameters per stride.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes stride-by-stride experimental parameters from a processed</span>
+0006 <span class="comment">% trial. Currently returns a placeholder parameterSeries containing a</span>
+0007 <span class="comment">% single NaN parameter; intended to be extended with study-specific</span>
+0008 <span class="comment">% parameter calculations.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   trialData     - processedLabData object containing gait events,</span>
+0012 <span class="comment">%                   parameters, and metadata for the trial</span>
+0013 <span class="comment">%   subData       - (optional) subjectData object containing subject</span>
+0014 <span class="comment">%                   information; reserved for study-specific use</span>
+0015 <span class="comment">%   eventClass    - (optional) string specifying the gait event</span>
+0016 <span class="comment">%                   detection method (e.g., 'kin' or 'force');</span>
+0017 <span class="comment">%                   defaults to ''</span>
+0018 <span class="comment">%   initEventSide - (optional) 'L' or 'R'; side for the initial</span>
+0019 <span class="comment">%                   gait event; defaults to</span>
+0020 <span class="comment">%                   trialData.metaData.refLeg if omitted or empty</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   out - parameterSeries object containing computed parameters</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies:</span>
+0026 <span class="comment">%   None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also CALCPARAMETERS, PARAMETERSERIES, GETSTRIDEINFO.</span>
 0029 
-0030 
-0031 
-0032 <span class="comment">%% Find number of strides</span>
-0033 good=in.adaptParams.getDataAsVector({<span class="string">'good'</span>}); <span class="comment">%Getting data from 'good' label</span>
-0034 ts=~isnan(good);
-0035 good=good(ts);
-0036 Nstrides=length(good);<span class="comment">%Using lenght of the 'good' parameter already calculated in calcParams</span>
-0037 
-0038 <span class="comment">%% get events</span>
-0039 eventTypes={[s,<span class="string">'HS'</span>],[f,<span class="string">'TO'</span>],[f,<span class="string">'HS'</span>],[s,<span class="string">'TO'</span>]};
-0040 eventTypes=strcat(eventClass,eventTypes);
-0041 eventTypes2={[<span class="string">'SHS'</span>],[<span class="string">'FTO'</span>],[<span class="string">'FHS'</span>],[<span class="string">'STO'</span>]};
-0042 triggerEvent=eventTypes{1};
-0043 [strideIdxs,initTime,endTime]=getStrideInfo(in,triggerEvent);
-0044 
-0045 <span class="comment">%% Compute params</span>
-0046 aux1={ <span class="string">'fakeParam'</span>, <span class="string">'fakeDescription'</span>};
-0047 paramLabels=aux1(:,1);
-0048 description=aux1(:,2);
-0049 fakeParam=nan(Nstrides,1);
-0050 
-0051 <span class="comment">%% Save all the params in the data matrix &amp; generate labTimeSeries</span>
-0052 <span class="keyword">for</span> i=1:length(paramLabels)
-0053     eval([<span class="string">'data(:,i)='</span>,paramLabels{i},<span class="string">';'</span>])
-0054 <span class="keyword">end</span>
-0055 
-0056 <span class="comment">%%</span>
-0057 out=parameterSeries(data,paramLabels,in.adaptParams.hiddenTime,description);
-0058</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0030 arguments
+0031     trialData     (1,1)
+0032     subData       = []
+0033     eventClass    (1,:) char = <span class="string">''</span>
+0034     initEventSide (1,:) char = <span class="string">''</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%% Resolve Reference Leg</span>
+0038 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(initEventSide)
+0039     refLeg = trialData.metaData.refLeg;
+0040 <span class="keyword">else</span>
+0041     refLeg = initEventSide;
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">if</span> strcmp(refLeg, <span class="string">'R'</span>)
+0045     s = <span class="string">'R'</span>;
+0046     f = <span class="string">'L'</span>;
+0047 <span class="keyword">elseif</span> strcmp(refLeg, <span class="string">'L'</span>)
+0048     s = <span class="string">'L'</span>;
+0049     f = <span class="string">'R'</span>;
+0050 <span class="keyword">else</span>
+0051     ME = MException(<span class="string">'MakeParameters:refLegError'</span>, <span class="keyword">...</span>
+0052         [<span class="string">'The refLeg property of metaData must be '</span> <span class="keyword">...</span>
+0053         <span class="string">'either ''L'' or ''R''.'</span>]);
+0054     throw(ME);
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="comment">%% Find Number of Strides</span>
+0058 <span class="comment">% 'good' is already computed by calcParameters; use it to count strides</span>
+0059 goodData   = trialData.adaptParams.getDataAsVector({<span class="string">'good'</span>});
+0060 validMask  = ~isnan(goodData);
+0061 goodData   = goodData(validMask);
+0062 numStrides = length(goodData);
+0063 
+0064 <span class="comment">%% Configure Gait Event Types</span>
+0065 eventTypes   = {[s, <span class="string">'HS'</span>], [f, <span class="string">'TO'</span>], [f, <span class="string">'HS'</span>], [s, <span class="string">'TO'</span>]};
+0066 eventTypes   = strcat(eventClass, eventTypes);
+0067 eventLabels  = {<span class="string">'SHS'</span>, <span class="string">'FTO'</span>, <span class="string">'FHS'</span>, <span class="string">'STO'</span>};
+0068 triggerEvent = eventTypes{1};
+0069 [strideCount, initTime, endTime] = <a href="../../../labTools/classes/dataStructs/@experimentData/getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>(trialData, triggerEvent);
+0070 
+0071 <span class="comment">%% Compute Parameters</span>
+0072 <span class="comment">% TODO: add study-specific parameter calculations here</span>
+0073 aux = {<span class="string">'fakeParam'</span>, <span class="string">'fakeDescription'</span>};
+0074 paramLabels = aux(:, 1);
+0075 description = aux(:, 2);
+0076 fakeParam   = nan(numStrides, 1);
+0077 
+0078 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0079 data = nan(numStrides, length(paramLabels));
+0080 <span class="keyword">for</span> ii = 1:length(paramLabels)
+0081     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="comment">%% Output Computed Parameters</span>
+0085 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>( <span class="keyword">...</span>
+0086     data, paramLabels, trialData.adaptParams.hiddenTime, description);
+0087 
+0088 <span class="keyword">end</span>
+0089</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

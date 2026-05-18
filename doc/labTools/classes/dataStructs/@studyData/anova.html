@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of anova</title>
+  <meta name="keywords" content="anova">
+  <meta name="description" content="anova  Performs ANOVA comparing groups across epochs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@studyData</a> &gt; anova.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@studyData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>anova
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>anova  Performs ANOVA comparing groups across epochs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function out = anova(this, epochs, contrasts) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">anova  Performs ANOVA comparing groups across epochs
+
+   out = anova(this, epochs, contrasts) performs analysis of variance
+   to test for significant differences between groups across the
+   specified epochs
+
+   Inputs:
+       this - studyData object
+       epochs - epoch specification for analysis
+       contrasts - planned contrasts or comparison specification
+
+   Outputs:
+       out - ANOVA results structure
+
+   Note: Method not yet implemented
+
+   See also: <a href="barPlot.html" class="code" title="function out = barPlot(this, epochs)">barPlot</a>, <a href="getEpochData.html" class="code" title="function data = getEpochData(this, epochs, labels, summaryFlag)">getEpochData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="studyData.html" class="code" title="">studyData</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = anova(this, epochs, contrasts)</a>
+0002 <span class="comment">%anova  Performs ANOVA comparing groups across epochs</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   out = anova(this, epochs, contrasts) performs analysis of variance</span>
+0005 <span class="comment">%   to test for significant differences between groups across the</span>
+0006 <span class="comment">%   specified epochs</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       this - studyData object</span>
+0010 <span class="comment">%       epochs - epoch specification for analysis</span>
+0011 <span class="comment">%       contrasts - planned contrasts or comparison specification</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       out - ANOVA results structure</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Note: Method not yet implemented</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: barPlot, getEpochData</span>
+0019 
+0020 out = []; <span class="comment">% Doxy</span>
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot</title>
+  <meta name="keywords" content="plot">
+  <meta name="description" content="plot  Plots aligned data with mean">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; plot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plot  Plots aligned data with mean</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plot  Plots aligned data with mean
+
+   [figHandle, plotHandles, plottedInds] = plot(this) plots
+   individual strides and mean
+
+   [figHandle, plotHandles, plottedInds] = plot(this, figHandle,
+   plotHandles, meanColor, events, individualLineStyle, plottedInds,
+   bounds, medianFlag) plots with full customization
+
+   Inputs:
+       this - alignedTimeSeries object
+       figHandle - figure handle (optional)
+       plotHandles - subplot handles (optional)
+       meanColor - RGB color for mean line (optional, default: red)
+       events - alignedTimeSeries with events to mark (optional)
+       individualLineStyle - line style for individual strides
+                             (optional, 0 to skip)
+       plottedInds - stride indices to plot (optional, auto-limited
+                     if too many)
+       bounds - percentile bounds for shading or lines (optional)
+       medianFlag - if 1 uses median, if 0 uses mean (optional,
+                    default: 1)
+
+   Outputs:
+       figHandle - figure handle
+       plotHandles - subplot handles
+       plottedInds - indices of strides actually plotted
+
+   Note: Plots individual instances (strides) and overlays mean. Uses
+         one subplot per label. If events given, displays average
+         event times.
+
+   See also: labTimeSeries/plot, <a href="plotCheckerboard.html" class="code" title="function [fh, ph] = plotCheckerboard(this, fh, ph)">plotCheckerboard</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>	tight_subplot creates "subplot" axes with adjustable gaps and margins</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotBars.html" class="code" title="function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>	TODO: Should check that numberOfStrides groups are given in</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	This function replaces plotMultipleGroupBars</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	checkMarkerDataHealth  Diagnoses issues with marker data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>	plotCell  Plots cell array of stride data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/assessMissing.html" class="code" title="function [fh, ph, missing] = assessMissing(this, labels, fh, ph)">assessMissing</a>	assessMissing  Assesses and plots missing data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	bilateralPlot  Plots bilateral comparison</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plotStridedTimeSeries.html" class="code" title="function [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle, plotHandles)">plotStridedTimeSeries</a>	plotStridedTimeSeries  Plots strided timeseries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>	assessMissing  Assesses missing data</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergyAnalysis/SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/+Hreflex/plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">plotSnippets</a>	PLOTSNIPPETS Plot H-reflex snippets with GRFs if available.</li><li><a href="../../../../labTools/fun/+Hreflex/plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin)">plotStimArtifactPeaks</a>	PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</li><li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</li><li><a href="../../../../labTools/fun/+dataMotion/processAndFillMarkerGapsSession.html" class="code" title="function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)">processAndFillMarkerGapsSession</a>	PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li><li><a href="../../../../labTools/fun/EMGanalysis/procEMGhealthCheck.html" class="code" title="function [h] = procEMGhealthCheck(procExperimentData)">procEMGhealthCheck</a>	</li><li><a href="../../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	this version was my first attempt to plot the postadaptation stuff,</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/CompareTrajectory_RL.html" class="code" title="">CompareTrajectory_RL</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajectoryCheckOptimizedRL.html" class="code" title="">TrajectoryCheckOptimizedRL</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/V2P_tester.html" class="code" title="">V2P_tester</a>	</li><li><a href="../../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>	this version was my first attempt to plot the readaptation stuff,</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="../../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa,Li] = nanJackKnife(varargin)">nanJackKnife</a>	JACKKNIFE plots jackknife errorbars around a given curve</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li><li><a href="../../../../labTools/gui/eventReview/ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li><li><a href="../../../../labTools/gui/importc3d/SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle, plotHandles, plottedInds] = plot(this, </a><span class="keyword">...</span>
+0002     figHandle, plotHandles, meanColor, events, <span class="keyword">...</span>
+0003     individualLineStyle, plottedInds, bounds, medianFlag)
+0004 <span class="comment">%plot  Plots aligned data with mean</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   [figHandle, plotHandles, plottedInds] = plot(this) plots</span>
+0007 <span class="comment">%   individual strides and mean</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   [figHandle, plotHandles, plottedInds] = plot(this, figHandle,</span>
+0010 <span class="comment">%   plotHandles, meanColor, events, individualLineStyle, plottedInds,</span>
+0011 <span class="comment">%   bounds, medianFlag) plots with full customization</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Inputs:</span>
+0014 <span class="comment">%       this - alignedTimeSeries object</span>
+0015 <span class="comment">%       figHandle - figure handle (optional)</span>
+0016 <span class="comment">%       plotHandles - subplot handles (optional)</span>
+0017 <span class="comment">%       meanColor - RGB color for mean line (optional, default: red)</span>
+0018 <span class="comment">%       events - alignedTimeSeries with events to mark (optional)</span>
+0019 <span class="comment">%       individualLineStyle - line style for individual strides</span>
+0020 <span class="comment">%                             (optional, 0 to skip)</span>
+0021 <span class="comment">%       plottedInds - stride indices to plot (optional, auto-limited</span>
+0022 <span class="comment">%                     if too many)</span>
+0023 <span class="comment">%       bounds - percentile bounds for shading or lines (optional)</span>
+0024 <span class="comment">%       medianFlag - if 1 uses median, if 0 uses mean (optional,</span>
+0025 <span class="comment">%                    default: 1)</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   Outputs:</span>
+0028 <span class="comment">%       figHandle - figure handle</span>
+0029 <span class="comment">%       plotHandles - subplot handles</span>
+0030 <span class="comment">%       plottedInds - indices of strides actually plotted</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   Note: Plots individual instances (strides) and overlays mean. Uses</span>
+0033 <span class="comment">%         one subplot per label. If events given, displays average</span>
+0034 <span class="comment">%         event times.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%   See also: labTimeSeries/plot, plotCheckerboard</span>
+0037 
+0038 <span class="comment">% Plot individual instances (strides) of the time-series, and overlays</span>
+0039 <span class="comment">% the mean of all of them Uses one subplot for each label in the</span>
+0040 <span class="comment">% timeseries (same as labTimeSeries.plot). If events are given</span>
+0041 <span class="comment">% (alignedTimeSeries with the same time vector and number of strides),</span>
+0042 <span class="comment">% it will display the average event-time ocurrence in the plot,</span>
+0043 <span class="comment">% instead of the time in the x-axis. See also labTimeSeries.plot</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% SYNTAX:</span>
+0046 <span class="comment">% [figHandle, plotHandles] = plot(this, figHandle, plotHandles,</span>
+0047 <span class="comment">%     meanColor, events)</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% INPUTS:</span>
+0050 <span class="comment">% this: alignedTimeSeries object to plot</span>
+0051 <span class="comment">% figHandle: handle to the figure to be used. If absent, creates a new</span>
+0052 <span class="comment">% figure.</span>
+0053 <span class="comment">% plotHandles: handles to the subplots being used. There need to be at</span>
+0054 <span class="comment">% least as many handles as labels in the data.</span>
+0055 <span class="comment">% meanColor: color to use for the plot of the mean. % FIXME</span>
+0056 <span class="comment">% events: alignedTimeSeries of events.</span>
+0057 <span class="comment">%</span>
+0058 <span class="comment">% OUTPUT:</span>
+0059 <span class="comment">% figHandle: handle to the figure used.</span>
+0060 <span class="comment">% plotHandles: handles to the subplots used.</span>
+0061 <span class="comment">%</span>
+0062 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(meanColor)
+0063     meanColor = [1, 0, 0];
+0064 <span class="keyword">end</span>
+0065 <span class="keyword">if</span> nargin &lt; 9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(medianFlag)
+0066     medianFlag = 1;
+0067 <span class="keyword">end</span>
+0068 structure = this.Data;
+0069 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
+0070     figHandle = figure();
+0071 <span class="keyword">else</span>
+0072     figure(figHandle); <span class="comment">% Only works for one condition!</span>
+0073 <span class="keyword">end</span>
+0074 set(figHandle, <span class="string">'Units'</span>, <span class="string">'normalized'</span>, <span class="string">'OuterPosition'</span>, [0 0 1 1]);
+0075 M = size(structure, 2);
+0076 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotHandles) || <span class="keyword">...</span>
+0077         length(plotHandles) &lt; size(this.Data, 2)
+0078     [b, a] = <a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(M);
+0079     <span class="comment">% External function</span>
+0080     plotHandles = <a href="../../../../labTools/fun/ext/tight_subplot/tight_subplot.html" class="code" title="function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)">tight_subplot</a>(b, a, [.02 .02], [.05 .05], <span class="keyword">...</span>
+0081         [.05 .05]);
+0082 <span class="keyword">end</span>
+0083 meanStr = <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(structure, 3);
+0084 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plottedInds)
+0085     plottedInds = 1:size(structure, 3);
+0086     <span class="keyword">if</span> (numel(structure)) &gt; 1e7
+0087         P = floor(1e7 / numel(structure(:, :, 1)));
+0088         warning([<span class="string">'There are too many strides in this condition to '</span> <span class="keyword">...</span>
+0089             <span class="string">'plot ('</span> num2str(size(structure, 3)) <span class="string">'). Only plotting '</span> <span class="keyword">...</span>
+0090             <span class="string">'first '</span> num2str(P) <span class="string">'.'</span>]);
+0091         plottedInds = 1:P;
+0092         structure = structure(:, :, plottedInds);
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">elseif</span> any(plottedInds &lt;= 0) <span class="comment">% Counting from the back</span>
+0095     plottedInds(plottedInds &lt;= 0) = size(structure, 3) + <span class="keyword">...</span>
+0096         plottedInds(plottedInds &lt;= 0);
+0097 <span class="keyword">end</span>
+0098 
+0099 
+0100 <span class="comment">% Define centerline plot:</span>
+0101 <span class="keyword">if</span> medianFlag == 1
+0102     centerline = this.median.castAsTS; <span class="comment">% Could do mean or median</span>
+0103 <span class="keyword">else</span>
+0104     centerline = this.mean.castAsTS;
+0105 <span class="keyword">end</span>
+0106 
+0107 <span class="comment">% Plot percentiles (bounds)</span>
+0108 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0109     events = [];
+0110     meanEvents = [];
+0111 <span class="keyword">else</span>
+0112     <span class="keyword">if</span> isa(events, <span class="string">'alignedTimeSeries'</span>)
+0113         [meanEvents, ss] = <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(events);
+0114         meanEvents = meanEvents.castAsTS;
+0115     <span class="keyword">else</span>
+0116         meanEvents = events;
+0117         ss = [];
+0118     <span class="keyword">end</span>
+0119     [i2, ~] = find(meanEvents.Data);
+0120 <span class="keyword">end</span>
+0121 <span class="keyword">if</span> ~islogical(this.Data) &amp;&amp; nargin &gt; 7 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(bounds)
+0122     <span class="keyword">if</span> length(bounds) == 2 <span class="comment">% Alt visualization: add patch</span>
+0123         <span class="keyword">if</span> any(bounds) == 0
+0124             <span class="keyword">if</span> medianFlag == 1
+0125                 st = this.stdRobust.castAsTS;
+0126             <span class="keyword">else</span>
+0127                 st = this.std.castAsTS;
+0128             <span class="keyword">end</span>
+0129             <span class="keyword">if</span> all(bounds) == 0 <span class="comment">% Plots ste</span>
+0130                 aux1 = centerline + (st .* 1 / sqrt(size(this.Data, 3)));
+0131                 aux2 = centerline - (st .* 1 / sqrt(size(this.Data, 3)));
+0132             <span class="keyword">else</span> <span class="comment">% Plots std</span>
+0133                 aux1 = centerline + (st);
+0134                 aux2 = centerline - (st);
+0135             <span class="keyword">end</span>
+0136         <span class="keyword">else</span>
+0137             aux1 = <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this, bounds(1));
+0138             aux2 = <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(this, bounds(2));
+0139         <span class="keyword">end</span>
+0140         <span class="keyword">for</span> i = 1:M
+0141             subplot(plotHandles(i));
+0142             hold on;
+0143             <span class="keyword">if</span> size(aux1.Time, 1) == numel(aux1.Time) <span class="comment">% column vector</span>
+0144                 megaTime = [aux1.Time; aux1.Time(end:-1:1)];
+0145             <span class="keyword">else</span> <span class="comment">% row vector</span>
+0146                 megaTime = [aux1.Time, aux1.Time(end:-1:1)];
+0147             <span class="keyword">end</span>
+0148             megaData = [aux1.Data(:, i); aux2.Data(end:-1:1, i)];
+0149             megaData(isnan(megaData)) = 0;
+0150             pp = patch(megaTime, megaData, meanColor, <span class="string">'FaceAlpha'</span>, .4, <span class="keyword">...</span>
+0151                 <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+0152             uistack(pp, <span class="string">'bottom'</span>);
+0153             hold off;
+0154         <span class="keyword">end</span>
+0155     <span class="keyword">else</span> <span class="comment">% Plot each percentile line</span>
+0156         <span class="keyword">for</span> k = 1:length(bounds)
+0157             [figHandle, plotHandles] = <span class="keyword">...</span>
+0158                 <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.prctile(bounds(k)).castAsTS, figHandle, [], <span class="keyword">...</span>
+0159                 plotHandles, [], meanColor * .8, .5);
+0160         <span class="keyword">end</span>
+0161     <span class="keyword">end</span>
+0162 <span class="keyword">end</span>
+0163 
+0164 <span class="comment">% Plot mean trace</span>
+0165 <span class="comment">% Plotting mean data</span>
+0166 [figHandle, plotHandles] = <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(centerline, figHandle, [], <span class="keyword">...</span>
+0167     plotHandles, meanEvents, meanColor);
+0168 
+0169 <span class="comment">% Plot individual traces</span>
+0170 <span class="keyword">for</span> i = 1:M <span class="comment">% Go over labels</span>
+0171     <span class="comment">% subplot(b, a, i)</span>
+0172     subplot(plotHandles(i));
+0173     hold on;
+0174     <span class="comment">% title(aux{1}.(field).labels{i})</span>
+0175     data = squeeze(structure(:, i, :));
+0176     N = size(data, 1);
+0177     <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(individualLineStyle)
+0178         ppp = <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.Time, data, <span class="string">'Color'</span>, [.7, .7, .7]);
+0179         uistack(ppp, <span class="string">'bottom'</span>);
+0180     <span class="keyword">elseif</span> individualLineStyle == 0
+0181         <span class="comment">% nop</span>
+0182     <span class="keyword">else</span>
+0183         ppp = <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.Time, data, individualLineStyle);
+0184         uistack(ppp, <span class="string">'bottom'</span>);
+0185     <span class="keyword">end</span>
+0186 
+0187     <span class="comment">% plot([0:N - 1] / N, meanStr(:, i), 'LineWidth', 2, 'Color',</span>
+0188     <span class="comment">%     meanColor);</span>
+0189     <span class="comment">% legend(this.labels{i})</span>
+0190     <span class="comment">% maxM(i) = 5 * norm(data(:)) / sqrt(length(data(:)));</span>
+0191     meanM(i) = <a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:), 50);
+0192     maxM(i) = 2 * (<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:), 99) - meanM(i)) + meanM(i) + eps;
+0193     minM(i) = 2 * (<a href="prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(data(:), 1) - meanM(i)) + meanM(i);
+0194     axis([this.Time(1) this.Time(end) minM(i) maxM(i)]);
+0195     hold off;
+0196 <span class="keyword">end</span>
+0197 
+0198 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(events)
+0199     <span class="comment">% For each plot, plot a standard deviation bar indicating how</span>
+0200     <span class="comment">% disperse are events with respect to their mean/median (XTick set)</span>
+0201     <span class="keyword">for</span> i = 1:length(plotHandles)
+0202         eventSampPeriod = (events.Time(2) - events.Time(1));
+0203         subplot(plotHandles(i));
+0204         hold on;
+0205         <span class="keyword">for</span> j = 1:length(ss)
+0206             <a href="plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(events.Time(i2(j)) + ss(j) * [-1, 1] * <span class="keyword">...</span>
+0207                 eventSampPeriod, [0, 0], <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1);
+0208         <span class="keyword">end</span>
+0209         <span class="comment">% axis tight % TO DO: not use axis tight, but find proper axes</span>
+0210         <span class="comment">% limits by computing the rms value of the signal, or</span>
+0211         <span class="comment">% something like that.</span>
+0212         hold off;
+0213     <span class="keyword">end</span>
+0214 <span class="keyword">else</span>
+0215     <span class="comment">% For each plot, plot a standard deviation bar indicating how</span>
+0216     <span class="comment">% disperse are events with respect to their mean/median (XTick set)</span>
+0217     <span class="keyword">for</span> i = 1:length(plotHandles)
+0218         subplot(plotHandles(i));
+0219         xt = get(gca, <span class="string">'XTick'</span>);
+0220         xt = [this.Time(1) + [0, cumsum(this.alignmentVector)] * <span class="keyword">...</span>
+0221             (this.Time(end) - this.Time(1)) / <span class="keyword">...</span>
+0222             sum(this.alignmentVector)];
+0223         xtl = [[this.alignmentLabels, this.alignmentLabels(1)]];
+0224         set(gca, <span class="string">'XTick'</span>, xt, <span class="string">'XTickLabel'</span>, xtl);
+0225         set(gca, <span class="string">'xgrid'</span>, <span class="string">'on'</span>);
+0226     <span class="keyword">end</span>
+0227 <span class="keyword">end</span>
+0228 <span class="keyword">end</span>
+0229</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

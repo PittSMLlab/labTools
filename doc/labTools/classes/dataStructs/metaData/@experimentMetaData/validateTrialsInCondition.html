@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of validateTrialsInCondition</title>
+  <meta name="keywords" content="validateTrialsInCondition">
+  <meta name="description" content="validateTrialsInCondition  Validates trial organization">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../../index.html">dataStructs</a> &gt; <a href="../index.html">metaData</a> &gt; <a href="index.html">@experimentMetaData</a> &gt; validateTrialsInCondition.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\metaData\@experimentMetaData&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>validateTrialsInCondition
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>validateTrialsInCondition  Validates trial organization</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function conditionOrder = validateTrialsInCondition(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">validateTrialsInCondition  Validates trial organization
+
+   conditionOrder = validateTrialsInCondition(this) checks that there
+   are no repeated trials and that conditions do not interleave trials
+
+   Inputs:
+       this - experimentMetaData object
+
+   Outputs:
+       conditionOrder - vector indicating proper order of conditions
+                        based on trial numbers
+
+   Note: Throws error if trials are repeated or interleaved between
+         conditions (e.g., condition 'A' has trials 1 and 3, and
+         condition 'B' has trial 2)
+
+   See also: <a href="checkConditionOrder.html" class="code" title="function conditionOrder = checkConditionOrder(this,conditionNamesInOrder, silentFlag)">checkConditionOrder</a>, <a href="sortConditions.html" class="code" title="function newThis = sortConditions(this)">sortConditions</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="checkConditionOrder.html" class="code" title="function conditionOrder = checkConditionOrder(this,conditionNamesInOrder, silentFlag)">checkConditionOrder</a>	checkConditionOrder  Checks that conditions appear in order</li><li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function conditionOrder = validateTrialsInCondition(this)</a>
+0002 <span class="comment">%validateTrialsInCondition  Validates trial organization</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   conditionOrder = validateTrialsInCondition(this) checks that there</span>
+0005 <span class="comment">%   are no repeated trials and that conditions do not interleave trials</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - experimentMetaData object</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       conditionOrder - vector indicating proper order of conditions</span>
+0012 <span class="comment">%                        based on trial numbers</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Note: Throws error if trials are repeated or interleaved between</span>
+0015 <span class="comment">%         conditions (e.g., condition 'A' has trials 1 and 3, and</span>
+0016 <span class="comment">%         condition 'B' has trial 2)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: checkConditionOrder, sortConditions</span>
+0019 
+0020 conditionNamesInOrder = this.conditionName;
+0021 <span class="keyword">for</span> i = 1:length(conditionNamesInOrder)
+0022     trialNo{i} = this.getTrialsInCondition(conditionNamesInOrder{i});
+0023 <span class="keyword">end</span>
+0024 allTrials = <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(trialNo);
+0025 uniqueTrials = unique(allTrials);
+0026 <span class="keyword">if</span> numel(uniqueTrials) ~= numel(allTrials)
+0027     error([<span class="string">'Some trials are repeated, in the same or different '</span> <span class="keyword">...</span>
+0028         <span class="string">'conditions. This is not allowed. Please review.'</span>]);
+0029 <span class="keyword">end</span>
+0030 mx = cellfun(@(x) min(x), trialNo);
+0031 Mx = cellfun(@(x) max(x), trialNo);
+0032 <span class="comment">% Sorting according to first trial in each condition</span>
+0033 [mx1, order1] = sort(mx);
+0034 <span class="comment">% Sorting according to last trial in each condition</span>
+0035 [Mx1, order2] = sort(Mx);
+0036 <span class="keyword">if</span> all(order1 == order2) &amp;&amp; all(Mx1(1:end - 1) &lt; mx1(2:end))
+0037     conditionOrder = order1;
+0038 <span class="keyword">else</span> <span class="comment">% Condition order cannot be established</span>
+0039     disp(this);
+0040     error([<span class="string">'Trials in conditions appear to be interleaved. This is '</span> <span class="keyword">...</span>
+0041         <span class="string">'not allowed. Please rename conditions.'</span>]);
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

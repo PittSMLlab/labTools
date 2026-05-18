@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processedEMGTimeSeries</title>
+  <meta name="keywords" content="processedEMGTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@processedEMGTimeSeries</a> &gt; processedEMGTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@processedEMGTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>processedEMGTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@labData/split.html" class="code" title="function newThis = split(this, t0, t1, newClass)">split</a>	split  Splits data into time-delimited segments</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns new labTimeSeries with given label(s)</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples over same time range</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Returns timeseries between two timepoints</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns labTimeSeries (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries (override)</li><li><a href="getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns processedEMGTimeSeries with specified label(s)</li><li><a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN)">resampleN</a>	resampleN  Resamples to N samples, preserving processing info</li><li><a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries, preserving processing info</li><li><a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li><li><a href="getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns processedEMGTimeSeries with specified label(s)</li><li><a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN)">resampleN</a>	resampleN  Resamples to N samples, preserving processing info</li><li><a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>	split  Splits timeseries, preserving processing info</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = processedEMGTimeSeries(data, t0, Ts, labels,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a> &lt; <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>
+0002     <span class="comment">%processedEMGTimeSeries  Time series for processed EMG data</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   processedEMGTimeSeries extends labTimeSeries to include</span>
+0005     <span class="comment">%   information about the signal processing applied to raw EMG data.</span>
+0006     <span class="comment">%   It maintains a record of filters used and overrides key methods to</span>
+0007     <span class="comment">%   preserve processing information when manipulating data.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%processedEMGTimeSeries properties:</span>
+0010     <span class="comment">%   processingInfo - processingInfo object describing filters applied</span>
+0011     <span class="comment">%   (inherits all properties from labTimeSeries)</span>
+0012     <span class="comment">%</span>
+0013     <span class="comment">%processedEMGTimeSeries methods:</span>
+0014     <span class="comment">%   processedEMGTimeSeries - constructor for processed EMG timeseries</span>
+0015     <span class="comment">%   getDataAsTS - returns processedEMGTimeSeries with specified</span>
+0016     <span class="comment">%                 label(s)</span>
+0017     <span class="comment">%   resampleN - resamples to N samples, preserving processing info</span>
+0018     <span class="comment">%   split - splits timeseries, preserving processing info</span>
+0019     <span class="comment">%</span>
+0020     <span class="comment">%See also: labTimeSeries, processingInfo, EMGData</span>
+0021 
+0022     <span class="comment">%% Properties</span>
+0023     properties (SetAccess = private)
+0024         <a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a> <span class="comment">% processingInfo object</span>
+0025     <span class="keyword">end</span>
+0026 
+0027     <span class="comment">%% Constructor</span>
+0028     methods
+0029         <a name="_sub0" href="#_subfunctions" class="code">function this = processedEMGTimeSeries(data, t0, Ts, labels, </a><span class="keyword">...</span>
+0030                 <a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>, Quality, QualInfo)
+0031             <span class="comment">%processedEMGTimeSeries  Constructor for</span>
+0032             <span class="comment">%processedEMGTimeSeries class</span>
+0033             <span class="comment">%</span>
+0034             <span class="comment">%   this = processedEMGTimeSeries(data, t0, Ts, labels,</span>
+0035             <span class="comment">%   processingInfo) creates a processed EMG timeseries with</span>
+0036             <span class="comment">%   specified data and processing information</span>
+0037             <span class="comment">%</span>
+0038             <span class="comment">%   this = processedEMGTimeSeries(data, t0, Ts, labels,</span>
+0039             <span class="comment">%   processingInfo, Quality, QualInfo) includes quality flags</span>
+0040             <span class="comment">%</span>
+0041             <span class="comment">%   Inputs:</span>
+0042             <span class="comment">%       data - matrix of processed EMG amplitudes (samples x</span>
+0043             <span class="comment">%              channels)</span>
+0044             <span class="comment">%       t0 - initial time in seconds</span>
+0045             <span class="comment">%       Ts - sampling period in seconds</span>
+0046             <span class="comment">%       labels - cell array of EMG channel labels</span>
+0047             <span class="comment">%       processingInfo - processingInfo object describing</span>
+0048             <span class="comment">%                        filters applied</span>
+0049             <span class="comment">%       Quality - quality flags for samples (optional)</span>
+0050             <span class="comment">%       QualInfo - quality information structure (optional)</span>
+0051             <span class="comment">%</span>
+0052             <span class="comment">%   Outputs:</span>
+0053             <span class="comment">%       this - processedEMGTimeSeries object</span>
+0054             <span class="comment">%</span>
+0055             <span class="comment">%   Note: Necessarily uniformly sampled</span>
+0056             <span class="comment">%</span>
+0057             <span class="comment">%   See also: labTimeSeries, processingInfo</span>
+0058 
+0059             this@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(data, t0, Ts, labels);
+0060             <span class="keyword">if</span> isa(<a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>, <span class="string">'processingInfo'</span>)
+0061                 this.processingInfo = <a href="../../../../labTools/classes/labTS/processingInfo.html" class="code" title="">processingInfo</a>;
+0062             <span class="keyword">else</span>
+0063                 ME = MException(<span class="string">'processedEMGTimeSeries:Constructor'</span>, <span class="keyword">...</span>
+0064                     [<span class="string">'processingInfo parameter is not an '</span> <span class="keyword">...</span>
+0065                     <span class="string">'processingInfo object.'</span>]);
+0066                 throw(ME);
+0067             <span class="keyword">end</span>
+0068             <span class="keyword">if</span> nargin &gt; 5
+0069                 this.Quality = Quality;
+0070                 this.QualityInfo = QualInfo;
+0071             <span class="keyword">end</span>
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074 
+0075     <span class="comment">%% Data Access Methods (Overrides)</span>
+0076     methods
+0077         newTS = <a href="getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>(this, label)
+0078     <span class="keyword">end</span>
+0079 
+0080     <span class="comment">%% Data Transformation Methods (Overrides)</span>
+0081     methods
+0082         newThis = <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN)">resampleN</a>(this, newN)
+0083 
+0084         newThis = <a href="split.html" class="code" title="function newThis = split(this, t0, t1)">split</a>(this, t0, t1)
+0085     <span class="keyword">end</span>
+0086 
+0087 <span class="keyword">end</span>
+0088</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

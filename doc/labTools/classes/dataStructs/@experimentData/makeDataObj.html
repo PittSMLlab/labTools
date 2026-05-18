@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of makeDataObj</title>
+  <meta name="keywords" content="makeDataObj">
+  <meta name="description" content="makeDataObj  Creates an adaptationData object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; makeDataObj.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>makeDataObj
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>makeDataObj  Creates an adaptationData object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function adaptData = makeDataObj(this, filename, experimentalFlag,contraLateralFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">makeDataObj  Creates an adaptationData object
+
+   adaptData = makeDataObj(this, filename) creates an adaptationData
+   object and saves it to file
+
+   adaptData = makeDataObj(this, filename, experimentalFlag,
+   contraLateralFlag) controls inclusion of experimental parameters
+   and contralateral computation
+
+   Inputs:
+       this - experimentData object
+       filename - string for saving (typically subject identifier,
+                  optional)
+       experimentalFlag - false (or 0) prevents experimental
+                          parameter calculation (optional)
+       contraLateralFlag - if true, computes parameters using
+                           non-reference leg (optional)
+
+   Outputs:
+       adaptData - adaptationData object, saved to present working
+                   directory if filename specified
+
+   Examples:
+       adaptData = expData.makeDataObj('Sub01'); saves
+       adaptationData object to Sub01params.mat
+
+       adaptData = expData.makeDataObj('', false); does not include
+       experimentalParams and does not save to file
+
+   See also: adaptationData, <a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function adaptData = makeDataObj(this, filename, experimentalFlag, </a><span class="keyword">...</span>
+0002     contraLateralFlag)
+0003 <span class="comment">%makeDataObj  Creates an adaptationData object</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   adaptData = makeDataObj(this, filename) creates an adaptationData</span>
+0006 <span class="comment">%   object and saves it to file</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   adaptData = makeDataObj(this, filename, experimentalFlag,</span>
+0009 <span class="comment">%   contraLateralFlag) controls inclusion of experimental parameters</span>
+0010 <span class="comment">%   and contralateral computation</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Inputs:</span>
+0013 <span class="comment">%       this - experimentData object</span>
+0014 <span class="comment">%       filename - string for saving (typically subject identifier,</span>
+0015 <span class="comment">%                  optional)</span>
+0016 <span class="comment">%       experimentalFlag - false (or 0) prevents experimental</span>
+0017 <span class="comment">%                          parameter calculation (optional)</span>
+0018 <span class="comment">%       contraLateralFlag - if true, computes parameters using</span>
+0019 <span class="comment">%                           non-reference leg (optional)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   Outputs:</span>
+0022 <span class="comment">%       adaptData - adaptationData object, saved to present working</span>
+0023 <span class="comment">%                   directory if filename specified</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   Examples:</span>
+0026 <span class="comment">%       adaptData = expData.makeDataObj('Sub01'); saves</span>
+0027 <span class="comment">%       adaptationData object to Sub01params.mat</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%       adaptData = expData.makeDataObj('', false); does not include</span>
+0030 <span class="comment">%       experimentalParams and does not save to file</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   See also: adaptationData, makeDataObjNew</span>
+0033 
+0034 <span class="keyword">if</span> ~(this.isProcessed)
+0035     ME = MException(<span class="string">'experimentData:makeDataObj'</span>, <span class="keyword">...</span>
+0036         [<span class="string">'Cannot create an adaptationData object from '</span> <span class="keyword">...</span>
+0037         <span class="string">'unprocessed data!'</span>]);
+0038     throw(ME);
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> nargin &lt; 3
+0042     experimentalFlag = [];
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">if</span> nargin &lt; 2
+0045     filename = [];
+0046 <span class="keyword">end</span>
+0047 <span class="keyword">if</span> nargin &lt; 4
+0048     contraLateralFlag = [];
+0049 <span class="keyword">end</span>
+0050 adaptData = <a href="makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>(this, filename, experimentalFlag, <span class="keyword">...</span>
+0051     contraLateralFlag);
+0052 <span class="keyword">end</span>
+0053</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

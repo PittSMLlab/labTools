@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getIndsForAllSteps</title>
+  <meta name="keywords" content="getIndsForAllSteps">
+  <meta name="description" content="GETINDSFORALLSTEPS Return event indices and times for all strides.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">parameterCalculation</a> &gt; <a href="index.html">deprecated</a> &gt; getIndsForAllSteps.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation\deprecated&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getIndsForAllSteps
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>GETINDSFORALLSTEPS Return event indices and times for all strides.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function indData = getIndsForAllSteps(gaitEvents, s, f) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GETINDSFORALLSTEPS Return event indices and times for all strides.
+
+   Extracts the sample index and time of each gait event for every
+ stride in a trial. A stride spans two consecutive slow heel strikes
+ (SHS). For each stride, the function records indices and times for
+ eight events in sequence: SHS, FTO, FHS, STO, SHS2, FTO2, FHS2,
+ STO2. The output is a struct with a data matrix and column labels
+ for use in downstream parameter computations.
+
+ Inputs:
+   gaitEvents - labTimeSeries containing binary gait event columns
+                with labels [sHS, fTO, fHS, sTO] (where s and f
+                are the slow and fast leg identifiers)
+   s          - char ('L' or 'R') identifying the slow leg
+   f          - char ('L' or 'R') identifying the fast leg
+
+ Outputs:
+   indData - struct with fields:
+               .Data   - numStrides-by-16 matrix; columns 1-8 are
+                         sample indices (SHS FTO FHS STO SHS2 FTO2
+                         FHS2 STO2) and columns 9-16 are the
+                         corresponding times
+               .labels - 16-element cell array of column names
+                         (e.g., 'indsRHS', 'indsLTO2', 'timesRHS')
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getIndsForThisStep.html" class="code" title="function [indSHS, indFTO, indFHS, indSTO, indSHS2, indFTO2, indFHS2,indSTO2, timeSHS, timeFTO, timeFHS, timeSTO, timeSHS2, timeFTO2,timeFHS2, timeSTO2] = getIndsForThisStep(events, eventsTime, step)">GETINDSFORTHISSTEP</a>, CALCPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function indData = getIndsForAllSteps(gaitEvents, s, f)</a>
+0002 <span class="comment">%GETINDSFORALLSTEPS Return event indices and times for all strides.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Extracts the sample index and time of each gait event for every</span>
+0005 <span class="comment">% stride in a trial. A stride spans two consecutive slow heel strikes</span>
+0006 <span class="comment">% (SHS). For each stride, the function records indices and times for</span>
+0007 <span class="comment">% eight events in sequence: SHS, FTO, FHS, STO, SHS2, FTO2, FHS2,</span>
+0008 <span class="comment">% STO2. The output is a struct with a data matrix and column labels</span>
+0009 <span class="comment">% for use in downstream parameter computations.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   gaitEvents - labTimeSeries containing binary gait event columns</span>
+0013 <span class="comment">%                with labels [sHS, fTO, fHS, sTO] (where s and f</span>
+0014 <span class="comment">%                are the slow and fast leg identifiers)</span>
+0015 <span class="comment">%   s          - char ('L' or 'R') identifying the slow leg</span>
+0016 <span class="comment">%   f          - char ('L' or 'R') identifying the fast leg</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   indData - struct with fields:</span>
+0020 <span class="comment">%               .Data   - numStrides-by-16 matrix; columns 1-8 are</span>
+0021 <span class="comment">%                         sample indices (SHS FTO FHS STO SHS2 FTO2</span>
+0022 <span class="comment">%                         FHS2 STO2) and columns 9-16 are the</span>
+0023 <span class="comment">%                         corresponding times</span>
+0024 <span class="comment">%               .labels - 16-element cell array of column names</span>
+0025 <span class="comment">%                         (e.g., 'indsRHS', 'indsLTO2', 'timesRHS')</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Toolbox Dependencies:</span>
+0028 <span class="comment">%   None</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% See also GETINDSFORTHISSTEP, CALCPARAMETERS.</span>
+0031 
+0032 arguments
+0033     gaitEvents (1,1)
+0034     s          (1,1) char
+0035     f          (1,1) char
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">%% Configure Event Types</span>
+0039 eventList  = {[s <span class="string">'HS'</span>], [f <span class="string">'TO'</span>], [f <span class="string">'HS'</span>], [s <span class="string">'TO'</span>]};
+0040 numEvents  = length(eventList);
+0041 eventData  = gaitEvents.getDataAsVector(eventList);
+0042 eventsTime = gaitEvents.Time;
+0043 
+0044 <span class="comment">%% Initialize Index and Time Arrays</span>
+0045 shsInds    = find(eventData(:, 1));
+0046 numStrides = length(shsInds) - 1;
+0047 eventInds  = NaN(numStrides, 2 * numEvents);
+0048 eventTimes = NaN(numStrides, 2 * numEvents);
+0049 
+0050 <span class="comment">% Set index and time for the SHS column (first event of each stride)</span>
+0051 eventInds(:, 1)  = shsInds(1:numStrides);
+0052 eventTimes(:, 1) = eventsTime(shsInds(1:numStrides));
+0053 
+0054 <span class="comment">%% Fill Events for All Steps Except Last</span>
+0055 <span class="keyword">for</span> stp = 1:numStrides - 1
+0056     <span class="keyword">for</span> ii = 2:numEvents
+0057         eventInds(stp, ii)  = find( <span class="keyword">...</span>
+0058             (eventsTime &gt; eventTimes(stp, ii - 1)) &amp; <span class="keyword">...</span>
+0059             eventData(:, ii), 1);
+0060         eventTimes(stp, ii) = eventsTime(eventInds(stp, ii));
+0061     <span class="keyword">end</span>
+0062     eventInds(stp, numEvents + 1)  = eventInds(stp + 1, 1);
+0063     eventTimes(stp, numEvents + 1) = <span class="keyword">...</span>
+0064         eventsTime(eventInds(stp, numEvents + 1));
+0065     <span class="keyword">for</span> ii = numEvents + 2 : 2 * numEvents
+0066         eventInds(stp, ii)  = find( <span class="keyword">...</span>
+0067             (eventsTime &gt; eventTimes(stp, ii - 1)) &amp; <span class="keyword">...</span>
+0068             eventData(:, ii - numEvents), 1);
+0069         eventTimes(stp, ii) = eventsTime(eventInds(stp, ii));
+0070     <span class="keyword">end</span>
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">%% Fill Events for Last Step</span>
+0074 stp = numStrides;
+0075 <span class="keyword">for</span> ii = 2:numEvents
+0076     eventInds(stp, ii)  = find( <span class="keyword">...</span>
+0077         (eventsTime &gt; eventTimes(stp, ii - 1)) &amp; <span class="keyword">...</span>
+0078         eventData(:, ii), 1);
+0079     eventTimes(stp, ii) = eventsTime(eventInds(stp, ii));
+0080 <span class="keyword">end</span>
+0081 eventInds(stp, numEvents + 1)  = shsInds(numStrides + 1);
+0082 eventTimes(stp, numEvents + 1) = <span class="keyword">...</span>
+0083     eventsTime(eventInds(stp, numEvents + 1));
+0084 <span class="comment">% NOTE: trailing second-stride events (FTO2, FHS2, STO2) may not</span>
+0085 <span class="comment">% exist for the last step — only M+1 SHS events are guaranteed</span>
+0086 <span class="keyword">for</span> ii = numEvents + 2 : 2 * numEvents
+0087     foundIdx = find( <span class="keyword">...</span>
+0088         (eventsTime &gt; eventTimes(stp, ii - 1)) &amp; <span class="keyword">...</span>
+0089         eventData(:, ii - numEvents), 1);
+0090     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(foundIdx)  <span class="comment">% leave NaN in place if event not found</span>
+0091         eventInds(stp, ii)  = foundIdx;
+0092         eventTimes(stp, ii) = eventsTime(eventInds(stp, ii));
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">%% Build Output Structure</span>
+0097 colLabels = cell(4 * numEvents, 1);
+0098 <span class="keyword">for</span> ii = 1:numEvents
+0099     colLabels(ii)                = {[<span class="string">'inds'</span>  eventList{ii}]};
+0100     colLabels(numEvents + ii)    = {[<span class="string">'inds'</span>  eventList{ii} <span class="string">'2'</span>]};
+0101     colLabels(2 * numEvents + ii) = {[<span class="string">'times'</span> eventList{ii}]};
+0102     colLabels(3 * numEvents + ii) = {[<span class="string">'times'</span> eventList{ii} <span class="string">'2'</span>]};
+0103 <span class="keyword">end</span>
+0104 
+0105 indData.Data   = [eventInds, eventTimes];
+0106 indData.labels = colLabels;
+0107 
+0108 <span class="keyword">end</span>
+0109</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

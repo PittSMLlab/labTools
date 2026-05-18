@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of times</title>
+  <meta name="keywords" content="times">
+  <meta name="description" content="times  Multiplies by constant (override)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; times.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>times
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>times  Multiplies by constant (override)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = times(this, constant) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">times  Multiplies by constant (override)
+
+   newThis = times(this, constant) multiplies and preserves
+   orientedLabTimeSeries type
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       constant - scalar or array to multiply by
+
+   Outputs:
+       newThis - scaled orientedLabTimeSeries
+
+   See also: labTimeSeries/times, <a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/mergeHemiCOPs.html" class="code" title="function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)">mergeHemiCOPs</a>	mergeHemiCOPs  Merges left and right center of pressure data</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plotCheckerboard.html" class="code" title="function [fh, ph] = plotCheckerboard(this, fh, ph)">plotCheckerboard</a>	plotCheckerboard  Displays data as heatmap</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="getVirtualOTS.html" class="code" title="function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)">getVirtualOTS</a>	getVirtualOTS  Computes virtual markers from model</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a>	rotate  Rotates data by matrix</li><li><a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/+Hreflex/extractStimArtifactIndsFromTrigger.html" class="code" title="function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, rawEMG_TAP, pinHreflexStim, options)">extractStimArtifactIndsFromTrigger</a>	EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.</li><li><a href="../../../../labTools/fun/+Hreflex/plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">plotSnippets</a>	PLOTSNIPPETS Plot H-reflex snippets with GRFs if available.</li><li><a href="../../../../labTools/fun/+Hreflex/plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin)">plotStimArtifactPeaks</a>	PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</li><li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	</li><li><a href="../../../../labTools/fun/ext/BTK/matlab/btkEmulateC3Dserver.html" class="code" title="function itf = btkEmulateC3Dserver()">btkEmulateC3Dserver</a>	BTKEMULATEC3DSERVER Creates an emulated COM object for C3Dserver.</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/generateHreflexRecruitmentCurves.html" class="code" title="">generateHreflexRecruitmentCurves</a>	% Generate H-Reflex Calibration Recruitment Curves & Other Figures</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeCOP.html" class="code" title="function COP = computeCOP(grfDataSlow, grfDataFast, slowLeg, fastLeg)">computeCOP</a>	COMPUTECOP Compute bilateral center of pressure in lab coordinates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>	COMPUTEHREFLEXPARAMETERS Compute stride-by-stride H-reflex parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</li><li><a href="../../../../labTools/fun/parameterCalculation/getKinematicData.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicData(eventTimes, markerData, angleData, s)">getKinematicData</a>	GETKINEMATICDATA Extract marker and angle data at gait event times.</li><li><a href="../../../../labTools/fun/parameterCalculation/getKinematicDataAbs.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicDataAbs(eventTimes, markerData, angleData, s)">getKinematicDataAbs</a>	GETKINEMATICDATAABS Extract marker data in absolute lab-frame coordinates.</li><li><a href="../../../../labTools/fun/plotting/colors/figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li><li><a href="../../../../labTools/fun/plotting/figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li><li><a href="../../../../labTools/gui/eventReview/ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = times(this, constant)</a>
+0002 <span class="comment">%times  Multiplies by constant (override)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = times(this, constant) multiplies and preserves</span>
+0005 <span class="comment">%   orientedLabTimeSeries type</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%       constant - scalar or array to multiply by</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - scaled orientedLabTimeSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: labTimeSeries/times, plus</span>
+0015 
+0016 newThis = <a href="times.html" class="code" title="function newThis = times(this, constant)">times</a>@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this, constant);
+0017 newThis = newThis.castAsOTS(this.orientation);
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

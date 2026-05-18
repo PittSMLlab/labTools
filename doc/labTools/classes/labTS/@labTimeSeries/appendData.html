@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of appendData</title>
+  <meta name="keywords" content="appendData">
+  <meta name="description" content="appendData  Adds more data as new labels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; appendData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>appendData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>appendData  Adds more data as new labels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = appendData(this, newData, newLabels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">appendData  Adds more data as new labels
+
+   newThis = appendData(this, newData, newLabels) concatenates new
+   data columns to the timeseries
+
+   Inputs:
+       this - labTimeSeries object
+       newData - matrix of new data (same number of rows as existing)
+       newLabels - cell array of labels for new data
+
+   Outputs:
+       newThis - labTimeSeries with appended data
+
+   Note: For backward compatibility
+
+   See also: cat, <a href="concatenate.html" class="code" title="function newThis = concatenate(this, other)">concatenate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="addNewParameter.html" class="code" title="function [newThis, newData] = addNewParameter(this, newParamLabel, funHandle, inputParameterLabels)">addNewParameter</a>	addNewParameter  Adds computed parameter from existing data</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/addNewParameter.html" class="code" title="function newThis = addNewParameter(this, newParamLabel, funHandle,inputParameterLabels, newParamDescription)">addNewParameter</a>	addNewParameter  Computes and adds new parameter from existing parameters</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/linearStretch.html" class="code" title="function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)">linearStretch</a>	linearStretch  Linearly transforms parameter values</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/appendBodyCOM.html" class="code" title="function markerDataOut = appendBodyCOM(markerData, BW)">appendBodyCOM</a>	APPENDBODYCOM Approximate whole-body center of mass from marker data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = appendData(this, newData, newLabels)</a>
+0002 <span class="comment">%appendData  Adds more data as new labels</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = appendData(this, newData, newLabels) concatenates new</span>
+0005 <span class="comment">%   data columns to the timeseries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - labTimeSeries object</span>
+0009 <span class="comment">%       newData - matrix of new data (same number of rows as existing)</span>
+0010 <span class="comment">%       newLabels - cell array of labels for new data</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       newThis - labTimeSeries with appended data</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: For backward compatibility</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: cat, concatenate</span>
+0018 
+0019 <span class="comment">% For back compatibility</span>
+0020 other = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, newLabels, this.Time(1), this.sampPeriod);
+0021 newThis = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(this, other);
+0022 <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

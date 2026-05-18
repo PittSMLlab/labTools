@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; flipEMGdata.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>flipEMGdata
 </h1>
@@ -24,7 +24,7 @@
 <div class="box"><strong>This function swaps the first and second half of EMGdata along phaseDim,</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [flippedEMGData] =flipEMGdata(EMGdata, phaseDim,muscleDim) </strong></div>
+<div class="box"><strong>function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">This function swaps the first and second half of EMGdata along phaseDim, 
@@ -34,7 +34,7 @@ but only for the SECOND half of the array EMGdata along dimension muscleDim</pre
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	fftshift  Shifts alignment by half cycle</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../labTools/fun/ext/pitools/usefulCode/sliceArray.html" class="code" title="function [slices] = sliceArray(data,inds,dim)">sliceArray</a>	sliceArray returns a subset of 'slices' of an array (indexed by inds)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -43,15 +43,15 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [flippedEMGData] =flipEMGdata(EMGdata, phaseDim,muscleDim)</a>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)</a>
 0002 <span class="comment">%This function swaps the first and second half of EMGdata along phaseDim,</span>
 0003 <span class="comment">%but only for the SECOND half of the array EMGdata along dimension muscleDim</span>
 0004 N=size(EMGdata,muscleDim);
-0005 EMGdata1=sliceArray(EMGdata,1:N/2,muscleDim);
-0006 EMGdata2=sliceArray(EMGdata,(N/2+1):N,muscleDim);
-0007 flippedEMGData=cat(muscleDim, EMGdata1, fftshift(EMGdata2,phaseDim));
+0005 EMGdata1=<a href="../../../labTools/fun/ext/pitools/usefulCode/sliceArray.html" class="code" title="function [slices] = sliceArray(data,inds,dim)">sliceArray</a>(EMGdata,1:N/2,muscleDim);
+0006 EMGdata2=<a href="../../../labTools/fun/ext/pitools/usefulCode/sliceArray.html" class="code" title="function [slices] = sliceArray(data,inds,dim)">sliceArray</a>(EMGdata,(N/2+1):N,muscleDim);
+0007 flippedEMGData=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>(muscleDim, EMGdata1, <a href="../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>(EMGdata2,phaseDim));
 0008 <span class="keyword">end</span>
 0009</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

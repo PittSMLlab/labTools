@@ -15,7 +15,7 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">BTK</a> &gt; <a href="index.html">matlab</a> &gt; btkCropAcquisition.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/BTK/matlab&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\BTK\matlab&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>btkCropAcquisition
 </h1>
@@ -43,7 +43,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="btkGetLastFrame.html" class="code" title="function lf = btkGetLastFrame(h) %#ok">btkGetLastFrame</a>	BTKGETLASTFRAME Returns acquisition's last frame index.</li></ul>
+<li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogSampleNumberPerFrame.html" class="code" title="function ratio = btkGetAnalogSampleNumberPerFrame(h) %#ok">btkGetAnalogSampleNumberPerFrame</a>	BTKGETANALOGSAMPLENUMBERPERFRAME Return the number of analog samples per video frame.</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogsValues.html" class="code" title="function av = btkGetAnalogsValues(h) %#ok">btkGetAnalogsValues</a>	BTKGETANALOGSVALUES Extract analog channels' values and store them in a matrix</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetFirstFrame.html" class="code" title="function ff = btkGetFirstFrame(h) %#ok">btkGetFirstFrame</a>	BTKGETFIRSTFRAME Returns acquisition's first frame index.</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetPointsResiduals.html" class="code" title="function r = btkGetPointsResiduals(h) %#ok">btkGetPointsResiduals</a>	BTKGETPOINTSRESIDUALS Extract points' residuals and store them in a matrix</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetPointsValues.html" class="code" title="function v = btkGetPointsValues(h) %#ok">btkGetPointsValues</a>	BTKGETPOINTSVALUES Extract points' components and store them in a matrix</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetAnalogsValues.html" class="code" title="function btkSetAnalogsValues(h, v) %#ok">btkSetAnalogsValues</a>	BTKSETANALOGSVALUES Sets analog channels' values from a matrix</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetFirstFrame.html" class="code" title="function btkSetFirstFrame(h, ff, adaptEvents) %#ok">btkSetFirstFrame</a>	BTKSETFIRSTFRAME Set acquisition's first frame index (and optionally adapt events' frame/time).</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetFrameNumber.html" class="code" title="function btkSetFrameNumber(h, num) %#ok">btkSetFrameNumber</a>	BTKSETFRAMENUMBER Set points and analogs frames number.</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetPointsResiduals.html" class="code" title="function btkSetPointsResiduals(h. r) %#ok">btkSetPointsResiduals</a>	BTKSETPOINTSRESIDUALS Sets points' residuals from a matrix</li><li><a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetPointsValues.html" class="code" title="function btkSetPointsValues(h. v) %#ok">btkSetPointsValues</a>	BTKSETPOINTSVALUES Sets points' components from a matrix</li><li><a href="btkGetLastFrame.html" class="code" title="function lf = btkGetLastFrame(h) %#ok">btkGetLastFrame</a>	BTKGETLASTFRAME Returns acquisition's last frame index.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 </ul>
@@ -68,7 +68,7 @@ This function is called by:
 0014 <span class="comment">%  Author: A. Barré</span>
 0015 <span class="comment">%  Copyright 2009-2013 Biomechanical ToolKit (BTK).</span>
 0016 
-0017 ff = btkGetFirstFrame(h);
+0017 ff = <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetFirstFrame.html" class="code" title="function ff = btkGetFirstFrame(h) %#ok">btkGetFirstFrame</a>(h);
 0018 lf = <a href="btkGetLastFrame.html" class="code" title="function lf = btkGetLastFrame(h) %#ok">btkGetLastFrame</a>(h);
 0019 <span class="keyword">if</span> (nargin == 2)
 0020     numFrames = lf - ff + 1 - startAt + 1;
@@ -83,23 +83,23 @@ This function is called by:
 0029 <span class="comment">% Data to keep</span>
 0030 <span class="comment">% - Point</span>
 0031 pidx = (startAt:startAt+numFrames-1)-ff+1;
-0032 pv = btkGetPointsValues(h);
+0032 pv = <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetPointsValues.html" class="code" title="function v = btkGetPointsValues(h) %#ok">btkGetPointsValues</a>(h);
 0033 pv = pv(pidx,:);
-0034 rv = btkGetPointsResiduals(h);
+0034 rv = <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetPointsResiduals.html" class="code" title="function r = btkGetPointsResiduals(h) %#ok">btkGetPointsResiduals</a>(h);
 0035 rv = rv(pidx,:);
 0036 <span class="comment">% - Analog</span>
-0037 snpf = btkGetAnalogSampleNumberPerFrame(h);
+0037 snpf = <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogSampleNumberPerFrame.html" class="code" title="function ratio = btkGetAnalogSampleNumberPerFrame(h) %#ok">btkGetAnalogSampleNumberPerFrame</a>(h);
 0038 aidx = (((startAt-ff)*snpf):(startAt-ff+numFrames)*snpf-1)+1;
-0039 av = btkGetAnalogsValues(h);
+0039 av = <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogsValues.html" class="code" title="function av = btkGetAnalogsValues(h) %#ok">btkGetAnalogsValues</a>(h);
 0040 av = av(aidx,:);
 0041 <span class="comment">% Resizing</span>
-0042 btkSetFrameNumber(h, numFrames);
+0042 <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetFrameNumber.html" class="code" title="function btkSetFrameNumber(h, num) %#ok">btkSetFrameNumber</a>(h, numFrames);
 0043 <span class="comment">% Storing modifications</span>
-0044 btkSetPointsValues(h, pv);
-0045 btkSetPointsResiduals(h, rv);
-0046 btkSetAnalogsValues(h, av);
+0044 <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetPointsValues.html" class="code" title="function btkSetPointsValues(h. v) %#ok">btkSetPointsValues</a>(h, pv);
+0045 <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetPointsResiduals.html" class="code" title="function btkSetPointsResiduals(h. r) %#ok">btkSetPointsResiduals</a>(h, rv);
+0046 <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetAnalogsValues.html" class="code" title="function btkSetAnalogsValues(h, v) %#ok">btkSetAnalogsValues</a>(h, av);
 0047 <span class="comment">% Set the first frame.</span>
-0048 btkSetFirstFrame(h, startAt, 1); <span class="comment">% 1: Modify also the events' frame/time</span></pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0048 <a href="../../../../../labTools/fun/ext/BTK/matlab/@Common/btkSetFirstFrame.html" class="code" title="function btkSetFirstFrame(h, ff, adaptEvents) %#ok">btkSetFirstFrame</a>(h, startAt, 1); <span class="comment">% 1: Modify also the events' frame/time</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fftshift</title>
+  <meta name="keywords" content="fftshift">
+  <meta name="description" content="fftshift  Shifts alignment by half cycle">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; fftshift.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>fftshift
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>fftshift  Shifts alignment by half cycle</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = fftshift(this, labels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">fftshift  Shifts alignment by half cycle
+
+   newThis = fftshift(this) shifts first and second halves of
+   alignment cycle for all labels
+
+   newThis = fftshift(this, labels) shifts only specified labels
+
+   Inputs:
+       this - alignedTimeSeries object
+       labels - cell array of labels to shift (optional, default: all)
+
+   Outputs:
+       newThis - shifted alignedTimeSeries
+
+   Example:
+       If first half starts at FHS and second half starts at SHS, the
+       shifted version will start at SHS and FHS will be the midpoint
+       of the cycle
+
+   See also: <a href="flipLR.html" class="code" title="function [this, iC, iI] = flipLR(this)">flipLR</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="flipLR.html" class="code" title="function [this, iC, iI] = flipLR(this)">flipLR</a>	flipLR  Flips left/right alignment</li><li><a href="../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	This function swaps the first and second half of EMGdata along phaseDim,</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>	DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>	FINDTIMELAG Estimate the sample lag between two signals via correlation.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = fftshift(this, labels)</a>
+0002 <span class="comment">%fftshift  Shifts alignment by half cycle</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = fftshift(this) shifts first and second halves of</span>
+0005 <span class="comment">%   alignment cycle for all labels</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   newThis = fftshift(this, labels) shifts only specified labels</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Inputs:</span>
+0010 <span class="comment">%       this - alignedTimeSeries object</span>
+0011 <span class="comment">%       labels - cell array of labels to shift (optional, default: all)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Outputs:</span>
+0014 <span class="comment">%       newThis - shifted alignedTimeSeries</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Example:</span>
+0017 <span class="comment">%       If first half starts at FHS and second half starts at SHS, the</span>
+0018 <span class="comment">%       shifted version will start at SHS and FHS will be the midpoint</span>
+0019 <span class="comment">%       of the cycle</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also: flipLR</span>
+0022 
+0023 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
+0024     [~, idxs] = this.isaLabel(labels);
+0025 <span class="keyword">else</span>
+0026     idxs = 1:length(this.labels);
+0027 <span class="keyword">end</span>
+0028 newThis = this;
+0029 M = round(length(this.alignmentVector) / 2);
+0030 N = sum(this.alignmentVector(1:M));
+0031 newThis.Data(:, idxs, :) = <span class="keyword">...</span>
+0032     this.Data([N + 1:size(this.Data, 1), 1:N], idxs, :);
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

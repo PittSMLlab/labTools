@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of stridedTSToAlignedTS</title>
+  <meta name="keywords" content="stridedTSToAlignedTS">
+  <meta name="description" content="stridedTSToAlignedTS  Converts strided TS to aligned TS">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; stridedTSToAlignedTS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>stridedTSToAlignedTS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>stridedTSToAlignedTS  Converts strided TS to aligned TS</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [alignedTS, originalDurations] =stridedTSToAlignedTS(stridedTS, N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">stridedTSToAlignedTS  Converts strided TS to aligned TS
+
+   [alignedTS, originalDurations] = stridedTSToAlignedTS(stridedTS,
+   N) converts cell array of strided timeseries to aligned timeseries
+
+   Inputs:
+       stridedTS - cell array (strides x phases) of labTimeSeries
+       N - vector of sample counts for each phase
+
+   Outputs:
+       alignedTS - alignedTimeSeries object
+       originalDurations - matrix of original phase durations
+
+   Note: Deprecated. Use labTS.align()
+
+   See also: <a href="align.html" class="code" title="function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)">align</a>, <a href="splitByEvents.html" class="code" title="function [steppedDataArray, bad, initTime, eventTimes] =splitByEvents(this, eventTS, eventLabel, timeMargin)">splitByEvents</a>, alignedTimeSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples over same time range</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>	resampleN  Resamples to N samples (override)</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/resampleN.html" class="code" title="function newThis = resampleN(this, newN)">resampleN</a>	resampleN  Resamples to N samples, preserving processing info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [alignedTS, originalDurations] = </a><span class="keyword">...</span>
+0002     stridedTSToAlignedTS(stridedTS, N)
+0003 <span class="comment">%stridedTSToAlignedTS  Converts strided TS to aligned TS</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [alignedTS, originalDurations] = stridedTSToAlignedTS(stridedTS,</span>
+0006 <span class="comment">%   N) converts cell array of strided timeseries to aligned timeseries</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   Inputs:</span>
+0009 <span class="comment">%       stridedTS - cell array (strides x phases) of labTimeSeries</span>
+0010 <span class="comment">%       N - vector of sample counts for each phase</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Outputs:</span>
+0013 <span class="comment">%       alignedTS - alignedTimeSeries object</span>
+0014 <span class="comment">%       originalDurations - matrix of original phase durations</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   Note: Deprecated. Use labTS.align()</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   See also: align, splitByEvents, alignedTimeSeries</span>
+0019 
+0020 error(<span class="string">'labTS:stridedTSToAlignedTS'</span>, <span class="string">'Deprecated. Use labTS.align();'</span>);
+0021 <span class="comment">% To be used after splitByEvents</span>
+0022 <span class="keyword">if</span> numel(stridedTS) ~= 0
+0023     <span class="keyword">if</span> ~islogical(stridedTS{1}.Data)
+0024         aux = zeros(sum(N), size(stridedTS{1}.Data, 2),size(stridedTS, 1));
+0025     <span class="keyword">else</span>
+0026         aux = false(sum(N), size(stridedTS{1}.Data, 2),size(stridedTS, 1));
+0027     <span class="keyword">end</span>
+0028     Nstrides = size(stridedTS, 1);
+0029     Nphases = size(stridedTS, 2);
+0030     originalDurations = nan(Nstrides, Nphases);
+0031     <span class="keyword">for</span> i = 1:Nstrides <span class="comment">% Going over strides</span>
+0032         M = [0, cumsum(N)];
+0033         <span class="keyword">for</span> j = 1:Nphases <span class="comment">% Going over aligned phases</span>
+0034             <span class="keyword">if</span> isa(stridedTS{i, j}, <span class="string">'labTimeSeries'</span>)
+0035                 originalDurations(i, j) = stridedTS{i, j}.timeRange;
+0036                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stridedTS{i, j}.Data) &amp;&amp; <span class="keyword">...</span>
+0037                         sum(~isnan(stridedTS{i, j}.Data(:, 1))) &gt; 1
+0038                     aa = <a href="resampleN.html" class="code" title="function newThis = resampleN(this, newN, method)">resampleN</a>(stridedTS{i, j}, N(j));
+0039                     aux(M(j) + 1:M(j + 1), :, i) = aa.Data;
+0040                 <span class="keyword">else</span>
+0041                     <span class="comment">% Separating by strides returned empty labTimeSeries,</span>
+0042                     <span class="comment">% possibly because of events in disorder</span>
+0043                     <span class="keyword">if</span> islogical(stridedTS{i, j}.Data)
+0044                         aux(M(j) + 1:M(j + 1), :, i) = false;
+0045                     <span class="keyword">else</span>
+0046                         aux(M(j) + 1:M(j + 1), :, i) = NaN;
+0047                     <span class="keyword">end</span>
+0048                 <span class="keyword">end</span>
+0049             <span class="keyword">else</span>
+0050                 error(<span class="string">'labTimeSeries:stridedTSToAlignedTS'</span>, <span class="keyword">...</span>
+0051                     [<span class="string">'First argument is not a cell array of '</span> <span class="keyword">...</span>
+0052                     <span class="string">'labTimeSeries. Element i = '</span> num2str(i) <span class="string">', j = '</span> <span class="keyword">...</span>
+0053                     num2str(j)]);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057     <span class="comment">% Need to populate this field properly</span>
+0058     alignmentLabels = cell(size(N));
+0059     <span class="comment">% On May 2nd 2017, Pablo changed to have sampling time = 1 [time</span>
+0060     <span class="comment">% vector now counts samples]</span>
+0061     alignedTS = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(0, 1, aux, stridedTS{1}.labels, N, <span class="keyword">...</span>
+0062         alignmentLabels);
+0063 <span class="keyword">else</span>
+0064     alignmentLabels = cell(size(N));
+0065     alignedTS = <span class="keyword">...</span>
+0066         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(0, 1, zeros(0, 0), [], N, alignmentLabels);
+0067     originalDurations = [];
+0068 <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

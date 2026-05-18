@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fixBadLabels</title>
+  <meta name="keywords" content="fixBadLabels">
+  <meta name="description" content="fixBadLabels  Detects and fixes label swaps">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@orientedLabTimeSeries</a> &gt; fixBadLabels.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@orientedLabTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>fixBadLabels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>fixBadLabels  Detects and fixes label swaps</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [this, m, permuteList, modelScore, badFlag, modelScore2] =fixBadLabels(this, permuteList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">fixBadLabels  Detects and fixes label swaps
+
+   [this, m, permuteList, modelScore, badFlag, modelScore2] =
+   fixBadLabels(this) attempts to detect and fix swapped marker labels
+
+   [this, m, permuteList, modelScore, badFlag, modelScore2] =
+   fixBadLabels(this, permuteList) applies known permutations first
+
+   Inputs:
+       this - orientedLabTimeSeries object
+       permuteList - known label permutations to try (optional)
+
+   Outputs:
+       this - orientedLabTimeSeries with fixed labels
+       m - validated marker model
+       permuteList - permutations applied
+       modelScore - model quality score (max robust std)
+       badFlag - true if model validation failed
+       modelScore2 - alternate model score (mean robust std)
+
+   See also: <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>, validateMarkerModel</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>	buildNaiveDistancesModel  Builds statistical marker model</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [this, m, permuteList, modelScore, badFlag, modelScore2] = </a><span class="keyword">...</span>
+0002     fixBadLabels(this, permuteList)
+0003 <span class="comment">%fixBadLabels  Detects and fixes label swaps</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [this, m, permuteList, modelScore, badFlag, modelScore2] =</span>
+0006 <span class="comment">%   fixBadLabels(this) attempts to detect and fix swapped marker labels</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   [this, m, permuteList, modelScore, badFlag, modelScore2] =</span>
+0009 <span class="comment">%   fixBadLabels(this, permuteList) applies known permutations first</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Inputs:</span>
+0012 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0013 <span class="comment">%       permuteList - known label permutations to try (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Outputs:</span>
+0016 <span class="comment">%       this - orientedLabTimeSeries with fixed labels</span>
+0017 <span class="comment">%       m - validated marker model</span>
+0018 <span class="comment">%       permuteList - permutations applied</span>
+0019 <span class="comment">%       modelScore - model quality score (max robust std)</span>
+0020 <span class="comment">%       badFlag - true if model validation failed</span>
+0021 <span class="comment">%       modelScore2 - alternate model score (mean robust std)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also: buildNaiveDistancesModel, validateMarkerModel</span>
+0024 
+0025 <span class="comment">% error('Unimplemented');</span>
+0026 <span class="keyword">if</span> nargin &lt; 2
+0027     permuteList = [];
+0028 <span class="keyword">end</span>
+0029 aux = this;
+0030 duration = aux.timeRange;
+0031 <span class="comment">% At least 10 secs of data with true movement for training</span>
+0032 <span class="keyword">if</span> duration &gt; 10
+0033     m = <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>(aux);
+0034     [badFlag, MO, OBO] = validateMarkerModel(m, false);
+0035     bF = badFlag;
+0036     nB = sum(MO | OBO);
+0037     <span class="comment">% If bad flag, will try to fix by permuting labels</span>
+0038     <span class="keyword">if</span> bF
+0039         <span class="comment">% Trying the same fix as the last model</span>
+0040         <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(permuteList) &amp;&amp; max(permuteList) &lt;= length(MO)
+0041             m2 = m.applyPermutation(permuteList);
+0042             [bF, MO, OBO] = m2.validateMarkerModel(false);
+0043         <span class="keyword">end</span>
+0044         <span class="keyword">if</span> bF <span class="comment">% Still not fully fixed</span>
+0045             <span class="keyword">if</span> sum(MO | OBO) &lt; nB <span class="comment">% some improvement so far</span>
+0046                 m = m2;
+0047             <span class="keyword">else</span>
+0048                 permuteList = nan(0, 2); <span class="comment">% Resetting</span>
+0049             <span class="keyword">end</span>
+0050             <span class="comment">% Searching over permutation space</span>
+0051             [permuteList2, m2] = m.permuteModelLabels;
+0052             <span class="keyword">if</span> size(permuteList2, 1) &gt; 0
+0053                 [bF, MO, OBO] = m2.validateMarkerModel(false);
+0054                 permuteList = [permuteList; permuteList2];
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         <span class="keyword">if</span> sum(MO | OBO) &lt; nB
+0058             fprintf(<span class="string">'Found switched labels:\n'</span>);
+0059             auxList = {<span class="string">'NameA'</span>, <span class="string">'NameB'</span>};
+0060             <span class="keyword">for</span> i = 1:size(permuteList, 1)
+0061                 preList = m.markerLabels(permuteList(i, :));
+0062                 fprintf([preList{1} <span class="string">' - '</span> preList{2} <span class="string">'\n'</span>]);
+0063                 warning(<span class="string">'off'</span>);
+0064                 aux = aux.renameLabels(preList, auxList);
+0065                 aux = aux.renameLabels(auxList, preList([2, 1]));
+0066                 warning(<span class="string">'on'</span>);
+0067             <span class="keyword">end</span>
+0068             <span class="comment">% Validate fix:</span>
+0069             m = <a href="buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>(aux);
+0070             [badFlag, MO, OBO] = validateMarkerModel(m, false);
+0071             <span class="keyword">if</span> sum(MO | OBO) &gt;= nB
+0072                 error(<span class="string">'orientedLabTS:fixBadLabels'</span>, <span class="keyword">...</span>
+0073                     <span class="string">'Something went wrong: tried fixing but failed'</span>);
+0074             <span class="keyword">else</span>
+0075                 <span class="comment">% Saving RELABELED data into experimentData structure</span>
+0076                 this = aux;
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">end</span>
+0079     <span class="keyword">end</span>
+0080 
+0081     sigma = m.getRobustStd(0.94);
+0082     <span class="keyword">if</span> <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(sigma) &lt; 20 <span class="comment">% Static trial most likely</span>
+0083         badFlag = true;
+0084     <span class="keyword">end</span>
+0085     sigma = naiveDistances.stat2Matrix(sigma);
+0086     sigma = triu(sigma) - triu(sigma, 3);
+0087     sigma(sigma == 0) = NaN;
+0088     modelScore = nanmax(sigma(:));
+0089     modelScore2 = nanmean(sigma(:));
+0090 <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

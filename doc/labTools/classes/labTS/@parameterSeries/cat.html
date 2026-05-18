@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cat</title>
+  <meta name="keywords" content="cat">
+  <meta name="description" content="cat  Concatenates two parameterSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@parameterSeries</a> &gt; cat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@parameterSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>cat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>cat  Concatenates two parameterSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = cat(this, other) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">cat  Concatenates two parameterSeries
+
+   newThis = cat(this, other) concatenates parameters from two
+   parameterSeries with same number of strides
+
+   Inputs:
+       this - parameterSeries object
+       other - parameterSeries object with same stride count
+
+   Outputs:
+       newThis - concatenated parameterSeries
+
+   See also: <a href="addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>, <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/makeDataObjNew.html" class="code" title="function adaptData = makeDataObjNew(this, filename, experimentalFlag,contraLateralFlag)">makeDataObjNew</a>	makeDataObjNew  Internal method to create adaptationData object</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	derivative  Numerical differentiation</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/alignRotate.html" class="code" title="function newThis = alignRotate(this, newX, newZ)">alignRotate</a>	alignRotate  Aligns to new coordinate system</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/buildNaiveDistancesModel.html" class="code" title="function model = buildNaiveDistancesModel(this)">buildNaiveDistancesModel</a>	buildNaiveDistancesModel  Builds statistical marker model</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a>	findOutliers  Detects outliers using model</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	This function swaps the first and second half of EMGdata along phaseDim,</li><li><a href="../../../../labTools/fun/misc/allcomb/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>	ALLCOMB - All combinations</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeAngleParameters.html" class="code" title="function out = computeAngleParameters(angleData, gaitEvents, slowLeg,eventTypes)">computeAngleParameters</a>	COMPUTEANGLEPARAMETERS Compute joint angle parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeEMGParameters.html" class="code" title="function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)">computeEMGParameters</a>	COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeHSParameters.html" class="code" title="function out = computeHSParameters(tsData, gaitEvents, eventTypes)">computeHSParameters</a>	COMPUTEHSPARAMETERS Compute heel-strike-aligned parameters per stride.</li><li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = cat(this, other)</a>
+0002 <span class="comment">%cat  Concatenates two parameterSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = cat(this, other) concatenates parameters from two</span>
+0005 <span class="comment">%   parameterSeries with same number of strides</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - parameterSeries object</span>
+0009 <span class="comment">%       other - parameterSeries object with same stride count</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       newThis - concatenated parameterSeries</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also: addStrides, appendData</span>
+0015 
+0016 <span class="keyword">if</span> size(this.Data, 1) == size(other.Data, 1)
+0017     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.description)
+0018         thisDescription = cell(size(this.labels));
+0019     <span class="keyword">else</span>
+0020         thisDescription = this.description(:);
+0021     <span class="keyword">end</span>
+0022     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(other.description)
+0023         otherDescription = cell(size(other.labels));
+0024     <span class="keyword">else</span>
+0025         otherDescription = other.description(:);
+0026     <span class="keyword">end</span>
+0027     newThis = <a href="parameterSeries.html" class="code" title="">parameterSeries</a>([this.Data other.Data], <span class="keyword">...</span>
+0028         [this.labels(:); other.labels(:)], this.hiddenTime, <span class="keyword">...</span>
+0029         [thisDescription; otherDescription], this.trialTypes);
+0030     <span class="comment">% this.Data = [this.Data other.Data];</span>
+0031     <span class="comment">% this.labels = [this.labels; other.labels];</span>
+0032     <span class="comment">% this.description = [this.description; other.description];</span>
+0033 <span class="keyword">else</span>
+0034     error(<span class="string">'parameterSeries:cat'</span>, <span class="keyword">...</span>
+0035         <span class="string">'Cannot concatenate series with different number of strides'</span>);
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computePercParameters</title>
+  <meta name="keywords" content="computePercParameters">
+  <meta name="description" content="COMPUTEPERCPARAMETERS Compute perceptual task parameters per stride.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computePercParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computePercParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>COMPUTEPERCPARAMETERS Compute perceptual task parameters per stride.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function out = computePercParameters(trialData, initTime, endTime,slaParam) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">COMPUTEPERCPARAMETERS Compute perceptual task parameters per stride.
+
+   Computes stride-by-stride parameters related to the perceptual
+ split-belt treadmill task and returns a parameterSeries object that
+ can be concatenated with other parameter series objects (e.g., from
+ computeTemporalParameters). Only adds parameters using gait event
+ information; all parameters will be NaN or zero if the relevant
+ events do not exist.
+
+ Inputs:
+   trialData - processedTrialData object for the trial; must contain
+               gaitEvents with 'percStartCue', 'percEndCue', and
+               'percEndRamp' labels, and metaData with a datlog
+   initTime  - N-by-1 vector of stride start times (in seconds)
+   endTime   - N-by-1 vector of stride end times (in seconds)
+   slaParam  - N-by-1 vector of step length asymmetry values
+
+ Outputs:
+   out - parameterSeries object containing all perceptual task
+         parameters
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="computeTemporalParameters.html" class="code" title="function out = computeTemporalParameters(strideEvents)">COMPUTETEMPORALPARAMETERS</a>, <a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">COMPUTESPATIALPARAMETERS</a>,
+   <a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">COMPUTEFORCEPARAMETERS</a>, PARAMETERSERIES, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.
+
+ Author: MGR
+ Date: 06/12/24</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = computePercParameters(trialData, initTime, endTime, </a><span class="keyword">...</span>
+0002     slaParam)
+0003 <span class="comment">%COMPUTEPERCPARAMETERS Compute perceptual task parameters per stride.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes stride-by-stride parameters related to the perceptual</span>
+0006 <span class="comment">% split-belt treadmill task and returns a parameterSeries object that</span>
+0007 <span class="comment">% can be concatenated with other parameter series objects (e.g., from</span>
+0008 <span class="comment">% computeTemporalParameters). Only adds parameters using gait event</span>
+0009 <span class="comment">% information; all parameters will be NaN or zero if the relevant</span>
+0010 <span class="comment">% events do not exist.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   trialData - processedTrialData object for the trial; must contain</span>
+0014 <span class="comment">%               gaitEvents with 'percStartCue', 'percEndCue', and</span>
+0015 <span class="comment">%               'percEndRamp' labels, and metaData with a datlog</span>
+0016 <span class="comment">%   initTime  - N-by-1 vector of stride start times (in seconds)</span>
+0017 <span class="comment">%   endTime   - N-by-1 vector of stride end times (in seconds)</span>
+0018 <span class="comment">%   slaParam  - N-by-1 vector of step length asymmetry values</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   out - parameterSeries object containing all perceptual task</span>
+0022 <span class="comment">%         parameters</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies:</span>
+0025 <span class="comment">%   None</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also COMPUTETEMPORALPARAMETERS, COMPUTESPATIALPARAMETERS,</span>
+0028 <span class="comment">%   COMPUTEFORCEPARAMETERS, PARAMETERSERIES, CALCPARAMETERS.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Author: MGR</span>
+0031 <span class="comment">% Date: 06/12/24</span>
+0032 
+0033 arguments
+0034     trialData (1,1)
+0035     initTime
+0036     endTime
+0037     slaParam
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">%% Locate Perceptual Task Event Indices</span>
+0041 idxPstart = find(full(trialData.gaitEvents.Data(:, <span class="keyword">...</span>
+0042     strcmpi(trialData.gaitEvents.labels, <span class="string">'percStartCue'</span>))));
+0043 
+0044 <span class="comment">% If Weber trial, the perturbation was most likely ramped down</span>
+0045 <span class="keyword">if</span> contains(lower(trialData.metaData.ID), <span class="string">'weber'</span>)
+0046     idxPend = find(full(trialData.gaitEvents.Data(:, <span class="keyword">...</span>
+0047         strcmpi(trialData.gaitEvents.labels, <span class="string">'percEndRamp'</span>))));
+0048 <span class="keyword">else</span>
+0049     idxPend = find(full(trialData.gaitEvents.Data(:, <span class="keyword">...</span>
+0050         strcmpi(trialData.gaitEvents.labels, <span class="string">'percEndCue'</span>))));
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">if</span> length(idxPstart) ~= length(idxPend)
+0054     minLen    = min(length(idxPstart), length(idxPend));
+0055     idxPstart = idxPstart(1:minLen);
+0056     idxPend   = idxPend(1:minLen);
+0057 <span class="keyword">end</span>
+0058 
+0059 timePercInit = trialData.gaitEvents.Time(idxPstart);
+0060 timePercEnd  = trialData.gaitEvents.Time(idxPend);
+0061 
+0062 <span class="comment">%% Extract Perturbation Sizes</span>
+0063 <span class="comment">% Grab the perturbation sizes tested from the speed profiles in the</span>
+0064 <span class="comment">% datlogs. Negative values indicate the right leg was slower.</span>
+0065 beltSpeedDiff = trialData.metaData.datlog.speedprofile.velR <span class="keyword">...</span>
+0066     - trialData.metaData.datlog.speedprofile.velL;
+0067 nanMask = isnan(beltSpeedDiff);
+0068 nanBoundaryMask = arrayfun( <span class="keyword">...</span>
+0069     @(i) (nanMask(i) == 1 &amp;&amp; nanMask(i-1) == 0 <span class="keyword">...</span>
+0070     &amp;&amp; nanMask(i+1) == 1), 2:length(nanMask)-1);
+0071 speedDiffPercTask = beltSpeedDiff(nanBoundaryMask); <span class="comment">% pert sizes in mm/s</span>
+0072 
+0073 <span class="comment">%% Labels and Descriptions</span>
+0074 aux = { <span class="keyword">...</span>
+0075     <span class="string">'percTaskInitStride'</span>,   <span class="string">'binary parameter where 1 indicates the beginning of a perceptual trial'</span>; <span class="keyword">...</span>
+0076     <span class="string">'percTaskEndStride'</span>,    <span class="string">'binary parameter where 1 indicates the end of a perceptual trial'</span>; <span class="keyword">...</span>
+0077     <span class="string">'percTask'</span>,             <span class="string">'binary parameter where 1 indicates the stride belongs to a perceptual trial'</span>; <span class="keyword">...</span>
+0078     <span class="string">'pertSizePercTask'</span>,     <span class="string">'value of the leg-speed difference experienced during the perceptual trial'</span>; <span class="keyword">...</span>
+0079     <span class="string">'SLAinPercTask'</span>,        <span class="string">'step length asymmetry parameter for the perceptual trials, otherwise nan'</span>; <span class="keyword">...</span>
+0080     <span class="string">'SLAnotPercTask'</span>,       <span class="string">'step length asymmetry parameter except for the perceptual trials (filled with nans)'</span>};
+0081 
+0082 paramLabels = aux(:, 1);
+0083 description = aux(:, 2);
+0084 
+0085 <span class="comment">%% Initialize Output Arrays</span>
+0086 percTaskInitStride = zeros(size(initTime));
+0087 percTaskEndStride  = zeros(size(initTime));
+0088 percTask           = zeros(size(initTime));
+0089 pertSizePercTask   = nan(size(initTime));
+0090 SLAinPercTask      = nan(size(initTime));
+0091 SLAnotPercTask     = nan(size(initTime));
+0092 
+0093 <span class="comment">%% Compute Perceptual Task Parameters</span>
+0094 <span class="comment">% Find the indices of the nearest heel strike to the start/end of each</span>
+0095 <span class="comment">% perceptual task interval.</span>
+0096 <span class="comment">% TODO: add a data check to warn if the stride indices are considerably</span>
+0097 <span class="comment">% different from what was expected</span>
+0098 
+0099 SLAnotPercTask = slaParam;
+0100 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timePercInit) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(timePercEnd)
+0101     indsInitStride = arrayfun( <span class="keyword">...</span>
+0102         @(x) find((x - initTime) &gt; 0, 1, <span class="string">'last'</span>), <span class="keyword">...</span>
+0103         timePercInit); <span class="comment">% initTime is the stride initial times</span>
+0104     indsEndStride  = arrayfun( <span class="keyword">...</span>
+0105         @(x) find((x - endTime) &lt; 0, 1, <span class="string">'first'</span>), <span class="keyword">...</span>
+0106         timePercEnd); <span class="comment">% timePercEnd is the stride final times</span>
+0107 
+0108     percTaskInitStride(indsInitStride) = 1;
+0109     percTaskEndStride(indsEndStride)   = 1;
+0110 
+0111     <span class="keyword">for</span> ii = 1:length(indsInitStride)
+0112         <span class="comment">% Here I am not currently considering the changes in the belt</span>
+0113         <span class="comment">% speed when going back to tied; sometimes it takes a couple of</span>
+0114         <span class="comment">% strides to reach this fully.</span>
+0115         <span class="comment">% Previously used indsEndStride(ii)+3 to account for the</span>
+0116         <span class="comment">% delay before belt speed reaches the tied condition.</span>
+0117         percTask(indsInitStride(ii):indsEndStride(ii)) = 1;
+0118 
+0119         <span class="comment">% No +3 buffer here: use the true perceptual task end for SLA.</span>
+0120         SLAinPercTask(indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
+0121             slaParam(indsInitStride(ii):indsEndStride(ii));
+0122 
+0123         <span class="comment">% Previously used indsEndStride(ii)+3 here as well.</span>
+0124         SLAnotPercTask(indsInitStride(ii):indsEndStride(ii)) = nan;
+0125 
+0126         <span class="keyword">if</span> length(speedDiffPercTask) &gt;= ii
+0127             pertSizePercTask( <span class="keyword">...</span>
+0128                 indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
+0129                 speedDiffPercTask(ii);
+0130         <span class="keyword">end</span>
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">end</span>
+0133 
+0134 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0135 data = nan(length(initTime), length(paramLabels));
+0136 <span class="keyword">for</span> ii = 1:length(paramLabels)
+0137     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="comment">%% Output Computed Parameters</span>
+0141 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0142 
+0143 <span class="keyword">end</span>
+0144</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of resampleShiftAndScale</title>
   <meta name="keywords" content="resampleShiftAndScale">
-  <meta name="description" content="Function that does the same thing as matchSignals, but when the">
+  <meta name="description" content="RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,20 +15,42 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; resampleShiftAndScale.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>resampleShiftAndScale
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Function that does the same thing as matchSignals, but when the</strong></div>
+<div class="box"><strong>RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function newSignals = resampleShiftAndScale(signals,timeScaleFactor,lagInSamples,scaleGain) </strong></div>
+<div class="box"><strong>function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Function that does the same thing as matchSignals, but when the
-parameters are given/known</pre></div>
+<div class="fragment"><pre class="comment">RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.
+
+   Transforms signals by resampling at timeScaleFactor, shifting by
+ lagInSamples samples, and dividing by scaleGain. Resampling uses
+ linear interpolation and is skipped when the scale factor would
+ produce less than half a sample of drift over the full signal length.
+ The integer portion of lagInSamples is applied by padding or
+ truncating; sub-sample correction is reserved for future use.
+
+ Inputs:
+   signals         - (M x N) double array of N time series, each M
+                     samples long
+   timeScaleFactor - resampling factor; values &gt; 1 interpolate (upscale),
+                     values &lt; 1 decimate (downscale)
+   lagInSamples    - time shift in samples; positive pads leading zeros,
+                     negative trims leading samples
+   scaleGain       - divisive gain applied after time shifting
+
+ Outputs:
+   newSignals - transformed signal array
+
+ Toolbox Dependencies: None
+
+ See also <a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">MATCHSIGNALS</a>, <a href="truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">TRUNCATETOSAMELENGTH</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -37,53 +59,85 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<li><a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Find and apply the transformation that best aligns signal2</li><li><a href="../../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li><li><a href="../../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newSignals = resampleShiftAndScale(signals,timeScaleFactor,lagInSamples,scaleGain)</a>
-0002 <span class="comment">%Function that does the same thing as matchSignals, but when the</span>
-0003 <span class="comment">%parameters are given/known</span>
-0004 
-0005 
-0006 [M,N]=size(signals);
-0007 
-0008 <span class="comment">%% Resample: (not using 'resample' function because i'm interested in very</span>
-0009 <span class="comment">%small resampling rates, on the order of 1+-1e-6</span>
-0010 <span class="keyword">if</span> abs(timeScaleFactor-1)&gt;.5/M <span class="comment">%Only resampling if there is at least a half a sample shift during the full timecourse</span>
-0011     <span class="keyword">for</span> i=1:N
-0012         newSignals(:,i)=interp1(1:M,signals(:,i),timeScaleFactor*[1:floor(M/timeScaleFactor)],<span class="string">'linear'</span>)';
-0013         newSignals(1,i)=signals(1,i); <span class="comment">%For same reason interp1 returns NaN when evaluating at same position</span>
-0014     <span class="keyword">end</span>
-0015 <span class="keyword">else</span>
-0016     newSignals=signals;
-0017 <span class="keyword">end</span>
-0018 
-0019 <span class="comment">%% Time-shift</span>
-0020 aux=round(lagInSamples); 
-0021 d=lagInSamples-aux;
-0022 <span class="comment">%First shift an integer number of samples:</span>
-0023 <span class="keyword">if</span> lagInSamples&lt;0
-0024     newSignals=newSignals(abs(aux)+1:<span class="keyword">end</span>,:); <span class="comment">%Throw first samples</span>
-0025 <span class="keyword">else</span>
-0026     newSignals=[zeros(abs(aux),N); newSignals]; <span class="comment">%Pad zeros to add samples</span>
-0027 <span class="keyword">end</span>
-0028 
-0029 <span class="comment">%Then, correct for sub-sample interpolation.</span>
-0030 <span class="comment">% k=1000;</span>
-0031 <span class="comment">% F=fft([newSignals;zeros(k,size(newSignals,2))]);</span>
-0032 <span class="comment">% Fd=exp(1i*2*pi*[0:size(F,1)-1]/size(F,1)).^d;</span>
-0033 <span class="comment">% newSignals=ifft(bsxfun(@times,F,Fd'),'symmetric');</span>
-0034 <span class="comment">% newSignals=newSignals(1:end-k,:);</span>
-0035 
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newSignals = resampleShiftAndScale( </a><span class="keyword">...</span>
+0002         signals, timeScaleFactor, lagInSamples, scaleGain)
+0003 <span class="comment">%RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Transforms signals by resampling at timeScaleFactor, shifting by</span>
+0006 <span class="comment">% lagInSamples samples, and dividing by scaleGain. Resampling uses</span>
+0007 <span class="comment">% linear interpolation and is skipped when the scale factor would</span>
+0008 <span class="comment">% produce less than half a sample of drift over the full signal length.</span>
+0009 <span class="comment">% The integer portion of lagInSamples is applied by padding or</span>
+0010 <span class="comment">% truncating; sub-sample correction is reserved for future use.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   signals         - (M x N) double array of N time series, each M</span>
+0014 <span class="comment">%                     samples long</span>
+0015 <span class="comment">%   timeScaleFactor - resampling factor; values &gt; 1 interpolate (upscale),</span>
+0016 <span class="comment">%                     values &lt; 1 decimate (downscale)</span>
+0017 <span class="comment">%   lagInSamples    - time shift in samples; positive pads leading zeros,</span>
+0018 <span class="comment">%                     negative trims leading samples</span>
+0019 <span class="comment">%   scaleGain       - divisive gain applied after time shifting</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   newSignals - transformed signal array</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies: None</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also MATCHSIGNALS, TRUNCATETOSAMELENGTH.</span>
+0027 
+0028 arguments
+0029     signals         (:,:) double
+0030     timeScaleFactor (1,1) double
+0031     lagInSamples    (1,1) double
+0032     scaleGain       (1,1) double
+0033 <span class="keyword">end</span>
+0034 
+0035 [M, N] = size(signals);
 0036 
-0037 <span class="comment">%% Scale:</span>
-0038 newSignals=newSignals/scaleGain;
-0039 
-0040 <span class="keyword">end</span>
-0041</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0037 <span class="comment">%% Resample Signal</span>
+0038 <span class="comment">% NOTE: Not using 'resample' because this targets very small resampling</span>
+0039 <span class="comment">% rates on the order of 1 +/- 1e-6. Only resamples when the cumulative</span>
+0040 <span class="comment">% drift exceeds half a sample over the full signal length.</span>
+0041 <span class="keyword">if</span> abs(timeScaleFactor - 1) &gt; 0.5 / M
+0042     <span class="keyword">for</span> ch = 1:N
+0043         newSignals(:, ch) = interp1( <span class="keyword">...</span>
+0044             1:M, signals(:, ch), <span class="keyword">...</span>
+0045             timeScaleFactor * (1:floor(M / timeScaleFactor)), <span class="keyword">...</span>
+0046             <span class="string">'linear'</span>)';
+0047         <span class="comment">% interp1 returns NaN when evaluating at the first boundary point</span>
+0048         newSignals(1, ch) = signals(1, ch);
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">else</span>
+0051     newSignals = signals;
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%% Apply Integer Time Shift</span>
+0055 lagInt  = round(lagInSamples);
+0056 lagFrac = lagInSamples - lagInt;
+0057 <span class="comment">% Sub-sample correction (frequency-domain phase shift) is stubbed out</span>
+0058 <span class="comment">% below; only integer-sample shifting is applied for now.</span>
+0059 <span class="comment">% k=1000;</span>
+0060 <span class="comment">% F=fft([newSignals;zeros(k,size(newSignals,2))]);</span>
+0061 <span class="comment">% Fd=exp(1i*2*pi*[0:size(F,1)-1]/size(F,1)).^lagFrac;</span>
+0062 <span class="comment">% newSignals=ifft(bsxfun(@times,F,Fd'),'symmetric');</span>
+0063 <span class="comment">% newSignals=newSignals(1:end-k,:);</span>
+0064 <span class="keyword">if</span> lagInSamples &lt; 0
+0065     newSignals = newSignals(abs(lagInt) + 1:<span class="keyword">end</span>, :); <span class="comment">% trim leading samples</span>
+0066 <span class="keyword">else</span>
+0067     newSignals = [zeros(abs(lagInt), N); newSignals]; <span class="comment">% pad leading zeros</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%% Apply Gain Scaling</span>
+0071 newSignals = newSignals / scaleGain;
+0072 
+0073 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of minus</title>
+  <meta name="keywords" content="minus">
+  <meta name="description" content="minus  Subtracts two alignedTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@alignedTimeSeries</a> &gt; minus.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@alignedTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>minus
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>minus  Subtracts two alignedTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = minus(this, other) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">minus  Subtracts two alignedTimeSeries
+
+   newThis = minus(this, other) subtracts other from this element-wise
+
+   Inputs:
+       this - alignedTimeSeries object
+       other - alignedTimeSeries with compatible dimensions
+
+   Outputs:
+       newThis - difference of two alignedTimeSeries
+
+   See also: <a href="plus.html" class="code" title="function newThis = plus(this, other)">plus</a>, <a href="times.html" class="code" title="function this = times(this, constant)">times</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag,padWithNaNFlag,numStrides,medianFlag)">removeBiasV4</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="demean.html" class="code" title="function newThis = demean(this)">demean</a>	demean  Removes mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/demean.html" class="code" title="function newthis = demean(this)">demean</a>	demean  Removes mean from each channel</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	computeDifferenceMatrix  Computes inter-marker differences</li><li><a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/fun/computeDiffMatrix.html" class="code" title="function [D] = computeDiffMatrix(pos)">computeDiffMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = minus(this, other)</a>
+0002 <span class="comment">%minus  Subtracts two alignedTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = minus(this, other) subtracts other from this element-wise</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Inputs:</span>
+0007 <span class="comment">%       this - alignedTimeSeries object</span>
+0008 <span class="comment">%       other - alignedTimeSeries with compatible dimensions</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       newThis - difference of two alignedTimeSeries</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   See also: plus, times</span>
+0014 
+0015 newThis = this;
+0016 newThis.Data = this.Data - other.Data;
+0017 <span class="keyword">end</span>
+0018</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

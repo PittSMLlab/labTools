@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parameterTimeCourse</title>
+  <meta name="keywords" content="parameterTimeCourse">
+  <meta name="description" content="parameterTimeCourse  Plots parameter time course">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@experimentData</a> &gt; parameterTimeCourse.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@experimentData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>parameterTimeCourse
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>parameterTimeCourse  Plots parameter time course</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [h, adaptDataObject] = parameterTimeCourse(this, field) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">parameterTimeCourse  Plots parameter time course
+
+   [h, adaptDataObject] = parameterTimeCourse(this, field) creates a
+   plot showing the specified parameter over time/strides
+
+   Inputs:
+       this - experimentData object
+       field - parameter label to plot
+
+   Outputs:
+       h - figure handle
+       adaptDataObject - adaptationData object used for plotting
+
+   Note: This function takes a long time to run. For efficiency, generate
+         and save an adaptData object, then use its plotting functions
+         directly.
+
+   See also: <a href="parameterEvolutionPlot.html" class="code" title="function [h, adaptDataObject] = parameterEvolutionPlot(this, field)">parameterEvolutionPlot</a>, adaptationData/plotParamTimeCourse</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h, adaptDataObject] = parameterTimeCourse(this, field)</a>
+0002 <span class="comment">%parameterTimeCourse  Plots parameter time course</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [h, adaptDataObject] = parameterTimeCourse(this, field) creates a</span>
+0005 <span class="comment">%   plot showing the specified parameter over time/strides</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       this - experimentData object</span>
+0009 <span class="comment">%       field - parameter label to plot</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Outputs:</span>
+0012 <span class="comment">%       h - figure handle</span>
+0013 <span class="comment">%       adaptDataObject - adaptationData object used for plotting</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: This function takes a long time to run. For efficiency, generate</span>
+0016 <span class="comment">%         and save an adaptData object, then use its plotting functions</span>
+0017 <span class="comment">%         directly.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   See also: parameterEvolutionPlot, adaptationData/plotParamTimeCourse</span>
+0020 
+0021 <span class="keyword">if</span> ~(this.isProcessed)
+0022     ME = MException(<span class="string">'experimentData:parameterTimeCourse'</span>, <span class="keyword">...</span>
+0023         [<span class="string">'Cannot generate parameter time course plot from '</span> <span class="keyword">...</span>
+0024         <span class="string">'unprocessed data!'</span>]);
+0025     throw(ME);
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{1}) &amp;&amp; <span class="keyword">...</span>
+0028         (all(this.data{1}.adaptParams.isaLabel(field)))
+0029     adaptDataObject = this.makeDataObj([], 0);
+0030     h = adaptDataObject.plotParamTimeCourse(field);
+0031 <span class="keyword">else</span>
+0032     <span class="comment">% Creating adaptationData object, to include experimentalParams</span>
+0033     <span class="comment">% (which are Dependent and need to be computed each time).</span>
+0034     <span class="comment">% Otherwise we could just access this.data{trial}.experimentalParams</span>
+0035     adaptDataObject = this.makeDataObj;
+0036     h = adaptDataObject.plotParamTimeCourse(field);
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

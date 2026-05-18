@@ -15,7 +15,7 @@
 <div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; getSimpleFileName.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
 
 <h1>getSimpleFileName
 </h1>
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(this)">calcLimbAngles</a>	calcLimbAngles  Calculates limb and joint angles from marker data.</li><li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li><li><a href="../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
 <!-- crossreference -->
 
 
@@ -47,7 +47,7 @@ This function is called by:
 0003     filename=filename{1};
 0004 <span class="keyword">end</span>
 0005 slashes=find(filename==<span class="string">'\'</span> | filename==<span class="string">'/'</span>);
-0006 <span class="keyword">if</span> ~isempty(slashes)
+0006 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(slashes)
 0007     file=filename((slashes(end)+1):end);
 0008 <span class="keyword">else</span>
 0009     file=filename;
@@ -56,6 +56,6 @@ This function is called by:
 0012 
 0013 <span class="keyword">end</span>
 0014</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

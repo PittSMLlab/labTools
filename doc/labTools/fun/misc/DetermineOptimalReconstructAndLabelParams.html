@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of DetermineOptimalReconstructAndLabelParams</title>
+  <meta name="keywords" content="DetermineOptimalReconstructAndLabelParams">
+  <meta name="description" content="% Determine the Optimal Reconstruct &amp; Label Pipeline Parameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; DetermineOptimalReconstructAndLabelParams.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>DetermineOptimalReconstructAndLabelParams
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Determine the Optimal Reconstruct &amp; Label Pipeline Parameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Determine the Optimal Reconstruct &amp; Label Pipeline Parameters
+ author: NWB (with assistance from ChatGPT)
+ date (created): 18 May 2025
+ purpose: to iterate through various Vicon Nexus 'Reconstruct &amp; Label'
+ pipeline parameters to determine the optimal configuration based on
+ metrics such as the percentage of frames missing, the average number of
+ gaps per marker, and the maximum and median gap length.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/fun/misc/allcomb/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>	ALLCOMB - All combinations</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Determine the Optimal Reconstruct &amp; Label Pipeline Parameters</span>
+0002 <span class="comment">% author: NWB (with assistance from ChatGPT)</span>
+0003 <span class="comment">% date (created): 18 May 2025</span>
+0004 <span class="comment">% purpose: to iterate through various Vicon Nexus 'Reconstruct &amp; Label'</span>
+0005 <span class="comment">% pipeline parameters to determine the optimal configuration based on</span>
+0006 <span class="comment">% metrics such as the percentage of frames missing, the average number of</span>
+0007 <span class="comment">% gaps per marker, and the maximum and median gap length.</span>
+0008 
+0009 <span class="comment">% TODO:</span>
+0010 <span class="comment">%   1. Loop through exemplar trials from all SML Lab studies or study types</span>
+0011 <span class="comment">%   2. Save RGT, LGT, RANK, LANK marker trajectories in MAT file for later</span>
+0012 <span class="comment">%       analysis just in case</span>
+0013 <span class="comment">%   3. Generate and save trajectory figures for GT and ANK markers</span>
+0014 
+0015 <span class="comment">%% 1) Define Paths</span>
+0016 pathData   = <span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\'</span>;
+0017 pathOutCSV = [<span class="string">'Z:\Nathan\ViconNexusReconstructAndLabel\'</span> <span class="keyword">...</span>
+0018     <span class="string">'Results_C3S_S1_OGPost_2.csv'</span>];
+0019 
+0020 <span class="comment">% get all sessions in data directory not including current and parent</span>
+0021 dirsSess = dir(pathData);
+0022 dirsSess = dirsSess([dirsSess.isdir] &amp; <span class="keyword">...</span>
+0023     ~ismember({dirsSess.name},{<span class="string">'.'</span>,<span class="string">'..'</span>}));
+0024 numSess = numel(dirsSess);                  <span class="comment">% number of sessions to process</span>
+0025 <span class="keyword">if</span> numSess == 0                             <span class="comment">% if no session folders, ...</span>
+0026     error(<span class="string">'No session folders found in %s'</span>,pathData);
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">%% 2) Initialize Vicon Nexus SDK &amp; Prepare the Results Container Structure</span>
+0030 vicon = ViconNexus();   <span class="comment">% assumes ViconNexus() is on the MATLAB path</span>
+0031 
+0032 <span class="comment">% preallocate a struct array to hold per-trial results:</span>
+0033 <span class="comment">%   • ParticipantName, TrialID, Use3DPredictions,</span>
+0034 <span class="comment">%     EnvironmentalDriftTolerance, MinCamerasToStartTraj,</span>
+0035 <span class="comment">%     MinCamerasToContTraj, MinSeparation, PercentMissing_All,</span>
+0036 <span class="comment">%     NumGapsPerMarker_All, MaxGapLength_All, MedianGapLength_All,</span>
+0037 <span class="comment">%     PercentMissing_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset,</span>
+0038 <span class="comment">%     MedianGapLength_Subset</span>
+0039 results = struct( <span class="keyword">...</span>
+0040     <span class="string">'ParticipantName'</span>,              {}, <span class="keyword">...</span>
+0041     <span class="string">'TrialID'</span>,                      {}, <span class="keyword">...</span>
+0042     <span class="string">'Use3DPredictions'</span>,             {}, <span class="keyword">...</span>
+0043     <span class="string">'EnvironmentalDriftTolerance'</span>,    {}, <span class="keyword">...</span>
+0044     <span class="string">'MinCamerasToStartTraj'</span>,        {}, <span class="keyword">...</span>
+0045     <span class="string">'MinCamerasToContTraj'</span>,         {}, <span class="keyword">...</span>
+0046     <span class="string">'MinSeparation'</span>,                {}, <span class="keyword">...</span>
+0047     <span class="string">'PercentMissing_All'</span>,           {}, <span class="keyword">...</span>
+0048     <span class="string">'NumGapsPerMarker_All'</span>,         {}, <span class="keyword">...</span>
+0049     <span class="string">'MaxGapLength_All'</span>,             {}, <span class="keyword">...</span>
+0050     <span class="string">'MedianGapLength_All'</span>,          {}, <span class="keyword">...</span>
+0051     <span class="string">'PercentMissing_Subset'</span>,        {}, <span class="keyword">...</span>
+0052     <span class="string">'NumGapsPerMarker_Subset'</span>,      {}, <span class="keyword">...</span>
+0053     <span class="string">'MaxGapLength_Subset'</span>,          {}, <span class="keyword">...</span>
+0054     <span class="string">'MedianGapLength_Subset'</span>,       {} <span class="keyword">...</span>
+0055     );
+0056 
+0057 <span class="comment">%% 3) Locate &amp; Read the 'Reconstruct And Label Test.Pipeline' File</span>
+0058 pathPipeline = [<span class="string">'C:\Users\Public\Documents\Vicon\Nexus2.x\'</span> <span class="keyword">...</span>
+0059     <span class="string">'Configurations\Pipelines\Reconstruct And Label Test.Pipeline'</span>];
+0060 
+0061 <span class="comment">% read in all lines once and search for the pertinent parameter lines</span>
+0062 params = readlines(pathPipeline);
+0063 
+0064 <span class="comment">% find exactly one line index for each parameter</span>
+0065 ind3DPredict = find(contains(params,<span class="string">'Reconstructor.3DPredictions'</span>));
+0066 indEnvDriftTol = find(contains(params,<span class="string">'EnvironmentalDriftTolerance'</span>));
+0067 indMinCamsToStartTraj = find(contains(params,<span class="string">'&quot;MinCams&quot;'</span>));
+0068 indMinCamsToContTraj = find(contains(params,<span class="string">'MinCamsWithPrediction'</span>));
+0069 indMinSeparation = find(contains(params,<span class="string">'MinSeparation'</span>));
+0070 
+0071 <span class="comment">% sanity check</span>
+0072 <span class="keyword">if</span> any([numel(ind3DPredict) numel(indEnvDriftTol) <span class="keyword">...</span>
+0073         numel(indMinCamsToStartTraj) numel(indMinCamsToContTraj) <span class="keyword">...</span>
+0074         numel(indMinSeparation)] ~= 1)
+0075     error([<span class="string">'Each pipeline parameter must appear exactly once in the '</span> <span class="keyword">...</span>
+0076         <span class="string">'XML file.'</span>]);
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">%% 4) Define the Subset of Critical Markers to Compute Separately</span>
+0080 markersSubset = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
+0081 
+0082 <span class="comment">%% 5) Specify Set of Reconstruct &amp; Label Parameters to Loop Through</span>
+0083 predict3D = [true false];                   <span class="comment">% should use 3D predictions</span>
+0084 envDriftTol = 2.00:0.50:4.50;               <span class="comment">% environmental drift tolerance</span>
+0085 minCamsToStartTraj = 2:3;                   <span class="comment">% minimum cameras to start</span>
+0086 minCamsToContTraj = 2;                      <span class="comment">% minimum cameras to continue</span>
+0087 minSeparation = 14:5:34;                    <span class="comment">% minimum marker separation</span>
+0088 <span class="comment">% minCentroidRadius = 0; % 0:2:4;</span>
+0089 <span class="comment">% maxCentroidRadius = 50; % 30:10:50;</span>
+0090 <span class="comment">% create set of parameter combinations</span>
+0091 paramSets = <a href="../../../labTools/fun/misc/allcomb/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>(predict3D,envDriftTol,minCamsToStartTraj, <span class="keyword">...</span>
+0092     minCamsToContTraj,minSeparation);
+0093 numParamSets = size(paramSets,1);           <span class="comment">% number of parameter sets</span>
+0094 
+0095 <span class="comment">%% 6) Loop Over All Parameters Sets &amp; Trials &amp; Compute Outcome Measures</span>
+0096 <span class="keyword">for</span> set = 1:numParamSets                    <span class="comment">% for each parameter set, ...</span>
+0097     <span class="comment">% 6a) overwrite the pertinent parameters lines in the pipeline XML file</span>
+0098     fprintf([<span class="string">'---\nAssessing the following parameter set:\n'</span> <span class="keyword">...</span>
+0099         <span class="string">'  • 3D Predictions = %u;\n'</span> <span class="keyword">...</span>
+0100         <span class="string">'  • Environmental Drift Tolerance = %03.1f;\n'</span> <span class="keyword">...</span>
+0101         <span class="string">'  • Minimum Cameras to Start Trajectory = %u;\n'</span> <span class="keyword">...</span>
+0102         <span class="string">'  • Minimum Cameras to Continue Trajectory = %u;\n'</span> <span class="keyword">...</span>
+0103         <span class="string">'  • Minimum Reconstruction Separation = %u...\n'</span>], <span class="keyword">...</span>
+0104         paramSets(set,1),paramSets(set,2),paramSets(set,3), <span class="keyword">...</span>
+0105         paramSets(set,4),paramSets(set,5));
+0106     shouldPredict3D = paramSets(set,1);     <span class="comment">% should use 3D predictions?</span>
+0107     <span class="keyword">if</span> shouldPredict3D                      <span class="comment">% if 3D predictions is on, ...</span>
+0108         params(ind3DPredict) = [<span class="string">'      '</span> <span class="keyword">...</span><span class="comment">  enable it in pipeline file</span>
+0109             <span class="string">'&lt;Param name=&quot;Reconstructor.3DPredictions&quot; value=&quot;true&quot;/&gt;'</span>];
+0110     <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
+0111         params(ind3DPredict) = [<span class="string">'      '</span> <span class="keyword">...</span><span class="comment">  disable it in pipeline file</span>
+0112             <span class="string">'&lt;Param name=&quot;Reconstructor.3DPredictions&quot; value=&quot;false&quot;/&gt;'</span>];
+0113     <span class="keyword">end</span>
+0114     params(indEnvDriftTol) = sprintf([<span class="string">'      &lt;Param name=&quot;'</span> <span class="keyword">...</span>
+0115         <span class="string">'EnvironmentalDriftTolerance&quot; value=&quot;%03.1f&quot;/&gt;'</span>],paramSets(set,2));
+0116     params(indMinCamsToStartTraj) = sprintf([<span class="string">'      &lt;Param name=&quot;'</span> <span class="keyword">...</span>
+0117         <span class="string">'MinCams&quot; value=&quot;%u&quot;/&gt;'</span>],paramSets(set,3));
+0118     params(indMinCamsToContTraj) = sprintf([<span class="string">'      &lt;Param name=&quot;'</span> <span class="keyword">...</span>
+0119         <span class="string">'MinCamsWithPrediction&quot; value=&quot;%u&quot;/&gt;'</span>],paramSets(set,4));
+0120     params(indMinSeparation) = sprintf([<span class="string">'      &lt;Param name=&quot;'</span> <span class="keyword">...</span>
+0121         <span class="string">'MinSeparation&quot; value=&quot;%u&quot;/&gt;'</span>],paramSets(set,5));
+0122 
+0123     <span class="comment">% 6b) overwrite ALL 209 lines back into the pipeline XML file</span>
+0124     <span class="comment">% if MATLAB R2022a or later, use 'writelines(params,pipelineFile);'</span>
+0125     fidW = fopen(pathPipeline,<span class="string">'w'</span>);         <span class="comment">% open the file to overwrite</span>
+0126     <span class="keyword">if</span> fidW &lt; 0                             <span class="comment">% if file did not open, ...</span>
+0127         error(<span class="string">'Could not open pipeline file for writing: %s'</span>,pathPipeline);
+0128     <span class="keyword">end</span>
+0129     <span class="keyword">for</span> line = 1:numel(params)              <span class="comment">% for each line in file, ...</span>
+0130         fprintf(fidW,<span class="string">'%s\n'</span>,params(line));  <span class="comment">% overwrite it</span>
+0131     <span class="keyword">end</span>
+0132     fclose(fidW);                           <span class="comment">% close file</span>
+0133     fprintf([<span class="string">'Successfully updated parameters in ''Reconstruct And '</span> <span class="keyword">...</span>
+0134         <span class="string">'Label Test'' pipeline XML file.\n\n'</span>]);
+0135 
+0136     <span class="comment">% 6i) compute aggregate measures over ALL sessions and trials</span>
+0137     PercentMissing_All_ParamSet = nan(numSess,1);
+0138     NumGapsPerMarker_All_ParamSet = nan(numSess,1);
+0139     MaxGapLength_All_ParamSet = nan(numSess,1);
+0140     MedianGapLength_All_ParamSet = nan(numSess,1);
+0141     PercentMissing_Subset_ParamSet = nan(numSess,1);
+0142     NumGapsPerMarker_Subset_ParamSet = nan(numSess,1);
+0143     MaxGapLength_Subset_ParamSet = nan(numSess,1);
+0144     MedianGapLength_Subset_ParamSet = nan(numSess,1);
+0145 
+0146     <span class="keyword">for</span> sess = 1:numel(dirsSess)            <span class="comment">% for each session, ...</span>
+0147         nameSess = dirsSess(sess).name;
+0148         pathSess = fullfile(pathData,nameSess);
+0149         fprintf(<span class="string">'Processing %s\n'</span>,nameSess);
+0150 
+0151         <span class="comment">% get all trial files that start with 'Trial' and end in '.x1d'</span>
+0152         trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
+0153         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)              <span class="comment">% if no trial files found, ...</span>
+0154             error(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
+0155         <span class="keyword">end</span>
+0156 
+0157         <span class="comment">% extract trial indices from filenames (assumes 'TrialXX.x1d')</span>
+0158         [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, <span class="keyword">...</span>
+0159             <span class="string">'UniformOutput'</span>,false);
+0160         indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+0161 
+0162         <span class="keyword">for</span> tr = 1:numel(indsTrials)        <span class="comment">% for each trial specified, ...</span>
+0163             trialID = indsTrials(tr);       <span class="comment">% retrieve trial number</span>
+0164             trialName = sprintf(<span class="string">'Trial%02d'</span>,trialID);
+0165             pathTrial = fullfile(pathSess,trialName);
+0166             fprintf(<span class="string">'Processing %s\n'</span>,trialName);
+0167 
+0168             <span class="comment">% 6c) open the trial in Nexus (if not already open)</span>
+0169             <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0170                 warning(<span class="string">'  • Could not open %s. Skipping.\n'</span>,trialName);
+0171                 <span class="keyword">continue</span>;                   <span class="comment">% skip trial if could not open</span>
+0172             <span class="keyword">end</span>
+0173 
+0174             <span class="comment">% 6d) run the &quot;Reconstruct And Label Test&quot; pipeline</span>
+0175             <span class="keyword">try</span>                             <span class="comment">% try running pipeline</span>
+0176                 vicon.RunPipeline(<span class="string">'Reconstruct And Label Test'</span>,<span class="string">''</span>,200);
+0177             <span class="keyword">catch</span> ME
+0178                 warning(ME.identifier, <span class="keyword">...</span>
+0179                     <span class="string">'  • Nexus.RunPipeline failed: %s\n'</span>,ME.message);
+0180                 <span class="keyword">continue</span>;
+0181             <span class="keyword">end</span>
+0182 
+0183             <span class="comment">% 6e) get participant name (assuming only one per trial)</span>
+0184             subject = vicon.GetSubjectNames();
+0185             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subject)
+0186                 warning(<span class="string">'  • No subject found in %s. Skipping.\n'</span>, <span class="keyword">...</span>
+0187                     trialName);
+0188                 <span class="keyword">continue</span>;
+0189             <span class="keyword">end</span>
+0190             subject = subject{1};
+0191 
+0192             <span class="comment">% 6f) retrieve all marker names for this subject</span>
+0193             markersAll = vicon.GetMarkerNames(subject);
+0194             numMarkers = numel(markersAll);
+0195             <span class="keyword">if</span> numMarkers == 0
+0196                 warning([<span class="string">'  • No markers found for participant %s. '</span> <span class="keyword">...</span>
+0197                     <span class="string">'Skipping.\n'</span>],subject);
+0198                 <span class="keyword">continue</span>;
+0199             <span class="keyword">end</span>
+0200 
+0201             <span class="comment">% 6g) preallocate temporary arrays to store per-marker metrics</span>
+0202             percentMissing = nan(numMarkers,1);    <span class="comment">% percentage frames missing</span>
+0203             numGaps = nan(numMarkers,1);        <span class="comment">% number of gap events</span>
+0204             gapLengths = nan(numMarkers,1000);  <span class="comment">% largest gap length</span>
+0205             isInSubset = false(numMarkers,1);   <span class="comment">% is marker in subset?</span>
+0206 
+0207             <span class="comment">% 6h) retrieve marker trajectory, compute missing frames &amp; gaps</span>
+0208             <span class="keyword">for</span> mrkr = 1:numMarkers             <span class="comment">% for each marker, ...</span>
+0209                 nameMarker = markersAll{mrkr};  <span class="comment">% name of current marker</span>
+0210                 isInSubset(mrkr) = any(strcmp(nameMarker,markersSubset));
+0211 
+0212                 <span class="keyword">try</span>                             <span class="comment">% try to get marker traj.</span>
+0213                     [~,~,~,existsTraj] = <span class="keyword">...</span>
+0214                         vicon.GetTrajectory(subject,nameMarker);
+0215                     <span class="comment">% existsTraj is logical vector: true  = visible,</span>
+0216                     <span class="comment">%                               false = occluded (miss)</span>
+0217                 <span class="keyword">catch</span>
+0218                     warning([<span class="string">'    • Could not retrieve trajectory for '</span> <span class="keyword">...</span>
+0219                         <span class="string">'%s. Treating as fully missing.\n'</span>],nameMarker);
+0220                     existsTraj = false(vicon.GetFrameCount(),1);
+0221                 <span class="keyword">end</span>
+0222 
+0223                 totalFrames = numel(existsTraj);<span class="comment">% total number of frames</span>
+0224                 numMissing = sum(~existsTraj);  <span class="comment">% number of missing frames</span>
+0225                 percentMissing(mrkr) = (numMissing / totalFrames) * 100;
+0226 
+0227                 dv = diff([0; (~existsTraj)'; 0]);  <span class="comment">% find marker gaps</span>
+0228                 runBoundaries = find(dv~=0);        <span class="comment">% changes</span>
+0229                 <span class="comment">% present &amp; gap run lengths</span>
+0230                 runLengths = diff(runBoundaries);
+0231                 <span class="comment">% +1 = gap starts, -1 = ends</span>
+0232                 runValues = dv(runBoundaries);
+0233                 gapRuns = runLengths(runValues==1);
+0234                 numGaps(mrkr) = numel(gapRuns);     <span class="comment">% number of marker gaps</span>
+0235                 gapLengths(mrkr,1:numGaps(mrkr)) = gapRuns';
+0236             <span class="keyword">end</span>
+0237 
+0238             <span class="comment">% 6i) compute aggregate measures over ALL markers</span>
+0239             PercentMissing_All = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(percentMissing);
+0240             NumGapsPerMarker_All = sum(numGaps) / numMarkers;
+0241             MaxGapLength_All = max(gapLengths,[],<span class="string">'all'</span>);
+0242             MedianGapLength_All = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(gapLengths,<span class="string">'all'</span>,<span class="string">'omitnan'</span>);
+0243 
+0244             <span class="comment">% 6j) compute aggregate measures over SUBSET markers</span>
+0245             indsMarkersSubset = find(isInSubset);
+0246             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsMarkersSubset)       <span class="comment">% if no subset markers, ...</span>
+0247                 PercentMissing_Subset = NaN;    <span class="comment">% set all values to 'NaN'</span>
+0248                 NumGapsPerMarker_Subset = NaN;
+0249                 MaxGapLength_Subset = NaN;
+0250                 MedianGapLength_Subset = NaN;
+0251             <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
+0252                 PercentMissing_Subset = <span class="keyword">...</span>
+0253                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(percentMissing(indsMarkersSubset));
+0254                 NumGapsPerMarker_Subset = <span class="keyword">...</span>
+0255                     sum(numGaps(indsMarkersSubset)) / <span class="keyword">...</span>
+0256                     numel(indsMarkersSubset);
+0257                 MaxGapLength_Subset = <span class="keyword">...</span>
+0258                     max(gapLengths(indsMarkersSubset),[],<span class="string">'all'</span>);
+0259                 MedianGapLength_Subset = <span class="keyword">...</span>
+0260                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(gapLengths(indsMarkersSubset),<span class="string">'all'</span>,<span class="string">'omitnan'</span>);
+0261             <span class="keyword">end</span>
+0262 
+0263             <span class="comment">% 6k) append a single row to the 'results' structure</span>
+0264             results(end+1) = struct( <span class="keyword">...</span>
+0265                 <span class="string">'ParticipantName'</span>,              subject, <span class="keyword">...</span>
+0266                 <span class="string">'TrialID'</span>,                      trialID, <span class="keyword">...</span>
+0267                 <span class="string">'Use3DPredictions'</span>,                shouldPredict3D, <span class="keyword">...</span>
+0268                 <span class="string">'EnvironmentalDriftTolerance'</span>,    paramSets(set,2), <span class="keyword">...</span>
+0269                 <span class="string">'MinCamerasToStartTraj'</span>,        paramSets(set,3), <span class="keyword">...</span>
+0270                 <span class="string">'MinCamerasToContTraj'</span>,         paramSets(set,4), <span class="keyword">...</span>
+0271                 <span class="string">'MinSeparation'</span>,                paramSets(set,5), <span class="keyword">...</span>
+0272                 <span class="string">'PercentMissing_All'</span>,           PercentMissing_All, <span class="keyword">...</span>
+0273                 <span class="string">'NumGapsPerMarker_All'</span>,         NumGapsPerMarker_All, <span class="keyword">...</span>
+0274                 <span class="string">'MaxGapLength_All'</span>,             MaxGapLength_All, <span class="keyword">...</span>
+0275                 <span class="string">'MedianGapLength_All'</span>,          MedianGapLength_All, <span class="keyword">...</span>
+0276                 <span class="string">'PercentMissing_Subset'</span>,        PercentMissing_Subset, <span class="keyword">...</span>
+0277                 <span class="string">'NumGapsPerMarker_Subset'</span>,      NumGapsPerMarker_Subset,<span class="keyword">...</span>
+0278                 <span class="string">'MaxGapLength_Subset'</span>,          MaxGapLength_Subset, <span class="keyword">...</span>
+0279                 <span class="string">'MedianGapLength_Subset'</span>,       MedianGapLength_Subset <span class="keyword">...</span>
+0280                 );
+0281 
+0282             <span class="comment">% TODO: update to handle case of multiple trials per session</span>
+0283             PercentMissing_All_ParamSet(sess) = PercentMissing_All;
+0284             NumGapsPerMarker_All_ParamSet(sess) = NumGapsPerMarker_All;
+0285             MaxGapLength_All_ParamSet(sess) = MaxGapLength_All;
+0286             MedianGapLength_All_ParamSet(sess) = MedianGapLength_All;
+0287             PercentMissing_Subset_ParamSet(sess) = PercentMissing_Subset;
+0288             NumGapsPerMarker_Subset_ParamSet(sess) = NumGapsPerMarker_Subset;
+0289             MaxGapLength_Subset_ParamSet(sess) = MaxGapLength_Subset;
+0290             MedianGapLength_Subset_ParamSet(sess) = MedianGapLength_Subset;
+0291 
+0292             fprintf([<span class="string">'    • PercentMissing_All=%.2f%%, Gaps/Marker_All='</span> <span class="keyword">...</span>
+0293                 <span class="string">'%.2f, MaxGap_All=%u frames, MedianGap_All=%.2f frames\n'</span>], <span class="keyword">...</span>
+0294                 PercentMissing_All,NumGapsPerMarker_All, <span class="keyword">...</span>
+0295                 MaxGapLength_All,MedianGapLength_All);
+0296             fprintf([<span class="string">'      Subset → PercentMissing=%.2f%%, Gaps/Marker='</span> <span class="keyword">...</span>
+0297                 <span class="string">'%.2f, MaxGap=%u frames, MedianGap=%.2f frames\n\n'</span>], <span class="keyword">...</span>
+0298                 PercentMissing_Subset,NumGapsPerMarker_Subset, <span class="keyword">...</span>
+0299                 MaxGapLength_Subset,MedianGapLength_Subset);
+0300         <span class="keyword">end</span>
+0301     <span class="keyword">end</span>
+0302 
+0303     <span class="comment">% 6l) compute averages across trials for parameter set</span>
+0304     results(end+1) = struct( <span class="keyword">...</span>
+0305         <span class="string">'ParticipantName'</span>,              <span class="string">'NA'</span>, <span class="keyword">...</span>
+0306         <span class="string">'TrialID'</span>,                      NaN, <span class="keyword">...</span>
+0307         <span class="string">'Use3DPredictions'</span>,                shouldPredict3D, <span class="keyword">...</span>
+0308         <span class="string">'EnvironmentalDriftTolerance'</span>,    paramSets(set,2), <span class="keyword">...</span>
+0309         <span class="string">'MinCamerasToStartTraj'</span>,        paramSets(set,3), <span class="keyword">...</span>
+0310         <span class="string">'MinCamerasToContTraj'</span>,         paramSets(set,4), <span class="keyword">...</span>
+0311         <span class="string">'MinSeparation'</span>,                paramSets(set,5), <span class="keyword">...</span>
+0312         <span class="string">'PercentMissing_All'</span>,           <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(PercentMissing_All_ParamSet), <span class="keyword">...</span>
+0313         <span class="string">'NumGapsPerMarker_All'</span>,         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(NumGapsPerMarker_All_ParamSet), <span class="keyword">...</span>
+0314         <span class="string">'MaxGapLength_All'</span>,             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MaxGapLength_All_ParamSet), <span class="keyword">...</span>
+0315         <span class="string">'MedianGapLength_All'</span>,          <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MedianGapLength_All_ParamSet), <span class="keyword">...</span>
+0316         <span class="string">'PercentMissing_Subset'</span>,        <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(PercentMissing_Subset_ParamSet), <span class="keyword">...</span>
+0317         <span class="string">'NumGapsPerMarker_Subset'</span>,      <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(NumGapsPerMarker_Subset_ParamSet), <span class="keyword">...</span>
+0318         <span class="string">'MaxGapLength_Subset'</span>,          <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MaxGapLength_Subset_ParamSet), <span class="keyword">...</span>
+0319         <span class="string">'MedianGapLength_Subset'</span>,       <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MedianGapLength_Subset_ParamSet) <span class="keyword">...</span>
+0320         );
+0321 
+0322     fprintf([<span class="string">'Parameter Set Means Across All Trials:\n'</span> <span class="keyword">...</span>
+0323         <span class="string">'    • PercentMissing_All=%.2f%%, Gaps/Marker_All='</span> <span class="keyword">...</span>
+0324         <span class="string">'%.2f, MaxGap_All=%.2f frames, MedianGap_All=%.2f frames\n'</span>], <span class="keyword">...</span>
+0325         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(PercentMissing_All_ParamSet), <span class="keyword">...</span>
+0326         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(NumGapsPerMarker_All_ParamSet), <span class="keyword">...</span>
+0327         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MaxGapLength_All_ParamSet), <span class="keyword">...</span>
+0328         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MedianGapLength_All_ParamSet));
+0329     fprintf([<span class="string">'    Subset → PercentMissing=%.2f%%, Gaps/Marker='</span> <span class="keyword">...</span>
+0330         <span class="string">'%.2f, MaxGap=%.2f frames, MedianGap=%.2f frames\n'</span>], <span class="keyword">...</span>
+0331         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(PercentMissing_Subset_ParamSet), <span class="keyword">...</span>
+0332         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(NumGapsPerMarker_Subset_ParamSet), <span class="keyword">...</span>
+0333         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MaxGapLength_Subset_ParamSet), <span class="keyword">...</span>
+0334         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MedianGapLength_Subset_ParamSet));
+0335 <span class="keyword">end</span>
+0336 
+0337 <span class="comment">%% 7) Save Summary Results to a CSV File</span>
+0338 T = struct2table(results);
+0339 writetable(T,pathOutCSV);
+0340 fprintf(<span class="string">'\nSummary written to:\n   %s\n'</span>,pathOutCSV);
+0341</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of filtfilthd_short</title>
   <meta name="keywords" content="filtfilthd_short">
-  <meta name="description" content="This is a copy of filtfilthd, but limiting the extent of the 'reflect'">
+  <meta name="description" content="FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,85 +15,116 @@
 <div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; filtfilthd_short.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
-<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+<td align="right"><a href="index.html">Index for labTools\fun\ext\pitools\signalProcessing&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
 
 <h1>filtfilthd_short
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>This is a copy of filtfilthd, but limiting the extent of the 'reflect'</strong></div>
+<div class="box"><strong>FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [filteredData] = filtfilthd_short(filterObj,data,method,M1) </strong></div>
+<div class="box"><strong>function filteredData = filtfilthd_short(filterObj, data, method, M1) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">This is a copy of filtfilthd, but limiting the extent of the 'reflect'
-method for efficiency
-Filters data along dim=1 with filterObj first forwards, and then
-backwards.
-It is an implementation of filtfilt that works with filter objects from
-the DSP toolbox.
-By default uses 'reflect' method for dealing with borders.</pre></div>
+<div class="fragment"><pre class="comment">FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.
+
+   Implements zero-phase filtering using a DSP toolbox filter object by
+ applying the filter forward and then backward. Reflective boundary
+ padding reduces edge transients; the padding length is capped at M1
+ samples (default 1000) for efficiency on long signals.
+
+ Inputs:
+   filterObj - DSP toolbox filter object
+   data      - (N×C) double, data to filter (columns are channels)
+   method    - char, boundary method: 'reflect' (default) pads with a
+               mirrored copy; any other value uses no padding
+   M1        - scalar integer, reflection pad length (samples); [] uses
+               default
+
+ Outputs:
+   filteredData - (N×C) double, zero-phase filtered data
+
+ Toolbox Dependencies: DSP System Toolbox (for filter objects)
+
+ See also <a href="filtfilthd.html" class="code" title="function filteredData = filtfilthd(filterObj, data, method)">FILTFILTHD</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	Estimation of amplitude of a given EMG signal (envelope detection).</li><li><a href="filtfilthd.html" class="code" title="function [filteredData] = filtfilthd(filterObj,data,method)">filtfilthd</a>	See also: filtfilthd_short</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/highPassFilter.html" class="code" title="function newThis = highPassFilter(this, fcut)">highPassFilter</a>	highPassFilter  Applies high-pass filter</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/lowPassFilter.html" class="code" title="function newThis = lowPassFilter(this, fcut)">lowPassFilter</a>	lowPassFilter  Applies low-pass filter</li><li><a href="../../../../../labTools/fun/EMGanalysis/filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li><li><a href="amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	Estimation of amplitude of a given EMG signal (envelope detection).</li><li><a href="filtfilthd.html" class="code" title="function filteredData = filtfilthd(filterObj, data, method)">filtfilthd</a>	FILTFILTHD Zero-phase filter with reflective boundary handling.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [filteredData] = filtfilthd_short(filterObj,data,method,M1)</a>
-0002 <span class="comment">%This is a copy of filtfilthd, but limiting the extent of the 'reflect'</span>
-0003 <span class="comment">%method for efficiency</span>
-0004 <span class="comment">%Filters data along dim=1 with filterObj first forwards, and then</span>
-0005 <span class="comment">%backwards.</span>
-0006 <span class="comment">%It is an implementation of filtfilt that works with filter objects from</span>
-0007 <span class="comment">%the DSP toolbox.</span>
-0008 <span class="comment">%By default uses 'reflect' method for dealing with borders.</span>
-0009 
-0010 <span class="keyword">if</span> size(data,1)==1 
-0011     warning(<span class="string">'filtfiltHD expects input data to be entered as columns, transposing'</span>)
-0012     data=data';
-0013 <span class="keyword">end</span>
-0014 <span class="keyword">if</span> size(data,1)&lt;size(data,2)
-0015     warning(<span class="string">'Input data seems to be organized as rows, and filtfilthd filters along columns.'</span>)
-0016 <span class="keyword">end</span>
-0017 
-0018 M=size(data,1);
-0019 
-0020 <span class="keyword">if</span> nargin&lt;3 || isempty(method)
-0021     method=<span class="string">'reflect'</span>; <span class="comment">%Default</span>
-0022 <span class="keyword">end</span>
-0023 <span class="keyword">if</span> nargin&lt;4 || isempty(M1)
-0024     M1=min(1000,size(data,1));
-0025     warning([<span class="string">'Unspecified size for reflective boundaries, setting to '</span> num2str(M1) <span class="string">' samples'</span>])
-0026 <span class="keyword">else</span>
-0027     M1=min(round(M1),size(data,1));
-0028 <span class="keyword">end</span>
-0029     <span class="keyword">switch</span> method
-0030         <span class="keyword">case</span> <span class="string">'reflect'</span>
-0031             post=[data([end:-1:end-M1+1],:)];
-0032             pre=[data(M1:-1:1,:)];
-0033         <span class="keyword">otherwise</span>         
-0034             pre=[];
-0035             post=[];
-0036     <span class="keyword">end</span>
-0037 filteredData=filter(filterObj,[pre;data;post]);
-0038 filteredData=filter(filterObj,filteredData(end:-1:1,:));
-0039 filteredData=filteredData(end:-1:1,:);
-0040 <span class="comment">%filteredData=filtfilt(filterObj,[pre;data;post]); %This should work, and</span>
-0041 <span class="comment">%is possibly more efficient, but doesn't.</span>
-0042 filteredData=filteredData([M1+1:M1+M],:);
-0043 
-0044 
-0045 <span class="keyword">end</span>
-0046</pre></div>
-<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function filteredData = filtfilthd_short(filterObj, data, method, M1)</a>
+0002 <span class="comment">%FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Implements zero-phase filtering using a DSP toolbox filter object by</span>
+0005 <span class="comment">% applying the filter forward and then backward. Reflective boundary</span>
+0006 <span class="comment">% padding reduces edge transients; the padding length is capped at M1</span>
+0007 <span class="comment">% samples (default 1000) for efficiency on long signals.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   filterObj - DSP toolbox filter object</span>
+0011 <span class="comment">%   data      - (N×C) double, data to filter (columns are channels)</span>
+0012 <span class="comment">%   method    - char, boundary method: 'reflect' (default) pads with a</span>
+0013 <span class="comment">%               mirrored copy; any other value uses no padding</span>
+0014 <span class="comment">%   M1        - scalar integer, reflection pad length (samples); [] uses</span>
+0015 <span class="comment">%               default</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   filteredData - (N×C) double, zero-phase filtered data</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: DSP System Toolbox (for filter objects)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also FILTFILTHD.</span>
+0023 
+0024 DEFAULT_REFLECT_LEN = 1000;  <span class="comment">% default reflection pad length (samples)</span>
+0025 
+0026 <span class="keyword">if</span> size(data, 1) == 1
+0027     warning(<span class="string">'filtfilthd_short:rowInput'</span>, <span class="keyword">...</span>
+0028         <span class="string">'Data appears to be a row vector; transposing to column.'</span>);
+0029     data = data';
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> size(data, 1) &lt; size(data, 2)
+0032     warning(<span class="string">'filtfilthd_short:rowMajor'</span>, <span class="keyword">...</span>
+0033         <span class="string">'Input data has more columns than rows; filtering along columns.'</span>);
+0034 <span class="keyword">end</span>
+0035 
+0036 M = size(data, 1);
+0037 
+0038 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(method)
+0039     method = <span class="string">'reflect'</span>;
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(M1)
+0042     M1 = min(DEFAULT_REFLECT_LEN, M);
+0043     warning(<span class="string">'filtfilthd_short:defaultPad'</span>, <span class="keyword">...</span>
+0044         sprintf(<span class="string">'Reflection pad length unspecified; using %d samples.'</span>, M1));
+0045 <span class="keyword">else</span>
+0046     M1 = min(round(M1), M);
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="keyword">switch</span> method
+0050     <span class="keyword">case</span> <span class="string">'reflect'</span>
+0051         pre  = data(M1:-1:1, :);
+0052         post = data(end:-1:end-M1+1, :);
+0053     <span class="keyword">otherwise</span>
+0054         pre  = [];
+0055         post = [];
+0056 <span class="keyword">end</span>
+0057 
+0058 filteredData = filter(filterObj, [pre; data; post]);
+0059 filteredData = filter(filterObj, filteredData(end:-1:1, :));
+0060 filteredData = filteredData(end:-1:1, :);
+0061 filteredData = filteredData((M1 + 1):(M1 + M), :);
+0062 
+0063 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plus</title>
+  <meta name="keywords" content="plus">
+  <meta name="description" content="plus  Adds two labTimeSeries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; plus.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plus
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>plus  Adds two labTimeSeries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = plus(this, other) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">plus  Adds two labTimeSeries
+
+   newThis = plus(this, other) adds two labTimeSeries element-wise
+
+   Inputs:
+       this - labTimeSeries object
+       other - labTimeSeries object with same time vector
+
+   Outputs:
+       newThis - sum of two timeseries
+
+   See also: <a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>, <a href="times.html" class="code" title="function this = times(this, constant)">times</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	TODO: this file should be updated to call upon plotGroupedBars</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/expandEventTimes.html" class="code" title="function expEventTimes = expandEventTimes(eventTimes, alignmentVector)">expandEventTimes</a>	expandEventTimes  Computes sample times for all events</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plotCheckerboard.html" class="code" title="function [fh, ph] = plotCheckerboard(this, fh, ph)">plotCheckerboard</a>	plotCheckerboard  Displays data as heatmap</li><li><a href="integrate.html" class="code" title="function newThis = integrate(this, initValues)">integrate</a>	integrate  Numerical integration</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/getVirtualOTS.html" class="code" title="function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)">getVirtualOTS</a>	getVirtualOTS  Computes virtual markers from model</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/translate.html" class="code" title="function newThis = translate(this, vector)">translate</a>	translate  Translates data by vector</li><li><a href="../../../../labTools/fun/parameterCalculation/computeCOP.html" class="code" title="function COP = computeCOP(grfDataSlow, grfDataFast, slowLeg, fastLeg)">computeCOP</a>	COMPUTECOP Compute bilateral center of pressure in lab coordinates.</li><li><a href="../../../../labTools/fun/plotting/colors/figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li><li><a href="../../../../labTools/fun/plotting/figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = plus(this, other)</a>
+0002 <span class="comment">%plus  Adds two labTimeSeries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = plus(this, other) adds two labTimeSeries element-wise</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Inputs:</span>
+0007 <span class="comment">%       this - labTimeSeries object</span>
+0008 <span class="comment">%       other - labTimeSeries object with same time vector</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       newThis - sum of two timeseries</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   See also: minus, times</span>
+0014 
+0015 M = size(this.Data, 2);
+0016 <span class="keyword">if</span> size(other.Data, 2) ~= M
+0017     error(<span class="string">'labTS:plus'</span>, <span class="string">'Inconsistent sizes for sum'</span>);
+0018 <span class="keyword">end</span>
+0019 newLabels = cell(size(this.labels));
+0020 <span class="keyword">for</span> i = 1:M
+0021     newLabels{i} = [<span class="string">'('</span> this.labels{i} <span class="string">' + '</span> other.labels{i} <span class="string">')'</span>];
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> abs(this.Time(1) - other.Time(1)) &lt; eps &amp;&amp; <span class="keyword">...</span>
+0024         abs(this.sampPeriod - other.sampPeriod) &lt; eps &amp;&amp; <span class="keyword">...</span>
+0025         length(this.labels) == length(other.labels)
+0026     newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
+0027         this.Data + other.Data, this.Time(1), this.sampPeriod, newLabels);
+0028 <span class="keyword">else</span>
+0029     error(<span class="string">'labTS:plus'</span>, <span class="keyword">...</span>
+0030         <span class="string">'Cannot add timeseries with different time vectors'</span>);
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

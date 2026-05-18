@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of removeParameter</title>
+  <meta name="keywords" content="removeParameter">
+  <meta name="description" content="removeParameter  Removes parameter from timeseries">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; removeParameter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\labTS\@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>removeParameter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>removeParameter  Removes parameter from timeseries</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = removeParameter(labels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">removeParameter  Removes parameter from timeseries
+
+   newThis = removeParameter(labels) removes specified labels from
+   the timeseries
+
+   Inputs:
+       labels - cell array of label strings to remove
+
+   Outputs:
+       newThis - labTimeSeries with parameters removed
+
+   Note: Issues warning if some labels not present
+
+   See also: <a href="appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/fun/ext/pitools/usefulCode/compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = removeParameter(labels)</a>
+0002 <span class="comment">%removeParameter  Removes parameter from timeseries</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   newThis = removeParameter(labels) removes specified labels from</span>
+0005 <span class="comment">%   the timeseries</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Inputs:</span>
+0008 <span class="comment">%       labels - cell array of label strings to remove</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Outputs:</span>
+0011 <span class="comment">%       newThis - labTimeSeries with parameters removed</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Note: Issues warning if some labels not present</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also: appendData</span>
+0016 
+0017 [bool, idxs] = <a href="../../../../labTools/fun/ext/pitools/usefulCode/compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>(this.labels, labels);
+0018 <span class="keyword">if</span> any(~bool)
+0019     warning([{<span class="string">'Could not remove some parameters because they are '</span> <span class="keyword">...</span>
+0020         <span class="string">'not present: '</span>} labels(~bool)]);
+0021 <span class="keyword">end</span>
+0022 newThis = this;
+0023 newThis.labels(idxs(bool)) = [];
+0024 newThis.Data(:, idxs(bool)) = [];
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
