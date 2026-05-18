@@ -369,16 +369,58 @@ usage examples and manual integration tests:
 
 ## Generating Documentation
 
-With [m2html][m2html] on your MATLAB path, run:
+[m2html][m2html] generates browsable HTML from MATLAB doc comments.
 
-```matlab
-m2html('mfiles', 'labTools', 'htmldir', 'doc/html', ...
-    'recursive', 'on', 'globalHypertextLinks', 'on')
-```
+**Prerequisites:** Download m2html from its [GitHub repository][m2html]
+and add it to your MATLAB path.
 
-HTML documentation is written to `doc/html/`.
+**Standard update** — increments existing HTML for changed or new
+files without removing pages for deleted functions:
 
-[m2html]: https://www.artefact.tk/software/matlab/m2html/
+1. Change directory to the **parent folder** of labTools:
+   ```matlab
+   cd('/path/to/parent')   % labTools is a subdirectory here
+   ```
+
+2. Run m2html:
+   ```matlab
+   m2html('mfiles', 'labTools', 'htmldir', 'labTools/doc', ...
+       'recursive', 'on', 'globalHypertextLinks', 'on')
+   ```
+
+HTML is written to `doc/` inside your labTools directory.
+
+**Full rebuild** — removes stale pages for functions that no longer
+exist. Use this when the repository structure has changed
+significantly:
+
+1. Rescue any non-generated files you keep in `doc/` (e.g. user
+   guides, PDFs) by moving them somewhere safe:
+   ```matlab
+   mkdir('temp_doc_backup')
+   movefile('labTools/doc/LabTools User Guide.doc', ...
+       'temp_doc_backup/')
+   ```
+
+2. Delete the `doc/` folder:
+   ```matlab
+   rmdir('labTools/doc', 's')
+   ```
+
+3. Run m2html (same command as above).
+
+4. Move your rescued files back and remove the temp folder:
+   ```matlab
+   movefile('temp_doc_backup/LabTools User Guide.doc', ...
+       'labTools/doc/')
+   rmdir('temp_doc_backup', 's')
+   ```
+
+**Checking your m2html version:** run `which m2html` in MATLAB to
+find your installed copy, check its header for a version date, and
+compare against the latest commit on the [m2html GitHub repo][m2html].
+
+[m2html]: https://github.com/gllmflndn/m2html
 
 ---
 
