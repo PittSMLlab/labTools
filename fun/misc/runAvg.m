@@ -1,38 +1,4 @@
-function [xnew, xnewstd]=runAvg(x,binwidth,dim)
-rows=size(x,1);
-cols=size(x,2);
-
-if ~isempty(x)
-    if binwidth==1
-        xnew=x;
-        xnewstd=zeros(rows,cols);
-    else
-        if rows>=cols || (nargin>2 && dim==1) %average rows
-            for  i=1:rows
-                t1=max([1 i-floor(binwidth/2)]);
-                t2=min([rows i+ceil(binwidth/2)]);
-                
-                xnew(i,:) = nanmean(x(t1:t2,:),1);
-                xnewstd(i,:) = nanstd(x(t1:t2,:),[],1);                
-            end
-        elseif cols>rows || (nargin>2 && dim==2) %average columns
-            for  i=1:cols
-                t1=max([1 i-floor(binwidth/2)]);
-                t2=min([cols i+ceil(binwidth/2)]);
-                
-                xnew(:,i) = nanmean(x(:,t1:t2),2);
-                xnewstd(:,i) = nanstd(x(:,t1:t2),[],2);                
-            end
-        else
-            warning('Dimension entered not correct')
-            xnew=[];
-            xnewstd=[];
-        end
-    end
-else
-    xnew=[];
-    xnewstd=[];
-end
+function [xnew, xnewstd] = runAvg(x, binwidth, dim)
 %RUNAVG Compute a running (sliding-window) average of a matrix.
 %
 %   Computes a running average of X along the larger dimension (rows
@@ -53,3 +19,38 @@ end
 % Toolbox Dependencies: None
 %
 % See also BIN_DATAV1, MEAN.
+rows = size(x, 1);
+cols = size(x, 2);
+
+if ~isempty(x)
+    if binwidth == 1
+        xnew    = x;
+        xnewstd = zeros(rows, cols);
+    else
+        if rows >= cols || (nargin > 2 && dim == 1)
+            for st = 1:rows             % average along rows
+                t1 = max([1 st - floor(binwidth / 2)]);
+                t2 = min([rows st + ceil(binwidth / 2)]);
+
+                xnew(st, :)    = mean(x(t1:t2, :), 1, 'omitnan');
+                xnewstd(st, :) = std(x(t1:t2, :), 0, 1, 'omitnan');
+            end
+        elseif cols > rows || (nargin > 2 && dim == 2)
+            for ii = 1:cols             % average along columns
+                t1 = max([1 ii - floor(binwidth / 2)]);
+                t2 = min([cols ii + ceil(binwidth / 2)]);
+
+                xnew(:, ii)    = mean(x(:, t1:t2), 2, 'omitnan');
+                xnewstd(:, ii) = std(x(:, t1:t2), 0, 2, 'omitnan');
+            end
+        else
+            warning('Dimension entered not correct')
+            xnew    = [];
+            xnewstd = [];
+        end
+    end
+else
+    xnew    = [];
+    xnewstd = [];
+end
+end
