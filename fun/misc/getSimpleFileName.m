@@ -1,6 +1,4 @@
-function [file] = getSimpleFileName(filename)
-if isa(filename,'cell') %Case where there are several filenames, using the first one only (arbitrary!)
-    filename=filename{1};
+function file = getSimpleFileName(filename)
 %GETSIMPLEFILENAME Extract the bare filename from a full path string.
 %
 %   Strips the leading directory portion from FILENAME and returns
@@ -16,14 +14,13 @@ if isa(filename,'cell') %Case where there are several filenames, using the first
 % Toolbox Dependencies: None
 %
 % See also FILEPARTS.
+if isa(filename, 'cell')    % cell input: use first element only
+    filename = filename{1};
 end
-slashes=find(filename=='\' | filename=='/');
+slashes = find(filename == '\' | filename == '/');
 if ~isempty(slashes)
-    file=filename((slashes(end)+1):end);
+    file = filename((slashes(end) + 1):end);
 else
-    file=filename;
+    file = filename;
 end
-
-
 end
-
