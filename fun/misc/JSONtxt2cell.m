@@ -1,4 +1,4 @@
-function [header,outmat] = JSONtxt2cell(filename)
+function [header, outmat] = JSONtxt2cell(filename)
 %JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.
 %
 %   Opens FILENAME, reads its contents as a single string, and uses
@@ -19,49 +19,46 @@ function [header,outmat] = JSONtxt2cell(filename)
 fid = fopen(filename);
 bigstring = fread(fid);
 fclose(fid);
-% smallstring = char(bigstring(1:150)');
 bigstring = char(bigstring');
-%figure out how many "[" and "]" there are
-% [IB] = length(strfind(bigstring,'['));
-% [IC] = length(strfind(bigstring,']'));
-[IB] = ismember(bigstring,'[');
-[IC] = ismember(bigstring,']');
 
-%check to make sure the file is complete before going on
+% find opening and closing bracket positions
+IB = ismember(bigstring, '[');
+IC = ismember(bigstring, ']');
+
+% verify the file has matching bracket pairs
 startindex = find(IB);
-stopindex = find(IC);
+stopindex  = find(IC);
 if length(startindex) ~= length(stopindex)
-    disp('Error in file construction, mismatch of JSON string terminators "[" and "]"');
+    disp(['Error in file construction, mismatch of JSON string ' ...
+        'terminators "[" and "]"']);
     disp(filename);
     header = '';
     outmat = [];
     return
 end
-outcell = cell(length(startindex),1);
+outcell = cell(length(startindex), 1);
 
-%the header
+% parse the header (first bracketed array)
 header = JSON.parse(bigstring(startindex(1):stopindex(1)));
 
-for z = 2:length(startindex)
-    temp = bigstring(startindex(z):stopindex(z));
-%     g = JSON.parse(temp);
-    [ID] = ismember(temp,',');%find out how many items there are
+for ii = 2:length(startindex)
+    temp = bigstring(startindex(ii):stopindex(ii));
+    ID   = ismember(temp, ',');
     commaindex = find(ID);
-    g{1} = str2double(temp(2:commaindex(1)-1));
-    for zz = 2:length(commaindex)
-       g{zz} = str2double(temp(commaindex(zz-1)+1:commaindex(zz)-1));
+    g{1} = str2double(temp(2:commaindex(1) - 1));       %#ok<AGROW>
+    for jj = 2:length(commaindex)
+        g{jj} = str2double( ...                         %#ok<AGROW>
+            temp(commaindex(jj-1)+1:commaindex(jj)-1));
     end
-    g{end+1} = str2double(temp(commaindex(end)+1:end-1));
-    outcell{z-1} = g;
+    g{end+1} = str2double(temp(commaindex(end)+1:end-1)); %#ok<AGROW>
+    outcell{ii-1} = g;
     clear g
 end
 
-outcell = outcell(~cellfun('isempty',outcell));
-outmat = zeros(length(outcell),length(outcell{1}));
+outcell = outcell(~cellfun('isempty', outcell));
+outmat  = zeros(length(outcell), length(outcell{1}));
 
-for z = 1:length(outcell)
-   outmat(z,:) = cell2mat(outcell{z}); 
+for ii = 1:length(outcell)
+    outmat(ii, :) = cell2mat(outcell{ii});
 end
-clear outcell
 end
-
