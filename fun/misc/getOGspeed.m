@@ -16,50 +16,56 @@ function OGspeed = getOGspeed(expData)
 %
 % See also EXPERIMENTDATA, DELETESHORTPHASES.
 
-%detemine overground baseline trials
-OGtrials=cell2mat(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName('OG base')))
+%% Get overground baseline trial indices
+OGtrials = cell2mat(expData.metaData.trialsInCondition( ...
+    expData.metaData.getConditionIdxsFromName('OG base')));
 
-speeds=[];
+speeds = [];
 
-for i=1:length(OGtrials) %loop through each og trail
-    
-    trialData=expData.data{OGtrials(i)};
-    orientation=expData.data{OGtrials(i)}.markerData.orientation;
-    
-    %get hip marker data (only in fore-aft direction)
-    newMarkerData = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['LHIP' orientation.foreaftAxis]});
-    rhip=newMarkerData(:,1);
-    lhip=newMarkerData(:,2);
-    avghip = (rhip+lhip)./2;
+for tr = 1:length(OGtrials)            % for each OG trial, ...
+    trialData   = expData.data{OGtrials(tr)};
+    orientation = expData.data{OGtrials(tr)}.markerData.orientation;
 
-    %Get hip velocity
+    % get hip marker data in the fore-aft direction only
+    newMarkerData = trialData.markerData.getDataAsVector( ...
+        {['RHIP' orientation.foreaftAxis], ...
+         ['LHIP' orientation.foreaftAxis]});
+    rhip   = newMarkerData(:, 1);
+    lhip   = newMarkerData(:, 2);
+    avghip = (rhip + lhip) ./ 2;
+
+    % compute hip velocity and remove dropout artifacts (>50 mm/frame)
     HipVel = diff(avghip);
+    HipVel(abs(HipVel) > 50) = 0;
 
-    %Clean up velocities to remove artifacts of marker drop-outs
-    HipVel(abs(HipVel)>50) = 0;
-
-    %Use hip velocity to determine when subject is up to median speed
-    midHipVel = nanmedian(abs(HipVel));
-    walking = abs(HipVel)>midHipVel;
-    % Eliminate walking or turn around phases shorter than 0.5 seconds
-    [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.5);
+    % identify frames at or above median speed
+    midHipVel = median(abs(HipVel), 'omitnan');
+    walking   = abs(HipVel) > midHipVel;
+    % eliminate phases shorter than 0.5 s (turn-around / artifacts)
+    walking = deleteShortPhases( ...
+        walking, trialData.markerData.sampFreq, 0.5);
 
     % split walking into individual bouts
     walkingSamples = find(walking);
 
-    %find samples when subject starts and stops walking
     if ~isempty(walkingSamples)
-        start= [walkingSamples(1) walkingSamples(find(diff(walkingSamples)~=1)+1)'];
-        stop = [walkingSamples(diff(walkingSamples)~=1)' walkingSamples(end)];
+        boutStarts = [walkingSamples(1), ...
+            walkingSamples(find(diff(walkingSamples) ~= 1) + 1)'];
+        boutStops  = [walkingSamples(diff(walkingSamples) ~= 1)', ...
+            walkingSamples(end)];
     else
-        warning('Subject was not walking during one of the overground trials');
+        warning(['Subject was not walking during one of the ' ...
+            'overground trials']);
         return
     end
-    
-    %find walking speed in m/s
-    sampDiff=stop-start;
-    distanceDiff=avghip(stop)-avghip(start); 
-    speeds= [speeds; (distanceDiff/1000)./(sampDiff'/trialData.markerData.sampFreq)] %distance divided by 1000 to convert to m, samples converted to seconds by dividing by samp freq
+
+    % compute speed (m/s): hip displacement in mm ÷ 1000, time in s
+    sampDiff = boutStops - boutStarts;
+    distDiff = avghip(boutStops) - avghip(boutStarts);
+    speeds   = [speeds; ...                             %#ok<AGROW>
+        (distDiff / 1000) ./ ...
+        (sampDiff' / trialData.markerData.sampFreq)];
 end
 
-OGspeed=nanmean(abs(speeds));
+OGspeed = mean(abs(speeds), 'omitnan');
+end
