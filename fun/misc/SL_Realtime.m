@@ -1,18 +1,14 @@
-% SL Realtime
+%% SL Realtime — Step Length & Cadence Computation
+% author: WDA
+% date: 4/11/2016
+% purpose: Designed to be run by a Nexus 2 pipeline shortly after c3d
+%   file creation. Opens the current trial and quickly computes step
+%   length, cadence, and step time without initializing labTools classes.
 %
-%A script designed to be used by a Nexus 2 pipeline shortly after creation
-%of a c3d file.
-%
-%The script opens the desired c3d and quickly computes the following
-%parameters using the same methods as Labtools but without initializing the
-%classes.
-%
-%Parameters: 
-% 1. Average Step Length (ANK-ANK distance)
-% 2. Cadence
-%
-%WDA 4/11/2016
-
+% Parameters computed:
+%   1. Average Step Length (ANK-ANK distance)
+%   2. Cadence
+%   3. Step time
 
 %% Load Data
 

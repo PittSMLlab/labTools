@@ -1,15 +1,17 @@
 %% Determine the Optimal Reconstruct & Label Pipeline Parameters
 % author: NWB (with assistance from ChatGPT)
 % date (created): 18 May 2025
-% purpose: to iterate through various Vicon Nexus 'Reconstruct & Label'
-% pipeline parameters to determine the optimal configuration based on
-% metrics such as the percentage of frames missing, the average number of
-% gaps per marker, and the maximum and median gap length.
+% purpose: Iterate through various Vicon Nexus 'Reconstruct & Label'
+%   pipeline parameters to determine the optimal configuration based
+%   on metrics such as percentage of frames missing, average number of
+%   gaps per marker, maximum gap length, and median gap length — both
+%   across all markers and a subset.
 
 % TODO:
-%   1. Loop through exemplar trials from all SML Lab studies or study types
-%   2. Save RGT, LGT, RANK, LANK marker trajectories in MAT file for later
-%       analysis just in case
+%   1. Loop through exemplar trials from all SML Lab studies or
+%       study types
+%   2. Save RGT, LGT, RANK, LANK marker trajectories in MAT file
+%       for later analysis just in case
 %   3. Generate and save trajectory figures for GT and ANK markers
 
 %% 1) Define Paths
