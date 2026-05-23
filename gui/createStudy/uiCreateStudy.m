@@ -191,8 +191,6 @@ end
 
 for ii = 1:nSubs
     load(fileList{ii});
-    % aux1 = strfind(lower(fileList{i}), 'params');
-    % subID = fileList{i}(1:(aux1-1));
     subID = adaptData.subData.ID;
 
     subGroup.IDs(ii)       = {subID};
