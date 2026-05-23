@@ -1,5 +1,20 @@
 function OGspeed = getOGspeed(expData)
-%must load subject before running function
+%GETOGSPEED Compute mean overground walking speed from hip marker data.
+%
+%   Identifies overground baseline trials in EXPDATA, uses hip marker
+% velocity to isolate walking bouts, and returns the mean absolute
+% walking speed in m/s. Subject data must be loaded before calling
+% this function.
+%
+% Inputs:
+%   expData - experimentData object with a condition named 'OG base'
+%
+% Outputs:
+%   OGspeed - mean absolute overground walking speed (m/s)
+%
+% Toolbox Dependencies: None
+%
+% See also EXPERIMENTDATA, DELETESHORTPHASES.
 
 %detemine overground baseline trials
 OGtrials=cell2mat(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName('OG base')))

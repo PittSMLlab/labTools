@@ -1,7 +1,21 @@
 function [header,outmat] = JSONtxt2cell(filename)
-%JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell
-%array
-%   ...
+%JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.
+%
+%   Opens FILENAME, reads its contents as a single string, and uses
+% JSON.parse to decode each top-level bracketed array. The first
+% array becomes the header; subsequent arrays are parsed into rows of
+% the output matrix.
+%
+% Inputs:
+%   filename - path to the JSON text file
+%
+% Outputs:
+%   header - parsed first JSON array (cell or struct from JSON.parse)
+%   outmat - numeric matrix where each row is a subsequent JSON array
+%
+% Toolbox Dependencies: None
+%
+% See also JSON.
 fid = fopen(filename);
 bigstring = fread(fid);
 fclose(fid);

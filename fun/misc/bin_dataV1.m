@@ -1,9 +1,4 @@
 function [xnew, xnewstd]=bin_dataV1(x,binwidth)
-% writen based on bin_data
-% function does running average. xnew averages rows of x
-% binwidth indicates the duration of each time bin
-%writen by GTO April 14th 2009
-
 if size(x,1)>=binwidth
     if binwidth==1
         xnew=x;
@@ -43,3 +38,20 @@ end
 %   xnew=conv2(x,ones(N,1)/N,'valid');
 %   xnewstd=conv2(x.^2,ones(N,1)/N,'valid') -xnew.^2;
 %end
+%BIN_DATAV1 Compute a running average along the rows of a matrix.
+%
+%   Computes a causal sliding-window mean and standard deviation for
+% each row of X using a window of BINWIDTH rows. Written by GTO,
+% April 14 2009.
+%
+% Inputs:
+%   x        - N×M numeric matrix
+%   binwidth - number of rows in each sliding window
+%
+% Outputs:
+%   xnew    - running-average matrix (N-binwidth+1) × M
+%   xnewstd - running standard deviation, same size as xnew
+%
+% Toolbox Dependencies: None
+%
+% See also RUNAVG, MEAN.

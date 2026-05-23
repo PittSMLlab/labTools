@@ -1,11 +1,4 @@
 function changeCondName(subID,oldNames,newNames)
-%Changes the condition names of a param file. 
-%   INPTUS:
-%   subID: a string (or cell array of strings) with the subject's ID (i.e. the
-%   characters preceeding 'params' in the file name)
-%   oldNames: a string (or cell array of strings) with the condition name(s) to be replaced
-%   newNames: a string (or cell array of strings) with the condition name(s) that should replace the old ones
-
 %Check inputs.
 
 if isa(subID,'char')
@@ -54,4 +47,23 @@ for s=1:length(subID)
     save([subID{s} 'params.mat'],'adaptData','-v7.3')
 end
     
-    
+    %CHANGECONDNAME Rename conditions in an adaptationData params file.
+%
+%   For each subject in SUBID, loads the corresponding params file,
+% replaces every condition name in OLDNAMES with the corresponding
+% name in NEWNAMES, and saves the updated file back to disk.
+%
+% Inputs:
+%   subID    - string or cell array of strings; subject ID prefix
+%              (characters preceding 'params' in the filename)
+%   oldNames - string or cell array of condition names to replace
+%   newNames - string or cell array of replacement condition names;
+%              must be the same length as oldNames
+%
+% Outputs:
+%   (none) — modifies params files on disk in-place
+%
+% Toolbox Dependencies: None
+%
+% See also ADAPTATIONDATA.
+

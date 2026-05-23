@@ -1,9 +1,4 @@
 function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials)
-%Over ground baseline data are ordered based on where the subject was
-%located in the lab during each particular gait cycle. The data is then
-%characterized spatially and a bias is removed form all overground data
-%taking spatial dependancies into account.
-
 labels=adaptData.data.labels;
 newData=nan(size(adaptData.data.Data));
 %seperate data based on walking direction
@@ -52,3 +47,23 @@ newOG=sortrows([allOG1; allOG2],1); %re-order based on time points
 newData(inds,:)=newOG(:,3:end); %first two columns are just for book keeping, do not get saved.
 
 end
+%REMOVEOGBIAS Remove spatial bias from overground gait data.
+%
+%   Orders overground baseline data by spatial position in the lab,
+% computes a running-average fit to characterize the position-dependent
+% bias, then subtracts that bias from all overground trial data.
+%
+% Inputs:
+%   adaptData    - adaptationData object containing the trial data
+%   OGtrials     - indices of all overground trials to debias
+%   OGbaseTrials - indices of overground baseline trials used to
+%                  fit the spatial bias model
+%
+% Outputs:
+%   newData - debiased parameter data matrix (same size as
+%             adaptData.data.Data)
+%
+% Toolbox Dependencies: None
+%
+% See also ADAPTATIONDATA, BIN_DATAV1.
+

@@ -10,8 +10,8 @@ function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)
 %   savePath   - full .mat file path to save the result
 %
 % Outputs:
-%   mrkrData - struct with per-subject/trial trajectory data from the
-% OLD or NEW pipeline
+%   mrkrData - struct with per-subject/trial trajectory data from
+%              the OLD or NEW pipeline
 %
 % Toolbox Dependencies:
 %   None

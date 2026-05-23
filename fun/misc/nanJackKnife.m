@@ -1,76 +1,4 @@
 function [Pa,Li] = nanJackKnife(varargin)
-% JACKKNIFE plots jackknife errorbars around a given curve
-%
-%     [Pa,Li,t] = JACKKNIFE(x,y,L,U,'r','g')
-%     JACKKNIFE(x,y,se,colorMean,colorShade)
-%     x= vector 1:points
-%     y= each row is mean of a condition
-%
-%     Plots a gray Jackknife around the line displayed in black very useful for
-%     funky nature style error bars which are shaded.
-%
-%         Pa is a patch object for more help on patch objects see below
-%         Li is a line object, more help on line object is available in MATLAB
-%
-%     USAGE :
-%              1)   [Pa,Li] = JackKnife(x,y,E)
-%                    Calculates the Lower and upper errorbars as
-%                    L = Y-E and U = Y+E. It then takes a default gray color
-%                    as patch color, and the line color as black and plots
-%                    it around the line using a patch object.
-%
-%              2)   [Pa,Li] = JackKnife(x,y,E,LineColor,PatchColor)
-%                    Calculates the Lower and upper errorbars as
-%                    L = Y-E and U = Y+E. It then takes PatchColor
-%                    as patch color, and the Line Color from the LineColor
-%                    variable. It then plots it around the line
-%                    using a patch object.
-%
-%              3)   [Pa,Li] = JackKnife(x,y,L,U)
-%                    User Supplied bounds are taken as L and U, It then takes
-%                    a default gray color as patch color, and the line color
-%                    as black and plots it around the line using a patch object.
-%
-%              4)   [Pa,Li] = JackKnife(x,y,L,U,LineColor,PatchColor)
-%                    User Supplied bounds are taken as L and U, It then takes
-%                    PatchColor as patch color, and the Line Color from the LineColor
-%                    variable. It then plots it around the line using a
-%                    patch object.
-%      CAVEATS
-%                 1) Can be Slow sometimes for length(Array) > 10000,
-%                 2) Needs better vectorization
-%      EXAMPLE
-%                         t = [-5:0.05:5];
-%                         Y = sin(t);
-%                         E = 0.4*rand(1,length(t));
-%                         [Pa,Li] = JackKnife(t,Y,E);
-%                         xlabel('time');
-%                         ylabel('Amplitude');
-%                         title('Using Errors alone');
-%
-%                         figure;
-%                         L = Y - E;
-%                         U = Y + E;
-%                         [Pa,Li] = JackKnife(t,Y,L,U);
-%                         xlabel('time');
-%                         ylabel('Amplitude');
-%                         title('Using Lower and Upper Confidence Intervals');
-%                         hold on;
-%
-%                         Y1 = 2*Y;
-%                         L = Y1 - 0.2;
-%                         U = Y1 + 0.2;
-%                         [Pa,Li] = JackKnife(t,Y1,L,U,[255 51 51]./255,[255 153 102]./255);
-%                         hold on;
-%                         [Pa,Li] = JackKnife(t,Y1*2,E,[51 51 153]./255,[102 153 204]./255);
-%                         [Pa,Li] = JackKnife(t,Y1*2,E,'r','g');
-%
-% See also ERRORBAR, PATCH, LINE
-%
-%
-% Version 0.001 Chandramouli Chandrasekaran (Chandt) - 13 April 2006.
-
-
 switch(nargin)
     case 3,
         % If there are 3 inputs it means its just the errors
@@ -181,3 +109,35 @@ hold on;
 
 
 
+%NANJACKKNIFE Plot shaded error-bar patches around a data curve.
+%
+%   Plots a shaded patch representing jackknife (or generic) error
+% bounds around a line. Supports 3–7 arguments. Based on the original
+% JackKnife by Chandramouli Chandrasekaran (2006).
+%
+% Usage:
+%   [Pa,Li] = nanJackKnife(x, y, E)
+%   [Pa,Li] = nanJackKnife(x, y, L, U)
+%   [Pa,Li] = nanJackKnife(x, y, E, LineColor, PatchColor)
+%   [Pa,Li] = nanJackKnife(x, y, L, U, LineColor, PatchColor)
+%   [Pa,Li] = nanJackKnife(x, y, E, LineColor, PatchColor, Opacity)
+%   [Pa,Li] = nanJackKnife(x, y, E, LineColor, PatchColor, Opacity, w)
+%
+% Inputs:
+%   x          - 1×N position vector
+%   y          - 1×N mean values
+%   E          - 1×N symmetric error (L = y-E, U = y+E)
+%   L, U       - 1×N lower and upper bounds (alternative to E)
+%   LineColor  - color for the mean line (default 'k')
+%   PatchColor - color for the error patch (default [0.85 0.85 0.85])
+%   Opacity    - patch transparency FaceAlpha (default 1)
+%   w          - (optional) 1×N binary flag; 0 = black fill, 1 = line
+%                color fill for each marker
+%
+% Outputs:
+%   Pa - patch object (or [] if U == L everywhere)
+%   Li - line/marker object from the last plotted point
+%
+% Toolbox Dependencies: None
+%
+% See also ERRORBAR, PATCH, LINE.

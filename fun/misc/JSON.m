@@ -1,14 +1,14 @@
 classdef JSON < handle
-    % v = JSON.parse(jsonString) converts a JSON string to a MATLAB value.
-    %
-    % This started out as a recursive descent parser, but JSON is so simple
-    % that most of the parser collapsed out.
-    %
-    % In the service of speed, simplicity, and laziness, this code is NOT a
-    % validator. Its purpose is to convert correct JSON strings to MATLAB
-    % values. It does not reject all malformed JSON.
-    
-    % Copyright 2013 The MathWorks, Inc.
+%JSON Non-validating JSON string parser.
+%
+%   Converts a JSON string to a MATLAB value. This is not a validator:
+% its purpose is to convert correct JSON to MATLAB values and it does
+% not reject all malformed JSON. Originally a recursive descent parser;
+% most of the parser collapsed out because JSON is so simple.
+%
+% See also JSONTXT2CELL.
+%
+% Copyright 2013 The MathWorks, Inc.
     
     properties (Access = private)
         json % the string

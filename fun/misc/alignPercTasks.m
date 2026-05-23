@@ -1,36 +1,23 @@
 function [paddedData]=alignPercTasks(data)
-%alignPercTasks Aligns time-course data with multiple, sequential
-%interleaved perceptual tasks by independently padding/truncating each
-%segment (walk/task) to standardize data across all participants.
+%ALIGNPERCTASKS Align time-course data across participants with
+%perceptual tasks.
 %
-% For conditions WITH perceptual tasks:
-%   - Walking segments are truncated to the MINIMUM length across participants
-%   - Perceptual Task segments are padded to the MAXIMUM length across
-%   participants (padded with NaNs)
-%   - Task markers are preserved and adjusted to new positions
+%   Standardizes stride-indexed data across participants by
+% independently padding or truncating each segment (walking or
+% perceptual task) to a uniform length. For conditions with tasks,
+% walking segments are truncated to the minimum length and task
+% segments are padded (with NaN) to the maximum length. For
+% conditions without tasks, all participants are cropped to the
+% minimum stride count.
 %
-% For conditions WITHOUT perceptual tasks (e.g., baseline walking):
-%   - All participants are cropped to the MINIMUM stride count
-%   - Ensures uniform length across participants for analysis
-%
-% INPUTS:
-%   data - A structure containing fields with PxN matrices where:
-%          * P=number of participants (rows)
-%          * N=number of strides (columns)
+% Inputs:
+%   data - struct with PxN fields (P = participants, N = strides).
 %          Required fields:
-%            - percTaskInitStride: Binary markers (1) indicating task start
-%            - percTaskEndStride: Binary markers (1) indicating task end
-%            - pertSizePercTask: Perturbation size for each task (not
-%            currenlty used but might need in the future MGR)
-%            - Other data fields to be aligned (e.g., kinematic variables)
-%          Each field contains subfields for conditions (e.g., .trial1)
+%            percTaskInitStride - binary matrix; 1 = task start
+%            percTaskEndStride  - binary matrix; 1 = task end
+%            pertSizePercTask   - perturbation size per task
+%          Each field has subfields for conditions (e.g., .trial1).
 %
-% OUTPUTS:
-%   paddedData - A structure with the same fields as input, containing:
-%                * Aligned matrices with uniform length per condition
-%                * Updated task marker positions in percTaskInitStride/percTaskEndStride
-%                * All data fields processed identically for consistency
-
 conditions=fields(data.percTaskInitStride);
 for cond=1:length(conditions) % I think trial is always one so will use this as a reference for now
 
@@ -43,6 +30,14 @@ for cond=1:length(conditions) % I think trial is always one so will use this as 
     noPercTasks=true;
     if sum(find(taskInitMatrix==1))~=0 && sum(find(taskEndMatrix==1))~=0
         noPercTasks=false;
+% Outputs:
+%   paddedData - struct with the same fields as DATA, containing
+%                aligned matrices of uniform length per condition,
+%                with updated task marker positions
+%
+% Toolbox Dependencies: None
+%
+% See also FIELDS, FIELDNAMES.
     end
 
     % for conditions without any perceptual tasks: calculate the minimun

@@ -1,5 +1,5 @@
 function signals = clipSignals(signals, percentile)
-% clipSignals  Clip the top and bottom of each signal column by percentile.
+%CLIPSIGNALS Clip each signal column to symmetric percentile bounds.
 %
 %   Replaces all samples below the lower percentile threshold and above
 % the upper percentile threshold with the respective threshold value,
@@ -25,7 +25,7 @@ function signals = clipSignals(signals, percentile)
 %   Toolbox Dependencies:
 %     Statistics and Machine Learning Toolbox  (prctile)
 %
-%   See also: loadTrials, prctile
+% See also LOADTRIALS, PRCTILE.
 
 arguments
     signals    (:, :) {mustBeNumeric}
