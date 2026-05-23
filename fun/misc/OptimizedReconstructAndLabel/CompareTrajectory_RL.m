@@ -1,44 +1,48 @@
+%% Compare Trajectory — Old vs. New Reconstruct & Label
+% Runs the old pipeline on a backup copy of the trial and the new
+% (optimized) pipeline on the original, then overlays resulting marker
+% trajectories for comparison.
+
 markersToCompare = {'LGT', 'LANK'};
-subject = 'C3S24';
-basePath = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1';
-trialName = 'Trial16';
-trialPath = fullfile(basePath, trialName);
+subject          = 'C3S24';
+basePath         = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1';
+trialName        = 'Trial16';
+trialPath        = fullfile(basePath, trialName);
 
 trajData = struct();
 
-% -----------------------------
-% Step 1: OLD PIPELINE
-% -----------------------------
+%% Step 1 — Old Pipeline
+
 fprintf('\n=== Running OLD pipeline ===\n');
 viconOld = ViconNexus();
 dataMotion.openTrialIfNeeded(trialPath, viconOld);
 pause(2);
 
-disp(viconOld.GetMarkerNames(subject));  % for old
-disp(viconNew.GetMarkerNames(subject));  % for new
+disp(viconOld.GetMarkerNames(subject));
 
-for m = 1:numel(markersToCompare)
-    marker = markersToCompare{m};
+for mrkr = 1:numel(markersToCompare)
+    marker = markersToCompare{mrkr};
     try
-        [trajX, trajY, trajZ, existsTraj] = viconOld.GetTrajectory(subject, marker);
+        [trajX, trajY, trajZ, existsTraj] = ...
+            viconOld.GetTrajectory(subject, marker);
         traj = NaN(length(trajX), 3);
-        traj(existsTraj, :) = [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
-        trajData.(marker).Old = NaN(0,3);
+        traj(existsTraj, :) = ...
+            [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
+        trajData.(marker).Old = traj;
     catch
         warning('Could not retrieve OLD trajectory for %s.', marker);
-        trajData.(marker).Old = NaN(0,3);
+        trajData.(marker).Old = NaN(0, 3);
     end
 end
 
-% -----------------------------
-% Step 2: NEW (Optimized) PIPELINE
-% -----------------------------
+%% Step 2 — New (Optimized) Pipeline
+
 fprintf('\n=== Running NEW (optimized) pipeline ===\n');
 viconNew = ViconNexus();
 dataMotion.openTrialIfNeeded(trialPath, viconNew);
 pause(2);
 try
-    viconNew.CloseTrial(200);  % Close with force
+    viconNew.CloseTrial(200);
     pause(2);
 catch
     warning('Could not close trial before re-opening.');
@@ -47,33 +51,35 @@ Part1RL(trialPath);
 %Part1RL(trialPath);  % Replace with your optimized R&L pipeline
 pause(3);
 
-for m = 1:numel(markersToCompare)
-    marker = markersToCompare{m};
+for mrkr = 1:numel(markersToCompare)
+    marker = markersToCompare{mrkr};
     try
-        [trajX, trajY, trajZ, existsTraj] = viconNew.GetTrajectory(subject, marker);
+        [trajX, trajY, trajZ, existsTraj] = ...
+            viconNew.GetTrajectory(subject, marker);
         traj = NaN(length(trajX), 3);
-        traj(existsTraj, :) = [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
-        trajData.(marker).New = NaN(0,3);
+        traj(existsTraj, :) = ...
+            [trajX(existsTraj), trajY(existsTraj), trajZ(existsTraj)];
+        trajData.(marker).New = traj;
     catch
         warning('Could not retrieve NEW trajectory for %s.', marker);
-        trajData.(marker).New = NaN(0,3);
+        trajData.(marker).New = NaN(0, 3);
     end
 end
 
-% -----------------------------
-% Step 3: PLOTTING
-% -----------------------------
+%% Step 3 — Plotting
+
 components = {'X', 'Y', 'Z'};
 
-for m = 1:numel(markersToCompare)
-    marker = markersToCompare{m};
+for mrkr = 1:numel(markersToCompare)
+    marker  = markersToCompare{mrkr};
     trajOld = trajData.(marker).Old;
     trajNew = trajData.(marker).New;
     nFrames = size(trajOld, 1);
-    time = (1:nFrames) / 100;  % 100 Hz
+    time    = (1:nFrames) / 100;  % 100 Hz
 
-    figure('Name', ['Trajectory Comparison: ' marker], 'NumberTitle', 'off');
-    tiledlayout(3,1);
+    figure('Name', ['Trajectory Comparison: ' marker], ...
+        'NumberTitle', 'Off');
+    tiledlayout(3, 1);
 
     for dim = 1:3
         nexttile;
@@ -81,12 +87,11 @@ for m = 1:numel(markersToCompare)
         title(sprintf('%s - %s trajectory', marker, components{dim}));
         xlabel('Time (s)');
         ylabel('Position (mm)');
-
-        if ~isempty(trajOld) && ~all(isnan(trajOld(:,dim)))
-            plot(time, trajOld(:,dim), 'b', 'DisplayName', 'Old');
+        if ~isempty(trajOld) && ~all(isnan(trajOld(:, dim)))
+            plot(time, trajOld(:, dim), 'b', 'DisplayName', 'Old');
         end
-        if ~isempty(trajNew) && ~all(isnan(trajNew(:,dim)))
-            plot(time, trajNew(:,dim), 'r--', 'DisplayName', 'New');
+        if ~isempty(trajNew) && ~all(isnan(trajNew(:, dim)))
+            plot(time, trajNew(:, dim), 'r--', 'DisplayName', 'New');
         end
         legend;
         hold off;

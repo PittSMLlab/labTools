@@ -1,29 +1,33 @@
 function runCustomPatternFill(vicon, refMap)
-
-% runCustomPatternFill: applies pattern fill using marker specific
-% reference markers
+%RUNCUSTOMPATTERNFILL Apply pattern fill using marker-specific references.
+%
+%   Iterates over all target markers in refMap and fills trajectory gaps
+% in each using the associated reference marker via the Vicon Nexus SDK.
 %
 % Inputs:
-%   vicon - initialized ViconNexus() object
-%   refMap - containers.Map of target marker names to reference marker
-%   names
+%   vicon  - Initialized ViconNexus() object
+%   refMap - containers.Map mapping target marker names to reference
+%            marker names
+%
+% Outputs:
+%   None
+%
+% Toolbox Dependencies: None
+%
+% See also GETPATTERNFILLREFERENCEMAP.
 
-markers = refMap.keys;
+markers = refMap.keys();
 
-for i = 1:numel(markers)
-    targetMarker = markers{i};
-    refMarker = refMap(targetMarker);
-    
+for mrkr = 1:numel(markers)
+    targetMarker = markers{mrkr};
+    refMarker    = refMap(targetMarker);
     try
-        % Apply pattern fill for the target marker using the reference
-        % marker
         vicon.PatterFillGap(targetMarker, refMarker);
-        fprintf('Pattern filled %s using %s. \n', targetMarker, refMarker);
+        fprintf('Pattern filled %s using %s.\n', targetMarker, refMarker);
     catch ME
-        warning('Could not pattern fil %s with %s: %s', ...
+        warning('Could not pattern fill %s with %s: %s', ...
             targetMarker, refMarker, ME.message);
     end
 end
+
 end
-
-

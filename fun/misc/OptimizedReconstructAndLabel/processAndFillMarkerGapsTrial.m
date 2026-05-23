@@ -1,60 +1,62 @@
 function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)
-%PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps
-%   This function runs reconstruct and label pipelines, fills small marker
-%   gaps using spline interpolation, and then attempts pattern-based filling.
+%PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps.
 %
-% input(s):
-%   pathTrial: full path to the trial folder
-%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-%       object will be created and connected.
+%   Runs the reconstruct and label pipeline, fills small marker gaps
+% via spline interpolation, then applies pattern-based filling for each
+% reference/target group. Returns marker trajectories at each stage.
+%
+% Inputs:
+%   pathTrial - Full path to the trial folder
+%   vicon     - (optional) Vicon Nexus SDK object; connects if not
+%               supplied
+%
+% Outputs:
+%   mrkrTrajs - Struct with fields Step1RandL, Step2Spline, and
+%               Step3Pattern; each contains marker trajectories at
+%               that processing stage
+%
+% Toolbox Dependencies: None
+%
+% See also RECONSTRUCTANDLABELTRIAL, RUNCUSTOMPATTERNFILL.
 
-% verify input
 narginchk(1, 2);
 
-% initialize Vicon Nexus object if not provided
 if nargin < 2 || isempty(vicon)
     fprintf('No Vicon SDK object provided. Connecting to Vicon Nexus...\n');
     vicon = ViconNexus();
 end
 
-% define reference and target markers
-markersRef = {'GT','KNEE','GT','ANK'};
-markersTarg = {
-    {'ASIS','PSIS','THI','KNEE'}, ...
-    {'GT','ANK'}, ...
-    {'ASIS','PSIS','THI','KNEE'}, ...
-    {'SHANK','HEEL','TOE'}
+markersRef  = {'GT', 'KNEE', 'GT', 'ANK'};
+markersTarg = { ...
+    {'ASIS', 'PSIS', 'THI', 'KNEE'}, ...
+    {'GT', 'ANK'}, ...
+    {'ASIS', 'PSIS', 'THI', 'KNEE'}, ...
+    {'SHANK', 'HEEL', 'TOE'} ...
 };
 
 mrkrTrajs = struct();
 
-% run reconstruct and label pipeline
 fprintf('Running reconstruct and label on: %s\n', pathTrial);
 dataMotion.reconstructAndLabelTrial(pathTrial, vicon, false);
 pause(3);
 mrkrTrajs.Step1RandL = getRelevantMrkrTrajs(vicon);
 
-% extract marker gaps
 markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial, vicon);
 
-% fill small gaps with spline interpolation
-markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false);
+markerGaps = dataMotion.fillSmallMarkerGapsSpline( ...
+    markerGaps, pathTrial, vicon, false);
 
 mrkrTrajs.Step2Spline = getRelevantMrkrTrajs(vicon);
 
-% fill gaps using pattern fill for each reference marker
 for ref = 1:numel(markersRef)
-    refMarker = markersRef{ref};
+    refMarker     = markersRef{ref};
     targetMarkers = markersTarg{ref};
-
-    % fill for both sides
-    markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
+    markerGaps    = fillMarkerGapsPatternSpecifiedTargets( ...
         markerGaps, targetMarkers, refMarker, pathTrial, vicon);
 end
 
 mrkrTrajs.Step3Pattern = getRelevantMrkrTrajs(vicon);
 
-% save trial
 fprintf('Saving trial: %s\n', pathTrial);
 try
     vicon.SaveTrial(200);
@@ -66,14 +68,28 @@ end
 end
 
 function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
-    markerGaps, targetMarkers, refMarker, pathTrial, vicon)
+        markerGaps, targetMarkers, refMarker, pathTrial, vicon)
+%FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for a marker group.
+%
+%   For each side (R/L), collects gaps for the specified target markers
+% and fills them using the given reference marker via pattern-based gap
+% filling. Updates markerGaps with any remaining unfilled gaps.
+%
+% Inputs:
+%   markerGaps    - Struct mapping marker names to gap arrays
+%   targetMarkers - Cell array of marker name suffixes to fill
+%   refMarker     - Reference marker name suffix
+%   pathTrial     - Full path to the trial folder
+%   vicon         - Vicon Nexus SDK object
+%
+% Outputs:
+%   markerGaps - Updated struct with remaining gaps after filling
 
-sides = {'R','L'};
+sides = {'R', 'L'};
 for side = sides
     sidePrefix = side{1};
     gaps = struct();
 
-    % collect gaps for the target markers
     for targ = 1:numel(targetMarkers)
         markerName = [sidePrefix targetMarkers{targ}];
         if isfield(markerGaps, markerName)
@@ -81,27 +97,36 @@ for side = sides
         end
     end
 
-    % skip if no gaps to process
     if isempty(fieldnames(gaps))
         continue;
     end
 
-    % fill gaps using pattern-based method
     remainingGaps = dataMotion.fillMarkerGapsPattern( ...
         gaps, pathTrial, [sidePrefix refMarker], vicon, false);
 
-    % update the marker gaps structure with the remaining gaps
     markerNames = fieldnames(remainingGaps);
     for mrkr = 1:numel(markerNames)
         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
     end
 end
+
 end
 
 function mrkrTrajs = getRelevantMrkrTrajs(vicon)
+%GETRELEVANTMRKRTRAJS Retrieve key lower-limb marker trajectories.
+%
+%   Queries the Vicon Nexus SDK for RGT, LGT, RANK, and LANK marker
+% trajectories and returns them as an N×3 matrix per marker with NaN
+% for missing frames.
+%
+% Inputs:
+%   vicon - Vicon Nexus SDK object
+%
+% Outputs:
+%   mrkrTrajs - Struct with one N×3 field per relevant marker
 
-mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
-mrkrTrajs = struct();
+mrkrsRelevant = {'RGT', 'LGT', 'RANK', 'LANK'};
+mrkrTrajs     = struct();
 
 subjects = vicon.GetSubjectNames();
 if isempty(subjects)
@@ -109,18 +134,18 @@ if isempty(subjects)
 end
 subject = subjects{1};
 
-for i = 1:numel(mrkrsRelevant)
-    marker = mrkrsRelevant{i};
-    [trajX, trajY, trajZ, existsTraj] = vicon.GetTrajectory(subject, marker);
-    
+for mrkr = 1:numel(mrkrsRelevant)
+    marker = mrkrsRelevant{mrkr};
+    [trajX, trajY, trajZ, existsTraj] = ...
+        vicon.GetTrajectory(subject, marker);
     trajX(~existsTraj) = NaN;
     trajY(~existsTraj) = NaN;
     trajZ(~existsTraj) = NaN;
-    
-    mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];%, double(exists(:))];
+    mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];
 end
 % for mrkr = mrkrsRelevant
 %     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});
 %     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
 % end
+
 end

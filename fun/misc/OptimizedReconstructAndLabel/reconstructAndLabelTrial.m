@@ -1,58 +1,63 @@
-function reconstructAndLabelTrial(pathTrial,vicon,shouldSave)
-%RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data
-%   This function accepts as input the full path to the trial to process by
-% running the reconstruct and label pipelines and saving the processed
-% trial. Make sure the Vicon Nexus SDK is installed and added to the MATLAB
-% path.
+function reconstructAndLabelTrial(pathTrial, vicon, shouldSave)
+%RECONSTRUCTANDLABELTRIAL Run reconstruct and label pipeline on a trial.
 %
-% input(s):
-%   pathTrial: string or character array of the full path of the trial on
-%       which to run the reconstruct and label processing pipeline
-%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.
-%   shouldSave: (optional) logical, whether to save changes (default: true)
+%   Accepts the full path to a Vicon Nexus trial folder, opens the
+% trial if needed, runs the reconstruct and label pipeline, and
+% optionally saves the result. Requires the Vicon Nexus SDK on the
+% MATLAB path.
+%
+% Inputs:
+%   pathTrial  - String or character array; full path to the trial
+%                folder on which to run the pipeline
+%   vicon      - (optional) Vicon Nexus SDK object; connects if not
+%                supplied
+%   shouldSave - (optional) Logical; whether to save changes after
+%                processing (default: true)
+%
+% Outputs:
+%   None
+%
+% Toolbox Dependencies: None
+%
+% See also RECONSTRUCTANDLABELSESSION.
 
 % TODO: add a GUI input option if helpful
-narginchk(1,3);         % verify correct number of input arguments
+narginchk(1, 3);
 
-if nargin < 3 || isempty(shouldSave)       % if no 'shouldSave' input
-    shouldSave = true;                     % default to saving changes
+if nargin < 3 || isempty(shouldSave)
+    shouldSave = true;
 end
 
-% initialize the Vicon Nexus object if not provided
 if nargin < 2 || isempty(vicon)
     fprintf(['No Vicon SDK object provided. Connecting to Vicon ' ...
         'Nexus...\n']);
     vicon = ViconNexus();
 end
 
-% open the trial if needed
-if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-    return;     % exit if the trial could not be opened
+if ~dataMotion.openTrialIfNeeded(pathTrial, vicon)
+    return;
 end
 
-% The reconstruct and label step will process the raw camera data and
-% reconstruct 3D marker positions. The labeling step assigns names to the
-% reconstructed markers based on the Vicon Nexus labeling scheme.
+% The reconstruct and label step processes raw camera data, reconstructs
+% 3D marker positions, and assigns names per the Vicon labeling scheme.
 fprintf('Running reconstruction and labeling pipeline...\n');
-try                     % try running reconstruct and label pipeline
-    vicon.RunPipeline('Reconstruct And Label','',200);
+try
+    vicon.RunPipeline('Reconstruct And Label', '', 200);
     fprintf('Reconstruction and labeling complete.\n');
 catch ME
-    warning(ME.identifier,'%s',ME.message);
+    warning(ME.identifier, '%s', ME.message);
 end
 
-% saves the trial changes made if 'shouldSave' is true back to trial file
 if shouldSave
     fprintf('Saving the trial...\n');
-    try                     % try saving the processed trial
+    try
         vicon.SaveTrial(200);
         fprintf('Trial saved successfully.\n');
     catch ME
-        warning(ME.identifier,'%s',ME.message);
+        warning(ME.identifier, '%s', ME.message);
     end
 else
     fprintf('Save option is disabled; trial not saved.\n');
 end
 
 end
-
