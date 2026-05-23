@@ -1,14 +1,4 @@
-function f=getOtherLeg(s)
-    switch s
-        case 'L'
-            f='R';
-        case 'R'
-            f='L';
-        case 's'
-            f='f';
-        case 'f'
-            f='s';
-    end
+function f = getOtherLeg(s)
 %GETOTHERLEG Return the label for the opposite leg or pace.
 %
 %   Maps single-character leg/pace labels to their opposites:
@@ -23,4 +13,14 @@ function f=getOtherLeg(s)
 % Toolbox Dependencies: None
 %
 % See also GETEVENTS.
+switch s
+    case 'L'
+        f = 'R';
+    case 'R'
+        f = 'L';
+    case 's'
+        f = 'f';
+    case 'f'
+        f = 's';
+end
 end
