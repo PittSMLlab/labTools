@@ -1,17 +1,17 @@
-%PLOTHELPER helper function with static functions to make common plots
-% Input arguments that are OPTIONAL can be skipped or provided by [] or nan.
+%PLOTHELPER Collection of static methods for common research plots.
 %
-% Current support: 1. correlation plot: scatter plots with a best fit
-% regression line (y=mx + b) and text printout of the pearson and spearman
-% correlation results
-% 2. bar plots with individual subjects dot
-% 3. confidence intervals
-% 4. boot strap of correlations
-% 5. regression diagnostics (residual normality and homoscedasticity)
-% 6. tight margin of plots (shrink empty space between the plot and the figure window)
+%   Provides static methods for correlation scatter plots with regression
+% lines, bar plots with individual subject overlays, confidence interval
+% plots, bootstrap Spearman correlation tests, regression diagnostic plots,
+% and figure margin tightening. Optional arguments may be passed as []
+% or NaN to skip them.
 %
-% 
-% $Author: Shuqi Liu $	$Date: 2022/08/22 10:06:49 $	$Revision: 0.1 $
+%   Key methods: computeAndPlotCorrelations, plotCorrelations,
+%   plotSingleCorrelation, barPlotWithIndiv, plotCI, plotRegression,
+%   plotRegressionDiagnostics, plotBootStrapCorrSpearman,
+%   compileModelSummaries, tightMargin.
+%
+% $Author: Shuqi Liu $  $Date: 2022/08/22$  $Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2022
 classdef PlotHelper
     
