@@ -1,20 +1,4 @@
-function [ Demographics ] = GroupDemographics(SMatrix)
-
-grps=fieldnames(SMatrix);
-StudyAge=[];
-StudyMale=[];
-for g=1:length(grps)  
-    [Demographics.(grps{g})]=SMatrix.(grps{g}).GroupDemographics;
-    StudyAge=[StudyAge Demographics.(grps{g}).AllAge];
-    StudyMale=[StudyMale Demographics.(grps{g}).NMale];
-end
-
-Demographics.StudyDemographics.N=length(StudyAge);
-Demographics.StudyDemographics.MeanAge=mean(StudyAge);
-Demographics.StudyDemographics.StdAge=std(StudyAge);
-Demographics.StudyDemographics.NMale=sum(StudyMale);
-end
-
+function Demographics = GroupDemographics(SMatrix)
 %GROUPDEMOGRAPHICS Compute group and study-level demographics.
 %
 %   Calculates the number of subjects, mean and SD of age, and number of
@@ -34,3 +18,20 @@ end
 % Toolbox Dependencies: None
 %
 % See also MAKESMATRIXV2, UICREATESTUDY.
+
+grps      = fieldnames(SMatrix);
+studyAge  = [];
+studyMale = [];
+
+for gg = 1:length(grps)
+    Demographics.(grps{gg}) = SMatrix.(grps{gg}).GroupDemographics;
+    studyAge  = [studyAge  Demographics.(grps{gg}).AllAge];  %#ok<AGROW>
+    studyMale = [studyMale Demographics.(grps{gg}).NMale];   %#ok<AGROW>
+end
+
+Demographics.StudyDemographics.N       = length(studyAge);
+Demographics.StudyDemographics.MeanAge = mean(studyAge);
+Demographics.StudyDemographics.StdAge  = std(studyAge);
+Demographics.StudyDemographics.NMale   = sum(studyMale);
+
+end
