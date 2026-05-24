@@ -1,14 +1,4 @@
 function Y = smoothedMax(X,N,vector)
-%SMOOTHEDMAX finds the maximum value of an N-pt running average 
-%   For vectors, smoothedMax(X,N) returns the largest value of the N-pt 
-%   running  average of X. For matrixes, smoothedMax(X,N) takes an N-pt running
-%   average of each column and returens the largest value within each column.
-%
-%   xMax=smoothedMax(X,N,dataVector) returns the values of the N-pt
-%   running average of X in the same location as the largest value of the
-%   N-pt running average of dataVector if dataVector is a column vector that has
-%   the same length as the columns of X.
-
 if nargin>2
     if isempty(X)
         newX=NaN(1,size(X,2));
@@ -37,4 +27,29 @@ end
 
 
 end
+
+%SMOOTHEDMAX Find the maximum of an N-point running average.
+%
+%   For vectors, smoothedMax(X, N) returns the largest value of the
+% N-point running average of X. For matrices, takes an N-point running
+% average of each column and returns the largest value within each
+% column.
+%
+%   smoothedMax(X, N, vector) returns the values of the N-point running
+% average of X at the location of the largest absolute value in the
+% N-point running average of vector. vector must be a column vector with
+% the same number of rows as X.
+%
+% Inputs:
+%   X      - Numeric matrix or vector to evaluate
+%   N      - Integer window width for the running average
+%   vector - (Optional) Column vector with size(X,1) rows; when provided,
+%            the peak location is taken from this vector rather than X
+%
+% Outputs:
+%   Y - Row vector of smoothed-max values, one per column of X
+%
+% Toolbox Dependencies: None
+%
+% See also BINDATA, BIN_DATAV1.
 

@@ -1,6 +1,4 @@
 function results = getForceResults( SMatrix,params,groups,maxPerturb,plotFlag,indivFlag, removeBias )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
 % define number of points to use for calculating values
 catchNumPts = 3; %catch
 steadyNumPts = 40; %end of adaptation

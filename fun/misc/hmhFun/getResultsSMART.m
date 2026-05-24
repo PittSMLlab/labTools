@@ -1,5 +1,4 @@
 function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)
-
 % define number of points to use for calculating values
 catchNumPts = 3; %catch
 steadyNumPts = 40; %end of adaptation

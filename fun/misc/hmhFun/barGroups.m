@@ -1,8 +1,4 @@
 function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)
-%Make a bar plot to compare groups for a given epoch and parameter
-%   TO DO: make function be able to accept a group array that is different
-%   thand the groups in the results matrix
-
 if nargin<8 || isempty(mode)
     mode=1;
 end
@@ -69,3 +65,30 @@ end
 
 end
 
+%BARGROUPS Make a bar plot comparing groups across epochs and parameters.
+%
+%   Creates a subplot grid of bar charts — one subplot per (parameter,
+% epoch) combination. Bars represent group means with error bars for
+% standard error. Optionally overlays individual subject data points.
+%
+% Inputs:
+%   Study      - Struct with group fields, each containing an ID field
+%                with subject identifiers
+%   results    - Struct with epoch fields; each epoch has avg (groups ×
+%                params), se (same size), and indiv sub-struct
+%   groups     - Cell array of group name strings
+%   params     - Cell array of parameter name strings
+%   epochs     - Cell array of epoch name strings
+%   indivFlag  - Logical; if true, overlay individual subject data points
+%   colorOrder - K×3 matrix of RGB colors (one row per group/subject);
+%                defaults to poster_colors if empty or not 3-column
+%   mode       - Display mode: 1 = filled bars, 2 = error bars only
+%
+% Outputs:
+%   None (creates a figure)
+%
+% Toolbox Dependencies: None
+%
+% See also OPTIMIZEDSUBPLOT, POSTER_COLORS.
+
+% TODO: accept a group array different from the groups in results

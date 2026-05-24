@@ -24,4 +24,22 @@ for s=subjects
     expData.makeDataObj([saveloc char(s)]); %overwrites file
     
     clearvars -except eventClass
-end
+end%BATCHREPROCESS Reprocess raw experiment data for a list of subjects.
+%
+%   Loads each subject's RAW.mat file, runs process() with the given
+% event class, and saves both the expData struct and the derived data
+% object to the same location as the RAW file.
+%
+%   Example:
+%     batchReProcess({'OG11','OG12','OG13'}, eventClass)
+%
+% Inputs:
+%   subjects   - Cell array of subject ID strings, or a single string
+%   eventClass - Event class passed to rawExpData.process()
+%
+% Outputs:
+%   None (saves files to disk)
+%
+% Toolbox Dependencies: None
+%
+% See also EXPERIMENTDATA.

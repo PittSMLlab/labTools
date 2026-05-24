@@ -1,19 +1,26 @@
 function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)
-% this version was my first attempt to plot the readaptation stuff,
-% AND DO SO WITHOUT CROPPING THE DATA
-%adaptDataList must be cell array of 'param.mat' file names
-%params is cell array of parameters to plot. List with commas to
-%plot on separate graphs or with semicolons to plot on same graph.
-%conditions is cell array of conditions to plot
-%binwidth is the number of data points to average in time
-%indivFlag - set to true to plot individual subject time courses
-%indivSubs - must be a cell array of 'param.mat' file names that is
-%a subset of those in the adaptDataList. Plots specific subjects
-%instead of all subjects.
-
 
 % %%%How to calculate strides to ss
 if isempty(plotFlag)~=0 || plotFlag==1
+%CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.
+%
+%   Applies a 63.2% threshold criterion to the smoothed time course of
+% each parameter in ALLVALUES to identify the stride at which the
+% response first reaches steady state.
+%
+% Inputs:
+%   allValues - N×P matrix of raw parameter values (strides × params)
+%   SSraw     - 1×P vector of raw steady-state values for each param
+%   params    - cell array of parameter name strings (length P)
+%   plotFlag  - scalar; if 1, plot time courses with threshold markers
+%   subID     - subject ID string for plot titles (or empty)
+%
+% Outputs:
+%   Stride2SS - 1×P vector of stride indices to steady state
+%
+% Toolbox Dependencies: None
+%
+% See also BIN_DATAV1.
     figure
 end
 

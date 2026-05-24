@@ -63,4 +63,25 @@ for i=1:length(fileList)
             
         end       
     end
-end
+end%MAKESMATRIX Build a subject matrix struct from params.mat files in the
+% current folder.
+%
+%   Scans the current working directory for *params.mat files, loads
+% each adaptData variable, and organises subjects by group into a
+% hierarchical Subs struct. Warns when a subject's condition list
+% differs from the rest of the group.
+%
+% Inputs:
+%   None
+%
+% Outputs:
+%   Subs - Struct with one field per group (named by abbreviated group
+%          string from adaptData.metaData.ID). Each group field has:
+%            IDs        - N×9 cell array: subID, sex, age, height,
+%                         weight, date, experimenter, obs, filename
+%            conditions - cell array of condition names
+%            (subID)    - adaptData struct for each subject
+%
+% Toolbox Dependencies: None
+%
+% See also MAKESMATRIXV2, GETRESULTSSMART.

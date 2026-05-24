@@ -39,4 +39,21 @@ for i=1:length(groups)
     Subs.(groups{i})=groupAdaptationData(sub.(groups{i}).IDs,sub.(groups{i}).adaptData);
 end
 
-end
+end%MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.
+%
+%   Scans the current working directory for *params.mat files, loads
+% each adaptData variable, and groups subjects by the abbreviated group
+% string from adaptData.metaData.ID. Returns each group as a
+% groupAdaptationData object rather than a raw struct.
+%
+% Inputs:
+%   None
+%
+% Outputs:
+%   Subs - Struct with one field per group, each a groupAdaptationData
+%          object constructed from all subjects' adaptData in that group
+%
+% Toolbox Dependencies: None
+%
+% See also MAKESMATRIX, GROUPADAPTATIONDATA, GETRESULTSSMART.
+

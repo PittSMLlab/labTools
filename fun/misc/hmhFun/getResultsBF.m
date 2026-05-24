@@ -9,6 +9,29 @@ transientNumPts = 5; %OG and Washout
 
 if nargin<3 || isempty(groups)
     groups=fields(SMatrix);  %default
+%GETRESULTSBF Compute body-frame perception results per group.
+%
+%   Loads each subject's bilateral-force perception data file, organises
+% hit rates by target step length (short, medium, long), and computes
+% group-level means and standard errors for two after-effect windows and
+% three step-length map conditions.
+%
+% Inputs:
+%   SMatrix   - Struct with group fields; each group has an ID field
+%               listing subject ID strings
+%   groups    - Cell array of group name strings; defaults to all fields
+%               of SMatrix when empty
+%   plotFlag  - Logical; if true, create bar plots
+%   indivFlag - Logical; if true, overlay individual subjects on bars
+%
+% Outputs:
+%   results - Struct with fields BFafter1, BFafter2, MapShort, MapMid,
+%             MapLong; each has avg, se, indiv sub-structs
+%
+% Toolbox Dependencies: None
+%
+% See also BARGROUPS, GETHITS.
+
 end
 ngroups=length(groups);
 

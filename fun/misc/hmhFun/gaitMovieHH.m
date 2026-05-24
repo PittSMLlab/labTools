@@ -1,17 +1,4 @@
 function  gaitMovieHH(subject,trial,start,stop)
-%GAITMOVIE  Make .avi movie of bilateral gait
-%   Run GAITMOVIE in folder containing .2ld file(s)
-%   .2ld - 3D positions for 12 markers
-%   .vlt - beltspeeds
-%   .txt - title, captions and footnotes
-%GTO Last edited May, 16th 2013 (cleaned up commented stuff)
-%
-%HH edit 6/2013 - changed avifile funtion to writeVideo function
-% added bar graphs below animations to show alpha and w*t values
-%
-%This function plots both contributions as horizontal bars on the same plot
-%but on opposite sides of vertical axis
-%
 
 %Load subject
 load([subject '.mat'])
@@ -213,3 +200,27 @@ set(t,'Matrix',Tx*S)
 
 
 
+%GAITMOVIEHH Make an AVI movie of bilateral gait.
+%
+%   Loads an experimentData .mat file for the given subject, animates
+% the lower-limb marker segments frame-by-frame using 3-D ellipsoids
+% and spheres, and writes the result to an AVI video file named after
+% the subject.
+%
+%   Original GTO code (May 2013). HH edit 6/2013: replaced avifile
+% with VideoWriter; added horizontal bar graphs for alpha and w*t.
+%
+% Inputs:
+%   subject - Subject ID string; a file named (subject).mat must exist
+%             in the current directory
+%   trial   - Scalar index into expData.data selecting the trial to
+%             animate
+%   start   - Start time in seconds
+%   stop    - Stop time in seconds
+%
+% Outputs:
+%   None (writes an AVI file to the current directory)
+%
+% Toolbox Dependencies: None
+%
+% See also VIDEOWRITER.

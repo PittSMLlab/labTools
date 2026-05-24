@@ -1,12 +1,4 @@
 function [xnew, xnewstd]=binData(x,binwidth)
-%BINDATA computes a running average
-%
-%   [xnew,xnewstd]=binData(x,binwidth) averages binwidth elements of the
-%   columns in x and returns the average (xnew) and standard deviations (xnewstd).
-%   The returned variables have columns that are length N-(binwidth-1) where N
-%   is the number of elements in a row of x.
-% 
-%writen by GTO April 14th 2009
 
 if ~isempty(x)
     if binwidth==1
@@ -41,3 +33,20 @@ else
     xnew=[];
     xnewstd=[];
 end
+%BINDATA Compute a running average and standard deviation of columns.
+%
+%   Averages binwidth-element windows of the columns in x and returns
+% both the average and the standard deviation. Returned arrays have
+% N - (binwidth - 1) rows, where N = size(x, 1).
+%
+% Inputs:
+%   x        - Numeric matrix (rows × columns) or column vector
+%   binwidth - Integer window width; must be ≤ size(x, 1)
+%
+% Outputs:
+%   xnew    - Running-average matrix, same number of columns as x
+%   xnewstd - Running standard deviation, same size as xnew
+%
+% Toolbox Dependencies: None
+%
+% See also BIN_DATAV1, SMOOTHEDMAX.

@@ -1,19 +1,4 @@
 function updateParams(subjects,eventClass,ignoreMatFlag)
-%UPDATEPARAMS recomputes parameters and saves new subject file(s).
-%Designed for batch re-processing.
-%   updateParams(Subject) recomputes the adaptation 
-%   parameters and overwrites the (Subject).mat and
-%   (Subject)params.mat files if Subject is a string 
-%   containing a subject ID for which a .mat file
-%   exists either in the current working directory
-%   or in a folder named after the same subject ID.
-%
-%   updateParams(Subject,1) Only overwrites the 
-%   (Subject)params.mat file. Only use when changes
-%   to calcExperimentalData have been made.
-%   
-%   See also calcParameters, experimentData.recomputeParameters, experimentData.makeDataObj.
-
 h=waitbar(0, 'Updating...');
 hw=findobj(h,'Type','Patch');
 set(hw,'EdgeColor',[0 0 1],'FaceColor',[0 0 1]) % changes the color to green
@@ -45,4 +30,28 @@ for s=1:length(subjects)
     waitbar(s/length(subjects))
 end
 close(h)
-end
+end%UPDATEPARAMS Recompute parameters and save updated subject files.
+%
+%   For each subject ID, loads the saved .mat file, recomputes adaptation
+% parameters via recomputeParameters, and overwrites both the .mat and
+% the params.mat files. A progress bar is shown during batch runs.
+%
+%   updateParams(subjects) recomputes parameters for all subjects and
+% overwrites both (subject).mat and (subject)params.mat.
+%
+%   updateParams(subjects, eventClass, 1) skips recomputeParameters and
+% only regenerates the params.mat file; use when only calcParameters
+% logic has changed.
+%
+% Inputs:
+%   subjects      - Cell array of subject ID strings, or a single string
+%   eventClass    - Event class passed to recomputeParameters
+%   ignoreMatFlag - (Optional) If 1, skip .mat recomputation and only
+%                   regenerate the params.mat file
+%
+% Outputs:
+%   None (saves files to disk)
+%
+% See also EXPERIMENTDATA.RECOMPUTEPARAMETERS, EXPERIMENTDATA.MAKEDATAOBJ,
+%   BATCHREPROCESS.
+

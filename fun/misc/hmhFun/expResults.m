@@ -1,6 +1,4 @@
 function results = expResults(SMatrix,groups,plotFlag,indivFlag)
-%% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!
-
 
 % Set colors
 poster_colors;
@@ -184,4 +182,27 @@ if nargin>2 && ~isempty(plotFlag)
     axis tight
     set(gca,'Xtick',1:ngroups,'XTickLabel',groups,'fontSize',12,'Ylim',[0 1500])   
     
-end
+end%EXPRESULTS Compute group-level steady-state and transfer results.
+%
+% NOTE: This function is deprecated; use getResults instead.
+%
+%   Computes spatial, step-time, velocity, and relative contributions
+% at treadmill steady state, plus OG-after transfer metrics, for each
+% group in SMatrix. Optionally generates scatter plots.
+%
+% Inputs:
+%   SMatrix   - Struct with group fields from makeSMatrix or
+%               uiCreateStudy; each group has IDs and adaptData
+%   groups    - Cell array of group name strings; defaults to all
+%               fields of SMatrix when empty
+%   plotFlag  - If provided and non-empty, generate diagnostic plots
+%   indivFlag - If provided and non-empty, overlay individual subjects
+%
+% Outputs:
+%   results - Struct with spatialSteady, stepTimeSteady, relSpatial,
+%             relStepTime, expSpeed, and OGafter sub-structs (each with
+%             avg, sd, indiv fields)
+%
+% Toolbox Dependencies: None
+%
+% See also GETRESULTS, BARGROUPS, POSTER_COLORS.

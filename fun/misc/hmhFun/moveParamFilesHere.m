@@ -1,9 +1,4 @@
 function moveParamFilesHere(path)
-% searches for files in all folders in path
-% what happens with conflicts? --> semms to just overwrite old file.
-% use recursion to look at all levels --> uncomment section.
-
-
 if nargin<1
     path='./';
 end
@@ -27,4 +22,21 @@ for i=1:length(things)
     end
 end
 
-end
+end%MOVEPARAMFILESHERE Copy params.mat files from subfolders to the current
+% directory.
+%
+%   Searches all immediate subdirectories of path for files whose names
+% end in 'params.mat' and copies them into the current working directory.
+% Conflicts are resolved by overwriting.
+%
+% Inputs:
+%   path - Character vector specifying the folder to search (default:
+%          './')
+%
+% Outputs:
+%   None (copies files to current directory)
+%
+% Toolbox Dependencies: None
+%
+% See also SUBFILELIST, GETSUBSFROMFOLDERS, COPYFILE.
+
