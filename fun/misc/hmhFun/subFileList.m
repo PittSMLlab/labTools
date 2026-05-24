@@ -1,12 +1,4 @@
-function output=subFileList(input)
-
-subs=input.IDs(:,1);
-output=cell(1,length(subs));
-
-for i=1:length(subs)
-    %output{end+1}=[subs{i} 'params.mat'];
-    output{i}=input.IDs{i,9};
-end
+function output = subFileList(input)
 %SUBFILELIST Extract parameter file paths from a study input structure.
 %
 %   Returns a cell array of file path strings by reading the ninth column
@@ -22,3 +14,12 @@ end
 % Toolbox Dependencies: None
 %
 % See also GETSUBSFROMFOLDERS.
+
+subs   = input.IDs(:, 1);
+output = cell(1, length(subs));
+
+for ii = 1:length(subs)
+    output{ii} = input.IDs{ii, 9};
+end
+
+end
