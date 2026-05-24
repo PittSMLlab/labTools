@@ -1,30 +1,5 @@
-function batchReProcess(subjects,eventClass)
-% ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}
-
-if isa(subjects,'char')
-    subjects={subjects};    
-end
-
-for s=subjects
-    try
-        load([char(s),'RAW.mat']) %could do this with not raw, but raw is faster to load
-        saveloc = [];
-    catch
-        try
-            load([char(s) filesep char(s) 'RAW.mat'])
-            saveloc=[char(s) filesep];
-        catch
-            ME=MException('makeDataObject:loadSubject',[char(s) ' could not be loaded, try changing your matlab path.']);
-            throw(ME)
-        end
-    end
-        
-    expData=rawExpData.process(eventClass);
-    save([saveloc,char(s)],'expData','-v7.3')
-    expData.makeDataObj([saveloc char(s)]); %overwrites file
-    
-    clearvars -except eventClass
-end%BATCHREPROCESS Reprocess raw experiment data for a list of subjects.
+function batchReProcess(subjects, eventClass)
+%BATCHREPROCESS Reprocess raw experiment data for a list of subjects.
 %
 %   Loads each subject's RAW.mat file, runs process() with the given
 % event class, and saves both the expData struct and the derived data
@@ -43,3 +18,32 @@ end%BATCHREPROCESS Reprocess raw experiment data for a list of subjects.
 % Toolbox Dependencies: None
 %
 % See also EXPERIMENTDATA.
+
+if isa(subjects, 'char')
+    subjects = {subjects};
+end
+
+for sub = subjects
+    try
+        load([char(sub) 'RAW.mat'])
+        saveloc = [];
+    catch
+        try
+            load([char(sub) filesep char(sub) 'RAW.mat'])
+            saveloc = [char(sub) filesep];
+        catch
+            ME = MException('makeDataObject:loadSubject', ...
+                [char(sub) ' could not be loaded, try changing ' ...
+                'your matlab path.']);
+            throw(ME)
+        end
+    end
+
+    expData = rawExpData.process(eventClass);
+    save([saveloc, char(sub)], 'expData', '-v7.3')
+    expData.makeDataObj([saveloc char(sub)]);
+
+    clearvars -except eventClass
+end
+
+end
