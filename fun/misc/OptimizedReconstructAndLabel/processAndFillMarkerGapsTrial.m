@@ -32,7 +32,7 @@ markersTarg = { ...
     {'GT', 'ANK'}, ...
     {'ASIS', 'PSIS', 'THI', 'KNEE'}, ...
     {'SHANK', 'HEEL', 'TOE'} ...
-};
+    };
 
 mrkrTrajs = struct();
 
@@ -68,7 +68,7 @@ end
 end
 
 function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
-        markerGaps, targetMarkers, refMarker, pathTrial, vicon)
+    markerGaps, targetMarkers, refMarker, pathTrial, vicon)
 %FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for a marker group.
 %
 %   For each side (R/L), collects gaps for the specified target markers

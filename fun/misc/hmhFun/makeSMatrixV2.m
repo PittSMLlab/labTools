@@ -1,4 +1,3 @@
-        %subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo
 function Subs = makeSMatrixV2
 %MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.
 %
@@ -26,6 +25,7 @@ for ii = 1:length(fileList)
     aux1 = strfind(lower(fileList{ii}), 'params');
     if ~isempty(aux1)
         subID      = fileList{ii}(1:(aux1 - 1));
+        % subID = adaptData.subData.ID; % I think this is more appropriate.-Pablo
         load(fileList{ii});
 
         group      = adaptData.metaData.ID;

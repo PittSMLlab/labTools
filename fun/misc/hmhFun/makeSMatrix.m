@@ -1,4 +1,3 @@
-        %subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo
 function Subs = makeSMatrix
 %MAKESMATRIX Build a subject matrix struct from params.mat files in the
 % current folder.
@@ -31,6 +30,7 @@ for ii = 1:length(fileList)
     aux1 = strfind(lower(fileList{ii}), 'params');
     if ~isempty(aux1)
         subID        = fileList{ii}(1:(aux1 - 1));
+        % subID = adaptData.subData.ID; % I think this is more appropriate.-Pablo
         load(fileList{ii});
         subAge       = adaptData.subData.age;
         expDate      = adaptData.metaData.date;
@@ -54,7 +54,7 @@ for ii = 1:length(fileList)
         if isfield(Subs, abrevGroup)
             Subs.(abrevGroup).IDs(end+1, :) = ...
                 {subID, gender, subAge, ht, wt, ...
-                 expDate, experimenter, obs, fileName};
+                expDate, experimenter, obs, fileName};
             Subs.(abrevGroup).(subID) = adaptData;
             if isfield(Subs.(abrevGroup), 'conditions')
                 for cc = 1:length(conditions)
@@ -77,13 +77,13 @@ for ii = 1:length(fileList)
                 end
                 Subs.(abrevGroup).conditions = ...
                     Subs.(abrevGroup).conditions( ...
-                        ~cellfun('isempty', ...
-                            Subs.(abrevGroup).conditions));
+                    ~cellfun('isempty', ...
+                    Subs.(abrevGroup).conditions));
             end
         else
             Subs.(abrevGroup).IDs(1, :) = ...
                 {subID, gender, subAge, ht, wt, ...
-                 expDate, experimenter, obs, fileName};
+                expDate, experimenter, obs, fileName};
             Subs.(abrevGroup).conditions   = conditions;
             Subs.(abrevGroup).(subID)      = adaptData;
         end

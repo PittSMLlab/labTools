@@ -73,7 +73,7 @@ markersTarg = { ...
     {'GT', 'ANK'}, ...
     {'ASIS', 'PSIS', 'THI', 'KNEE'}, ...
     {'SHANK', 'HEEL', 'TOE'} ...
-};
+    };
 
 markerGaps = dataMotion.extractMarkerGapsTrial(trialPath, newVicon);
 
@@ -122,7 +122,7 @@ end
 end
 
 function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
-        markerGaps, targetMarkers, refMarker, trialPath, newVicon)
+    markerGaps, targetMarkers, refMarker, trialPath, newVicon)
 %FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for a marker group.
 %
 %   For each side (R/L), collects gaps for the specified target markers
