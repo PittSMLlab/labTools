@@ -1,11 +1,3 @@
-derivativeFilter=fsample * 1/8 * [1,2,0,-2,-1]; %Order 5
-derivativeFilter=fsample * 1/32 * [1,4,5,0,-5,-4,-1]; %Order 7
-derivativeFilter=fsample * 1/128 * [1,6,14,14,0,-14,-14,-6,-1]; %Order 9
-order=9;
-%derivativeFilter=fsample * 1/512 * [1,8,.,.,.,0,-14,-14,-6,-1]; %Order 9
-%Get vels:
-y2=conv([x(end:-1:1);x;x(end:-1:1)],derivativeFilter,'same');
-y=y2(length(x)+1:2*length(x));
 function y = derive(x, fsample)
 %DERIVE Compute the numerical derivative of a discrete signal.
 %
@@ -29,5 +21,15 @@ arguments
     x       (:,1) double
     fsample (1,1) double {mustBePositive}
 end
+
+% 9-tap smoothing-derivative filter (antisymmetric, normalized by 1/128)
+DERIV_SCALE      = 1 / 128;  % filter normalizer
+derivativeFilter = fsample * DERIV_SCALE ...
+    * [1, 6, 14, 14, 0, -14, -14, -6, -1];
+
+% mirror x at both ends to reduce convolution boundary effects
+xMirrored = [x(end:-1:1); x; x(end:-1:1)];
+yMirrored = conv(xMirrored, derivativeFilter, 'same');
+y         = yMirrored(length(x) + 1 : 2 * length(x));
 
 end
