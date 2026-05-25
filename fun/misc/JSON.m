@@ -1,28 +1,28 @@
 classdef JSON < handle
-%JSON Non-validating JSON string parser.
-%
-%   Converts a JSON string to a MATLAB value. This is not a validator:
-% its purpose is to convert correct JSON to MATLAB values and it does
-% not reject all malformed JSON. Originally a recursive descent parser;
-% most of the parser collapsed out because JSON is so simple.
-%
-% See also JSONTXT2CELL.
-%
-% Copyright 2013 The MathWorks, Inc.
-    
+    %JSON Non-validating JSON string parser.
+    %
+    %   Converts a JSON string to a MATLAB value. This is not a validator:
+    % its purpose is to convert correct JSON to MATLAB values and it does
+    % not reject all malformed JSON. Originally a recursive descent parser;
+    % most of the parser collapsed out because JSON is so simple.
+    %
+    % See also JSONTXT2CELL.
+    %
+    % Copyright 2013 The MathWorks, Inc.
+
     properties (Access = private)
         json % the string
         index % position in the string
     end
-    
-    
+
+
     methods (Access = public)
-        
+
         function this = JSON(JSONstring)
             this.json = JSONstring;
             this.index = 1;
         end
-        
+
         function value = getValue(this)
             % get the next value in the string
             [token, tokenType] = this.getNextToken();
@@ -36,11 +36,11 @@ classdef JSON < handle
                 end
             end
         end
-        
+
         function array = getArray(this)
             % an array is [ value, ... ]
             array = {};
-            
+
             value = this.getValue();
             while ~strcmp(value, ']')
                 % got a value
@@ -65,7 +65,7 @@ classdef JSON < handle
                 array = [array{:}];
             end
         end
-        
+
         function obj = getObject(this)
             % an object is { string : value, ... }
             obj = struct;
@@ -100,9 +100,9 @@ classdef JSON < handle
                         'object elements']);
                 end
             end
-            
+
         end
-        
+
         function [token, tokenType] = getNextToken(this)
             % get whatever is next in the string
 
@@ -167,13 +167,13 @@ classdef JSON < handle
             function tf = isWhitespace(aChar)
                 % space (32), carriage return (13), linefeed (10), tab (9)
                 tf = aChar == 32 || aChar == 10 || ...
-                     aChar == 13 || aChar == 9;
+                    aChar == 13 || aChar == 9;
             end
 
             function tf = isSpecial(aChar)
                 % the special characters in the JSON grammar
                 tf = aChar == '{' || aChar == '}' || aChar == '[' || ...
-                     aChar == ']' || aChar == ':' || aChar == ',';
+                    aChar == ']' || aChar == ':' || aChar == ',';
             end
 
             function string = getString(this)
@@ -183,7 +183,7 @@ classdef JSON < handle
 
                 ch = str(last);
                 while ch ~= '"'
-                    if ch == '\\' %#ok<STCMP> We KNOW both are single chars
+                    if ch == '\\' % We KNOW both are single chars
                         last = last + 2;
                     else
                         last = last + 1;
@@ -251,9 +251,9 @@ classdef JSON < handle
             end
 
         end
-        
+
     end
-    
+
     methods(Static)
         % This is the one method you should call from outside the file.
         % JSON.parse(string)... that should be familiar to Javascrpt
@@ -263,5 +263,5 @@ classdef JSON < handle
             value = jsonObject.getValue();
         end
     end
-    
+
 end

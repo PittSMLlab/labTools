@@ -5,7 +5,7 @@
 %% 1) Define Paths & Trial List
 
 pathSess   = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\';
-pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\ShanthiTry_Results.csv'; %#ok<NASGU>
+pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\ShanthiTry_Results.csv';
 
 trialFiles = dir(fullfile(pathSess, '**', 'Trial*.x1d'));
 if isempty(trialFiles)
@@ -53,7 +53,7 @@ results = struct( ...
     'NumGapsPerMarker_Subset',      {}, ...
     'MaxGapLength_Subset',          {}, ...
     'MedianGapLength_Subset',       {} ...
-    ); %#ok<NASGU>
+    );
 
 %% 3) Loop through Trials and Apply Pre-Pattern Nexus Pipeline
 

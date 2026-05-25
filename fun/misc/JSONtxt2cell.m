@@ -45,12 +45,12 @@ for ii = 2:length(startindex)
     temp = bigstring(startindex(ii):stopindex(ii));
     ID   = ismember(temp, ',');
     commaindex = find(ID);
-    g{1} = str2double(temp(2:commaindex(1) - 1));       %#ok<AGROW>
+    g{1} = str2double(temp(2:commaindex(1) - 1));
     for jj = 2:length(commaindex)
-        g{jj} = str2double( ...                         %#ok<AGROW>
-            temp(commaindex(jj-1)+1:commaindex(jj)-1));
+        g{jj} = str2double( ...
+            temp(commaindex(jj-1)+1:commaindex(jj)-1));     %#ok<AGROW>
     end
-    g{end+1} = str2double(temp(commaindex(end)+1:end-1)); %#ok<AGROW>
+    g{end+1} = str2double(temp(commaindex(end)+1:end-1));   %#ok<AGROW>
     outcell{ii-1} = g;
     clear g
 end

@@ -318,17 +318,17 @@ targetHeightUnit.Layout.Row = 8; targetHeightUnit.Layout.Column = 2;
 % Callback to update visibility
 targetHeightUnit.ValueChangedFcn = @(src,evt) updateHeightFields();
 
-function updateHeightFields()
-    if strcmp(targetHeightUnit.Value, 'Feet and Inches')
-        htFeet.Visible = true;
-        htInches.Visible = true;
-        htSingle.Visible = false;
-    else
-        htFeet.Visible = false;
-        htInches.Visible = false;
-        htSingle.Visible = true;
+    function updateHeightFields()
+        if strcmp(targetHeightUnit.Value, 'Feet and Inches')
+            htFeet.Visible = true;
+            htInches.Visible = true;
+            htSingle.Visible = false;
+        else
+            htFeet.Visible = false;
+            htInches.Visible = false;
+            htSingle.Visible = true;
+        end
     end
-end
 
 % Call once to set initial visibility
 updateHeightFields();

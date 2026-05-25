@@ -105,7 +105,7 @@ for ii = 1:nCommon
 
     % Include processedLabData fields if either object is processed
     isProc    = isa(refObj, 'processedLabData') || ...
-                isa(newObj, 'processedLabData');
+        isa(newObj, 'processedLabData');
     allFields = baseFields;
     if isProc
         allFields = [baseFields, procFields];

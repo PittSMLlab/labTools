@@ -14,11 +14,11 @@ g = fgetl(f);
 fclose(f);
 
 if strcmp(g(1), '[')
-    [header, data] = JSONtxt2cell(filename); %#ok<ASGLU>
+    [header, data] = JSONtxt2cell(filename);
 else
     S      = importdata(filename, ',', 1);
     data   = S.data;
-    Header = S.textdata; %#ok<NASGU>
+    Header = S.textdata;
 end
 
 %% Extract signals
