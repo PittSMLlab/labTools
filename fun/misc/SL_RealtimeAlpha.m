@@ -145,18 +145,19 @@ if short < stepDisparityThresh * max([length(RHS) length(LHS)])
         'in # of steps between limbs. Please verify data.']);
 end
 
-Rgamma(1:5)=[];
-Lgamma(1:5)=[];
-Rgamma(end-5:end)=[];
-Lgamma(end-5:end)=[];
 %% Step Lengths
 Rgamma = LANKY(RHS(1:short)) - RANKY(RHS(1:short));
 Lgamma = RANKY(LHS(1:short)) - LANKY(LHS(1:short));
 
+edgeTrimSL = 5;                 % strides to remove from each end (artifact)
 Rgamma(Rgamma == 0) = [];
 Lgamma(Lgamma == 0) = [];
 Rgamma(Rgamma < 0)  = [];
 Lgamma(Lgamma < 0)  = [];
+Rgamma(1:edgeTrimSL) = [];
+Lgamma(1:edgeTrimSL) = [];
+Rgamma(end-edgeTrimSL:end) = [];
+Lgamma(end-edgeTrimSL:end) = [];
 
 Rgammamean = mean(Rgamma, 'omitnan');
 Rgammastd  = std(Rgamma, 0, 'omitnan');
@@ -171,16 +172,6 @@ subplot(6, 1, 2)
 plot(Lgamma, 'Color', [15/255, 129/255, 6/255]);
 title('Left Leg Step Lengths (mm)');
 
-Ralpha(1:5)=[];
-Lalpha(1:5)=[];
-Ralpha(end-5:end)=[];
-Lalpha(end-5:end)=[];
-RX(1:5)=[];
-LX(1:5)=[];
-RX(end-5:end)=[];
-LX(end-5:end)=[];
-if length(forces)/1000 == length(markers)/100
-    duration = length(RANKY)/1000;
 %% Alpha (hip COM to leading ankle at heel strike)
 Ralpha = ((LHIPY(RHS(1:short)) + RHIPY(RHS(1:short))) ./ 2) ...
     - RANKY(RHS(1:short));
@@ -191,6 +182,10 @@ Ralpha(Ralpha == 0) = [];
 Lalpha(Lalpha == 0) = [];
 Ralpha(Ralpha < 0)  = [];
 Lalpha(Lalpha < 0)  = [];
+Ralpha(1:edgeTrimSL) = [];
+Lalpha(1:edgeTrimSL) = [];
+Ralpha(end-edgeTrimSL:end) = [];
+Lalpha(end-edgeTrimSL:end) = [];
 
 Ralphamean = mean(Ralpha, 'omitnan');
 Ralphastd  = std(Ralpha, 0, 'omitnan');
@@ -207,6 +202,10 @@ RX(RX == 0) = [];
 LX(LX == 0) = [];
 RX(RX > 0)  = [];
 LX(LX > 0)  = [];
+RX(1:edgeTrimSL) = [];
+LX(1:edgeTrimSL) = [];
+RX(end-edgeTrimSL:end) = [];
+LX(end-edgeTrimSL:end) = [];
 
 RXmean = mean(RX, 'omitnan');
 RXstd  = std(RX, 0, 'omitnan');
@@ -214,22 +213,24 @@ LXmean = mean(LX, 'omitnan');
 LXstd  = std(LX, 0, 'omitnan');
 
 %% Cadence
+if length(forces) / forceHz1 == length(markers) / markerHz
+    duration = length(RANKY) / forceHz1;
     time = 0:0.001:duration;
-elseif length(forces)/2000 == length(markers)/100
-    duration = length(RANKY)/2000;
+elseif length(forces) / forceHz2 == length(markers) / markerHz
+    duration = length(RANKY) / forceHz2;
     time = 0:0.0005:duration;
 else
     disp('Warning: Unknown sampling frequency in analog data!');
 end
-Rcadence(1:5) = [];
-Lcadence(1:5) = [];
-Rcadence(end-5:end)=[];
-Lcadence(end-5:end)=[];
 
 time(end)  = [];
 Rcadence   = 60 ./ diff(time(RHS));
 Lcadence   = 60 ./ diff(time(LHS));
 
+Rcadence(1:edgeTrimSL)         = [];
+Lcadence(1:edgeTrimSL)         = [];
+Rcadence(end-edgeTrimSL:end)   = [];
+Lcadence(end-edgeTrimSL:end)   = [];
 Rcadence(Rcadence < 0) = [];
 Lcadence(Lcadence < 0) = [];
 maxCadence = 75;                % discard obviously erroneous cadence (steps/min)
@@ -247,6 +248,7 @@ HS = sort([RHS; LHS]);
 [~, rind, ~] = intersect(HS, RHS); %#ok<ASGLU>
 [~, lind, ~] = intersect(HS, LHS); %#ok<ASGLU>
 
+edgeTrimST = 4;                 % strides to remove from step-time ends
 if HS(1) == RHS(1)              % first event is RHS
     for ii = 1:length(HS)-2
         Lsteptime(ii) = time(HS(ii+1)) - time(HS(ii));   %#ok<AGROW>
@@ -259,12 +261,12 @@ else
     end
 end
 
-Rsteptime(1:4) = [];
-Lsteptime(1:4) = [];
-Rsteptime(end-4:end)=[];
-Lsteptime(end-4:end)=[];
 Rsteptime(Rsteptime <= 0)     = [];
 Lsteptime(Lsteptime <= 0)     = [];
+Rsteptime(1:edgeTrimST)       = [];
+Lsteptime(1:edgeTrimST)       = [];
+Rsteptime(end-edgeTrimST:end) = [];
+Lsteptime(end-edgeTrimST:end) = [];
 
 rstmean = mean(Rsteptime, 'omitnan');
 lstmean = mean(Lsteptime, 'omitnan');

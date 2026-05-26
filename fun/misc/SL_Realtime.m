@@ -142,10 +142,6 @@ if short < stepDisparityThresh * max([length(RHS) length(LHS)])
         'in # of steps between limbs. Please verify data.']);
 end
 
-Rgamma(1:5)=[];
-Lgamma(1:5)=[];
-Rgamma(end-5:end)=[];
-Lgamma(end-5:end)=[];
 %% Step Lengths
 Rgamma = LANKY(RHS(1:short)) - RANKY(RHS(1:short));
 Lgamma = RANKY(LHS(1:short)) - LANKY(LHS(1:short));
@@ -155,6 +151,10 @@ Rgamma(Rgamma == 0) = [];
 Lgamma(Lgamma == 0) = [];
 Rgamma(Rgamma < 0)  = [];
 Lgamma(Lgamma < 0)  = [];
+Rgamma(1:edgeTrimSL) = [];
+Lgamma(1:edgeTrimSL) = [];
+Rgamma(end-edgeTrimSL:end) = [];
+Lgamma(end-edgeTrimSL:end) = [];
 
 Rgammamean = mean(Rgamma, 'omitnan');
 Rgammastd  = std(Rgamma, 0, 'omitnan');
@@ -179,15 +179,15 @@ elseif length(forces) / forceHz2 == length(markers) / markerHz
 else
     disp('Warning: Unknown sampling frequency in analog data!');
 end
-Rcadence(1:5) = [];
-Lcadence(1:5) = [];
-Rcadence(end-5:end)=[];
-Lcadence(end-5:end)=[];
 
 time(end)  = [];
 Rcadence   = 60 ./ diff(time(RHS));
 Lcadence   = 60 ./ diff(time(LHS));
 
+Rcadence(1:edgeTrimSL)       = [];
+Lcadence(1:edgeTrimSL)       = [];
+Rcadence(end-edgeTrimSL:end) = [];
+Lcadence(end-edgeTrimSL:end) = [];
 Rcadence(Rcadence < 0)  = [];
 Lcadence(Lcadence < 0)  = [];
 maxCadence = 75;                % discard obviously erroneous cadence (steps/min)
@@ -218,12 +218,12 @@ else
     end
 end
 
-Rsteptime(1:4) = [];
-Lsteptime(1:4) = [];
-Rsteptime(end-4:end)=[];
-Lsteptime(end-4:end)=[];
 Rsteptime(Rsteptime <= 0)   = [];
 Lsteptime(Lsteptime <= 0)   = [];
+Rsteptime(1:edgeTrimST)     = [];
+Lsteptime(1:edgeTrimST)     = [];
+Rsteptime(end-edgeTrimST:end) = [];
+Lsteptime(end-edgeTrimST:end) = [];
 
 rstmean = mean(Rsteptime, 'omitnan');
 lstmean = mean(Lsteptime, 'omitnan');
