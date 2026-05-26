@@ -73,7 +73,7 @@ forces = relData;
 clear analogs* relData
 
 %% Load Marker Data
-[markers, markerInfo] = btkGetMarkers(H); %#ok<ASGLU>
+[markers, markerInfo] = btkGetMarkers(H);
 relData   = [];
 fieldList = fields(markers);
 markerList = {};
@@ -108,7 +108,7 @@ clear H
 [~, ~, lfz] = intersect('LFz', forceLabels);
 [~, ~, rfz] = intersect('RFz', forceLabels);
 
-[LHS, RHS, LTO, RTO] = getEventsFromForces( ...  %#ok<ASGLU>
+[LHS, RHS, LTO, RTO] = getEventsFromForces( ...
     forces(:,lfz), forces(:,rfz), 100);
 
 %% Compute Parameters
@@ -202,8 +202,8 @@ Lcadstd  = std(Lcadence, 0, 'omitnan');
 %% Step Times
 HS = sort([RHS; LHS]);
 
-[~, rind, ~] = intersect(HS, RHS); %#ok<ASGLU>
-[~, lind, ~] = intersect(HS, LHS); %#ok<ASGLU>
+[~, rind, ~] = intersect(HS, RHS);
+[~, lind, ~] = intersect(HS, LHS);
 
 edgeTrimST = 4;                 % strides to remove from step-time ends
 if HS(1) == RHS(1)              % first event is RHS
@@ -264,7 +264,7 @@ mesg = [mesg 'Mean R Step Time: ' ...
 mesg = [mesg sprintf('\n')];
 mesg = [mesg 'Mean L Step Time: ' ...
     num2str(lstmean) ' stdev: ' num2str(lststd)];
-H = msgbox(mesg, 'Metrics');    %#ok<NASGU>
+H = msgbox(mesg, 'Metrics');
 disp(mesg)
 
 %% Save Data

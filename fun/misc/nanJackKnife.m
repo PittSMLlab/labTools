@@ -100,7 +100,7 @@ switch nargin
         U          = y + E;
         LineColor  = varargin{4};
         EdgeColor  = LineColor - 0.5 .* abs(LineColor);
-        EdgeColor  = 'none';                %#ok<NASGU>
+        EdgeColor  = 'none';
         PatchColor = varargin{5};
         Opacity    = varargin{6};
         w          = varargin{7};   % binary: 0 = black fill, 1 = line color
