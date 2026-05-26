@@ -184,7 +184,7 @@ for gg = 1:ngroups
                 else
                     newtmcatchData = mean( ...
                         tmcatchData(1:catchNumPts, :), 'omitnan');
-                    %newtmcatchData=mean(tmcatchData,'omitnan');
+                    % newtmcatchData = mean(tmcatchData,'omitnan');
                 end
                 tmCatch = [tmCatch; newtmcatchData]; %#ok<AGROW>
             end

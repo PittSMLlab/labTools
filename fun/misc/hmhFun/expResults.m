@@ -1,33 +1,3 @@
-function results = expResults(SMatrix,groups,plotFlag,indivFlag)
-
-% Set colors
-poster_colors;
-% Set colors order
-GreyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.1 0.1 0.1;0.7 0.7 0.7;0.2 0.2 0.2;0.8 0.8 0.8;0.3 0.3 0.3;0.9 0.9 0.9];
-ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; p_gray; p_black;p_red];
-
-catchNumPts = 3; % catch
-steadyNumPts = 40; %end of adaptation
-transientNumPts = 5; % OG and Washout
-
-if nargin<2 || isempty(groups)
-    groups=fields(SMatrix);          
-end
-ngroups=length(groups);
-
-results.spatialSteady.avg=[];
-results.spatialSteady.sd=[];
-results.stepTimeSteady.avg=[];
-results.stepTimeSteady.sd=[];
-results.relStepTime.avg=[];
-results.relStepTime.sd=[];
-results.relSpatial.avg=[];
-results.relSpatial.sd=[];
-results.expSpeed.avg=[];
-results.expSpeed.sd=[];
-results.OGafter.avg=[];
-results.OGafter.sd=[];
-
 for g=1:ngroups
     %get subjects in group
     subjects=SMatrix.(groups{g}).IDs(:,1); 
@@ -183,6 +153,8 @@ if nargin>2 && ~isempty(plotFlag)
     set(gca,'Xtick',1:ngroups,'XTickLabel',groups,'fontSize',12,'Ylim',[0 1500])   
     
 end%EXPRESULTS Compute group-level steady-state and transfer results.
+function results = expResults(SMatrix, groups, plotFlag, indivFlag)
+%EXPRESULTS Compute group-level steady-state and transfer results.
 %
 % NOTE: This function is deprecated; use getResults instead.
 %
@@ -206,3 +178,35 @@ end%EXPRESULTS Compute group-level steady-state and transfer results.
 % Toolbox Dependencies: None
 %
 % See also GETRESULTS, BARGROUPS, POSTER_COLORS.
+
+poster_colors;
+GreyOrder  = [0   0   0;   1   1   1;   0.5 0.5 0.5; ...
+              0.1 0.1 0.1; 0.7 0.7 0.7; 0.2 0.2 0.2; ...
+              0.8 0.8 0.8; 0.3 0.3 0.3; 0.9 0.9 0.9];
+ColorOrder = [p_red;  p_orange;  p_fade_green; p_fade_blue; ...
+              p_plum; p_green;   p_blue;        p_fade_red;  ...
+              p_lime; p_yellow;  p_gray;         p_black;     ...
+              p_red];
+
+catchNumPts     = 3;   % catch
+steadyNumPts    = 40;  % end of adaptation
+transientNumPts = 5;   % OG and washout
+
+if nargin < 2 || isempty(groups)
+    groups = fields(SMatrix);
+end
+ngroups = length(groups);
+
+results.spatialSteady.avg  = [];
+results.spatialSteady.sd   = [];
+results.stepTimeSteady.avg = [];
+results.stepTimeSteady.sd  = [];
+results.relStepTime.avg    = [];
+results.relStepTime.sd     = [];
+results.relSpatial.avg     = [];
+results.relSpatial.sd      = [];
+results.expSpeed.avg       = [];
+results.expSpeed.sd        = [];
+results.OGafter.avg        = [];
+results.OGafter.sd         = [];
+
