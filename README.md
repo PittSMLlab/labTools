@@ -157,6 +157,47 @@ saved `*.mat` and recompute without re-parsing C3D files:
 `experimentData` is a value class — always capture the return:
 `expData = expData.recomputeParameters()`
 
+### Full Call Chain
+
+```
+c3d2mat
+ ├── GetInfoGUI
+ └── loadSubject
+      ├── determineRefLeg
+      ├── getTrialMetaData
+      ├── loadTrials               % Load C3D into rawTrialData
+      │    ├── btkReadAcquisition  % BTK (external)
+      │    ├── processGRFData      % GRF loading and offset calibration
+      │    ├── syncEMGData         % EMG inter-PC synchronization
+      │    └── rawTrialData(...)
+      ├── SyncDatalog
+      ├── experimentData(...)      % [save *RAW.mat]
+      ├── experimentData.process
+      │    └── labData.process     % per trial
+      │         ├── processEMG
+      │         ├── calcLimbAngles
+      │         ├── getEvents
+      │         ├── getBeltSpeedsFromFootMarkers
+      │         ├── computeTorques / computeCOPAlt
+      │         ├── processedTrialData(...)
+      │         └── calcParameters
+      │              ├── computeTemporalParameters
+      │              ├── computeSpatialParameters
+      │              ├── computeEMGParameters
+      │              ├── computeForceParameters
+      │              ├── computeHreflexParameters
+      │              └── computePercParameters
+      ├── appendEMGNormParameters
+      ├── populateNewParamBackToExpData
+      ├── [save *expData.mat]
+      └── experimentData.makeDataObj  % [save *params.mat]
+
+% Post-processing:
+experimentData.recomputeEvents
+experimentData.recomputeParameters     → calcParameters
+experimentData.flushAndRecomputeParameters → labData.process
+```
+
 ---
 
 ## Key Classes
