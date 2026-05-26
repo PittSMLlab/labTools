@@ -15,9 +15,9 @@
 
 %% Load Data
 
-%Nexus must be open, offline, and the desired trial loaded
+% Nexus must be open, offline, and the desired trial loaded
 vicon = ViconNexus();
-[path,filename] = vicon.GetTrialName;%Ask Nexus which trial is open
+[path, filename] = vicon.GetTrialName;  % ask Nexus which trial is open
 filename = [filename '.c3d'];
 
 %use these two lines when processing c3d files not open in Nexus
@@ -26,63 +26,69 @@ filename = [filename '.c3d'];
 
 H = btkReadAcquisition([path filename]);
 
-%Using same method as Labtools, determine analog data
-[analogs,analogsInfo] = btkGetAnalogs(H);
+% use same method as labTools to determine analog data
+[analogs, analogsInfo] = btkGetAnalogs(H);
 
-relData=[];
-forceLabels ={};
-units={};
-fieldList=fields(analogs);
-showWarning = false;
-for j=1:length(fieldList);%parse analog channels by force, moment, cop
-    %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
-    if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
-        if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
-            warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
+relData      = [];
+forceLabels  = {};
+units        = {};
+fieldList    = fields(analogs);
+showWarning  = false;
+
+for jj = 1:length(fieldList)   % parse analog channels by force/moment
+    fld = fieldList{jj};
+    if strcmp(fld(1), 'F') || strcmp(fld(1), 'M') || ...
+            ~isempty(strfind(fld, 'Force')) || ...
+            ~isempty(strfind(fld, 'Moment'))
+        if ~strcmpi('x', fld(end-1)) && ~strcmpi('y', fld(end-1)) ...
+                && ~strcmpi('z', fld(end-1))
+            warning(['loadTrials:GRFs', 'Found force/moment data ' ...
+                'that does not correspond to any expected direction ' ...
+                '(x, y or z). Discarding channel ' fld])
         else
-            switch fieldList{j}(end)%parse devices
-                case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
-                    forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
-                    units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                    relData=[relData,analogs.(fieldList{j})];
-                case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt
-                    forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
-                    units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                    relData=[relData,analogs.(fieldList{j})];
-                case '4'%Forces/moments ending in '4' area assumed to be of handrail
-                    forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
-                    units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                    relData=[relData,analogs.(fieldList{j})];
+            switch fld(end)     % parse by device number
+                case '1'        % left treadmill belt
+                    forceLabels{end+1} = ['L', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    relData = [relData, analogs.(fld)]; %#ok<AGROW>
+                case '2'        % right treadmill belt
+                    forceLabels{end+1} = ['R', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    relData = [relData, analogs.(fld)]; %#ok<AGROW>
+                case '4'        % handrail
+                    forceLabels{end+1} = ['H', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    relData = [relData, analogs.(fld)]; %#ok<AGROW>
                 otherwise
-                    showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output
+                    showWarning = true; % warn outside loop to reduce output
             end
-            analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+            analogs = rmfield(analogs, fld); % free memory
         end
     end
 end
 if showWarning
-    warning(['loadTrials:GRFs','Found force/moment data in trial ' filename ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
+    warning(['loadTrials:GRFs', 'Found force/moment data in trial ' ...
+        filename ' that does not correspond to any expected channel ' ...
+        '(L=1, R=2, H=4). Data discarded.'])
 end
 
 forces = relData;
+clear analogs* relData
 
-clear analogs* %Save memory space, no longer need analog data, it was already loaded
-clear relData
+%% Load Marker Data
+[markers, markerInfo] = btkGetMarkers(H); %#ok<ASGLU>
+relData    = [];
+fieldList  = fields(markers);
+markerList = {};
 
-
-
-%Get marker data
-[markers,markerInfo]=btkGetMarkers(H);
-relData=[];
-fieldList=fields(markers);
-markerList={};
-
-%Check marker labels are good in .c3d files
-mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really
-labelPresent=false(1,length(mustHaveLabels));
-for i=1:length(fieldList)
-    newFieldList{i}=findLabel(fieldList{i});
-    labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
+% verify required marker labels are present
+mustHaveLabels = {'LHIP','RHIP','LANK','RANK','RHEE','LHEE', ...
+    'LTOE','RTOE','RKNE','LKNE'};
+labelPresent = false(1, length(mustHaveLabels));
+for ii = 1:length(fieldList)
+    newFieldList{ii} = findLabel(fieldList{ii}); %#ok<AGROW>
+    labelPresent = labelPresent + ...
+        ismember(mustHaveLabels, newFieldList{ii});
 end
 for j=1:length(fieldList);
     if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
@@ -91,48 +97,42 @@ for j=1:length(fieldList);
         markerList{end+1}=[markerLabel 'x'];
         markerList{end+1}=[markerLabel 'y'];
         markerList{end+1}=[markerLabel 'z'];
+
     end
-    markers=rmfield(markers,fieldList{j}); %Save memory
+    markers = rmfield(markers, fld);        % free memory
 end
 
 markers = relData;
 clear H
-%*******************************************************************************
+
 %% Extract Events
+[~, ~, lfz] = intersect('LFz', forceLabels);
+[~, ~, rfz] = intersect('RFz', forceLabels);
 
-[~,~,lfz] = intersect('LFz',forceLabels);
-[~,~,rfz] = intersect('RFz',forceLabels);
+[LHS, RHS, LTO, RTO] = getEventsFromForces( ...  %#ok<ASGLU>
+    forces(:,lfz), forces(:,rfz), 100);
 
-[LHS,RHS,LTO,RTO] = getEventsFromForces(forces(:,lfz),forces(:,rfz),100);
+%% Compute Parameters
 
-%% Compute parameters
-
-%up sample to match forceplate data
-%check sampling frequency of forces (could be 1000 or 2000 Hz)
 if length(forces)/1000 == length(markers)/100
     markers1000 = interp1(markers,[1:1/10:length(markers)]);
 elseif length(forces)/2000 == length(markers)/100
     markers1000 = interp1(markers,[1:1/20:length(markers)]);
+% upsample markers to match force plate sampling rate
 else
     disp('Warning: Unknown sampling frequency in analog data!');
 end
-markers1000(end,:)=[];
+markers1000(end, :) = [];
 
-[~,rank,~] = intersect(markerList,'RANKy');
-[~,lank,~] = intersect(markerList,'LANKy');
+[~, rank, ~] = intersect(markerList, 'RANKy');
+[~, lank, ~] = intersect(markerList, 'LANKy');
+[~, rhip, ~] = intersect(markerList, 'RHIPy');
+[~, lhip, ~] = intersect(markerList, 'LHIPy');
 
-[~,rhip,~] = intersect(markerList,'RHIPy');
-[~,lhip,~] = intersect(markerList,'LHIPy');
-
-RANKY = markers1000(:,rank);
-LANKY = markers1000(:,lank);
-RHIPY = markers1000(:,rhip);
-LHIPY = markers1000(:,lhip);
-
-% figure(1)
-% plot(0:10:length(markers)*10-1,markers(:,rank),'LineWidth',3);
-% hold on
-% plot(0:length(RANKY)-1,RANKY)
+RANKY = markers1000(:, rank);
+LANKY = markers1000(:, lank);
+RHIPY = markers1000(:, rhip);
+LHIPY = markers1000(:, lhip);
 
 RHS = find(RHS);
 LHS = find(LHS);
