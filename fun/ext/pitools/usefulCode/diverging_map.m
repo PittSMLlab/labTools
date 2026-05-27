@@ -233,9 +233,6 @@ if b < 0, b = 0; end
 rgb = [r g b];
 end
 
-function[rgb] = LabToRGB(Lab)
-  xyz = LabToXYZ(Lab);
-  rgb = XYZToRGB(xyz);
 % ---------------------------------------------------------------------------
 function xyz = RGBToXYZ(rgb)
 %RGBTOXYZ Convert sRGB to XYZ with inverse gamma correction.
@@ -260,7 +257,16 @@ z = r * 0.0193 + g * 0.1192 + b * 0.9505;
 xyz = [x y z];
 end
 
-function[Lab] = RGBToLab(rgb)
-  xyz = RGBToXYZ(rgb);
-  Lab = XYZToLab(xyz);
+% ---------------------------------------------------------------------------
+function rgb = LabToRGB(Lab)
+%LABTORGB Convert CIELab to sRGB.
+xyz = LabToXYZ(Lab);
+rgb = XYZToRGB(xyz);
+end
+
+% ---------------------------------------------------------------------------
+function Lab = RGBToLab(rgb)
+%RGBTOLAB Convert sRGB to CIELab.
+xyz = RGBToXYZ(rgb);
+Lab = XYZToLab(xyz);
 end
