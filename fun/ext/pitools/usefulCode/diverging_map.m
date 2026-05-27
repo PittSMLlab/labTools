@@ -62,37 +62,37 @@ elseif msh2(2) < 0.05 && msh1(2) > 0.05
     msh2(3) = AdjustHue(msh1, msh2(1));
 end
 
-%Convert to and from a special polar version of CIELAB (useful for creating
-%continuous diverging color maps).
-    function[Msh] = LabToMsh(Lab)  
-        L = Lab(1);
-        a = Lab(2);
-        b = Lab(3);
 mshTmp(1) = (1 - s) * msh1(1) + s * msh2(1);
 mshTmp(2) = (1 - s) * msh1(2) + s * msh2(2);
 mshTmp(3) = (1 - s) * msh1(3) + s * msh2(3);
 
-        M = sqrt(L*L + a*a + b*b);
-        s = (M > 0.001) * acos(L/M);
-        h = (s > 0.001) * atan2(b,a);
 labTmp = MshToLab(mshTmp);
 result = LabToRGB(labTmp);
 end
 
-        Msh = [M s h];
-    end
+% ---------------------------------------------------------------------------
+function Msh = LabToMsh(Lab)
+%LABTOMSH Convert CIELab to polar Msh representation.
 
     function[Lab] = MshToLab(Msh)
         M = Msh(1);
         s = Msh(2);
         h = Msh(3);
+L = Lab(1);
+a = Lab(2);
+b = Lab(3);
 
         L = M*cos(s);
         a = M*sin(s)*cos(h);
         b = M*sin(s)*sin(h);
+M = sqrt(L*L + a*a + b*b);
+s = (M > 0.001) * acos(L / M);
+h = (s > 0.001) * atan2(b, a);
 
         Lab = [L a b];
     end
+Msh = [M s h];
+end
 
 %Given two angular orientations, returns the smallest angle between the two.
     function[adiff] = AngleDiff(a1, a2)
