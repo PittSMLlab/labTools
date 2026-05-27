@@ -1,4 +1,4 @@
-function [newP] = effconvn(pValues1,pValues2,shape)
+function newP = effconvn(pValues1, pValues2, shape)
 %EFFCONVN Convolve N-D arrays via FFT.
 %
 %   Implements convn using FFTs; equivalent to convn(A, B, shape).
@@ -18,17 +18,21 @@ function [newP] = effconvn(pValues1,pValues2,shape)
 %
 % See also EFFCONVNFULL, CONVN.
 
-[newP] = effconvnfull(pValues1,pValues2);
+arguments
+    pValues1
+    pValues2
+    shape {mustBeTextScalar} = 'full'
+end
 
-if nargin>2
+newP = effconvnfull(pValues1, pValues2);
+
+if ~strcmp(shape, 'full')
     warning('Shape argument still not implemented.')
-    if strcmp(shape,'valid')
-        newP=[];
-    elseif strcmp(shape,'same')
-        newP=[];
-    end %Assumes method='full'
+    if strcmp(shape, 'valid')
+        newP = [];
+    elseif strcmp(shape, 'same')
+        newP = [];
+    end % Assumes method='full'
 end
 
-
 end
-
