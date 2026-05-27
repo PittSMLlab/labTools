@@ -85,13 +85,6 @@ h = (s > 0.001) * atan2(b, a);
 Msh = [M s h];
 end
 
-%Given two angular orientations, returns the smallest angle between the two.
-    function[adiff] = AngleDiff(a1, a2)
-        v1    = [cos(a1) sin(a1)];
-        v2    = [cos(a2) sin(a2)];        
-        adiff = acos(dot(v1,v2));
-    end
-        
 %% For the case when interpolating from a saturated color to an unsaturated
 %% color, find a hue for the unsaturated color that makes sense.
     function[h] = AdjustHue(msh, unsatM)
@@ -181,6 +174,15 @@ b = M * sin(s) * sin(h);
 
         Lab = [L a b];
 Lab = [L a b];
+end
+
+% ---------------------------------------------------------------------------
+function adiff = AngleDiff(a1, a2)
+%ANGLEDIFF Smallest angle between two orientations (radians).
+
+v1    = [cos(a1) sin(a1)];
+v2    = [cos(a2) sin(a2)];
+adiff = acos(dot(v1, v2));
 end
 
     end
