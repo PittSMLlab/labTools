@@ -85,26 +85,6 @@ h = (s > 0.001) * atan2(b, a);
 Msh = [M s h];
 end
 
-%% For the case when interpolating from a saturated color to an unsaturated
-%% color, find a hue for the unsaturated color that makes sense.
-    function[h] = AdjustHue(msh, unsatM)
-
-        if msh(1) >= unsatM-0.1                    
-            %%The best we can do is hold hue constant.
-            h = msh(3);
-        else
-            % This equation is designed to make the perceptual change of the
-            % interpolation to be close to constant.
-            hueSpin = (msh(2)*sqrt(unsatM^2 - msh(1)^2)/(msh(1)*sin(msh(2))));
-    
-            % Spin hue away from 0 except in purple hues.
-            if (msh(3) > -0.3*pi)
-                h = msh(3) + hueSpin;
-            else
-                h = msh(3) - hueSpin;
-            end
-        end
-    end
 % ---------------------------------------------------------------------------
 function Lab = MshToLab(Msh)
 %MSHTOLAB Convert polar Msh representation to CIELab.
@@ -185,7 +165,29 @@ v2    = [cos(a2) sin(a2)];
 adiff = acos(dot(v1, v2));
 end
 
+% ---------------------------------------------------------------------------
+% For the case when interpolating from a saturated to an unsaturated color,
+% find a hue for the unsaturated color that makes perceptual sense.
+function h = AdjustHue(msh, unsatM)
+%ADJUSTHUE Compute hue for an unsaturated endpoint during interpolation.
+
+if msh(1) >= unsatM - 0.1
+    % Best we can do is hold hue constant.
+    h = msh(3);
+else
+    % Equation designed to keep the perceptual rate of change near constant.
+    hueSpin = msh(2) * sqrt(unsatM^2 - msh(1)^2) / ...
+        (msh(1) * sin(msh(2)));
+
+    % Spin hue away from 0 except in purple hues.
+    if msh(3) > -0.3 * pi
+        h = msh(3) + hueSpin;
+    else
+        h = msh(3) - hueSpin;
     end
+end
+end
+
 
 function[rgb] = XYZToRGB(xyz)
   
