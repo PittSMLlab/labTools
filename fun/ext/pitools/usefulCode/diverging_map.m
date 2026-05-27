@@ -93,31 +93,10 @@ M = Msh(1);
 s = Msh(2);
 h = Msh(3);
 
-    function[Lab] = XYZToLab(xyz)
-        x = xyz(1); y = xyz(2); z = xyz(3);
 L = M * cos(s);
 a = M * sin(s) * cos(h);
 b = M * sin(s) * sin(h);
 
-        ref_X = 0.9505;
-        ref_Y = 1.000;
-        ref_Z = 1.089;
-        var_X = x / ref_X;  %ref_X = 0.9505  Observer= 2 deg, Illuminant= D65
-        var_Y = y / ref_Y;  %ref_Y = 1.000
-        var_Z = z / ref_Z;  %ref_Z = 1.089
-
-        if ( var_X > 0.008856 ), var_X = var_X^(1/3);
-        else                     var_X = ( 7.787 * var_X ) + ( 16.0 / 116.0 ); end
-        if ( var_Y > 0.008856 ), var_Y = var_Y^(1/3);
-        else                     var_Y = ( 7.787 * var_Y ) + ( 16.0 / 116.0 ); end
-        if ( var_Z > 0.008856 ), var_Z = var_Z^(1/3);
-        else                     var_Z = ( 7.787 * var_Z ) + ( 16.0 / 116.0 ); end
-
-        L = ( 116 * var_Y ) - 16;
-        a = 500 * ( var_X - var_Y );
-        b = 200 * ( var_Y - var_Z );
-
-        Lab = [L a b];
 Lab = [L a b];
 end
 
@@ -188,6 +167,35 @@ ref_Z = 1.089;
 xyz = [ref_X * var_X, ref_Y * var_Y, ref_Z * var_Z];
 end
 
+% ---------------------------------------------------------------------------
+function Lab = XYZToLab(xyz)
+%XYZTOLAB Convert XYZ to CIELab color space.
+
+x = xyz(1);
+y = xyz(2);
+z = xyz(3);
+
+ref_X = 0.9505;  % Observer = 2 deg, Illuminant = D65
+ref_Y = 1.000;
+ref_Z = 1.089;
+
+var_X = x / ref_X;
+var_Y = y / ref_Y;
+var_Z = z / ref_Z;
+
+if var_X > 0.008856, var_X = var_X^(1/3);
+else                 var_X = (7.787 * var_X) + (16.0 / 116.0); end
+if var_Y > 0.008856, var_Y = var_Y^(1/3);
+else                 var_Y = (7.787 * var_Y) + (16.0 / 116.0); end
+if var_Z > 0.008856, var_Z = var_Z^(1/3);
+else                 var_Z = (7.787 * var_Z) + (16.0 / 116.0); end
+
+L = (116 * var_Y) - 16;
+a = 500 * (var_X - var_Y);
+b = 200 * (var_Y - var_Z);
+
+Lab = [L a b];
+end
 
 function[rgb] = XYZToRGB(xyz)
   
