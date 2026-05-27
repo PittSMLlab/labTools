@@ -1,4 +1,4 @@
-function [logL] = ppcaLikelihood(data,coeff,latents,mu)
+function logL = ppcaLikelihood(data, coeff, latents, mu)
 %PPCALIKELIHOOD Log-likelihood under probabilistic PCA.
 %
 %   Returns the log-likelihood of observing data given a PCA result,
@@ -21,49 +21,60 @@ function [logL] = ppcaLikelihood(data,coeff,latents,mu)
 %
 % See also PCA.
 
-%Parameters are such that data'=repmat(mu,N,1)+coeff'*scores + e;
-
-if nargin<4 %In this case, assuming either the data had exactly zero mean or the analysis performed was on uncentered data and hence the mean parameter is by definition useless.
-    mu=zeros(1,size(data,2));
+arguments
+    data
+    coeff
+    latents
+    mu = []
 end
 
-
-N=size(data,1); %Sample size
-D=size(data,2); %Sample dimensionality
-k=size(coeff,1); %Number of components in reduced dimensionality space (reduced dim)
-
-
-%Just in case: normalize so that the coeffs have norm=1
-for i=1:k
-   coeff(i,:)=coeff(i,:)/norm(coeff(i,:)); 
+if isempty(mu)
+    mu = zeros(1, size(data, 2));
 end
 
-centData=data-repmat(mu,N,1);
-S=centData'*centData/N;
-if k<D %If k==D there is no need to do anything, the model makes no sense anyway. Returning NaN.
-    sigma=sqrt(sum(latents(k+1:D))/(D-k));
+N = size(data, 1);  % sample size
+D = size(data, 2);  % sample dimensionality
+k = size(coeff, 1); % number of retained components
 
+%% Normalize Coefficients
+for ii = 1:k
+    coeff(ii, :) = coeff(ii, :) / norm(coeff(ii, :));
+end
 
-    W=(coeff'*diag(sqrt(latents(1:k)-sigma^2)))'; %Eigen vectors are scaled by the sqrt(\lambda-sigma^2), which roughly means they are scaled by the standard deviation along that direction, discounting the portion of the variance that is attributed to noise.
+centData = data - repmat(mu, N, 1);
+S        = centData' * centData / N;
 
+%% Compute Log-Likelihood
+% If k == D the noise-free model is undefined; return NaN.
+if k < D
+    sigma = sqrt(sum(latents(k+1:D)) / (D - k));
 
-    M=W*W' + sigma^2*eye(k);
-    bb=svd(W');
-    eigM=bb.^2 + sigma^2; %This should be exactly latents(1:k)
+    % Eigenvectors scaled by sqrt(lambda - sigma^2): each direction is
+    % scaled by the std beyond the noise floor.
+    W = (coeff' * diag(sqrt(latents(1:k) - sigma^2)))';
 
-    Cinv=(eye(D)- W'*(M\W))/sigma^2;
+    M    = W * W' + sigma^2 * eye(k);
+    bb   = svd(W');
+    eigM = bb.^2 + sigma^2;  % should equal latents(1:k)
 
-    C=W'*W+sigma^2*eye(D); %If I understand this properly, C has the same first k eigenvectors and eigenvalues as S (when the coeff are extracted from the matrix S), and has the same trace (sum of all eigenvalues). If this is true, I expect trace(Cinv*S)= D (unless any of the eigenvalues of C is exactly 0, in which case this is undetermined), and then the only term of the likelihood that changes with k is det(C)
-    aux=bb.^2;
-    if length(aux)<D
-        aux(end+1:D)=0;
+    Cinv = (eye(D) - W' * (M \ W)) / sigma^2;
+
+    % C shares the first k eigenvectors/eigenvalues with S and has the
+    % same trace. Consequently trace(Cinv*S) = D when no eigenvalue of
+    % C is zero, so the only k-dependent term in logL is det(C).
+    C = W' * W + sigma^2 * eye(D);
+
+    aux = bb.^2;
+    if length(aux) < D
+        aux(end+1:D) = 0;
     end
-    detC=prod(aux + sigma^2); %Alt. calculation of det(C) to avoid numerical issues
+    detC = prod(aux + sigma^2);  % alt det(C) to avoid numerical issues
 
-    logL=-.5*N * (D*log(2*pi) + log(det(C)) + trace(Cinv*S)); 
-    logL=-.5*N * (D*log(2*pi) + log(detC) + trace(pinv(C)*S)); %Alt. calc to avoid numerical errors
+    logL = -0.5 * N * ...
+        (D * log(2*pi) + log(det(C)) + trace(Cinv * S));
+    logL = -0.5 * N * ...
+        (D * log(2*pi) + log(detC) + trace(pinv(C) * S));
 else
-    logL=NaN;
+    logL = NaN;
 end
 end
-
