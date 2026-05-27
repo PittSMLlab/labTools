@@ -1,8 +1,25 @@
 function [logL] = ppcaLikelihood(data,coeff,latents,mu)
-%ppcaLikelihood Returns the likelihood of the pca result based on the
-%probabilistic pca analysis. Coeff and scores should be obtained through
-%the function pca. This is useful to analyze the intrinsic dimensionality
-%of a data set.
+%PPCALIKELIHOOD Log-likelihood under probabilistic PCA.
+%
+%   Returns the log-likelihood of observing data given a PCA result,
+%   under a probabilistic PCA (PPCA) model. coeff and latents should be
+%   obtained from pca(). Useful for estimating the intrinsic dimensionality
+%   of a dataset.
+%
+%   Model: data' = repmat(mu, N, 1) + coeff' * scores + noise
+%
+% Inputs:
+%   data    - N-by-D observation matrix
+%   coeff   - k-by-D matrix of PCA coefficients (one row per component)
+%   latents - D-by-1 vector of eigenvalues from pca()
+%   mu      - (optional) 1-by-D mean vector; defaults to zero if omitted
+%
+% Outputs:
+%   logL - scalar log-likelihood; NaN when k >= D (model undefined)
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also PCA.
 
 %Parameters are such that data'=repmat(mu,N,1)+coeff'*scores + e;
 

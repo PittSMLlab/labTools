@@ -1,28 +1,26 @@
 function xticklabel_rotate90(XTick,xTickLabels,varargin)
-%XTICKLABEL_ROTATE90 - Rotate numeric Xtick labels by 90 degrees
+%XTICKLABEL_ROTATE90 Rotate x-tick labels by 90 degrees.
 %
-% Syntax: xticklabel_rotate90(XTick)
+%   Replaces numeric XTick labels with rotated text objects, allowing
+%   the caller to supply arbitrary cell-array labels via xTickLabels.
+%   Additional property-value pairs are forwarded to the text() call.
 %
-% Input:  XTick - vector array of XTick positions & values (numeric)
+%   NOTE: This function name does not match the file name
+%   (xticklabel_rotate90_cell.m). Do not rename the file; call this
+%   function as xticklabel_rotate90().
 %
-% Output:  none
+% Inputs:
+%   XTick       - numeric vector of x-tick positions
+%   xTickLabels - cell array of label strings, one per element of XTick
+%   varargin    - additional property-value pairs forwarded to text()
 %
-% Example 1:  Set the positions of the XTicks and rotate them
-%    figure;  plot([1960:2004],randn(45,1)); xlim([1960 2004]);
-%    xticklabel_rotate90([1960:2:2004]);
-%    %If you wish, you may set a few text "Property-value" pairs
-%    xticklabel_rotate90([1960:2:2004],'Color','m','Fontweight','bold');
+% Outputs:
+%   None
 %
-% Example 2:  %Rotate XTickLabels at their current position
-%    XTick = get(gca,'XTick');
-%    xticklabel_rotate90(XTick);
+% Toolbox Dependencies: None
 %
-% Other m-files required: none
-% Subfunctions: none
-% MAT-files required: none
+% See also TEXT, SET.
 %
-% See also: TEXT,  SET
-
 % Author: Denis Gilbert, Ph.D., physical oceanography
 % Maurice Lamontagne Institute, Dept. of Fisheries and Oceans Canada
 % email: gilbertd@dfo-mpo.gc.ca  Web: http://www.qc.dfo-mpo.gc.ca/iml/

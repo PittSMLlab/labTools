@@ -1,9 +1,21 @@
 function [slices] = sliceArray(data,inds,dim)
-%sliceArray returns a subset of 'slices' of an array (indexed by inds)
-%along dimension dim. %Preferable to solutions using permute() which create copies of the array,
-%which is not desirable for large arrays.
-%It is equivalent to slices=data(:,:,..,:,inds,:,...,:), where 'inds' is
-%located at the 'dim' dimension of the array.
+%SLICEARRAY Extract slices of an array along a given dimension.
+%
+%   Returns the subset of slices indexed by inds along dimension dim.
+%   Equivalent to data(:,...,inds,...,:) where inds occupies position dim.
+%   Preferable to permute-based solutions, which copy the full array.
+%
+% Inputs:
+%   data - N-D array to index into
+%   inds - index vector selecting slices along dimension dim
+%   dim  - dimension along which to slice (scalar integer)
+%
+% Outputs:
+%   slices - array with size(slices, dim) == length(inds)
+%
+% Toolbox Dependencies: None
+%
+% See also PERMUTE, SQUEEZE.
 
 nd=ndims(data);
 if dim>nd

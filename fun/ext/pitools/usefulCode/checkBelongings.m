@@ -1,11 +1,24 @@
 function [flag] = checkBelongings(idx1,idx2)
-%checkBelongings Gets two vectors of equal size and checks that no pair of
-%indexes are repeated, i.e. that there is no i and j such that
-%idx1(i)==idx1(j) && idx2(i)==idx2(j)
-%The idea is that the idx vectors represents belongings to groups/clusters
-%of a list of elements, and we want to make sure that no two elements have equal
-%belongings in the two groups (Pauli's exclusion principle)
-%Returns true if the exclusion criteria is fulfilled, false otherwise
+%CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.
+%
+%   Returns true if no two elements share the same (idx1, idx2) pair,
+%   i.e. there is no i and j such that idx1(i)==idx1(j) && idx2(i)==idx2(j).
+%   The idx vectors represent group/cluster memberships, and this function
+%   verifies a Pauli-exclusion-like constraint: no two elements may have
+%   identical belongings in both groups simultaneously.
+%
+% Inputs:
+%   idx1 - integer vector of group memberships (first grouping)
+%   idx2 - integer vector of group memberships (second grouping);
+%          must be the same length as idx1
+%
+% Outputs:
+%   flag - true if the exclusion criterion is satisfied, false otherwise;
+%          empty ([]) if the inputs fail validation
+%
+% Toolbox Dependencies: None
+%
+% See also CROSSTAB.
 
 %Check inputs are vectors are of same size
 if length(idx1)~=numel(idx1) || length(idx2)~=numel(idx2)

@@ -1,9 +1,6 @@
 function[map] = diverging_map(s,rgb1,rgb2)
-%This function is based on Kenneth Moreland's code for greating Diverging
-%Colormaps.  Created by Andy Stein.
+%DIVERGING_MAP Interpolate a perceptual diverging colormap.
 %
-%s is a vector that goes between zero and one 
-
 map = zeros(length(s),3);
 for i=1:length(s)
     map(i,:) = diverging_map_1val(s(i),rgb1,rgb2);
@@ -53,6 +50,23 @@ end
         labTmp = MshToLab(mshTmp);
         result = LabToRGB(labTmp);
         1;
+%   For each value in s (range [0, 1]), interpolates between two RGB
+%   endpoint colors via the Msh perceptual color space, optionally
+%   inserting white at the midpoint when the endpoints are distinctly
+%   saturated. Based on Kenneth Moreland's algorithm; adapted by Andy Stein.
+%
+% Inputs:
+%   s    - vector of values in [0, 1]
+%   rgb1 - 1-by-3 RGB triplet for the low end of the colormap
+%   rgb2 - 1-by-3 RGB triplet for the high end of the colormap
+%
+% Outputs:
+%   map - length(s)-by-3 RGB colormap matrix
+%
+% Toolbox Dependencies: None
+%
+% See also COLORMAP, INTERP1.
+
     end
 
 

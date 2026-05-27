@@ -1,32 +1,35 @@
 function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)
-%Performs the Benjamini-Hochberg procedure to determine significance in
-%multiple comparisons while controlling the False Discovery Rate (number of
-%false positives as a % of the number of total comparisons). This is a
-%less taxing alternative to performing a Bonferroni correction, for example.
-%FDR control is done in expectation over many realizations.
-%See also: mafdr
-
-%INPUT:
-%p: vector of p-values from the multiple comparisons, has to be 1-D
-%fdr: value in [0,1] that determines the (expected) False Discovery Rate that is
-%tolerated
-%twoStageFlag: if true, it performs the two-stage procedure suggested in
-%Benjamini, Krieger and Yekuteli 2006, which maintains fdr control
-%guarantees (under independent tests) but has more power. Default = false.
-%OUTPUT:
-%h= binary vector that is 1 if the corresponding p-value was deemed
-%significant, and 0 if not.
-%pThreshold = value that ends up being the cut-off for p. Should satisfy:
-%h = p<=pThreshold = pAdjusted<fdr
-%i1 = no. of significant results, equals sum(h)
-%pAdjusted = adjusted p-values
-
-%Validated on Oct 19th 2017 against fdr_bh() function from Matlab Exchange,
-%and on Nov 29th 2018 agains BioInformatic's Toolbox mafdr()
-%References:
-%Benjamini & Hochberg 1995
-%Yekuteli & Benjamini 1999 (for definition of adjusted p-values)
-%Benjamini, Krieger and Yekuteli 2006 (for two-stage procedure)
+%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction for multiple comparisons.
+%
+%   Determines significance across multiple comparisons while controlling
+%   the False Discovery Rate (expected fraction of false positives among
+%   all rejections). Less conservative than Bonferroni correction; FDR
+%   control holds in expectation over many realizations.
+%
+%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and
+%   Nov 2018 against the Bioinformatics Toolbox mafdr().
+%
+%   References:
+%     Benjamini & Hochberg 1995
+%     Yekuteli & Benjamini 1999 (adjusted p-values)
+%     Benjamini, Krieger & Yekuteli 2006 (two-stage procedure)
+%
+% Inputs:
+%   p            - vector of p-values from multiple comparisons
+%   fdr          - scalar in [0,1]; tolerated False Discovery Rate
+%   twoStageFlag - (optional) logical; if true, applies the BKY two-stage
+%                  procedure (more power, same FDR guarantees under
+%                  independent tests); default false
+%
+% Outputs:
+%   h          - binary vector; 1 where p-value is significant, 0 elsewhere
+%   pThreshold - p-value cut-off; satisfies h = (p <= pThreshold)
+%   i1         - number of significant results; equals sum(h)
+%   pAdjusted  - adjusted p-values; significant where pAdjusted < fdr
+%
+% Toolbox Dependencies: None
+%
+% See also MAFDR.
 
 if nargin<3 || isempty(twoStageFlag)
     twoStageFlag=false;

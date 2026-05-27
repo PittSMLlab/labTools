@@ -1,21 +1,31 @@
 function [W,C,d] = myNNMF(data,rank,reps,useParallel)
-%myNNMF Customized call to NNMF to get more consistent results
-%This function calls nnmf with custom params:
-%INPUTS:
-%data is the matrix to be factorized
-%rank is the desired rank of the factorization (dimensionality)
-%useParallel defines whether to use parallel computation
-%------------------------------------------------------------------------
-%CUSTOM PARAMS:
-%tolF is a % error that will be accepted as the min increment to say that
-%convergence has been achieved
-%tolX is 
-
 if nargin<4
     useParallel='always';
 end
 if nargin<3
     reps=8;
+%MYNNMF Non-negative matrix factorisation with robust defaults.
+%
+%   Calls nnmf() with custom convergence tolerances and multiple random
+%   initialisations to obtain more consistent results than a single run.
+%
+% Inputs:
+%   data        - matrix to factorize (observations-by-features; transposed
+%                 automatically when features exceed observations)
+%   rank        - desired factorization rank (dimensionality)
+%   reps        - (optional) number of random initialisations; default 8
+%   useParallel - (optional) parallel-computation flag passed to statset;
+%                 default 'always'
+%
+% Outputs:
+%   W - left factor matrix (observations-by-rank)
+%   C - right factor matrix (rank-by-features)
+%   d - residual norm
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also NNMF, STATSET.
+
 end
 
 if size(data,1)<size(data,2)
