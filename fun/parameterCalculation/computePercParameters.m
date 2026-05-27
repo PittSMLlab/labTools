@@ -133,9 +133,12 @@ end
 
 %% Assign Parameters to Data Matrix
 data = nan(length(initTime), length(paramLabels));
-for ii = 1:length(paramLabels)
-    eval(['data(:, ii) = ' paramLabels{ii} ';']);
-end
+data(:, 1) = percTaskInitStride;
+data(:, 2) = percTaskEndStride;
+data(:, 3) = percTask;
+data(:, 4) = pertSizePercTask;
+data(:, 5) = SLAinPercTask;
+data(:, 6) = SLAnotPercTask;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);

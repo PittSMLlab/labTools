@@ -351,9 +351,49 @@ outCOP.description = [];
 
 %% Assign Parameters to Data Matrix
 data = nan(numStrides, length(paramLabels));
-for ii = 1:length(paramLabels)
-    eval(['data(:, ii) = ' paramLabels{ii} ';']);
-end
+data(:,  1) = TMAngle;
+data(:,  2) = WalkingDirection;
+data(:,  3) = FyBS;
+data(:,  4) = FyPS;
+data(:,  5) = FyBF;
+data(:,  6) = FyPF;
+data(:,  7) = FyBSym;
+data(:,  8) = FyPSym;
+data(:,  9) = FxS;
+data(:, 10) = FzS;
+data(:, 11) = FxF;
+data(:, 12) = FzF;
+data(:, 13) = HandrailHolding;
+data(:, 14) = ImpactMagS;
+data(:, 15) = ImpactMagF;
+data(:, 16) = FyBSmax;
+data(:, 17) = FyPSmax;
+data(:, 18) = FyBFmax;
+data(:, 19) = FyPFmax;
+data(:, 20) = FyBmaxSym;
+data(:, 21) = FyPmaxSym;
+data(:, 22) = FyBmaxRatio;
+data(:, 23) = FyPmaxRatio;
+data(:, 24) = FyBmaxSymNorm;
+data(:, 25) = FyPmaxSymNorm;
+data(:, 26) = FyBFmaxPer;
+data(:, 27) = FyBSmaxPer;
+data(:, 28) = FyPFmaxPer;
+data(:, 29) = FyPSmaxPer;
+data(:, 30) = Slow_Ipsi_FySym;
+data(:, 31) = Fast_Ipsi_FySym;
+data(:, 32) = SlowB_Contra_FySym;
+data(:, 33) = FastB_Contra_FySym;
+data(:, 34) = FyPSsum;
+data(:, 35) = FyPFsum;
+data(:, 36) = FyBSsum;
+data(:, 37) = FyBFsum;
+data(:, 38) = FxSmax;
+data(:, 39) = FzSmax;
+data(:, 40) = FxFmax;
+data(:, 41) = FzFmax;
+data(:, 42) = FyBFmax_ABS;
+data(:, 43) = FyBSmax_ABS;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);

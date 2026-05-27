@@ -147,9 +147,10 @@ end
 
 %% Assign Parameters to Data Matrix
 data = nan(numStrides, length(paramLabels));
-for ii = 1:length(paramLabels)
-    eval(['data(:, ii) = ' paramLabels{ii} ';']);
-end
+data(:, 1) = harmonicRatio;
+data(:, 2) = harmonicRatioX;
+data(:, 3) = harmonicRatioY;
+data(:, 4) = harmonicRatioZ;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);

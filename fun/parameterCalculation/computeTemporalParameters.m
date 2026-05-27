@@ -122,9 +122,33 @@ TgoalSW = swingTimeDiff ./ strideTimeSlow;
 
 %% Assign Parameters to Data Matrix
 data = nan(length(timeSHS), length(paramLabels));
-for ii = 1:length(paramLabels)
-    eval(['data(:, ii) = ' paramLabels{ii} ';']);
-end
+data(:,  1) = swingTimeSlow;
+data(:,  2) = swingTimeFast;
+data(:,  3) = stanceTimeSlow;
+data(:,  4) = stanceTimeFast;
+data(:,  5) = doubleSupportSlow;
+data(:,  6) = doubleSupportFast;
+data(:,  7) = doubleSupportTemp;
+data(:,  8) = stepTimeSlow;
+data(:,  9) = stepTimeFast;
+data(:, 10) = toeOffSlow;
+data(:, 11) = toeOffFast;
+data(:, 12) = strideTimeSlow;
+data(:, 13) = strideTimeFast;
+data(:, 14) = cadenceSlow;
+data(:, 15) = cadenceFast;
+data(:, 16) = stepCadenceSlow;
+data(:, 17) = stepCadenceFast;
+data(:, 18) = doubleSupportPctSlow;
+data(:, 19) = doubleSupportPctFast;
+data(:, 20) = doubleSupportDiff;
+data(:, 21) = stepTimeDiff;
+data(:, 22) = stanceTimeDiff;
+data(:, 23) = swingTimeDiff;
+data(:, 24) = doubleSupportAsym;
+data(:, 25) = Tout;
+data(:, 26) = Tgoal;
+data(:, 27) = TgoalSW;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);
