@@ -1,8 +1,4 @@
-function b = cellisa(cell,type)
-b=[];
-for i=1:length(cell)
-    b(i)=isa(cell{i},type);
-end
+function b = cellisa(cellArr, type)
 %CELLISA Check class membership for each element of a cell array.
 %
 %   Applies isa() to every element of cellArr, returning a logical vector.
@@ -18,5 +14,9 @@ end
 %
 % See also ISA, CELLFUN.
 
+b = [];
+for ii = 1:length(cellArr)
+    b(ii) = isa(cellArr{ii}, type);
 end
 
+end
