@@ -89,41 +89,6 @@ end
 function Lab = MshToLab(Msh)
 %MSHTOLAB Convert polar Msh representation to CIELab.
 
-    function [xyz] = LabToXYZ(Lab)
-        %LAB to XYZ
-        L = Lab(1); a = Lab(2); b = Lab(3);
-
-        var_Y = ( L + 16 ) / 116;
-        var_X = a / 500 + var_Y;
-        var_Z = var_Y - b / 200;
-
-        if ( var_Y^3 > 0.008856 ) 
-          var_Y = var_Y^3;
-        else
-          var_Y = ( var_Y - 16.0 / 116.0 ) / 7.787;
-        end
-        if ( var_X^3 > 0.008856 ) 
-          var_X = var_X^3;
-        else
-          var_X = ( var_X - 16.0 / 116.0 ) / 7.787;
-        end
-        if ( var_Z^3) > 0.008856 
-          var_Z = var_Z^3;
-        else
-          var_Z = ( var_Z - 16.0 / 116.0 ) / 7.787;
-        end
-
-        ref_X = 0.9505;
-        ref_Y = 1.000;
-        ref_Z = 1.089;
-
-
-        x = ref_X * var_X;     %ref_X = 0.9505  Observer= 2 deg Illuminant= D65
-        y = ref_Y * var_Y;     %ref_Y = 1.000
-        z = ref_Z * var_Z;     %ref_Z = 1.089
-
-        xyz = [x y z];
-    end
 M = Msh(1);
 s = Msh(2);
 h = Msh(3);
@@ -186,6 +151,41 @@ else
         h = msh(3) - hueSpin;
     end
 end
+end
+
+% ---------------------------------------------------------------------------
+function xyz = LabToXYZ(Lab)
+%LABTOXYZ Convert CIELab to XYZ color space.
+
+L = Lab(1);
+a = Lab(2);
+b = Lab(3);
+
+var_Y = (L + 16) / 116;
+var_X = a / 500 + var_Y;
+var_Z = var_Y - b / 200;
+
+if var_Y^3 > 0.008856
+    var_Y = var_Y^3;
+else
+    var_Y = (var_Y - 16.0 / 116.0) / 7.787;
+end
+if var_X^3 > 0.008856
+    var_X = var_X^3;
+else
+    var_X = (var_X - 16.0 / 116.0) / 7.787;
+end
+if var_Z^3 > 0.008856
+    var_Z = var_Z^3;
+else
+    var_Z = (var_Z - 16.0 / 116.0) / 7.787;
+end
+
+ref_X = 0.9505;  % Observer = 2 deg, Illuminant = D65
+ref_Y = 1.000;
+ref_Z = 1.089;
+
+xyz = [ref_X * var_X, ref_Y * var_Y, ref_Z * var_Z];
 end
 
 
