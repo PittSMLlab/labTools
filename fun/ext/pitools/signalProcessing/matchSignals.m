@@ -1,5 +1,5 @@
 function [alignedSignal2, timeScaleFactor, lagInSamples, gain] = ...
-        matchSignals(signal1, signal2)
+    matchSignals(signal1, signal2)
 %MATCHSIGNALS Find and apply the transformation that best aligns signal2
 %to signal1.
 %

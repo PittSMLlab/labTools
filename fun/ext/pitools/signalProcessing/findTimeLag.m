@@ -1,5 +1,5 @@
 function [timeDiff, corrCoef, lagInSamples] = findTimeLag( ...
-        referenceSignal, secondarySignal)
+    referenceSignal, secondarySignal)
 %FINDTIMELAG Estimate the sample lag between two signals via correlation.
 %
 %   Zero-pads both signals to the same length, computes their cross-

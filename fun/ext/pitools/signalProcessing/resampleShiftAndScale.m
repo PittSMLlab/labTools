@@ -1,5 +1,5 @@
 function newSignals = resampleShiftAndScale( ...
-        signals, timeScaleFactor, lagInSamples, scaleGain)
+    signals, timeScaleFactor, lagInSamples, scaleGain)
 %RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.
 %
 %   Transforms signals by resampling at timeScaleFactor, shifting by

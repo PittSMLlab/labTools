@@ -19,11 +19,11 @@ function slices = sliceArray(data, inds, dim)
 
 nd = ndims(data);
 if dim > nd
-    error('')
+    error('');
 end
 N = size(data, dim);
 if any(inds > N | inds < 1)
-    error()
+    error();
 end
 prefix = repmat(':,', 1, dim - 1);
 suffix = repmat(',:', 1, nd - dim);

@@ -77,4 +77,5 @@ if k < D
 else
     logL = NaN;
 end
+
 end

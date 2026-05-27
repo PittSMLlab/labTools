@@ -17,15 +17,15 @@ end
 %     end
 %     str(end)=';';
 % end
-% 
+%
 % %Initialize extended version
 % eval(['x2=zeros(', str, ');']);
-% 
+%
 % %Fill x2 with copies of x
-% 
-% 
+%
+%
 % %Do the interpolation
-% 
+%
 % %Get the relevant part of the interpolation
 
 %% To work with only dim=1
@@ -41,4 +41,3 @@ y(N+1:end,:)=[];
 y=depermute(y,[dim 1:dim-1 dim+1:ndims(x)]);
 
 end
-
