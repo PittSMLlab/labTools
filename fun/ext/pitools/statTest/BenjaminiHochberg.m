@@ -1,4 +1,4 @@
-function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)
+function [h, pThreshold, i1, pAdjusted] = BenjaminiHochberg(p, fdr, twoStageFlag)
 %BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction for multiple comparisons.
 %
 %   Determines significance across multiple comparisons while controlling
@@ -31,46 +31,51 @@ function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)
 %
 % See also MAFDR.
 
-if nargin<3 || isempty(twoStageFlag)
-    twoStageFlag=false;
+arguments
+    p            {mustBeVector, mustBeNumeric}
+    fdr    (1,1) double {mustBeInRange(fdr, 0, 1)}
+    twoStageFlag (1,1) logical = false
 end
+
 if twoStageFlag
-    fdr=fdr/(1+fdr); %BKY procedure requires using this value
-    %in the first and second pass for FDR guarantee, although authors later use fdr
-    %itself for the first pass and claim that it is ok in practice.
+    % BKY procedure uses fdr/(1+fdr) in both passes for FDR guarantee,
+    % though authors later suggest using fdr itself in the first pass.
+    fdr = fdr / (1 + fdr);
 end
 
-M=numel(p); %No. of total comparisons
+M = numel(p);  % total number of comparisons
 
-[p1,idx]=sort(p(:),'ascend');
-h1=zeros(size(p1));
-ii=find(p1 < fdr*[1:M]'/M,1,'last');
-if isempty(ii)
-    i1=0;
+%% Sort and Apply BH Threshold
+[p1, idx] = sort(p(:), 'ascend');
+h1        = zeros(size(p1));
+lastSig   = find(p1 < fdr * (1:M)' / M, 1, 'last');
+if isempty(lastSig)
+    i1 = 0;
 else
-    i1=ii;
+    i1 = lastSig;
 end
 
-h1(1:i1)=1; %Significant results
-h=nan(size(p));
-h(idx)=h1; %Re-sorting
+h1(1:i1) = 1;  % significant results
+h         = nan(size(p));
+h(idx)    = h1;  % restore original ordering
 
-pThreshold=p1(ii);
+pThreshold = p1(lastSig);
 
-if nargout>3 %Computing adjusted p-values
-    %Adjusted p-values are the thing that is compared to fdr
-    pAdjusted=nan(size(p));
-    newP=p1*M./[1:M]';
-    for i=(length(newP)-1):-1:1
-        if newP(i)>newP(i+1)
-            newP(i)=newP(i+1);
+%% Compute Adjusted P-Values
+if nargout > 3
+    pAdjusted = nan(size(p));
+    newP      = p1 * M ./ (1:M)';
+    for ii = (length(newP) - 1):-1:1
+        if newP(ii) > newP(ii + 1)
+            newP(ii) = newP(ii + 1);
         end
     end
-    pAdjusted(idx)=newP;
+    pAdjusted(idx) = newP;
 end
 
+%% Two-Stage Recursive Call
 if twoStageFlag
-    [h,pThreshold,i1] = BenjaminiHochberg(p,fdr*M/(M-i1),false);
+    [h, pThreshold, i1] = BenjaminiHochberg(p, fdr * M / (M - i1), false);
 end
 
 end
