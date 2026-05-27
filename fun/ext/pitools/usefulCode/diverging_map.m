@@ -1,48 +1,6 @@
 function map = diverging_map(s, rgb1, rgb2)
 %DIVERGING_MAP Interpolate a perceptual diverging colormap.
 %
-    function[result] = diverging_map_1val(s, rgb1, rgb2)
-    %s1 is a number between 0 and 1
-
-        lab1 = RGBToLab(rgb1);
-        lab2 = RGBToLab(rgb2);
-  
-        msh1 = LabToMsh(lab1);
-        msh2 = LabToMsh(lab2);
-
-        % If the endpoints are distinct saturated colors, then place white in between
-        % them.
-        if msh1(2) > 0.05 && msh2(2) > 0.05 && AngleDiff(msh1(3),msh2(3)) > 0.33*pi    
-            % Insert the white midpoint by setting one end to white and adjusting the
-            % scalar value.
-            Mmid = max(msh1(1), msh2(1));
-            Mmid = max(88.0, Mmid);
-            if (s < 0.5)
-                msh2(1) = Mmid;  msh2(2) = 0.0;  msh2(3) = 0.0;
-                s = 2.0*s;
-            else
-                msh1(1) = Mmid;  msh1(2) = 0.0;  msh1(3) = 0.0;
-                s = 2.0*s - 1.0;
-            end
-        end
-
-        % If one color has no saturation, then its hue value is invalid.  In this
-        % case, we want to set it to something logical so that the interpolation of
-        % hue makes sense.
-        if ((msh1(2) < 0.05) && (msh2(2) > 0.05))
-            msh1(3) = AdjustHue(msh2, msh1(1));
-        elseif ((msh2(2) < 0.05) && (msh1(2) > 0.05))
-            msh2(3) = AdjustHue(msh1, msh2(1));
-        end
-
-        mshTmp(1) = (1-s)*msh1(1) + s*msh2(1);
-        mshTmp(2) = (1-s)*msh1(2) + s*msh2(2);
-        mshTmp(3) = (1-s)*msh1(3) + s*msh2(3);
-
-        % Now convert back to RGB
-        labTmp = MshToLab(mshTmp);
-        result = LabToRGB(labTmp);
-        1;
 %   For each value in s (range [0, 1]), interpolates between two RGB
 %   endpoint colors via the Msh perceptual color space, optionally
 %   inserting white at the midpoint when the endpoints are distinctly
@@ -67,8 +25,42 @@ end
 end
 
 % ---------------------------------------------------------------------------
-    end
+function result = diverging_map_1val(s, rgb1, rgb2)
+%DIVERGING_MAP_1VAL Interpolate one colormap value in Msh space.
 
+lab1 = RGBToLab(rgb1);
+lab2 = RGBToLab(rgb2);
+
+msh1 = LabToMsh(lab1);
+msh2 = LabToMsh(lab2);
+
+% If the endpoints are distinct saturated colors, place white between them.
+if msh1(2) > 0.05 && msh2(2) > 0.05 && ...
+        AngleDiff(msh1(3), msh2(3)) > 0.33 * pi
+    % Insert the white midpoint by setting one end to white and adjusting
+    % the scalar value.
+    Mmid = max(msh1(1), msh2(1));
+    Mmid = max(88.0, Mmid);
+    if s < 0.5
+        msh2(1) = Mmid;
+        msh2(2) = 0.0;
+        msh2(3) = 0.0;
+        s = 2.0 * s;
+    else
+        msh1(1) = Mmid;
+        msh1(2) = 0.0;
+        msh1(3) = 0.0;
+        s = 2.0 * s - 1.0;
+    end
+end
+
+% If one color has no saturation its hue is invalid; set it logically
+% so that hue interpolation makes sense.
+if msh1(2) < 0.05 && msh2(2) > 0.05
+    msh1(3) = AdjustHue(msh2, msh1(1));
+elseif msh2(2) < 0.05 && msh1(2) > 0.05
+    msh2(3) = AdjustHue(msh1, msh2(1));
+end
 
 %Convert to and from a special polar version of CIELAB (useful for creating
 %continuous diverging color maps).
@@ -76,10 +68,16 @@ end
         L = Lab(1);
         a = Lab(2);
         b = Lab(3);
+mshTmp(1) = (1 - s) * msh1(1) + s * msh2(1);
+mshTmp(2) = (1 - s) * msh1(2) + s * msh2(2);
+mshTmp(3) = (1 - s) * msh1(3) + s * msh2(3);
 
         M = sqrt(L*L + a*a + b*b);
         s = (M > 0.001) * acos(L/M);
         h = (s > 0.001) * atan2(b,a);
+labTmp = MshToLab(mshTmp);
+result = LabToRGB(labTmp);
+end
 
         Msh = [M s h];
     end
