@@ -1,4 +1,4 @@
-function [bool,idxs] = compareLists(list1,list2)
+function [bool, idxs] = compareLists(list1, list2)
 %COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.
 %
 %   Passes all arguments through to compareListsNested unchanged.
@@ -19,6 +19,5 @@ function [bool,idxs] = compareLists(list1,list2)
 % See also COMPARELISTSNESTED.
 
 warning('Deprecated: use compareListsNested')
-[bool,idxs] = compareListsNested(list1,list2);
+[bool, idxs] = compareListsNested(list1, list2);
 end
-
