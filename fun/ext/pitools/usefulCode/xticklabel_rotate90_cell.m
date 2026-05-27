@@ -1,4 +1,4 @@
-function xticklabel_rotate90(XTick,xTickLabels,varargin)
+function xticklabel_rotate90(XTick, xTickLabels, varargin)
 %XTICKLABEL_ROTATE90 Rotate x-tick labels by 90 degrees.
 %
 %   Replaces numeric XTick labels with rotated text objects, allowing
@@ -27,43 +27,36 @@ function xticklabel_rotate90(XTick,xTickLabels,varargin)
 % February 1998; Last revision: 24-Mar-2003
 
 if ~isnumeric(XTick)
-   error('XTICKLABEL_ROTATE90 requires a numeric input argument');
+    error('XTICKLABEL_ROTATE90 requires a numeric input argument');
 end
 
-%Make sure XTick is a column vector
+% Make sure XTick is a column vector.
 XTick = XTick(:);
 
-%Set the Xtick locations and set XTicklabel to an empty string
-set(gca,'XTick',XTick,'XTickLabel','')
+% Clear the built-in tick labels at the desired positions.
+set(gca, 'XTick', XTick, 'XTickLabel', '')
 
-% Define the xtickLabels
-%xTickLabels = num2str(XTick);
-
-% Determine the location of the labels based on the position
-% of the xlabel
-hxLabel = get(gca,'XLabel');  % Handle to xlabel
-xLabelString = get(hxLabel,'String');
+% Determine the vertical position for the rotated labels.
+hxLabel      = get(gca, 'XLabel');
+xLabelString = get(hxLabel, 'String');
 
 if ~isempty(xLabelString)
-   warning('You may need to manually reset the XLABEL vertical position')
+    warning('You may need to manually reset the XLABEL vertical position')
 end
 
-set(hxLabel,'Units','data');
-xLabelPosition = get(hxLabel,'Position');
+set(hxLabel, 'Units', 'Data');
+xLabelPosition = get(hxLabel, 'Position');
 y = xLabelPosition(2);
-y=1.1;
+Y_LABEL_OFFSET = 1.1;  % empirical offset below axis (per Urs Schwarz)
+y = Y_LABEL_OFFSET;
+%y = repmat(y, size(XTick, 1), 1);
 
-%CODE below was modified following suggestions from Urs Schwarz
-%y=repmat(y,size(XTick,1),1);
-% retrieve current axis' fontsize
-fs = get(gca,'fontsize');
+fs = get(gca, 'FontSize');
 
-for i=1:length(XTick)
-% Place the new xTickLabels by creating TEXT objects
-hText = text(XTick(i), y, xTickLabels{i},'fontsize',fs);
-
-% Rotate the text objects by 90 degrees
-set(hText,'Rotation',90,'HorizontalAlignment','right',varargin{:})
+for ii = 1:length(XTick)
+    % Place rotated text objects in lieu of built-in tick labels.
+    hText = text(XTick(ii), y, xTickLabels{ii}, 'FontSize', fs);
+    set(hText, 'Rotation', 90, 'HorizontalAlignment', 'Right', varargin{:})
 end
 
-%------------- END OF CODE --------------
+end
