@@ -1,13 +1,6 @@
-function[map] = diverging_map(s,rgb1,rgb2)
+function map = diverging_map(s, rgb1, rgb2)
 %DIVERGING_MAP Interpolate a perceptual diverging colormap.
 %
-map = zeros(length(s),3);
-for i=1:length(s)
-    map(i,:) = diverging_map_1val(s(i),rgb1,rgb2);
-end
-end
-
-% Interpolate a diverging color map.
     function[result] = diverging_map_1val(s, rgb1, rgb2)
     %s1 is a number between 0 and 1
 
@@ -67,6 +60,13 @@ end
 %
 % See also COLORMAP, INTERP1.
 
+map = zeros(length(s), 3);
+for ii = 1:length(s)
+    map(ii, :) = diverging_map_1val(s(ii), rgb1, rgb2);
+end
+end
+
+% ---------------------------------------------------------------------------
     end
 
 
