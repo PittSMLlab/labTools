@@ -1,9 +1,4 @@
-function [W,C,d] = myNNMF(data,rank,reps,useParallel)
-if nargin<4
-    useParallel='always';
-end
-if nargin<3
-    reps=8;
+function [W, C, d] = myNNMF(data, rank, reps, useParallel)
 %MYNNMF Non-negative matrix factorisation with robust defaults.
 %
 %   Calls nnmf() with custom convergence tolerances and multiple random
@@ -26,32 +21,46 @@ if nargin<3
 %
 % See also NNMF, STATSET.
 
+arguments
+    data
+    rank        (1,1) {mustBeInteger, mustBeNonnegative}
+    reps        (1,1) {mustBeInteger, mustBePositive}   = 8
+    useParallel                                          = 'always'
 end
 
-if size(data,1)<size(data,2)
-    data=data';
+if size(data, 1) < size(data, 2)
+    data = data';
 end
 
-if rank==0
+%% Handle Edge Cases
+if rank == 0
     disp('There are no possible factorizations of rank 0, returning')
     return
-elseif rank==size(data,2)
+elseif rank == size(data, 2)
     %disp('Full rank factorization: returning original matrix.')
-    C=eye(size(data,2));
-    W=data;
-    d=0;
+    C = eye(size(data, 2));
+    W = data;
+    d = 0;
     return
 end
 
-nm=numel(data);
-alg='als'; %Should verify this is the best choice
-tolF=sqrt(.0001*norm(data,'fro')^2/(nm*(rank^2))) + eps; % 0.1% tolerance in objective function (note that this is 1/1000th of the max value for the tolerance function F)divided by desired rank squared.
-tolX=0.0001; %This is as a percentage (0.01%). It will determine convergence if the element that changes the most in W or H changes less than 0.01% of the highest element in those matrices.
+%% Set Algorithm Parameters
+nm  = numel(data);
+alg = 'als';  % TODO: verify this is the optimal algorithm choice
 
-opts=statset('TolFun',tolF,'TolX',tolX,'UseParallel',useParallel,'Display','off');
+% tolF: 0.1% relative tolerance in the objective function.
+% Equals 0.001 * max(F) / rank^2 where F is the Frobenius-norm error.
+tolF = sqrt(0.0001 * norm(data, 'fro')^2 / (nm * (rank^2))) + eps;
 
-[W,C,d]=nnmf(data,rank,'replicates',reps,'algorithm',alg,'options',opts);
+% tolX: convergence fires when the largest per-element change in W or C
+% falls below 0.01% of the maximum element in those matrices.
+tolX = 0.0001;
 
+opts = statset('TolFun', tolF, 'TolX', tolX, ...
+    'UseParallel', useParallel, 'Display', 'off');
+
+%% Run NNMF
+[W, C, d] = nnmf(data, rank, 'replicates', reps, ...
+    'algorithm', alg, 'options', opts);
 
 end
-
