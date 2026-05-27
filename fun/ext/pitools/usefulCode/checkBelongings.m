@@ -1,4 +1,4 @@
-function [flag] = checkBelongings(idx1,idx2)
+function flag = checkBelongings(idx1, idx2)
 %CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.
 %
 %   Returns true if no two elements share the same (idx1, idx2) pair,
@@ -20,32 +20,29 @@ function [flag] = checkBelongings(idx1,idx2)
 %
 % See also CROSSTAB.
 
-%Check inputs are vectors are of same size
-if length(idx1)~=numel(idx1) || length(idx2)~=numel(idx2)
+%% Validate Inputs
+if length(idx1) ~= numel(idx1) || length(idx2) ~= numel(idx2)
     disp('Error in checkBelongings: inputs are not vectors')
-    flag=[];
+    flag = [];
     return
 end
-if length(idx1)~=length(idx2)
+if length(idx1) ~= length(idx2)
     disp('Error in checkBelongings: vectors are not of the same size')
-    flag=[];
+    flag = [];
     return
 end
 
-
-
-%Check belongings:
-Nelem=length(idx1);
-%M=sparse([],[],[],max(idx1),max(idx2),Nelem^2); %Create belonging matrix (sparse to avoid memory problems)
-%for i=1:length(idx1)
-%   M(idx1(i),idx2(i)) = M(idx1(i),idx2(i))+1;
+%% Check Belongings
+Nelem = length(idx1);
+%M = sparse([], [], [], max(idx1), max(idx2), Nelem^2);
+%for ii = 1:length(idx1)
+%    M(idx1(ii), idx2(ii)) = M(idx1(ii), idx2(ii)) + 1;
 %end
-M=crosstab(idx1,idx2);
+M = crosstab(idx1, idx2);
 
-if any(M(:)>1)
-    flag=false;
+if any(M(:) > 1)
+    flag = false;
 else
-    flag=true;
+    flag = true;
 end
 end
-
