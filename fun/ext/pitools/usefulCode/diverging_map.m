@@ -74,23 +74,14 @@ end
 function Msh = LabToMsh(Lab)
 %LABTOMSH Convert CIELab to polar Msh representation.
 
-    function[Lab] = MshToLab(Msh)
-        M = Msh(1);
-        s = Msh(2);
-        h = Msh(3);
 L = Lab(1);
 a = Lab(2);
 b = Lab(3);
 
-        L = M*cos(s);
-        a = M*sin(s)*cos(h);
-        b = M*sin(s)*sin(h);
 M = sqrt(L*L + a*a + b*b);
 s = (M > 0.001) * acos(L / M);
 h = (s > 0.001) * atan2(b, a);
 
-        Lab = [L a b];
-    end
 Msh = [M s h];
 end
 
@@ -121,6 +112,9 @@ end
             end
         end
     end
+% ---------------------------------------------------------------------------
+function Lab = MshToLab(Msh)
+%MSHTOLAB Convert polar Msh representation to CIELab.
 
     function [xyz] = LabToXYZ(Lab)
         %LAB to XYZ
@@ -157,9 +151,15 @@ end
 
         xyz = [x y z];
     end
+M = Msh(1);
+s = Msh(2);
+h = Msh(3);
 
     function[Lab] = XYZToLab(xyz)
         x = xyz(1); y = xyz(2); z = xyz(3);
+L = M * cos(s);
+a = M * sin(s) * cos(h);
+b = M * sin(s) * sin(h);
 
         ref_X = 0.9505;
         ref_Y = 1.000;
@@ -180,6 +180,9 @@ end
         b = 200 * ( var_Y - var_Z );
 
         Lab = [L a b];
+Lab = [L a b];
+end
+
     end
 
 function[rgb] = XYZToRGB(xyz)
