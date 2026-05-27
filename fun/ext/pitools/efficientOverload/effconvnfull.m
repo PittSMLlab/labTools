@@ -1,6 +1,4 @@
-function [newP] = effconvnfull(pValues1,pValues2)
-newSize=size(pValues1)+size(pValues2)-1;
-newP=ifftn(fftn(pValues1,newSize).*fftn(pValues2,newSize));
+function newP = effconvnfull(pValues1, pValues2)
 %EFFCONVNFULL Convolve N-D arrays via FFT (full output).
 %
 %   Implements convn using FFTs; equivalent to convn(A, B, 'full').
@@ -18,6 +16,7 @@ newP=ifftn(fftn(pValues1,newSize).*fftn(pValues2,newSize));
 %
 % See also EFFCONVN, CONVN, IFFTN, FFTN.
 
+newSize = size(pValues1) + size(pValues2) - 1;
+newP    = ifftn(fftn(pValues1, newSize) .* fftn(pValues2, newSize));
 
 end
-
