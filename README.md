@@ -68,6 +68,10 @@ through stride-indexed adaptation metrics and group statistics.
    - `*params.mat` — stride-indexed adaptation metrics
      (`adaptationData` object)
 
+To add a new experiment type to the GetInfoGUI dropdown, or to update
+the Vicon marker label mappings, see
+[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md).
+
 ---
 
 ## External Libraries
@@ -300,8 +304,11 @@ MATLAB GUIs and require no additional toolboxes.
 
 Covered in [Getting Started](#getting-started) step 3. Prompts for
 participant demographics, data file locations, trial/condition
-assignments, and EMG channel labels. `ExpDetails/` files can be placed
-in the working directory to auto-populate condition information.
+assignments, and EMG channel labels. The experiment-description
+dropdown is auto-populated from `.mat` files in
+`gui/importc3d/ExpDetails/`. To define a new experiment type, use the
+`Template.m` script in that directory — see
+[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md) for the full workflow.
 
 ### `ReviewEventsGUI` — Gait Event Review and Stride Labeling
 
@@ -433,29 +440,15 @@ HTML is written to `doc/` inside your labTools directory.
 
 **Full rebuild** — removes stale pages for functions that no longer
 exist. Use this when the repository structure has changed
-significantly:
+significantly. The `doc/` directory is fully auto-generated and safe
+to delete:
 
-1. Rescue any non-generated files you keep in `doc/` (e.g. user
-   guides, PDFs) by moving them somewhere safe:
-   ```matlab
-   mkdir('temp_doc_backup')
-   movefile('labTools/doc/LabTools User Guide.doc', ...
-       'temp_doc_backup/')
-   ```
-
-2. Delete the `doc/` folder:
+1. Delete the `doc/` folder:
    ```matlab
    rmdir('labTools/doc', 's')
    ```
 
-3. Run m2html (same command as above).
-
-4. Move your rescued files back and remove the temp folder:
-   ```matlab
-   movefile('temp_doc_backup/LabTools User Guide.doc', ...
-       'labTools/doc/')
-   rmdir('temp_doc_backup', 's')
-   ```
+2. Run m2html (same command as above).
 
 **Checking your m2html version:** run `which m2html` in MATLAB to
 find your installed copy, check its header for a version date, and
