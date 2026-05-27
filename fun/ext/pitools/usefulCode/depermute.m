@@ -1,6 +1,4 @@
-function [B] = depermute(A,order)
-newOrder(order)=order;
-B=permute(A,newOrder);
+function B = depermute(A, order)
 %DEPERMUTE Invert a prior permute() call given the same order vector.
 %
 %   If A = permute(C, order), then B = depermute(A, order) recovers C.
@@ -16,6 +14,7 @@ B=permute(A,newOrder);
 %
 % See also PERMUTE.
 
+newOrder(order) = order;
+B = permute(A, newOrder);
 
 end
-
