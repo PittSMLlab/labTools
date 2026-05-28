@@ -1,67 +1,3 @@
-if nargin>2 && ~isempty(plotFlag)
-    
-    figure
-    hold on
-    
-    for b=1:ngroups
-        ph(b)=plot(results.stepTimeSteady.indiv.(groups{b}),results.spatialSteady.indiv.(groups{b}),'.','color',ColorOrder(b,:),'markerSize',20);
-    end
-    
-    title('Treadmill Steady State')
-    ylabel('Spatial Contribution')
-    xlabel('Step Time Cont')
-    
-    legend(ph,groups)
-    
-    figure
-    hold on
-    
-    for b=1:ngroups
-        ph2(b)=plot(results.OGafter.indiv.(groups{b})(:,2),results.OGafter.indiv.(groups{b})(:,1),'.','color',ColorOrder(b,:),'markerSize',20);
-    end
-    
-    title('OG after')
-    ylabel('Spatial Contribution')
-    xlabel('Step Time Cont')
-    
-    legend(ph2,groups)
-    
-    figure 
-    hold on
-    
-    for b=1:ngroups
-        ph3(b)=plot(results.relStepTime.indiv.(groups{b}),results.relSpatial.indiv.(groups{b}),'.','color',ColorOrder(b,:),'markerSize',20);
-    end
-    
-    plot([0 100],[100 0],'k','linewidth',2)
-    
-    set(gca,'Ylim',[0 120])
-    set(gca,'Xlim',[0 80])           
-    
-    ylabel('Relative Spatial Contribution')
-    xlabel('Relative Step Time Cont')
-
-    legend(ph3,groups)
-    
-    figure
-    hold on
-    
-    for b=1:ngroups
-        nSubs=length(SMatrix.(groups{b}).IDs(:,1));
-        if nargin>3 && ~isempty(indivFlag)
-            bar(b,results.expSpeed.avg(b),'facecolor',GreyOrder(b,:));
-            for s=1:nSubs
-                plot(b,results.expSpeed.indiv.(groups{b})(s),'*','Color',ColorOrder(s,:))
-            end
-        else
-            bar(b,results.expSpeed.avg(b),'facecolor',ColorOrder(b,:));
-        end                                
-    end
-    errorbar(results.expSpeed.avg,results.expSpeed.sd,'.','LineWidth',2,'Color','k')
-    axis tight
-    set(gca,'Xtick',1:ngroups,'XTickLabel',groups,'fontSize',12,'Ylim',[0 1500])   
-    
-end%EXPRESULTS Compute group-level steady-state and transfer results.
 function results = expResults(SMatrix, groups, plotFlag, indivFlag)
 %EXPRESULTS Compute group-level steady-state and transfer results.
 %
@@ -230,3 +166,70 @@ for gg = 1:ngroups
 end
 
 %% Plot
+if nargin > 2 && ~isempty(plotFlag)
+
+    figure
+    hold on
+    for gg = 1:ngroups
+        ph(gg) = plot( ...
+            results.stepTimeSteady.indiv.(groups{gg}), ...
+            results.spatialSteady.indiv.(groups{gg}), ...
+            '.', 'color', ColorOrder(gg, :), 'markerSize', 20); %#ok<AGROW>
+    end
+    title('Treadmill Steady State')
+    ylabel('Spatial Contribution')
+    xlabel('Step Time Cont')
+    legend(ph, groups)
+
+    figure
+    hold on
+    for gg = 1:ngroups
+        ph2(gg) = plot( ...
+            results.OGafter.indiv.(groups{gg})(:, 2), ...
+            results.OGafter.indiv.(groups{gg})(:, 1), ...
+            '.', 'color', ColorOrder(gg, :), 'markerSize', 20); %#ok<AGROW>
+    end
+    title('OG after')
+    ylabel('Spatial Contribution')
+    xlabel('Step Time Cont')
+    legend(ph2, groups)
+
+    figure
+    hold on
+    for gg = 1:ngroups
+        ph3(gg) = plot( ...
+            results.relStepTime.indiv.(groups{gg}), ...
+            results.relSpatial.indiv.(groups{gg}), ...
+            '.', 'color', ColorOrder(gg, :), 'markerSize', 20); %#ok<AGROW>
+    end
+    plot([0 100], [100 0], 'k', 'linewidth', 2)
+    set(gca, 'Ylim', [0 120])
+    set(gca, 'Xlim', [0 80])
+    ylabel('Relative Spatial Contribution')
+    xlabel('Relative Step Time Cont')
+    legend(ph3, groups)
+
+    figure
+    hold on
+    for gg = 1:ngroups
+        nSubs = length(SMatrix.(groups{gg}).IDs(:, 1));
+        if nargin > 3 && ~isempty(indivFlag)
+            bar(gg, results.expSpeed.avg(gg), ...
+                'facecolor', GreyOrder(gg, :));
+            for ss = 1:nSubs
+                plot(gg, results.expSpeed.indiv.(groups{gg})(ss), ...
+                    '*', 'Color', ColorOrder(ss, :))
+            end
+        else
+            bar(gg, results.expSpeed.avg(gg), ...
+                'facecolor', ColorOrder(gg, :));
+        end
+    end
+    errorbar(results.expSpeed.avg, results.expSpeed.sd, '.', ...
+        'LineWidth', 2, 'Color', 'k')
+    axis tight
+    set(gca, 'Xtick', 1:ngroups, 'XTickLabel', groups, ...
+        'fontSize', 12, 'Ylim', [0 1500])
+end
+
+end
