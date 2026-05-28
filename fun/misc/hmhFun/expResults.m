@@ -1,30 +1,3 @@
-    results.spatialSteady.avg(end+1,:)=nanmean(spatialSteady,1);
-    results.spatialSteady.sd(end+1,:)=nanstd(spatialSteady,1)./sqrt(nSubs);
-    results.spatialSteady.indiv.(groups{g})=spatialSteady;
-    
-    results.stepTimeSteady.avg(end+1,:)=nanmean(stepTimeSteady,1);
-    results.stepTimeSteady.sd(end+1,:)=nanstd(stepTimeSteady,1)./sqrt(nSubs);
-    results.stepTimeSteady.indiv.(groups{g})=stepTimeSteady;
-    
-    results.relSpatial.avg(end+1,:)=nanmean(relSpatial,1);
-    results.relSpatial.sd(end+1,:)=nanstd(relSpatial,1)./sqrt(nSubs);
-    results.relSpatial.indiv.(groups{g})=relSpatial;
-    
-    results.relStepTime.avg(end+1,:)=nanmean(relStepTime,1);
-    results.relStepTime.sd(end+1,:)=nanstd(relStepTime,1)./sqrt(nSubs);
-    results.relStepTime.indiv.(groups{g})=relStepTime;
-    
-    results.expSpeed.avg(end+1,:)=nanmean(expSpeed,1);
-    results.expSpeed.sd(end+1,:)=nanstd(expSpeed,1)./sqrt(nSubs);
-    results.expSpeed.indiv.(groups{g})=expSpeed;
-    
-    results.OGafter.avg(end+1,:)=nanmean(ogafter,1);
-    results.OGafter.sd(end+1,:)=nanstd(ogafter,1)./sqrt(nSubs);
-    results.OGafter.indiv.(groups{g})=ogafter;
-end
-
-%plot stuff
-
 if nargin>2 && ~isempty(plotFlag)
     
     figure
@@ -219,3 +192,41 @@ for gg = 1:ngroups
 
     nSubs = length(subjects);
 
+    results.spatialSteady.avg(end+1, :)  = ...
+        mean(spatialSteady, 1, 'omitnan');
+    results.spatialSteady.sd(end+1, :)   = ...
+        std(spatialSteady, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.spatialSteady.indiv.(groups{gg}) = spatialSteady;
+
+    results.stepTimeSteady.avg(end+1, :) = ...
+        mean(stepTimeSteady, 1, 'omitnan');
+    results.stepTimeSteady.sd(end+1, :)  = ...
+        std(stepTimeSteady, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.stepTimeSteady.indiv.(groups{gg}) = stepTimeSteady;
+
+    results.relSpatial.avg(end+1, :)     = ...
+        mean(relSpatial, 1, 'omitnan');
+    results.relSpatial.sd(end+1, :)      = ...
+        std(relSpatial, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.relSpatial.indiv.(groups{gg}) = relSpatial;
+
+    results.relStepTime.avg(end+1, :)    = ...
+        mean(relStepTime, 1, 'omitnan');
+    results.relStepTime.sd(end+1, :)     = ...
+        std(relStepTime, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.relStepTime.indiv.(groups{gg}) = relStepTime;
+
+    results.expSpeed.avg(end+1, :)       = ...
+        mean(expSpeed, 1, 'omitnan');
+    results.expSpeed.sd(end+1, :)        = ...
+        std(expSpeed, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.expSpeed.indiv.(groups{gg})  = expSpeed;
+
+    results.OGafter.avg(end+1, :)        = ...
+        mean(ogafter, 1, 'omitnan');
+    results.OGafter.sd(end+1, :)         = ...
+        std(ogafter, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.OGafter.indiv.(groups{gg})   = ogafter;
+end
+
+%% Plot
