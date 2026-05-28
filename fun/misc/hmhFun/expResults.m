@@ -1,39 +1,3 @@
-        %remove baseline bias
-        adaptDataNoBias=adaptData.removeBias;
-                
-        %calculate spatial and step time contribution as a percent of velocity
-        %contribution during steady state
-
-        spatialData=adaptDataNoBias.getParamInCond('spatialContribution','re-adaptation');
-        stepTimeData=adaptDataNoBias.getParamInCond('stepTimeContribution','re-adaptation');
-        velocityData=adaptDataNoBias.getParamInCond('velocityContribution','re-adaptation');
-        
-        spatialSteady=[spatialSteady;nanmean(spatialData((end-5)-steadyNumPts+1:(end-5)))];
-        stepTimeSteady=[stepTimeSteady;nanmean(stepTimeData((end-5)-steadyNumPts+1:(end-5)))];
-        velocitySteady=[velocitySteady;nanmean(velocityData((end-5)-steadyNumPts+1:(end-5)))];
-        
-        relSpatial=[relSpatial; spatialSteady(end)/abs(velocitySteady(end))*100];
-        relStepTime=[relStepTime; stepTimeSteady(end)/abs(velocitySteady(end))*100];
-        
-        expSpeed=[expSpeed; mean(adaptData.getParamInCond('equivalentSpeed','TM base'))];
-        
-        params={'spatialContribution','stepTimeContribution'};
-        %calculate OG after as mean values during strides which cause a
-        %maximum deviation from zero in step length asymmetry during
-        %'transientNumPts' consecutive steps within first 10 strides
-        stepAsymData=adaptData.getParamInCond('stepLengthAsym','OG post');
-        transferData=adaptData.getParamInCond(params,'OG post');
-        [newStepAsymData,~]=bin_dataV1(stepAsymData(1:10,:),transientNumPts);
-        [newTransferData,~]=bin_dataV1(transferData(1:10,:),transientNumPts);
-        [~,maxLoc]=max(abs(newStepAsymData),[],1);
-%             ind=sub2ind(size(newTransferData),maxLoc*ones(1,length(params)),1:length(params));
-        ogafter=[ogafter; newTransferData(maxLoc,:)];
-        
-    end       
-
-    
-    nSubs=length(subjects);
-    
     results.spatialSteady.avg(end+1,:)=nanmean(spatialSteady,1);
     results.spatialSteady.sd(end+1,:)=nanstd(spatialSteady,1)./sqrt(nSubs);
     results.spatialSteady.indiv.(groups{g})=spatialSteady;
@@ -209,4 +173,49 @@ for gg = 1:ngroups
             contData = contData ./ Dist;
             adaptData.data.Data(:, dataCols(cc)) = contData;
         end
+
+        adaptDataNoBias = adaptData.removeBias();
+
+        spatialData  = adaptDataNoBias.getParamInCond( ...
+            'spatialContribution', 're-adaptation');
+        stepTimeData = adaptDataNoBias.getParamInCond( ...
+            'stepTimeContribution', 're-adaptation');
+        velocityData = adaptDataNoBias.getParamInCond( ...
+            'velocityContribution', 're-adaptation');
+
+        spatialSteady = [spatialSteady; ...
+            mean(spatialData( ...
+                (end-5) - steadyNumPts + 1:(end-5)), ...
+                'omitnan')]; %#ok<AGROW>
+        stepTimeSteady = [stepTimeSteady; ...
+            mean(stepTimeData( ...
+                (end-5) - steadyNumPts + 1:(end-5)), ...
+                'omitnan')]; %#ok<AGROW>
+        velocitySteady = [velocitySteady; ...
+            mean(velocityData( ...
+                (end-5) - steadyNumPts + 1:(end-5)), ...
+                'omitnan')]; %#ok<AGROW>
+
+        relSpatial  = [relSpatial; ...
+            spatialSteady(end) / abs(velocitySteady(end)) * 100]; %#ok<AGROW>
+        relStepTime = [relStepTime; ...
+            stepTimeSteady(end) / abs(velocitySteady(end)) * 100]; %#ok<AGROW>
+
+        expSpeed = [expSpeed; ...
+            mean(adaptData.getParamInCond( ...
+                'equivalentSpeed', 'TM base'))]; %#ok<AGROW>
+
+        params = {'spatialContribution', 'stepTimeContribution'};
+        stepAsymData  = adaptData.getParamInCond( ...
+            'stepLengthAsym', 'OG post');
+        transferData  = adaptData.getParamInCond(params, 'OG post');
+        [newStepAsymData, ~] = bin_dataV1( ...
+            stepAsymData(1:10, :), transientNumPts);
+        [newTransferData, ~] = bin_dataV1( ...
+            transferData(1:10, :), transientNumPts);
+        [~, maxLoc] = max(abs(newStepAsymData), [], 1);
+        ogafter = [ogafter; newTransferData(maxLoc, :)]; %#ok<AGROW>
+    end
+
+    nSubs = length(subjects);
 
