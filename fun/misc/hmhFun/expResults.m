@@ -1,31 +1,3 @@
-for g=1:ngroups
-    %get subjects in group
-    subjects=SMatrix.(groups{g}).IDs(:,1); 
-  
-    spatialSteady=[];
-    stepTimeSteady=[];
-    velocitySteady=[];
-    relSpatial=[];
-    relStepTime=[];
-    ogafter=[];
-    expSpeed=[];
-        
-    for s=1:length(subjects)
-        %load subject
-        load([subjects{s} 'params.mat'])
-                
-        %normalize contributions based on combined step lengths
-        SLf=adaptData.data.getParameter('stepLengthFast');
-        SLs=adaptData.data.getParameter('stepLengthSlow');
-        Dist=SLf+SLs;
-        contLabels={'spatialContribution','stepTimeContribution','velocityContribution','netContribution'};
-        [~,dataCols]=isaParameter(adaptData.data,contLabels);
-        for c=1:length(contLabels)
-            contData=adaptData.data.getParameter(contLabels(c));
-            contData=contData./Dist;
-            adaptData.data.Data(:,dataCols(c))=contData;
-        end
-        
         %remove baseline bias
         adaptDataNoBias=adaptData.removeBias;
                 
@@ -209,4 +181,32 @@ results.expSpeed.avg       = [];
 results.expSpeed.sd        = [];
 results.OGafter.avg        = [];
 results.OGafter.sd         = [];
+
+for gg = 1:ngroups
+    subjects = SMatrix.(groups{gg}).IDs(:, 1);
+
+    spatialSteady  = [];
+    stepTimeSteady = [];
+    velocitySteady = [];
+    relSpatial     = [];
+    relStepTime    = [];
+    ogafter        = [];
+    expSpeed       = [];
+
+    for ss = 1:length(subjects)
+        load([subjects{ss} 'params.mat'])
+
+        SLf  = adaptData.data.getParameter('stepLengthFast');
+        SLs  = adaptData.data.getParameter('stepLengthSlow');
+        Dist = SLf + SLs;
+        contLabels = {'spatialContribution', ...
+            'stepTimeContribution', ...
+            'velocityContribution', ...
+            'netContribution'};
+        [~, dataCols] = isaParameter(adaptData.data, contLabels);
+        for cc = 1:length(contLabels)
+            contData = adaptData.data.getParameter(contLabels(cc));
+            contData = contData ./ Dist;
+            adaptData.data.Data(:, dataCols(cc)) = contData;
+        end
 
