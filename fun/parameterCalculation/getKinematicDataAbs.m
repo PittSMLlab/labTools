@@ -82,7 +82,7 @@ rotatedMarkerData = markerData.translate(-squeeze(refMarker3D)) ...
     rotatedMarkerData, angleData, s);
 
 %% Compute Absolute Ankle Positions
-%rotate coordinates to be aligned wiht walking dierection
+%rotate coordinates to be aligned with walking direction
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
 %fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;
 

@@ -175,8 +175,8 @@ strideDuration = diff(extendedEventTimes(:, [1 5]), 1, 2);
 %   1. Any event times are 'NaN' (i.e., missing gait event)
 %   2. Difference between any two consecutive event times is negative
 %   3. Stride duration > 1.5 * median stride duration of the trial
-%   4. Stride duration < 0.4 seconds (stride too short)
-%   5. Stride duration > 2.5 seconds (stride too long)
+%   4. Stride duration < minStrideDur (stride too short)
+%   5. Stride duration > maxStrideDur (stride too long)
 % TODO: NWB found that 2.5 seconds may be too stringent for slower older
 % adult walkers and 1.5 * median may be a sufficient threshold to exclude
 % outliers (especially in overground trials); consider removing criterion 5

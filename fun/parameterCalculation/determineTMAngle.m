@@ -64,7 +64,8 @@ if ~isempty(strfind(trial, 'deg'))
     end
     degIdx = strfind(trial, 'deg');
     degIdx = degIdx(1);  % use first occurrence if multiple
-    % Extract substring ending at 'deg'; start up to 6 chars before
+    % Extract substring ending at 'deg'; start up to 6 chars before.
+    % max([degIdx, 7]) - 6 clamps the start index to 1 when degIdx <= 6
     degSubstr = trial(max([degIdx, 7]) - 6 : degIdx);
     % NOTE: assumes angle digits precede 'deg' by at most 5 characters
     digitInds = regexp(degSubstr, '\d');

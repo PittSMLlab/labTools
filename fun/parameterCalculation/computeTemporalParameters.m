@@ -103,7 +103,7 @@ cadenceFast = 1 ./ strideTimeFast;
 stepCadenceSlow = 1 ./ stepTimeSlow;
 stepCadenceFast = 1 ./ stepTimeFast;
 
-% Percentage of gait cycle that is double support phase
+% Percentage of gait cycle that is double support phase (fraction → %)
 doubleSupportPctSlow = (doubleSupportSlow ./ strideTimeSlow) * 100;
 doubleSupportPctFast = (doubleSupportFast ./ strideTimeFast) * 100;
 

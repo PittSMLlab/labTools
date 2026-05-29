@@ -339,10 +339,12 @@ n = length(signal);
 Y = fft(signal);
 P = abs(Y/n);
 P = P(1:floor(n/2)+1);
-P(2:end-1) = 2*P(2:end-1);
+P(2:end-1) = 2*P(2:end-1);  % two-sided → one-sided (DC/Nyquist not doubled)
 
 % Frequency vector
-fsLocal = n * strideFreq; % Effective sampling rate for this stride
+% With n samples spanning exactly one stride, bin k of the FFT falls
+% at k * strideFreq Hz; fsLocal encodes this so that f(k) = k*strideFreq
+fsLocal = n * strideFreq;
 f = fsLocal * (0:(floor(n/2))) / n;
 
 % Extract harmonic amplitudes
