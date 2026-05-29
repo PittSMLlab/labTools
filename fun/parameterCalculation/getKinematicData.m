@@ -115,11 +115,12 @@ fAnk2D  = fAnk(:, :, 1:2) - hipPos3D(:, :, 1:2);
 % adjust stride data to ensure consistent slope during stance phase
 % checks for: sAnk(indSHS2,2) < sAnk(indFHS,2)
 % (doesn't use HIP to avoid HIP fluctuation issues)
-aux = sign(diff(sAnk(:, [3 5], 2), 1, 2));
-sAnkFwd = bsxfun(@times, sAnkFwd, aux);
-fAnkFwd = bsxfun(@times, fAnkFwd, aux);
-sAnk2D  = bsxfun(@times, sAnk2D, aux);
-fAnk2D  = bsxfun(@times, fAnk2D, aux);
+% [3 5] = FHS (3) to SHS2 (5): spans double stance and full swing
+walkDirSign = sign(diff(sAnk(:, [3 5], 2), 1, 2));
+sAnkFwd = bsxfun(@times, sAnkFwd, walkDirSign);
+fAnkFwd = bsxfun(@times, fAnkFwd, walkDirSign);
+sAnk2D  = bsxfun(@times, sAnk2D,  walkDirSign);
+fAnk2D  = bsxfun(@times, fAnk2D,  walkDirSign);
 
 %Alternative definition: should be equivalent, since we reference to midHip
 %when doing the rotation. Only difference may be in sign of walking, since
