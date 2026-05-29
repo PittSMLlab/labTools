@@ -108,7 +108,7 @@ numStrides  = length(strideEvents.tSHS);
 
 shoeWeightKg   = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
 gravityAcc     = 9.81;  % gravitational acceleration (m/s^2)
-noiseThreshold = 0.01;  % min GRF std/mean to skip near-zero strides
+noiseThreshold = 0.01;  % min std/mean ratio; TODO: confirm threshold
 
 % Normalize forces to body weight (add Nimbus shoe mass for those trials)
 if strcmpi(trialData.type, 'NIM')   % if Nimbus shoe trial, ...
@@ -185,7 +185,7 @@ filteredGRF.Data(:, slowFyIdx) = ...
 % line([0 5*10^5], [0, 0]);
 
 % Gravity component projected onto walking direction for inclined treadmill
-inclineAPFactor = 0.5;  % scales gravity to the AP direction for inclined trials
+inclineAPFactor = 0.5;  % AP-direction gravity fraction; TODO: confirm
 levelOfInterest = inclineAPFactor .* flipSign .* cosd(90 - abs(tmAngle));
 
 %% Initialize Output Arrays
