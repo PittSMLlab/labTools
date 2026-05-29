@@ -149,9 +149,8 @@ fAngle = bsxfun(@times, fAngle, angleSignCorr);
 
 %% Compute Walking Direction
 % direction is determined from y-axis difference of slow ankle marker
-% during swing phase (STO to SHS2)
-% TODO: would using SHS and STO work just as well?
-direction = sign(diff(sAnk(:, 4:5, 2), 1, 2));
+% spanning double stance and swing (FHS to SHS2)
+direction = sign(diff(sAnk(:, [3 5], 2), 1, 2));
 
 % handle missing values in direction vector
 indsDirNans = find(isnan(direction));   % identify any NaN values
