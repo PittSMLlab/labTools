@@ -1,4 +1,4 @@
-function lag=circCorr(trace1,trace2)
+function phaseShift = circCorr(trace1, trace2)
 %CIRCCORR Estimate the phase shift between two sinusoidal traces.
 %
 %   Performs a circular (cyclic) correlation by iteratively shifting
@@ -22,23 +22,24 @@ function lag=circCorr(trace1,trace2)
 %
 % See also COMPUTESPATIALPARAMETERS.
 
-s1=std(trace1);
-s2=std(trace2);
+stdTrace1 = std(trace1);
+stdTrace2 = std(trace2);
+nSamples  = length(trace1);
+circCorrs = zeros(1, nSamples);
 
-c=[];
-n=length(trace1);
-for t=1:n
-    c(t)=(trace1'*trace2)./((n-1)*s1*s2);
-    trace2=circshift(trace2,1);
+for sh = 1:nSamples
+    circCorrs(sh) = (trace1' * trace2) ./ ...
+        ((nSamples - 1) * stdTrace1 * stdTrace2);  % n-1: unbiased std
+    trace2 = circshift(trace2, 1);
 end
 
-[cmax,lag]=max(c);
-lag=lag/n;
+[maxCorr, maxShift] = max(circCorrs);
+phaseShift = maxShift / nSamples;
 
-if cmax<0.5 || isnan(cmax)
-    lag=NaN;
 % Return NaN if peak correlation is below empirical quality threshold
 % or undefined (e.g., zero-variance input)
+if maxCorr < 0.5 || isnan(maxCorr)
+    phaseShift = NaN;
 end
 
 end
