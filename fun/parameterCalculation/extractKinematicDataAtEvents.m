@@ -100,12 +100,12 @@ end
 % below but are not exposed as outputs; add outputs here if callers
 % need toe marker data.
 for lbl = 1:length(labels) % assign each marker data to a x3 str
-    aux = markerData.getDataAsTS( ...
+    markerTS = markerData.getDataAsTS( ...
         markerData.addLabelSuffix(labels{lbl}));
-    if ~isempty(aux.Data)
+    if ~isempty(markerTS.Data)
         % extract data by finding the closest available sample at each
         % event time
-        newMarkerData = aux.getSample(eventTimes, 'closest');
+        newMarkerData = markerTS.getSample(eventTimes, 'closest');
         relMarkerData = rotatedMarkerData.getDataAsTS( ...
             rotatedMarkerData.addLabelSuffix(labels{lbl}));
         relMarkerData = relMarkerData.getSample(eventTimes, 'closest');
@@ -143,9 +143,9 @@ else
     fAngle = nan(size(eventTimes, 1), size(eventTimes, 2), 1);
 end
 
-aux    = sign(sAngle(:, 1));            % checks for sAngle(indSHS) < 0
-sAngle = bsxfun(@times, sAngle, aux);
-fAngle = bsxfun(@times, fAngle, aux);
+angleSignCorr = sign(sAngle(:, 1));     % checks for sAngle(indSHS) < 0
+sAngle = bsxfun(@times, sAngle, angleSignCorr);
+fAngle = bsxfun(@times, fAngle, angleSignCorr);
 
 %% Compute Walking Direction
 % direction is determined from y-axis difference of slow ankle marker
