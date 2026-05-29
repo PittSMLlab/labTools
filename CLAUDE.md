@@ -99,9 +99,9 @@ release.
 - Write `0.5` not `.5`
 - Use `mean(x, 'omitnan')` not `nanmean(x)` (similarly for `median`,
   `std`, `sum`). For `min`/`max`: `min(x, [], 'omitnan')`.
-- Define unexplained numeric literals as named constants with an
-  end-of-line comment giving their source or rationale. The `aux`
-  label/description block is exempt from this rule.
+- Define unexplained numeric literals as named constants (camelCase)
+  with an end-of-line comment giving their source or rationale. The
+  `aux` label/description block is exempt from this rule.
 - Prefer `fullfile(...)` over string concatenation with `filesep`:
   `fullfile(dir, 'file.mat')` not `[dir filesep 'file.mat']`
 
