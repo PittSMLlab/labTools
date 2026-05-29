@@ -97,7 +97,7 @@ else
     SBmax    = min( ...
         apForceTrace(brakingIdx), [], 'omitnan');  %-forceBaseline
     SBmax    = brakingSign .* SBmax;
-    SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;
+    SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;  % TODO: verify formula
     SBmaxAbs = brakingSign .* ...
         min(apForceTrace - forceBaseline, [], 'omitnan');
 end
@@ -107,7 +107,7 @@ if isempty(propIdx)
     SPmaxQS = NaN;
 else
     SPmax   = max(apForceTrace(propIdx), [], 'omitnan');  %-forceBaseline
-    SPmaxQS = SPmax - 2 .* forceBaseline;
+    SPmaxQS = SPmax - 2 .* forceBaseline;  % TODO: verify formula
 end
 
 % if propIdx(MaxWhereS) <= 0.1*length(apForceTrace)

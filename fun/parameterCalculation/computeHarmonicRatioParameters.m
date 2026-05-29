@@ -289,7 +289,7 @@ function dataFilt = filterMarkerData(data, fs, fc)
 % Toolbox Dependencies:
 %   Signal Processing Toolbox (butter, filtfilt)
 
-[b, a] = butter(4, fc/(fs/2), 'low');
+[b, a] = butter(4, fc/(fs/2), 'low');  % TODO: confirm 4th-order rationale
 dataFilt = filtfilt(b, a, data);
 end
 
