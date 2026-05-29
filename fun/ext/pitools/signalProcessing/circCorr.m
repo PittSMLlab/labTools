@@ -37,6 +37,8 @@ lag=lag/n;
 
 if cmax<0.5 || isnan(cmax)
     lag=NaN;
+% Return NaN if peak correlation is below empirical quality threshold
+% or undefined (e.g., zero-variance input)
 end
 
 end
