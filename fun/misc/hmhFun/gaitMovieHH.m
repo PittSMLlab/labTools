@@ -1,34 +1,3 @@
-function drawsegment(h_axes,X1,Y1,Z1,a,color)
-O = [X1(1) Y1(1) Z1(1)]; %vector origin
-V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector
-[theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment
-%build segment surface and rotate/translate
-[X,Y,Z] = ellipsoid(r/2,0,0,r/2,r/2*a(2)/a(1),r/2*a(3)/a(1)); %build segment surface about origin
-h = surf(h_axes,X,Y,Z,'FaceColor',color,'EdgeColor','none');
-t = hgtransform('Parent',h_axes);
-set(h,'Parent',t)
-Ry = makehgtform('yrotate',-phi);
-Rz = makehgtform('zrotate',theta);
-Tx = makehgtform('translate',O);
-set(t,'Matrix',Tx*Rz*Ry)
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-function drawball(h_axes,X1,Y1,Z1,radius,color)
-O = [X1 Y1 Z1]; %vector origin
-%build ball surface and translate
-[X,Y,Z] = sphere; %build segment surface about origin
-h = surf(h_axes,X,Y,Z,'FaceColor',color,'EdgeColor','none');
-t = hgtransform('Parent',h_axes);
-set(h,'Parent',t)
-S = makehgtform('scale',radius);
-Tx = makehgtform('translate',O);
-set(t,'Matrix',Tx*S)
-%--------------------------------------------------------------------------
-
-
-
-
 function gaitMovieHH(subject, trial, start, stop)
 %GAITMOVIEHH Make an AVI movie of bilateral gait.
 %
@@ -242,6 +211,7 @@ close(videoObj);
 
 end
 
+function drawsegment(h_axes, X1, Y1, Z1, a, color)
 %DRAWSEGMENT Draw an ellipsoid aligned to the line segment defined by X1.
 %
 %   Builds an ellipsoid about the midpoint of the segment from
@@ -259,6 +229,22 @@ end
 % Outputs:
 %   None
 
+O = [X1(1) Y1(1) Z1(1)];
+V = [X1(2) - X1(1), Y1(2) - Y1(1), Z1(2) - Z1(1)];
+[theta, phi, r] = cart2sph(V(1), V(2), V(3));
+[X, Y, Z] = ellipsoid(r/2, 0, 0, r/2, ...
+    r/2*a(2)/a(1), r/2*a(3)/a(1));
+h = surf(h_axes, X, Y, Z, 'FaceColor', color, 'EdgeColor', 'none');
+t = hgtransform('Parent', h_axes);
+set(h, 'Parent', t)
+Ry = makehgtform('yrotate', -phi);
+Rz = makehgtform('zrotate', theta);
+Tx = makehgtform('translate', O);
+set(t, 'Matrix', Tx * Rz * Ry)
+
+end
+
+function drawball(h_axes, X1, Y1, Z1, radius, color)
 %DRAWBALL Draw a sphere centered at a defined point.
 %
 %   Builds a unit sphere, scales it by radius, translates it to
@@ -275,3 +261,13 @@ end
 % Outputs:
 %   None
 
+O        = [X1 Y1 Z1];
+[X, Y, Z] = sphere;
+h = surf(h_axes, X, Y, Z, 'FaceColor', color, 'EdgeColor', 'none');
+t = hgtransform('Parent', h_axes);
+set(h, 'Parent', t)
+S  = makehgtform('scale', radius);
+Tx = makehgtform('translate', O);
+set(t, 'Matrix', Tx * S)
+
+end
