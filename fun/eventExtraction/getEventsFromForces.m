@@ -21,15 +21,17 @@ function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)
 % See also GETSTANCEFROMFORCES, GETEVENTSFROMSTANCE.
 
 %% Get stance phases
-forceThresh = 10; % detection threshold (N)
+forceThresh = 10; % stance detection threshold (N); ~8% of typical BW
 
-% % Temporary filter the force data (4th order butterworth Low pass filter
-% % with cutoff frequency of 10)
-% Wn=2*10/fsample;
-% filterList=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),1.5,20); %Ast=10dB (/octave) results in a 4th order Butterworth filter (-80dB/dec fall).
-% lowPassFilter=design(filterList,'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.
-% FzL=filtfilthd(lowPassFilter,FzL);  %Ext function
-% FzR=filtfilthd(lowPassFilter,FzR);  %Ext function
+% % Temporarily filter force data (4th order butterworth Low pass filter
+% % with cutoff frequency of 10 Hz)
+% Wn = 2*10 / fsample;
+% Ast=10dB (/octave) results in 4th order Butterworth filter (-80dB/dec fall)
+% filterList = fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),1.5,20);
+% Changed Oct 21, 2014 to have less ripple in impulse response (4th order filter)
+% lowPassFilter = design(filterList,'butter');
+% FzL = filtfilthd(lowPassFilter, FzL); % ext function
+% FzR = filtfilthd(lowPassFilter, FzR); % ext function
 % NOTE: getStanceFromForcesAlt is a derivative-based alternative to
 % getStanceFromForces; see that function for details.
 stanceL = getStanceFromForces(FzL, forceThresh, fsample);
@@ -39,7 +41,7 @@ stanceR = getStanceFromForces(FzR, forceThresh, fsample);
 [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR);
 
 %% Check consistency
-%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);
+% consistent = checkEventConsistency(LHS, RHS, LTO, RTO);
 % NOTE: energy-onset masking (removing events before first GRF activity)
 % was removed because it suppressed the very first step of a trial, which
 % is often the most important event for adaptation analysis (Pablo, 2015).
