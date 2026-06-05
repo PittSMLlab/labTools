@@ -171,7 +171,7 @@ for jj = 1:2
     %A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)=A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)+1;
     %end
     A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, ...
-               roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
+        roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
     try
         [H, THETA, RHO] = hough(full(A)', 'RhoResolution', HOUGH_RHO_RES, ...
             'Theta', HOUGH_ANGLES);
@@ -274,15 +274,16 @@ NAN_FILL_ACC = 100000; % large sentinel to suppress NaN in idealLPF (mm/s²)
 accThresh    = 5000;   % acceleration threshold (mm/s²); empirical
 
 % Get velocities:
-% va(:,1)=derive(ankKin(:,1),fsample); %fore-aft axis
-% va(:,2)=derive(ankKin(:,2),fsample); %up-down axis
-% vt(:,1)=derive(toeKin(:,1),fsample);
-% vt(:,2)=derive(toeKin(:,2),fsample);
+% va(:,1) = derive(ankKin(:,1), fsample); % fore-aft axis
+% va(:,2) = derive(ankKin(:,2), fsample); % up-down axis
+% vt(:,1) = derive(toeKin(:,1), fsample);
+% vt(:,2) = derive(toeKin(:,2), fsample);
 % Get accelerations:
-% aa(:,1)=derive(va(:,1),fsample);
-% aa(:,2)=derive(va(:,2),fsample);
-% at(:,1)=derive(vt(:,1),fsample);
-% at(:,2)=derive(vt(:,2),fsample);
+% aa(:,1) = derive(va(:,1), fsample);
+% aa(:,2) = derive(va(:,2), fsample);
+% at(:,1) = derive(vt(:,1), fsample);
+% at(:,2) = derive(vt(:,2), fsample);
+
 %% Step 1: calculate acceleration via second finite difference
 ankleAcc = fsample ^ 2 * diff(diff(ankKin));
 ankleAcc = [ankleAcc(1, :); ankleAcc; ankleAcc(end, :)];
@@ -300,18 +301,17 @@ toeAccFilt(:, 2)   = idealLPF(toeAcc(:, 2),   fcut);
 modAnkA = sqrt(sum(ankleAccFilt .^ 2, 2));
 modToeA = sqrt(sum(toeAccFilt   .^ 2, 2));
 
-%filter=hann(50);
-%modAnkAf=conv(modAnkA,filter,'same')/sum(filter);
-%modToeAf=conv(modToeA,filter,'same')/sum(filter);
-%toeThresh=.1*mean(modToeA(10:end-10));
-%ankThresh=.1*mean(modAnkA(10:end-10));
+% filter    = hann(50);
+% modAnkAf  = conv(modAnkA, filter, 'same') / sum(filter);
+% modToeAf  = conv(modToeA, filter, 'same') / sum(filter);
+% toeThresh = 0.1 * mean(modToeA(10:end-10));
+% ankThresh = 0.1 * mean(modAnkA(10:end-10));
 
 %% Step 4: classify stance from ankle OR toe stance
 ankStance = modAnkA < accThresh;
 toeStance = modToeA < accThresh;
-
-%ankStance = deleteShortPhases(ankStance,fsample,0.25);
-%toeStance = deleteShortPhases(toeStance,fsample,0.25);
+% ankStance = deleteShortPhases(ankStance, fsample, 0.25);
+% toeStance = deleteShortPhases(toeStance, fsample, 0.25);
 stance    = ankStance | toeStance;
 
 %% Eliminate stance and swing phases shorter than 200 ms
