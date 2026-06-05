@@ -1,54 +1,3 @@
-        for seg = 1:3
-            if seg==1
-                joint1 = 'MT';
-                joint2 = 'Ankle';
-                radius = [1 .5 .5];
-            elseif seg==2
-                joint1 = 'Ankle';
-                joint2 = 'Knee';
-                radius = [1 .25 .25];
-            elseif seg==3
-                joint1 = 'Knee';
-                joint2 = 'Hip';
-                radius = [1 .35 .35];
-            end
-            X = [Marker.([s joint1]).X(i) Marker.([s joint2]).X(i)];
-            Y = [Marker.([s joint1]).Y(i) Marker.([s joint2]).Y(i)];
-            Z = [Marker.([s joint1]).Z(i) Marker.([s joint2]).Z(i)];
-            drawsegment(gca,X,Y,Z,radius,colorLegs)
-        end
-        %draw hip joints
-        X = Marker.([s 'Hip']).X(i);
-        Y = Marker.([s 'Hip']).Y(i);
-        Z = Marker.([s 'Hip']).Z(i);
-        drawball(gca,X,Y,Z,50,color)        
-    end
-    %draw pelvis
-    X = [Marker.RHip.X(i) Marker.LHip.X(i)];
-    Y = [Marker.RHip.Y(i) Marker.LHip.Y(i)];
-    Z = [Marker.RHip.Z(i) Marker.LHip.Z(i)];
-    drawsegment(gca,X,Y,Z,[1 .4 .4],color)  
-  
-    h_light = camlight('headlight');
-    set(findobj(gca,'type','surface'),...
-        'FaceLighting','gouraud',...
-        'AmbientStrength',.3,...
-        'DiffuseStrength',.8,...
-        'SpecularStrength',.8,...
-        'SpecularExponent',25,...
-        'BackFaceLighting','reverselit')
-    
-    %save image as next frame in video file
-    
-    frame = getframe(h_fig);
-    writeVideo(videoObj,frame);
-    
-    pause(.0001) %forces refresh    
-    delete(h_light)       
-end
-
-close(videoObj);
-
 function drawsegment(h_axes,X1,Y1,Z1,a,color)
 %draw an ellipsoid aligned to line defined by 2 points
 %a defines relative length of the ellipsoid radii
@@ -243,3 +192,56 @@ for fr = start:stop
             sideStr   = 'L';
             colorLegs = orange;
         end
+        for seg = 1:3
+            if seg == 1
+                joint1 = 'MT';
+                joint2 = 'Ankle';
+                radius = [1 0.5 0.5];
+            elseif seg == 2
+                joint1 = 'Ankle';
+                joint2 = 'Knee';
+                radius = [1 0.25 0.25];
+            elseif seg == 3
+                joint1 = 'Knee';
+                joint2 = 'Hip';
+                radius = [1 0.35 0.35];
+            end
+            X = [Marker.([sideStr joint1]).X(fr) ...
+                 Marker.([sideStr joint2]).X(fr)];
+            Y = [Marker.([sideStr joint1]).Y(fr) ...
+                 Marker.([sideStr joint2]).Y(fr)];
+            Z = [Marker.([sideStr joint1]).Z(fr) ...
+                 Marker.([sideStr joint2]).Z(fr)];
+            drawsegment(gca, X, Y, Z, radius, colorLegs)
+        end
+        X = Marker.([sideStr 'Hip']).X(fr);
+        Y = Marker.([sideStr 'Hip']).Y(fr);
+        Z = Marker.([sideStr 'Hip']).Z(fr);
+        drawball(gca, X, Y, Z, 50, color)
+    end
+
+    X = [Marker.RHip.X(fr) Marker.LHip.X(fr)];
+    Y = [Marker.RHip.Y(fr) Marker.LHip.Y(fr)];
+    Z = [Marker.RHip.Z(fr) Marker.LHip.Z(fr)];
+    drawsegment(gca, X, Y, Z, [1 0.4 0.4], color)
+
+    h_light = camlight('headlight');
+    set(findobj(gca, 'type', 'surface'), ...
+        'FaceLighting',    'gouraud', ...
+        'AmbientStrength',  0.3, ...
+        'DiffuseStrength',  0.8, ...
+        'SpecularStrength', 0.8, ...
+        'SpecularExponent', 25, ...
+        'BackFaceLighting', 'reverselit')
+
+    frame = getframe(h_fig);
+    writeVideo(videoObj, frame);
+
+    pause(0.0001)
+    delete(h_light)
+end
+
+close(videoObj);
+
+end
+
