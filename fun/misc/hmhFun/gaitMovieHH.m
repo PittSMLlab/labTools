@@ -1,6 +1,4 @@
 function drawsegment(h_axes,X1,Y1,Z1,a,color)
-%draw an ellipsoid aligned to line defined by 2 points
-%a defines relative length of the ellipsoid radii
 O = [X1(1) Y1(1) Z1(1)]; %vector origin
 V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector
 [theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment
@@ -17,7 +15,6 @@ set(t,'Matrix',Tx*Rz*Ry)
 
 %--------------------------------------------------------------------------
 function drawball(h_axes,X1,Y1,Z1,radius,color)
-%draw a ball centered at a defined point
 O = [X1 Y1 Z1]; %vector origin
 %build ball surface and translate
 [X,Y,Z] = sphere; %build segment surface about origin
@@ -244,4 +241,37 @@ end
 close(videoObj);
 
 end
+
+%DRAWSEGMENT Draw an ellipsoid aligned to the line segment defined by X1.
+%
+%   Builds an ellipsoid about the midpoint of the segment from
+% (X1(1),Y1(1),Z1(1)) to (X1(2),Y1(2),Z1(2)), scales its radii by a,
+% and uses an hgtransform to align the major axis with the segment.
+%
+% Inputs:
+%   h_axes - Target axes handle
+%   X1     - 1×2 vector [x_start x_end]
+%   Y1     - 1×2 vector [y_start y_end]
+%   Z1     - 1×2 vector [z_start z_end]
+%   a      - 1×3 relative radii vector (major, minor1, minor2)
+%   color  - 1×3 RGB color vector
+%
+% Outputs:
+%   None
+
+%DRAWBALL Draw a sphere centered at a defined point.
+%
+%   Builds a unit sphere, scales it by radius, translates it to
+% (X1, Y1, Z1), and renders it with the specified color.
+%
+% Inputs:
+%   h_axes - Target axes handle
+%   X1     - Scalar x-coordinate of the center
+%   Y1     - Scalar y-coordinate of the center
+%   Z1     - Scalar z-coordinate of the center
+%   radius - Scalar sphere radius
+%   color  - 1×3 RGB color vector
+%
+% Outputs:
+%   None
 
