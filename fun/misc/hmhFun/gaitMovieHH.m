@@ -1,40 +1,3 @@
-Marker.LMT.X = -trialData.getMarkerData(['LTOE' orientation.foreaftAxis]);
-Marker.LMT.Z = trialData.getMarkerData(['LTOE' orientation.updownAxis]);
-Marker.LMT.Y = trialData.getMarkerData(['LTOE' orientation.sideAxis]);
-Marker.LAnkle.X = -trialData.getMarkerData(['LANK' orientation.foreaftAxis]);
-Marker.LAnkle.Z = trialData.getMarkerData(['LANK' orientation.updownAxis]);
-Marker.LAnkle.Y = trialData.getMarkerData(['LANK' orientation.sideAxis]);
-Marker.LKnee.X = -trialData.getMarkerData(['LKNEE' orientation.foreaftAxis]);
-Marker.LKnee.Z = trialData.getMarkerData(['LKNEE' orientation.updownAxis]);
-Marker.LKnee.Y = trialData.getMarkerData(['LKNEE' orientation.sideAxis]);
-Marker.LHip.X = -trialData.getMarkerData(['LHIP' orientation.foreaftAxis]);
-Marker.LHip.Z = trialData.getMarkerData(['LHIP' orientation.updownAxis]);
-Marker.LHip.Y = trialData.getMarkerData(['LHIP' orientation.sideAxis]);
-Marker.LPelvis.X = -trialData.getMarkerData(['LASIS' orientation.foreaftAxis]);
-Marker.LPelvis.Z = trialData.getMarkerData(['LASIS' orientation.updownAxis]);
-Marker.LPelvis.Y = trialData.getMarkerData(['LASIS' orientation.sideAxis]);
-
-
-%Make animation
-color = [0.4 0.4 0.4];
-
-%colors
-blue = [11 132 199]/255;
-%blue = [0 160 198]/255;
-orange = [255 153 0]/255;
-fadeblue = [152 212 228]/255;
-fadeorange = [255 210 142]/255;
-grey = [.4 .4 .4];
-
-opengl software
-
-h_fig = figure;
-set(h_fig,'Position',[933 73 339 605],...  %HH laptop [500   50   500   600] desktop [1440 135 400 800]
-    'Color',[1 1 1],...
-    'Renderer','OpenGL');
-%'DoubleBuffer','on');
-%'Renderer','OpenGL',... %'Renderer','zbuffer',...
-
 Xlim = [min([Marker.LAnkle.X(start:stop); Marker.RAnkle.X(start:stop)])-200 max([Marker.LMT.X(start:stop); Marker.RMT.X(start:stop)])+200];
 Ylim = [min([Marker.LAnkle.Y(start:stop); Marker.RAnkle.Y(start:stop)])-200 max([Marker.LAnkle.Y(start:stop); Marker.RAnkle.Y(start:stop)])+200];
 Zlim = [min([Marker.LMT.Z(start:stop); Marker.RMT.Z(start:stop)])-200 max([Marker.LPelvis.Z(start:stop); Marker.RPelvis.Z(start:stop)])+200];
@@ -233,4 +196,51 @@ Marker.RPelvis.Z = trialData.getMarkerData( ...
     ['RASIS' orientation.updownAxis]);
 Marker.RPelvis.Y = trialData.getMarkerData( ...
     ['RASIS' orientation.sideAxis]);
+
+Marker.LMT.X     = -trialData.getMarkerData( ...
+    ['LTOE' orientation.foreaftAxis]);
+Marker.LMT.Z     = trialData.getMarkerData( ...
+    ['LTOE' orientation.updownAxis]);
+Marker.LMT.Y     = trialData.getMarkerData( ...
+    ['LTOE' orientation.sideAxis]);
+Marker.LAnkle.X  = -trialData.getMarkerData( ...
+    ['LANK' orientation.foreaftAxis]);
+Marker.LAnkle.Z  = trialData.getMarkerData( ...
+    ['LANK' orientation.updownAxis]);
+Marker.LAnkle.Y  = trialData.getMarkerData( ...
+    ['LANK' orientation.sideAxis]);
+Marker.LKnee.X   = -trialData.getMarkerData( ...
+    ['LKNEE' orientation.foreaftAxis]);
+Marker.LKnee.Z   = trialData.getMarkerData( ...
+    ['LKNEE' orientation.updownAxis]);
+Marker.LKnee.Y   = trialData.getMarkerData( ...
+    ['LKNEE' orientation.sideAxis]);
+Marker.LHip.X    = -trialData.getMarkerData( ...
+    ['LHIP' orientation.foreaftAxis]);
+Marker.LHip.Z    = trialData.getMarkerData( ...
+    ['LHIP' orientation.updownAxis]);
+Marker.LHip.Y    = trialData.getMarkerData( ...
+    ['LHIP' orientation.sideAxis]);
+Marker.LPelvis.X = -trialData.getMarkerData( ...
+    ['LASIS' orientation.foreaftAxis]);
+Marker.LPelvis.Z = trialData.getMarkerData( ...
+    ['LASIS' orientation.updownAxis]);
+Marker.LPelvis.Y = trialData.getMarkerData( ...
+    ['LASIS' orientation.sideAxis]);
+
+%% Set colours
+color      = [0.4 0.4 0.4];
+blue       = [11  132 199] / 255;
+orange     = [255 153 0]   / 255;
+fadeblue   = [152 212 228] / 255; %#ok<NASGU>
+fadeorange = [255 210 142] / 255; %#ok<NASGU>
+grey       = [0.4 0.4 0.4]; %#ok<NASGU>
+
+opengl software
+
+%% Create figure
+h_fig = figure;
+set(h_fig, 'Position', [933 73 339 605], ...
+    'Color', [1 1 1], ...
+    'Renderer', 'OpenGL');
 
