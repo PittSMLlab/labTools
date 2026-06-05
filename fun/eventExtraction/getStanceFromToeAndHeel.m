@@ -18,7 +18,7 @@ function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
 %
 % See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.
 
-stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations
+% stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations
 % NOTE: getStance2 (Hough-transform floor detection) is an alternative
 % that may be more robust for non-standard gait; see that nested function.
 stance1 = getStance(ankKin, toeKin, fsample);   % threshold velocities
@@ -37,6 +37,7 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 %(kernel with support of 3 samples: the central one, and one to each side),
 %and also with some other types of noise (NOT SURE: it might make it more
 %sensible to big errors in only one of the estimations)
+
 end
 
 %% Method 1: try to find full stance points and threshold relative speed
@@ -62,10 +63,10 @@ VEL_THRESH_TOE        = 250;   % toe speed threshold for stance (mm/s); empirica
 coreStanceSpeedThresh = 150;   % max relative ankle–toe speed for core stance (mm/s)
 
 %% Step 1: calculate speed
-% va(:,1)=derive(ankKin(:,1),fsample);
-% va(:,2)=derive(ankKin(:,2),fsample);
-% vt(:,1)=derive(toeKin(:,1),fsample);
-% vt(:,2)=derive(toeKin(:,2),fsample);
+% va(:,1) = derive(ankKin(:,1), fsample);
+% va(:,2) = derive(ankKin(:,2), fsample);
+% vt(:,1) = derive(toeKin(:,1), fsample);
+% vt(:,2) = derive(toeKin(:,2), fsample);
 ankleVel = fsample * diff(ankKin);
 ankleVel(end+1, :) = ankleVel(end, :);
 toeVel = fsample * diff(toeKin);
@@ -162,14 +163,14 @@ for jj = 1:2
         > OUTLIER_SD_MULT * std(relevantKin(:, 2)), 2) = 0;
     roundedKin = round(relevantKin);
 
-    %In y: limit values to a 500mm range
-    %In x: limit values to a 2000mm range
-    %Throw everything outside those limits
+    % In y: limit values to a 500mm range
+    % In x: limit values to a 2000mm range
+    % Throw everything outside those limits
 
-    %A=zeros(max(roundedKin(:,1)-min(roundedKin(:,1))+1),(max(roundedKin(:,2)-min(roundedKin(:,2))+1)));
-    %for i=1:length(roundedKin(:,1))
-    %A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)=A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)+1;
-    %end
+    % A = zeros(max(roundedKin(:,1) - min(roundedKin(:,1))+1), (max(roundedKin(:,2) - min(roundedKin(:,2))+1)));
+    % for i = 1:length(roundedKin(:,1))
+    % A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, roundedKin(i,2) - min(roundedKin(:,2)) + 1) = A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, roundedKin(i,2) - min(roundedKin(:,2)) + 1) + 1;
+    % end
     A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, ...
         roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
     try
