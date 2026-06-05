@@ -1,44 +1,3 @@
-function  gaitMovieHH(subject,trial,start,stop)
-
-%Load subject
-load([subject '.mat'])
-
-%get trial to animate
-trialData=expData.data{trial};
-
-%adjust input times to samples
-start=round(start*trialData.markerData.sampFreq);
-stop=round(stop*trialData.markerData.sampFreq);
-
-%reduce sampling rate by factor 10
-f = 1.5; % 15 would make the file smaller %5 was chosen for presentation movies
-
-%create object that stores movie data to .avi file
-videoObj = VideoWriter(subject);
-videoObj.FrameRate = 100/f;
-videoObj.Quality = 100;
-open(videoObj);
-
-%extract and orgaize data from .2ld file and Evants matrix
-
-orientation=trialData.markerData.orientation;
-
-Marker.RMT.X = -trialData.getMarkerData(['RTOE' orientation.foreaftAxis]);
-Marker.RMT.Z = trialData.getMarkerData(['RTOE' orientation.updownAxis]);
-Marker.RMT.Y = trialData.getMarkerData(['RTOE' orientation.sideAxis]);
-Marker.RAnkle.X = -trialData.getMarkerData(['RANK' orientation.foreaftAxis]);
-Marker.RAnkle.Z = trialData.getMarkerData(['RANK' orientation.updownAxis]);
-Marker.RAnkle.Y = trialData.getMarkerData(['RANK' orientation.sideAxis]);
-Marker.RKnee.X = -trialData.getMarkerData(['RKNEE' orientation.foreaftAxis]);
-Marker.RKnee.Z = trialData.getMarkerData(['RKNEE' orientation.updownAxis]);
-Marker.RKnee.Y = trialData.getMarkerData(['RKNEE' orientation.sideAxis]);
-Marker.RHip.X = -trialData.getMarkerData(['RHIP' orientation.foreaftAxis]);
-Marker.RHip.Z = trialData.getMarkerData(['RHIP' orientation.updownAxis]);
-Marker.RHip.Y = trialData.getMarkerData(['RHIP' orientation.sideAxis]);
-Marker.RPelvis.X = -trialData.getMarkerData(['RASIS' orientation.foreaftAxis]);
-Marker.RPelvis.Z = trialData.getMarkerData(['RASIS' orientation.updownAxis]);
-Marker.RPelvis.Y = trialData.getMarkerData(['RASIS' orientation.sideAxis]);
-
 Marker.LMT.X = -trialData.getMarkerData(['LTOE' orientation.foreaftAxis]);
 Marker.LMT.Z = trialData.getMarkerData(['LTOE' orientation.updownAxis]);
 Marker.LMT.Y = trialData.getMarkerData(['LTOE' orientation.sideAxis]);
@@ -200,6 +159,7 @@ set(t,'Matrix',Tx*S)
 
 
 
+function gaitMovieHH(subject, trial, start, stop)
 %GAITMOVIEHH Make an AVI movie of bilateral gait.
 %
 %   Loads an experimentData .mat file for the given subject, animates
@@ -224,3 +184,53 @@ set(t,'Matrix',Tx*S)
 % Toolbox Dependencies: None
 %
 % See also VIDEOWRITER.
+
+%% Load data
+load([subject '.mat'])
+trialData = expData.data{trial};
+
+%% Adjust input times to samples
+start = round(start * trialData.markerData.sampFreq);
+stop  = round(stop  * trialData.markerData.sampFreq);
+
+f = 1.5;  % sub-sampling factor (15 would make a smaller file)
+
+videoObj            = VideoWriter(subject);
+videoObj.FrameRate  = 100 / f;
+videoObj.Quality    = 100;
+open(videoObj);
+
+%% Extract and organise marker data
+orientation = trialData.markerData.orientation;
+
+Marker.RMT.X     = -trialData.getMarkerData( ...
+    ['RTOE' orientation.foreaftAxis]);
+Marker.RMT.Z     = trialData.getMarkerData( ...
+    ['RTOE' orientation.updownAxis]);
+Marker.RMT.Y     = trialData.getMarkerData( ...
+    ['RTOE' orientation.sideAxis]);
+Marker.RAnkle.X  = -trialData.getMarkerData( ...
+    ['RANK' orientation.foreaftAxis]);
+Marker.RAnkle.Z  = trialData.getMarkerData( ...
+    ['RANK' orientation.updownAxis]);
+Marker.RAnkle.Y  = trialData.getMarkerData( ...
+    ['RANK' orientation.sideAxis]);
+Marker.RKnee.X   = -trialData.getMarkerData( ...
+    ['RKNEE' orientation.foreaftAxis]);
+Marker.RKnee.Z   = trialData.getMarkerData( ...
+    ['RKNEE' orientation.updownAxis]);
+Marker.RKnee.Y   = trialData.getMarkerData( ...
+    ['RKNEE' orientation.sideAxis]);
+Marker.RHip.X    = -trialData.getMarkerData( ...
+    ['RHIP' orientation.foreaftAxis]);
+Marker.RHip.Z    = trialData.getMarkerData( ...
+    ['RHIP' orientation.updownAxis]);
+Marker.RHip.Y    = trialData.getMarkerData( ...
+    ['RHIP' orientation.sideAxis]);
+Marker.RPelvis.X = -trialData.getMarkerData( ...
+    ['RASIS' orientation.foreaftAxis]);
+Marker.RPelvis.Z = trialData.getMarkerData( ...
+    ['RASIS' orientation.updownAxis]);
+Marker.RPelvis.Y = trialData.getMarkerData( ...
+    ['RASIS' orientation.sideAxis]);
+
