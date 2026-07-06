@@ -18,7 +18,6 @@ function paddedData = alignPercTasks(data)
 %            pertSizePercTask   - perturbation size per task
 %          Each field has subfields for conditions (e.g., .trial1).
 %
-    % pertSize=data.pertSizePercTask.(conditions{cond}).trial1;
 % Outputs:
 %   paddedData - struct with the same fields as DATA, containing
 %                aligned matrices of uniform length per condition,
@@ -27,6 +26,7 @@ function paddedData = alignPercTasks(data)
 % Toolbox Dependencies: None
 %
 % See also FIELDS, FIELDNAMES.
+
 conditions = fields(data.percTaskInitStride);
 
 for con = 1:length(conditions)
@@ -35,6 +35,7 @@ for con = 1:length(conditions)
         data.percTaskInitStride.(conditions{con}).trial1;
     taskEndMatrix  = ...
         data.percTaskEndStride.(conditions{con}).trial1;
+    % pertSize = data.pertSizePercTask.(conditions{cond}).trial1;
     [nParticipants, ~] = size(taskInitMatrix);
 
     % check if this condition has any perceptual tasks
@@ -49,7 +50,7 @@ for con = 1:length(conditions)
         fieldsToAlign = fieldnames(data);
         fieldsToAlign = fieldsToAlign(~contains(fieldsToAlign, ...
             {'percTaskInitStride','percTaskEndStride', ...
-             'pertSizePercTask'}));
+            'pertSizePercTask'}));
 
         maxStridesCond = zeros(nParticipants, 1);
         for pp = 1:nParticipants
@@ -61,16 +62,16 @@ for con = 1:length(conditions)
         maxStridesCond = min(maxStridesCond);
     end
 
-    % allpertSize=cell(nParticipants,1);
-        % allpertSize{i}=pertSize(i,find(taskInitMatrix(i,:)==1));
     % extract task marker indices for each participant
     allInitIndices = cell(nParticipants, 1);
     allEndIndices  = cell(nParticipants, 1);
+    % allpertSize = cell(nParticipants, 1);
     numTasks       = zeros(nParticipants, 1);
 
     for pp = 1:nParticipants
         allInitIndices{pp} = find(taskInitMatrix(pp, :) == 1);
         allEndIndices{pp}  = find(taskEndMatrix(pp, :) == 1);
+        % allpertSize{i} = pertSize(pp, find(taskInitMatrix(pp, :) == 1));
         numTasks(pp)       = length(allInitIndices{pp});
 
         % sanity check: equal number of start and end markers
@@ -120,7 +121,7 @@ for con = 1:length(conditions)
         end
     end
 
-    % Calculate total length of aligned data
+    % calculate total length of aligned data
     finalMatrixLength = sum(targetSegmentLength);
 
     % get data fields to align (exclude task marker fields)
@@ -137,8 +138,6 @@ for con = 1:length(conditions)
         originalMatrix = data.(fieldName).(conditions{con}).trial1;
         finalPaddedMatrix = NaN(nParticipants, finalMatrixLength);
 
-        %Access the original data matrix
-            % Process each segment (walk/task alternating)
         for pp = 1:nParticipants
             currentRow     = originalMatrix(pp, :);
             lastNonNaNidx  = find(~isnan(currentRow), 1, 'Last');
@@ -201,8 +200,6 @@ for con = 1:length(conditions)
                     processedSegment = [segment, padding];
                 end
 
-                    %Task initiation marker is at the beginning of the padded task segment
-                    %Task end marker is at the end of the padded task segment
                 % record new task marker positions
                 if mod(jj, 2) == 0
                     new_start_index = current_padded_row_len + 1;
@@ -228,7 +225,7 @@ for con = 1:length(conditions)
                     currentRow(lastNonNaNidx-trailStrides:lastNonNaNidx)];
             elseif sum(strcmp(conditions(con), ...
                     {'Familiarization','Baseline Perception', ...
-                     'Post adaptation'})) > 0
+                    'Post adaptation'})) > 0
                 % standard conditions: last 10 strides
                 trailStrides = 10;
                 currentPaddedRow = [currentPaddedRow, ...
@@ -239,14 +236,13 @@ for con = 1:length(conditions)
                     currentRow(1:maxStridesCond)];
             end
 
-            % Store new marker indices for this participant
-            % Add processed row to final matrix
+            % store new marker indices for this participant
             newInitIndices{pp} = current_new_init_indices;
             newEndIndices{pp}  = current_new_end_indices;
+            % add processed row to final matrix
             finalPaddedMatrix(pp, 1:length(currentPaddedRow)) = ...
                 currentPaddedRow;
         end
-        % Store aligned data for this field
         paddedData.(fieldName).(conditions{con}).trial1 = ...
             finalPaddedMatrix;
     end
@@ -260,10 +256,11 @@ for con = 1:length(conditions)
         newEndMatrix(pp, newEndIndices{pp})   = 1;
     end
 
-    % Store updated marker matrices
+    % store updated marker matrices
     paddedData.percTaskInitStride.(conditions{con}).trial1 = ...
         newInitMatrix;
     paddedData.percTaskEndStride.(conditions{con}).trial1  = ...
         newEndMatrix;
 end
+
 end
