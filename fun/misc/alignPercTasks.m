@@ -1,4 +1,4 @@
-function [paddedData]=alignPercTasks(data)
+function paddedData = alignPercTasks(data)
 %ALIGNPERCTASKS Align time-course data across participants with
 %perceptual tasks.
 %
@@ -18,18 +18,7 @@ function [paddedData]=alignPercTasks(data)
 %            pertSizePercTask   - perturbation size per task
 %          Each field has subfields for conditions (e.g., .trial1).
 %
-conditions=fields(data.percTaskInitStride);
-for cond=1:length(conditions) % I think trial is always one so will use this as a reference for now
-
-    taskInitMatrix=data.percTaskInitStride.(conditions{cond}).trial1;
-    taskEndMatrix=data.percTaskEndStride.(conditions{cond}).trial1;
     % pertSize=data.pertSizePercTask.(conditions{cond}).trial1;
-    [nParticipants,~]=size(taskInitMatrix);
-
-    % Check if this condition has any perceptual tasks
-    noPercTasks=true;
-    if sum(find(taskInitMatrix==1))~=0 && sum(find(taskEndMatrix==1))~=0
-        noPercTasks=false;
 % Outputs:
 %   paddedData - struct with the same fields as DATA, containing
 %                aligned matrices of uniform length per condition,
@@ -38,43 +27,59 @@ for cond=1:length(conditions) % I think trial is always one so will use this as 
 % Toolbox Dependencies: None
 %
 % See also FIELDS, FIELDNAMES.
+conditions = fields(data.percTaskInitStride);
+
+for con = 1:length(conditions)
+
+    taskInitMatrix = ...
+        data.percTaskInitStride.(conditions{con}).trial1;
+    taskEndMatrix  = ...
+        data.percTaskEndStride.(conditions{con}).trial1;
+    [nParticipants, ~] = size(taskInitMatrix);
+
+    % check if this condition has any perceptual tasks
+    noPercTasks = true;
+    if sum(find(taskInitMatrix == 1)) ~= 0 && ...
+            sum(find(taskEndMatrix == 1)) ~= 0
+        noPercTasks = false;
     end
 
-    % for conditions without any perceptual tasks: calculate the minimun
-    % stride count
+    % for conditions without perceptual tasks: find minimum stride count
     if noPercTasks
-        % Get all field names to process
-        fieldsToAlign=fieldnames(data);
-        fieldsToAlign=fieldsToAlign(~contains(fieldsToAlign,{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
+        fieldsToAlign = fieldnames(data);
+        fieldsToAlign = fieldsToAlign(~contains(fieldsToAlign, ...
+            {'percTaskInitStride','percTaskEndStride', ...
+             'pertSizePercTask'}));
 
-        % Calculate minimum stride length across participants
-        for i=1:nParticipants
-            currentRow=data.(fieldsToAlign{1}).(conditions{cond}).trial1(i,:);
-            maxStridesCond(i)=find(~isnan(currentRow),1,'Last');
+        maxStridesCond = zeros(nParticipants, 1);
+        for pp = 1:nParticipants
+            currentRow = data.(fieldsToAlign{1}). ...
+                (conditions{con}).trial1(pp, :);
+            maxStridesCond(pp) = find(~isnan(currentRow), 1, 'Last');
         end
-        maxStridesCond=min(maxStridesCond); % Maximum index for non-perceptual trials conditions
+        % minimum last-non-NaN index across all participants
+        maxStridesCond = min(maxStridesCond);
     end
 
-    % Extract task marker indices for each participant
-    allInitIndices=cell(nParticipants,1);
-    allEndIndices=cell(nParticipants,1);
     % allpertSize=cell(nParticipants,1);
-
-    numTasks=zeros(nParticipants,1);
-
-    for i=1:nParticipants
-        allInitIndices{i}=find(taskInitMatrix(i,:)==1);
-        allEndIndices{i}=find(taskEndMatrix(i,:)==1);
         % allpertSize{i}=pertSize(i,find(taskInitMatrix(i,:)==1));
+    % extract task marker indices for each participant
+    allInitIndices = cell(nParticipants, 1);
+    allEndIndices  = cell(nParticipants, 1);
+    numTasks       = zeros(nParticipants, 1);
 
-        % Number of tasks is equal to the number of init markers
-        numTasks(i)=length(allInitIndices{i});
+    for pp = 1:nParticipants
+        allInitIndices{pp} = find(taskInitMatrix(pp, :) == 1);
+        allEndIndices{pp}  = find(taskEndMatrix(pp, :) == 1);
+        numTasks(pp)       = length(allInitIndices{pp});
 
-        % Sanity check: must have same number of start and end markers
-        if length(allInitIndices{i})~=length(allEndIndices{i})
-            warning('Participant %d has unequal number of init (%d) and end (%d) markers. Skipping alignment.', ...
-                i,length(allInitIndices{i}),length(allEndIndices{i}));
-            numTasks(i)=0;
+        % sanity check: equal number of start and end markers
+        if length(allInitIndices{pp}) ~= length(allEndIndices{pp})
+            warning(['Participant %d has unequal number of init ' ...
+                '(%d) and end (%d) markers. Skipping alignment.'], ...
+                pp, length(allInitIndices{pp}), ...
+                length(allEndIndices{pp}));
+            numTasks(pp) = 0;
         end
     end
 
