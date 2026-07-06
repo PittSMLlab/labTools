@@ -83,124 +83,122 @@ for con = 1:length(conditions)
         end
     end
 
-    % Calculate the length of each segment (walking and perceptual task
-    % segments) per participant
-    numStrideSegments=zeros(nParticipants,min(numTasks)*2);
+    % compute length of each walk/task segment per participant
+    numStrideSegments = zeros(nParticipants, min(numTasks) * 2);
 
-    for i=1:nParticipants
-        count=1;
-        for s=1:min(numTasks)
-            if s==1
-                % First walking segment: from start to first perceptual
-                % task
-                numStrideSegments(i,count)=length(1:allInitIndices{i}(s)-1);
-                % First perceptual task segment
-                numStrideSegments(i,count+1)=length(allInitIndices{i}(s):allEndIndices{i}(s));
-                count=count+2;
+    for pp = 1:nParticipants
+        count = 1;
+        for s = 1:min(numTasks)
+            if s == 1
+                % first walking segment: start to first task
+                numStrideSegments(pp, count) = ...
+                    length(1:allInitIndices{pp}(s) - 1);
+                % first task segment
+                numStrideSegments(pp, count+1) = ...
+                    length(allInitIndices{pp}(s):allEndIndices{pp}(s));
             else
-                % Subsequent walking segments: between perceptual tasks
-                numStrideSegments(i,count)=length(allEndIndices{i}(s-1)+1:allInitIndices{i}(s)-1);
-                % Susequent perceptual task segment
-                numStrideSegments(i,count+1)=length(allInitIndices{i}(s):allEndIndices{i}(s));
-                count=count+2;
+                % subsequent walking segment: between tasks
+                numStrideSegments(pp, count) = length( ...
+                    allEndIndices{pp}(s-1)+1 : allInitIndices{pp}(s)-1);
+                % subsequent task segment
+                numStrideSegments(pp, count+1) = length( ...
+                    allInitIndices{pp}(s):allEndIndices{pp}(s));
             end
-
+            count = count + 2;
         end
     end
 
-    % determine target length for each segment (walking/task)
-    targetSegmentLength=[];
-    for j=1:size(numStrideSegments,2)
-        if mod(j, 2) ~= 0 % Odd Segment (Walking): Truncate to MIN length
-            targetSegmentLength=[targetSegmentLength min(numStrideSegments(:,j))];
-        else % Even Segment (Task): Pad to MAX length
-            targetSegmentLength=[targetSegmentLength max(numStrideSegments(:,j))];
+    % determine target length for each segment type
+    targetSegmentLength = [];
+    for jj = 1:size(numStrideSegments, 2)
+        if mod(jj, 2) ~= 0  % odd = walking → truncate to MIN
+            targetSegmentLength = [targetSegmentLength, ...  %#ok<AGROW>
+                min(numStrideSegments(:, jj))];
+        else                 % even = task → pad to MAX
+            targetSegmentLength = [targetSegmentLength, ...  %#ok<AGROW>
+                max(numStrideSegments(:, jj))];
         end
     end
 
     % Calculate total length of aligned data
-    finalMatrixLength=sum(targetSegmentLength);
+    finalMatrixLength = sum(targetSegmentLength);
 
-    %Get all data fields to align (exclude marker fields)
-    fieldsToAlign=fieldnames(data);
-    fieldsToAlign=fieldsToAlign(~contains(fieldsToAlign,{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
+    % get data fields to align (exclude task marker fields)
+    fieldsToAlign = fieldnames(data);
+    fieldsToAlign = fieldsToAlign(~contains(fieldsToAlign, ...
+        {'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
 
-    % Initialize cells to store new marker positions
-    newInitIndices=cell(nParticipants,1);
-    newEndIndices=cell(nParticipants,1);
+    % initialize cells for updated marker positions
+    newInitIndices = cell(nParticipants, 1);
+    newEndIndices  = cell(nParticipants, 1);
 
-    % Process each data field
-    for field=1:length(fieldsToAlign)
-        fieldName=fieldsToAlign{field};
+    for field = 1:length(fieldsToAlign)
+        fieldName      = fieldsToAlign{field};
+        originalMatrix = data.(fieldName).(conditions{con}).trial1;
+        finalPaddedMatrix = NaN(nParticipants, finalMatrixLength);
 
         %Access the original data matrix
-        originalMatrix=data.(fieldName).(conditions{cond}).trial1;
-        finalPaddedMatrix=NaN(nParticipants,finalMatrixLength);
-
-        for i=1:nParticipants
-            currentRow=originalMatrix(i,:);
-            lastNonNaNidx=find(~isnan(currentRow),1,'Last');
-            initIdx=allInitIndices{i};
-            endIdx=allEndIndices{i};
-
-            currentPaddedRow=[];
-            current_new_init_indices=[];
-            current_new_end_indices=[];
-            currentStride=1;
-
             % Process each segment (walk/task alternating)
-            for j=1:length(targetSegmentLength)
+        for pp = 1:nParticipants
+            currentRow     = originalMatrix(pp, :);
+            lastNonNaNidx  = find(~isnan(currentRow), 1, 'Last');
+            initIdx        = allInitIndices{pp};
+            endIdx         = allEndIndices{pp};
 
-                targetLen=targetSegmentLength(j);
-                current_padded_row_len=length(currentPaddedRow);
+            currentPaddedRow       = [];
+            current_new_init_indices = [];
+            current_new_end_indices  = [];
+            currentStride          = 1;
 
-                % Determine segment boundaries based on task markers
-                if j==1
-                    % First segment: start to first perceptual task
-                    segEnd=initIdx(1)-1;
-                elseif mod(j,2)==0
-                    % even segments are perceptual tasks
-                    k=j/2;
-                    taskStart=initIdx(k);
-                    taskEnd=endIdx(k);
-                    currentStride=taskStart;
-                    segEnd=taskEnd;
+            for jj = 1:length(targetSegmentLength)
+                targetLen            = targetSegmentLength(jj);
+                current_padded_row_len = length(currentPaddedRow);
+
+                % determine segment boundaries from task markers
+                if jj == 1
+                    % first segment: start to first task
+                    segEnd = initIdx(1) - 1;
+                elseif mod(jj, 2) == 0
+                    % even: perceptual task segment
+                    k = jj / 2;
+                    taskStart     = initIdx(k);
+                    taskEnd       = endIdx(k);
+                    currentStride = taskStart;
+                    segEnd        = taskEnd;
                 else
-                    % odd segments are walking between tasks
-                    k=(j-1)/2;
-                    if k<min(numTasks)
-                        walkEnd=initIdx(k+1)-1;
+                    % odd: walking between tasks
+                    k = (jj - 1) / 2;
+                    if k < min(numTasks)
+                        walkEnd = initIdx(k+1) - 1;
                     else
-                        walkEnd=finalMatrixLength;
+                        walkEnd = finalMatrixLength;
                     end
-                    currentStride=endIdx(k)+1;
-                    segEnd=walkEnd;
+                    currentStride = endIdx(k) + 1;
+                    segEnd        = walkEnd;
                 end
 
-                %Extract segment data
-                if segEnd>=currentStride
-                    segment=currentRow(currentStride:segEnd);
-                    nextStride=segEnd+1;
+                % extract segment data
+                if segEnd >= currentStride
+                    segment     = currentRow(currentStride:segEnd);
+                    nextStride  = segEnd + 1;
                 else
-                    segment=[];
-                    nextStride=currentStride;
+                    segment    = [];
+                    nextStride = currentStride;
                 end
-                currentStride=nextStride;
+                currentStride = nextStride;
 
-                %Apply Truncation or Padding
-                currentLen=length(segment);
-
-                if mod(j,2)~=0 % Odd Segment(MIN/Truncate for Walking)
-                    processedSegment=segment(1:min(currentLen,targetLen));
-
-                    if length(processedSegment)<targetLen
-                        padding=NaN(1,targetLen-length(processedSegment));
-                        processedSegment=[processedSegment,padding];
+                % apply truncation (walking) or padding (task)
+                currentLen = length(segment);
+                if mod(jj, 2) ~= 0     % odd = walking: truncate to MIN
+                    processedSegment = segment(1:min(currentLen,targetLen));
+                    if length(processedSegment) < targetLen
+                        padding = NaN(1, targetLen - ...
+                            length(processedSegment));
+                        processedSegment = [processedSegment, padding];
                     end
-
-                else %Even Segment(MAX/Pad for Task)
-                    padding=NaN(1,targetLen-currentLen);
-                    processedSegment=[segment,padding];
+                else                    % even = task: pad to MAX
+                    padding = NaN(1, targetLen - currentLen);
+                    processedSegment = [segment, padding];
                 end
 
                 % Calculate new indices for perceptual task markers
