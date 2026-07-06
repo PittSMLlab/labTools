@@ -201,58 +201,69 @@ for con = 1:length(conditions)
                     processedSegment = [segment, padding];
                 end
 
-                % Calculate new indices for perceptual task markers
-                if mod(j,2)==0%Even Segment(Task)
                     %Task initiation marker is at the beginning of the padded task segment
-                    new_start_index=current_padded_row_len+1;
-                    current_new_init_indices(end+1)=new_start_index;
-
                     %Task end marker is at the end of the padded task segment
-                    new_end_index=current_padded_row_len+targetLen;
-                    current_new_end_indices(end+1)=new_end_index;
+                % record new task marker positions
+                if mod(jj, 2) == 0
+                    new_start_index = current_padded_row_len + 1;
+                    current_new_init_indices(end+1) = ...  %#ok<AGROW>
+                        new_start_index;
+                    new_end_index = current_padded_row_len + targetLen;
+                    current_new_end_indices(end+1) = ...   %#ok<AGROW>
+                        new_end_index;
                 end
-                currentPaddedRow=[currentPaddedRow,processedSegment];
+                currentPaddedRow = [currentPaddedRow, processedSegment];
             end
 
-            % Add trailing data based on condition type
-            if strcmp(conditions(cond),'Psychometricfit')
-                % Adaptation characterization: add last 50 strides
-                currentPaddedRow=[currentPaddedRow,currentRow(lastNonNaNidx-50:lastNonNaNidx)];
-            elseif strcmp(conditions(cond),'PSEtracking')
-                % PSE tracking: add last 15 strides
-                currentPaddedRow=[currentPaddedRow,currentRow(lastNonNaNidx-15:lastNonNaNidx)];
-            elseif sum(strcmp(conditions(cond),{'Familiarization','Baseline Perception','Post adaptation'}))>0
-                % Standard conditions: add last 10 strides
-                currentPaddedRow=[currentPaddedRow,currentRow(lastNonNaNidx-10:lastNonNaNidx)];
+            % append trailing data based on condition type
+            if strcmp(conditions(con), 'Psychometricfit')
+                % adaptation characterization: last 50 strides
+                trailStrides = 50;
+                currentPaddedRow = [currentPaddedRow, ...
+                    currentRow(lastNonNaNidx-trailStrides:lastNonNaNidx)];
+            elseif strcmp(conditions(con), 'PSEtracking')
+                % PSE tracking: last 15 strides
+                trailStrides = 15;
+                currentPaddedRow = [currentPaddedRow, ...
+                    currentRow(lastNonNaNidx-trailStrides:lastNonNaNidx)];
+            elseif sum(strcmp(conditions(con), ...
+                    {'Familiarization','Baseline Perception', ...
+                     'Post adaptation'})) > 0
+                % standard conditions: last 10 strides
+                trailStrides = 10;
+                currentPaddedRow = [currentPaddedRow, ...
+                    currentRow(lastNonNaNidx-trailStrides:lastNonNaNidx)];
             else
-                % Conditions without perceptual tasks: crop to minimum stride count
-                currentPaddedRow=[currentPaddedRow,currentRow(1:maxStridesCond)];
+                % no perceptual tasks: crop to minimum stride count
+                currentPaddedRow = [currentPaddedRow, ...
+                    currentRow(1:maxStridesCond)];
             end
 
             % Store new marker indices for this participant
-            newInitIndices{i}=current_new_init_indices;
-            newEndIndices{i}=current_new_end_indices;
-
             % Add processed row to final matrix
-            finalPaddedMatrix(i,1:length(currentPaddedRow))=currentPaddedRow;
+            newInitIndices{pp} = current_new_init_indices;
+            newEndIndices{pp}  = current_new_end_indices;
+            finalPaddedMatrix(pp, 1:length(currentPaddedRow)) = ...
+                currentPaddedRow;
         end
         % Store aligned data for this field
-        paddedData.(fieldName).(conditions{cond}).trial1=finalPaddedMatrix;
+        paddedData.(fieldName).(conditions{con}).trial1 = ...
+            finalPaddedMatrix;
     end
 
-    % Create new binary marker matrices with updated positions
-    newInitMatrix=zeros(nParticipants,size(finalPaddedMatrix,2));
-    newEndMatrix=zeros(nParticipants,size(finalPaddedMatrix,2));
+    % build updated binary marker matrices
+    newInitMatrix = zeros(nParticipants, size(finalPaddedMatrix, 2));
+    newEndMatrix  = zeros(nParticipants, size(finalPaddedMatrix, 2));
 
-    for i=1:nParticipants
-        newInitMatrix(i,newInitIndices{i})=1;
-        newEndMatrix(i,newEndIndices{i})=1;
+    for pp = 1:nParticipants
+        newInitMatrix(pp, newInitIndices{pp}) = 1;
+        newEndMatrix(pp, newEndIndices{pp})   = 1;
     end
 
     % Store updated marker matrices
-    paddedData.percTaskInitStride.(conditions{cond}).trial1=newInitMatrix;
-    paddedData.percTaskEndStride.(conditions{cond}).trial1=newEndMatrix;
-
-
+    paddedData.percTaskInitStride.(conditions{con}).trial1 = ...
+        newInitMatrix;
+    paddedData.percTaskEndStride.(conditions{con}).trial1  = ...
+        newEndMatrix;
 end
 end
