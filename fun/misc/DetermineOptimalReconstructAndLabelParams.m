@@ -86,8 +86,6 @@ end
 markersSubset = {'RGT','LGT','RANK','LANK'};
 
 %% 5) Specify Set of Reconstruct & Label Parameters to Loop Through
-% minCentroidRadius = 0; % 0:2:4;
-% maxCentroidRadius = 50; % 30:10:50;
 predict3D          = [true, false];
 envDriftTol        = 2.00:0.25:4.50;   % e.g., [2.00, 2.25, ..., 4.50]
 minCamsToStartTraj = 2:3;              % [2, 3]
@@ -143,18 +141,12 @@ for setIdx = 1:numParamSets
         error('Could not open pipeline file for writing: %s', ...
             pathPipeline);
     end
-    % 6i) compute aggregate measures over ALL sessions and trials
-    PercentMissing_All_ParamSet = nan(numSess,1);
-    NumGapsPerMarker_All_ParamSet = nan(numSess,1);
-    MaxGapLength_All_ParamSet = nan(numSess,1);
-    MedianGapLength_All_ParamSet = nan(numSess,1);
-    PercentMissing_Subset_ParamSet = nan(numSess,1);
-    NumGapsPerMarker_Subset_ParamSet = nan(numSess,1);
-    MaxGapLength_Subset_ParamSet = nan(numSess,1);
-    MedianGapLength_Subset_ParamSet = nan(numSess,1);
     fprintf(fidW, '%s\n', params);
     fclose(fidW);
 
+    % 6c) initialize per-parameter-set lists for PercentMissing
+    missingAllList = [];
+    missingSubList = [];
 
     for sessIdx = 1:numSess             % for each session, ...
         nameSess = dirsSess(sessIdx).name;
@@ -217,66 +209,84 @@ for setIdx = 1:numParamSets
                 continue;
             end
 
-            % 6g) preallocate temporary arrays to store per-marker metrics
-            percentMissing = nan(numMarkers,1);	% percentage frames missing
-            numGaps = nan(numMarkers,1);        % number of gap events
-            gapLengths = nan(numMarkers,1000);  % largest gap length
-            isInSubset = false(numMarkers,1);   % is marker in subset?
+            % 6h) preallocate per-marker arrays
+            percentMissing = nan(nMarkers, 1);
+            numGaps        = nan(nMarkers, 1);
+            allGapLens     = cell(nMarkers, 1);
+            isInSubset     = false(nMarkers, 1);
 
-            % 6h) retrieve marker trajectory, compute missing frames & gaps
-            for mrkr = 1:numMarkers             % for each marker, ...
-                nameMarker = markersAll{mrkr};  % name of current marker
-                isInSubset(mrkr) = any(strcmp(nameMarker,markersSubset));
+            % 6i) for each marker: retrieve trajectory, compute
+            %     missing frames and gaps
+            totalFrames = vicon.GetFrameCount();
 
-                try                             % try to get marker traj.
-                    [~,~,~,existsTraj] = ...
-                        vicon.GetTrajectory(subject,nameMarker);
-                    % existsTraj is logical vector: true  = visible,
-                    %                               false = occluded (miss)
+            for mrkr = 1:nMarkers       % for each marker, ...
+                nameMarker = markersAll{mrkr};
+                isInSubset(mrkr) = ...
+                    any(strcmp(nameMarker, markersSubset));
+
+                try
+                    [~, ~, ~, existsTraj] = ...
+                        vicon.GetTrajectory(subject, nameMarker);
+                    % existsTraj: true = visible, false = occluded
                 catch
-                    warning(['    • Could not retrieve trajectory for ' ...
-                        '%s. Treating as fully missing.\n'],nameMarker);
-                    existsTraj = false(vicon.GetFrameCount(),1);
+                    warning(['    – Failed to get trajectory ' ...
+                        'for %s. Marking all as missing.'], ...
+                        nameMarker);
+                    existsTraj = false(totalFrames, 1);
                 end
 
-                totalFrames = numel(existsTraj);% total number of frames
-                numMissing = sum(~existsTraj);  % number of missing frames
-                percentMissing(mrkr) = (numMissing / totalFrames) * 100;
+                % compute percentage of missing frames
+                nMissing             = sum(~existsTraj);
+                percentMissing(mrkr) = ...
+                    (nMissing / totalFrames) * 100;
 
-                dv = diff([0; (~existsTraj)'; 0]);  % find marker gaps
-                runBoundaries = find(dv~=0);        % changes
-                % present & gap run lengths
-                runLengths = diff(runBoundaries);
-                % +1 = gap starts, -1 = ends
-                runValues = dv(runBoundaries);
-                gapRuns = runLengths(runValues==1);
-                numGaps(mrkr) = numel(gapRuns);     % number of marker gaps
-                gapLengths(mrkr,1:numGaps(mrkr)) = gapRuns';
+                % identify gap runs (contiguous occluded segments)
+                missingFlags  = ~existsTraj;
+                dv            = diff([0; missingFlags; 0]);
+                runBoundaries = find(dv ~= 0);
+                runLengths    = diff(runBoundaries);
+                runValues     = dv(runBoundaries);
+                gapRuns       = runLengths(runValues == 1);
+                numGaps(mrkr)     = numel(gapRuns);
+                allGapLens{mrkr}  = gapRuns;
             end
 
-            % 6i) compute aggregate measures over ALL markers
-            PercentMissing_All = mean(percentMissing);
-            NumGapsPerMarker_All = sum(numGaps) / numMarkers;
-            MaxGapLength_All = max(gapLengths,[],'all');
-            MedianGapLength_All = median(gapLengths,'all','omitnan');
+            % 6j) compute aggregate metrics for ALL markers
+            PercentMissing_All   = mean(percentMissing);
+            NumGapsPerMarker_All = sum(numGaps) / nMarkers;
+            MaxGapLength_All     = max(cellfun( ...
+                @(x) max([x; 0]), allGapLens));
+            allGapsCombined_All  = vertcat(allGapLens{:});
+            if isempty(allGapsCombined_All)
+                MedianGapLength_All = 0;
+            else
+                MedianGapLength_All = median(allGapsCombined_All);
+            end
 
-            % 6j) compute aggregate measures over SUBSET markers
-            indsMarkersSubset = find(isInSubset);
-            if isempty(indsMarkersSubset)       % if no subset markers, ...
-                PercentMissing_Subset = NaN;    % set all values to 'NaN'
+            % 6k) compute aggregate metrics for SUBSET markers
+            subsetInds = find(isInSubset);
+            if isempty(subsetInds)
+                PercentMissing_Subset   = NaN;
                 NumGapsPerMarker_Subset = NaN;
-                MaxGapLength_Subset = NaN;
-                MedianGapLength_Subset = NaN;
-            else                                % otherwise, ...
-                PercentMissing_Subset = ...
-                    mean(percentMissing(indsMarkersSubset));
+                MaxGapLength_Subset     = NaN;
+                MedianGapLength_Subset  = NaN;
+            else
+                pctMiss_Sub  = percentMissing(subsetInds);
+                nGaps_Sub    = numGaps(subsetInds);
+                gapLens_Sub  = allGapLens(subsetInds);
+
+                PercentMissing_Subset   = mean(pctMiss_Sub);
                 NumGapsPerMarker_Subset = ...
-                    sum(numGaps(indsMarkersSubset)) / ...
-                    numel(indsMarkersSubset);
-                MaxGapLength_Subset = ...
-                    max(gapLengths(indsMarkersSubset),[],'all');
-                MedianGapLength_Subset = ...
-                    median(gapLengths(indsMarkersSubset),'all','omitnan');
+                    sum(nGaps_Sub) / numel(subsetInds);
+                MaxGapLength_Subset     = max(cellfun( ...
+                    @(x) max([x; 0]), gapLens_Sub));
+                gapsCombined_Sub = vertcat(gapLens_Sub{:});
+                if isempty(gapsCombined_Sub)
+                    MedianGapLength_Subset = 0;
+                else
+                    MedianGapLength_Subset = ...
+                        median(gapsCombined_Sub);
+                end
             end
 
             % 6k) append a single row to the 'results' structure
@@ -355,6 +365,5 @@ end
 
 %% 7) Save Summary Results to a CSV File
 T = struct2table(results);
-writetable(T,pathOutCSV);
-fprintf('\nSummary written to:\n   %s\n',pathOutCSV);
-
+writetable(T, pathOutCSV);
+fprintf('All per-trial results saved to:\n   %s\n\n', pathOutCSV);
