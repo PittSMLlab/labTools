@@ -88,24 +88,6 @@ markersSubset = {'RGT','LGT','RANK','LANK'};
 %% 5) Specify Set of Reconstruct & Label Parameters to Loop Through
 % minCentroidRadius = 0; % 0:2:4;
 % maxCentroidRadius = 50; % 30:10:50;
-%% 6) Loop Over All Parameters Sets & Trials & Compute Outcome Measures
-for set = 1:numParamSets                    % for each parameter set, ...
-    % 6a) overwrite the pertinent parameters lines in the pipeline XML file
-    fprintf(['---\nAssessing the following parameter set:\n' ...
-        '  • 3D Predictions = %u;\n' ...
-        '  • Environmental Drift Tolerance = %03.1f;\n' ...
-        '  • Minimum Cameras to Start Trajectory = %u;\n' ...
-        '  • Minimum Cameras to Continue Trajectory = %u;\n' ...
-        '  • Minimum Reconstruction Separation = %u...\n'], ...
-        paramSets(set,1),paramSets(set,2),paramSets(set,3), ...
-        paramSets(set,4),paramSets(set,5));
-    shouldPredict3D = paramSets(set,1);     % should use 3D predictions?
-    if shouldPredict3D                      % if 3D predictions is on, ...
-        params(ind3DPredict) = ['      ' ...  enable it in pipeline file
-            '<Param name="Reconstructor.3DPredictions" value="true"/>'];
-    else                                    % otherwise, ...
-        params(ind3DPredict) = ['      ' ...  disable it in pipeline file
-            '<Param name="Reconstructor.3DPredictions" value="false"/>'];
 predict3D          = [true, false];
 envDriftTol        = 2.00:0.25:4.50;   % e.g., [2.00, 2.25, ..., 4.50]
 minCamsToStartTraj = 2:3;              % [2, 3]
@@ -117,29 +99,50 @@ paramSets    = allcomb(predict3D, envDriftTol, ...
     minCamsToStartTraj, minCamsToContTraj, minSeparation);
 numParamSets = size(paramSets, 1);
 
-    end
-    params(indEnvDriftTol) = sprintf(['      <Param name="' ...
-        'EnvironmentalDriftTolerance" value="%03.1f"/>'],paramSets(set,2));
-    params(indMinCamsToStartTraj) = sprintf(['      <Param name="' ...
-        'MinCams" value="%u"/>'],paramSets(set,3));
-    params(indMinCamsToContTraj) = sprintf(['      <Param name="' ...
-        'MinCamsWithPrediction" value="%u"/>'],paramSets(set,4));
-    params(indMinSeparation) = sprintf(['      <Param name="' ...
-        'MinSeparation" value="%u"/>'],paramSets(set,5));
+%% 6) Loop Over Parameter Sets & Trials & Compute Outcome Measures
+for setIdx = 1:numParamSets
 
-    % 6b) overwrite ALL 209 lines back into the pipeline XML file
-    % if MATLAB R2022a or later, use 'writelines(params,pipelineFile);'
-    fidW = fopen(pathPipeline,'w');         % open the file to overwrite
-    if fidW < 0                             % if file did not open, ...
-        error('Could not open pipeline file for writing: %s',pathPipeline);
+    % extract current parameter values
+    shouldPredict3D = paramSets(setIdx, 1);
+    currEnvDriftTol = paramSets(setIdx, 2);
+    currMinStart    = paramSets(setIdx, 3);
+    currMinCont     = paramSets(setIdx, 4);
+    currMinSep      = paramSets(setIdx, 5);
+
+    fprintf('\n---\nAssessing parameter set %d of %d:\n', ...
+        setIdx, numParamSets);
+    fprintf('  • 3D Predictions          = %d\n',   shouldPredict3D);
+    fprintf('  • Environmental Drift Tol = %.2f\n', currEnvDriftTol);
+    fprintf('  • MinCamsToStartTraj      = %d\n',   currMinStart);
+    fprintf('  • MinCamsToContTraj       = %d\n',   currMinCont);
+    fprintf('  • MinSeparation           = %d\n',   currMinSep);
+
+    % 6a) overwrite the pertinent lines in the pipeline XML file
+    if shouldPredict3D
+        params(ind3DPredict) = ['      <Param name=' ...
+            '"Reconstructor.3DPredictions" value="true"/>'];
+    else
+        params(ind3DPredict) = ['      <Param name=' ...
+            '"Reconstructor.3DPredictions" value="false"/>'];
     end
     for line = 1:numel(params)              % for each line in file, ...
         fprintf(fidW,'%s\n',params(line));  % overwrite it
-    end
-    fclose(fidW);                           % close file
-    fprintf(['Successfully updated parameters in ''Reconstruct And ' ...
-        'Label Test'' pipeline XML file.\n\n']);
+    params(indEnvDriftTol) = sprintf(['      <Param name=' ...
+        '"EnvironmentalDriftTolerance" value="%.2f"/>'], ...
+        currEnvDriftTol);
+    params(indMinCamsToStartTraj) = sprintf(['      <Param ' ...
+        'name="MinCams" value="%d"/>'], currMinStart);
+    params(indMinCamsToContTraj) = sprintf(['      <Param name=' ...
+        '"MinCamsWithPrediction" value="%d"/>'], currMinCont);
+    params(indMinSeparation) = sprintf(['      <Param name=' ...
+        '"MinSeparation" value="%d"/>'], currMinSep);
 
+    % 6b) write all lines back into the pipeline XML file
+    fidW = fopen(pathPipeline, 'w');
+    if fidW < 0
+        error('Could not open pipeline file for writing: %s', ...
+            pathPipeline);
+    end
     % 6i) compute aggregate measures over ALL sessions and trials
     PercentMissing_All_ParamSet = nan(numSess,1);
     NumGapsPerMarker_All_ParamSet = nan(numSess,1);
@@ -149,59 +152,68 @@ numParamSets = size(paramSets, 1);
     NumGapsPerMarker_Subset_ParamSet = nan(numSess,1);
     MaxGapLength_Subset_ParamSet = nan(numSess,1);
     MedianGapLength_Subset_ParamSet = nan(numSess,1);
+    fprintf(fidW, '%s\n', params);
+    fclose(fidW);
 
-    for sess = 1:numel(dirsSess)            % for each session, ...
-        nameSess = dirsSess(sess).name;
-        pathSess = fullfile(pathData,nameSess);
-        fprintf('Processing %s\n',nameSess);
 
-        % get all trial files that start with 'Trial' and end in '.x1d'
-        trialFiles = dir(fullfile(pathSess,'Trial*.x1d'));
-        if isempty(trialFiles)              % if no trial files found, ...
-            error('No trials found in session folder: %s\n',pathSess);
+    for sessIdx = 1:numSess             % for each session, ...
+        nameSess = dirsSess(sessIdx).name;
+        pathSess = fullfile(pathData, nameSess);
+        fprintf('\nProcessing session: %s\n', nameSess);
+
+        % find all trials in this session folder
+        trialFiles = dir(fullfile(pathSess, 'Trial*.x1d'));
+        if isempty(trialFiles)
+            warning(['  • No trials found in folder: %s. ' ...
+                'Skipping session.'], pathSess);
+            continue;
         end
 
-        % extract trial indices from filenames (assumes 'TrialXX.x1d')
-        [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
-            'UniformOutput',false);
-        indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+        % extract trial numbers from filenames ('TrialXX.x1d')
+        [~, namesFiles] = cellfun(@fileparts, {trialFiles.name}, ...
+            'UniformOutput', false);
+        indsTrials = cellfun( ...
+            @(s) str2double(s(end-1:end)), namesFiles);
 
-        for tr = 1:numel(indsTrials)        % for each trial specified, ...
-            trialID = indsTrials(tr);       % retrieve trial number
-            trialName = sprintf('Trial%02d',trialID);
-            pathTrial = fullfile(pathSess,trialName);
-            fprintf('Processing %s\n',trialName);
+        for tr = 1:numel(indsTrials)    % for each trial, ...
+            trialID   = indsTrials(tr);
+            trialName = sprintf('Trial%02d', trialID);
+            pathTrial = fullfile(pathSess, [trialName '.x1d']);
 
-            % 6c) open the trial in Nexus (if not already open)
-            if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-                warning('  • Could not open %s. Skipping.\n',trialName);
-                continue;                   % skip trial if could not open
+            fprintf('  • Trial %s ...\n', trialName);
+
+            % 6d) open the trial in Nexus (if not already open)
+            if ~dataMotion.openTrialIfNeeded(pathTrial, vicon)
+                warning(['    – Could not open trial %s. ' ...
+                    'Skipping.'], trialName);
+                continue;
             end
 
-            % 6d) run the "Reconstruct And Label Test" pipeline
-            try                             % try running pipeline
-                vicon.RunPipeline('Reconstruct And Label Test','',200);
+            % 6e) run the "Reconstruct And Label Test" pipeline
+            try
+                vicon.RunPipeline( ...
+                    'Reconstruct And Label Test', '', 200);
             catch ME
-                warning(ME.identifier, ...
-                    '  • Nexus.RunPipeline failed: %s\n',ME.message);
+                warning(['    – Nexus.RunPipeline failed on ' ...
+                    '%s: %s'], trialName, ME.message);
                 continue;
             end
 
-            % 6e) get participant name (assuming only one per trial)
-            subject = vicon.GetSubjectNames();
-            if isempty(subject)
-                warning('  • No subject found in %s. Skipping.\n', ...
-                    trialName);
+            % 6f) retrieve the (single) subject name
+            subs = vicon.GetSubjectNames();
+            if isempty(subs)
+                warning(['    – No subject found in %s. ' ...
+                    'Skipping.'], trialName);
                 continue;
             end
-            subject = subject{1};
+            subject = subs{1};
 
-            % 6f) retrieve all marker names for this subject
+            % 6g) retrieve all marker names for this subject
             markersAll = vicon.GetMarkerNames(subject);
-            numMarkers = numel(markersAll);
-            if numMarkers == 0
-                warning(['  • No markers found for participant %s. ' ...
-                    'Skipping.\n'],subject);
+            nMarkers   = numel(markersAll);
+            if nMarkers == 0
+                warning(['    – No markers found for subject ' ...
+                    '%s. Skipping.'], subject);
                 continue;
             end
 
