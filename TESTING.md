@@ -271,6 +271,40 @@ This saves substantial time during iterative testing.
 
 ---
 
+## Testing Handrail-Holding Parameters
+
+`example/data/LI16_Trial9_expData.mat` is a `processedTrialData` object
+with real instrumented-handrail channels (`HFx`/`HFy`/`HFz`) already
+present in its `GRFData` — useful as a real-data fixture for testing
+changes to `HandrailHolding`/`HandrailForce` (`computeForceParameters`)
+without needing your own handrail-collected session. Note its
+`metaData.type` is `'IN'` (incline); handrail computation runs
+regardless of trial type (see `EXPERIMENT_SETUP.md`), so no override
+is needed to exercise it. The other, belt-plate force parameters
+(`FyBS`/`FyPS`/etc.) will still read `NaN` on this trial, since those
+remain gated to `'TM'`-type trials — that is expected and unrelated to
+handrail testing.
+
+To positively confirm the holding threshold logic (rather than relying
+on whatever the reference trial's incidental handrail contact happens
+to be), inject a known force segment directly into the `HFz` channel
+of a copy of `GRFData` — e.g., set a 1–2 second window to a known
+fraction of body weight and the rest to zero — then recompute and
+verify `HandrailHolding` flips for the strides overlapping that window
+and `HandrailForce` matches the injected fraction. Also verify the
+NaN-guard: on a trial/copy with the `H*` channels stripped, confirm
+`HandrailHolding`/`HandrailForce` are `NaN` for every stride, not `0`
+(`NaN > threshold` evaluates to `false` in MATLAB, so an unguarded
+comparison would silently mislabel "no data" as "not holding").
+
+To test `removeHandrailStrides`, confirm it actually changes the
+stride count on a real `adaptationData` object (value-class objects
+can silently no-op if a returned copy isn't captured) and that the
+default no-`HandrailHolding`-column case returns the object unchanged
+with a warning rather than erroring.
+
+---
+
 ## See Also
 
 - `fun/misc/compareAdaptationData.m` — parameter value comparison
