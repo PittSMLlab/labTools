@@ -1,10 +1,11 @@
 # EXPERIMENT_SETUP.md — Configuring New Experiments
 
-This guide covers two setup tasks that are specific to each study or
+This guide covers three setup tasks that are specific to each study or
 lab configuration:
 
 1. [Adding a New Experiment Type](#adding-a-new-experiment-type)
 2. [Marker Label Mapping](#marker-label-mapping)
+3. [Instrumented Handrail (Optional)](#instrumented-handrail-optional)
 
 ---
 
@@ -114,3 +115,88 @@ save('gui/importc3d/markerLabelKey.mat', 'matchedLabels')
 > **Do not edit `findLabel.m` directly.** The switch-statement code
 > visible in that file is commented-out legacy code; the active mapping
 > source is `markerLabelKey.mat`.
+
+---
+
+## Instrumented Handrail (Optional)
+
+If your treadmill has a force-transducer-instrumented handrail wired
+into the C3D analog channels, `processGRFData` auto-detects it and
+labels it `HFx`/`HFy`/`HFz` (+ moments `HMx`/`HMy`/`HMz`) inside
+`GRFData`. No GetInfoGUI configuration is needed — presence of these
+channels is determined entirely by the C3D file's analog channel
+layout, not by any GUI setting.
+
+### Stride-Level Parameters
+
+`computeForceParameters` computes two stride-level parameters from the
+vertical handrail channel (`HFz`):
+
+- **`HandrailHolding`** — binary; `1` if the mean absolute vertical
+  handrail force over the stride exceeds 5% body weight (BW), `0`
+  otherwise, `NaN` if no handrail channel was found for the trial.
+- **`HandrailForce`** — continuous; the underlying mean absolute
+  vertical force per stride, normalized to BW (the value
+  `HandrailHolding` thresholds).
+
+Unlike the belt-plate force parameters (`FyBS`/`FyPS`/etc.), which are
+only computed for `'TM'`-type trials, handrail computation runs for
+any trial type (`'TM'`, `'IN'`, `'NIM'`, or `'OG'`) — the handrail is
+an independent load cell, not one of the belt plates, so it is not
+tied to that gate. It self-gates purely on whether the `HFz` channel
+is present and stride events are valid; on trials without a handrail
+channel (e.g., `'OG'`, or any `'TM'`/`'IN'` session collected without
+one), both parameters simply stay `NaN`.
+
+`abs()` is used so that both pushing down on the rail (weight support)
+and pulling up on it (recovering balance from a backward fall) count
+toward "holding."
+
+**Threshold rationale:** the 5% BW cutoff is the documented "light
+touch" ceiling from the instrumented-handrail literature (e.g.,
+Buffum et al., *Treadmill Handrail-use Increases the Anteroposterior
+Margin of Stability in Individuals Post-stroke*, PMC10957321; casual/
+light-touch vertical forces there were ~1–2% BW). `>5% BW` therefore
+means "more than light touch," not necessarily heavy weight-bearing.
+Adjust `handrailHoldFractionBW` in `computeForceParameters.m` if a
+stricter definition is needed for your study. See also Brown & Kesar,
+*Handrail Holding During Treadmill Walking Reduces Locomotor Learning
+in Able-Bodied Persons* (IEEE TNSRE, 2019; PMID 31425041), on why
+handrail use is worth flagging for adaptation studies.
+
+**Only vertical force (`HFz`) is used**, not fore-aft or
+medial-lateral, based on an alongside-treadmill handrail placement
+(matching the cited literature). If your handrail sits in front of the
+participant rather than alongside, or if validation on your data shows
+holding shows up mainly in `HFy`, consider using the `HFy`+`HFz` vector
+magnitude instead (see the legacy `computeForceParameters_OGFP.m` for
+that approach).
+
+### Known Channel-Numbering Caveat
+
+`processGRFData` maps analog force channel **3** to the handrail
+prefix `H`; some collections and legacy loaders instead assume the
+handrail is channel **4** (see the warning text and `fpPrefixMap` in
+`processGRFData.m`). If `HandrailHolding`/`HandrailForce` are `NaN`
+for every stride of a session you know had an instrumented handrail,
+verify which analog channel your load cell was actually wired to
+before assuming no data was collected. Some older collections instead
+label the channel `X` rather than `H`; `computeForceParameters` falls
+back to `XFz` in that case and issues a warning.
+
+### Censoring Handrail-Held Strides
+
+`HandrailHolding` is informational only — strides are **not**
+automatically excluded from analysis. To drop (or NaN) strides where
+the handrail was held:
+
+```matlab
+% Removes handrail-held strides (ORed with the existing 'bad' column):
+adaptData = adaptData.removeHandrailStrides();
+
+% Or NaN them instead of removing rows:
+adaptData = adaptData.removeHandrailStrides(true);
+```
+
+`removeHandrailStrides` returns the object unchanged (with a warning)
+if `HandrailHolding` is absent or entirely `NaN` for that subject.
