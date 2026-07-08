@@ -21,11 +21,29 @@ return value: `expData = expData.recomputeParameters()`
   `subData`, `data` (cell array of `labData`)
 - `adaptationData` — stride-indexed params; key methods: `removeBias`,
   `getParamInCond`, `getEarlyLateData_v2`, `getEpochData`,
-  `addNewParameter`, `removeBadStrides`, `plotAvgTimeCourse`
+  `addNewParameter`, `removeBadStrides`, `removeHandrailStrides`,
+  `plotAvgTimeCourse`
 - `groupAdaptationData` / `studyData` — group/study-level analysis
 - `labTimeSeries` — time series with string-label channel access;
   extended by `orientedLabTimeSeries`, `parameterSeries`,
   `processedEMGTimeSeries`
+
+### Handrail-Holding Parameters
+`computeForceParameters` (called from `calcParameters`) computes
+`HandrailHolding` (binary; 1 held / 0 not / `NaN` if no instrumented
+handrail was collected for the trial) and `HandrailForce` (continuous;
+mean absolute vertical handrail force per stride, normalized to body
+weight). Both read the `HFz` channel of `GRFData` (analog force-plate
+channel 3, populated by `processGRFData`); they stay `NaN` when that
+channel is absent. Unlike the belt-plate force parameters
+(`FyBS`/`FyPS`/etc.), handrail computation is **not** restricted to
+`'TM'`-type trials — the handrail is an independent load cell, so it
+also computes for `'IN'`/`'NIM'` trials when a handrail channel is
+present. `HandrailHolding` is informational only — it is **not**
+auto-folded into `bad`/`good`. To censor held strides, call the
+opt-in helper `adaptData.removeHandrailStrides()` (mirrors
+`removeBadStrides`; see `EXPERIMENT_SETUP.md` for the threshold
+rationale and channel-numbering caveat).
 
 ### Full Call Chain
 
