@@ -63,7 +63,7 @@ aux = { ...
     'FzS',                  'GRF-Fzs average force';...
     'FxF',                  'GRF-Fxf average force';...
     'FzF',                  'GRF-Fzf average force';...
-    'HandrailHolding',      'Handrail was being held onto';...
+    'HandrailHolding',      '1 if mean abs. vertical handrail force > 5% BW this stride; 0 if not; NaN if no handrail data';...
     'ImpactMagS',           'Max anterior-posterior impact force of the slow leg';...
     'ImpactMagF',           'Max anterior-posterior impact force of the fast leg';...
     'FyBSmax',              'GRF-FYs max signed braking';...
@@ -93,7 +93,8 @@ aux = { ...
     'FxFmax',               'GRF-Fxf max force';...
     'FzFmax',               'GRF-Fzf max force';...
     'FyBFmax_ABS',          'FyBFmax_ABS';...
-    'FyBSmax_ABS',          'FyBSmax_ABS'};
+    'FyBSmax_ABS',          'FyBSmax_ABS';...
+    'HandrailForce',        'Mean absolute vertical handrail force per stride, normalized to body weight'};
 
 paramLabels = aux(:, 1);
 description = aux(:, 2);
@@ -109,6 +110,15 @@ numStrides  = length(strideEvents.tSHS);
 shoeWeightKg   = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
 gravityAcc     = 9.81;  % gravitational acceleration (m/s^2)
 noiseThreshold = 0.01;  % min std/mean ratio; TODO: confirm threshold
+
+% Handrail holding: light-touch ceiling of 5% BW (mean vertical force
+% ~1-2% BW during casual light touch; source: instrumented-handrail
+% literature, e.g. PMC10957321). Matches the threshold used in the
+% legacy computeForceParameters_OGFP implementation.
+handrailHoldFractionBW = 0.05;
+% Body weight (N), unadjusted for shoe mass: shoe weight does not act
+% on the handrail load cell, unlike the belt GRF 'normalizer' below.
+bodyweightN = gravityAcc * BW;
 
 % Normalize forces to body weight (add Nimbus shoe mass for those trials)
 if strcmpi(trialData.type, 'NIM')   % if Nimbus shoe trial, ...
@@ -200,6 +210,7 @@ FyPF          = nan(1, numStrides);
 FzF           = nan(1, numStrides);
 FxF           = nan(1, numStrides);
 HandrailHolding = nan(1, numStrides);
+HandrailForce   = nan(1, numStrides);
 FyBSmax       = nan(1, numStrides);
 FyPSmax       = nan(1, numStrides);
 FzSmax        = nan(1, numStrides);
@@ -217,6 +228,54 @@ FyBFmax_ABS   = nan(1, numStrides);
 ImpactMagS    = nan(1, numStrides);
 ImpactMagF    = nan(1, numStrides);
 
+%% Retrieve Handrail Force Data
+% Vertical instrumented-handrail force channel ('HFz'), loaded by
+% processGRFData as force-plate channel 3. Not all trials were
+% collected with an instrumented handrail, so this is commonly absent
+% (handrailFz stays empty; HandrailHolding/HandrailForce stay NaN).
+% Some collections mislabel the channel 'XFz' due to a known force
+% channel numbering mismatch (channel 3 vs. 4) in c3d2mat loading; that
+% case is used as a fallback but flagged with a warning since it is not
+% confirmed to actually be the handrail.
+if filteredGRF.isaLabel('HFz')
+    handrailFz = filteredGRF.getDataAsTS('HFz');
+elseif filteredGRF.isaLabel('XFz')
+    handrailFz = filteredGRF.getDataAsTS('XFz');
+    warning('computeForceParameters:handrailLabel', ['Handrail data ' ...
+        'was not found labeled ''HFz''; using ''XFz'' instead (not ' ...
+        'confirmed to be the handrail). This is likely a force ' ...
+        'channel numbering mismatch during loading (c3d2mat).']);
+else
+    handrailFz = [];
+end
+
+%% Compute Handrail Holding (Independent of Belt-Force Trial Gate)
+% Unlike the belt-plate force parameters below, the handrail signal
+% comes from an independent load cell rather than the treadmill belt
+% plates, so it is not restricted to TM trials the way FyBS/FyPS/etc.
+% are (that gate exists because OG trials lack reliable belt force
+% plate data, which is not a constraint on the handrail transducer).
+% This loop is self-gated purely on handrail-channel presence and
+% valid stride timing, so it naturally stays NaN for OG trials or any
+% trial without an instrumented handrail.
+%
+% Mean absolute vertical handrail force over the full stride (SHS to
+% SHS2), normalized to body weight. abs() is used so that both
+% pushing down (weight support) and pulling up (recovering balance
+% from a backward fall) count toward "holding". Left as NaN (not 0)
+% when handrail data or the stride window is unavailable, since
+% NaN > threshold would otherwise silently evaluate to false.
+for st = 1:numStrides - 1
+    SHS  = strideEvents.tSHS(st);
+    SHS2 = strideEvents.tSHS2(st);
+    if ~isempty(handrailFz) && ~isnan(SHS) && ~isnan(SHS2)
+        HandrailForce(st) = mean(abs(handrailFz.split(SHS, SHS2) ...
+            .Data), 'omitnan') / bodyweightN;
+        HandrailHolding(st) = ...
+            double(HandrailForce(st) > handrailHoldFractionBW);
+    end
+end
+
 %% Compute Stride-by-Stride Force Parameters
 % Only compute force parameters for treadmill (TM) trials; overground
 % (OG) trials do not have reliable belt force plate data.
@@ -227,7 +286,6 @@ if ~isempty(regexp(trialData.type, 'TM')) %#ok<RGXP1>
         FHS  = strideEvents.tFHS(st);
         STO  = strideEvents.tSTO(st);
         FTO2 = strideEvents.tFTO2(st);
-        SHS2 = strideEvents.tSHS2(st);
 
         % Slow-leg stance phase Fy (SHS to STO), normalized to BW
         if isnan(SHS) || isnan(STO)
@@ -244,10 +302,6 @@ if ~isempty(regexp(trialData.type, 'TM')) %#ok<RGXP1>
             striderF = flipSign .* filteredGRF.split(FHS, FTO2) ...
                 .getDataAsTS([fastleg 'Fy']).Data / normalizer;
         end
-
-        % Currently, handrail holding is not computed because data
-        % integrity is poor unless it was explicitly collected.
-        % HandrailHolding(i) = NaN;
 
         % Slow leg: compute anterior-posterior force measures
         if ~isempty(striderS) && ~all(striderS == striderS(1)) && ...
@@ -395,6 +449,7 @@ data(:, 40) = FxFmax;
 data(:, 41) = FzFmax;
 data(:, 42) = FyBFmax_ABS;
 data(:, 43) = FyBSmax_ABS;
+data(:, 44) = HandrailForce;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);
