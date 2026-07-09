@@ -31,11 +31,13 @@ return value: `expData = expData.recomputeParameters()`
 ### Handrail-Holding Parameters
 `computeForceParameters` (called from `calcParameters`) computes
 `HandrailHolding` (binary; 1 held / 0 not / `NaN` if no instrumented
-handrail was collected for the trial) and `HandrailForce` (continuous;
-mean absolute vertical handrail force per stride, normalized to body
-weight). Both read the `HFz` channel of `GRFData` (analog force-plate
-channel 3, populated by `processGRFData`); they stay `NaN` when that
-channel is absent. Unlike the belt-plate force parameters
+handrail was collected for the trial), `HandrailForceNorm`
+(continuous; mean absolute vertical handrail force per stride,
+normalized to body weight), and `HandrailForceN` (continuous; the same
+mean, in Newtons, not normalized). All three read the `HFz` channel of
+`GRFData` (analog force-plate channel 3, populated by
+`processGRFData`); they stay `NaN` when that channel is absent. Unlike
+the belt-plate force parameters
 (`FyBS`/`FyPS`/etc.), handrail computation is **not** restricted to
 `'TM'`-type trials — the handrail is an independent load cell, so it
 also computes for `'IN'`/`'NIM'` trials when a handrail channel is

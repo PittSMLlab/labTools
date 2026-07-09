@@ -129,15 +129,20 @@ layout, not by any GUI setting.
 
 ### Stride-Level Parameters
 
-`computeForceParameters` computes two stride-level parameters from the
-vertical handrail channel (`HFz`):
+`computeForceParameters` computes three stride-level parameters from
+the vertical handrail channel (`HFz`):
 
 - **`HandrailHolding`** — binary; `1` if the mean absolute vertical
   handrail force over the stride exceeds 5% body weight (BW), `0`
   otherwise, `NaN` if no handrail channel was found for the trial.
-- **`HandrailForce`** — continuous; the underlying mean absolute
+- **`HandrailForceNorm`** — continuous; the underlying mean absolute
   vertical force per stride, normalized to BW (the value
   `HandrailHolding` thresholds).
+- **`HandrailForceN`** — continuous; the same mean absolute vertical
+  force per stride, in Newtons (not normalized to BW). Useful when an
+  analysis cares about absolute handrail loading rather than
+  body-weight support (e.g., comparing across subjects of different
+  mass without factoring out BW).
 
 Unlike the belt-plate force parameters (`FyBS`/`FyPS`/etc.), which are
 only computed for `'TM'`-type trials, handrail computation runs for
@@ -146,7 +151,7 @@ an independent load cell, not one of the belt plates, so it is not
 tied to that gate. It self-gates purely on whether the `HFz` channel
 is present and stride events are valid; on trials without a handrail
 channel (e.g., `'OG'`, or any `'TM'`/`'IN'` session collected without
-one), both parameters simply stay `NaN`.
+one), all three parameters simply stay `NaN`.
 
 `abs()` is used so that both pushing down on the rail (weight support)
 and pulling up on it (recovering balance from a backward fall) count
@@ -177,9 +182,10 @@ that approach).
 `processGRFData` maps analog force channel **3** to the handrail
 prefix `H`; some collections and legacy loaders instead assume the
 handrail is channel **4** (see the warning text and `fpPrefixMap` in
-`processGRFData.m`). If `HandrailHolding`/`HandrailForce` are `NaN`
-for every stride of a session you know had an instrumented handrail,
-verify which analog channel your load cell was actually wired to
+`processGRFData.m`). If `HandrailHolding`/`HandrailForceNorm`/
+`HandrailForceN` are `NaN` for every stride of a session you know had
+an instrumented handrail, verify which analog channel your load cell
+was actually wired to
 before assuming no data was collected. Some older collections instead
 label the channel `X` rather than `H`; `computeForceParameters` falls
 back to `XFz` in that case and issues a warning.
