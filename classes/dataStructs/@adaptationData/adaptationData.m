@@ -316,6 +316,67 @@ classdef adaptationData
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
 
+        function newThis = removeHandrailStrides(this, markAsNaNflag)
+        %REMOVEHANDRAILSTRIDES Remove/NaN strides flagged as
+        %handrail-held.
+        %
+        %   Opt-in stride-censoring companion to REMOVEBADSTRIDES: OR's
+        % the 'HandrailHolding' flag (computed by COMPUTEFORCEPARAMETERS)
+        % into 'bad', then removes (or NaN's) those strides the same way
+        % REMOVEBADSTRIDES does. Returns 'this' unchanged (with a
+        % warning) if 'HandrailHolding' is absent or entirely NaN, i.e.,
+        % no instrumented handrail data was collected for this subject.
+        %
+        % Inputs:
+        %   this          - adaptationData object
+        %   markAsNaNflag - (optional) if true, NaN handrail-held
+        %                  strides instead of removing rows entirely.
+        %                  Defaults to false.
+        %
+        % Outputs:
+        %   newThis - adaptationData object with handrail-held strides
+        %             removed (or NaN'd); unchanged if no handrail data
+        %             is available
+        %
+        % See also REMOVEBADSTRIDES, MARKBADWHENMISSINGANY,
+        %   COMPUTEFORCEPARAMETERS.
+            if nargin < 2 || isempty(markAsNaNflag)
+                markAsNaNflag = false;
+            end
+            if isa(this.data, 'paramData')
+                % Legacy paramData-backed objects: pass through
+                % unchanged, mirroring REMOVEBADSTRIDES.
+                newThis = this;
+                return;
+            end
+
+            aux = this.data;
+            [hasHandrail, handrailIdx] = aux.isaLabel('HandrailHolding');
+            if ~hasHandrail || all(isnan(aux.Data(:, handrailIdx)))
+                warning('adaptationData:noHandrailData', ...
+                    ['No handrail-holding data available for this ' ...
+                    'subject; returning object unchanged.']);
+                newThis = this;
+                return;
+            end
+
+            held = aux.Data(:, handrailIdx) == 1;
+            [~, badGoodIdxs] = aux.isaParameter({'bad', 'good'});
+            newBad = aux.bad | held;
+            aux.Data(:, badGoodIdxs) = [newBad, ~newBad];
+
+            inds = ~newBad;
+            if ~markAsNaNflag
+                newParamData = parameterSeries(aux.Data(inds, :), ...
+                    aux.labels, aux.hiddenTime(inds), aux.description);
+                newParamData = newParamData.setTrialTypes(aux.trialTypes);
+            else
+                newParamData = aux.markBadStridesAsNan;
+            end
+            newThis = adaptationData(this.metaData, this.subData, ...
+                newParamData);
+        end
+
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
            %This function allows to compute new parameters from other existing parameters and have them added to the data.
            %This is useful when trying out new parameters without having to
