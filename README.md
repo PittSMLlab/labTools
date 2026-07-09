@@ -217,7 +217,8 @@ Stride-indexed parameter storage. Key methods:
 - `removeBias` / `removeBiasV4` — baseline subtraction by trial type
 - `getParamInCond`, `getParamInTrial` — parameter retrieval
 - `getEarlyLateData_v2`, `getEpochData` — epoch extraction
-- `addNewParameter`, `removeBadStrides` — data manipulation
+- `addNewParameter`, `removeBadStrides`, `removeHandrailStrides` —
+  data manipulation
 - Static plotting: `plotAvgTimeCourse`, `plotGroupedSubjectsBars`,
   `createGroupAdaptData`
 
@@ -252,9 +253,14 @@ detected events.
 ### Stride-Level Parameters
 `calcParameters` computes temporal, spatial, EMG, force, H-reflex,
 and perceptual parameters for each stride. Force parameters
-(`computeForceParameters`) include ~43 labels covering AP braking and
+(`computeForceParameters`) include ~44 labels covering AP braking and
 propulsion, bilateral symmetry, impulse, vertical and mediolateral
-peaks, and treadmill incline angle.
+peaks, treadmill incline angle, and handrail holding (`HandrailHolding`
+binary flag + `HandrailForce` continuous value, computed from an
+instrumented handrail's vertical force channel when present — see
+[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#instrumented-handrail-optional)).
+`HandrailHolding` is informational by default; opt into censoring held
+strides with `adaptData.removeHandrailStrides()`.
 
 ### EMG Analysis
 Raw EMG is processed through amplitude extraction and optional spike
