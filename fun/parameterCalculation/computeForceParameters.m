@@ -94,7 +94,8 @@ aux = { ...
     'FzFmax',               'GRF-Fzf max force';...
     'FyBFmax_ABS',          'FyBFmax_ABS';...
     'FyBSmax_ABS',          'FyBSmax_ABS';...
-    'HandrailForce',        'Mean absolute vertical handrail force per stride, normalized to body weight'};
+    'HandrailForceNorm',    'Mean absolute vertical handrail force per stride, normalized to body weight';...
+    'HandrailForceN',       'Mean absolute vertical handrail force per stride, in Newtons (not normalized)'};
 
 paramLabels = aux(:, 1);
 description = aux(:, 2);
@@ -209,8 +210,9 @@ FyBF          = nan(1, numStrides);
 FyPF          = nan(1, numStrides);
 FzF           = nan(1, numStrides);
 FxF           = nan(1, numStrides);
-HandrailHolding = nan(1, numStrides);
-HandrailForce   = nan(1, numStrides);
+HandrailHolding    = nan(1, numStrides);
+HandrailForceNorm  = nan(1, numStrides);
+HandrailForceN     = nan(1, numStrides);
 FyBSmax       = nan(1, numStrides);
 FyPSmax       = nan(1, numStrides);
 FzSmax        = nan(1, numStrides);
@@ -232,7 +234,8 @@ ImpactMagF    = nan(1, numStrides);
 % Vertical instrumented-handrail force channel ('HFz'), loaded by
 % processGRFData as force-plate channel 3. Not all trials were
 % collected with an instrumented handrail, so this is commonly absent
-% (handrailFz stays empty; HandrailHolding/HandrailForce stay NaN).
+% (handrailFz stays empty; HandrailHolding/HandrailForceNorm/
+% HandrailForceN stay NaN).
 % Some collections mislabel the channel 'XFz' due to a known force
 % channel numbering mismatch (channel 3 vs. 4) in c3d2mat loading; that
 % case is used as a fallback but flagged with a warning since it is not
@@ -260,19 +263,22 @@ end
 % trial without an instrumented handrail.
 %
 % Mean absolute vertical handrail force over the full stride (SHS to
-% SHS2), normalized to body weight. abs() is used so that both
-% pushing down (weight support) and pulling up (recovering balance
-% from a backward fall) count toward "holding". Left as NaN (not 0)
-% when handrail data or the stride window is unavailable, since
-% NaN > threshold would otherwise silently evaluate to false.
+% SHS2). abs() is used so that both pushing down (weight support) and
+% pulling up (recovering balance from a backward fall) count toward
+% "holding". HandrailForceN is the raw mean in Newtons; HandrailForceNorm
+% is the same value normalized to body weight, and is what
+% HandrailHolding thresholds. Left as NaN (not 0) when handrail data or
+% the stride window is unavailable, since NaN > threshold would
+% otherwise silently evaluate to false.
 for st = 1:numStrides - 1
     SHS  = strideEvents.tSHS(st);
     SHS2 = strideEvents.tSHS2(st);
     if ~isempty(handrailFz) && ~isnan(SHS) && ~isnan(SHS2)
-        HandrailForce(st) = mean(abs(handrailFz.split(SHS, SHS2) ...
-            .Data), 'omitnan') / bodyweightN;
+        HandrailForceN(st) = mean(abs(handrailFz.split(SHS, SHS2) ...
+            .Data), 'omitnan');
+        HandrailForceNorm(st) = HandrailForceN(st) / bodyweightN;
         HandrailHolding(st) = ...
-            double(HandrailForce(st) > handrailHoldFractionBW);
+            double(HandrailForceNorm(st) > handrailHoldFractionBW);
     end
 end
 
@@ -449,7 +455,8 @@ data(:, 40) = FxFmax;
 data(:, 41) = FzFmax;
 data(:, 42) = FyBFmax_ABS;
 data(:, 43) = FyBSmax_ABS;
-data(:, 44) = HandrailForce;
+data(:, 44) = HandrailForceNorm;
+data(:, 45) = HandrailForceN;
 
 %% Output Computed Parameters
 out = parameterSeries(data, paramLabels, [], description);
