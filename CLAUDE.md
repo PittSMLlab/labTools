@@ -22,7 +22,7 @@ return value: `expData = expData.recomputeParameters()`
 - `adaptationData` — stride-indexed params; key methods: `removeBias`,
   `getParamInCond`, `getEarlyLateData_v2`, `getEpochData`,
   `addNewParameter`, `removeBadStrides`, `removeHandrailStrides`,
-  `plotAvgTimeCourse`
+  `removeStridesByReason`, `plotAvgTimeCourse`
 - `groupAdaptationData` / `studyData` — group/study-level analysis
 - `labTimeSeries` — time series with string-label channel access;
   extended by `orientedLabTimeSeries`, `parameterSeries`,
@@ -46,6 +46,48 @@ auto-folded into `bad`/`good`. To censor held strides, call the
 opt-in helper `adaptData.removeHandrailStrides()` (mirrors
 `removeBadStrides`; see `EXPERIMENT_SETUP.md` for the threshold
 rationale and channel-numbering caveat).
+
+### Stride-Quality Labeling
+`calcParameters` adjudicates each stride's quality through
+`adjudicateStrideQuality` (called twice: once provisionally on event/
+duration criteria alone, once at the end of the pipeline once force
+and spatial parameters exist, to add the treadmill start/stop reason).
+Thresholds and the reason-column schema are centralized in
+`getStrideQualityConfig`, the single source of truth shared by both
+calls — this is what keeps the reason set and thresholds identical
+across marker-based and marker-less pipelines. In addition to the
+aggregate `bad`/`good` columns (backward compatible; unchanged
+aggregation logic), the output `parameterSeries` carries one binary
+reason column per criterion (`badMissingEvent`, `badDisordered`,
+`badDurationOutlier`, `badDurationShort`, `badDurationLong`,
+`badStartStop`), three documented stub reasons that are always false
+until a stride-level detector exists (`badTurning`,
+`badWalkwayBounds`, `badMarkerDropout` — see the TODOs in
+`adjudicateStrideQuality` for their intended data sources), and a
+non-destructive `triageOutlier` column (`flagTriageOutliers`; a 3-
+stride moving-median residual flagged at a robust MAD-based
+threshold) that surfaces candidate outliers for review WITHOUT
+auto-censoring them — it is never folded into `bad`.
+
+To censor by the default aggregate, use `removeBadStrides()` as
+before. To censor a chosen **subset** of reasons (e.g., for a
+marker-less pipeline that can't yet compute `badMarkerDropout`, or
+that wants to exclude a duration threshold it disagrees with), use
+`adaptData.removeStridesByReason({'badMissingEvent', ...})`; both
+`removeBadStrides` and `removeHandrailStrides` are thin wrappers
+around this method. Manual `Label Bad`/`Label Good` edits made in
+`ReviewEventsGUI` are recorded only in the aggregate `bad`/`good`
+columns (the GUI was deliberately left unchanged), not in any
+individual reason column — include `'bad'` in the reason list (or
+call `removeBadStrides`) to also honor those manual edits.
+
+**Important:** every reason column plus `triageOutlier` (and
+`HandrailHolding`) must stay on the protected-label list inside
+`removeBias`/`removeBiasV2`/`removeBiasV3`/`removeBiasV4` — otherwise
+bias removal would silently subtract a baseline mean from these
+binary flag columns. All four call `getStrideQualityConfig().reasonLabels`
+to build that list, so a new reason added to the schema is
+automatically protected everywhere.
 
 ### Full Call Chain
 
@@ -71,6 +113,9 @@ c3d2mat
       │         ├── computeTorques / computeCOPAlt
       │         ├── processedTrialData(...)
       │         └── calcParameters
+      │              ├── adjudicateStrideQuality  % bad/good + reasons
+      │              │    └── getStrideQualityConfig
+      │              ├── flagTriageOutliers     % non-destructive triage
       │              ├── computeTemporalParameters
       │              ├── computeSpatialParameters
       │              ├── computeEMGParameters
