@@ -185,6 +185,9 @@ c3d2mat
       │         ├── computeTorques / computeCOPAlt
       │         ├── processedTrialData(...)
       │         └── calcParameters
+      │              ├── adjudicateStrideQuality  % bad/good + reasons
+      │              │    └── getStrideQualityConfig
+      │              ├── flagTriageOutliers     % non-destructive triage
       │              ├── computeTemporalParameters
       │              ├── computeSpatialParameters
       │              ├── computeEMGParameters
@@ -217,8 +220,8 @@ Stride-indexed parameter storage. Key methods:
 - `removeBias` / `removeBiasV4` — baseline subtraction by trial type
 - `getParamInCond`, `getParamInTrial` — parameter retrieval
 - `getEarlyLateData_v2`, `getEpochData` — epoch extraction
-- `addNewParameter`, `removeBadStrides`, `removeHandrailStrides` —
-  data manipulation
+- `addNewParameter`, `removeBadStrides`, `removeHandrailStrides`,
+  `removeStridesByReason` — data manipulation
 - Static plotting: `plotAvgTimeCourse`, `plotGroupedSubjectsBars`,
   `createGroupAdaptData`
 
@@ -262,6 +265,16 @@ present — see
 [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#instrumented-handrail-optional)).
 `HandrailHolding` is informational by default; opt into censoring held
 strides with `adaptData.removeHandrailStrides()`.
+
+Every stride is also labeled with WHY it is bad, not just whether:
+`adjudicateStrideQuality` (thresholds centralized in
+`getStrideQualityConfig`) writes per-reason columns
+(`badMissingEvent`, `badDurationOutlier`, `badStartStop`, etc.)
+alongside the aggregate `bad`/`good` pair, plus a non-destructive
+`triageOutlier` review flag. See
+[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#stride-quality-labeling) for
+the full reason schema and how to censor a chosen subset with
+`adaptData.removeStridesByReason(...)`.
 
 ### EMG Analysis
 Raw EMG is processed through amplitude extraction and optional spike
@@ -346,7 +359,11 @@ ReviewEventsGUI
      of the type selected in the event-type panel.
 6. Label strides:
    - Click on a stride in the plot to select it, then press **Label
-     Bad** or **Label Good**.
+     Bad** or **Label Good**. This writes only the aggregate `bad`/
+     `good` columns (see
+     [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#stride-quality-labeling));
+     it does not touch the per-reason columns computed by
+     `calcParameters`.
 7. Press **Mark Save** when finished reviewing a trial, then **Write
    to Disk** to save the corrected `*.mat` and regenerate
    `*params.mat`.
