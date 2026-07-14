@@ -7,6 +7,9 @@ function out = calcParameters(trialData, subData, eventClass, ...
 % reflex, and perceptual task parameters. Returns a parameterSeries
 % object containing all requested parameter classes, with each stride
 % labeled as good or bad based on event quality and duration criteria.
+% Per-reason stride-quality columns (why a stride is bad) and a non-
+% destructive outlier triage column are also included; see
+% ADJUDICATESTRIDEQUALITY and GETSTRIDEQUALITYCONFIG.
 %
 % To add a new parameter, update the paramLabels cell and ensure the
 % label matches the variable name where the data is assigned in the
@@ -43,7 +46,8 @@ function out = calcParameters(trialData, subData, eventClass, ...
 %
 % Outputs:
 %   out - parameterSeries object containing all stride-by-stride
-%         parameters with good/bad stride labels
+%         parameters with good/bad stride labels, per-reason stride-
+%         quality columns, and a non-destructive 'triageOutlier' flag
 %
 % Toolbox Dependencies:
 %   None
@@ -51,7 +55,9 @@ function out = calcParameters(trialData, subData, eventClass, ...
 % See also PARAMETERSERIES, PROCESSEDTRIALDATA, LABDATA/PROCESS,
 %   COMPUTETEMPORALPARAMETERS, COMPUTESPATIALPARAMETERS,
 %   COMPUTEEMGPARAMETERS, COMPUTEFORCEPARAMETERS,
-%   COMPUTEHREFLEXPARAMETERS, COMPUTEPERCPARAMETERS, GETSTRIDEINFO.
+%   COMPUTEHREFLEXPARAMETERS, COMPUTEPERCPARAMETERS, GETSTRIDEINFO,
+%   ADJUDICATESTRIDEQUALITY, GETSTRIDEQUALITYCONFIG,
+%   FLAGTRIAGEOUTLIERS, REMOVESTRIDESBYREASON.
 
 arguments
     trialData        (1,1)
