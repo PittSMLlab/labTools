@@ -177,22 +177,20 @@ times = mean(extendedEventTimes, 2, 'omitnan');
 out = parameterSeries(zeros(length(times), 0), {}, times, {});
 % Compute stride duration (seconds) as time between SHS and SHS2
 strideDuration = diff(extendedEventTimes(:, [1 5]), 1, 2);
-% Five criteria to determine whether a stride is 'bad':
-%   1. Any event times are 'NaN' (i.e., missing gait event)
-%   2. Difference between any two consecutive event times is negative
-%   3. Stride duration > 1.5 * median stride duration of the trial
-%   4. Stride duration < minStrideDur (stride too short)
-%   5. Stride duration > maxStrideDur (stride too long)
-% TODO: NWB found that 2.5 seconds may be too stringent for slower older
-% adult walkers and 1.5 * median may be a sufficient threshold to exclude
-% outliers (especially in overground trials); consider removing criterion 5
-minStrideDur = 0.4;  % TODO: confirm physiological bound rationale
-maxStrideDur = 2.5;  % TODO: confirm physiological bound rationale
-bad = any(isnan(extendedEventTimes), 2)                       | ...
-    any(diff(extendedEventTimes, 1, 2) < 0, 2)                | ...
-    (strideDuration > 1.5*median(strideDuration, 'omitnan'))  | ...
-    (strideDuration < minStrideDur)                           | ...
-    (strideDuration > maxStrideDur);
+
+% Stride-quality adjudication config: single source of truth for
+% thresholds and the reason-column schema, shared with the end-of-
+% pipeline call below and with FLAGTRIAGEOUTLIERS. Kept identical
+% across marker-based and marker-less pipelines.
+strideQualityCfg = getStrideQualityConfig();
+% Provisional adjudication using event/duration criteria only. The
+% start/stop reason (needs force parameters) and the triage flag
+% (needs spatial parameters) are not yet available and are refreshed
+% at the end of this function, once those parameter classes have been
+% computed. See ADJUDICATESTRIDEQUALITY for the full criteria.
+[bad, badReasons] = adjudicateStrideQuality( ...
+    extendedEventTimes, strideDuration, [], ...
+    trialData.metaData.type, strideQualityCfg);
 
 %% Extract Basic Parameters and Save to Output parameterSeries Object
 if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
@@ -230,17 +228,34 @@ if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
         throw(ME);
     end
 
+    % Per-reason stride-quality columns (see ADJUDICATESTRIDEQUALITY
+    % and GETSTRIDEQUALITYCONFIG for the reason schema). 'triageOutlier'
+    % is a placeholder here; it is computed once spatial parameters
+    % are available, at the end of this function.
+    numReasons = numel(strideQualityCfg.reasonLabels);
+    reasonData = false(length(bad), numReasons);
+    for ii = 1:numReasons  % for each stride-quality reason column, ...
+        reasonData(:, ii) = ...
+            badReasons.(strideQualityCfg.reasonLabels{ii});
+    end
+    triageOutlier = false(length(bad), 1);
+
     % Add 'basic' parameters to output 'parameterSeries' object
-    basicData   = [eventType bad ~bad trial initTime finalTime];
-    basicLabels = {'eventType', 'bad', 'good', 'trial', ...
-        'initTime', 'finalTime'};
-    basicDescriptions = {'1 kinematics, 2 forces', ...
-        ['True if events are missing, disordered, or if stride ' ...
-        'time is too long or too short.'], ...
+    basicData   = [eventType bad ~bad trial initTime finalTime ...
+        reasonData triageOutlier];
+    basicLabels = [{'eventType', 'bad', 'good', 'trial', ...
+        'initTime', 'finalTime'}, strideQualityCfg.reasonLabels, ...
+        {'triageOutlier'}];
+    basicDescriptions = [{'1 kinematics, 2 forces', ...
+        ['True if any reason in strideQualityCfg.defaultBadReasons ' ...
+        'is set for this stride (see per-reason columns below).'], ...
         'Opposite of bad.', ...
         'Original trial number for stride', ...
         'Time of initial event (SHS), with respect to trial beginning.',...
-        'Time of final event (FTO2), with respect to trial beginning.'};
+        'Time of final event (FTO2), with respect to trial beginning.'}, ...
+        strideQualityCfg.reasonDescriptions, ...
+        {['Candidate outlier for review (moving-median residual); ' ...
+        'NOT auto-censored and NOT part of the ''bad'' aggregate.']}];
     basicParams = parameterSeries( ...
         basicData, basicLabels, times, basicDescriptions);
     out = cat(out, basicParams);
@@ -380,7 +395,7 @@ if hasPercEvents
     end
 end
 
-%% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
+%% Update Stride-Quality Labeling (Only If Basic Parameters Computed)
 if any(strcmpi(parameterClasses, 'basic'))
     badOriginal = bad;  % copy 'bad' strides array for later comparison
 
@@ -391,6 +406,10 @@ if any(strcmpi(parameterClasses, 'basic'))
     % NOTE: NWB is confused because it appears this block was doing
     % something, namely updating strides labeled 'bad' based on
     % outliers.
+    % NOTE: this block's role is now filled non-destructively by
+    % FLAGTRIAGEOUTLIERS below, which flags candidate outliers in the
+    % 'triageOutlier' column WITHOUT folding them into 'bad'. Preserved
+    % here as historical reference only; do not restore verbatim.
     % TODO: generalize below process to potentially filter any param.
     % TODO: make this a method of 'parameterSeries' or 'labTimeSeries'
     % TODO: consider a different method of filtering the parameters
@@ -420,28 +439,52 @@ if any(strcmpi(parameterClasses, 'basic'))
     %     ' outlier(s) from ' file ' at stride(s) ' ...
     %     num2str(outlierStrides')]);
 
-    % -------------- REMOVE START / STOP STRIDES ----------------------
-    % Criterion 3: if 'singleStanceSpeed' of BOTH legs is less than
-    % 0.05 m/s (50 mm/s), label as starting/stopping strides (TM only)
+    % -------------- REFRESH START/STOP AND STUB REASONS ---------------
+    % Criterion 6 (badStartStop): if 'singleStanceSpeed' of BOTH legs is
+    % less than 0.05 m/s (50 mm/s), label as starting/stopping strides
+    % (TM only). Requires force/spatial parameters, so it is only
+    % available now; event/duration reasons are recomputed identically
+    % to the provisional call above (see ADJUDICATESTRIDEQUALITY).
     if strcmp(trialData.metaData.type, 'TM')
-        slowFastSpeedData = out.getDataAsVector( ...
+        singleStanceSpeedData = out.getDataAsVector( ...
             {'singleStanceSpeedFastAbs', 'singleStanceSpeedSlowAbs'});
-        if ~isempty(slowFastSpeedData)  % if parameters not empty, ...
-            % Label as 'bad' TM strides where moving too slowly
-            bad(abs(slowFastSpeedData(:, 1)) < 50 & ...
-                abs(slowFastSpeedData(:, 2)) < 50) = true;
-        end
+    else
+        singleStanceSpeedData = [];
     end
+    [bad, badReasons] = adjudicateStrideQuality( ...
+        extendedEventTimes, strideDuration, singleStanceSpeedData, ...
+        trialData.metaData.type, strideQualityCfg);
 
-    % Criterion 4: if any 'swingRange' < 50 mm or if equivalent speed
-    % is too small (OG trials only; may be problematic for children)
+    % Criterion 4 (badWalkwayBounds stub): if any 'swingRange' < 50 mm
+    % or if equivalent speed is too small (OG trials only; may be
+    % problematic for children)
     if strcmp(trialData.metaData.type, 'OG')
-        % TODO: implement this handling
+        % TODO: implement this handling; feeds the 'badWalkwayBounds'
+        % stub reason once available (see ADJUDICATESTRIDEQUALITY).
     end
 
-    % Update 'bad' labeling in the parameterSeries output
+    % Update 'bad'/'good' and per-reason columns in the output object
     [~, badGoodColIdxs] = out.isaParameter({'bad', 'good'});
     out.Data(:, badGoodColIdxs) = [bad ~bad];
+    for ii = 1:numReasons  % for each stride-quality reason column, ...
+        [~, reasonIdx] = out.isaParameter( ...
+            strideQualityCfg.reasonLabels{ii});
+        out.Data(:, reasonIdx) = ...
+            badReasons.(strideQualityCfg.reasonLabels{ii});
+    end
+
+    % Non-destructive outlier triage: flags candidates for review, only
+    % if spatial parameters (needed for the triage parameter set) were
+    % computed; never folded into 'bad'.
+    if exist('spatParams', 'var')
+        triageValues = ...
+            out.getDataAsVector(strideQualityCfg.triageParams);
+        triageOutlier = ...
+            flagTriageOutliers(triageValues, strideQualityCfg);
+        [~, triageIdx] = out.isaParameter('triageOutlier');
+        out.Data(:, triageIdx) = triageOutlier;
+    end
+
     % Identify strides newly marked 'bad' since the initial labeling
     outlierStrides = find(bad & ~badOriginal);
     % TODO: confusing — NWB sees no code removing 'bad' strides from
@@ -461,6 +504,10 @@ end
 % TODO: remove permanently so users have option of keeping all strides
 % Only mask parameters in columns 6 to end, leave first five untouched:
 % out.Data(bad == 1, 6:end) = NaN;
+% NOTE: to censor bad strides today, use the opt-in
+% ADAPTATIONDATA/REMOVEBADSTRIDES (or REMOVESTRIDESBYREASON for a
+% chosen reason subset) on the resulting adaptationData object, rather
+% than masking here.
 
 end
 
