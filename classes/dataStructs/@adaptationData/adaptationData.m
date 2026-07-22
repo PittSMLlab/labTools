@@ -316,19 +316,7 @@ classdef adaptationData
             if nargin<2 || isempty(markAsNaNflag)
                markAsNaNflag=false;
             end
-            if isa(this.data,'paramData') %What does this do?
-                newParamData=this.data;
-            else
-                aux=this.data;
-                inds=~aux.bad;
-                if ~markAsNaNflag
-                    newParamData=parameterSeries(aux.Data(inds,:),aux.labels,aux.hiddenTime(inds),aux.description);
-                    newParamData=newParamData.setTrialTypes(aux.trialTypes);
-                else
-                    newParamData=this.data.markBadStridesAsNan;
-                end
-            end
-            newThis=adaptationData(this.metaData,this.subData,newParamData);
+            newThis=this.removeStridesByReason({'bad'},markAsNaNflag);
         end
 
         function newThis = removeHandrailStrides(this, markAsNaNflag)
@@ -375,21 +363,12 @@ classdef adaptationData
                 return;
             end
 
-            held = aux.Data(:, handrailIdx) == 1;
-            [~, badGoodIdxs] = aux.isaParameter({'bad', 'good'});
-            newBad = aux.bad | held;
-            aux.Data(:, badGoodIdxs) = [newBad, ~newBad];
-
-            inds = ~newBad;
-            if ~markAsNaNflag
-                newParamData = parameterSeries(aux.Data(inds, :), ...
-                    aux.labels, aux.hiddenTime(inds), aux.description);
-                newParamData = newParamData.setTrialTypes(aux.trialTypes);
-            else
-                newParamData = aux.markBadStridesAsNan;
-            end
-            newThis = adaptationData(this.metaData, this.subData, ...
-                newParamData);
+            % Delegate the OR-with-'bad'-and-censor mechanics to
+            % REMOVESTRIDESBYREASON; this reproduces the prior
+            % 'newBad = aux.bad | held' logic exactly, since 'bad' is
+            % itself one of the OR'd reason columns.
+            newThis = this.removeStridesByReason( ...
+                {'bad', 'HandrailHolding'}, markAsNaNflag);
         end
 
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
