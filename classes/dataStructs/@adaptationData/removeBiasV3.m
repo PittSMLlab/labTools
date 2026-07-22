@@ -82,7 +82,13 @@ for itype=1:length(types)
     end
 end
 %fix any parameters that should not have bias removal
-[~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime','direction'});
+% Also protects stride-quality reason/triage columns (see
+% GETSTRIDEQUALITYCONFIG) and 'HandrailHolding' so bias removal does
+% not corrupt these binary flag columns.
+protectedLabels = [{'bad', 'good', 'trial', 'initTime', ...
+    'finalTime', 'direction'}, getStrideQualityConfig().reasonLabels, ...
+    {'triageOutlier', 'HandrailHolding'}];
+[~,idxs]=this.data.isaParameter(protectedLabels);
 if ~isempty(idxs)
     newData(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
 end
