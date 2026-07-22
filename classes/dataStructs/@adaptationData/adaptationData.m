@@ -305,6 +305,14 @@ classdef adaptationData
         end
 
         function newThis=removeBadStrides(this,markAsNaNflag)
+            %REMOVEBADSTRIDES Remove/NaN strides flagged as 'bad'.
+            %
+            %   Thin wrapper around REMOVESTRIDESBYREASON with
+            % reasonLabels={'bad'}, which reproduces the pre-refactor
+            % behavior of this method exactly (filters/NaN's strides
+            % using the aggregate 'bad' column only).
+            %
+            % See also REMOVESTRIDESBYREASON, REMOVEHANDRAILSTRIDES.
             if nargin<2 || isempty(markAsNaNflag)
                markAsNaNflag=false;
             end
@@ -329,8 +337,8 @@ classdef adaptationData
         %
         %   Opt-in stride-censoring companion to REMOVEBADSTRIDES: OR's
         % the 'HandrailHolding' flag (computed by COMPUTEFORCEPARAMETERS)
-        % into 'bad', then removes (or NaN's) those strides the same way
-        % REMOVEBADSTRIDES does. Returns 'this' unchanged (with a
+        % into 'bad', then removes (or NaN's) those strides via
+        % REMOVESTRIDESBYREASON. Returns 'this' unchanged (with a
         % warning) if 'HandrailHolding' is absent or entirely NaN, i.e.,
         % no instrumented handrail data was collected for this subject.
         %
@@ -345,8 +353,8 @@ classdef adaptationData
         %             removed (or NaN'd); unchanged if no handrail data
         %             is available
         %
-        % See also REMOVEBADSTRIDES, MARKBADWHENMISSINGANY,
-        %   COMPUTEFORCEPARAMETERS.
+        % See also REMOVEBADSTRIDES, REMOVESTRIDESBYREASON,
+        %   MARKBADWHENMISSINGANY, COMPUTEFORCEPARAMETERS.
             if nargin < 2 || isempty(markAsNaNflag)
                 markAsNaNflag = false;
             end
