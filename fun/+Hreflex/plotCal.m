@@ -63,10 +63,16 @@ nameFile        = options.nameFile;
 %% Determine Plot Type & Leg Identifier
 isRatio = contains(yLabel, 'ratio', 'IgnoreCase', true); % is ratio plot?
 legID   = leg(1);   % 1st character selects struct field (e.g., 'R' or 'L')
+% FITCAL skips a leg with no stimulation data (see its noLegData warning),
+% so a one-leg session's fit struct has no M.(legID)/H.(legID) for the
+% missing leg. Every fit dereference below is guarded on this rather than
+% only on fit being non-empty, so a single-leg session degrades to an
+% unannotated plot instead of a "Reference to non-existent field" error.
+hasFitLeg = isfield(fit, 'M') && isfield(fit.M, legID) && ...
+    isfield(fit, 'H') && isfield(fit.H, legID);
 
 %% Normalize Data if Requested & Fit Provided
-if shouldNormalize && ~isempty(fieldnames(fit)) && ...
-        isfield(fit, 'M') && isfield(fit.M, legID)
+if shouldNormalize && hasFitLeg
     values = cellfun(@(x) x ./ fit.M.(legID).Mmax, values, ...
         'UniformOutput', false);
 end
@@ -102,7 +108,7 @@ else        % otherwise, this is an H- and M-wave recruitment curve
     plot(amplitudesStim, values{2}, 'ok', 'MarkerSize', 10);
     p2 = plot(amplitudesStimU(hasVals{2}), avgs{2}(hasVals{2}), 'k--', ...
         'LineWidth', 2);                        % averaged H-wave
-    if ~isempty(fieldnames(fit))                % if fit provided, ...
+    if hasFitLeg                                % if fit provided, ...
         I_fit = linspace(min(amplitudesStim), max(amplitudesStim), 1000);
         if isfield(fit.M.(legID), 'R2') && fit.M.(legID).R2 > 0.8
             M_fit = fit.M.modHyperbolic(fit.M.(legID).params, I_fit);
@@ -152,26 +158,42 @@ else
     end
 end
 
-% optional: annotate additional features if fit quality is high
-if ~isempty(fieldnames(fit)) && isfield(fit.M.(legID), 'R2') && ...
+% optional: annotate additional features if fit quality is high. This
+% needs M_fit, which is only computed in the ~isRatio branch above, so
+% ~isRatio is required here too (a ratio call that happened to pass a
+% fit struct would otherwise hit an undefined-variable error on M_fit;
+% the actual caller never does this, but the guard costs nothing).
+if ~isRatio && hasFitLeg && isfield(fit.M.(legID), 'R2') && ...
         fit.M.(legID).R2 > 0.8 && shouldAnnotate
-    % find third derivative maximum index as a feature (M*)
+    % find third derivative maximum index as a feature (M*). A fit whose
+    % half-saturation intensity falls outside the delivered current range
+    % (unsaturated data, e.g. R2 in (0.8, 0.95] with a rank-deficient
+    % nlinfit) never leaves its rising limb, so the third difference is
+    % monotonic and has no interior peak -- findpeaks then returns empty,
+    % which must not reach the plot() calls below (see the M_star guard
+    % further down, which relies on M_star never being assigned here).
     [~, ind3rdDeriv] = findpeaks(diff(diff(diff(M_fit))), 'NPeaks', 1);
-    I_star = I_fit(ind3rdDeriv);
-    M_star = M_fit(ind3rdDeriv);
-    plot([I_star I_star], [0 M_star], 'k-.');               % vertical line
-    text(I_star + 0.1, maxYOffset, sprintf('I* = %.1f mA', I_star));
-    plot([min(amplitudesStim)-1 I_star], [M_star M_star], 'k-.');
-    if shouldNormalize
-        text(min(amplitudesStim)-0.9, M_star + maxYOffset, ...
-            sprintf('M* = %.2f', M_star));
+    if isempty(ind3rdDeriv)
+        warning('Hreflex:plotCal:No3rdDerivPeak', ...
+            ['%s M-wave fit has no third-derivative peak within the ' ...
+            'stimulation range; skipping I*/M* annotation.'], leg);
     else
-        text(min(amplitudesStim)-0.9, M_star + maxYOffset, ...
-            sprintf('M* = %.2f mV', M_star));
+        I_star = I_fit(ind3rdDeriv);
+        M_star = M_fit(ind3rdDeriv);
+        plot([I_star I_star], [0 M_star], 'k-.');           % vertical line
+        text(I_star + 0.1, maxYOffset, sprintf('I* = %.1f mA', I_star));
+        plot([min(amplitudesStim)-1 I_star], [M_star M_star], 'k-.');
+        if shouldNormalize
+            text(min(amplitudesStim)-0.9, M_star + maxYOffset, ...
+                sprintf('M* = %.2f', M_star));
+        else
+            text(min(amplitudesStim)-0.9, M_star + maxYOffset, ...
+                sprintf('M* = %.2f mV', M_star));
+        end
     end
 end
 
-if ~isRatio && ~isempty(fieldnames(fit)) && ...
+if ~isRatio && hasFitLeg && ...
         isfield(fit.M.(legID), 'R2') && isfield(fit.H.(legID), 'R2') && ...
         shouldAnnotate
     text(max(amplitudesStim)-3.0, max(values{1})*0.75, ...
@@ -180,12 +202,15 @@ if ~isRatio && ~isempty(fieldnames(fit)) && ...
         sprintf('{R^{2}}_{M} = %.2f', fit.M.(legID).R2));
 end
 
-if ~isRatio && ~isempty(fieldnames(fit)) && ~shouldNormalize
+if ~isRatio && hasFitLeg && ~shouldNormalize
     % display additional metrics if available
     % TODO: should use H-wave curve fit if good R2?
     text(min(amplitudesStim)-0.9, max(values{1})*0.75, ...
         sprintf('H_{max}/M_{max} = %.2f', valMax/fit.M.(legID).Mmax));
-    if exist('M_star', 'var')
+    % M_star only exists (and is non-empty) when the I*/M* annotation
+    % block above found a third-derivative peak; exist() alone is true
+    % even for an emptied M_star, which would print a blank number
+    if exist('M_star', 'var') && ~isempty(M_star)
         text(min(amplitudesStim)-0.9, max(values{1})*0.65, ...
             sprintf('M*/M_{max} = %.2f', M_star/fit.M.(legID).Mmax));
     end
