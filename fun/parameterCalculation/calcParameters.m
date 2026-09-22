@@ -365,9 +365,15 @@ trialDataFields = fieldnames(trialData);
 if any(contains(trialDataFields, 'HreflexPin'))
     % If there is data in the 'HreflexPin' and 'EMGData' fields, ...
     if ~isempty(trialData.HreflexPin) && ~isempty(trialData.EMGData)
-        hreflexParams = computeHreflexParameters( ...
-            strideEvents, trialData.HreflexPin, trialData.EMGData, s);
-        out = cat(out, hreflexParams);
+        try
+            hreflexParams = computeHreflexParameters( ...
+                strideEvents, trialData.HreflexPin, trialData.EMGData, s);
+            out = cat(out, hreflexParams);
+        catch ME
+            warning('calcParameters:HreflexError', ['Could not ' ...
+                'compute H-reflex parameters for ' file '. Skipping. ' ...
+                'Error: ' ME.message]);
+        end
     end
 end
 

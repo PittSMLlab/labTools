@@ -180,15 +180,28 @@ for mscl = 1:length(muscles)            % for each muscle of interest, ...
 end
 
 %% Identify Stimulus Artifact Indices
-% extract time for the trial, and use proximal TA to localize stim artifact
-[EMG_RTAP, times] = EMGData.getDataAsVector('RTAP');
-EMG_LTAP = EMGData.getDataAsVector('LTAP');
-stimTrigR = HreflexData.getDataAsVector( ...
-    'Stimulator_Trigger_Sync_Right_Stimulator');
-stimTrigL = HreflexData.getDataAsVector( ...
-    'Stimulator_Trigger_Sync_Left__Stimulator');
-indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
-    times, {EMG_RTAP, EMG_LTAP}, {stimTrigR, stimTrigL});
+% Skip artifact localization when the trigger channels were recorded but
+% carry no pulses (an H-reflex Nexus configuration left enabled for a
+% session without stimulation). NaN parameters are returned below rather
+% than skipping this function's call so the parameter label set stays
+% identical across trials (see PARAMETERSERIES.ADDSTRIDES).
+if Hreflex.hasStimTrigger(HreflexData)
+    % extract time for the trial, and use proximal TA to localize stim
+    % artifact
+    [EMG_RTAP, times] = EMGData.getDataAsVector('RTAP');
+    EMG_LTAP = EMGData.getDataAsVector('LTAP');
+    stimTrigR = HreflexData.getDataAsVector( ...
+        'Stimulator_Trigger_Sync_Right_Stimulator');
+    stimTrigL = HreflexData.getDataAsVector( ...
+        'Stimulator_Trigger_Sync_Left__Stimulator');
+    indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
+        times, {EMG_RTAP, EMG_LTAP}, {stimTrigR, stimTrigL});
+else
+    warning('Hreflex:noStimTrigger', ['Stim trigger channels are ' ...
+        'present but carry no pulses; skipping H-reflex artifact ' ...
+        'localization for this trial.']);
+    indsStimArtifact = {[]; []};
+end
 if all(cellfun(@isempty, indsStimArtifact))          % if no stim, ...
     data = nan(length(timeSHS), length(paramLabels));
     for ii = 1:length(paramLabels)
