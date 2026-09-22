@@ -89,6 +89,37 @@ binary flag columns. All four call `getStrideQualityConfig().reasonLabels`
 to build that list, so a new reason added to the schema is
 automatically protected everywhere.
 
+### H-Reflex Stim-Trigger Guard
+Some H-reflex Vicon Nexus configurations record the stimulator trigger
+channels (`Stimulator_Trigger_Sync_*`) even for sessions that never
+stimulate — e.g., the configuration left enabled from a prior H-reflex
+study. Left unguarded, this aborted `calcParameters` entirely, because
+`extractStimArtifactIndsFromTrigger` requires the artifact-localization
+EMG channels (`RTAP`/`LTAP`), which such sessions never collect.
+`computeHreflexParameters` now checks `Hreflex.hasStimTrigger(HreflexData)`
+before reading those EMG channels: it returns `false` when every trigger
+sample stays below `threshStim` (`2.5 V`, the same default used by
+`extractStimArtifactIndsFromTrigger`'s rising-edge detector), which is a
+strict superset check — any sample above threshold implies at least one
+rising edge, so it can never skip a trial the detector would have found
+pulses in. The check reads all columns of `HreflexPin` and is
+intentionally name-agnostic (no hardcoded per-leg channel name), since
+`loadTrials` only matches the `Stimulator_Trigger_Sync_` prefix and a
+hardcoded name that didn't match would silently skip a genuine
+stimulation session.
+
+When the guard trips, `computeHreflexParameters` still returns its full
+NaN-filled `parameterSeries` (same code path used for any trial with no
+detected stimuli) rather than being skipped outright — this keeps the
+H-reflex parameter label set identical across every trial in a session,
+which matters because `parameterSeries.addStrides` degrades to a
+NaN-padding merge (with a loud warning) when trials carry different
+label sets. As a second-layer net, `calcParameters` wraps its call to
+`computeHreflexParameters` in `try`/`catch` (matching the
+`forceParamsOGFPAligned` pattern already used for optional force
+parameters), so a genuine H-reflex session with a renamed or missing
+TAP channel still completes import with a warning instead of aborting.
+
 ### Full Call Chain
 
 ```
@@ -121,6 +152,7 @@ c3d2mat
       │              ├── computeEMGParameters
       │              ├── computeForceParameters
       │              ├── computeHreflexParameters
+      │              │    └── hasStimTrigger  % trigger-present guard
       │              └── computePercParameters
       ├── appendEMGNormParameters
       ├── populateNewParamBackToExpData
