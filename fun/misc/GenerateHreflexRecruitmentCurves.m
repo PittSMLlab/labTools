@@ -72,7 +72,8 @@ prompt = { ...
     ' if not using stim trigger pulse):'], ...
     'Muscle in which to measure the H-reflex (e.g., ''SOL''):', ...
     ['Muscle in which to localize the stimulation artifact (e.g., ' ...
-    '''TAP''); falls back to the H-reflex muscle if not present:']};
+    '''TA''; TA, TAP, and TAD each also accept the other two); falls ' ...
+    'back to the H-reflex muscle if none is present:']};
 dlgtitle = 'H-Reflex Calibration Input';
 numPrompts = numel(prompt);
 fieldsize = repmat([1 200],numPrompts,1);
@@ -94,7 +95,7 @@ definputDefault = { ...
     '0.0003', ...                           stim artifact threshold (V)
     '1', ...                                min. time between stim. (s)
     'SOL', ...                              H-reflex muscle
-    'TAP'};                               % stim artifact muscle
+    'TA'};                                % stim artifact muscle
 
 % determine default input
 filesConf = dir(fullfile(pathFigs,[id 'Config*.mat']));
@@ -177,9 +178,13 @@ disp('Data extraction completed successfully.');
 %% 4. Retrieve EMG Data
 % NOTE: below is copied directly from 'loadTrials.m'
 % below are the muscle names (abbrev.) in the desired order
-% NOTE: thigh and hip muscles have been removed since not currently
-% relevant for the Spinal Adaptation project
-orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG'};
+% NOTE: keep this the FULL 'loadTrials.m' list, not a subset: a sensor
+% labeled with a muscle missing from it drops into the re-entry prompt
+% below, and with the thigh and hip muscles removed that crashed on any
+% 3-letter name such as 'RRF' (SpinalAdapt participant SAYA90,
+% 2026-09-18). Muscles this script does not analyze are simply unused.
+orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG', ...
+    'RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'};
 if ~ismember(muscleHreflex,orderedMuscleList) || ...
         ~ismember(muscleArtifact,orderedMuscleList)
     error(['The H-reflex and stimulation artifact muscles must each ' ...
@@ -213,8 +218,10 @@ EMGList = EMGList1;
 
 %Check if names match with expectation, otherwise query user
 for kk = 1:length(EMGList)
+    % NOTE: 'strncmpi' (not EMGList{kk}(1:4)) so a name shorter than four
+    % characters cannot index past its end
     while sum(strcmpi(orderedEMGList, EMGList{kk})) == 0 && ...
-            ~strcmpi(EMGList{kk}(1:4), 'sync')
+            ~strncmpi(EMGList{kk}, 'sync', 4)
         aux = inputdlg(['Did not recognize muscle name, please ' ...
             're-enter name for channel ' num2str(kk) ' (was ' ...
             EMGList{kk} '). Acceptable values are ' ...
@@ -390,12 +397,24 @@ times = EMG.Time;                       % time array for plotting
 EMGArtifact    = cell(1,2);
 EMGHreflex     = cell(1,2);
 labelsArtifact = cell(1,2);
+% the artifact muscle is resolved through an explicit tibialis anterior
+% family so an entry of 'TA' finds a single-channel 'RTA' as well as a
+% historical 'RTAP'/'RTAD' (and vice versa): the requested muscle first,
+% then the rest of the family in a fixed order, then (below) the H-reflex
+% muscle. No channel is renamed; the channel used is printed per leg.
+familyTA = {'TAP','TA','TAD'};          % tibialis anterior channel names
+if ismember(muscleArtifact,familyTA)
+    candsArtifact = [{muscleArtifact} ...
+        setdiff(familyTA,{muscleArtifact},'stable')];
+else
+    candsArtifact = {muscleArtifact};
+end
 for leg = 1:2                           % for each leg, ...
     if ~isLegStim(leg)                  % if leg was not stimulated, ...
         continue;                       % advance to next leg
     end
     labelHreflex  = [idsLegs{leg} muscleHreflex];
-    labelArtifact = [idsLegs{leg} muscleArtifact];
+    labelArtifact = '';
 
     if EMG.isaLabel(labelHreflex)       % if H-reflex channel present, ...
         EMGHreflex{leg} = EMG.getDataAsVector(labelHreflex);
@@ -404,18 +423,27 @@ for leg = 1:2                           % for each leg, ...
         EMGHreflex{leg} = [];           % treat it as missing
     end
 
-    if EMG.isaLabel(labelArtifact)      % if artifact channel present, ...
-        EMGArtifact{leg} = EMG.getDataAsVector(labelArtifact);
-    end
-    if all(isnan(EMGArtifact{leg}))
-        EMGArtifact{leg} = [];
+    for cc = 1:numel(candsArtifact)     % for each candidate channel, ...
+        labelCand = [idsLegs{leg} candsArtifact{cc}];
+        if EMG.isaLabel(labelCand)      % if candidate channel present, ...
+            dataCand = EMG.getDataAsVector(labelCand);
+            if ~all(isnan(dataCand))    % and it has data, use it
+                EMGArtifact{leg} = dataCand;
+                labelArtifact    = labelCand;
+                break;
+            end
+        end
     end
     if isempty(EMGArtifact{leg})        % if no artifact muscle EMG, ...
         EMGArtifact{leg} = EMGHreflex{leg};     % use H-reflex muscle
         labelArtifact    = labelHreflex;
         fprintf(['%s: no %s EMG data; localizing the stimulation ' ...
             'artifact in %s instead.\n'],namesLegs{leg}, ...
-            [idsLegs{leg} muscleArtifact],labelHreflex);
+            strjoin(strcat(idsLegs{leg},candsArtifact),'/'),labelHreflex);
+    else
+        fprintf(['%s: localizing the stimulation artifact in %s ' ...
+            '(requested %s).\n'],namesLegs{leg},labelArtifact, ...
+            [idsLegs{leg} muscleArtifact]);
     end
     labelsArtifact{leg} = labelArtifact;
 
