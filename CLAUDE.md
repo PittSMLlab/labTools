@@ -11,7 +11,8 @@ adaptationData → groupAdaptationData → studyData`
 - `recomputeParameters` — recomputes from existing processed data;
   `eventClass` must match the original run (use
   `flushAndRecomputeParameters` to change it)
-- `flushAndRecomputeParameters` — full reprocessing from existing data
+- `flushAndRecomputeParameters` — discards and recomputes all
+  parameters (`calcParameters` per trial) from existing processed data
 
 **Important:** `experimentData` is a value class — always capture the
 return value: `expData = expData.recomputeParameters()`
@@ -29,96 +30,73 @@ return value: `expData = expData.recomputeParameters()`
   `processedEMGTimeSeries`
 
 ### Handrail-Holding Parameters
-`computeForceParameters` (called from `calcParameters`) computes
-`HandrailHolding` (binary; 1 held / 0 not / `NaN` if no instrumented
-handrail was collected for the trial), `HandrailForceNorm`
-(continuous; mean absolute vertical handrail force per stride,
-normalized to body weight), and `HandrailForceN` (continuous; the same
-mean, in Newtons, not normalized). All three read the `HFz` channel of
-`GRFData` (analog force-plate channel 3, populated by
-`processGRFData`); they stay `NaN` when that channel is absent. Unlike
-the belt-plate force parameters
-(`FyBS`/`FyPS`/etc.), handrail computation is **not** restricted to
-`'TM'`-type trials — the handrail is an independent load cell, so it
-also computes for `'IN'`/`'NIM'` trials when a handrail channel is
-present. `HandrailHolding` is informational only — it is **not**
-auto-folded into `bad`/`good`. To censor held strides, call the
-opt-in helper `adaptData.removeHandrailStrides()` (mirrors
-`removeBadStrides`; see `EXPERIMENT_SETUP.md` for the threshold
-rationale and channel-numbering caveat).
+`computeForceParameters` computes `HandrailHolding` (1/0; `NaN` with
+no handrail), `HandrailForceNorm` (mean |vertical force| per stride,
+body-weight normalized), and `HandrailForceN` (same, in N) from the
+`GRFData` `HFz` channel (analog force-plate channel 3). Unlike the
+belt-plate force parameters, they are **not** limited to `'TM'` trials
+(the handrail is an independent load cell). `HandrailHolding` is
+informational, never folded into `bad`/`good`; censor held strides
+with the opt-in `adaptData.removeHandrailStrides()`. Threshold
+rationale and channel-numbering caveat: `EXPERIMENT_SETUP.md`.
 
 ### Stride-Quality Labeling
-`calcParameters` adjudicates each stride's quality through
-`adjudicateStrideQuality` (called twice: once provisionally on event/
-duration criteria alone, once at the end of the pipeline once force
-and spatial parameters exist, to add the treadmill start/stop reason).
-Thresholds and the reason-column schema are centralized in
-`getStrideQualityConfig`, the single source of truth shared by both
-calls — this is what keeps the reason set and thresholds identical
-across marker-based and marker-less pipelines. In addition to the
-aggregate `bad`/`good` columns (backward compatible; unchanged
-aggregation logic), the output `parameterSeries` carries one binary
-reason column per criterion (`badMissingEvent`, `badDisordered`,
-`badDurationOutlier`, `badDurationShort`, `badDurationLong`,
-`badStartStop`), three documented stub reasons that are always false
-until a stride-level detector exists (`badTurning`,
-`badWalkwayBounds`, `badMarkerDropout` — see the TODOs in
-`adjudicateStrideQuality` for their intended data sources), and a
-non-destructive `triageOutlier` column (`flagTriageOutliers`; a 3-
-stride moving-median residual flagged at a robust MAD-based
-threshold) that surfaces candidate outliers for review WITHOUT
-auto-censoring them — it is never folded into `bad`.
-
-To censor by the default aggregate, use `removeBadStrides()` as
-before. To censor a chosen **subset** of reasons (e.g., for a
-marker-less pipeline that can't yet compute `badMarkerDropout`, or
-that wants to exclude a duration threshold it disagrees with), use
-`adaptData.removeStridesByReason({'badMissingEvent', ...})`; both
-`removeBadStrides` and `removeHandrailStrides` are thin wrappers
-around this method. Manual `Label Bad`/`Label Good` edits made in
-`ReviewEventsGUI` are recorded only in the aggregate `bad`/`good`
-columns (the GUI was deliberately left unchanged), not in any
-individual reason column — include `'bad'` in the reason list (or
-call `removeBadStrides`) to also honor those manual edits.
+`calcParameters` labels stride quality with `adjudicateStrideQuality`
+(twice: provisionally on event/duration criteria, then again once
+force parameters exist, to add `badStartStop`), using the thresholds
+and reason schema of `getStrideQualityConfig` — the single source of
+truth that keeps marker-based and marker-less pipelines identical.
+Besides the unchanged aggregate `bad`/`good`, each stride carries one
+binary column per reason, three always-false stubs (`badTurning`,
+`badWalkwayBounds`, `badMarkerDropout`), and a non-destructive
+`triageOutlier` flag that is never folded into `bad` (schema table in
+`EXPERIMENT_SETUP.md`). Censor a reason subset with
+`adaptData.removeStridesByReason({...})`; `removeBadStrides` and
+`removeHandrailStrides` wrap it. Manual `ReviewEventsGUI` Label
+Bad/Good edits live only in the aggregate `bad`/`good` columns —
+include `'bad'` in the reason list to honor them.
 
 **Important:** every reason column plus `triageOutlier` (and
 `HandrailHolding`) must stay on the protected-label list inside
-`removeBias`/`removeBiasV2`/`removeBiasV3`/`removeBiasV4` — otherwise
-bias removal would silently subtract a baseline mean from these
-binary flag columns. All four call `getStrideQualityConfig().reasonLabels`
-to build that list, so a new reason added to the schema is
-automatically protected everywhere.
+`removeBias`/`removeBiasV2`/`removeBiasV3`/`removeBiasV4` (built from
+`getStrideQualityConfig().reasonLabels`), or bias removal silently
+subtracts a baseline mean from these binary flags.
+
 
 ### H-Reflex Stim-Trigger Guard
-Some H-reflex Vicon Nexus configurations record the stimulator trigger
-channels (`Stimulator_Trigger_Sync_*`) even for sessions that never
-stimulate — e.g., the configuration left enabled from a prior H-reflex
-study. Left unguarded, this aborted `calcParameters` entirely, because
-`extractStimArtifactIndsFromTrigger` requires the artifact-localization
-EMG channels (`RTAP`/`LTAP`), which such sessions never collect.
-`computeHreflexParameters` now checks `Hreflex.hasStimTrigger(HreflexData)`
-before reading those EMG channels: it returns `false` when every trigger
-sample stays below `threshStim` (`2.5 V`, the same default used by
-`extractStimArtifactIndsFromTrigger`'s rising-edge detector), which is a
-strict superset check — any sample above threshold implies at least one
-rising edge, so it can never skip a trial the detector would have found
-pulses in. The check reads all columns of `HreflexPin` and is
-intentionally name-agnostic (no hardcoded per-leg channel name), since
-`loadTrials` only matches the `Stimulator_Trigger_Sync_` prefix and a
-hardcoded name that didn't match would silently skip a genuine
-stimulation session.
+Some Nexus configurations record the `Stimulator_Trigger_Sync_*`
+channels in sessions that never stimulate (a configuration left
+enabled from an H-reflex study), which used to abort `calcParameters`
+because the artifact-localization EMG channels (`RTAP`/`LTAP`) are
+absent. `computeHreflexParameters` therefore first calls
+`Hreflex.hasStimTrigger`: `false` when every sample of every
+`HreflexPin` column stays below `threshStim` (2.5 V, the rising-edge
+detector's default) — a strict superset check that can never skip a
+trial with pulses, and name-agnostic on purpose (`loadTrials` matches
+only the channel prefix). A tripped guard still returns the full
+NaN-filled `parameterSeries`, keeping the H-reflex label set identical
+across trials (`parameterSeries.addStrides` otherwise NaN-pads with a
+warning), and `calcParameters` wraps the call in `try`/`catch` so a
+missing TAP channel warns instead of aborting import.
 
-When the guard trips, `computeHreflexParameters` still returns its full
-NaN-filled `parameterSeries` (same code path used for any trial with no
-detected stimuli) rather than being skipped outright — this keeps the
-H-reflex parameter label set identical across every trial in a session,
-which matters because `parameterSeries.addStrides` degrades to a
-NaN-padding merge (with a loud warning) when trials carry different
-label sets. As a second-layer net, `calcParameters` wraps its call to
-`computeHreflexParameters` in `try`/`catch` (matching the
-`forceParamsOGFPAligned` pattern already used for optional force
-parameters), so a genuine H-reflex session with a renamed or missing
-TAP channel still completes import with a warning instead of aborting.
+### SpinalAdapt Bout Splitting
+For `ExpDescription` `'SpinalAdapt'` (matched exactly: it is a prefix
+of the older `'SpinalAdaptation'`/`'SpinalAdaptBoutStudy'`, and the
+legacy `contains(..., 'SpinalAdaptation')` test that still routes the
+2024 study to `SepCondsInExpByAudioCue` never matched it),
+`loadSubject` ends with `splitSpinalAdaptBoutConds`: each bout trial
+becomes one trial and condition per bout segment (`'Adapt 1 Ramp01'`,
+`'Adapt 1 SS01'`, …), windowed by the datlog cues
+(`getSpinalAdaptBoutSegments`: ramp cue → `Mid`/`Split` →
+`Rest##_CountForward`) shifted by `dataLogTimeOffsetBest`. Strides
+are **partitioned by `initTime`, not recomputed** — recomputing the
+short pieces loses the stride at each cut and flags each piece's last
+stride `badMissingEvent`. Never run `recomputeParameters`/
+`flushAndRecomputeParameters`/`correctLegAssignment` on the split
+`<ID>.mat`: recompute `<ID>OriginalCondName.mat` (the unsplit copy)
+and split again. Split sessions exceed 99 trials, so `calcParameters`
+reads the `trial` column from all trailing digits of
+`rawDataFilename` (`_SplitIdx###`). See `EXPERIMENT_SETUP.md`.
 
 ### Full Call Chain
 
@@ -157,12 +135,15 @@ c3d2mat
       ├── appendEMGNormParameters
       ├── populateNewParamBackToExpData
       ├── [save *expData.mat]
-      └── experimentData.makeDataObj  % [save *params.mat]
+      ├── experimentData.makeDataObj  % [save *params.mat]
+      ├── splitSpinalAdaptBoutConds   % 'SpinalAdapt' only; see above
+      │    └── getSpinalAdaptBoutSegments  % datlog cue windows
+      └── SepCondsInExpByAudioCue     % legacy, 'SpinalAdaptation' only
 
 % Post-processing:
 experimentData.recomputeEvents
 experimentData.recomputeParameters     → calcParameters
-experimentData.flushAndRecomputeParameters → labData.process
+experimentData.flushAndRecomputeParameters → calcParameters (all)
 ```
 
 ---

@@ -395,6 +395,17 @@ pop`, re-run, and diff the two `bad` vectors element-wise with
 
 ---
 
+## SpinalAdapt Bout-Split Tests
+
+`testing/TestSpinalAdaptBoutSegments.m` tests the cue parser on
+synthetic datlogs. `testing/ValidateSpinalAdaptBoutSplitOnServer.m`
+checks real data, read-only and headless: datlogs alone (Part A,
+before import), `params.mat` (Part B), and optionally the real
+splitter on `expData.mat` (Part C). Expect `0 flag(s)`, i.e., no
+zero/one-stride segment and no good stride outside every segment.
+
+---
+
 ## See Also
 
 - `fun/misc/compareAdaptationData.m` — parameter value comparison

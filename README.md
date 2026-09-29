@@ -197,12 +197,13 @@ c3d2mat
       ├── appendEMGNormParameters
       ├── populateNewParamBackToExpData
       ├── [save *expData.mat]
-      └── experimentData.makeDataObj  % [save *params.mat]
+      ├── experimentData.makeDataObj  % [save *params.mat]
+      └── splitSpinalAdaptBoutConds   % 'SpinalAdapt' only
 
 % Post-processing:
 experimentData.recomputeEvents
 experimentData.recomputeParameters     → calcParameters
-experimentData.flushAndRecomputeParameters → labData.process
+experimentData.flushAndRecomputeParameters → calcParameters (all)
 ```
 
 ---
@@ -275,6 +276,11 @@ alongside the aggregate `bad`/`good` pair, plus a non-destructive
 [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#stride-quality-labeling) for
 the full reason schema and how to censor a chosen subset with
 `adaptData.removeStridesByReason(...)`.
+
+### Bout-Based Trial Splitting (SpinalAdapt)
+For `'SpinalAdapt'` sessions, `loadSubject` also splits every bout
+trial into per-bout ramp/steady-state conditions (`'Adapt 1 SS03'`,
+...); see [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#bout-based-trial-splitting-spinaladapt).
 
 ### EMG Analysis
 Raw EMG is processed through amplitude extraction and optional spike

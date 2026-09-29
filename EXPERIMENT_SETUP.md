@@ -1,12 +1,13 @@
 # EXPERIMENT_SETUP.md — Configuring New Experiments
 
-This guide covers three setup tasks that are specific to each study or
+This guide covers setup tasks that are specific to each study or
 lab configuration:
 
 1. [Adding a New Experiment Type](#adding-a-new-experiment-type)
 2. [Marker Label Mapping](#marker-label-mapping)
 3. [Instrumented Handrail (Optional)](#instrumented-handrail-optional)
 4. [Stride-Quality Labeling](#stride-quality-labeling)
+6. [Bout-Based Trial Splitting (SpinalAdapt)](#bout-based-trial-splitting-spinaladapt)
 
 ---
 
@@ -306,3 +307,36 @@ parameters in `cfg.triageParams` (`stepLengthSlow`, `stepLengthFast`,
 `alphaSlow`, `alphaFast`, `alphaTemp`, `betaSlow`, `betaFast`).
 Triage requires spatial parameters to have been computed; it stays
 `false` for every stride otherwise.
+## Bout-Based Trial Splitting (SpinalAdapt)
+
+`loadSubject` splits each `'SpinalAdapt'` bout trial into one
+condition per segment (`'<Condition> Ramp01'`, `'<Condition> SS01'`,
+...) from its datlog cues (Vicon time = cue time +
+`dataLogTimeOffsetBest`); trials without ramp cues stay whole. The
+unsplit files become `<ID>OriginalCondName*.mat`: recompute from
+those, then split again (see `CLAUDE.md`).
+
+| Segment | Opens at | Closes at |
+|---|---|---|
+| Ramp | ramp cue (`AccRamp##`/`DccRamp2Split##`); bout 1: pre-loop `Mid01` | the `Mid##`/`Split##` row after it |
+| SS | that `Mid##`/`Split##` row | `Rest##_CountForward` (fallbacks: `Rest##`, trial end) |
+
+Standing intervals belong to no condition, and the spoken "stop" has
+no datlog row. Strides keep their whole-trial parameters and go to the
+segment containing their `initTime`: 2-3 ramp and 9-13 SS strides per
+bout (the extras are `bad` stopping strides). The flipped-leg check
+runs before the split, and its `'adapt'` fallback picks the tied
+`'Pre-Adapt Fast'` (SAYA90: `indeterminate`, +0.046 against the 0.05
+threshold). For this study run `detectFlippedLegs(adaptData, [],
+'Adapt 1')` by hand (SAYA90: `correct`, -0.67).
+
+To recompute (e.g., new events or EMG norm), start from the unsplit
+copy and split again:
+
+```matlab
+load('SAYA91OriginalCondName.mat', 'expData');
+expData = expData.flushAndRecomputeParameters();  % + EMG-norm args
+expData = splitSpinalAdaptBoutConds(expData);
+save('SAYA91.mat', 'expData', '-v7.3');
+adaptData = expData.makeDataObj('SAYA91');        % SAYA91params.mat
+```
