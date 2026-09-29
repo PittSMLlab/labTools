@@ -196,7 +196,10 @@ strideQualityCfg = getStrideQualityConfig();
 if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
     try                             % try initializing trial number
         % need to FIX, but data is currently unavailable on 'trialMetaData'
-        trial = str2double(trialData.metaData.rawDataFilename(end-1:end));
+        % NOTE: all trailing digits, not just the last two: a session
+        % split by SPLITSPINALADAPTBOUTCONDS has more than 99 trials
+        trial = str2double(regexp(trialData.metaData.rawDataFilename, ...
+            '\d+$', 'match', 'once'));
     catch
         warning('calcParametersNew:gettingTrialNumber', ['Could not ' ...
             'determine trial number from metaData, setting to NaN.']);
