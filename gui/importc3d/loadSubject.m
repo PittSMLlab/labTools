@@ -206,7 +206,32 @@ save(fullfile(info.save_folder, [info.ID '.mat']), 'expData', '-v7.3');
 adaptData = expData.makeDataObj(fullfile(info.save_folder, info.ID));
 
 %% Handle Experiments Requiring Special Trial Splitting from Data Logs
-if contains(erase(info.ExpDescription, ' '), 'SpinalAdaptation')
+% NOTE: 'SpinalAdapt' (2026- protocol) must be matched exactly: it is a
+% prefix of the older 'SpinalAdaptation' and 'SpinalAdaptBoutStudy'
+% descriptions, and the legacy contains() test below never matches it.
+expDescription = erase(info.ExpDescription, ' ');
+if strcmp(expDescription, 'SpinalAdapt')
+    % Split each bout trial into per-bout ramp/steady-state conditions.
+    % The unsplit files saved above are copied, then replaced, only
+    % after the split succeeds.
+    try
+        [expDataSplit, splitReport] = splitSpinalAdaptBoutConds(expData);
+        if ~isempty(splitReport.segments)
+            disp(splitReport.trials);
+            disp(splitReport.segments);
+            adaptData = saveSplitBoutFiles(expDataSplit, ...
+                info.save_folder, info.ID);
+            expData   = expDataSplit;
+        end
+    catch splitErr
+        warning('loadSubject:boutSplit', ['Bout-trial splitting ' ...
+            'failed (unsplit data: %s.mat, or %sOriginalCondName.mat ' ...
+            'if saving had begun): %s'], info.ID, info.ID, ...
+            splitErr.message);
+        fprintf(2, '%s\n', getReport(splitErr, 'extended', ...
+            'hyperlinks', 'off'));
+    end
+elseif contains(expDescription, 'SpinalAdaptation')
     if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
         [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
             info.save_folder, info.ID, eventClass, info.ExpDescription,...
@@ -222,6 +247,39 @@ end
 % ============================================================
 % ==================== Local Functions =======================
 % ============================================================
+
+
+function adaptData = saveSplitBoutFiles(expData, saveFolder, subjectID)
+%SAVESPLITBOUTFILES Replace the saved session files with the bout split.
+%
+%   Copies the unsplit '<ID>.mat' and '<ID>params.mat' just saved by
+% LOADSUBJECT to '<ID>OriginalCondName.mat' and
+% '<ID>OriginalCondNameparams.mat' (the names SEPCONDSINEXPBYAUDIOCUE
+% uses), then saves the split expData as '<ID>.mat' and rebuilds
+% '<ID>params.mat' from it. To recompute parameters later, start from
+% the OriginalCondName copy and split again (see
+% SPLITSPINALADAPTBOUTCONDS).
+%
+% Inputs:
+%   expData    - experimentData split by SPLITSPINALADAPTBOUTCONDS
+%   saveFolder - char; session save folder (info.save_folder)
+%   subjectID  - char; session ID (info.ID)
+%
+% Outputs:
+%   adaptData - adaptationData built from, and saved with, expData
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also SPLITSPINALADAPTBOUTCONDS, SEPCONDSINEXPBYAUDIOCUE.
+
+filePrefix = fullfile(saveFolder, subjectID);
+copyfile([filePrefix '.mat'], [filePrefix 'OriginalCondName.mat']);
+copyfile([filePrefix 'params.mat'], ...
+    [filePrefix 'OriginalCondNameparams.mat']);
+save([filePrefix '.mat'], 'expData', '-v7.3');
+adaptData = expData.makeDataObj(filePrefix);
+end
 
 function info = determineRefLeg(info)
 % determineRefLeg  Resolves info.refLeg and info.fastLeg from the
