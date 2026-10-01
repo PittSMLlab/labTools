@@ -348,14 +348,28 @@ else            % otherwise, fast leg heel strikes first, ...
 end
 
 %% Extract EMG Signal for Each H-Reflex Muscle of Interest
-EMG_RSOL = EMGData.getDataAsVector('RSOL');
-EMG_LSOL = EMGData.getDataAsVector('LSOL');
-EMG_RMG = EMGData.getDataAsVector('RMG');
-EMG_LMG = EMGData.getDataAsVector('LMG');
-EMG_RLG = EMGData.getDataAsVector('RLG');
-EMG_LLG = EMGData.getDataAsVector('LLG');
-% organize EMG Data for Each Muscle
-EMGDataByMuscle = {EMG_RSOL, EMG_LSOL; EMG_RMG, EMG_LMG; EMG_RLG, EMG_LLG};
+% organize EMG data by muscle (rows, as in 'muscles') and leg (right,
+% left); a muscle not recorded in this session is NaN-filled rather than
+% dropped, so its parameters are NaN and the label set stays identical
+% across trials and participants (exact-label check, as for TA above)
+EMGDataByMuscle = cell(length(muscles), 2);
+missingLabels = {};
+for mscl = 1:length(muscles)            % for each muscle of interest, ...
+    for side = 1:2                      % for right (1) & left (2) leg, ...
+        lbl = [sides{side} muscles{mscl}];
+        if EMGData.isaLabel(lbl)
+            EMGDataByMuscle{mscl, side} = EMGData.getDataAsVector(lbl);
+        else
+            EMGDataByMuscle{mscl, side} = nan(size(times));
+            missingLabels{end+1} = lbl; %#ok<AGROW>
+        end
+    end
+end
+if ~isempty(missingLabels)
+    warning('Hreflex:missingMuscleChannel', ['EMG channel(s) %s not ' ...
+        'recorded; their H-reflex parameters are NaN.'], ...
+        strjoin(missingLabels, ', '));
+end
 
 %% Identify Indices of Mid-Single Stance (No Stim) using Valid Stim Strides
 timesMidSingleStanceSlow = timeFTO + ((timeFHS - timeFTO) / 2);
