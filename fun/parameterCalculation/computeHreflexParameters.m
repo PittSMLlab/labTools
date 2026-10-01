@@ -58,6 +58,7 @@ timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
 %% Labels & Descriptions
 muscles = {'SOL', 'MG', 'LG'};
 legs = {'Slow', 'Fast'};
+sides = {'R', 'L'};     % EMG label prefixes: right (1) and left (2) leg
 % H-reflex stimulation timing and amplitude parameters
 % TODO: add convenience parameter for percentage of stance phase
 % TODO: consider implementing Wilson Amplitude, sample entropy, skewness,
@@ -191,16 +192,30 @@ end
 % than skipping this function's call so the parameter label set stays
 % identical across trials (see PARAMETERSERIES.ADDSTRIDES).
 if Hreflex.hasStimTrigger(HreflexData)
-    % extract time for the trial, and use proximal TA to localize stim
-    % artifact
-    [EMG_RTAP, times] = EMGData.getDataAsVector('RTAP');
-    EMG_LTAP = EMGData.getDataAsVector('LTAP');
+    % extract time for the trial, and localize the stim artifact in the
+    % tibialis anterior: proximal TA first (as before), then a single TA
+    % channel, then distal TA, as GENERATEHREFLEXRECRUITMENTCURVES does.
+    % NOTE: exact-label 'isaLabel' check, since 'getDataAsVector' falls
+    % back to a regular expression match (e.g., 'RTA' would also match
+    % 'RTAP' and 'RTAD'); a leg with no TA channel stays empty (skipped)
+    times = EMGData.Time;
+    familyTA = {'TAP', 'TA', 'TAD'};
+    EMGArtifact = {[], []};
+    for side = 1:2                      % for right (1) & left (2) leg, ...
+        for ii = 1:length(familyTA)
+            lbl = [sides{side} familyTA{ii}];
+            if EMGData.isaLabel(lbl)
+                EMGArtifact{side} = EMGData.getDataAsVector(lbl);
+                break;
+            end
+        end
+    end
     stimTrigR = HreflexData.getDataAsVector( ...
         'Stimulator_Trigger_Sync_Right_Stimulator');
     stimTrigL = HreflexData.getDataAsVector( ...
         'Stimulator_Trigger_Sync_Left__Stimulator');
     indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
-        times, {EMG_RTAP, EMG_LTAP}, {stimTrigR, stimTrigL});
+        times, EMGArtifact, {stimTrigR, stimTrigL});
 else
     warning('Hreflex:noStimTrigger', ['Stim trigger channels are ' ...
         'present but carry no pulses; skipping H-reflex artifact ' ...
