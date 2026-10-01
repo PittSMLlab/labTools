@@ -63,21 +63,43 @@ include `'bad'` in the reason list to honor them.
 subtracts a baseline mean from these binary flags.
 
 
-### H-Reflex Stim-Trigger Guard
-Some Nexus configurations record the `Stimulator_Trigger_Sync_*`
-channels in sessions that never stimulate (a configuration left
-enabled from an H-reflex study), which used to abort `calcParameters`
-because the artifact-localization EMG channels (`RTAP`/`LTAP`) are
-absent. `computeHreflexParameters` therefore first calls
-`Hreflex.hasStimTrigger`: `false` when every sample of every
-`HreflexPin` column stays below `threshStim` (2.5 V, the rising-edge
-detector's default) — a strict superset check that can never skip a
-trial with pulses, and name-agnostic on purpose (`loadTrials` matches
-only the channel prefix). A tripped guard still returns the full
-NaN-filled `parameterSeries`, keeping the H-reflex label set identical
-across trials (`parameterSeries.addStrides` otherwise NaN-pads with a
-warning), and `calcParameters` wraps the call in `try`/`catch` so a
-missing TAP channel warns instead of aborting import.
+`loadSubject` runs `detectFlippedLegs` right after building
+`adaptData` (before saving `expData.mat`/`params.mat`) and, if a flip
+is detected, prompts the user to auto-correct (`info.promptFlip`,
+default `true`, disables the prompt for batch/headless imports). The
+entire check is wrapped defensively — a QC check must never abort
+import. Accepting the correction calls
+`experimentData.correctLegAssignment`, which flips
+`subData.fastLeg` (via `subjectData.flipFastLeg`) and every trial's
+`metaData.refLeg`, then calls `flushAndRecomputeParameters` (not
+`recomputeParameters` — swapping `refLeg` changes which heel strike
+starts each stride, which can shift the stride count by ±1 and would
+trip `recomputeParameters`'s stride-count check). For stroke
+subjects, `affectedSide` (the clinical paretic side) is **never**
+auto-flipped — only the fast/slow belt label is corrected.
+
+### H-Reflex Parameters
+`computeHreflexParameters` always returns the same fixed 66-label
+set, so labels match across trials and participants
+(`parameterSeries.addStrides` otherwise NaN-pads with a warning):
+- An unrecorded SOL/MG/LG channel (e.g., no MG in SpinalAdapt) is
+  NaN-filled with a `Hreflex:missingMuscleChannel` warning, never
+  dropped.
+- The stim artifact is localized per leg in the first recorded of
+  TAP, TA, TAD. Look channels up with `isaLabel`, never a bare
+  `getDataAsVector`: its regex fallback makes `'RTA'` also match
+  `RTAP`/`RTAD`.
+- Sessions that record the `Stimulator_Trigger_Sync_*` channels
+  without stimulating: `Hreflex.hasStimTrigger` is `false` when every
+  sample of every `HreflexPin` column stays below `threshStim`
+  (2.5 V) — a strict superset of the rising-edge detector,
+  name-agnostic on purpose (`loadTrials` matches only the prefix) —
+  and the full NaN set is returned.
+
+`calcParameters` wraps the call in `try`/`catch`, so a remaining
+failure (e.g., no TA channel on either leg) warns per trial instead
+of aborting import, which also hides a class-wide failure: check
+every trial's warnings, not just that the import completed.
 
 ### SpinalAdapt Bout Splitting
 For `ExpDescription` `'SpinalAdapt'` (matched exactly: it is a prefix
