@@ -9,18 +9,23 @@ function out = computeHreflexParameters(strideEvents, HreflexData, ...
 % per stride for each muscle. Background EMG RMS is computed for both
 % stimulated strides (pre-artifact window) and non-stimulated strides
 % (mid single-stance). Output is a parameterSeries that can be
-% concatenated with other parameter series from the same trial.
+% concatenated with other parameter series from the same trial. The
+% label set is fixed: a muscle not recorded in the session (e.g., no MG
+% in SpinalAdapt) keeps its labels, with NaN values.
 %
 % Inputs:
 %   strideEvents - struct of stride event times with fields tSHS, tFTO,
 %                  tFHS, tSTO, tSHS2, tFTO2, tFHS2, tSTO2
 %   HreflexData  - labTimeSeries containing stimulator trigger channels
-%   EMGData      - labTimeSeries containing EMG channels (RSOL, LSOL,
-%                  RMG, LMG, RLG, LLG, RTAP, LTAP required)
+%   EMGData      - labTimeSeries containing EMG channels; the stim
+%                  artifact is localized per leg in the first recorded
+%                  of the TAP, TA, TAD channels (e.g., RTAP, RTA, RTAD),
+%                  and an unrecorded RSOL, LSOL, RMG, LMG, RLG, or LLG
+%                  leaves that muscle's parameters NaN
 %   slowLeg      - slow-leg identifier, 'R' or 'L' (char)
 %
 % Outputs:
-%   out - parameterSeries of H-reflex parameters per stride (68
+%   out - parameterSeries of H-reflex parameters per stride (66
 %         parameters: timing, amplitude, RMS, and background EMG for
 %         each combination of leg, muscle, and measure)
 %
