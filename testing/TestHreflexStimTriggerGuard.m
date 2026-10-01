@@ -85,9 +85,7 @@ timeSTO2 = [2.2; 3.2; 3.95];
 strideEvents = struct('tSHS', timeSHS, 'tFTO', timeFTO, ...
     'tFHS', timeFHS, 'tSTO', timeSTO, 'tSHS2', timeSHS2, ...
     'tFTO2', timeFTO2, 'tFHS2', timeFHS2, 'tSTO2', timeSTO2);
-nExpectedParams = 66;   % see computeHreflexParameters aux label block
-                         % (the function's own H1 comment says 68; the
-                         % literal 'aux' cell array has 66 rows)
+nExpectedParams = 66;   % rows of computeHreflexParameters aux block
 
 %% computeHreflexParameters: Flat Trigger, No TAP EMG -> NaN Parameters
 % The H-reflex Nexus configuration was left enabled (trigger channels
