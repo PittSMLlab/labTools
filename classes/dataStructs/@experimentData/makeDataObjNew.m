@@ -1,26 +1,28 @@
 function adaptData = makeDataObjNew(this, filename, experimentalFlag, ...
     contraLateralFlag)
-%makeDataObjNew  Internal method to create adaptationData object
+%MAKEDATAOBJNEW Internal method to create adaptationData object
 %
 %   adaptData = makeDataObjNew(this, filename, experimentalFlag,
-%   contraLateralFlag) creates adaptationData object with full control
-%   over parameters
+% contraLateralFlag) creates adaptationData object with full control over
+% parameters
 %
-%   Inputs:
-%       this - experimentData object
-%       filename - string for saving (optional)
-%       experimentalFlag - if false, excludes experimental parameters
-%                          (optional)
-%       contraLateralFlag - if true, uses non-reference leg for computation
-%                           (optional)
+% NOTE: This function may not be compatible with certain methods of the
+%   adaptationData class
 %
-%   Outputs:
-%       adaptData - adaptationData object
+% Inputs:
+%   this              - experimentData object
+%   filename          - string for saving (optional)
+%   experimentalFlag  - if false, excludes experimental parameters
+%                       (optional)
+%   contraLateralFlag - if true, uses non-reference leg for computation
+%                       (optional)
 %
-%   Note: This function may not be compatible with certain methods of
-%         the adaptationData class
+% Outputs:
+%   adaptData - adaptationData object
 %
-%   See also: makeDataObj, adaptationData
+% Toolbox Dependencies: None
+%
+% See also MAKEDATAOBJ, ADAPTATIONDATA.
 
 if isempty(contraLateralFlag) || contraLateralFlag == 0
     % Normal parameters
@@ -29,9 +31,9 @@ else
     % Computing all parameters on a contraLateral way (this is, we compute
     % parameters using the NON reference leg as the 'slow' one, opposite to
     % the default computation)
-    if strcmp(this.getRefLeg, 'R')
+    if strcmp(this.getRefLeg(), 'R')
         initEventSide = 'L';
-    elseif strcmp(this.getRefLeg, 'L')
+    elseif strcmp(this.getRefLeg(), 'L')
         initEventSide = 'R';
     else
         ME = MException('makeDataObject:ContralateralComputation', ...
@@ -43,14 +45,14 @@ else
     this = recomputeParameters(this, [], initEventSide);
 end
 
-for i = 1:length(this.data) % Trials
-    if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+for ii = 1:length(this.data) % Trials
+    if ~isempty(this.data{ii}) && ~isempty(this.data{ii}.adaptParams)
         % Get data from this trial:
-        aux = this.data{i}.adaptParams;
-        trialTypes{i} = this.data{i}.metaData.type;
+        aux = this.data{ii}.adaptParams;
+        trialTypes{ii} = this.data{ii}.metaData.type;
         if ~(nargin > 2 && ~isempty(experimentalFlag) && ...
                 experimentalFlag == 0)
-            aux = cat(aux, this.data{i}.experimentalParams);
+            aux = cat(aux, this.data{ii}.experimentalParams);
         end
         % Concatenate with other trials:
         % Case in which no strides were detected for a trial, it
@@ -64,13 +66,16 @@ for i = 1:length(this.data) % Trials
         end
     end
 end
-% HH: remove all bad strides completely
-% paramData = parameterSeries(paramData.Data(paramData.bad == 0, :), paramData.labels, paramData.hiddenTime(paramData.bad == 0), paramData.description);
+% NOTE: alternative, kept for reference: remove all bad strides
+% completely.
+% paramData = parameterSeries(paramData.Data(paramData.bad == 0, :), ...
+%    paramData.labels, paramData.hiddenTime(paramData.bad == 0), ...
+%    paramData.description);
 paramData = paramData.setTrialTypes(trialTypes);
 adaptData = adaptationData(this.metaData, this.subData, paramData);
 if nargin > 1 && ~isempty(filename)
-    % HH edit 2/12 - added 'params' to file name so experimentData
-    % file isn't overwritten
+    % The 'params' suffix keeps the experimentData file from being
+    % overwritten
     save([filename 'params.mat'], 'adaptData', '-v7.3');
 end
 end

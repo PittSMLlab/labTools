@@ -1,22 +1,23 @@
 function this = checkMarkerHealth(this, refTrial)
-%checkMarkerHealth  Validates marker data quality
+%CHECKMARKERHEALTH Validates marker data quality
 %
 %   this = checkMarkerHealth(this) analyzes marker data across all trials
-%   for missing data, label errors, and outliers
+% for missing data, label errors, and outliers
 %
 %   this = checkMarkerHealth(this, refTrial) optionally specifies which
-%   trial to use for model training
+% trial to use for model training
 %
-%   Inputs:
-%       this - experimentData object
-%       refTrial - trial number to use for reference model (optional,
-%                  automatically selected if not provided)
+% Inputs:
+%   this     - experimentData object
+%   refTrial - trial number to use for reference model (optional,
+%              automatically selected if not provided)
 %
-%   Outputs:
-%       this - experimentData object with quality flags added to marker
-%              data
+% Outputs:
+%   this - experimentData object with quality flags added to marker data
 %
-%   See also: extractMarkerModels, orientedLabTimeSeries/findOutliers
+% Toolbox Dependencies: None
+%
+% See also EXTRACTMARKERMODELS, ORIENTEDLABTIMESERIES.FINDOUTLIERS.
 
 disp('Checking marker health...');
 
@@ -28,7 +29,7 @@ disp('Checking marker health...');
 noOutlierTest = false;
 if (nargin < 2 || isempty(refTrial)) && ~all(badFlag)
     modelScore(badFlag) = Inf;
-    [~, refTrial] = nanmin(modelScore);
+    [~, refTrial] = min(modelScore, [], 'omitnan');
 elseif all(badFlag) % Undefined refTrial but all trials are bad
     warning(['Could not find suitable data for model training. ' ...
         'Not testing for outliers.']);

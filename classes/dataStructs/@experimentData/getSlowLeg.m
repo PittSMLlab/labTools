@@ -1,18 +1,20 @@
 function slowLeg = getSlowLeg(this)
-%getSlowLeg  Returns leg that was on slow belt
+%GETSLOWLEG Returns leg that was on slow belt
 %
-%   slowLeg = getSlowLeg(this) determines which leg is the slow leg,
-%   simply the opposite of the fast leg
+%   slowLeg = getSlowLeg(this) determines which leg is the slow leg, simply
+% the opposite of the fast leg
 %
-%   Inputs:
-%       this - experimentData object
+% NOTE: Be sure to call get.fastLeg() first
 %
-%   Outputs:
-%       slowLeg - 'R' or 'L'
+% Inputs:
+%   this - experimentData object
 %
-%   Note: Be sure to call get.fastLeg() first
+% Outputs:
+%   slowLeg - 'R' or 'L'
 %
-%   See also: getRefLeg, getNonRefLeg
+% Toolbox Dependencies: None
+%
+% See also GETREFLEG, GETNONREFLEG.
 
 if strcmpi(this.fastLeg, 'L')
     slowLeg = 'R';

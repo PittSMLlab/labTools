@@ -1,21 +1,26 @@
 function this = recomputeEvents(this, eventClass, initEventSide)
-%recomputeEvents  Recalculates gait events and parameters
+%RECOMPUTEEVENTS Recalculates gait events and parameters
 %
-%   this = recomputeEvents(this) recomputes events and parameters for
-%   all trials with default options
+%   this = recomputeEvents(this) recomputes events and parameters for all
+% trials with default options
 %
-%   this = recomputeEvents(this, eventClass, initEventSide)
-%   recomputes with specified options
+%   this = recomputeEvents(this, eventClass, initEventSide) recomputes with
+% specified options
 %
-%   Inputs:
-%       this - experimentData object
-%       eventClass - event classification parameter (optional)
-%       initEventSide - initial event side specification (optional)
+% NOTE: currently errors because PROCESSEDLABDATA.RECOMPUTEEVENTS does;
+%   eventClass and initEventSide are ignored.
 %
-%   Outputs:
-%       this - experimentData object with recomputed events and parameters
+% Inputs:
+%   this          - experimentData object
+%   eventClass    - event classification parameter (optional)
+%   initEventSide - initial event side specification (optional)
 %
-%   See also: processedLabData/recomputeEvents, recomputeParameters
+% Outputs:
+%   this - experimentData object with recomputed events and parameters
+%
+% Toolbox Dependencies: None
+%
+% See also PROCESSEDLABDATA.RECOMPUTEEVENTS, RECOMPUTEPARAMETERS.
 
 trials = cell2mat(this.metaData.trialsInCondition);
 for t = trials

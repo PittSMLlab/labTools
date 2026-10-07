@@ -1,23 +1,25 @@
 function stridedExp = splitIntoStrides(this, refEvent)
-%splitIntoStrides  Separates trials into individual strides
+%SPLITINTOSTRIDES Separates trials into individual strides
 %
-%   stridedExp = splitIntoStrides(this) splits all trials into
-%   individual strides using default reference event
+%   stridedExp = splitIntoStrides(this) splits all trials into individual
+% strides using default reference event
 %
-%   stridedExp = splitIntoStrides(this, refEvent) splits using
-%   specified reference event
+%   stridedExp = splitIntoStrides(this, refEvent) splits using specified
+% reference event
 %
-%   Inputs:
-%       this - experimentData object
-%       refEvent - event label for stride boundaries (optional,
-%                  default: refLeg HS)
+% NOTE: This might not be used?
 %
-%   Outputs:
-%       stridedExp - stridedExperimentData object containing strided trials
+% Inputs:
+%   this     - experimentData object
+%   refEvent - event label for stride boundaries (optional, default: refLeg
+%              HS)
 %
-%   Note: This might not be used?
+% Outputs:
+%   stridedExp - stridedExperimentData object containing strided trials
 %
-%   See also: stridedExperimentData, processedLabData/separateIntoStrides
+% Toolbox Dependencies: None
+%
+% See also STRIDEDEXPERIMENTDATA, PROCESSEDLABDATA.SEPARATEINTOSTRIDES.
 
 if ~this.isStepped && this.isProcessed
     for trial = 1:length(this.data)

@@ -1,32 +1,31 @@
 function processedThis = process(this, eventClass)
-% process  Processes raw data for all trials in the experimental session.
+%PROCESS Processes raw data for all trials in the experimental session.
 %
-%   processedThis = process(this) processes all trials using the
-%   default gait event detection method.
+%   processedThis = process(this) processes all trials using the default
+% gait event detection method.
 %
-%   processedThis = process(this, eventClass) uses the specified
-%   gait event detection method.
+%   processedThis = process(this, eventClass) uses the specified gait event
+% detection method.
 %
-%   Inputs:
-%     this       - experimentData object containing raw trial data
-%     eventClass - (optional) String specifying the gait event
-%                  detection method. Defaults to '' if omitted:
-%                    ''      - default (forces for TM trials,
-%                              kinematics otherwise)
-%                    'kin'   - strictly from kinematics
-%                    'force' - strictly from forces
+% Inputs:
+%   this       - experimentData object containing raw trial data
+%   eventClass - (optional) String specifying the gait event detection
+%                method. Defaults to '' if omitted:
+%                  ''      - default (forces for TM trials, kinematics
+%                    otherwise)
+%                  'kin'   - strictly from kinematics
+%                  'force' - strictly from forces
 %
-%   Outputs:
-%     processedThis - experimentData object with processed trial data
+% Outputs:
+%   processedThis - experimentData object with processed trial data
 %
-%   Example:
-%     expData = rawExpData.process();
-%     expData = rawExpData.process('kin');
+% Toolbox Dependencies: None
 %
-%   Toolbox Dependencies:
-%     None
+% Example:
+%   expData = rawExpData.process();
+%   expData = rawExpData.process('kin');
 %
-%   See also: labData/process, recomputeParameters, loadSubject
+% See also LABDATA.PROCESS, RECOMPUTEPARAMETERS, LOADSUBJECT.
 
 arguments
     this

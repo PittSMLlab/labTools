@@ -1,14 +1,10 @@
 classdef experimentData
-    % experimentData  Contains all information for a single
-    %   experimental session.
+    %EXPERIMENTDATA Contain all information of one experimental session.
     %
     %   experimentData organizes all data, metadata, and subject
     % information for a complete experimental session. It provides
     % methods for data processing, analysis, visualization, and
     % parameter extraction.
-    %
-    % Toolbox Dependencies:
-    %   None
     %
     % experimentData properties:
     %   metaData    - experimentMetaData object with experimental
@@ -49,7 +45,9 @@ classdef experimentData
     % experimentData static methods:
     %   loadobj - backward-compatible object loading (removes DOB)
     %
-    % See also: experimentMetaData, subjectData, labData, adaptationData
+    % Toolbox Dependencies: None
+    %
+    % See also EXPERIMENTMETADATA, SUBJECTDATA, LABDATA, ADAPTATIONDATA.
 
     %% Properties
     properties
@@ -68,21 +66,23 @@ classdef experimentData
     %% Constructor
     methods
         function this = experimentData(meta, sub, data)
-            %experimentData  Constructor for experimentData class.
+            %EXPERIMENTDATA Constructor for experimentData class.
             %
-            %   this = experimentData(meta, sub, data) creates an
-            %   experiment data object with specified metadata, subject
-            %   data, and trial data. All arguments are optional.
+            %   this = experimentData(meta, sub, data) creates an experiment
+            % data object with specified metadata, subject data, and trial
+            % data. All arguments are optional.
             %
-            %   Inputs:
-            %       meta - (optional) experimentMetaData object
-            %       sub  - (optional) subjectData object
-            %       data - (optional) cell array of labData objects
+            % Inputs:
+            %   meta - (optional) experimentMetaData object
+            %   sub  - (optional) subjectData object
+            %   data - (optional) cell array of labData objects
             %
-            %   Outputs:
-            %       this - experimentData object
+            % Outputs:
+            %   this - experimentData object
             %
-            %   See also: experimentMetaData, subjectData, labData
+            % Toolbox Dependencies: None
+            %
+            % See also EXPERIMENTMETADATA, SUBJECTDATA, LABDATA.
 
             arguments
                 meta = []
@@ -107,19 +107,20 @@ classdef experimentData
     %% Property Setters
     methods
         function this = set.metaData(this, meta)
-            %set.metaData  Validates and sets experiment metadata.
+            %SET.METADATA Validates and sets experiment metadata.
             %
             %   Property-block validators (mustBeA) were not used here
-            %   because MATLAB evaluates them against the declared
-            %   default value at class load time, causing an immediate
-            %   error since the default [] is a double, not an
-            %   experimentMetaData. The constructor's if ~isempty()
-            %   guard prevents this setter from being reached with the
-            %   default empty value.
+            % because MATLAB evaluates them against the declared default
+            % value at class load time, causing an immediate error since the
+            % default [] is a double, not an experimentMetaData. The
+            % constructor's if ~isempty() guard prevents this setter from
+            % being reached with the default empty value.
             %
-            %   Inputs:
-            %       this - experimentData object
-            %       meta - experimentMetaData object
+            % Inputs:
+            %   this - experimentData object
+            %   meta - experimentMetaData object
+            %
+            % Toolbox Dependencies: None
 
             if isa(meta, 'experimentMetaData')
                 this.metaData = meta;
@@ -132,23 +133,24 @@ classdef experimentData
         end
 
         function this = set.subData(this, sub)
-            %set.subData  Validates and sets subject data.
+            %SET.SUBDATA Validates and sets subject data.
             %
             %   Property-block validators (mustBeA) were not used here
-            %   because MATLAB evaluates them against the declared
-            %   default value at class load time, causing an immediate
-            %   error since the default [] is a double, not a
-            %   subjectData. The constructor's if ~isempty() guard
-            %   prevents this setter from being reached with the
-            %   default empty value.
+            % because MATLAB evaluates them against the declared default
+            % value at class load time, causing an immediate error since the
+            % default [] is a double, not a subjectData. The constructor's
+            % if ~isempty() guard prevents this setter from being reached
+            % with the default empty value.
             %
             %   isa() returns true for subclasses of subjectData (e.g.,
-            %   strokeSubjectData), so this validator correctly accepts
-            %   both healthy and stroke participant data objects.
+            % strokeSubjectData), so this validator correctly accepts both
+            % healthy and stroke participant data objects.
             %
-            %   Inputs:
-            %       this - experimentData object
-            %       sub  - subjectData object
+            % Inputs:
+            %   this - experimentData object
+            %   sub  - subjectData object
+            %
+            % Toolbox Dependencies: None
 
             if isa(sub, 'subjectData')
                 this.subData = sub;
@@ -160,22 +162,24 @@ classdef experimentData
         end
 
         function this = set.data(this, data)
-            %set.data  Validates and sets experimental trial data.
+            %SET.DATA Validates and sets experimental trial data.
             %
-            %   Element-level validation (each non-empty cell must
-            %   contain a labData or reducedLabData object) cannot be
-            %   expressed in the properties block, so all three
-            %   property setters are retained as explicit methods.
+            %   Element-level validation (each non-empty cell must contain a
+            % labData or reducedLabData object) cannot be expressed in the
+            % properties block, so all three property setters are retained
+            % as explicit methods.
             %
-            %   Inputs:
-            %       this - experimentData object
-            %       data - cell array of labData objects
+            % Inputs:
+            %   this - experimentData object
+            %   data - cell array of labData objects
+            %
+            % Toolbox Dependencies: None
 
             if isa(data, 'cell')  % Has to be array of labData cells
                 aux = find(cellfun('isempty', data) ~= 1);
-                for i = 1:length(aux)
-                    if ~isa(data{aux(i)}, 'labData') && ...
-                            ~isa(data{aux(i)}, 'reducedLabData')
+                for ii = 1:length(aux)
+                    if ~isa(data{aux(ii)}, 'labData') && ...
+                            ~isa(data{aux(ii)}, 'reducedLabData')
                         ME = MException('experimentData:Constructor', ...
                             ['Data is not a cell array of labData ' ...
                             '(or one of its subclasses) objects.']);
@@ -194,38 +198,42 @@ classdef experimentData
     %% Dependent Property Getters
     methods
         function a = get.isProcessed(this)
-            %get.isProcessed  Checks if trials have been processed.
+            %GET.ISPROCESSED Checks if trials have been processed.
             %
             %   Returns true if the trials have been processed (i.e.,
-            %   parameters have been calculated through labData.process()),
-            %   and false if they contain only rawData.
+            % parameters have been calculated through labData.process()),
+            % and false if they contain only rawData.
             %
-            %   Inputs:
-            %       this - experimentData object
+            % Inputs:
+            %   this - experimentData object
             %
-            %   Outputs:
-            %       a - boolean indicating if data is processed
+            % Outputs:
+            %   a - boolean indicating if data is processed
+            %
+            % Toolbox Dependencies: None
 
             aux = cellfun('isempty', this.data);
             idx = find(aux ~= 1);       % not empty
             a   = true;
-            for i = idx
-                if ~isa(this.data{i}, 'processedLabData')
+            for ii = idx
+                if ~isa(this.data{ii}, 'processedLabData')
                     a = false;
                 end
             end
         end
 
         function a = get.isStepped(this)
-            %get.isStepped  Checks if data is strided.
+            %GET.ISSTEPPED Checks if data is strided.
             %
             %   Returns true if data is an object of the strideData class.
             %
-            %   Inputs:
-            %       this - experimentData object
+            % Inputs:
+            %   this - experimentData object
             %
-            %   Outputs:
-            %       a - boolean indicating if data is strided
+            % Outputs:
+            %   a - boolean indicating if data is strided
+            %
+            % Toolbox Dependencies: None
 
             aux = cellfun('isempty', this.data);
             idx = find(aux ~= 1, 1);
@@ -233,15 +241,17 @@ classdef experimentData
         end
 
         function a = get.isRaw(this)
-            %get.isRaw  Checks if data is raw.
+            %GET.ISRAW Checks if data is raw.
             %
             %   Returns true if data is an object of the rawLabData class.
             %
-            %   Inputs:
-            %       this - experimentData object
+            % Inputs:
+            %   this - experimentData object
             %
-            %   Outputs:
-            %       a - boolean indicating if data is raw
+            % Outputs:
+            %   a - boolean indicating if data is raw
+            %
+            % Toolbox Dependencies: None
 
             aux = cellfun('isempty', this.data);
             idx = find(aux ~= 1, 1);
@@ -249,37 +259,37 @@ classdef experimentData
         end
 
         function fastLeg = get.fastLeg(this)
-            %get.fastLeg  Determines which leg was on the fast belt.
+            %GET.FASTLEG Determines which leg was on the fast belt.
             %
-            %   Based on each trial, determines from the data (not
-            %   metadata, which could be wrong) which leg is the fast
-            %   leg, even if there is no belt data.
+            %   Based on each trial, determines from the data (not metadata,
+            % which could be wrong) which leg is the fast leg, even if there
+            % is no belt data.
             %
-            %   Inputs:
-            %       this - experimentData object
+            % NOTE: Currently unimplemented. Try getRefLeg, which reads
+            %   slow/fast leg labels from trial metaData.
             %
-            %   Outputs:
-            %       fastLeg - 'R' or 'L'
+            % Inputs:
+            %   this - experimentData object
             %
-            %   Note: Currently unimplemented. Try getRefLeg, which
-            %         reads slow/fast leg labels from trial metaData.
+            % Outputs:
+            %   fastLeg - 'R' or 'L'
+            %
+            % Toolbox Dependencies: None
 
-            % NOTE: The error below makes all code in this method
-            % body unreachable. See suggestion to either remove the
-            % dead code or complete the implementation.
+            % NOTE: the error below makes the rest of this method
+            % unreachable: remove the dead code or complete it.
             error(['Unimplemented. Try getRefLeg, which reads ' ...
                 'slow/fast leg labels from trial metaData.']);
             % -- Dead code below this line ---------------------------
             vR     = [];
             vL     = [];
             trials = cell2mat(this.metaData.trialsInCondition);
-            for i = 1:length(trials)
-                trial = trials(i);
+            for ii = 1:length(trials)
+                trial = trials(ii);
                 if ~this.isStepped
                     if ~isempty(this.data{trial}.beltSpeedReadData)
-                        % Old version: Need to fix, as we are not
-                        % really populating the beltSpeedReadData
-                        % field.
+                        % NOTE: the code below does not work because
+                        % beltSpeedReadData is not populated.
                         % vR(end+1) = mean( ...
                         %     this.data{trial} ...
                         %     .beltSpeedReadData ...
@@ -364,19 +374,12 @@ classdef experimentData
     %% Visualization Methods
     methods
         %% Display
-        % HH: I don't like either of these functions. They take way too
-        % long to run, and at the time being they assume that if a field
-        % isn't a label of the adaptParams property, then it must be a
-        % label of experimentalParams (which is a bad assumption because it
-        % could result in 5+ minutes of waiting just to find out the
-        % parameter doesn't exist.)
-        % PI, 5/26/2015: Agreed. Is there any other way to do it if someone
-        % asks for a label that does not exist? Do note that these
-        % functions are here for flexibility of the code, but the really
-        % efficient way to do it is generate an adaptData object (and save
-        % it) and use its plotting functions (which is what these do).
-        % Perhaps we could issue a warning or a disclaimer telling the user
-        % that this takes TOO long.
+        % NOTE: these are slow: a field that is not a label of adaptParams
+        % is assumed to be in experimentalParams, which can take minutes
+        % to find out that the parameter does not exist. They are kept
+        % for flexibility; the efficient way is to build and save an
+        % adaptData object and use its plotting methods (which these call).
+        % TODO: warn the user that this takes long.
         [h, adaptDataObject] = parameterEvolutionPlot(this, field)
 
         [h, adaptDataObject] = parameterTimeCourse(this, field)
@@ -389,7 +392,8 @@ classdef experimentData
             shouldComputeEMGNorm,muscleLabels, ...
             normalizationRefCond, biasRemovalCond)
 
-        this = flushAndRecomputeParameters(this, eventClass, initEventSide,...
+        this = flushAndRecomputeParameters(this, eventClass, ...
+            initEventSide,...
             shouldComputeEMGNorm,muscleLabels, ...
             normalizationRefCond, biasRemovalCond)
 
@@ -425,18 +429,20 @@ classdef experimentData
     %% Static Methods
     methods (Static)
         function this = loadobj(this)
-            %loadobj  Object loading method for backward compatibility.
+            %LOADOBJ Object loading method for backward compatibility.
             %
-            %   this = loadobj(this) scrubs date of birth information
-            %   when loading saved experimentData objects for privacy.
+            %   this = loadobj(this) scrubs date of birth information when
+            % loading saved experimentData objects for privacy.
             %
-            %   Inputs:
-            %       this - experimentData object being loaded
+            % Inputs:
+            %   this - experimentData object being loaded
             %
-            %   Outputs:
-            %       this - experimentData object with DOB removed
+            % Outputs:
+            %   this - experimentData object with DOB removed
             %
-            %   See also: saveobj, subjectData
+            % Toolbox Dependencies: None
+            %
+            % See also SAVEOBJ, SUBJECTDATA.
 
             if ~isempty(this.subData.dateOfBirth)
                 warning('expData:subjectDOB', ...

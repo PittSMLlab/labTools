@@ -1,23 +1,24 @@
 function [h, adaptDataObject] = parameterEvolutionPlot(this, field)
-%parameterEvolutionPlot  Plots parameter evolution across conditions
+%PARAMETEREVOLUTIONPLOT Plots parameter evolution across conditions
 %
-%   [h, adaptDataObject] = parameterEvolutionPlot(this, field)
-%   creates a plot showing how the specified parameter evolves across
-%   experimental conditions
+%   [h, adaptDataObject] = parameterEvolutionPlot(this, field) creates a
+% plot showing how the specified parameter evolves across experimental
+% conditions
 %
-%   Inputs:
-%       this - experimentData object
-%       field - parameter label to plot
+% NOTE: This function takes a long time to run. For efficiency, generate and
+%   save an adaptData object, then use its plotting functions directly.
 %
-%   Outputs:
-%       h - figure handle
-%       adaptDataObject - adaptationData object used for plotting
+% Inputs:
+%   this  - experimentData object
+%   field - parameter label to plot
 %
-%   Note: This function takes a long time to run. For efficiency, generate
-%         and save an adaptData object, then use its plotting functions
-%         directly.
+% Outputs:
+%   h               - figure handle
+%   adaptDataObject - adaptationData object used for plotting
 %
-%   See also: parameterTimeCourse, adaptationData/plotParamByConditions
+% Toolbox Dependencies: None
+%
+% See also PARAMETERTIMECOURSE, ADAPTATIONDATA.PLOTPARAMBYCONDITIONS.
 
 if ~(this.isProcessed)
     ME = MException('experimentData:parameterEvolutionPlot', ...
@@ -33,7 +34,7 @@ else
     % Creating adaptationData object, to include experimentalParams
     % (which are Dependent and need to be computed each time).
     % Otherwise we could just access this.data{trial}.experimentalParams
-    adaptDataObject = this.makeDataObj;
+    adaptDataObject = this.makeDataObj();
     h = adaptDataObject.plotParamByConditions(field);
 end
 end

@@ -1,12 +1,12 @@
 classdef reducedLabData % AKA alignedLabData
-    %reducedLabData  Time-aligned and resampled data container
+    %REDUCEDLABDATA Time-aligned and resampled data container
     %
     %   reducedLabData (also known as alignedLabData) contains data that
-    %   has been aligned to gait events and resampled to a standard time
-    %   base. All time series are organized into a single alignedTimeSeries
-    %   object with consistent sampling across strides.
+    % has been aligned to gait events and resampled to a standard time
+    % base. All time series are organized into a single alignedTimeSeries
+    % object with consistent sampling across strides.
     %
-    %reducedLabData properties:
+    % reducedLabData properties:
     %   Data - alignedTimeSeries object containing all aligned data
     %   bad - logical vector indicating strides with issues
     %   gaitEvents - labTimeSeries with gait event markers
@@ -26,15 +26,17 @@ classdef reducedLabData % AKA alignedLabData
     %   strideNo - number of strides (dependent)
     %   initTimes - initial time for each stride (dependent)
     %
-    %reducedLabData methods:
+    % reducedLabData methods:
     %   reducedLabData - constructor for reduced lab data
     %
-    %See also: processedLabData, alignedTimeSeries, labData
+    % Toolbox Dependencies: None
+    %
+    % See also PROCESSEDLABDATA, ALIGNEDTIMESERIES, LABDATA.
 
     %% Properties
     properties
         Data = [];
-        bad = [];
+        bad  = [];
         gaitEvents % labTS
         adaptParams
         metaData % labMetaData object
@@ -64,26 +66,28 @@ classdef reducedLabData % AKA alignedLabData
     %% Constructor
     methods
         function this = reducedLabData(metaData, events, alignTS, bad, ...
-                fields, fieldPrefixes, adaptParams)
-            %reducedLabData  Constructor for reducedLabData class
+            fields, fieldPrefixes, adaptParams)
+            %REDUCEDLABDATA Constructor for reducedLabData class
             %
             %   this = reducedLabData(metaData, events, alignTS, bad,
-            %   fields, fieldPrefixes, adaptParams) creates a reduced lab
-            %   data object with time-aligned data organized by stride
+            % fields, fieldPrefixes, adaptParams) creates a reduced lab data
+            % object with time-aligned data organized by stride
             %
-            %   Inputs:
-            %       metaData - labMetaData or subclass object
-            %       events - labTimeSeries with gait events
-            %       alignTS - alignedTimeSeries with resampled data
-            %       bad - logical vector indicating bad strides
-            %       fields - cell array of field names included in data
-            %       fieldPrefixes - cell array of prefixes for each field
-            %       adaptParams - parameterSeries with parameters
+            % Inputs:
+            %   metaData      - labMetaData or subclass object
+            %   events        - labTimeSeries with gait events
+            %   alignTS       - alignedTimeSeries with resampled data
+            %   bad           - logical vector indicating bad strides
+            %   fields        - cell array of field names included in data
+            %   fieldPrefixes - cell array of prefixes for each field
+            %   adaptParams   - parameterSeries with parameters
             %
-            %   Outputs:
-            %       this - reducedLabData object
+            % Outputs:
+            %   this - reducedLabData object
             %
-            %   See also: processedLabData/reduce, alignedTimeSeries
+            % Toolbox Dependencies: None
+            %
+            % See also PROCESSEDLABDATA.REDUCE, ALIGNEDTIMESERIES.
 
             this.metaData = metaData;
             this.Data = alignTS;
@@ -100,123 +104,149 @@ classdef reducedLabData % AKA alignedLabData
         % Can we do a universal getter for dependent fields like this?
         % function pED = get(fieldName)
         %     prefix = this.fieldPrefixes_(strcmp(this.fields_, fieldName));
-        %     pED = this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
+        %     pED = this.Data.getPartialDataAsATS( ...
+        %    this.Data.getLabelsThatMatch(prefix));
         % end
 
         function pED = get.procEMGData(this)
-            %get.procEMGData  Returns processed EMG data
+            %GET.PROCEMGDATA Returns processed EMG data
             %
             %   Uses universal getter to extract EMG-prefixed data
+            %
+            % Toolbox Dependencies: None
 
-            ST = dbstack;
+            ST  = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.angleData(this)
-            %get.angleData  Returns joint angle data
+            %GET.ANGLEDATA Returns joint angle data
             %
             %   Uses universal getter to extract angle-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.COPData(this)
-            %get.COPData  Returns center of pressure data
+            %GET.COPDATA Returns center of pressure data
             %
             %   Uses universal getter to extract COP-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.COMData(this)
-            %get.COMData  Returns center of mass data
+            %GET.COMDATA Returns center of mass data
             %
             %   Uses universal getter to extract COM-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.jointMomentsData(this)
-            %get.jointMomentsData  Returns joint moment data
+            %GET.JOINTMOMENTSDATA Returns joint moment data
             %
             %   Uses universal getter to extract moment-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.markerData(this)
-            %get.markerData  Returns marker trajectory data
+            %GET.MARKERDATA Returns marker trajectory data
             %
             %   Uses universal getter to extract marker-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.accData(this)
-            %get.accData  Returns acceleration data
+            %GET.ACCDATA Returns acceleration data
             %
-            %   Uses universal getter to extract acceleration-prefixed
-            %   data
+            %   Uses universal getter to extract acceleration-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.GRFData(this)
-            %get.GRFData  Returns ground reaction force data
+            %GET.GRFDATA Returns ground reaction force data
             %
             %   Uses universal getter to extract GRF-prefixed data
+            %
+            % Toolbox Dependencies: None
 
             [ST, ~] = dbstack;
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
         function pED = get.beltSpeedSetData(this)
-            %get.beltSpeedSetData  Returns commanded belt speed data
+            %GET.BELTSPEEDSETDATA Returns commanded belt speed data
             %
-            %   Currently returns empty as belt speed data is not
-            %   included in reduced format
+            %   Currently returns empty as belt speed data is not included
+            % in reduced format
+            %
+            % Toolbox Dependencies: None
 
             pED = [];
         end
 
         function pED = get.beltSpeedReadData(this)
-            %get.beltSpeedReadData  Returns actual belt speed data
+            %GET.BELTSPEEDREADDATA Returns actual belt speed data
             %
-            %   Currently returns empty as belt speed data is not
-            %   included in reduced format
+            %   Currently returns empty as belt speed data is not included
+            % in reduced format
+            %
+            % Toolbox Dependencies: None
 
             pED = [];
         end
 
         function pED = get.footSwitchData(this)
-            %get.footSwitchData  Returns foot switch data
+            %GET.FOOTSWITCHDATA Returns foot switch data
             %
-            %   Currently returns empty as foot switch data is not
-            %   included in reduced format
+            %   Currently returns empty as foot switch data is not included
+            % in reduced format
+            %
+            % Toolbox Dependencies: None
 
             pED = [];
         end
 
         function sN = get.strideNo(this)
-            %get.strideNo  Returns number of strides in data
+            %GET.STRIDENO Returns number of strides in data
             %
-            %   Outputs:
-            %       sN - number of strides (third dimension of Data)
+            % Outputs:
+            %   sN - number of strides (third dimension of Data)
+            %
+            % Toolbox Dependencies: None
 
             sN = size(this.Data.Data, 3);
         end
 
         function iT = get.initTimes(this)
-            %get.initTimes  Returns initial time for each stride
+            %GET.INITTIMES Returns initial time for each stride
             %
-            %   Outputs:
-            %       iT - vector of initial times for each stride
+            % Outputs:
+            %   iT - vector of initial times for each stride
+            %
+            % Toolbox Dependencies: None
 
             iT = this.Data.eventTimes(1, 1:end - 1);
         end
@@ -225,22 +255,26 @@ classdef reducedLabData % AKA alignedLabData
     %% Property Setters
     methods
         function this = set.metaData(this, mD)
-            %set.metaData  Validates and sets metadata
+            %SET.METADATA Validates and sets metadata
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       mD - labMetaData or subclass object
+            % Inputs:
+            %   this - reducedLabData object
+            %   mD   - labMetaData or subclass object
+            %
+            % Toolbox Dependencies: None
 
             % TODO: Check something
             this.metaData = mD;
         end
 
         function this = set.Data(this, dd)
-            %set.Data  Validates and sets aligned data
+            %SET.DATA Validates and sets aligned data
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       dd - alignedTimeSeries object
+            % Inputs:
+            %   this - reducedLabData object
+            %   dd   - alignedTimeSeries object
+            %
+            % Toolbox Dependencies: None
 
             if ~isa(dd, 'alignedTimeSeries')
                 error('reducedLabData:setData', ...
@@ -251,12 +285,13 @@ classdef reducedLabData % AKA alignedLabData
         end
 
         function this = set.bad(this, b)
-            %set.bad  Validates and sets bad stride flags
+            %SET.BAD Validates and sets bad stride flags
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       b - logical vector of length equal to number of
-            %           strides
+            % Inputs:
+            %   this - reducedLabData object
+            %   b    - logical vector of length equal to number of strides
+            %
+            % Toolbox Dependencies: None
 
             if length(b) ~= this.strideNo
                 error('reducedLabData:setBad', ...
@@ -267,11 +302,13 @@ classdef reducedLabData % AKA alignedLabData
         end
 
         function this = set.gaitEvents(this, e)
-            %set.gaitEvents  Validates and sets gait events
+            %SET.GAITEVENTS Validates and sets gait events
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       e - logical labTimeSeries with event markers
+            % Inputs:
+            %   this - reducedLabData object
+            %   e    - logical labTimeSeries with event markers
+            %
+            % Toolbox Dependencies: None
 
             if ~isa(e, 'labTimeSeries') || ~isa(e.Data, 'logical')
                 error('reducedLabData:setGaitEvents', ...
@@ -282,15 +319,17 @@ classdef reducedLabData % AKA alignedLabData
         end
 
         function this = set.adaptParams(this, aP)
-            %set.adaptParams  Validates and sets adaptation parameters
+            %SET.ADAPTPARAMS Validates and sets adaptation parameters
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       aP - parameterSeries object with parameters for each
-            %            stride
+            % NOTE: Validates that parameter count matches stride count and
+            %   that initial times are consistent
             %
-            %   Note: Validates that parameter count matches stride count
-            %         and that initial times are consistent
+            % Inputs:
+            %   this - reducedLabData object
+            %   aP   - parameterSeries object with parameters for each
+            %          stride
+            %
+            % Toolbox Dependencies: None
 
             if ~isa(aP, 'parameterSeries') || ...
                     size(aP.Data, 1) ~= this.strideNo
@@ -313,23 +352,25 @@ classdef reducedLabData % AKA alignedLabData
     %% Hidden Methods
     methods (Hidden)
         function pED = universalDependentFieldGetter(this, funName)
-            %universalDependentFieldGetter  Universal getter for dependent
+            %UNIVERSALDEPENDENTFIELDGETTER Universal getter for dependent
             %fields
             %
-            %   pED = universalDependentFieldGetter(this, funName)
-            %   extracts data for a dependent field by matching the field
-            %   prefix and removing the prefix from labels
+            %   pED = universalDependentFieldGetter(this, funName) extracts
+            % data for a dependent field by matching the field prefix and
+            % removing the prefix from labels
             %
-            %   Inputs:
-            %       this - reducedLabData object
-            %       funName - full function name from stack trace
+            % NOTE: This method is called by all dependent property getters
+            %   to extract field-specific data from the unified Data
+            %   property
             %
-            %   Outputs:
-            %       pED - alignedTimeSeries with extracted field data
+            % Inputs:
+            %   this    - reducedLabData object
+            %   funName - full function name from stack trace
             %
-            %   Note: This method is called by all dependent property
-            %         getters to extract field-specific data from the
-            %         unified Data property
+            % Outputs:
+            %   pED - alignedTimeSeries with extracted field data
+            %
+            % Toolbox Dependencies: None
 
             fieldName = regexp(funName, '\.get\.', 'split');
             prefix = this.fieldPrefixes_(strcmp(this.fields_, ...
