@@ -18,9 +18,13 @@ function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
 %
 %   See also: computeCOPAlt, computeHemiCOP
 
+medFiltOrder = 5;  % samples; TODO: source?
+fcut         = 30;  % Hz, low-pass cutoff; TODO: source?
 if noFilterFlag == 1
-    COPL = COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
-    COPR = COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+    COPL = COPL.medianFilter(medFiltOrder).substituteNaNs ...
+        .lowPassFilter(fcut);
+    COPR = COPR.medianFilter(medFiltOrder).substituteNaNs ...
+        .lowPassFilter(fcut);
 end
 
 newData = bsxfun(@rdivide, (bsxfun(@times, COPL.Data, FL(:, 3)) + ...
