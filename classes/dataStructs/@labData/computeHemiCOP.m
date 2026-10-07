@@ -1,26 +1,29 @@
 function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)
-%computeHemiCOP  Computes center of pressure for one leg
+%COMPUTEHEMICOP Computes center of pressure for one leg.
 %
 %   [COP, F, M] = computeHemiCOP(this, side) computes center of pressure
-%   for specified leg with default filtering
+% for specified leg with default filtering
 %
 %   [COP, F, M] = computeHemiCOP(this, side, noFilterFlag) optionally
-%   disables filtering when noFilterFlag is true
+% disables filtering when noFilterFlag is true
 %
-%   Inputs:
-%       this - labData object
-%       side - 'L' or 'R' for left or right leg
-%       noFilterFlag - flag to disable filtering (default: filtered)
+% Inputs:
+%   this         - labData object
+%   side         - 'L' or 'R' for left or right leg
+%   noFilterFlag - flag to disable filtering (default: filtered)
 %
-%   Outputs:
-%       COP - orientedLabTimeSeries containing center of pressure
-%       F - force data matrix
-%       M - moment data matrix
+% Outputs:
+%   COP - orientedLabTimeSeries containing center of pressure
+%   F   - force data matrix
+%   M   - moment data matrix
 %
-%   Note: COP computation is calibrated only for GRFData
-%         obtained from the Bertec instrumented treadmill
+% NOTE: COP computation is calibrated only for GRFData obtained from the
+%       Bertec instrumented treadmill
 %
-%   See also: computeCOPAlt, mergeHemiCOPs
+% Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+%                        LABTIMESERIES filter methods)
+%
+% See also COMPUTECOPALT, MERGEHEMICOPS.
 
 % COP calculation as used by the ALTERNATIVE version
 
@@ -52,7 +55,7 @@ else
     % Thresholding to avoid artifacts
     F(abs(F(:, 3)) < forceThreshold, :) = 0;
 end
-% I believe this should work for all forceplates in the world:
+% General COP formula (disabled; the Bertec-specific form below is used):
 % aux = bsxfun(@rdivide, cross(F, M), (sum(F.^2, 2)));
 % t = -aux(:, 3) ./ F(:, 3);
 % COP = orientedLabTimeSeries(aux + t .* F, this.Time(1), this.sampPeriod,

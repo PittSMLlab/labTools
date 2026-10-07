@@ -1,4 +1,28 @@
 function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)
+%GETBELTSPEEDSFROMFOOTMARKERS Estimate belt speeds from heel markers.
+%
+%   beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData, events)
+% estimates each belt's speed from the fore-aft heel marker speed. For
+% every heel strike, the stance-leg heel speed is the median over that
+% leg's single stance (from the contralateral toe-off to the next
+% contralateral heel strike); that value is assigned to the samples from
+% the heel strike to the ipsilateral toe-off. Strides with an incomplete
+% event sequence stay NaN. If either heel marker is missing, a warning is
+% issued and [] is returned.
+%
+% Inputs:
+%   trialData - rawTrialData with markerData (heel markers LHEE and RHEE)
+%               and metaData.rawDataFilename
+%   events    - labTimeSeries with LHS, RHS, LTO, RTO event labels
+%
+% Outputs:
+%   beltSpeedReadData - labTimeSeries with labels 'L' and 'R' sampled at
+%                       the event time base (NaN where not estimated), or
+%                       [] if the heel markers are missing
+%
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES, LABDATA/GETEVENTS.
 
 LHS = events.getDataAsVector('LHS');
 LTO = events.getDataAsVector('LTO');

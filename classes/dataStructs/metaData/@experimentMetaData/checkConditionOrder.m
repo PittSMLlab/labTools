@@ -1,26 +1,28 @@
 function conditionOrder = checkConditionOrder(this, ...
     conditionNamesInOrder, silentFlag)
-%checkConditionOrder  Checks that conditions appear in order
+%CHECKCONDITIONORDER Checks that conditions appear in order.
 %
 %   conditionOrder = checkConditionOrder(this) checks that all
-%   conditions appear in order according to trial numbering
+% conditions appear in order according to trial numbering
 %
 %   conditionOrder = checkConditionOrder(this,
-%   conditionNamesInOrder, silentFlag) checks specified conditions and
-%   optionally displays warnings
+% conditionNamesInOrder, silentFlag) checks specified conditions and
+% optionally displays warnings
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       conditionNamesInOrder - cell array of condition names to check
-%                               (optional, default: all conditions)
-%       silentFlag - if false, displays warnings for out-of-order
-%                    conditions (optional, default: true)
+% Inputs:
+%   this                  - experimentMetaData object
+%   conditionNamesInOrder - cell array of condition names to check
+%                           (optional, default: all conditions)
+%   silentFlag            - if false, displays warnings for out-of-order
+%                           conditions (optional, default: true)
 %
-%   Outputs:
-%       conditionOrder - vector indicating order of conditions by first
-%                        trial number
+% Outputs:
+%   conditionOrder - vector indicating order of conditions by first trial
+%                    number
 %
-%   See also: validateTrialsInCondition, sortConditions
+% Toolbox Dependencies: None
+%
+% See also VALIDATETRIALSINCONDITION, SORTCONDITIONS.
 
 if nargin < 2 || isempty(conditionNamesInOrder)
     conditionNamesInOrder = this.conditionName;

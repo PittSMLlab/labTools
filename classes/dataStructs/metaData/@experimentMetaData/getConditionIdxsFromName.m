@@ -1,31 +1,32 @@
 function conditionIdxs = getConditionIdxsFromName(this, ...
     conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)
-%getConditionIdxsFromName  Returns condition indices from names
+%GETCONDITIONIDXSFROMNAME Returns condition indices from names.
 %
 %   conditionIdxs = getConditionIdxsFromName(this, conditionNames)
-%   looks for condition names similar to those given and returns
-%   corresponding condition indices. Accepts partial matches.
+% looks for condition names similar to those given and returns
+% corresponding condition indices. Accepts partial matches.
 %
 %   conditionIdxs = getConditionIdxsFromName(this, conditionNames,
-%   exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over
-%   matching behavior
+% exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over
+% matching behavior
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       conditionNames - cell array containing strings or nested cell
-%                        arrays of strings (e.g., {'Base', 'Adap',
-%                        {'Post', 'wash'}})
-%       exactMatchesOnlyFlag - if true, only exact matches accepted
-%                              (default: false)
-%       ignoreMissingNamesFlag - if true, missing names generate
-%                                warning instead of error (default:
-%                                false)
+% Inputs:
+%   this                   - experimentMetaData object
+%   conditionNames         - cell array containing strings or nested cell
+%                            arrays of strings (e.g., {'Base', 'Adap',
+%                            {'Post', 'wash'}})
+%   exactMatchesOnlyFlag   - if true, only exact matches accepted (default:
+%                            false)
+%   ignoreMissingNamesFlag - if true, missing names generate warning instead
+%                            of error (default: false)
 %
-%   Outputs:
-%       conditionIdxs - vector of condition indices (NaN for conditions
-%                       not found)
+% Outputs:
+%   conditionIdxs - vector of condition indices (NaN for conditions not
+%                   found)
 %
-%   See also: getTrialsInCondition, getConditionsThatMatch
+% Toolbox Dependencies: None
+%
+% See also GETTRIALSINCONDITION, GETCONDITIONSTHATMATCH.
 
 if nargin < 3 || isempty(exactMatchesOnlyFlag)
     % Default behavior accepts partial matches

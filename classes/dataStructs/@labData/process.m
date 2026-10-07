@@ -1,6 +1,5 @@
 function processedData = process(this, subData, eventClass)
-% process  Processes raw trial data to compute angles, gait events,
-%   and adaptation parameters.
+%PROCESS Process raw trial data into angles, events, and parameters.
 %
 %   processedData = process(this, subData) processes the raw trial
 %   data and returns a processedTrialData object with computed limb
@@ -9,30 +8,29 @@ function processedData = process(this, subData, eventClass)
 %   processedData = process(this, subData, eventClass) uses the
 %   specified gait event detection method.
 %
-%   Inputs:
-%     this       - labData object
-%     subData    - subjectData object containing subject weight and
-%                  other anthropometric information
-%     eventClass - (optional) String specifying the gait event
-%                  detection method. Defaults to '' if omitted:
-%                    ''      - default (forces for TM trials,
-%                              kinematics otherwise)
-%                    'kin'   - strictly from kinematics
-%                    'force' - strictly from forces
+% Inputs:
+%   this       - labData object
+%   subData    - subjectData object containing subject weight and other
+%                anthropometric information
+%   eventClass - (optional) String specifying the gait event detection
+%                method. Defaults to '' if omitted:
+%                  ''      - default (forces for TM trials, kinematics
+%                            otherwise)
+%                  'kin'   - strictly from kinematics
+%                  'force' - strictly from forces
 %
-%   Outputs:
-%     processedData - processedTrialData object containing all
-%                     processed data
+% Outputs:
+%   processedData - processedTrialData object containing all processed
+%                   data
 %
-%   Note: This function must be idempotent, i.e.,
-%           labData.process().process() == labData.process()
-%         Otherwise re-processing data may lead to double or
-%         triple filtering.
+% NOTE: This function must be idempotent, i.e.,
+%         labData.process().process() == labData.process()
+%       Otherwise re-processing data may lead to double or triple
+%       filtering.
 %
-%   Toolbox Dependencies:
-%     None
+% Toolbox Dependencies: None
 %
-%   See also: processedTrialData, calcParameters, experimentData/process
+% See also PROCESSEDTRIALDATA, CALCPARAMETERS, EXPERIMENTDATA/PROCESS.
 
 arguments
     this

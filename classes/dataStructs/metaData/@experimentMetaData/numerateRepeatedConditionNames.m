@@ -1,24 +1,24 @@
 function [newThis, change] = numerateRepeatedConditionNames(this)
-%numerateRepeatedConditionNames  Adds numbers to repeated condition
-%names
+%NUMERATEREPEATEDCONDITIONNAMES Adds numbers to repeated condition names.
 %
 %   [newThis, change] = numerateRepeatedConditionNames(this) finds any
-%   repeated condition names and appends sequential numbers to make
-%   them unique
+% repeated condition names and appends sequential numbers to make
+% them unique
 %
-%   Inputs:
-%       this - experimentMetaData object
+% Inputs:
+%   this - experimentMetaData object
 %
-%   Outputs:
-%       newThis - experimentMetaData object with unique condition names
-%       change - logical flag indicating if any changes were made
+% Outputs:
+%   newThis - experimentMetaData object with unique condition names
+%   change  - logical flag indicating if any changes were made
 %
-%   Note: This function should (almost) never be used. metaData no
-%         longer allows repeated condition names, so this is
-%         unnecessary. However, for files created before the
-%         prohibition, it may happen.
+% NOTE: This function should (almost) never be used. metaData no longer
+%       allows repeated condition names, so this is unnecessary. However,
+%       for files created before the prohibition, it may happen.
 %
-%   See also: replaceConditionNames, validateTrialsInCondition
+% Toolbox Dependencies: None
+%
+% See also REPLACECONDITIONNAMES, VALIDATETRIALSINCONDITION.
 
 aaa    = unique(this.conditionName);
 change = false;

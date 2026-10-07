@@ -1,6 +1,5 @@
 function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)
-% processEMG  Extracts processed and filtered EMG amplitude envelopes
-%   from raw trial EMG data.
+%PROCESSEMG Extract EMG amplitude envelopes from raw trial EMG.
 %
 %   Performs quality checks, outlier clipping, optional template-based
 % spike removal, NaN interpolation, and bandpass/envelope amplitude
@@ -11,23 +10,23 @@ function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)
 % returns the existing processed data unchanged to avoid over-smoothing.
 % To re-process, retrieve the original raw EMG before calling.
 %
-%   Inputs:
-%     trialData - labData object whose EMGData property contains the
-%                 raw EMG time series to process
-%     spikeFlag - (optional) Logical flag to enable template-based spike
-%                 removal. Default: false
+% Inputs:
+%   trialData - labData object whose EMGData property contains the raw EMG
+%               time series to process
+%   spikeFlag - (optional) Logical flag to enable template-based spike
+%               removal. Default: false
 %
-%   Outputs:
-%     procEMGData     - processedEMGTimeSeries with fully processed
-%                       amplitude envelope
-%     filteredEMGData - processedEMGTimeSeries with filtered (not fully
-%                       smoothed) EMG data
+% Outputs:
+%   procEMGData     - processedEMGTimeSeries with fully processed amplitude
+%                     envelope
+%   filteredEMGData - processedEMGTimeSeries with filtered (not fully
+%                     smoothed) EMG data
 %
-%   Toolbox Dependencies:
-%     Signal Processing Toolbox  (used in extractMuscleActivityFromEMG)
+% Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+%                        EXTRACTMUSCLEACTIVITYFROMEMG)
 %
-%   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,
-%     processingInfo, labData/process
+% See also EXTRACTMUSCLEACTIVITYFROMEMG, PROCESSEDEMGTIMESERIES,
+%          PROCESSINGINFO, LABDATA/PROCESS.
 
 arguments
     this       (1,1) labData

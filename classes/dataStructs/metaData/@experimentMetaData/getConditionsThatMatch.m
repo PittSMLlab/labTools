@@ -1,25 +1,27 @@
 function condNames = getConditionsThatMatch(this, name, type)
-%getConditionsThatMatch  Returns condition names matching pattern
+%GETCONDITIONSTHATMATCH Returns condition names matching pattern.
 %
 %   condNames = getConditionsThatMatch(this, name) returns all
-%   condition names that contain the specified pattern
+% condition names that contain the specified pattern
 %
 %   condNames = getConditionsThatMatch(this, name, type) returns
-%   condition names matching both name pattern and type pattern
+% condition names matching both name pattern and type pattern
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       name - string pattern to search for in condition names
-%       type - string pattern for additional filtering (optional)
+% Inputs:
+%   this - experimentMetaData object
+%   name - string pattern to search for in condition names
+%   type - string pattern for additional filtering (optional)
 %
-%   Outputs:
-%       condNames - cell array of matching condition names
+% Outputs:
+%   condNames - cell array of matching condition names
 %
-%   Example:
-%       condNames = getConditionsThatMatch('base', 'TM')
-%       % Returns all treadmill baseline conditions
+% Example:
+%   condNames = getConditionsThatMatch('base', 'TM')
+%   % Returns all treadmill baseline conditions
 %
-%   See also: getConditionsThatMatchV2, getConditionIdxsFromName
+% Toolbox Dependencies: None
+%
+% See also GETCONDITIONSTHATMATCHV2, GETCONDITIONIDXSFROMNAME.
 
 if nargin < 2 || isempty(name) || ~isa(name, 'char')
     error('Pattern name to search for needs to be a string');

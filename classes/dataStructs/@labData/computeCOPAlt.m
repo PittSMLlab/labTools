@@ -1,25 +1,28 @@
 function [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)
-%computeCOPAlt  Alternative method to compute center of pressure
+%COMPUTECOPALT Alternative method to compute center of pressure.
 %
 %   [COPData, COPL, COPR] = computeCOPAlt(this) computes center of pressure
-%   for left and right legs separately, then merges them. Uses default
-%   filtering.
+% for left and right legs separately, then merges them. Uses default
+% filtering.
 %
 %   [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag) optionally
-%   disables filtering when noFilterFlag is true
+% disables filtering when noFilterFlag is true
 %
-%   Inputs:
-%       this - labData object
-%       noFilterFlag - flag to disable filtering (default: 1)
+% Inputs:
+%   this         - labData object
+%   noFilterFlag - flag to disable filtering (default: 1)
 %
-%   Outputs:
-%       COPData - merged center of pressure data
-%       COPL - left leg center of pressure
-%       COPR - right leg center of pressure
+% Outputs:
+%   COPData - merged center of pressure data
+%   COPL    - left leg center of pressure
+%   COPR    - right leg center of pressure
 %
-%   Note: Only works for GRFData from Bertec instrumented treadmill
+% NOTE: Only works for GRFData from Bertec instrumented treadmill
 %
-%   See also: computeCOP, computeHemiCOP, mergeHemiCOPs
+% Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+%                        LABTIMESERIES filter methods)
+%
+% See also COMPUTECOP, COMPUTEHEMICOP, MERGEHEMICOPS.
 
 if nargin < 2 || isempty(noFilterFlag)
     noFilterFlag = 1;

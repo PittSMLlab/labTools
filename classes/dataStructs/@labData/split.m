@@ -1,27 +1,29 @@
 function newThis = split(this, t0, t1, newClass)
-%split  Splits data into time-delimited segments
+%SPLIT Splits data into time-delimited segments.
 %
 %   newThis = split(this, t0) splits data from time t0 to end of trial
 %
 %   newThis = split(this, t0, t1) splits data into interval [t0, t1)
 %
 %   newThis = split(this, t0, t1, newClass) splits data and returns object
-%   of type specified by newClass string
+% of type specified by newClass string
 %
-%   Inputs:
-%       this - labData object
-%       t0 - time in seconds of split start (inclusive). Use NaN for trial
-%            start
-%       t1 - time in seconds of split end (exclusive). Use NaN or omit for
-%            trial end
-%       newClass - string representing class/object type to return
-%                  (optional, default: same as this)
+% Inputs:
+%   this     - labData object
+%   t0       - time in seconds of split start (inclusive). Use NaN for trial
+%              start
+%   t1       - time in seconds of split end (exclusive). Use NaN or omit for
+%              trial end
+%   newClass - string representing class/object type to return (optional,
+%              default: same as this)
 %
-%   Outputs:
-%       newThis - new object containing split data, of type specified by
-%                 newClass or same as input (must be subclass)
+% Outputs:
+%   newThis - new object containing split data, of type specified by
+%             newClass or same as input (must be subclass)
 %
-%   See also: labTimeSeries/split
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/SPLIT.
 
 newThis = []; % Just to avoid Matlab saying this is not defined
 cname   = class(this);
@@ -31,12 +33,12 @@ if nargin < 4
         labDate.getCurrent, 'labData.split', ...
         ['Splice of ' this.metaData.description], 'Auto-generated', ...
         this.metaData.refLeg, this.metaData);
-    % HH removed 'Partial Interval' after labdata.split since 'type'
-    % property was eliminated.
+    % NOTE: no 'Partial Interval' tag; the 'type' property no longer
+    % exists.
     eval(['newThis = ' cname '(metaData);']);
     % Call empty constructor of same class
 else
-    % Should I call a different metaData constructor
+    % TODO: decide whether a different metaData constructor is needed
     metaData = strideMetaData(labDate.genIDFromClock, ...
         labDate.getCurrent, 'labData.split', ...
         ['Splice of ' this.metaData.description], 'Auto-generated', ...

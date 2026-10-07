@@ -1,22 +1,25 @@
 function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
-%mergeHemiCOPs  Merges left and right center of pressure data
+%MERGEHEMICOPS Merges left and right center of pressure data.
 %
 %   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag) combines left and
-%   right COP data weighted by vertical forces
+% right COP data weighted by vertical forces
 %
-%   Inputs:
-%       COPL - left leg center of pressure (orientedLabTS)
-%       COPR - right leg center of pressure (orientedLabTS)
-%       FL - left leg force data
-%       FR - right leg force data
-%       noFilterFlag - flag indicating if filtering should be applied
-%                      (1 = apply filtering)
+% Inputs:
+%   COPL         - left leg center of pressure (orientedLabTS)
+%   COPR         - right leg center of pressure (orientedLabTS)
+%   FL           - left leg force data
+%   FR           - right leg force data
+%   noFilterFlag - flag indicating if filtering should be applied (1 = apply
+%                  filtering)
 %
-%   Outputs:
-%       COP - merged center of pressure data containing both individual and
-%             combined COP
+% Outputs:
+%   COP - merged center of pressure data containing both individual and
+%         combined COP
 %
-%   See also: computeCOPAlt, computeHemiCOP
+% Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+%                        LABTIMESERIES filter methods)
+%
+% See also COMPUTECOPALT, COMPUTEHEMICOP.
 
 medFiltOrder = 5;  % samples; TODO: source?
 fcut         = 30;  % Hz, low-pass cutoff; TODO: source?

@@ -1,18 +1,20 @@
 function condLst = getCondLstPerTrial(this)
-%getCondLstPerTrial  Returns list of condition numbers for each trial
+%GETCONDLSTPERTRIAL Returns list of condition numbers for each trial.
 %
 %   condLst = getCondLstPerTrial(this) returns a vector with length
-%   equal to the number of trials in the experiment and with values
-%   equal to the condition number for each trial
+% equal to the number of trials in the experiment and with values
+% equal to the condition number for each trial
 %
-%   Inputs:
-%       this - experimentMetaData object
+% Inputs:
+%   this - experimentMetaData object
 %
-%   Outputs:
-%       condLst - vector of condition numbers, one per trial (NaN for
-%                 trials not assigned to any condition)
+% Outputs:
+%   condLst - vector of condition numbers, one per trial (NaN for trials not
+%             assigned to any condition)
 %
-%   See also: getTrialsInCondition, getConditionIdxsFromName
+% Toolbox Dependencies: None
+%
+% See also GETTRIALSINCONDITION, GETCONDITIONIDXSFROMNAME.
 
 for tr = 1:this.Ntrials
     for cond = 1:length(this.trialsInCondition)

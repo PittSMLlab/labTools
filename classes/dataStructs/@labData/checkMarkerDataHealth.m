@@ -1,16 +1,18 @@
 function checkMarkerDataHealth(this)
-%checkMarkerDataHealth  Diagnoses issues with marker data
+%CHECKMARKERDATAHEALTH Diagnoses issues with marker data.
 %
 %   checkMarkerDataHealth(this) analyzes marker data for missing frames,
-%   gap distributions, and potential outliers. Generates diagnostic plots.
+% gap distributions, and potential outliers. Generates diagnostic plots.
 %
-%   Inputs:
-%       this - labData object
+% Inputs:
+%   this - labData object
 %
-%   Outputs:
-%       None - generates diagnostic figures
+% Outputs:
+%   None - generates diagnostic figures
 %
-%   See also: orientedLabTimeSeries
+% Toolbox Dependencies: None
+%
+% See also ORIENTEDLABTIMESERIES.
 
 ts = this.markerData;
 minMissingFrac = 0.01; % plot gap histogram only if >1% of frames missing

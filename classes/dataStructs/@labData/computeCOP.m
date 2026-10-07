@@ -1,16 +1,18 @@
 function COPData = computeCOP(this)
-%computeCOP  Computes center of pressure from GRF data
+%COMPUTECOP Computes center of pressure from GRF data.
 %
 %   COPData = computeCOP(this) calculates the center of pressure using the
-%   COPCalculator function
+% COPCalculator function
 %
-%   Inputs:
-%       this - labData object
+% Inputs:
+%   this - labData object
 %
-%   Outputs:
-%       COPData - orientedLabTimeSeries containing center of pressure data
+% Outputs:
+%   COPData - orientedLabTimeSeries containing center of pressure data
 %
-%   See also: COPCalculator, computeCOPAlt
+% Toolbox Dependencies: None
+%
+% See also COPCALCULATOR, COMPUTECOPALT.
 
 COPData = COPCalculator(this.GRFData);
 end

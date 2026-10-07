@@ -1,25 +1,26 @@
 function [newThis, change] = replaceConditionNames(this, currentName, ...
     newName)
-%replaceConditionNames  Replaces condition names
+%REPLACECONDITIONNAMES Replaces condition names.
 %
 %   [newThis, change] = replaceConditionNames(this, currentName,
-%   newName) looks for conditions whose names match options in
-%   currentName and changes them to newName
+% newName) looks for conditions whose names match options in
+% currentName and changes them to newName
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       currentName - cell array of current condition names to replace
-%       newName - cell array of new condition names (same length as
+% Inputs:
+%   this        - experimentMetaData object
+%   currentName - cell array of current condition names to replace
+%   newName     - cell array of new condition names (same length as
 %                 currentName)
 %
-%   Outputs:
-%       newThis - experimentMetaData object with replaced names
-%       change - logical flag indicating if any changes were made
+% Outputs:
+%   newThis - experimentMetaData object with replaced names
+%   change  - logical flag indicating if any changes were made
 %
-%   Note: Only exact matches are replaced, partial matches ignored
+% NOTE: Only exact matches are replaced, partial matches ignored
 %
-%   See also: numerateRepeatedConditionNames,
-%             getConditionIdxsFromName
+% Toolbox Dependencies: None
+%
+% See also NUMERATEREPEATEDCONDITIONNAMES, GETCONDITIONIDXSFROMNAME.
 
 change = false;
 % Check currentName and newName are cell arrays of same length

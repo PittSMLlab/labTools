@@ -1,6 +1,5 @@
 function events = getEvents(trialData, angleData, perceptualFlag)
-%GETEVENTS Extract gait events from a raw trial, selecting the appropriate
-%detection strategy based on trial type and available data.
+%GETEVENTS Extract gait events from a raw trial by trial type.
 %
 %   For OG and NIM trials, events are derived from limb angles
 % (GETEVENTSFROMANGLES). For treadmill (TM) trials with GRF data, events
@@ -14,14 +13,16 @@ function events = getEvents(trialData, angleData, perceptualFlag)
 %   trialData      - rawTrialData, contains markerData, GRFData, metaData
 %   angleData      - labTimeSeries with 'RLimb' and 'LLimb' labels, or []
 %   perceptualFlag - scalar logical/numeric (1 = include perceptual cue
-%                   columns in the output)
+%                    columns in the output)
 %
 % Outputs:
-%   events - labTimeSeries, sparse logical event matrix with labels:
-%            LHS, RHS, LTO, RTO, forceLHS/RHS/LTO/RTO,
-%            kinLHS/RHS/LTO/RTO, [percStartCue, percEndCue, percEndRamp]
+%   events - labTimeSeries, sparse logical event matrix with labels: LHS,
+%            RHS, LTO, RTO, forceLHS/RHS/LTO/RTO, kinLHS/RHS/LTO/RTO,
+%            [percStartCue, percEndCue, percEndRamp]
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+%                        GETSTANCEFROMFORCES and
+%                        GETSTANCEFROMTOEANDHEEL)
 %
 % See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,
 %          GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.

@@ -1,16 +1,18 @@
 function COMData = computeCOM(this)
-%computeCOM  Computes center of mass from marker data
+%COMPUTECOM Computes center of mass from marker data.
 %
 %   COMData = computeCOM(this) calculates the center of mass trajectory
-%   using the COMCalculator function
+% using the COMCalculator function
 %
-%   Inputs:
-%       this - labData object
+% Inputs:
+%   this - labData object
 %
-%   Outputs:
-%       COMData - orientedLabTimeSeries containing center of mass data
+% Outputs:
+%   COMData - orientedLabTimeSeries containing center of mass data
 %
-%   See also: COMCalculator
+% Toolbox Dependencies: None
+%
+% See also COMCALCULATOR.
 
 COMData = COMCalculator(this.markerData);
 end
