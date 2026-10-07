@@ -1,25 +1,26 @@
 function alignedData = getAlignedData(this, spacing, trial, ...
     fieldName, labelList)
-%getAlignedData  Extracts phase-aligned data
+%GETALIGNEDDATA Extracts phase-aligned data.
 %
 %   alignedData = getAlignedData(this, spacing, trial, fieldName,
-%   labelList) extracts data aligned to gait phases with specified
-%   sample counts per phase
+% labelList) extracts data aligned to gait phases with specified
+% sample counts per phase
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       spacing - vector specifying number of samples for each of 4
-%                 phases [DS_LR, SS_L, DS_RL, SS_R]
-%       trial - trial number to extract from
-%       fieldName - name of field to extract (e.g., 'procEMGData')
-%       labelList - cell array of data labels to extract
+% Inputs:
+%   this      - stridedExperimentData object
+%   spacing   - vector specifying number of samples for each of 4 phases
+%               [DS_LR, SS_L, DS_RL, SS_R]
+%   trial     - trial number to extract from
+%   fieldName - name of field to extract (e.g., 'procEMGData')
+%   labelList - cell array of data labels to extract
 %
-%   Outputs:
-%       alignedData - 3D array (samples x labels x strides) with
-%                     phase-aligned data
+% Outputs:
+%   alignedData - 3D array (samples x labels x strides) with phase-aligned
+%                 data
 %
-%   See also: strideData/getDoubleSupportLR,
-%             strideData/getSingleStanceL
+% Toolbox Dependencies: None
+%
+% See also STRIDEDATA/GETDOUBLESUPPORTLR, STRIDEDATA/GETSINGLESTANCEL.
 
 data        = this;
 M           = spacing;

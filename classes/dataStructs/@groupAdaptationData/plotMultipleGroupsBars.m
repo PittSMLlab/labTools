@@ -3,6 +3,56 @@ function [figHandle,allData] = plotMultipleGroupsBars(groups,label, ...
     exemptFirst,exemptLast,legendNames,significanceThreshold, ...
     plotHandles,colors,significancePlotMatrixGroups,medianFlag, ...
     signifPlotMatrixConds)
+%PLOTMULTIPLEGROUPSBARS Bar plot of stride-group means for many groups.
+%
+%   Plots, for each label, bars of the mean (or median) across subjects
+% for every group, condition, and stride group (see
+% ADAPTATIONDATA/PLOTGROUPEDSUBJECTSBARSV2). If there is more than one
+% group and significanceThreshold is not empty, significance markers are
+% overlaid: paired and unpaired t-tests (signed-rank and rank-sum tests
+% when medianFlag is 1) and a repeated-measures ANOVA with Mauchly's
+% sphericity test and post-hoc comparisons.
+%
+% Inputs:
+%   groups                       - cell array of groupAdaptationData
+%                                  objects, or a struct with one such
+%                                  object per field
+%   label                        - cell array of parameter labels, one
+%                                  subplot each
+%   removeBiasFlag               - passed to the bar plot (default 0,
+%                                  with a warning)
+%   plotIndividualsFlag          - plot each subject (default [])
+%   condList                     - cell array of condition names
+%   numberOfStrides              - strides per stride group: positive
+%                                  values take the first N, negative the
+%                                  last N
+%   exemptFirst                  - strides skipped at the start
+%   exemptLast                   - strides skipped at the end
+%   legendNames                  - group names for the legend
+%   significanceThreshold        - p-value threshold for the overlaid
+%                                  tests (default []: no tests)
+%   plotHandles                  - axes handles, one per label
+%   colors                       - Nx3 group colors (default from
+%                                  COLORSCHEME)
+%   significancePlotMatrixGroups - square matrix over groups; nonzero
+%                                  entries select the compared groups
+%                                  (default: all ones)
+%   medianFlag                   - 1 to plot medians and use rank-based
+%                                  tests (default 0)
+%   signifPlotMatrixConds        - square matrix over the condition x
+%                                  stride group bars; nonzero entries
+%                                  select the compared bars (default:
+%                                  all zeros)
+%
+% Outputs:
+%   figHandle - figure handle
+%   allData   - struct with allData.group{g}, a conditions x stride
+%               groups x labels x subjects array of means over strides
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also PLOTBARS, ADAPTATIONDATA/PLOTGROUPEDSUBJECTSBARSV2.
+
 sphericityAlpha = 0.05; % Mauchly test: sphericity assumed if p > alpha
 if nargin < 3 || isempty(removeBiasFlag)
     %For efficiency, subjects should remove bias before hand, as it is a

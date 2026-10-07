@@ -1,18 +1,19 @@
 function newThis = timeNormalize(this, N)
-%timeNormalize  Resamples all strides to uniform length
+%TIMENORMALIZE Resamples all strides to uniform length.
 %
 %   newThis = timeNormalize(this, N) resamples all stride data to N
-%   samples, creating time-normalized strides
+% samples, creating time-normalized strides
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       N - target number of samples for each stride
+% Inputs:
+%   this - stridedExperimentData object
+%   N    - target number of samples for each stride
 %
-%   Outputs:
-%       newThis - stridedExperimentData object with time-normalized
-%                 strides
+% Outputs:
+%   newThis - stridedExperimentData object with time-normalized strides
 %
-%   See also: strideData/timeNormalize
+% Toolbox Dependencies: None
+%
+% See also STRIDEDATA/TIMENORMALIZE.
 
 % Lstrides
 newStrides = cell(1, length(this.stridedTrials));

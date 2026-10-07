@@ -2,10 +2,49 @@ function [figHandle,allData] = plotBars(this,label,removeBiasFlag, ...
     plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast, ...
     legendNames,significanceThreshold,plotHandles,colors, ...
     significancePlotMatrix)
-%TODO: Should check that numberOfStrides groups are given in
-%chronological order & that so are the conditions in condList
-%This will work if they are not, but the statistical testing
-%plots may not work properly, as it expects ordered things.
+%PLOTBARS Bar plot of stride-group parameter means for one group.
+%
+%   Plots, for each label, one bar per stride group and condition (see
+% PLOTMULTIPLEGROUPSBARS) and overlays paired t-test significance bars
+% between the stride groups selected in significancePlotMatrix.
+%
+% Inputs:
+%   this                   - groupAdaptationData object
+%   label                  - cell array of parameter labels, one subplot
+%                            each
+%   removeBiasFlag         - passed to the bar plot (default 0, with a
+%                            warning)
+%   plotIndividualsFlag    - plot each subject (default [])
+%   condList               - cell array of condition names
+%   numberOfStrides        - strides per group: positive values take the
+%                            first N, negative the last N
+%   exemptFirst            - strides skipped at the start
+%   exemptLast             - strides skipped at the end
+%   legendNames            - group names for the legend
+%   significanceThreshold  - p-value threshold; a bar is drawn if the
+%                            paired t-test p-value is below it divided by
+%                            the number of compared pairs. If empty, no
+%                            tests are run.
+%   plotHandles            - axes handles, one per label
+%   colors                 - Nx3 group colors
+%   significancePlotMatrix - square matrix over the condition x stride
+%                            group bars; nonzero entries select the
+%                            compared pairs (default: consecutive bars and
+%                            the second bar against all later ones)
+%
+% Outputs:
+%   figHandle - figure handle
+%   allData   - struct with allData.group{1}, a conditions x stride
+%               groups x labels x subjects array of means over strides
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also PLOTMULTIPLEGROUPSBARS, ADAPTATIONDATA/PLOTGROUPEDSUBJECTSBARSV2.
+
+% TODO: check that the numberOfStrides groups and the conditions in
+% condList are given in chronological order. The plot works if they are
+% not, but the statistical testing plots may not, as they expect ordered
+% input.
 
 if nargin < 3 || isempty(removeBiasFlag)
     %For efficiency, subjects should remove bias before hand, as it is a

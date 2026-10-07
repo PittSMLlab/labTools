@@ -1,29 +1,30 @@
 function [figHandle, plotHandles] = plotAllStrides(this, field, ...
     conditions, plotHandles, figHandle)
-%plotAllStrides  Plots all individual strides for a field
+%PLOTALLSTRIDES Plots all individual strides for a field.
 %
 %   [figHandle, plotHandles] = plotAllStrides(this, field,
-%   conditions) creates plots showing all individual strides for the
-%   specified field and conditions
+% conditions) creates plots showing all individual strides for the
+% specified field and conditions
 %
 %   [figHandle, plotHandles] = plotAllStrides(this, field,
-%   conditions, plotHandles, figHandle) uses existing plot handles
+% conditions, plotHandles, figHandle) uses existing plot handles
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       field - name of field to plot (e.g., 'procEMGData',
-%               'angleData')
-%       conditions - vector of condition indices to plot
-%       plotHandles - existing subplot handles (optional)
-%       figHandle - existing figure handle (optional)
+% Inputs:
+%   this        - stridedExperimentData object
+%   field       - name of field to plot (e.g., 'procEMGData', 'angleData')
+%   conditions  - vector of condition indices to plot
+%   plotHandles - existing subplot handles (optional)
+%   figHandle   - existing figure handle (optional)
 %
-%   Outputs:
-%       figHandle - handle to figure
-%       plotHandles - array of subplot handles
+% Outputs:
+%   figHandle   - handle to figure
+%   plotHandles - array of subplot handles
 %
-%   Note: To Do - need to add gait events markers
+% TODO: add gait event markers.
 %
-%   See also: plotAvgStride, plotAllStridesBilateral
+% Toolbox Dependencies: None
+%
+% See also PLOTAVGSTRIDE, PLOTALLSTRIDESBILATERAL.
 
 % TODO: need to add gait event markers
 

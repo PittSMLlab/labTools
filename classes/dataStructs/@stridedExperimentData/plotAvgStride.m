@@ -1,26 +1,27 @@
 function [figHandle, plotHandles] = plotAvgStride(this, field, ...
     conditions, plotHandles, figHandle)
-%plotAvgStride  Plots average stride across conditions
+%PLOTAVGSTRIDE Plots average stride across conditions.
 %
 %   [figHandle, plotHandles] = plotAvgStride(this, field, conditions)
-%   creates plots showing the average stride for each condition
+% creates plots showing the average stride for each condition
 %
 %   [figHandle, plotHandles] = plotAvgStride(this, field, conditions,
-%   plotHandles, figHandle) uses existing plot handles
+% plotHandles, figHandle) uses existing plot handles
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       field - name of field to plot (e.g., 'procEMGData',
-%               'angleData')
-%       conditions - vector of condition indices to plot
-%       plotHandles - existing subplot handles (optional)
-%       figHandle - existing figure handle (optional)
+% Inputs:
+%   this        - stridedExperimentData object
+%   field       - name of field to plot (e.g., 'procEMGData', 'angleData')
+%   conditions  - vector of condition indices to plot
+%   plotHandles - existing subplot handles (optional)
+%   figHandle   - existing figure handle (optional)
 %
-%   Outputs:
-%       figHandle - handle to figure
-%       plotHandles - array of subplot handles
+% Outputs:
+%   figHandle   - handle to figure
+%   plotHandles - array of subplot handles
 %
-%   See also: plotAllStrides, strideData/plotCellAvg
+% Toolbox Dependencies: None
+%
+% See also PLOTALLSTRIDES, STRIDEDATA/PLOTCELLAVG.
 
 % Set colors
 poster_colors;

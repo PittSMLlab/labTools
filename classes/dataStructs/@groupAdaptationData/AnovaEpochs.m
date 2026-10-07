@@ -1,8 +1,40 @@
 function [model,btab,wtab,maineff,posthocGroup,posthocEpoch, ...
     posthocEpochByGroup,posthocGroupByEpoch] = AnovaEpochs(groups, ...
     groupsNames,label,eps,significanceThreshold)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ANOVAEPOCHS ANOVA of a parameter across groups and epochs.
+%
+%   Performs an ANOVA on a parameter in a series of defined epochs:
+%   - one-way ANOVA if there is one epoch and more than one group
+%   - one-way repeated-measures ANOVA if there are several epochs and
+%     one group
+%   - two-way repeated-measures ANOVA if there are several epochs and
+%     several groups
+% Pairwise post-hoc p-values are corrected with the Benjamini-Hochberg
+% procedure at significanceThreshold.
+%
+% Inputs:
+%   groups                - cell array of groupAdaptationData objects,
+%                           one per group
+%   groupsNames           - names of the groups
+%   label                 - name of the parameter of interest
+%   eps                   - epoch dataset created with defineEpochs
+%   significanceThreshold - level of the Benjamini-Hochberg correction
+%
+% Outputs:
+%   model               - fitted model
+%   btab                - between-subjects ANOVA table
+%   wtab                - within-subjects ANOVA table
+%   maineff             - table with main effects of group and epoch
+%   posthocGroup        - table with post-hoc results
+%   posthocEpoch        - table with post-hoc results
+%   posthocEpochByGroup - table with post-hoc results of epochs within
+%                         each group
+%   posthocGroupByEpoch - table with post-hoc results of groups within
+%                         each epoch
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also GROUPADAPTATIONDATA, BENJAMINIHOCHBERG.
 %Performs ANOVA on a parameter in a series of defined epochs    %%
 %                                                               %%
 %Applications                                                   %%

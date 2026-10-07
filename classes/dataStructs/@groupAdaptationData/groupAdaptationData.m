@@ -1,21 +1,28 @@
 classdef groupAdaptationData
-    %groupAdaptaitonData  contains the adaptation data objects for a group
-    %of subjects
+    %GROUPADAPTATIONDATA Contain the adaptation data of a group of subjects.
     %
-    %groupAdaptaitonData properties:
-    %   ID - cell array of strings listing subject ID's in group
+    %   groupAdaptationData holds the adaptationData objects of a group of
+    % subjects and applies analyses and plots to all of them at once. The
+    % methods are grouped in this file as queries (conditions, parameters,
+    % stride counts), modifiers (bias removal, normalization, renaming,
+    % subject selection), grouped data access, plots, and statistics.
+    %
+    % groupAdaptationData properties:
+    %   ID        - cell array of strings listing subject IDs in the group
     %   adaptData - cell array of adaptationData objects
+    %   groupID   - group identifier (dependent)
+    %   subjectData - alias of adaptData (dependent)
     %
-    %groupAdaptaitonData Methods:
+    % Toolbox Dependencies: Statistics and Machine Learning Toolbox
     %
-    %See also: experimentMetaData, subjectData, adaptationData
+    % See also EXPERIMENTMETADATA, SUBJECTDATA, ADAPTATIONDATA.
 
     properties
-        %cell array of strings listing subject ID's in group: should be a
-        %dependent property!
+        % cell array of strings listing subject IDs in the group
+        % TODO: should be a dependent property
         ID
-        % cell array of adaptationData objects. This should be called
-        % 'subjectData'
+        % cell array of adaptationData objects
+        % TODO: should be called 'subjectData'
         adaptData
     end
 
@@ -31,6 +38,31 @@ classdef groupAdaptationData
     methods
         %% Constructor
         function this = groupAdaptationData(ID,data,groupID)
+            %GROUPADAPTATIONDATA Construct a group of subjects.
+            %
+            %   group = groupAdaptationData(ID, data, groupID) stores the
+            % subject IDs and their adaptationData objects, then checks the
+            % conditions common to all subjects and their order.
+            %
+            % Inputs:
+            %   ID      - cell array of subject IDs
+            %   data    - cell array of adaptationData objects, one per ID
+            %   groupID - (optional) group identifier; currently not stored
+            %             (see NOTE)
+            %
+            % Outputs:
+            %   this - groupAdaptationData object
+            %
+            % NOTE: If ID and data differ in length, or data holds anything
+            %       other than adaptationData objects, the object is left
+            %       empty. groupID is assigned to a local variable, so
+            %       groupID falls back to the first character of the first
+            %       subject ID.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA, GETCOMMONCONDITIONS,
+            %          CHECKCOMMONCONDITIONORDER.
 
             if nargin > 1 && length(ID) == length(data)
                 boolFlag = false(1,length(data));
@@ -58,11 +90,50 @@ classdef groupAdaptationData
 
         %% Other Functions
         function out = get.subjectData(this)
+            %GET.SUBJECTDATA Return the adaptationData objects of the group.
+            %
+            %   Alias of the adaptData property.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   out - cell array of adaptationData objects
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA.
+
             out = this.adaptData;
         end
 
         function [conditions,nonCommonConditions] = ...
             getCommonConditions(this,subs)
+            %GETCOMMONCONDITIONS Return conditions common to all subjects.
+            %
+            %   [conditions, nonCommonConditions] =
+            % getCommonConditions(this, subs) lists the condition names
+            % present for every selected subject, and warns about conditions
+            % that are missing for some of them. Names are compared
+            % case-insensitively.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   subs - indices of the subjects to use, or a cell array of
+            %          their IDs (default: all)
+            %
+            % Outputs:
+            %   conditions          - cell array of condition names common
+            %                         to all selected subjects (as named for
+            %                         the first subject)
+            %   nonCommonConditions - cell array of lower-case condition
+            %                         names found for some but not all
+            %                         subjects
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETALLCONDITIONS, CHECKCOMMONCONDITIONORDER.
+
             if nargin < 2 || isempty(subs)
                 subs = 1:length(this.ID);
             else
@@ -112,6 +183,26 @@ classdef groupAdaptationData
         end
 
         function commonOrder = checkCommonConditionOrder(this,conditions)
+            %CHECKCOMMONCONDITIONORDER Check the common condition order.
+            %
+            %   commonOrder = checkCommonConditionOrder(this, conditions)
+            % compares each subject's condition order with the median order
+            % and warns if any subject differs.
+            %
+            % Inputs:
+            %   this       - groupAdaptationData object
+            %   conditions - (optional) cell array of condition names
+            %                (default: the common conditions)
+            %
+            % Outputs:
+            %   commonOrder - median order of the conditions across
+            %                 subjects, or [] if any subject differs
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETCOMMONCONDITIONS,
+            %          EXPERIMENTMETADATA/CHECKCONDITIONORDER.
+
             if nargin < 2 || isempty(conditions)
                 conditions = this.getCommonConditions;
             end
@@ -140,6 +231,21 @@ classdef groupAdaptationData
         end
 
         function conditions = getAllConditions(this,subs)
+            %GETALLCONDITIONS Return all condition names found in the group.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   subs - indices of the subjects to use, or a cell array of
+            %          their IDs (default: all)
+            %
+            % Outputs:
+            %   conditions - sorted cell array of unique lower-case
+            %                condition names
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETCOMMONCONDITIONS.
+
             if nargin < 2 || isempty(subs)
                 subs = 1:length(this.ID);
             else
@@ -158,6 +264,27 @@ classdef groupAdaptationData
         end
 
         function [parameters,descriptions] = getCommonParameters(this,subs)
+            %GETCOMMONPARAMETERS Return parameters common to all subjects.
+            %
+            %   [parameters, descriptions] = getCommonParameters(this, subs)
+            % lists the parameter labels present for every selected subject
+            % and displays a warning for each parameter that is missing for
+            % some subject.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   subs - indices of the subjects to use, or a cell array of
+            %          their IDs (default: all)
+            %
+            % Outputs:
+            %   parameters   - cell array of parameter labels common to all
+            %                  selected subjects
+            %   descriptions - cell array of the matching descriptions
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETALLPARAMETERS, ADAPTATIONDATA/GETPARAMETERLIST.
+
             if nargin < 2 || isempty(subs)
                 subs = 1:length(this.ID);
             else
@@ -196,6 +323,24 @@ classdef groupAdaptationData
         end
 
         function [parameters,descriptions] = getAllParameters(this,subs)
+            %GETALLPARAMETERS Return all parameters found in the group.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   subs - indices of the subjects to use, or a cell array of
+            %          their IDs (default: all)
+            %
+            % Outputs:
+            %   parameters   - sorted cell array of unique parameter labels
+            %   descriptions - cell array of the matching descriptions
+            %
+            % NOTE: The loop indexes adaptData with its own counter, so subs
+            %       only sets how many subjects are read, not which ones.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETCOMMONPARAMETERS, ADAPTATIONDATA/GETPARAMETERLIST.
+
             if nargin < 2 || isempty(subs)
                 subs = 1:length(this.ID);
             else
@@ -216,12 +361,38 @@ classdef groupAdaptationData
         end
 
         function labelList = getLabelsThatMatch(this,exp)
+            %GETLABELSTHATMATCH Return parameter labels matching a pattern.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   exp  - regular expression to match against parameter labels
+            %
+            % Outputs:
+            %   labelList - cell array of matching parameter labels
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETALLPARAMETERS, REGEXP.
+
             labelList = this.getAllParameters;
             flags     = cellfun(@(x) ~isempty(x),regexp(labelList,exp));
             labelList = labelList(flags);
         end
 
         function gID = get.groupID(this)
+            %GET.GROUPID Return the group identifier.
+            %
+            %   Returns the hidden ID if set, otherwise the first character
+            % of the first subject's ID.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   gID - group identifier
+            %
+            % Toolbox Dependencies: None
+
             if ~isempty(this.hiddenID)
                 gID = this.hiddenID;
             else
@@ -231,6 +402,20 @@ classdef groupAdaptationData
         end
 
         function [nStrides,labels] = getNumStridesInCond(this,conds)
+            %GETNUMSTRIDESINCOND Count strides per subject and condition.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   conds - condition name or cell array of condition names
+            %
+            % Outputs:
+            %   nStrides - subjects x conditions matrix of stride counts
+            %   labels   - cell array of the condition names
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETINDSINCONDITION.
+
             nsubs = length(this.ID);
             if iscell(conds)
                 nconds = length(conds);
@@ -252,6 +437,22 @@ classdef groupAdaptationData
         end
 
         function meanSub = getMeanSubject(this)
+            %GETMEANSUBJECT Create an average subject (not implemented).
+            %
+            %   Always raises an Unimplemented error; the code after the
+            % error is the unfinished implementation.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   meanSub - adaptationData object of the group average
+            %
+            % NOTE: Needs getMinSharedNumberOfStrides to be finished first.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETMINSHAREDNUMBEROFSTRIDES.
 
             error('Unimplemented')
             %This requires finisihing getMinSharedNumberOfStrides
@@ -261,26 +462,54 @@ classdef groupAdaptationData
                 commonConds);
             data = getGroupedData(this,commonParams,commonConds,0, ...
                 numberOfStrides,0,0); %No removal of bias, no exempt strides
-            %Doxy: need to fill meta data and subject data fields
-            %appropriately
+            % TODO: fill meta data and subject data fields appropriately
             meanSub = adaptationData(this.adaptData{1}.metaData, ...
                 this.adaptData{1}.subData,data);
         end
 
         function minNumStrides = getMinSharedNumberOfStrides(this, conds)
-            %This function returns the minimum number of strides ALL
-            %subjects have for any given condition(s)
+            %GETMINSHAREDNUMBEROFSTRIDES Unimplemented: min shared strides.
+            %
+            %   Always raises an Unimplemented error. The intended result is
+            % the minimum number of strides that all subjects have for each
+            % condition.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   conds - (optional) condition names (default: the common
+            %           conditions)
+            %
+            % Outputs:
+            %   minNumStrides - minimum number of strides per condition
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETMEANSUBJECT, GETNUMSTRIDESINCOND.
+
             error('Unimplemented')
             if nargin < 2 || isempty(conds)
                 conds = this.getCommonConditions;
             end
             minNumStrides = nan(size(conds));
             for ii = 1:length(conds)
-                minNumStrides(ii) = NaN; %Doxy
+                minNumStrides(ii) = NaN; % placeholder
             end
         end
 
         function ageInMonths = getSubjectAgeAtExperimentDate(this)
+            %GETSUBJECTAGEATEXPERIMENTDATE Return age at experiment date.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   ageInMonths - age of each subject, as returned by
+            %                 adaptationData/getSubjectAgeAtExperimentDate
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETSUBJECTAGEATEXPERIMENTDATE.
+
             for ii = 1:length(this.ID)
                 ageInMonths(ii) = ...
                     this.adaptData{ii}.getSubjectAgeAtExperimentDate;
@@ -289,11 +518,41 @@ classdef groupAdaptationData
 
         %Modifiers
         function newThis = cat(this,other)
+            %CAT Concatenate two groups.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   other - groupAdaptationData object
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object with the subjects of
+            %             both groups
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also CATGROUPS.
+
             newThis = groupAdaptationData([this.ID other.ID], ...
                 [this.adaptData other.adaptData]);
         end
 
         function newThis = removeBadStrides(this,markAsNaNflag)
+            %REMOVEBADSTRIDES Remove bad strides from every subject.
+            %
+            %   Applies adaptationData/removeBadStrides to each subject.
+            %
+            % Inputs:
+            %   this          - groupAdaptationData object
+            %   markAsNaNflag - (optional) see
+            %                   adaptationData/removeBadStrides (default [])
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/REMOVEBADSTRIDES.
+
             newThis = this;
             if nargin < 2 || isempty(markAsNaNflag)
                 markAsNaNflag = [];
@@ -305,6 +564,22 @@ classdef groupAdaptationData
         end
 
         function newThis = markBadWhenMissingAny(this,labels)
+            %MARKBADWHENMISSINGANY Mark strides bad if any label missing.
+            %
+            %   Applies adaptationData/markBadWhenMissingAny to each
+            % subject.
+            %
+            % Inputs:
+            %   this   - groupAdaptationData object
+            %   labels - cell array of parameter labels
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/MARKBADWHENMISSINGANY.
+
             newThis = this;
             for ii = 1:length(this.ID)
                 newThis.adaptData{ii} = ...
@@ -313,6 +588,22 @@ classdef groupAdaptationData
         end
 
         function newThis = markBadWhenMissingAll(this,labels)
+            %MARKBADWHENMISSINGALL Mark strides bad if all labels missing.
+            %
+            %   Applies adaptationData/markBadWhenMissingAll to each
+            % subject.
+            %
+            % Inputs:
+            %   this   - groupAdaptationData object
+            %   labels - cell array of parameter labels
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/MARKBADWHENMISSINGALL.
+
             newThis = this;
             for ii = 1:length(this.ID)
                 newThis.adaptData{ii} = ...
@@ -321,6 +612,20 @@ classdef groupAdaptationData
         end
 
         function newThis = removeBias(this)
+            %REMOVEBIAS Remove the baseline bias from every subject.
+            %
+            %   Applies adaptationData/removeBias to each subject.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/REMOVEBIAS.
+
             newThis = this;
             for ii = 1:length(this.ID)
                 newThis.adaptData{ii} = this.adaptData{ii}.removeBias;
@@ -329,6 +634,20 @@ classdef groupAdaptationData
         end
 
         function newThis = normalizeBias(this)
+            %NORMALIZEBIAS Normalize the baseline bias of every subject.
+            %
+            %   Applies adaptationData/normalizeBias to each subject.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/NORMALIZEBIAS.
+
             newThis = this;
             for ii = 1:length(this.ID)
                 newThis.adaptData{ii} = this.adaptData{ii}.normalizeBias;
@@ -337,6 +656,22 @@ classdef groupAdaptationData
         end
 
         function newThis = normalizeToBaseline(this,labelPrefix,baseConds2)
+            %NORMALIZETOBASELINE Normalize to a baseline condition.
+            %
+            %   Applies adaptationData/normalizeToBaseline to each subject.
+            %
+            % Inputs:
+            %   this        - groupAdaptationData object
+            %   labelPrefix - prefix(es) of the parameters to normalize
+            %   baseConds2  - (optional) baseline conditions (default [])
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/NORMALIZETOBASELINE.
+
             newThis = this;
             if nargin < 3
                 baseConds2 = [];
@@ -351,6 +686,26 @@ classdef groupAdaptationData
         function this = normalizeToBaselineEpoch(this,labelPrefix, ...
             baseEpoch, ...
             noMinNormFlag)
+            %NORMALIZETOBASELINEEPOCH Normalize to a baseline epoch.
+            %
+            %   Applies adaptationData/normalizeToBaselineEpoch to each
+            % subject.
+            %
+            % Inputs:
+            %   this          - groupAdaptationData object
+            %   labelPrefix   - prefix(es) of the parameters to normalize
+            %   baseEpoch     - baseline epoch definition
+            %   noMinNormFlag - (optional) see
+            %                   adaptationData/normalizeToBaselineEpoch
+            %                   (default 0)
+            %
+            % Outputs:
+            %   this - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/NORMALIZETOBASELINEEPOCH.
+
             if nargin < 4 || isempty(noMinNormFlag)
                 noMinNormFlag = 0;
             end
@@ -363,6 +718,22 @@ classdef groupAdaptationData
         end
 
         function this = removeBaselineEpoch(this,baseEpoch,labels)
+            %REMOVEBASELINEEPOCH Subtract a baseline epoch.
+            %
+            %   Applies adaptationData/removeBaselineEpoch to each subject.
+            %
+            % Inputs:
+            %   this      - groupAdaptationData object
+            %   baseEpoch - baseline epoch definition
+            %   labels    - parameter labels to correct
+            %
+            % Outputs:
+            %   this - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/REMOVEBASELINEEPOCH.
+
             for ii = 1:length(this.ID)
                 this.adaptData{ii} = ...
                     this.adaptData{ii}.removeBaselineEpoch(baseEpoch, ...
@@ -373,6 +744,26 @@ classdef groupAdaptationData
         function newThis = removeAltBias(this,condName,strideNo, ...
             exemptStrides, ...
             medianFlag,normalizeFlag)
+            %REMOVEALTBIAS Remove an alternative bias from every subject.
+            %
+            %   Applies adaptationData/removeAltBias to each subject.
+            %
+            % Inputs:
+            %   this          - groupAdaptationData object
+            %   condName      - condition used to compute the bias
+            %   strideNo      - number of strides used
+            %   exemptStrides - strides skipped
+            %   medianFlag    - (optional) 1 to use the median (default 0)
+            %   normalizeFlag - (optional) see adaptationData/removeAltBias
+            %                   (default [])
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/REMOVEALTBIAS.
+
             newThis = this;
             if nargin < 5
                 medianFlag = 0;
@@ -388,6 +779,22 @@ classdef groupAdaptationData
         end
 
         function newThis = renameParams(this,oldLabels,newLabels)
+            %RENAMEPARAMS Rename parameters in every subject.
+            %
+            %   Applies adaptationData/renameParams to each subject.
+            %
+            % Inputs:
+            %   this      - groupAdaptationData object
+            %   oldLabels - cell array of current parameter labels
+            %   newLabels - cell array of new parameter labels
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/RENAMEPARAMS.
+
             for ii = 1:length(this.ID)
                 this.adaptData{ii} = ...
                     this.adaptData{ii}.renameParams(oldLabels,newLabels);
@@ -396,13 +803,26 @@ classdef groupAdaptationData
         end
 
         function newThis = renameConditions(this,oldNames,newNames)
-            %Replaces names for conditions in all members of the group.
-            %Old names is a cell array containing strings, or containing
-            %cell arrays of strings with multiple alternative spellings.
-            %New names is a cell array of strings.
-            %Only exact matches to old names are replaced, and if no exact
-            %match is found, then no replacement happens but the process
-            %continues (warning thrown, same as adaptationData method)
+            %RENAMECONDITIONS Rename conditions in every subject.
+            %
+            %   Replaces condition names in the metadata of every member of
+            % the group. Only exact matches to the old names are replaced;
+            % if no exact match is found nothing is replaced and the process
+            % continues, with a warning (same as the adaptationData method).
+            %
+            % Inputs:
+            %   this     - groupAdaptationData object
+            %   oldNames - cell array of strings, or of cell arrays of
+            %              strings with several alternative spellings
+            %   newNames - cell array of strings
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also EXPERIMENTMETADATA/REPLACECONDITIONNAMES.
+
             for ii = 1:length(this.ID)
                 this.adaptData{ii}.metaData = ...
                     this.adaptData{ii}.metaData.replaceConditionNames( ...
@@ -412,6 +832,21 @@ classdef groupAdaptationData
         end
 
         function newThis = medianFilter(this,N)
+            %MEDIANFILTER Apply a median filter to every subject.
+            %
+            %   Applies adaptationData/medianFilter to each subject.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %   N    - filter length in strides
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/MEDIANFILTER.
+
             newThis = this;
             for ii = 1:length(this.adaptData)
                 newThis.adaptData{ii} = this.adaptData{ii}.medianFilter(N);
@@ -420,6 +855,26 @@ classdef groupAdaptationData
 
         function newThis = addNewParameter(this,newParamLabel,funHandle, ...
             inputParameterLabels,newParamDescription)
+            %ADDNEWPARAMETER Add a computed parameter to every subject.
+            %
+            %   Applies adaptationData/addNewParameter to each subject.
+            %
+            % Inputs:
+            %   this                 - groupAdaptationData object
+            %   newParamLabel        - label of the new parameter
+            %   funHandle            - function handle that computes the
+            %                          parameter
+            %   inputParameterLabels - labels of the parameters passed to
+            %                          funHandle
+            %   newParamDescription  - description of the new parameter
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/ADDNEWPARAMETER.
+
             newThis = this;
             for ii = 1:length(this.adaptData)
                 newThis.adaptData{ii} = ...
@@ -430,6 +885,21 @@ classdef groupAdaptationData
         end
 
         function newThis = removeSubs(this,subList)
+            %REMOVESUBS Remove subjects from the group.
+            %
+            %   IDs that are not in the group are skipped with a warning.
+            %
+            % Inputs:
+            %   this    - groupAdaptationData object
+            %   subList - cell array of subject IDs to remove
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object without those subjects
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETSUBGROUP.
+
             for sub = 1:length(subList)
                 ii = find(strcmp(subList{sub},this.ID));
                 if ~isempty(ii)
@@ -444,6 +914,23 @@ classdef groupAdaptationData
         end
 
         function newThis = getSubGroup(this,subList)
+            %GETSUBGROUP Return a subgroup of subjects.
+            %
+            %   The subjects appear in the order of subList. An ID that is
+            % not in the group raises groupAdaptationData:getSubGroup.
+            %
+            % Inputs:
+            %   this    - groupAdaptationData object
+            %   subList - cell array of subject IDs to keep
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object with only those
+            %             subjects
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also REMOVESUBS.
+
             ii = nan(size(subList));
             for sub = 1:length(subList)
                 jj = find(strcmp(subList{sub},this.ID));
@@ -462,6 +949,18 @@ classdef groupAdaptationData
 
         %I/O
         function data = getAdaptData(this,subID)
+            %GETADAPTDATA Return the adaptationData object of one subject.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   subID - subject ID
+            %
+            % Outputs:
+            %   data - adaptationData object, or [] if the subject is not in
+            %          the group
+            %
+            % Toolbox Dependencies: None
+
             subInd = find(ismember(subID,this.ID));
             if subInd ~= 0
                 data = this.adaptData{subInd};
@@ -473,6 +972,27 @@ classdef groupAdaptationData
         function [inds,names] = getGroupedInds(this,conds, ...
             numberOfStrides, ...
             exemptFirst,exemptLast)
+            %GETGROUPEDINDS Return stride indices of each stride group.
+            %
+            %   Calls adaptationData/getEarlyLateIdxs for every subject.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   conds           - cell array of condition names
+            %   numberOfStrides - strides per group: positive values take
+            %                     the first N, negative the last N
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %
+            % Outputs:
+            %   inds  - cell array, stride groups x subjects, of stride
+            %           indices
+            %   names - cell array of group names
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETEARLYLATEIDXS, GETGROUPEDDATA.
+
             %Getting data for each subject in the list
             for subject = 1:length(this.adaptData)
                 [inds(:,subject),names] = ...
@@ -485,6 +1005,29 @@ classdef groupAdaptationData
         function [data,inds] = getGroupedData(this,label,conds, ...
             removeBiasFlag, ...
             numberOfStrides,exemptFirst,exemptLast,padWithNaNFlag)
+            %GETGROUPEDDATA Return parameter values for groups of strides.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   conds           - cell array of condition names
+            %   removeBiasFlag  - true to remove the bias first
+            %   numberOfStrides - strides per group: positive values take
+            %                     the first N, negative the last N
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %   padWithNaNFlag  - (optional) pad short groups with NaN
+            %                     (default false)
+            %
+            % Outputs:
+            %   data - cell array, one cell per stride group, of conditions
+            %          x strides x labels x subjects arrays
+            %   inds - stride indices (see GETGROUPEDINDS)
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETGROUPEDINDS, GETGROUPEDDATAFROMINDS.
+
             if removeBiasFlag
                 this = this.removeBias;
             end
@@ -499,11 +1042,26 @@ classdef groupAdaptationData
 
         function [data,validStrides,allData] = ...
             getEpochData(this,epochs,labels,padWithNaNFlag)
-            %getEpochData returns data from all subjects for each epoch
-            %See also: adaptationData.getEpochData
-            %Ex:[data,validStrides, ...
-            %    everyStrideData]=getEpochData(studyData,epochs, ...
-            %    {'doubleSupportFast'},0);
+            %GETEPOCHDATA Return data from all subjects for each epoch.
+            %
+            % Inputs:
+            %   this           - groupAdaptationData object
+            %   epochs         - epoch definition table (from defineEpochs)
+            %   labels         - parameter label or cell array of labels
+            %   padWithNaNFlag - (optional) pad short epochs with NaN
+            %                    (default false)
+            %
+            % Outputs:
+            %   data         - labels x epochs x subjects array of epoch
+            %                  values
+            %   validStrides - epochs x subjects matrix of valid-stride
+            %                  counts
+            %   allData      - cell array, one cell per epoch, of strides x
+            %                  labels x subjects arrays
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETEPOCHDATA.
 
             %Manage inputs:
             if isa(labels,'char')
@@ -532,6 +1090,24 @@ classdef groupAdaptationData
 
         function data = getGroupedDataFromInds(this,inds,label, ...
             padWithNaNFlag)
+            %GETGROUPEDDATAFROMINDS Return values for stride indices.
+            %
+            % Inputs:
+            %   this           - groupAdaptationData object
+            %   inds           - cell array of stride indices (see
+            %                    GETGROUPEDINDS)
+            %   label          - parameter label(s)
+            %   padWithNaNFlag - (optional) pad short groups with NaN
+            %                    (default false)
+            %
+            % Outputs:
+            %   data - cell array, one cell per stride group, of conditions
+            %          x strides x labels x subjects arrays
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETGROUPEDINDS, ADAPTATIONDATA/GETDATAFROMINDS.
+
             if nargin < 4 || isempty(padWithNaNFlag)
                 padWithNaNFlag = false;
             end
@@ -562,6 +1138,20 @@ classdef groupAdaptationData
         end
 
         function [biasTM, biasOG] = getGroupedBias(this,label)
+            %GETGROUPEDBIAS Return the baseline bias of each subject.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   label - parameter label(s)
+            %
+            % Outputs:
+            %   biasTM - labels x subjects matrix of treadmill biases
+            %   biasOG - labels x subjects matrix of overground biases
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETBIAS.
+
             for ii = 1:length(this.ID)
                 [biasTM(:,ii),biasOG(:,ii)] = ...
                     this.adaptData{ii}.getBias(label);
@@ -571,6 +1161,29 @@ classdef groupAdaptationData
         function [meanData,stdData] = ...
             getAvgGroupedData(this,label,conds, ...
             removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
+            %GETAVGGROUPEDDATA Return mean and std of grouped strides.
+            %
+            %   Averages the output of GETGROUPEDDATA over strides.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   conds           - cell array of condition names
+            %   removeBiasFlag  - true to remove the bias first
+            %   numberOfStrides - strides per group: positive values take
+            %                     the first N, negative the last N
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %
+            % Outputs:
+            %   meanData - conditions x stride groups x labels x subjects
+            %              array of means over strides
+            %   stdData  - same size array of standard deviations
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETGROUPEDDATA.
+
             data = getGroupedData(this,label,conds,removeBiasFlag, ...
                 numberOfStrides, ...
                 exemptFirst,exemptLast);
@@ -582,12 +1195,52 @@ classdef groupAdaptationData
         end
 
         function newThis = catGroups(this,other)
+            %CATGROUPS Concatenate two groups.
+            %
+            %   Same as CAT.
+            %
+            % Inputs:
+            %   this  - groupAdaptationData object
+            %   other - groupAdaptationData object
+            %
+            % Outputs:
+            %   newThis - groupAdaptationData object with the subjects of
+            %             both groups
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also CAT.
+
             newThis = groupAdaptationData([this.ID other.ID], ...
                 [this.adaptData other.adaptData]);
         end
         %Visualization
         %Scatter
         function [fh,dataAll,idAll] = scatter(this, params, conditions)
+            %SCATTER Scatter plot of two or three parameters.
+            %
+            %   Plots, for every subject and condition, the strides in the
+            % space of the given parameters (one color per subject, one
+            % marker per condition).
+            %
+            % Inputs:
+            %   this       - groupAdaptationData object
+            %   params     - cell array of two or three parameter labels
+            %   conditions - cell array of condition names
+            %
+            % Outputs:
+            %   fh      - figure handle
+            %   dataAll - plotted values, one row per stride
+            %   idAll   - cell array with the subject and condition of each
+            %             row of dataAll
+            %
+            % NOTE: Any other number of parameters raises an error with an
+            %       empty message.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETPARAMINCOND.
+
             fh = figure;
             hold on
             colorScheme
@@ -639,6 +1292,35 @@ classdef groupAdaptationData
         function fh = plotAvgTimeCourse(this,params,conditions,binwidth, ...
             trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback, ...
             removeBiasFlag,groupNames,medianFlag,plotHandles)
+            %PLOTAVGTIMECOURSE Plot the average time course of the group.
+            %
+            %   Forwards to adaptationData/plotAvgTimeCourse with the
+            % subjects of this group.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   params          - cell array of parameter labels
+            %   conditions      - (optional) condition names (default: the
+            %                     common conditions)
+            %   binwidth        - (optional) bin width in strides
+            %   trialMarkerFlag - (optional) mark trial boundaries
+            %   indivFlag       - (optional) plot individual subjects
+            %   indivSubs       - (optional) subjects to plot individually
+            %   colorOrder      - (optional) plot colors
+            %   biofeedback     - (optional) biofeedback information
+            %   removeBiasFlag  - (optional) 1 to remove the bias (default
+            %                     0)
+            %   groupNames      - (optional) names of the groups
+            %   medianFlag      - (optional) 1 to use the median
+            %   plotHandles     - (optional) axes handles
+            %
+            % Outputs:
+            %   fh - figure handle
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/PLOTAVGTIMECOURSE.
+
             if nargin < 3 || isempty(conditions)
                 conditions = this.getCommonConditions;
             end
@@ -693,9 +1375,38 @@ classdef groupAdaptationData
             plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch, ...
             flipLR, ...
             summFlag)
-            %This is meant to be used with parameters that end in
-            %'s1...s12' as are computed for EMG and angles. The 's' must be
-            %included in the labelPrefixes (to allow for other options too)
+            %PLOTCHECKERBOARDS Plot checkerboards of epoch data.
+            %
+            %   Meant for parameters that end in 's1...s12' (as computed for
+            % EMG and angles). The 's' must be included in the label
+            % prefixes, to allow for other options too. One checkerboard is
+            % drawn per epoch, optionally relative to a reference epoch.
+            %
+            % Inputs:
+            %   this        - groupAdaptationData object
+            %   labelPrefix - cell array of parameter label prefixes
+            %   epochs      - epoch definition table (from defineEpochs)
+            %   fh          - (optional) figure handle (default: new figure)
+            %   ph          - (optional) axes handles, one per epoch
+            %   refEpoch    - (optional) reference epoch subtracted from
+            %                 every epoch
+            %   flipLR      - (optional) true to flip left and right; 2 for
+            %                 a symmetry plot
+            %   summFlag    - (optional) name of the function that averages
+            %                 across subjects (default 'nanmean')
+            %
+            % Outputs:
+            %   fh      - figure handle
+            %   ph      - axes handles
+            %   labels  - parameter labels
+            %   dataE   - epoch data (aligned if flipLR is set)
+            %   dataRef - reference epoch data, or []
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETCHECKERBOARDSDATA,
+            %          ALIGNEDTIMESERIES/PLOTCHECKERBOARD.
+
             symmetryFlag = false;
             if nargin < 7 || isempty(flipLR)
                 flipLR    = false;
@@ -774,9 +1485,33 @@ classdef groupAdaptationData
         function [dataE,dataRef,labels,groups] = ...
             getCheckerboardsData(this,labelPrefix,epochs,refEpoch, ...
             flipLR,summFlag)
-            %This is meant to be used with parameters that end in
-            %'s1...s12' as are computed for EMG and angles. The 's' must be
-            %included in the labelPrefixes (to allow for other options too)
+            %GETCHECKERBOARDSDATA Return the data of PLOTCHECKERBOARDS.
+            %
+            %   Meant for parameters that end in 's1...s12' (as computed for
+            % EMG and angles). The 's' must be included in the label
+            % prefixes, to allow for other options too.
+            %
+            % Inputs:
+            %   this        - groupAdaptationData object
+            %   labelPrefix - cell array of parameter label prefixes
+            %   epochs      - epoch definition table (from defineEpochs)
+            %   refEpoch    - (optional) reference epoch subtracted from
+            %                 every epoch
+            %   flipLR      - (optional) true to flip left and right; 2 for
+            %                 a symmetry plot
+            %   summFlag    - (optional) name of the function that averages
+            %                 across subjects (default 'nanmean')
+            %
+            % Outputs:
+            %   dataE   - epoch data (aligned if flipLR is set)
+            %   dataRef - reference epoch data, or []
+            %   labels  - parameter labels
+            %   groups  - group-averaged data used for the plot
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also PLOTCHECKERBOARDS.
+
             symmetryFlag = false;
             if nargin < 5 || isempty(flipLR)
                 flipLR    = false;
@@ -847,7 +1582,25 @@ classdef groupAdaptationData
         function [dataE,labels,allData] = ...
             getPrefixedEpochData(this,labelPrefix, ...
             epochs,padWithNaNFlag)
-            %See also: adaptationData.getPrefixedEpochData
+            %GETPREFIXEDEPOCHDATA Return epoch data for label prefixes.
+            %
+            % Inputs:
+            %   this           - groupAdaptationData object
+            %   labelPrefix    - cell array of parameter label prefixes
+            %   epochs         - epoch definition table (from defineEpochs)
+            %   padWithNaNFlag - (optional) pad short epochs with NaN
+            %                    (default false)
+            %
+            % Outputs:
+            %   dataE   - labels x epochs x subjects array of epoch values
+            %   labels  - matching parameter labels
+            %   allData - cell array, one cell per epoch, of strides x
+            %             labels x subjects arrays
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/GETPREFIXEDEPOCHDATA.
+
             if nargin < 4 || isempty(padWithNaNFlag)
                 padWithNaNFlag = false;
             end
@@ -875,31 +1628,46 @@ classdef groupAdaptationData
         %Individuals
         function [fh,ph] = plotIndividuals(this,labels,conds,strideNo, ...
             exemptStrides,medianFlag,ph,regFlag,differenceFlag)
-            %This function plots individual averages (or medians) for some
-            %subset of
-            %strides
-            %INPUTS:
-            %this: a groupAdapatationData object
-            %labels: a string, or cell containing up to two parameter names
-            %(if only
-            %one, assume the same label is being compared to itself)
-            %conds: a string, or cell containing up to two condition names
-            %(if only one,
-            %.. blah)
-            %strideNo: a scalar or 2x1 vector, containing the number of
-            %strides to be
-            %used. Negative numbers indicate indexing from the end
-            %exemptStrides: scalar or 2x1 determining how many strides are
-            %to be
-            %exempted from counting [no sign, exempting equally from end and
-            %beginning]
-            %medianFlag: whether we take mean or median across strides
-            %(mean is default)
-            %ph: handles to individual axes to plot
-            %regFlag: plot linear regression between variables (default=no)
-            %differenceFlag: instead of plotting the second data set as is,
-            %subtract the first set from it first. Useful to compare
-            %baseline behavior to change from baseline
+            %PLOTINDIVIDUALS Scatter plot of individual subject averages.
+            %
+            %   Plots individual averages (or medians) over some subset of
+            % strides, one point per subject, for one parameter against
+            % another (or the same parameter in two conditions or stride
+            % sets).
+            %
+            % Inputs:
+            %   this           - groupAdaptationData object
+            %   labels         - parameter name, or cell array of up to two
+            %                    names (if only one, the same label is
+            %                    compared to itself)
+            %   conds          - condition name, or cell array of up to two
+            %                    names
+            %   strideNo       - scalar or 2-vector with the number of
+            %                    strides to use; negative numbers index from
+            %                    the end
+            %   exemptStrides  - scalar or 2-vector with the strides to
+            %                    exempt (no sign: exempted equally from the
+            %                    end and the beginning)
+            %   medianFlag     - (optional) true to take the median across
+            %                    strides (default: mean)
+            %   ph             - (optional) axes handle to plot into
+            %   regFlag        - (optional) 1 to plot the linear regression
+            %                    between the variables (default: no)
+            %   differenceFlag - (optional) 1 to subtract the first data set
+            %                    from the second before plotting, e.g., to
+            %                    compare baseline behavior to change from
+            %                    baseline
+            %
+            % Outputs:
+            %   fh - figure handle
+            %   ph - axes handle properties
+            %
+            % NOTE: With differenceFlag set, a third set of labels,
+            %       conditions, or strides is allowed (plots 1 against 2
+            %       minus 3).
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
             if ischar(labels)
                 labels = {labels};
             end
@@ -1067,17 +1835,46 @@ classdef groupAdaptationData
             friedman(this,label,conds,groupingStrides,exemptFirst, ...
             exemptLast, ...
             interactionFlag,avgFlag)
-            %Runs Friedman (non-parametric 1-way repeated measures anova
-            %equivalent) for the grouped data. Individual ID is considered
-            %to be the
-            %blocking factor, each individual is
-            %considered to be a block.
-            %It works by finding the indexes corresponding to
-            %conditions/strides
-            %desired, and calls on friedmanI.
-            %TODO: Should check that numberOfStrides groups are given in
-            %chronological order & that so are the conditions in condList
-            %as it expects ordered things.
+            %FRIEDMAN Friedman test of grouped data.
+            %
+            %   Runs the Friedman test (non-parametric one-way repeated
+            % measures ANOVA equivalent) on the grouped data, with each
+            % individual as a block. It finds the indices of the desired
+            % conditions and strides and calls FRIEDMANI.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   conds           - cell array of condition names
+            %   groupingStrides - strides per group (same absolute value in
+            %                     every group: Friedman needs a balanced
+            %                     design)
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %   interactionFlag - (optional) 1 for a model with interactions
+            %   avgFlag         - (optional) 1 to average strides within a
+            %                     group
+            %
+            % Outputs:
+            %   p                - p-value
+            %   table            - test table
+            %   stats            - test statistics structure
+            %   postHoc          - matrix of post-hoc p-values between
+            %                      stride groups
+            %   postHocEstimates - matrix of the post-hoc estimated
+            %                      differences
+            %   data             - grouped data used in the test
+            %
+            % NOTE: If the groups are not balanced, a warning is issued and
+            %       the size of the first group is used for all groups.
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also FRIEDMANI, ANOVA1RM, GETGROUPEDINDS.
+
+            % TODO: check that the numberOfStrides groups are given in
+            % chronological order and that so are the conditions in conds,
+            % as the test expects ordered input.
 
             if nargin < 7
                 interactionFlag = [];
@@ -1110,9 +1907,43 @@ classdef groupAdaptationData
             anova1RM(this,label,conds,groupingStrides,exemptFirst, ...
             exemptLast, ...
             interactionFlag,avgFlag)
-            %TODO: Should check that numberOfStrides groups are given in
-            %chronological order & that so are the conditions in condList
-            %as it expects ordered things.
+            %ANOVA1RM One-way repeated-measures ANOVA of grouped data.
+            %
+            %   Finds the indices of the desired conditions and strides and
+            % calls ANOVA1RMI, with each individual as a block.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   conds           - cell array of condition names
+            %   groupingStrides - strides per group (same absolute value in
+            %                     every group)
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %   interactionFlag - (optional) 1 for a model with interactions
+            %   avgFlag         - (optional) 1 to average strides within a
+            %                     group
+            %
+            % Outputs:
+            %   p                - p-value
+            %   table            - ANOVA table
+            %   stats            - test statistics structure
+            %   postHoc          - matrix of post-hoc p-values between
+            %                      stride groups
+            %   postHocEstimates - matrix of the post-hoc estimated
+            %                      differences
+            %   data             - grouped data used in the test
+            %
+            % NOTE: If the groups are not balanced, a warning is issued and
+            %       the size of the first group is used for all groups.
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also ANOVA1RMI, FRIEDMAN, GETGROUPEDINDS.
+
+            % TODO: check that the numberOfStrides groups are given in
+            % chronological order and that so are the conditions in conds,
+            % as the test expects ordered input.
 
             if nargin < 7
                 interactionFlag = [];
@@ -1143,23 +1974,44 @@ classdef groupAdaptationData
 
         function [p,table,stats,postHoc,postHocEstimates,allData] = ...
             friedmanI(this,label,inds,interactionFlag,avgFlag)
-            %Runs Friedman (non-parametric 1-way repeated measures anova
-            %equivalent) for the grouped data. Individual ID is considered
-            %to be the
-            %blocking factor, each individual is
-            %considered to be a block, and the different index groups are
-            %compared to each other.
-
-            %inds should be a cell with length = #subs and its contents a
-            %NxM matrix, where M is the number of groups to be tested and N
-            %the number of strides/repetitions in each group
-            %Inds here follows a slightly different specification from that
-            %returned by getGroupedInds. In order to format the output of
-            %that function to the input of this, the following lines need to
-            %be executed:
-            %N=size(inds{1},1);
-            %M=size(inds{1},2)*size(inds,1);
-            %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
+            %FRIEDMANI Friedman test on given stride indices.
+            %
+            %   Runs the Friedman test (non-parametric one-way repeated
+            % measures ANOVA equivalent) for the grouped data. Each
+            % individual is a block, and the different index groups are
+            % compared to each other.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   inds            - cell array with one cell per subject, each
+            %                     an N x M matrix of stride indices (M
+            %                     groups to test, N strides per group)
+            %   interactionFlag - (optional) 1 for a model with interactions
+            %                     (default 0)
+            %   avgFlag         - (optional) 1 to average strides within a
+            %                     group (default 0)
+            %
+            % Outputs:
+            %   p                - p-value
+            %   table            - test table
+            %   stats            - test statistics structure
+            %   postHoc          - upper-triangular M x M matrix of p-values
+            %                      of pairwise Friedman tests between stride
+            %                      groups
+            %   postHocEstimates - upper-triangular M x M matrix of the
+            %                      differences in mean ranks
+            %   allData          - N x subjects x M array of the data tested
+            %
+            % NOTE: inds follows a different specification from the output
+            %       of GETGROUPEDINDS. To convert that output: N =
+            %       size(inds{1},1); M = size(inds{1},2)*size(inds,1); inds
+            %       = mat2cell(cell2mat(inds'), N*ones(length(this.ID),1),
+            %       M).
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also FRIEDMAN, GETGROUPEDINDS.
 
             %Check that the size of inds is the same for all
             %subjects (friedman needs to be balanced)
@@ -1233,17 +2085,43 @@ classdef groupAdaptationData
 
         function [p,table,stats,postHoc,postHocEstimates,allData] = ...
             anova1RMI(this,label,inds,interactionFlag,avgFlag)
-            %One-way repeated measures anova, using each individual as a
-            %block, and testing across stride groups (e.g. early adap vs
-            %late
-            %base)
-            %Inds here follows a slightly different specification from that
-            %returned by getGroupedInds. In order to format the output of
-            %that function to the input of this, the following lines need to
-            %be executed:
-            %N=size(inds{1},1);
-            %M=size(inds{1},2)*size(inds,1);
-            %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
+            %ANOVA1RMI One-way RM ANOVA on stride indices.
+            %
+            %   Runs a one-way repeated-measures ANOVA using each individual
+            % as a block, testing across stride groups (e.g., early
+            % adaptation vs late baseline).
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   label           - parameter label(s)
+            %   inds            - cell array with one cell per subject, each
+            %                     an N x M matrix of stride indices (M
+            %                     groups to test, N strides per group)
+            %   interactionFlag - (optional) 1 for a model with interactions
+            %                     (default 0)
+            %   avgFlag         - (optional) 1 to average strides within a
+            %                     group (default 0)
+            %
+            % Outputs:
+            %   p                - p-value
+            %   table            - ANOVA table
+            %   stats            - test statistics structure
+            %   postHoc          - M x M matrix of Bonferroni-corrected
+            %                      post-hoc p-values between stride groups
+            %   postHocEstimates - M x M matrix of the estimated differences
+            %                      between stride groups
+            %   allData          - N x subjects x M array of the data tested
+            %
+            % NOTE: inds follows a different specification from the output
+            %       of GETGROUPEDINDS. To convert that output: N =
+            %       size(inds{1},1); M = size(inds{1},2)*size(inds,1); inds
+            %       = mat2cell(cell2mat(inds'), N*ones(length(this.ID),1),
+            %       M).
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also ANOVA1RM, GETGROUPEDINDS.
+
             N = size(inds{1},1);%Number of strides per stride group
             M = size(inds{1},2);%Number of strideGroups
             P = length(this.ID); %num of subs = size(inds,2)
@@ -1307,8 +2185,31 @@ classdef groupAdaptationData
         function [p,anovatab,stats,postHoc,postHocEstimate,data] = ...
             summaryKW(this,param,conds,groupingStrides,exemptFirst, ...
             exemptLast)
-            %Runs kruskal-wallis for each individual, and returns
-            %summarized results.
+            %SUMMARYKW Kruskal-Wallis test for each subject.
+            %
+            %   Runs adaptationData/kruskalwallis for each individual and
+            % returns the results as cell arrays, one cell per subject.
+            %
+            % Inputs:
+            %   this            - groupAdaptationData object
+            %   param           - parameter label
+            %   conds           - cell array of condition names
+            %   groupingStrides - strides per group
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %
+            % Outputs:
+            %   p               - cell array of p-values
+            %   anovatab        - cell array of test tables
+            %   stats           - cell array of test statistics structures
+            %   postHoc         - cell array of post-hoc results
+            %   postHocEstimate - cell array of post-hoc estimates
+            %   data            - cell array of the data tested
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ADAPTATIONDATA/KRUSKALWALLIS.
+
             for ii = 1:length(this.ID)
                 [p{ii},anovatab{ii},stats{ii},postHoc{ii}, ...
                     postHocEstimate{ii},data{ii}] = ...
@@ -1319,9 +2220,23 @@ classdef groupAdaptationData
         end
 
         function Demographic = GroupDemographics(this)
-            %Calculates number subjects, mean and std of age and number of
-            %males
-            %Use in conjuction with "GroupDemographics"
+            %GROUPDEMOGRAPHICS Compute the demographics of the group.
+            %
+            %   Calculates the number of subjects, the mean and std of age,
+            % and the number of males. Used by the GroupDemographics
+            % function.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object
+            %
+            % Outputs:
+            %   Demographic - struct with fields N, MeanAge, StdAge, AllAge,
+            %                 and NMale
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GROUPDEMOGRAPHICS.
+
             for s = 1:length(this.adaptData)
                 tempAge(s) = [this.adaptData{s}.subData.age];
                 if strcmp(lower(this.adaptData{s}.subData.sex), 'male') == 1
@@ -1341,23 +2256,34 @@ classdef groupAdaptationData
         function RemovedData = RemoveBadMuscles(normalizedGroupData, ...
             badSubjID, ...
             badMuscles )
-            %This is a function that change the values of the "bad" muscle
-            %to NaN.
-
-            %This code was developed by SL and updated by DMMO
-
-            %This is a function that change the values of the "bad" muscle
-            %to NaN. The
-            %subjects and muscle
-            %are hard code. Make sure you update this to your needs and that
-            %you
-            %removed muscle bilaterally
-
-            %This code was developed by SL and updated by DMMO
+            %REMOVEBADMUSCLES Set the data of bad muscles to NaN.
+            %
+            %   Sets to NaN the values of the listed muscles for the listed
+            % subjects. Muscles must be removed bilaterally, so both sides
+            % must be listed.
+            %
+            % Inputs:
+            %   normalizedGroupData - groupAdaptationData object with
+            %                         normalized data
+            %   badSubjID           - cell array of subject IDs
+            %   badMuscles          - cell array, one cell per subject ID,
+            %                         of cell arrays of muscle names
+            %
+            % Outputs:
+            %   RemovedData - groupAdaptationData object with the bad data
+            %                 set to NaN
+            %
+            % NOTE: If a label is not found, a warning is issued and the
+            %       function returns before the remaining muscles are
+            %       removed; normalize the data first.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also NORMALIZETOBASELINE.
 
             subjectsToPlot = [];  subjectsToPlotID = [];
-            subjectsToPlot{end+1} = normalizedGroupData; %
-            %     subjectsToPlotID{end+1} = groupID;% from SLcode
+            subjectsToPlot{end+1} = normalizedGroupData;
+            %     subjectsToPlotID{end+1} = groupID;
 
             for idxToRemove = 1:numel(badSubjID)
 
@@ -1397,7 +2323,7 @@ classdef groupAdaptationData
 
             end
 
-            RemovedData = subjectsToPlot{1}; % from SL code
+            RemovedData = subjectsToPlot{1};
 
         end
     end
@@ -1426,10 +2352,26 @@ classdef groupAdaptationData
 
         function p = compareMultipleGroups(groups,label,condition, ...
             numberOfStrides,exemptFirst,exemptLast)
-            %2-sample t-test comparing behavior of parameters across groups,
-            %for a given
-            %subset of strides
-            %Check that there are exactly two groups
+            %COMPAREMULTIPLEGROUPS Compare two groups with a t-test.
+            %
+            %   Runs a 2-sample t-test comparing the behavior of parameters
+            % across exactly two groups, for a given subset of strides.
+            %
+            % Inputs:
+            %   groups          - cell array of two groupAdaptationData
+            %                     objects
+            %   label           - cell array of parameter labels
+            %   condition       - cell array of condition names
+            %   numberOfStrides - strides per group
+            %   exemptFirst     - strides skipped at the start
+            %   exemptLast      - strides skipped at the end
+            %
+            % Outputs:
+            %   p - conditions x stride groups x labels array of p-values
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also GETAVGGROUPEDDATA.
 
             for jj = 1:length(condition)
                 for ii = 1:length(numberOfStrides)
@@ -1449,7 +2391,21 @@ classdef groupAdaptationData
 
         %% Loading
         function this = loadobj(this)
-            %Retroactive compliance check!
+            %LOADOBJ Check the group when loading a saved object.
+            %
+            %   Retroactive compliance check: runs getCommonConditions and
+            % checkCommonConditionOrder on the loaded object.
+            %
+            % Inputs:
+            %   this - groupAdaptationData object being loaded
+            %
+            % Outputs:
+            %   this - groupAdaptationData object
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETCOMMONCONDITIONS, CHECKCOMMONCONDITIONORDER.
+
             [conditions,nonCommonConditions] = getCommonConditions(this);
             condOrder = this.checkCommonConditionOrder(conditions);
             %To do: check and display minimum number of strides per common
