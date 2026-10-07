@@ -26,8 +26,7 @@ function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs, ...
 % Outputs:
 %   figHandle - figure handle
 %
-% Toolbox Dependencies: Curve Fitting Toolbox (SMOOTH), Statistics and
-%   Machine Learning Toolbox
+% Toolbox Dependencies: Curve Fitting Toolbox (SMOOTH)
 %
 % See also GETPARAMINCOND, REMOVEBIAS.
 

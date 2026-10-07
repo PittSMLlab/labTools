@@ -23,7 +23,7 @@ function [figHandle,allData] = ...
 %   figHandle - figure handle
 %   allData   - plotted data
 %
-% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+% Toolbox Dependencies: None
 %
 % See also PLOTAVGTIMECOURSE, PLOTGROUPEDSUBJECTSBARSV2.
 
