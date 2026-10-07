@@ -121,7 +121,7 @@ classdef strideData < processedLabData
                 evList = {'LHS', 'RHS', 'LTO', 'RTO'};
                 for ii = 1:length(evList)
                     eval([evList{ii} ...
-                        ' = this.gaitEvents.getDataAsVector(evList{i});']);
+                        ' = this.gaitEvents.getDataAsVector(evList{ii});']);
                 end
                 % This should get events in the sequence 1, 2, 3, 4, 1...
                 % with 0 for non-events
