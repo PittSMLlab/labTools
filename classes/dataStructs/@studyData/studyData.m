@@ -60,9 +60,9 @@ classdef studyData % < dynamicprops
                 N = nargin;
             end
 
-            for i = 1:N
-                if isa(V{i}, 'groupAdaptationData')
-                    this.groupData{i} = V{i};
+            for ii = 1:N
+                if isa(V{ii}, 'groupAdaptationData')
+                    this.groupData{ii} = V{ii};
                     % An attempt at making dot notation a thing:
                     % P = addprop(this, V{i}.groupID);
                     % P.Dependent = true;
@@ -89,8 +89,8 @@ classdef studyData % < dynamicprops
             %       outputArg - cell array of group ID strings
 
             outputArg = cell(size(this.groupData));
-            for i = 1:length(this.groupData)
-                outputArg{i} = this.groupData{i}.groupID;
+            for ii = 1:length(this.groupData)
+                outputArg{ii} = this.groupData{ii}.groupID;
             end
         end
     end

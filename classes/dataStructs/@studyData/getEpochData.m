@@ -34,12 +34,12 @@ if isa(labels, 'char')
     labels = {labels};
 end
 
-data = cell(size(this.groupData));
+data        = cell(size(this.groupData));
 allSameSize = true;
-N = length(this.groupData{1}.ID);
-for i = 1:length(this.groupData)
-    data{i} = this.groupData{i}.getEpochData(epochs, labels, summaryFlag);
-    allSameSize = allSameSize && N == size(data{i}, 3);
+N           = length(this.groupData{1}.ID);
+for ii = 1:length(this.groupData)
+    data{ii} = this.groupData{ii}.getEpochData(epochs, labels, summaryFlag);
+    allSameSize = allSameSize && N == size(data{ii}, 3);
 end
 % If all groups are same size, catting into a matrix for easier
 % manipulation (this is probably a bad idea)

@@ -21,12 +21,12 @@ function alignedData = getAlignedData(this, spacing, trial, ...
 %   See also: strideData/getDoubleSupportLR,
 %             strideData/getSingleStanceL
 
-data = this;
-M = spacing;
-aux = [0 cumsum(M)];
-strides = data.stridedTrials{trial};
+data        = this;
+M           = spacing;
+aux         = [0 cumsum(M)];
+strides     = data.stridedTrials{trial};
 alignedData = zeros(sum(M), length(labelList), length(strides));
-Nphases = 4;
+Nphases     = 4;
 for phase = 1:Nphases
     samples = zeros(length(strides), length(labelList));
     for stride = 1:length(strides)

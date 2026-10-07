@@ -36,8 +36,8 @@ else
     figure(figHandle); % Only works for one condition!
 end
 set(figHandle, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
-aux = this.getStridesFromCondition(conditions(1));
-N = 2^ceil(log2(size(aux{1}.(field).Data, 1)));
+aux       = this.getStridesFromCondition(conditions(1));
+N         = 2^ceil(log2(size(aux{1}.(field).Data, 1)));
 structure = this.getDataAsMatrices(field, conditions, N);
 if nargin < 4 || isempty(plotHandles)
     M = size(structure{1}, 2);
@@ -45,19 +45,19 @@ if nargin < 4 || isempty(plotHandles)
     plotHandles = tight_subplot(b, a, [0.04 0.02], [0.05 0.02], ...
         [0.04 0.05]);
 end
-for i = 1:M
+for ii = 1:M
     % subplot(b, a, i)
-    subplot(plotHandles(i));
+    subplot(plotHandles(ii));
     hold on;
     legStr = {};
-    title(aux{1}.(field).labels{i});
+    title(aux{1}.(field).labels{ii});
     for cond = conditions
-        data = mean(squeeze(structure{cond}(:, i, :)), 2);
+        data = mean(squeeze(structure{cond}(:, ii, :)), 2);
         plot([0:N - 1] / N, data, 'LineWidth', 2, 'Color', ...
             ColorOrder(mod(cond - 1, size(ColorOrder, 1)) + 1, :));
         legStr{end + 1} = ['Condition ' num2str(cond)];
     end
-    if i == M
+    if ii == M
         legend(legStr);
     end
     hold off;

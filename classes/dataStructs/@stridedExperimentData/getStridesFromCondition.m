@@ -16,7 +16,7 @@ function strides = getStridesFromCondition(this, condition)
 strides = {};
 for trial = this.metaData.trialsInCondition{condition}
     trialData = this.stridedTrials{trial};
-    Nsteps = length(trialData);
+    Nsteps    = length(trialData);
     strides(end + 1:end + Nsteps) = trialData;
 end
 end

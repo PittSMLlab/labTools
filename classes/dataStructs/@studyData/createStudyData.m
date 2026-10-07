@@ -20,8 +20,8 @@ function this = createStudyData(groupAdaptationDataList)
 % Check: groupAdaptationDataList is a cell of strings
 % Doxy
 aux = cell(size(groupAdaptationDataList));
-for i = 1:length(groupAdaptationDataList)
-    aux{i} = load(groupAdaptationDataList{i});
+for ii = 1:length(groupAdaptationDataList)
+    aux{ii} = load(groupAdaptationDataList{ii});
 end
 this = studyData(aux);
 end
