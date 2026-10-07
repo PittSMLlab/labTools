@@ -1,19 +1,20 @@
 function [boolFlag, labelIdx] = isaLabel(this, label)
-%isaLabel  Checks if label(s) exist in dataset
+%ISALABEL Checks if label(s) exist in dataset.
 %
-%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether
-%   specified label(s) are present in the cognitive data
+%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether specified
+% label(s) are present in the cognitive data
 %
-%   Inputs:
-%       this - cognitiveData object
-%       label - string or cell array of label(s) to check
+% Inputs:
+%   this  - cognitiveData object
+%   label - string or cell array of label(s) to check
 %
-%   Outputs:
-%       boolFlag - logical vector indicating which labels were found
-%       labelIdx - vector of indices for found labels (0 for not
-%                  found)
+% Outputs:
+%   boolFlag - logical vector indicating which labels were found
+%   labelIdx - vector of indices for found labels (0 for not found)
 %
-%   See also: getScore
+% Toolbox Dependencies: None
+%
+% See also GETSCORE.
 
 if isa(label, 'char')
     auxLabel{1} = label;

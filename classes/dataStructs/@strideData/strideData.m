@@ -1,40 +1,43 @@
 classdef strideData < processedLabData
-    %strideData  Represents data from a single gait stride
+    %STRIDEDATA Data from a single gait stride.
     %
-    %   strideData extends processedLabData to handle data from
-    %   individual stride cycles, including stride validation, phase
-    %   extraction, and time normalization.
+    %   strideData extends processedLabData to hold the data of one stride
+    % cycle and adds stride validation, phase extraction, and time
+    % normalization.
     %
-    %strideData properties:
-    %   isBad - logical flag indicating if stride has inconsistent
-    %           events
-    %   initialEvent - first gait event in the stride
-    %   originalTrial - name of parent trial from which stride was
+    %   NOTE: this file does not parse as MATLAB (the nested methods block
+    % under Phase Extraction Methods and the stray end after alignEvents),
+    % so the class cannot be loaded as written.
+    %
+    % strideData properties:
+    %   isBad         - logical flag, true if the events are inconsistent
+    %                   with a single stride
+    %   initialEvent  - first gait event in the stride
+    %   originalTrial - name of the parent trial from which the stride was
     %                   extracted
     %
-    %strideData methods:
-    %
-    %   fakeStride - generates fake stride by reordering phases
-    %   getDoubleSupportLR - extracts left-to-right double support
-    %                        phase
-    %   getDoubleSupportRL - extracts right-to-left double support
-    %                        phase
-    %   getSingleStanceL - extracts left single stance phase
-    %   getSingleStanceR - extracts right single stance phase
-    %   getSwingL - extracts left swing phase
-    %   getSwingR - extracts right swing phase
-    %   getMasterSampleLength - returns common sample length if time
+    % strideData methods:
+    %   fakeStride            - generates a fake stride by reordering phases
+    %   getDoubleSupportLR    - extracts left-to-right double support phase
+    %   getDoubleSupportRL    - extracts right-to-left double support phase
+    %   getSingleStanceL      - extracts left single stance phase
+    %   getSingleStanceR      - extracts right single stance phase
+    %   getSwingL             - extracts left swing phase
+    %   getSwingR             - extracts right swing phase
+    %   getMasterSampleLength - returns the common sample length if time
     %                           normalized
-    %   timeNormalize - resamples all data to uniform length
-    %   alignEvents - aligns data to gait events (unimplemented)
+    %   timeNormalize         - resamples all data to a uniform length
+    %   alignEvents           - aligns data to gait events (unimplemented)
     %
-    %strideData static methods:
+    % strideData static methods:
+    %   cell2mat    - converts a cell array of strides to a matrix
+    %   plotCell    - plots a cell array of stride data
+    %   plotCellAvg - plots the mean and standard deviation of a stride cell
+    %                 array
     %
-    %   cell2mat - converts cell array of strides to matrix
-    %   plotCell - plots cell array of stride data
-    %   plotCellAvg - plots average and std of stride cell array
+    % Toolbox Dependencies: None
     %
-    %See also: processedLabData, labData, strideMetaData
+    % See also PROCESSEDLABDATA, LABDATA, STRIDEMETADATA.
 
     %% Properties
     properties (Dependent)
@@ -48,10 +51,29 @@ classdef strideData < processedLabData
         function this = strideData(metaData, markerData, EMGData, ...
             GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
             EEGData, footSwitches, events, procEMG)
-            %strideData  Constructor for strideData class
+            %STRIDEDATA Constructor for strideData class.
             %
-            %   All arguments validated for proper type. metaData must
-            %   be strideMetaData or derivedMetaData.
+            %   Calls the processedLabData constructor with all arguments
+            % and warns if the events are not consistent with a single
+            % stride.
+            %
+            % Inputs:
+            %   metaData          - strideMetaData or derivedMetaData object
+            %   markerData        - marker data (optional)
+            %   EMGData           - EMG data (optional)
+            %   GRFData           - ground reaction force data (optional)
+            %   beltSpeedSetData  - commanded belt speeds (optional)
+            %   beltSpeedReadData - measured belt speeds (optional)
+            %   accData           - accelerometer data (optional)
+            %   EEGData           - EEG data (optional)
+            %   footSwitches      - foot switch data (optional)
+            %   events            - gait events time series (optional)
+            %   procEMG           - processed EMG data (optional)
+            %
+            % Outputs:
+            %   this - strideData object
+            %
+            % Toolbox Dependencies: None
 
             if nargin < 11
                 markerData = [];
@@ -102,6 +124,18 @@ classdef strideData < processedLabData
         %% Dependent Property Getters
         methods
             function initEv = get.initialEvent(this)
+                %GET.INITIALEVENT First gait event of the stride.
+                %
+                % Inputs:
+                %   this - strideData object
+                %
+                % Outputs:
+                %   initEv - label of the first of LHS, RHS, LTO, RTO with
+                %            an event at the first sample ([] if there are
+                %            no events)
+                %
+                % Toolbox Dependencies: None
+
                 if isempty(this.gaitEvents)
                     initEv = [];
                 else
@@ -118,6 +152,21 @@ classdef strideData < processedLabData
             end
 
             function b = get.isBad(this)
+                %GET.ISBAD True if the events are not in stride order.
+                %
+                %   Combines the event series into one sequence (LHS = 1,
+                % RTO = 2, RHS = 3, LTO = 4) and checks that the events
+                % cycle in that order and that at least four events are
+                % present.
+                %
+                % Inputs:
+                %   this - strideData object
+                %
+                % Outputs:
+                %   b - logical flag
+                %
+                % Toolbox Dependencies: None
+
                 evList = {'LHS', 'RHS', 'LTO', 'RTO'};
                 for ii = 1:length(evList)
                     eval([evList{ii} ...
@@ -153,6 +202,16 @@ classdef strideData < processedLabData
             end
 
             function t = get.originalTrial(this)
+                %GET.ORIGINALTRIAL Name of the parent trial of the stride.
+                %
+                % Inputs:
+                %   this - strideData object
+                %
+                % Outputs:
+                %   t - name of the parent trial metadata
+                %
+                % Toolbox Dependencies: None
+
                 t = this.metaData.parentMetaData.name;
             end
         end

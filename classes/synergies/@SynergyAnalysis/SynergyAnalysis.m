@@ -1,6 +1,39 @@
 classdef SynergyAnalysis
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %SYNERGYANALYSIS Dimensionality analysis of muscle synergies.
+    %
+    %   Factorizes training data into 1 to Nmuscles synergies with
+    % FactorizedMatrix.factorize and reconstructs testing data from the
+    % training synergies. Data are arrays with time in the first dimension,
+    % steps in the second, and muscles in the last.
+    %
+    % SynergyAnalysis properties:
+    %   trainingFactorizations - cell array of FactorizedMatrix, one per
+    %                            dimension
+    %   testingFactorizations  - cell array of cell arrays of
+    %                            FactorizedMatrix
+    %   muscleList             - cell array of muscle names
+    %   trainingData           - training data array
+    %   testingData            - testing data array
+    %   trainingResiduals      - error matrices of the training fits
+    %                            (dependent)
+    %   testingResiduals       - error matrices of the testing fits
+    %                            (dependent)
+    %   synergySets            - training synergies per dimension
+    %                            (dependent)
+    %
+    % SynergyAnalysis methods:
+    %   SynergyAnalysis - constructor
+    %   factorizeNewTestingData - adds testing data
+    %   getFactorization - testing and training factorization of a dimension
+    %   getRandomDataReconstructionPerformance - reconstruction of random
+    %                                            data
+    %   assessDimensionality - reconstruction error versus dimension
+    %   plot - plots the testing factorization
+    %   coefExtrFromSyn - activations from fixed synergies (static)
+    %
+    % Toolbox Dependencies: Parallel Computing Toolbox
+    %
+    % See also FACTORIZEDMATRIX.
 
     properties
         %cell array of length N, each containing a factorizedMatrix
@@ -22,6 +55,26 @@ classdef SynergyAnalysis
         %Constructor
         function this = SynergyAnalysis(testingData,trainingData, ...
             muscleList,name,method)
+            %SYNERGYANALYSIS Constructor for SynergyAnalysis class.
+            %
+            %   this = SynergyAnalysis(testingData, trainingData,
+            % muscleList) factorizes trainingData for every number of
+            % synergies from 1 to the number of muscles, and testingData (if
+            % not empty) with the training synergies.
+            %
+            % Inputs:
+            %   testingData  - testing array (time x steps x muscles), may
+            %                  be empty
+            %   trainingData - training array (time x steps x muscles)
+            %   muscleList   - cell array of muscle names
+            %   name         - prefix for the factorization names (optional)
+            %   method       - 'nnmf' or 'pca' (optional, default 'nnmf')
+            %
+            % Outputs:
+            %   this - SynergyAnalysis object
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
             if nargin < 5 || isempty(method)
                 method = 'nnmf';
             end
@@ -54,12 +107,31 @@ classdef SynergyAnalysis
         %Extract coefs for testingData
         function newThis = factorizeNewTestingData(this,testingData, ...
             method,name)
+            %FACTORIZENEWTESTINGDATA Adds a testing data set.
+            %
+            %   Extracts the activations of testingData from the training
+            % synergies of every dimension and stores the factorizations and
+            % the data.
+            %
+            % Inputs:
+            %   this        - SynergyAnalysis object
+            %   testingData - testing array (time x steps x muscles)
+            %   method      - 'nnmf' or 'pca'
+            %   name        - prefix for the factorization names (optional)
+            %
+            % Outputs:
+            %   newThis - SynergyAnalysis with the new testing
+            %             factorizations
+            %
+            % Toolbox Dependencies: Parallel Computing Toolbox
+            %
+            % See also COEFEXTRFROMSYN.
+
             if nargin < 4 || isempty(name)
                 name = '';
             end
-            %Check that new testingData and  have compatible
-            %dimensions
-            %DOXY
+            % TODO: check that testingData and trainingData have compatible
+            % dimensions.
 
             %
             N = length(this.testingFactorizations);
@@ -89,6 +161,23 @@ classdef SynergyAnalysis
         %chosenDim factorization
         function [testFactorization,trainFactorization] = ...
             getFactorization(this,dim)
+            %GETFACTORIZATION Factorizations of one dimension.
+            %
+            %   NOTE: the body reads testFactorizations and
+            % trainFactorizations, which are not properties (they are
+            % testingFactorizations and trainingFactorizations), and
+            % chooseDim is not implemented, so the method errors as written.
+            %
+            % Inputs:
+            %   this - SynergyAnalysis object
+            %   dim  - number of synergies (default chooseDim)
+            %
+            % Outputs:
+            %   testFactorization  - testing FactorizedMatrix
+            %   trainFactorization - training FactorizedMatrix
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 2
                 dim = this.chooseDim;
             end
@@ -100,6 +189,36 @@ classdef SynergyAnalysis
         function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf, ...
             meanPdf] = getRandomDataReconstructionPerformance(this, ...
             randomMethod,factMethod)
+            %GETRANDOMDATARECONSTRUCTIONPERFORMANCE Random-data fits.
+            %
+            %   Generates random data with the 'spectralMatch' (spectrum of
+            % the training data) or 'timeShift' (time-shifted training data)
+            % method, factorizes it with factMethod, and returns the
+            % distributions computed by the empiric*EigDistributions*
+            % functions. Uses 10000 repetitions (200 for 'timeShift' with
+            % 'nnmf').
+            %
+            %   NOTE: the empiric*EigDistributions* and
+            % createUnstructuredParametersFromData functions are not in this
+            % repository; the output descriptions below follow the variable
+            % names.
+            %
+            % Inputs:
+            %   this         - SynergyAnalysis object
+            %   randomMethod - 'spectralMatch' or 'timeShift'
+            %   factMethod   - 'pca', 'uncentPCA', or 'nnmf'
+            %
+            % Outputs:
+            %   cumEigPdf          - distribution of the cumulative
+            %                        eigenvalues
+            %   margEigPdf         - distribution of the marginal
+            %                        eigenvalues
+            %   totalVarPdf        - distribution of the total variance
+            %   overexplanationPdf - distribution of the overexplanation
+            %   meanPdf            - distribution of the mean
+            %
+            % Toolbox Dependencies: None
+
             Nreps = 10000;
             switch randomMethod
                 case 'spectralMatch'
@@ -185,6 +304,26 @@ classdef SynergyAnalysis
 
         function [errTrain,errTest,fh] = ...
             assessDimensionality(this,plotFlag,fh,names)
+            %ASSESSDIMENSIONALITY Reconstruction error by dimension.
+            %
+            %   Computes the Frobenius norm of the error matrix of each
+            % factorization relative to the norm of the data, for training
+            % and testing data, and plots the squared errors unless plotFlag
+            % is 0.
+            %
+            % Inputs:
+            %   this     - SynergyAnalysis object
+            %   plotFlag - plot the errors (default true)
+            %   fh       - existing figure handle (optional)
+            %   names    - prefix for the legend entries (optional)
+            %
+            % Outputs:
+            %   errTrain - normalized training error per dimension
+            %   errTest  - normalized testing error per dimension
+            %   fh       - figure handle
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 4 || isempty(names)
                 names = '';
             end
@@ -228,6 +367,27 @@ classdef SynergyAnalysis
         %Display
         function [figHandle,plotHandles1,plotHandles2] = ...
             plot(this,plotHandles1,plotHandles2,colors,dim)
+            %PLOT Plots the testing factorization of one dimension.
+            %
+            %   Calls FactorizedMatrix.plot on the testing factorization of
+            % dimension dim and labels the muscles.
+            %
+            % Inputs:
+            %   this         - SynergyAnalysis object
+            %   plotHandles1 - subplot handles for the second factor
+            %                  (optional)
+            %   plotHandles2 - subplot handles for the first factor
+            %                  (optional)
+            %   colors       - cell array of RGB colors (optional)
+            %   dim          - number of synergies (default chooseDim)
+            %
+            % Outputs:
+            %   figHandle    - figure handle
+            %   plotHandles1 - subplot handles for the second factor
+            %   plotHandles2 - subplot handles for the first factor
+            %
+            % Toolbox Dependencies: None
+
             %Plotting the testing data only
             if nargin < 5
                 dim = this.chooseDim;
@@ -254,6 +414,16 @@ classdef SynergyAnalysis
         %Getters for dependent properties
 
         function trainRes = get.trainingResiduals(this)
+            %GET.TRAININGRESIDUALS Training error matrices.
+            %
+            % Inputs:
+            %   this - SynergyAnalysis object
+            %
+            % Outputs:
+            %   trainRes - cell array with one error matrix per dimension
+            %
+            % Toolbox Dependencies: None
+
             for ii = 1:length(this.trainingFactorizations)
                 trainRes{ii} = ...
                     this.trainingFactorizations{ii}.errorMatrix( ...
@@ -262,6 +432,17 @@ classdef SynergyAnalysis
         end
 
         function testRes = get.testingResiduals(this)
+            %GET.TESTINGRESIDUALS Testing error matrices.
+            %
+            % Inputs:
+            %   this - SynergyAnalysis object
+            %
+            % Outputs:
+            %   testRes - cell array (per testing set) of cell arrays (per
+            %             dimension) of error matrices
+            %
+            % Toolbox Dependencies: None
+
             for jj = 1:length(this.testingFactorizations)
                 for ii = 1:length(this.testingFactorizations{1})
                     testRes{jj}{ii} = ...
@@ -272,6 +453,17 @@ classdef SynergyAnalysis
         end
 
         function ss = get.synergySets(this)
+            %GET.SYNERGYSETS Training synergies of every dimension.
+            %
+            % Inputs:
+            %   this - SynergyAnalysis object
+            %
+            % Outputs:
+            %   ss - cell array with the dim2Vectors of each training
+            %        factorization
+            %
+            % Toolbox Dependencies: None
+
             for ii = 1:length(this.trainingFactorizations)
                 ss{ii} = this.trainingFactorizations{ii}.dim2Vectors;
             end
@@ -282,8 +474,24 @@ classdef SynergyAnalysis
     methods(Static)
 
         function dim1Vectors = coefExtrFromSyn(data,dim2Vectors,method)
-            %solves the least squares problem data=syn*act; subject to the
-            %non-negativity of the activations.
+            %COEFEXTRFROMSYN Activations for fixed synergies.
+            %
+            %   Solves data = act * dim2Vectors for act. With 'nnmf' the
+            % activations are constrained to be nonnegative (lsqnonneg, run
+            % in parallel); with 'pca' the unconstrained solution is used
+            % and a warning is issued if the residual exceeds that expected
+            % from random reconstructions. Opens a parallel pool if none is
+            % running and closes it afterwards.
+            %
+            % Inputs:
+            %   data        - samples x muscles matrix
+            %   dim2Vectors - synergies x muscles matrix
+            %   method      - 'nnmf' or 'pca'
+            %
+            % Outputs:
+            %   dim1Vectors - synergies x samples matrix of activations
+            %
+            % Toolbox Dependencies: Parallel Computing Toolbox
 
             solverTol = 1e-4; % TODO: source?
             opts = optimset('display','off','TolFun', ...

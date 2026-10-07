@@ -1,18 +1,19 @@
 function fakeStride(this, initEvent)
-%fakeStride  Generates fake stride by reordering phases
+%FAKESTRIDE Generates fake stride by reordering phases.
 %
-%   fakeStride(this, initEvent) creates a fake stride using data
-%   from this stride but cutting and pasting phases in different
-%   order
+%   fakeStride(this, initEvent) creates a fake stride using data from this
+% stride but cutting and pasting phases in different order
 %
-%   Inputs:
-%       this - strideData object
-%       initEvent - initial event for the fake stride
+% Inputs:
+%   this      - strideData object
+%   initEvent - initial event for the fake stride
 %
-%   Outputs:
-%       None - method not yet implemented
+% Outputs:
+%   None - method not yet implemented
 %
-%   See also: split
+% Toolbox Dependencies: None
+%
+% See also SPLIT.
 
 % Method implementation needed
 end

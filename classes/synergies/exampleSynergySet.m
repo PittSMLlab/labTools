@@ -1,3 +1,12 @@
+%EXAMPLESYNERGYSET Example usage of the SynergySet class.
+%
+%   Creates a SynergySet, plots it, and queries its dimensions, contents,
+% and distances.
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also SYNERGYSET, SYNERGY.
+
 clear s
 
 s = SynergySet(randn(5,9),{'TA','PER','SOL','MG','RF','VM','BF', ...

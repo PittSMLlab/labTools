@@ -1,19 +1,20 @@
 function interval = getIntervalBtwEvents(this, event1, event2)
-%getIntervalBtwEvents  Extracts data between two gait events
+%GETINTERVALBTWEVENTS Extracts data between two gait events.
 %
-%   interval = getIntervalBtwEvents(this, event1, event2)
-%   extracts a segment of the stride between the specified events
+%   interval = getIntervalBtwEvents(this, event1, event2) extracts a segment
+% of the stride between the specified events
 %
-%   Inputs:
-%       this - strideData object
-%       event1 - label of starting event (e.g., 'LHS', 'RTO')
-%       event2 - label of ending event (e.g., 'RHS', 'LTO')
+% Inputs:
+%   this   - strideData object
+%   event1 - label of starting event (e.g., 'LHS', 'RTO')
+%   event2 - label of ending event (e.g., 'RHS', 'LTO')
 %
-%   Outputs:
-%       interval - strideData object containing the extracted
-%                  interval
+% Outputs:
+%   interval - strideData object containing the extracted interval
 %
-%   See also: split, getDoubleSupportLR, getSingleStanceL
+% Toolbox Dependencies: None
+%
+% See also SPLIT, GETDOUBLESUPPORTLR, GETSINGLESTANCEL.
 
 if strcmp(this.initialEvent, event1)
     t0 = this.gaitEvents.Time(1);

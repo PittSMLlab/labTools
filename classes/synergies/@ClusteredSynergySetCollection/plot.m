@@ -1,6 +1,29 @@
 function [figHandle,subplotHandles] = ...
     plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)
-%PLOT Implementation for ClusteredSynergySetCollection
+%PLOT Plots every cluster as a bar graph of its mean synergy.
+%
+%   Each cluster gets one subplot with the mean weights, bars of one
+% standard deviation, the individual synergies (marker per second collection
+% index, color per first index), the number of elements, and the angle
+% statistics of the cluster (distance to centroid and range). The title of
+% the first subplot shows the inter-centroid distances.
+%
+% Inputs:
+%   this          - ClusteredSynergySetCollection object
+%   figHandle     - existing figure handle (optional)
+%   handleVector  - subplot handles, one per cluster (optional)
+%   colorClusters - cell array of bar colors per cluster (default: the
+%                   colors property)
+%   colorInd1     - cell array of marker colors indexed by the first
+%                   collection index (optional)
+%   markerInd2    - cell array of markers indexed by the second collection
+%                   index (optional)
+%
+% Outputs:
+%   figHandle      - handle of the figure
+%   subplotHandles - subplot handles, one per cluster
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
 
 Nplots = numel(this.content);
 Ndims  = this.getSynergyDim;

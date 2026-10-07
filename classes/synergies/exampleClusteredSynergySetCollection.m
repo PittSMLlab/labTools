@@ -1,4 +1,12 @@
+%EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.
 %
+%   Creates a collection, assigns fake cluster indexes, builds the clustered
+% collection, and plots it.
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also CLUSTEREDSYNERGYSETCOLLECTION, SYNERGYSETCOLLECTION.
+
 clear s s2
 %Create:
 muscleList = {'TA','PER','SOL','MG','RF','VM','BF','TFL','GLU'};

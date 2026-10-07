@@ -1,18 +1,19 @@
 function N = getMasterSampleLength(this)
-%getMasterSampleLength  Returns common sample length if time
-%normalized
+%GETMASTERSAMPLELENGTH Returns common sample length if time normalized.
 %
-%   N = getMasterSampleLength(this) returns the common sample
-%   length across all time series if data is time normalized.
-%   Returns 0 if not time normalized.
+%   N = getMasterSampleLength(this) returns the common sample length across
+% all time series if data is time normalized. Returns 0 if not time
+% normalized.
 %
-%   Inputs:
-%       this - strideData object
+% Inputs:
+%   this - strideData object
 %
-%   Outputs:
-%       N - common sample length (0 if not time normalized)
+% Outputs:
+%   N - common sample length (0 if not time normalized)
 %
-%   See also: timeNormalize
+% Toolbox Dependencies: None
+%
+% See also TIMENORMALIZE.
 
 cname  = class(this);
 auxLst = properties(cname);

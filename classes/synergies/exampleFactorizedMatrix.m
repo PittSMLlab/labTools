@@ -1,4 +1,12 @@
-%Test of FactorizedMatrix class
+%EXAMPLEFACTORIZEDMATRIX Example usage of the FactorizedMatrix class.
+%
+%   Builds FactorizedMatrix objects from 2-D and N-D matrices (nnmf factors
+% and FactorizedMatrix.factorize).
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also FACTORIZEDMATRIX.
+
 clearvars
 
 %% Example 1: normal 2D matrix

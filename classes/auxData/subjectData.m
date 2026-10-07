@@ -1,26 +1,29 @@
 classdef subjectData
-    %subjectData  Stores information about study participants
+    %SUBJECTDATA Stores information about study participants.
     %
     %   subjectData contains demographic and anthropometric information
-    %   about research participants, with privacy protections for date of
-    %   birth information.
+    % about research participants, with privacy protections for date of
+    % birth information.
     %
-    %subjectData properties:
-    %   dateOfBirth - labDate object (private, discouraged for privacy)
-    %   sex - string, either 'male' or 'female'
-    %   fastLeg - string, either 'L' or 'R'
-    %   dominantLeg - string, either 'L' or 'R'
-    %   dominantArm - string, either 'L' or 'R'
-    %   height - height in centimeters
-    %   weight - weight in kilograms
-    %   age - age in years at time of experiment
+    % subjectData properties:
+    %   dateOfBirth     - labDate object (private, discouraged for privacy)
+    %   sex             - string, either 'male' or 'female'
+    %   fastLeg         - string, either 'L' or 'R'
+    %   dominantLeg     - string, either 'L' or 'R'
+    %   dominantArm     - string, either 'L' or 'R'
+    %   height          - height in centimeters
+    %   weight          - weight in kilograms
+    %   age             - age in years at time of experiment
     %   cognitiveScores - cognitiveData object with test results
-    %   ID - string containing experimental identifier (e.g., 'OG90')
+    %   ID              - string containing experimental identifier (e.g.,
+    %                     'OG90')
     %
-    %subjectData methods:
+    % subjectData methods:
     %   subjectData - constructor for subject data
     %
-    %See also: labDate, strokeSubjectData, cognitiveData
+    % Toolbox Dependencies: None
+    %
+    % See also LABDATE, STROKESUBJECTDATA, COGNITIVEDATA.
 
     %% Properties
     properties (SetAccess = private)
@@ -43,31 +46,32 @@ classdef subjectData
     methods
         function this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, ...
             age, ID, fLeg)
-            %subjectData  Constructor for subjectData class
+            %SUBJECTDATA Constructor for subjectData class.
             %
-            %   this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, age,
-            %   ID, fLeg) creates a subject data object with specified
-            %   information
+            %   this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, age, ID,
+            % fLeg) creates a subject data object with specified information
             %
-            %   Inputs:
-            %       DOB - date of birth as labDate (optional, ignored for
-            %             privacy)
-            %       sex - 'male' or 'female' (optional)
-            %       dLeg - dominant leg, 'L' or 'R' (optional)
-            %       dArm - dominant arm, 'L' or 'R' (optional)
-            %       hgt - height in cm (optional)
-            %       wgt - weight in kg (optional)
-            %       age - age in years at experiment time (optional)
-            %       ID - subject identifier string (optional)
-            %       fLeg - fast leg, 'L' or 'R' (optional)
+            % Inputs:
+            %   DOB  - date of birth as labDate (optional, ignored for
+            %          privacy)
+            %   sex  - 'male' or 'female' (optional)
+            %   dLeg - dominant leg, 'L' or 'R' (optional)
+            %   dArm - dominant arm, 'L' or 'R' (optional)
+            %   hgt  - height in cm (optional)
+            %   wgt  - weight in kg (optional)
+            %   age  - age in years at experiment time (optional)
+            %   ID   - subject identifier string (optional)
+            %   fLeg - fast leg, 'L' or 'R' (optional)
             %
-            %   Outputs:
-            %       this - subjectData object
+            % Outputs:
+            %   this - subjectData object
             %
             %   Note: Date of birth is ignored for privacy protection.
             %         Use age instead.
             %
-            %   See also: labDate, experimentData
+            % Toolbox Dependencies: None
+            %
+            % See also LABDATE, EXPERIMENTDATA.
 
             if nargin > 0 && ~isempty(DOB)
                 warning('subjectData:DOB', ['Date of birth was provided'...
@@ -103,11 +107,19 @@ classdef subjectData
     %% Property Setters
     methods
         function this = set.cognitiveScores(this, scores)
-            %set.cognitiveScores  Validates and sets cognitive test scores
+            %SET.COGNITIVESCORES Validates and sets cognitive test scores.
             %
-            %   Inputs:
-            %       this - subjectData object
-            %       scores - cognitiveData object or empty
+            %   Throws subjectData:Setter if scores is neither a
+            % cognitiveData object nor empty.
+            %
+            % Inputs:
+            %   this   - subjectData object
+            %   scores - cognitiveData object or empty
+            %
+            % Outputs:
+            %   this - subjectData object with the updated cognitiveScores
+            %
+            % Toolbox Dependencies: None
 
             if isa(scores, 'cognitiveData') || isempty(scores)
                 this.cognitiveScores = scores;
@@ -123,22 +135,24 @@ classdef subjectData
     %% Static Methods
     methods (Static)
         function this = loadobj(this)
-            %loadobj  Object loading method for privacy protection
+            %LOADOBJ Object loading method for privacy protection.
             %
-            %   this = loadobj(this) warns if date of birth information
-            %   is present when loading saved subjectData objects
+            %   this = loadobj(this) warns if date of birth information is
+            % present when loading saved subjectData objects
             %
-            %   Inputs:
-            %       this - subjectData object being loaded
+            % Inputs:
+            %   this - subjectData object being loaded
             %
-            %   Outputs:
-            %       this - subjectData object
+            % Outputs:
+            %   this - subjectData object
             %
             %   Note: This function was created to warn about DOB being
             %         present at load time. DOB is not automatically
             %         scrubbed to prevent loss of information.
             %
-            %   See also: experimentData/loadobj
+            % Toolbox Dependencies: None
+            %
+            % See also EXPERIMENTDATA/LOADOBJ.
 
             if ~isempty(this.dateOfBirth)
                 warning('subjectData:DOB', ...

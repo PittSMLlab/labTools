@@ -1,6 +1,36 @@
 classdef SynergySetCollection
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %SYNERGYSETCOLLECTION Array of SynergySets over the same muscles.
+    %
+    %   A collection holds a 1-D or N-D cell array of SynergySet objects
+    % with category names and labels for each dimension of the array.
+    %
+    % SynergySetCollection properties:
+    %   content         - cell array of SynergySet objects
+    %   indexCategories - cell array of strings, one per dimension of
+    %                     content, naming what that dimension indexes
+    %   indexLabels     - cell array (one per dimension) of cell arrays of
+    %                     strings labeling every set
+    %   muscleList      - cell array of muscle names shared by all sets
+    %   sortingMethod   - sorting applied to the collection ('None' if
+    %                     unsorted)
+    %   name            - display name (default 'Unnamed')
+    %   colors          - constant cell array of default plot colors
+    %
+    % SynergySetCollection methods:
+    %   SynergySetCollection - constructor
+    %   getCollectionDim     - number of dimensions of the collection
+    %   getCollectionSize    - size of content
+    %   getSynergyDim        - number of muscles per synergy
+    %   getContentAsSet      - all synergies stacked in one SynergySet
+    %   isSorted             - true if a sorting method was applied
+    %   getSetLabels         - labels of the set at a given index
+    %   display              - prints names, labels, and contents
+    %   plot                 - plots a 1-D collection
+    %   cluster              - hierarchical clustering of all synergies
+    %
+    % Toolbox Dependencies: None
+    %
+    % See also SYNERGYSET, CLUSTEREDSYNERGYSETCOLLECTION.
 
     properties(SetAccess = private, GetAccess = public)
         %Cell array of synergySet objects
@@ -37,6 +67,31 @@ classdef SynergySetCollection
         %Constructor:
         function s = SynergySetCollection(content,indexCats,indexLabels, ...
             varargin)
+            %SYNERGYSETCOLLECTION Constructor for the class.
+            %
+            %   s = SynergySetCollection(content, indexCats, indexLabels)
+            % validates that content is a cell array of SynergySets over the
+            % same muscles, that the number of categories equals the
+            % dimension of content, and that the label sizes match the size
+            % of content. s = SynergySetCollection(..., name) also sets the
+            % display name.
+            %
+            %   NOTE: on invalid input an error message is printed and an
+            % empty collection is returned; no exception is thrown.
+            %
+            % Inputs:
+            %   content     - cell array of SynergySet objects
+            %   indexCats   - cell array of strings, one per dimension of
+            %                 content (a vector counts as one dimension)
+            %   indexLabels - cell array (one per dimension) of cell arrays
+            %                 of label strings
+            %   varargin    - optional display name (char) as first element
+            %
+            % Outputs:
+            %   s - SynergySetCollection object
+            %
+            % Toolbox Dependencies: None
+
             %Check that content is a cell array
             if ~isa(content,'cell')
                 disp(['ERROR: Contents for SynergySetCollection are ' ...
@@ -100,6 +155,16 @@ classdef SynergySetCollection
         end
         %Get and sets:
         function dim = getCollectionDim(this)
+            %GETCOLLECTIONDIM Number of dimensions of the collection.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Outputs:
+            %   dim - 1 if content is a vector, else ndims(content)
+            %
+            % Toolbox Dependencies: None
+
             if length(this.content) == numel(this.content)
                 dim = 1;
             else
@@ -108,14 +173,48 @@ classdef SynergySetCollection
         end
 
         function colSize = getCollectionSize(this)
+            %GETCOLLECTIONSIZE Size of the cell array of SynergySets.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Outputs:
+            %   colSize - size(content)
+            %
+            % Toolbox Dependencies: None
+
             colSize = size(this.content);
         end
 
         function dim = getSynergyDim(this)
+            %GETSYNERGYDIM Number of muscles per synergy.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Outputs:
+            %   dim - dimension of the first SynergySet
+            %
+            % Toolbox Dependencies: None
+
             dim = this.content{1}.getDim;
         end
 
         function [set,originalCollectionIndexes] = getContentAsSet(this)
+            %GETCONTENTASSET All synergies stacked in one SynergySet.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Outputs:
+            %   set - SynergySet named 'SetFrom<name>Collection'
+            %   originalCollectionIndexes - Kx2 matrix; row k holds the
+            %                               linear index of the source
+            %                               SynergySet in content and the
+            %                               row of synergy k within that set
+            %
+            % Toolbox Dependencies: None
+
             setContent = [];
             originalCollectionIndexes = [];
             for ii = 1:numel(this.content)
@@ -130,9 +229,20 @@ classdef SynergySetCollection
                 ['SetFrom' this.name 'Collection']);
         end
 
-        getSubCollection(this,indexLabels) %TO DO
+        % TODO: not implemented
+        getSubCollection(this,indexLabels)
 
         function isSorted = isSorted(this)
+            %ISSORTED True if a sorting method was applied.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Outputs:
+            %   isSorted - logical flag
+            %
+            % Toolbox Dependencies: None
+
             if strcmpi(this.sortingMethod,'None')
                 isSorted = false;
             else
@@ -141,6 +251,23 @@ classdef SynergySetCollection
         end
 
         function labels = getSetLabels(this,idx)
+            %GETSETLABELS Labels of the SynergySet at a given index.
+            %
+            %   NOTE: a vector index whose length differs from the
+            % collection dimension prints an error and returns an empty cell
+            % array.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %   idx  - linear index (scalar) or vector of subscripts, one
+            %          per dimension
+            %
+            % Outputs:
+            %   labels - cell array with one label per dimension of the
+            %            collection
+            %
+            % Toolbox Dependencies: None
+
             if isscalar(idx) %Linear indexing, this will take some work
                 idx2 = zeros(this.getCollectionDim,1);
                 aux  = ['[idx2(1)'];
@@ -163,13 +290,24 @@ classdef SynergySetCollection
         end
 
         %Other manipulation that implies modification:
-        addColumnCollection(this,colCollection,indexLabel) %TO DO
-        addRowCollection(this,rowCollection,indexLabel) %TO DO
-        addSynergySet(this,set,indexLabel) %TO DO
-        sort(this) %TO DO
+        % TODO: not implemented
+        addColumnCollection(this,colCollection,indexLabel)
+        % TODO: not implemented
+        addRowCollection(this,rowCollection,indexLabel)
+        % TODO: not implemented
+        addSynergySet(this,set,indexLabel)
+        % TODO: not implemented
+        sort(this)
 
         %Output:
         function display(this)
+            %DISPLAY Prints the name, set labels, contents, and muscles.
+            %
+            % Inputs:
+            %   this - SynergySetCollection object
+            %
+            % Toolbox Dependencies: None
+
             disp('---')
             disp([this.name ' Collection'])
             for ii = 1:numel(this.content)

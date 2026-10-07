@@ -1,32 +1,33 @@
 function [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
     field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)
-%plotCellAvg  Plots average and std of stride cell array
+%PLOTCELLAVG Plots average and std of stride cell array.
 %
-%   [plotHandle, offset, ampCoefs] = plotCellAvg(strides, field,
-%   N, sync_norm, ampNorm, plotHandle, side, color, offset,
-%   plotEv) plots the mean and standard deviation of data from
-%   multiple strides
+%   [plotHandle, offset, ampCoefs] = plotCellAvg(strides, field, N,
+% sync_norm, ampNorm, plotHandle, side, color, offset, plotEv) plots the
+% mean and standard deviation of data from multiple strides
 %
-%   Inputs:
-%       strides - cell array of strideData objects
-%       field - name of field to plot (e.g., 'procEMGData')
-%       N - number of samples for time normalization
-%       sync_norm - synchronization normalization flag (0 =
-%                   none, 1 = swing/stance, 2 = 4 phases)
-%       ampNorm - amplitude normalization (0 = none, 1 =
-%                 normalize, or vector of coefficients)
-%       plotHandle - subplot handle for plotting
-%       side - 'L', 'R', or cell array of labels to plot
-%       color - RGB color vector for plot
-%       offset - vertical offset between traces
-%       plotEv - flag to plot event markers (default: 0)
+% Inputs:
+%   strides    - cell array of strideData objects
+%   field      - name of field to plot (e.g., 'procEMGData')
+%   N          - number of samples for time normalization
+%   sync_norm  - synchronization normalization flag (0 = none, 1 =
+%                swing/stance, 2 = 4 phases)
+%   ampNorm    - amplitude normalization (0 = none, 1 = normalize, or vector
+%                of coefficients)
+%   plotHandle - subplot handle for plotting
+%   side       - 'L', 'R', or cell array of labels to plot
+%   color      - RGB color vector for plot
+%   offset     - vertical offset between traces
+%   plotEv     - flag to plot event markers (default: 0)
 %
-%   Outputs:
-%       plotHandle - handle to plot axes
-%       offset - vertical offset used
-%       ampCoefs - amplitude normalization coefficients used
+% Outputs:
+%   plotHandle - handle to plot axes
+%   offset     - vertical offset used
+%   ampCoefs   - amplitude normalization coefficients used
 %
-%   See also: plotCell, cell2mat
+% Toolbox Dependencies: None
+%
+% See also PLOTCELL, CELL2MAT.
 
 procEmgPlotGain = 8;   % TODO: source?
 ampNormFill     = 0.9; % TODO: source?
@@ -89,9 +90,9 @@ if isa(testField, 'labTimeSeries')
         case 0 % Do nothing
 
         case 1 % Renormalize to swing/stance
-            % To Do
+            % TODO: not implemented
         case 2 % Renormalize to 4 phases
-            % To Do
+            % TODO: not implemented
     end
 
     switch ampNorm

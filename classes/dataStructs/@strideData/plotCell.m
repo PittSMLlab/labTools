@@ -1,36 +1,29 @@
 function plotHandles = plotCell(strides, field, ampNorm, ...
     plotHandles, reqElements, color, plotEvents)
-%plotCell  Plots cell array of stride data
+%PLOTCELL Plots cell array of stride data.
 %
-%   plotHandles = plotCell(strides, field, ampNorm,
-%   plotHandles, reqElements, color, plotEvents) plots data from
-%   multiple strides with various normalization and display
-%   options
+%   plotHandles = plotCell(strides, field, ampNorm, plotHandles,
+% reqElements, color, plotEvents) plots data from multiple strides with
+% various normalization and display options
 %
-%   Inputs:
-%       strides - cell array of strideData objects
-%       field - name of field to plot
-%       ampNorm - amplitude normalization flag or coefficients
-%       plotHandles - handles to plot axes
-%       reqElements - elements to plot
-%       color - plot color specification
-%       plotEvents - flag to overlay gait events
+% Inputs:
+%   strides     - cell array of strideData objects
+%   field       - name of field to plot
+%   ampNorm     - amplitude normalization flag or coefficients
+%   plotHandles - handles to plot axes
+%   reqElements - elements to plot
+%   color       - plot color specification
+%   plotEvents  - flag to overlay gait events
 %
-%   Outputs:
-%       plotHandles - updated plot handles
+% Outputs:
+%   plotHandles - updated plot handles
 %
-%   See also: plotCellAvg, cell2mat
+% Toolbox Dependencies: None
+%
+% See also PLOTCELLAVG, CELL2MAT.
 
-% CHANGES FROM PREVIOUS VERSION:
-%   - Different subplots for every element of the field (e.g. each muscle)
-%   - No longer supports sync_norm in here. sync_norm needs to be
-%       implemented as a class function, that returns strided &
-%       synchronized data from strided & non-sync'd data.
-%   - Offset parameter no longer plays a role
-%   - Length parameter is now calculated to be automatically the smaller
-%       power of two that is still larger than all strides (N is no longer
-%       needed.)
-%   - No longer outputting ampCoefs or offset.
+% NOTE: strides must be synchronized before the call; each element of the
+% field (e.g., each muscle) gets its own subplot.
 
 %Get a sample field:
 eval(['justTheField{1}=strides{1}.' field ';']);
@@ -83,6 +76,7 @@ for stride = 1:length(strides)
     end
     strideLength(stride) = size(relData{stride}.Data,1);
 end
+% N is the smallest power of two that is not shorter than any stride.
 N = 2^ceil(log2(max(strideLength)));
 
 %Time normalize and put everything in a matrix
@@ -113,7 +107,7 @@ for ii = 1:Nplots
     plot(repmat([0:N-1]'/N,1,length(strides)), ...
         squeeze(allDataAsMatrix(:,ii,:)),'Color',color);
     if plotEvents
-        %To Do
+        % TODO: overlay the gait events
     end
     plot([0:N-1]'/N,mean(allDataAsMatrix(:,ii,:),3),'k--');
     ylabel(relLabels{ii})

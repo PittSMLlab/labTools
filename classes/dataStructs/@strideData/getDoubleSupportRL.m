@@ -1,18 +1,19 @@
 function [dsRL, duration] = getDoubleSupportRL(this)
-%getDoubleSupportRL  Extracts right-to-left double support phase
+%GETDOUBLESUPPORTRL Extracts right-to-left double support phase.
 %
-%   [dsRL, duration] = getDoubleSupportRL(this) extracts the
-%   phase from right heel strike to left toe off
+%   [dsRL, duration] = getDoubleSupportRL(this) extracts the phase from
+% right heel strike to left toe off
 %
-%   Inputs:
-%       this - strideData object
+% Inputs:
+%   this - strideData object
 %
-%   Outputs:
-%       dsRL - strideData object containing double support phase
-%       duration - duration of phase in seconds
+% Outputs:
+%   dsRL     - strideData object containing double support phase
+%   duration - duration of phase in seconds
 %
-%   See also: getDoubleSupportLR, getSingleStanceR,
-%             getIntervalBtwEvents
+% Toolbox Dependencies: None
+%
+% See also GETDOUBLESUPPORTLR, GETSINGLESTANCER, GETINTERVALBTWEVENTS.
 
 dsRL     = getIntervalBtwEvents(this, 'RHS', 'LTO');
 duration = dsRL.gaitEvents.timeRange;

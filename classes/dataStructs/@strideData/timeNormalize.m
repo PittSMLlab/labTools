@@ -1,25 +1,27 @@
 function newThis = timeNormalize(this, N, newClass)
-%timeNormalize  Resamples all data to uniform length
+%TIMENORMALIZE Resamples all data to uniform length.
 %
-%   newThis = timeNormalize(this, N) resamples all time series
-%   data to N samples, creating a time-normalized stride
+%   newThis = timeNormalize(this, N) resamples all time series data to N
+% samples, creating a time-normalized stride
 %
-%   newThis = timeNormalize(this, N, newClass) resamples and
-%   returns object of type specified by newClass string
+%   newThis = timeNormalize(this, N, newClass) resamples and returns object
+% of type specified by newClass string
 %
-%   Inputs:
-%       this - strideData object
-%       N - target number of samples
-%       newClass - string representing class/object type to
-%                  return (optional, default: 'strideData')
+% Inputs:
+%   this     - strideData object
+%   N        - target number of samples
+%   newClass - string representing class/object type to return (optional,
+%              default: 'strideData')
 %
-%   Outputs:
-%       newThis - time-normalized stride object
+% Outputs:
+%   newThis - time-normalized stride object
 %
 %   Note: EMG data is resampled to next power of 2 to maintain
 %         appropriate sampling rate
 %
-%   See also: getMasterSampleLength, labTimeSeries/resampleN
+% Toolbox Dependencies: None
+%
+% See also GETMASTERSAMPLELENGTH, LABTIMESERIES/RESAMPLEN.
 
 newThis = []; % Just to avoid Matlab saying this is not defined
 cname   = class(this);

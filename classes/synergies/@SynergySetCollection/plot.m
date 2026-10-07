@@ -1,5 +1,17 @@
 function figHandle = plot(this)
-%PLOT Implementation of the plot method for SynergySetCollections
+%PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.
+%
+%   NOTE: collections with more than one dimension are not plotted; cluster
+% them first and plot the ClusteredSynergySetCollection, which overrides
+% this method.
+%
+% Inputs:
+%   this - SynergySetCollection object
+%
+% Outputs:
+%   figHandle - handle of the new figure
+%
+% Toolbox Dependencies: None
 
 %clusteredSynergySetCollections override this plotting function!
 

@@ -1,27 +1,30 @@
 classdef paramData
-    %paramData  Container for parameter data across trials
+    %PARAMDATA Container for parameter data across trials.
     %
     %   paramData stores adaptation parameters organized by label, along
-    %   with trial indices and types. This class may no longer be in
-    %   active use.
+    % with trial indices and types. This class may no longer be in active
+    % use.
     %
-    %paramData properties:
-    %   labels - cell array of parameter names
-    %   Data - matrix of parameter values (strides/samples x parameters)
+    % paramData properties:
+    %   labels      - cell array of parameter names
+    %   Data        - matrix of parameter values (strides/samples x
+    %                 parameters)
     %   indsInTrial - cell array of indices indicating which data points
     %                 belong to each trial
-    %   trialTypes - cell array of trial type identifiers
+    %   trialTypes  - cell array of trial type identifiers
     %
-    %paramData methods:
-    %   paramData - constructor for parameter data
+    % paramData methods:
+    %   paramData    - constructor for parameter data
     %   getParameter - retrieves data for specified parameter(s)
     %   isaParameter - checks if parameter(s) exist in dataset
-    %   isaLabel - checks if label(s) exist in dataset
-    %   appendData - adds new parameters to dataset
+    %   isaLabel     - checks if label(s) exist in dataset
+    %   appendData   - adds new parameters to dataset
     %
-    %Note: This class may no longer be in use
+    %   Note: This class may no longer be in use
     %
-    %See also: parameterSeries, adaptationData
+    % Toolbox Dependencies: None
+    %
+    % See also PARAMETERSERIES, ADAPTATIONDATA.
 
     %% Properties
     properties % (SetAccess = private)
@@ -38,24 +41,24 @@ classdef paramData
     %% Constructor
     methods
         function this = paramData(data, labels, inds, types)
-            %paramData  Constructor for paramData class
+            %PARAMDATA Constructor for paramData class.
             %
             %   this = paramData(data, labels, inds, types) creates a
-            %   parameter data object with specified data, labels, trial
-            %   indices, and trial types
+            % parameter data object with specified data, labels, trial
+            % indices, and trial types
             %
-            %   Inputs:
-            %       data - matrix of parameter values (samples x
-            %              parameters)
-            %       labels - cell array of parameter name strings
-            %       inds - cell array of trial indices
-            %       types - cell array of trial type identifiers
-            %               (optional)
+            % Inputs:
+            %   data   - matrix of parameter values (samples x parameters)
+            %   labels - cell array of parameter name strings
+            %   inds   - cell array of trial indices
+            %   types  - cell array of trial type identifiers (optional)
             %
-            %   Outputs:
-            %       this - paramData object
+            % Outputs:
+            %   this - paramData object
             %
-            %   See also: appendData
+            % Toolbox Dependencies: None
+            %
+            % See also APPENDDATA.
 
             if (length(labels) == size(data, 2)) && isa(labels, 'cell')
                 this.labels = labels;

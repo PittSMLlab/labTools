@@ -1,23 +1,25 @@
 function [score, auxLabel] = getScore(this, label)
-%getScore  Retrieves scores for specified test(s)
+%GETSCORE Retrieves scores for specified test(s).
 %
 %   [score, auxLabel] = getScore(this) returns all scores and labels
 %
-%   [score, auxLabel] = getScore(this, label) returns scores for
-%   specified test(s)
+%   [score, auxLabel] = getScore(this, label) returns scores for specified
+% test(s)
 %
-%   Inputs:
-%       this - cognitiveData object
-%       label - string or cell array of test name(s) to retrieve
-%               (optional, default: all tests)
+% Inputs:
+%   this  - cognitiveData object
+%   label - string or cell array of test name(s) to retrieve (optional,
+%           default: all tests)
 %
-%   Outputs:
-%       score - matrix of scores for requested test(s)
-%       auxLabel - cell array of labels for returned scores
+% Outputs:
+%   score    - matrix of scores for requested test(s)
+%   auxLabel - cell array of labels for returned scores
 %
 %   Note: Issues warning if requested label does not exist
 %
-%   See also: isaLabel
+% Toolbox Dependencies: None
+%
+% See also ISALABEL.
 
 if nargin < 2 || isempty(label)
     label = this.labels;

@@ -1,4 +1,12 @@
-%Test example of SynergySetCollection
+%EXAMPLESYNERGYSETCOLLECTION Collection example.
+%
+%   Creates a 2-D collection of SynergySets and queries its size, labels,
+% and contents.
+%
+% Toolbox Dependencies: None
+%
+% See also SYNERGYSETCOLLECTION, SYNERGYSET.
+
 
 %Create:
 muscleList = {'TA','PER','SOL','MG','RF','VM','BF','TFL','GLU'};

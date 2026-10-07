@@ -1,7 +1,27 @@
 function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)
-
-%CLUSTER Implementation of the cluster function for the class
-%SynergySetCollection
+%CLUSTER Hierarchical clustering of all synergies in a collection.
+%
+%   Stacks every synergy with getContentAsSet, computes the pairwise angles
+% (SynergySet.distance), and builds an average-linkage tree. If Nclusters is
+% empty, the number of clusters is increased from 1 until no cluster
+% contains two synergies from the same SynergySet; otherwise the tree is cut
+% at Nclusters.
+%
+% Inputs:
+%   this      - SynergySetCollection object
+%   method    - not used
+%   Nclusters - number of clusters to force (optional)
+%
+% Outputs:
+%   clusteredSet      - ClusteredSynergySetCollection with one SynergySet
+%                       per cluster
+%   clusteringIndexes - cell array shaped like the collection; cell k is a
+%                       column vector with the cluster index of every
+%                       synergy in set k
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also LINKAGE, CLUSTEREDSYNERGYSETCOLLECTION.
 
 if nargin < 3
     Nclusters = [];
