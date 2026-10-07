@@ -26,11 +26,11 @@ classdef trialMetaData
 
     %% Properties
     properties
-        name = '';
-        description = ''; % describes condition
+        name         = '';
+        description  = ''; % describes condition
         observations = '';
-        refLeg = '';
-        condition = [];
+        refLeg       = '';
+        condition    = [];
         % string or cell array of strings, if there are many files
         rawDataFilename = '';
         type = '';
@@ -43,7 +43,7 @@ classdef trialMetaData
     %% Constructor
     methods
         function this = trialMetaData(name, desc, obs, refLeg, cond, ...
-                filename, type, schenleyLab, perceptualTasks, ID, datlog)
+            filename, type, schenleyLab, perceptualTasks, ID, datlog)
             %trialMetaData  Constructor for trialMetaData class
             %
             %   this = trialMetaData(name) creates a trial metadata object

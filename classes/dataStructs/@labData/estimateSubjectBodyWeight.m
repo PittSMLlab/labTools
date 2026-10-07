@@ -15,7 +15,9 @@ function bodyWeight = estimateSubjectBodyWeight(this)
 %   See also: computeTorques
 
 % Taking forces in z-axis and averaging to estimate subject weight
+gravityAcc = 9.8; % m/s^2
 bodyWeight = ...
-    -nanmean(sum(this.GRFData.getDataAsVector({'LFz', 'RFz'}), 2)) / 9.8;
+    -mean(sum(this.GRFData.getDataAsVector({'LFz', 'RFz'}), 2), ...
+    'omitnan') / gravityAcc;
 end
 

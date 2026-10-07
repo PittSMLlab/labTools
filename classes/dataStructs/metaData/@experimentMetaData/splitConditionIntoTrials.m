@@ -20,8 +20,8 @@ function newThis = splitConditionIntoTrials(this, condList)
 %   See also: getConditionIdxsFromName, numerateRepeatedConditionNames
 
 newThis = this;
-for i = 1:length(condList)
-    id = this.getConditionIdxsFromName(condList{i});
+for ii = 1:length(condList)
+    id = this.getConditionIdxsFromName(condList{ii});
     Nt = newThis.trialsInCondition{id};
     newCondNames = mat2cell(strcat(newThis.conditionName{id}, ...
         num2str([1:numel(Nt)]')), ones(size(Nt')), ...

@@ -27,10 +27,10 @@ change = false;
 % partial matches)
 conditionIdxs = this.getConditionIdxsFromName(currentName, 1, 1);
 % this.conditionName(conditionIdxs) = newName;
-for i = 1:length(currentName)
-    if ~isnan(conditionIdxs(i)) && ...
-            ~strcmp(this.conditionName{conditionIdxs(i)}, newName{i})
-        this.conditionName{conditionIdxs(i)} = newName{i};
+for ii = 1:length(currentName)
+    if ~isnan(conditionIdxs(ii)) && ...
+            ~strcmp(this.conditionName{conditionIdxs(ii)}, newName{ii})
+        this.conditionName{conditionIdxs(ii)} = newName{ii};
         change = true;
     end
 end

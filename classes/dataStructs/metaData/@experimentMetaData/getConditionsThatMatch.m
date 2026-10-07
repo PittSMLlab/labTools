@@ -26,7 +26,7 @@ if nargin < 2 || isempty(name) || ~isa(name, 'char')
 end
 
 ccNames = this.conditionName;
-idx = cellfun(@(x) isempty(x), ccNames);
+idx     = cellfun(@(x) isempty(x), ccNames);
 if sum(idx) >= 1
     r = find(idx == 1);
     for q = 1:length(r)
@@ -43,9 +43,11 @@ else
     typeMatches = true(size(patternMatches));
 end
 
-% patternMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(name))));
+% patternMatches = cellfun(@(x) ~isempty(x), ...
+%    (strfind(lower(this.conditionName), lower(name))));
 % if nargin > 2 && ~isempty(type) && isa(type, 'char')
-%     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(type))));
+%     typeMatches = cellfun(@(x) ~isempty(x), ...
+%    (strfind(lower(this.conditionName), lower(type))));
 % else
 %     typeMatches = true(size(patternMatches));
 % end

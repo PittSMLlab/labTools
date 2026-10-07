@@ -165,10 +165,10 @@ LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ ...
 
 % ---- Joint angles and angular velocities ----------------------------
 % Hip: thigh angle from vertical, assuming trunk is vertical
-RhipAngle   = RThighAngle;
-LhipAngle   = LThighAngle;
-RhipAngVel  = angVel(RhipAngle);
-LhipAngVel  = angVel(LhipAngle);
+RhipAngle  = RThighAngle;
+LhipAngle  = LThighAngle;
+RhipAngVel = angVel(RhipAngle);
+LhipAngVel = angVel(LhipAngle);
 
 % Knee: angle between the thigh and shank segments.
 % Derivation: 180 - ((90 - thighAngle) + (90 + shankAngle))
@@ -183,10 +183,10 @@ LkneeAngVel = angVel(LkneeAngle);
 % Derivation: 90 - (shankAngle + 90 + footAngle)
 %           = 90 - shankAngle - 90 - footAngle
 %           = -(shankAngle + footAngle)
-RankAngle   = -(RShankAngle + RfootAngle);
-LankAngle   = -(LShankAngle + LfootAngle);
-RankAngVel  = angVel(RankAngle);
-LankAngVel  = angVel(LankAngle);
+RankAngle  = -(RShankAngle + RfootAngle);
+LankAngle  = -(LShankAngle + LfootAngle);
+RankAngVel = angVel(RankAngle);
+LankAngVel = angVel(LankAngle);
 
 % keyboard
 % Commented-out alternative joint angle calculations using calcangle
@@ -250,7 +250,7 @@ function pos2D = getMarker2D(markerData, markerName, orientation)
 %   Outputs:
 %     pos2D - Nx2 matrix of signed [foreaft, updown] positions
 
-raw   = markerData.getDataAsVector( ...
+raw = markerData.getDataAsVector( ...
     {[markerName orientation.foreaftAxis], ...
     [markerName orientation.updownAxis]});
 pos2D = [orientation.foreaftSign * raw(:, 1), ...

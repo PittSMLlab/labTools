@@ -50,13 +50,16 @@ else
 end
 
 if strcmpi(trialData.metaData.type, 'OG') ...
-        || strcmpi(trialData.metaData.type, 'NIM') % overground trial: use limb angles
-    [LHSevent, LHSeventKin] = deal(kinLHS); % make a redundant copy; kinematic events are default
+        || strcmpi(trialData.metaData.type, 'NIM')
+    % overground trial: use limb angles
+    % make a redundant copy; kinematic events are default
+    [LHSevent, LHSeventKin] = deal(kinLHS);
     [RHSevent, RHSeventKin] = deal(kinRHS);
     [LTOevent, LTOeventKin] = deal(kinLTO);
     [RTOevent, RTOeventKin] = deal(kinRTO);
 
-    LHSeventForce = false(length(LHSevent), 1); % no force events; fill with logical 0s
+    % no force events; fill with logical 0s
+    LHSeventForce = false(length(LHSevent), 1);
     RHSeventForce = false(length(RHSevent), 1);
     LTOeventForce = false(length(LTOevent), 1);
     RTOeventForce = false(length(RTOevent), 1);
@@ -64,35 +67,63 @@ if strcmpi(trialData.metaData.type, 'OG') ...
     t0 = trialData.markerData.Time(1);
     Ts = trialData.markerData.sampPeriod;
 
-    %     t0=trialData.GRFData.Time(1);
-    %     Ts=trialData.GRFData.sampPeriod;
+    % t0=trialData.GRFData.Time(1);
+    % Ts=trialData.GRFData.sampPeriod;
 else % treadmill trial
 
-    if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) % no force data: use marker kinematics
+    % no force data: use marker kinematics
+    if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data)
         disp(['No ground reaction forces data in ' trialFileName ...
             '. Using marker data to compute events.'])
 
-        %         LtoePos=trialData.getMarkerData({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis],['LTOE' orientation.sideAxis]});
-        %         LtoePos=[orientation.foreaftSign* LtoePos(:,1),orientation.updownSign*LtoePos(:,2),orientation.sideSign*LtoePos(:,3)];
-        %         RtoePos=trialData.getMarkerData({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis],['RTOE' orientation.sideAxis]});
-        %         RtoePos=[orientation.foreaftSign* RtoePos(:,1),orientation.sideSign*RtoePos(:,2),orientation.updownSign*RtoePos(:,3)];
+        % LtoePos=trialData.getMarkerData({['LTOE' ...
+        %    orientation.foreaftAxis],['LTOE' orientation.updownAxis], ...
+        %    ['LTOE' orientation.sideAxis]});
+        % LtoePos=[orientation.foreaftSign* LtoePos(:,1), ...
+        %    orientation.updownSign*LtoePos(:,2), ...
+        %    orientation.sideSign*LtoePos(:,3)];
+        % RtoePos=trialData.getMarkerData({['RTOE' ...
+        %    orientation.foreaftAxis],['RTOE' orientation.updownAxis], ...
+        %    ['RTOE' orientation.sideAxis]});
+        % RtoePos=[orientation.foreaftSign* RtoePos(:,1), ...
+        %    orientation.sideSign*RtoePos(:,2), ...
+        %    orientation.updownSign*RtoePos(:,3)];
 
         LtoePos = trialData.markerData.getDataAsVector({'LTOE'});
-        RtoePos = trialData.markerData.getDataAsVector({'RTOE'}); % was incorrectly 'LTOE' before
+        % was incorrectly 'LTOE' before
+        RtoePos = trialData.markerData.getDataAsVector({'RTOE'});
 
-        %         LanklePos=trialData.getMarkerData({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis],['LANK' orientation.sideAxis]});
-        %         LanklePos=[orientation.foreaftSign* LanklePos(:,1),orientation.sideSign*LanklePos(:,2),orientation.updownSign*LanklePos(:,3)];
-        %         RanklePos=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis],['RANK' orientation.sideAxis]});
-        %         RanklePos=[orientation.foreaftSign* RanklePos(:,1),orientation.sideSign*RanklePos(:,2),orientation.updownSign*RanklePos(:,3)];
+        % LanklePos=trialData.getMarkerData({['LANK' ...
+        %    orientation.foreaftAxis],['LANK' orientation.updownAxis], ...
+        %    ['LANK' orientation.sideAxis]});
+        % LanklePos=[orientation.foreaftSign* LanklePos(:,1), ...
+        %    orientation.sideSign*LanklePos(:,2), ...
+        %    orientation.updownSign*LanklePos(:,3)];
+        % RanklePos=trialData.getMarkerData({['RANK' ...
+        %    orientation.foreaftAxis],['RANK' orientation.updownAxis], ...
+        %    ['RANK' orientation.sideAxis]});
+        % RanklePos=[orientation.foreaftSign* RanklePos(:,1), ...
+        %    orientation.sideSign*RanklePos(:,2), ...
+        %    orientation.updownSign*RanklePos(:,3)];
 
         LanklePos = trialData.markerData.getDataAsVector({'LANK'});
         RanklePos = trialData.markerData.getDataAsVector({'RANK'});
 
         if trialData.markerData.isaLabel('LHEEx')
-            %             LheelPos=trialData.getMarkerData({['LHEE' orientation.foreaftAxis],['LHEE' orientation.updownAxis],['LHEE' orientation.sideAxis]});
-            %             LheelPos=[orientation.foreaftSign* LheelPos(:,1),orientation.sideSign*LheelPos(:,2),orientation.updownSign*LheelPos(:,3)];
-            %             RheelPos=trialData.getMarkerData({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis],['RHEE' orientation.sideAxis]});
-            %             RheelPos=[orientation.foreaftSign* RheelPos(:,1),orientation.sideSign*RheelPos(:,2),orientation.updownSign*RheelPos(:,3)];
+            % LheelPos=trialData.getMarkerData({['LHEE' ...
+            %    orientation.foreaftAxis], ...
+            %    ['LHEE' orientation.updownAxis], ...
+            %    ['LHEE' orientation.sideAxis]});
+            % LheelPos=[orientation.foreaftSign* LheelPos(:,1), ...
+            %    orientation.sideSign*LheelPos(:,2), ...
+            %    orientation.updownSign*LheelPos(:,3)];
+            % RheelPos=trialData.getMarkerData({['RHEE' ...
+            %    orientation.foreaftAxis], ...
+            %    ['RHEE' orientation.updownAxis], ...
+            %    ['RHEE' orientation.sideAxis]});
+            % RheelPos=[orientation.foreaftSign* RheelPos(:,1), ...
+            %    orientation.sideSign*RheelPos(:,2), ...
+            %    orientation.updownSign*RheelPos(:,3)];
 
             LheelPos = trialData.markerData.getDataAsVector({'LHEE'});
             RheelPos = trialData.markerData.getDataAsVector({'RHEE'});
@@ -105,9 +136,11 @@ else % treadmill trial
         end
         fs_kin = trialData.markerData.sampFreq;
         [LHSevent, RHSevent, LTOevent, RTOevent] = ...
-            getEventsFromToeAndHeel(LtoePos, LheelPos, RtoePos, RheelPos, fs_kin);
+            getEventsFromToeAndHeel(LtoePos, LheelPos, RtoePos, ...
+            RheelPos, fs_kin);
 
-        LHSeventForce = false(length(LHSevent), 1); % no force events; fill with logical 0s
+        % no force events; fill with logical 0s
+        LHSeventForce = false(length(LHSevent), 1);
         RHSeventForce = false(length(RHSevent), 1);
         LTOeventForce = false(length(LTOevent), 1);
         RTOeventForce = false(length(RTOevent), 1);
@@ -129,18 +162,23 @@ else % treadmill trial
         % %Sanity check: correct non-zeroed force-plates: % Now we will be
         % doing this inside the even detection
         % if mode(FzL)~=0
-        %     disp(['Warning: Left z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])
+        %     disp(['Warning: Left z-axis forces in ' trialFileName ...
+        %    ' have non-zero mode. Subtracting mode from force data ' ...
+        %    'before event detection'])
         %     FzL=FzL-mode(FzL);
         % end
         % if mode(FzR)~=0
-        %     disp(['Warning: Right z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])
+        %     disp(['Warning: Right z-axis forces in ' trialFileName ...
+        %    ' have non-zero mode. Subtracting mode from force data ' ...
+        %    'before event detection'])
         %     FzR=FzR-mode(FzR);
         % end
 
         [LHSevent, RHSevent, LTOevent, RTOevent] = ...
             getEventsFromForces(FzL, FzR, trialData.GRFData.sampFreq);
 
-        LHSeventForce = LHSevent; % make a redundant copy to label as force events
+        % make a redundant copy to label as force events
+        LHSeventForce = LHSevent;
         RHSeventForce = RHSevent;
         LTOeventForce = LTOevent;
         RTOeventForce = RTOevent;
@@ -153,7 +191,8 @@ else % treadmill trial
         % TODO: use a method to re-sample kinematic events to be consistent
         % with forces.
         kinToGrfRatio = trialData.GRFData.sampFreq ...
-            / trialData.markerData.sampFreq; % GRF samples per kinematic sample
+            / trialData.markerData.sampFreq;
+        % ratio = GRF samples per kinematic sample
         LHSeventKin(round((find(kinLHS) - 1) * kinToGrfRatio + 1)) = true;
         RHSeventKin(round((find(kinRHS) - 1) * kinToGrfRatio + 1)) = true;
         LTOeventKin(round((find(kinLTO) - 1) * kinToGrfRatio + 1)) = true;
@@ -161,13 +200,21 @@ else % treadmill trial
 
         %%
 
-        if perceptualFlag == 1 % If your code is breaking, I am iterating so just comment this out
+        % If your code is breaking, I am iterating so just comment this out
+        if perceptualFlag == 1
 
-            % timeLHS = find(LHSeventForce==1)./trialData.GRFData.sampFreq; timeRHS = find(RHSeventForce==1)./trialData.GRFData.sampFreq;
+            % timeLHS = ...
+            %    find(LHSeventForce==1)./trialData.GRFData.sampFreq;
+            % timeRHS = ...
+            %    find(RHSeventForce==1)./trialData.GRFData.sampFreq;
             % timeLTO = find(LTOeventForce==1)./trialData.GRFData.sampFreq;
-            timeRTO = find(RTOeventForce == 1) ./ trialData.GRFData.sampFreq; % time of each RTO event, used to align with datalog
+            % time of each RTO event, used to align with datalog
+            timeRTO = find(RTOeventForce == ...
+                1) ./ trialData.GRFData.sampFreq;
 
-            % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
+            % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = ...
+            %    getPerceptualEventsFromCues(trialData.metaData.datlog, ...
+            %    infoLHSevent, infoRHSevent);
 
             % actual frame number for the stride whose time is closest to
             % the perceptual trial start and end cues
@@ -189,25 +236,30 @@ else % treadmill trial
                     % increments stride count starting from RTO
                     idxStrideScue = arrayfun( ...
                         @(x) find((x - timeRTO) >= 0, 1, 'last'), startCue);
-                    ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
-                        idxStrideEcue = arrayfun( ...
+                    % start cue should happen after updating both legs,
+                    % so the RTO after the left leg speed was updated in
+                    % the task
+                    idxStrideEcue = arrayfun( ...
                         @(x) find((x - timeRTO) >= 0, 1, 'last'), endCue);
 
-                    framesRTO = find(RTOeventForce == 1);
+                    framesRTO     = find(RTOeventForce == 1);
                     idxFrameStart = framesRTO(idxStrideScue);
                     percStartCue(idxFrameStart) = true;
                     idxFrameEnd = framesRTO(idxStrideEcue);
-                    percEndCue(idxFrameEnd)  = true;
+                    percEndCue(idxFrameEnd) = true;
                     idxFrameEndRamp = framesRTO(idxStrideEcue);
                     percEndRamp(idxFrameEndRamp) = true;
                     % Currently for Weber Perception I have a ramp down of 3
-                    % strides which might change in the future. TODO: make it
+                    % strides which might change in the future. TODO: make
+                    % it
                     % more robust such that this is only computed for Weber
                     % Study
                     % idxFrameEndRamp = framesRTO(idxStrideEcue+3);
                     % percEndRamp(idxFrameEndRamp) = true;
                 end
-            else % proceed with caution; relative times in MATLAB are not synchronized with Nexus
+                % proceed with caution; relative times in MATLAB are not
+                % synchronized with Nexus
+            else
                 warning("Datalogs can't be synchronized with Nexus data");
             end
         end
@@ -219,14 +271,14 @@ end
 eventLabels = {'LHS', 'RHS', 'LTO', 'RTO', ...
     'forceLHS', 'forceRHS', 'forceLTO', 'forceRTO', ...
     'kinLHS', 'kinRHS', 'kinLTO', 'kinRTO'};
-eventData   = [LHSevent, RHSevent, LTOevent, RTOevent, ...
+eventData = [LHSevent, RHSevent, LTOevent, RTOevent, ...
     LHSeventForce, RHSeventForce, LTOeventForce, RTOeventForce, ...
     LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin];
 
 if perceptualFlag == 1
     eventLabels = [eventLabels, ...
         {'percStartCue', 'percEndCue', 'percEndRamp'}];
-    eventData   = [eventData, ...
+    eventData = [eventData, ...
         percStartCue', percEndCue', percEndRamp'];
 end
 

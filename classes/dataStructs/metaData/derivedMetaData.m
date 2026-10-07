@@ -24,8 +24,8 @@ classdef derivedMetaData < trialMetaData
     %% Constructor
     methods
         function this = derivedMetaData(ID, date, experimenter, desc, ...
-                obs, refLeg, parentMeta, condition, rawDataFilename, ...
-                type, schenleyLab, perceptualTasks, datlog, fastLeg)
+            obs, refLeg, parentMeta, condition, rawDataFilename, ...
+            type, schenleyLab, perceptualTasks, datlog, fastLeg)
             %derivedMetaData  Constructor for derivedMetaData class
             %
             %   this = derivedMetaData(ID, date, experimenter, desc,

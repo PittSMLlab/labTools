@@ -20,6 +20,6 @@ function trialNums = getTrialsInCondition(this, conditionNames)
 %   See also: getConditionIdxsFromName, getCondLstPerTrial
 
 conditionIdx = this.getConditionIdxsFromName(conditionNames);
-trialNums = cell2mat(this.trialsInCondition(conditionIdx));
+trialNums    = cell2mat(this.trialsInCondition(conditionIdx));
 end
 

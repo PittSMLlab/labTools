@@ -20,16 +20,16 @@ function [newThis, change] = numerateRepeatedConditionNames(this)
 %
 %   See also: replaceConditionNames, validateTrialsInCondition
 
-aaa = unique(this.conditionName);
+aaa    = unique(this.conditionName);
 change = false;
 if length(aaa) < length(this.conditionName) % There are repetitions
     change = true;
-    for i = 1:length(aaa)
-        aux = find(strcmpi(aaa{i}, this.conditionName));
+    for ii = 1:length(aaa)
+        aux = find(strcmpi(aaa{ii}, this.conditionName));
         if length(aux) > 1
-            disp(['Found a repeated condition name ' aaa{i}]);
-            for j = 1:length(aux)
-                aaux = this.trialsInCondition{aux(j)};
+            disp(['Found a repeated condition name ' aaa{ii}]);
+            for jj = 1:length(aux)
+                aaux = this.trialsInCondition{aux(jj)};
                 % This queries the user for a new name:
                 % disp(['Occurrence ' num2str(j) ' contains trials '
                 % num2str(aaux) '.']);
@@ -37,9 +37,9 @@ if length(aaa) < length(this.conditionName) % There are repetitions
                 % condition: ']);
 
                 % This assigns a new name by adding a number:
-                ss = [aaa{i} ' ' num2str(j)];
-                this.conditionName{aux(j)} = ss;
-                disp(['Occurrence ' num2str(j) ' contains trials ' ...
+                ss = [aaa{ii} ' ' num2str(jj)];
+                this.conditionName{aux(jj)} = ss;
+                disp(['Occurrence ' num2str(jj) ' contains trials ' ...
                     num2str(aaux) ', was replaced by ' ss '.']);
             end
         end

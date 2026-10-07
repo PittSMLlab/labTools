@@ -130,7 +130,7 @@ if ~isempty(emg)
     % and maps to quality value 3; 'saturationMask' covers
     % [hardwareRangeLimit, Inf) and maps to quality value 4.
     looseSensorOnlyMask = sparse(abs(emg.Data) >= normalRangeLimit & ...
-        abs(emg.Data) <  hardwareRangeLimit);
+        abs(emg.Data) < hardwareRangeLimit);
     saturationMask = sparse(abs(emg.Data) >= hardwareRangeLimit);
 
     if any(looseSensorOnlyMask, 'all')
@@ -142,7 +142,7 @@ if ~isempty(emg)
     % Delsys claims +-5.5 mV max; samples up to 5.9 mV do appear.
     % Clip samples at or above hardwareRangeLimit and mark as saturated.
     if any(saturationMask, 'all')
-        quality                  = 8 * saturationMask + quality;
+        quality = 8 * saturationMask + quality;
         emg.Data(saturationMask) = 0;
         warning(['Found samples outside the hardware range (+-%.0f mV).'...
             ' Clipping affected samples.'], hardwareRangeLimit * 1e3);
@@ -194,7 +194,7 @@ if ~isempty(emg)
                 % Set spike region to zero
                 spikeEndIdx = min([spikeStartIdx(spike) + ...
                     length(template) - 1, size(emg.Data, 1)]);
-                newRows = (spikeStartIdx(spike):spikeEndIdx)';
+                newRows     = (spikeStartIdx(spike):spikeEndIdx)';
                 spikeRowIdx = [spikeRowIdx; newRows]; %#ok<AGROW>
                 spikeColIdx = [spikeColIdx; ...
                     repmat(chan, length(newRows), 1)]; %#ok<AGROW>
@@ -215,16 +215,16 @@ if ~isempty(emg)
         emg.Data, emg.sampFreq, envelopeCutoffFreq);
 
     % ---- Step 3: Create processedEMGTimeSeries objects -----------------
-    procInfo    = processingInfo([filterList, procList]);
+    procInfo = processingInfo([filterList, procList]);
     procEMGData = processedEMGTimeSeries( ...
         procEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
-    procInfo        = processingInfo(filterList);
+    procInfo = processingInfo(filterList);
     filteredEMGData = processedEMGTimeSeries( ...
         filteredEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
 
     % ---- Step 4: Update quality info, incorporating pre-existing -------
     if ~isempty(emg.Quality)    % if pre-existing quality info exists, ...
-        filteredEMGData.Quality               = emg.Quality;
+        filteredEMGData.Quality = emg.Quality;
         filteredEMGData.Quality(quality == 2) = 2;  % spike
         filteredEMGData.Quality(quality == 4) = 4;  % sensorLoose
         filteredEMGData.Quality(quality == 8) = 8;  % outsideValidRange
@@ -235,12 +235,12 @@ if ~isempty(emg)
     else
         % Cast as int8: MATLAB's timeseries enforces this type for
         % the Quality property
-        filteredEMGData.Quality             = int8(quality);
-        filteredEMGData.QualityInfo.Code    = [0 2 4 8];
+        filteredEMGData.Quality = int8(quality);
+        filteredEMGData.QualityInfo.Code = [0 2 4 8];
         filteredEMGData.QualityInfo.Description = ...
             {'good', 'spike', 'sensorLoose', 'outsideValidRange'};
     end
-    procEMGData.Quality     = filteredEMGData.Quality;
+    procEMGData.Quality = filteredEMGData.Quality;
     procEMGData.QualityInfo = filteredEMGData.QualityInfo;
 
 else    % if EMG data is empty, return empty outputs

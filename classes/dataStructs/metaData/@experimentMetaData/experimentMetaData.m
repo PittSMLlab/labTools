@@ -64,8 +64,8 @@ classdef experimentMetaData
     %% Constructor
     methods
         function this = experimentMetaData(ID, date, experimenter, obs, ...
-                conds, desc, trialLst, Ntrials, SchenleyPlace, ...
-                PerceptualTasks, datlog)
+            conds, desc, trialLst, Ntrials, SchenleyPlace, ...
+            PerceptualTasks, datlog)
             %experimentMetaData  Constructor for experimentMetaData class
             %
             %   this = experimentMetaData(ID) creates an experiment
@@ -214,13 +214,14 @@ classdef experimentMetaData
             % Must be cell of doubles
             if ~isempty(trialLst) && isa(trialLst, 'cell')
                 % Check that no trial is repeated
-                aux = cell2mat(trialLst);
+                aux  = cell2mat(trialLst);
                 aux2 = unique(aux);
-                for i = 1:length(aux2)
-                    a = find(aux == aux2(i));
+                for ii = 1:length(aux2)
+                    a = find(aux == aux2(ii));
                     if numel(a) > 1
-                        ME = MException('experimentMetaData:Constructor', ...
-                            ['Trial ' num2str(aux2(i)) ' is listed as ' ...
+                        ME = MException( ...
+                            'experimentMetaData:Constructor', ...
+                            ['Trial ' num2str(aux2(ii)) ' is listed as ' ...
                             'part of more than one condition.']);
                         throw(ME);
                     end
@@ -309,7 +310,7 @@ classdef experimentMetaData
             %             sortConditions
 
             conditionOrder = this.validateTrialsInCondition();
-            this = this.sortConditions();
+            this           = this.sortConditions();
         end
     end
 

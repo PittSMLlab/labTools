@@ -24,7 +24,7 @@ classdef strideMetaData < derivedMetaData
     %% Constructor
     methods
         function this = strideMetaData(ID, date, experimenter, desc, ...
-                obs, refLeg, parentMeta)
+            obs, refLeg, parentMeta)
             %strideMetaData  Constructor for strideMetaData class
             %
             %   this = strideMetaData(ID, date, experimenter, desc, obs,

@@ -60,8 +60,8 @@ classdef labData
     %% Constructor
     methods
         function this = labData(metaData, markerData, EMGData, ...
-                GRFData, beltSpeedSetData, beltSpeedReadData, ...
-                accData, EEGData, footSwitches, HreflexPin)
+            GRFData, beltSpeedSetData, beltSpeedReadData, ...
+            accData, EEGData, footSwitches, HreflexPin)
             % labData  Constructor for labData class.
             %
             %   All input arguments except metaData are optional

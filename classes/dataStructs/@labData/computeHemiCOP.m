@@ -25,7 +25,13 @@ function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)
 % COP calculation as used by the ALTERNATIVE version
 
 this = this.GRFData;
-fcut = 50;
+fcut           = 50;      % Hz, low-pass cutoff; TODO: source?
+medFiltOrder   = 5;       % samples; TODO: source?
+forceThreshold = 100;     % N, artifact threshold on Fz; TODO: source?
+plateOffsetZ   = 15;      % plate geometry (units?); TODO: source?
+rightPlateOffX = 977.9;   % L-to-R plate x shift (units?); TODO: source?
+labOffsetY     = 1619.25; % lab-axis y offset (units?); TODO: source?
+labOffsetX     = 25.4;    % lab-axis x offset (units?); TODO: source?
 % Warning: this only works if GRF data is stored here
 warning('orientedLabTimeSeries:computeCOP', ...
     ['COP computation is calibrated only for GRFData ' ...
@@ -34,14 +40,17 @@ if nargin > 2 && ~isempty(noFilterFlag) && noFilterFlag == 1
     F = squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
     M = squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
 else
-    F = this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-    F = F.lowPassFilter(fcut).thresholdByChannel(-100, [side 'Fz'], 1);
+    F = this.getDataAsOTS([side 'F']);
+    F = F.medianFilter(medFiltOrder).substituteNaNs;
+    F = F.lowPassFilter(fcut).thresholdByChannel(-forceThreshold, ...
+        [side 'Fz'], 1);
     F = squeeze(F.getOrientedData);
-    M = this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
+    M = this.getDataAsOTS([side 'M']);
+    M = M.medianFilter(medFiltOrder).substituteNaNs;
     M = M.lowPassFilter(fcut);
     M = squeeze(M.getOrientedData);
     % Thresholding to avoid artifacts
-    F(abs(F(:, 3)) < 100, :) = 0;
+    F(abs(F(:, 3)) < forceThreshold, :) = 0;
 end
 % I believe this should work for all forceplates in the world:
 % aux = bsxfun(@rdivide, cross(F, M), (sum(F.^2, 2)));
@@ -49,17 +58,17 @@ end
 % COP = orientedLabTimeSeries(aux + t .* F, this.Time(1), this.sampPeriod,
 % orientedLabTimeSeries.addLabelSuffix([side 'COP']), this.orientation);
 % This is Bertec Treadmill specific:
-aux(:, 1) = (-15 * F(:, 1) - M(:, 2)) ./ F(:, 3);
-aux(:, 2) = (15 * F(:, 2) + M(:, 1)) ./ F(:, 3);
+aux(:, 1) = (-plateOffsetZ * F(:, 1) - M(:, 2)) ./ F(:, 3);
+aux(:, 2) = (plateOffsetZ * F(:, 2) + M(:, 1)) ./ F(:, 3);
 aux(:, 3) = 0;
 if strcmp(side, 'R')
     % Flipping and offsetting to match reference axis of L-forceplate
-    aux(:, 1) = aux(:, 1) - 977.9;
+    aux(:, 1) = aux(:, 1) - rightPlateOffX;
 end
 % Flipping & adding offset to match lab's reference axis sign
-aux(:, 2) = -aux(:, 2) + 1619.25;
+aux(:, 2) = -aux(:, 2) + labOffsetY;
 % Adding offset to lab's reference origin
-aux(:, 1) = aux(:, 1) + 25.4;
+aux(:, 1) = aux(:, 1) + labOffsetX;
 COP = orientedLabTimeSeries(aux, this.Time(1), this.sampPeriod, ...
     orientedLabTimeSeries.addLabelSuffix([side 'COP']), this.orientation);
 end

@@ -35,10 +35,10 @@ conditionOrder = conditionOrder(conditionIdxsInOrder);
 if nargin > 2 && ~isempty(silentFlag) && ~silentFlag
     if any(diff(conditionOrder) < 1)
         badOrder = find(diff(conditionOrder) < 1);
-        for i = 1:length(badOrder)
+        for ii = 1:length(badOrder)
             disp(['Conditions provided are not in order: ' ...
-                conditionNamesInOrder{badOrder(i)} ' precedes ' ...
-                conditionNamesInOrder{badOrder(i) + 1}]);
+                conditionNamesInOrder{badOrder(ii)} ' precedes ' ...
+                conditionNamesInOrder{badOrder(ii) + 1}]);
         end
     end
 end

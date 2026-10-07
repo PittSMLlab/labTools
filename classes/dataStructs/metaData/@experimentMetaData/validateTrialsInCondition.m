@@ -18,10 +18,10 @@ function conditionOrder = validateTrialsInCondition(this)
 %   See also: checkConditionOrder, sortConditions
 
 conditionNamesInOrder = this.conditionName;
-for i = 1:length(conditionNamesInOrder)
-    trialNo{i} = this.getTrialsInCondition(conditionNamesInOrder{i});
+for ii = 1:length(conditionNamesInOrder)
+    trialNo{ii} = this.getTrialsInCondition(conditionNamesInOrder{ii});
 end
-allTrials = cell2mat(trialNo);
+allTrials    = cell2mat(trialNo);
 uniqueTrials = unique(allTrials);
 if numel(uniqueTrials) ~= numel(allTrials)
     error(['Some trials are repeated, in the same or different ' ...

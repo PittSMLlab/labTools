@@ -14,17 +14,17 @@ function condLst = getCondLstPerTrial(this)
 %
 %   See also: getTrialsInCondition, getConditionIdxsFromName
 
-for i = 1:this.Ntrials
+for tr = 1:this.Ntrials
     for cond = 1:length(this.trialsInCondition)
-        k = find(i == this.trialsInCondition{cond}, 1);
+        k = find(tr == this.trialsInCondition{cond}, 1);
         if ~isempty(k)
             break;
         end
     end
     if isempty(k)
-        condLst(i) = NaN;
+        condLst(tr) = NaN;
     else
-        condLst(i) = cond;
+        condLst(tr) = cond;
     end
 end
 end

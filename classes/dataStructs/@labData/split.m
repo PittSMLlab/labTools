@@ -24,7 +24,7 @@ function newThis = split(this, t0, t1, newClass)
 %   See also: labTimeSeries/split
 
 newThis = []; % Just to avoid Matlab saying this is not defined
-cname = class(this);
+cname   = class(this);
 if nargin < 4
     % (ID, date, experimenter, desc, obs, refLeg, parentMeta)
     metaData = derivedMetaData(labDate.genIDFromClock, ...
@@ -46,10 +46,10 @@ else
 end
 
 auxLst = properties(cname);
-for i = 1:length(auxLst)
+for ii = 1:length(auxLst)
     % Should try to do this only if the property is not dependent;
     % otherwise, I'm computing things I don't need
-    eval(['oldVal = this.' auxLst{i} ';'])
+    eval(['oldVal = this.' auxLst{ii} ';'])
     if isa(oldVal, 'labTimeSeries') && ...
             ~isa(oldVal, 'parameterSeries')
         % no end time point provided, assume spliting from t0 to end of the
@@ -74,7 +74,7 @@ for i = 1:length(auxLst)
     end
     try
         % If this fails it is because the property is not settable
-        eval(['newThis.' auxLst{i} ' = newVal;'])
+        eval(['newThis.' auxLst{ii} ' = newVal;'])
     catch
 
     end
