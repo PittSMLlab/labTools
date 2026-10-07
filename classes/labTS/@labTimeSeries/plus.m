@@ -17,8 +17,8 @@ if size(other.Data, 2) ~= M
     error('labTS:plus', 'Inconsistent sizes for sum');
 end
 newLabels = cell(size(this.labels));
-for i = 1:M
-    newLabels{i} = ['(' this.labels{i} ' + ' other.labels{i} ')'];
+for ii = 1:M
+    newLabels{ii} = ['(' this.labels{ii} ' + ' other.labels{ii} ')'];
 end
 if abs(this.Time(1) - other.Time(1)) < eps && ...
         abs(this.sampPeriod - other.sampPeriod) < eps && ...

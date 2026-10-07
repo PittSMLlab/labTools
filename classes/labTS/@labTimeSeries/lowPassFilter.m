@@ -13,9 +13,15 @@ function newThis = lowPassFilter(this, fcut)
 %
 %   See also: highPassFilter, medianFilter, filtfilthd_short
 
-Wn = fcut * 2 / this.sampFreq;
-Wst = min([2 * Wn, Wn + 0.2 * (1 - Wn)]);
-filterList{1} = fdesign.lowpass('Fp,Fst,Ap,Ast', Wn, Wst, 3, 10);
+passAttenDb  = 3;   % dB, Ap in the fdesign spec
+stopAttenDb  = 10;  % dB, Ast in the fdesign spec
+stopFreqMult = 2;   % TODO: source? (stopband edge = 2 * cutoff, capped)
+stopBandFrac = 0.2; % TODO: source? (cap: 20% of the band above cutoff)
+
+Wn  = fcut * 2 / this.sampFreq;
+Wst = min([stopFreqMult * Wn, Wn + stopBandFrac * (1 - Wn)]);
+filterList{1} = fdesign.lowpass('Fp,Fst,Ap,Ast', Wn, Wst, ...
+    passAttenDb, stopAttenDb);
 lowPassFilter = design(filterList{1}, 'butter');
 newData = ...
     filtfilthd_short(lowPassFilter, this.Data, 'reflect', this.sampFreq);

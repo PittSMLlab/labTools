@@ -13,6 +13,7 @@ function newthis = equalizeEnergyPerChannel(this)
 %   See also: equalizeVarPerChannel, demean
 
 newthis = this;
-newthis.Data = bsxfun(@rdivide, this.Data, sqrt(nanmean(this.Data.^2, 1)));
+newthis.Data = bsxfun(@rdivide, this.Data, ...
+    sqrt(mean(this.Data.^2, 1, 'omitnan')));
 end
 

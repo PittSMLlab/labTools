@@ -15,7 +15,7 @@ function newThis = derivate(this)
 %   See also: derivative
 
 partialThis = this.derivative;
-pad = nan(1, size(this.Data, 2));
+pad         = nan(1, size(this.Data, 2));
 newThis = labTimeSeries([pad; partialThis.Data; pad], this.Time(1), ...
     this.sampPeriod, partialThis.labels);
 end

@@ -12,6 +12,6 @@ function newthis = demean(this)
 %   See also: equalizeVarPerChannel, equalizeEnergyPerChannel
 
 newthis = this;
-newthis.Data = bsxfun(@minus, this.Data, nanmean(this.Data));
+newthis.Data = bsxfun(@minus, this.Data, mean(this.Data, 'omitnan'));
 end
 

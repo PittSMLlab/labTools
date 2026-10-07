@@ -34,9 +34,9 @@ if compareListsFast(this.labels, newParamLabel)
         'Cannot add parameter because it already exists');
 end
 oldData = this.getDataAsVector(inputParameterLabels);
-str = '(';
-for i = 1:size(oldData, 2)
-    str = [str 'oldData(:,' num2str(i) '),'];
+str     = '(';
+for ii = 1:size(oldData, 2)
+    str = [str 'oldData(:,' num2str(ii) '),'];
 end
 str(end) = ')'; % Replacing last comma with parenthesis
 % Isn't there a way to do this without eval?

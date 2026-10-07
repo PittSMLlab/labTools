@@ -39,12 +39,13 @@ time = this.Time;
 if ~any(boolFlag)
     matchedLabels = [];
     for ii = 1:length(auxLabel)
-        matchedLabels = [matchedLabels this.getLabelsThatMatch(auxLabel{ii})]; %#ok<AGROW>
+        matchedLabels = [matchedLabels ...
+            this.getLabelsThatMatch(auxLabel{ii})]; %#ok<AGROW>
     end
     [boolFlag, labelIdx] = this.isaLabel(matchedLabels);
     warning('labTimeSeries:labelNotFound', sprintf( ...
         ['None of the provided labels are in this timeSeries. ' ...
-         'Trying regex match: found %d match(es).'], numel(matchedLabels)));
+        'Trying regex match: found %d match(es).'], numel(matchedLabels)));
 else
     for ii = 1:length(boolFlag)
         if ~boolFlag(ii)

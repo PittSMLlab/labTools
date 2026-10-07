@@ -17,7 +17,7 @@ function newThis = appendData(this, newData, newLabels)
 %   See also: cat, concatenate
 
 % For back compatibility
-other = labTimeSeries(newData, newLabels, this.Time(1), this.sampPeriod);
+other   = labTimeSeries(newData, newLabels, this.Time(1), this.sampPeriod);
 newThis = cat(this, other);
 end
 

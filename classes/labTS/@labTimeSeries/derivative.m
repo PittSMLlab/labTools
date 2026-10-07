@@ -44,7 +44,7 @@ switch diffOrder
     otherwise
         error('labTS:derivative', 'Order not supported');
 end
-M = size(this.Data, 2);
+M       = size(this.Data, 2);
 newData = conv2(this.Data, w', 'valid') / this.sampPeriod;
 % newData = [nan(order, M); .5 * (this.Data(3:end, :) -
 %     this.Data(1:end - 2, :)); nan(order, M)] / this.sampPeriod;
@@ -59,6 +59,6 @@ else
     newT0 = this.Time(1) + lag * this.sampPeriod;
 end
 newLabels = strcat('d/dt', {' '}, this.labels);
-newThis = labTimeSeries(newData, newT0, this.sampPeriod, newLabels);
+newThis   = labTimeSeries(newData, newT0, this.sampPeriod, newLabels);
 end
 

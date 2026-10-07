@@ -23,8 +23,8 @@ end
 if nargin < 3 || isempty(Nreg)
     Nreg = 2;
 end
-for i = 1:size(this.Data, 2)
-    this.Data(:, i) = monoLS(this.Data(:, i), [], Nderiv, Nreg);
+for ii = 1:size(this.Data, 2)
+    this.Data(:, ii) = monoLS(this.Data(:, ii), [], Nderiv, Nreg);
 end
 newThis = this;
 end

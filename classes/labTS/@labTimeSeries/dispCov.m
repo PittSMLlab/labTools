@@ -12,7 +12,7 @@ function h = dispCov(this)
 %
 %   See also: cov
 
-h = figure;
+h  = figure;
 dd = cov(this.Data);
 imagesc(dd);
 set(gca, 'XTick', 1:length(this.labels), 'XTickLabels', this.labels, ...

@@ -35,9 +35,9 @@ if numel(initValues) ~= M
 end
 newData = bsxfun(@plus, initValues(:)', ...
     cumsum([zeros(1, M); this.Data], 1) * this.sampPeriod);
-lag = -0.5;
+lag       = -0.5;
 newLabels = strcat('\int', {' '}, this.labels, {' '}, 'dt');
-newT0 = this.Time(1) + lag * this.sampPeriod;
-newThis = labTimeSeries(newData, newT0, this.sampPeriod, newLabels);
+newT0     = this.Time(1) + lag * this.sampPeriod;
+newThis   = labTimeSeries(newData, newT0, this.sampPeriod, newLabels);
 end
 

@@ -25,32 +25,32 @@ if numel(stridedTS) ~= 0
     else
         aux = false(sum(N), size(stridedTS{1}.Data, 2),size(stridedTS, 1));
     end
-    Nstrides = size(stridedTS, 1);
-    Nphases = size(stridedTS, 2);
+    Nstrides          = size(stridedTS, 1);
+    Nphases           = size(stridedTS, 2);
     originalDurations = nan(Nstrides, Nphases);
-    for i = 1:Nstrides % Going over strides
+    for ii = 1:Nstrides % Going over strides
         M = [0, cumsum(N)];
-        for j = 1:Nphases % Going over aligned phases
-            if isa(stridedTS{i, j}, 'labTimeSeries')
-                originalDurations(i, j) = stridedTS{i, j}.timeRange;
-                if ~isempty(stridedTS{i, j}.Data) && ...
-                        sum(~isnan(stridedTS{i, j}.Data(:, 1))) > 1
-                    aa = resampleN(stridedTS{i, j}, N(j));
-                    aux(M(j) + 1:M(j + 1), :, i) = aa.Data;
+        for jj = 1:Nphases % Going over aligned phases
+            if isa(stridedTS{ii, jj}, 'labTimeSeries')
+                originalDurations(ii, jj) = stridedTS{ii, jj}.timeRange;
+                if ~isempty(stridedTS{ii, jj}.Data) && ...
+                        sum(~isnan(stridedTS{ii, jj}.Data(:, 1))) > 1
+                    aa = resampleN(stridedTS{ii, jj}, N(jj));
+                    aux(M(jj) + 1:M(jj + 1), :, ii) = aa.Data;
                 else
                     % Separating by strides returned empty labTimeSeries,
                     % possibly because of events in disorder
-                    if islogical(stridedTS{i, j}.Data)
-                        aux(M(j) + 1:M(j + 1), :, i) = false;
+                    if islogical(stridedTS{ii, jj}.Data)
+                        aux(M(jj) + 1:M(jj + 1), :, ii) = false;
                     else
-                        aux(M(j) + 1:M(j + 1), :, i) = NaN;
+                        aux(M(jj) + 1:M(jj + 1), :, ii) = NaN;
                     end
                 end
             else
                 error('labTimeSeries:stridedTSToAlignedTS', ...
                     ['First argument is not a cell array of ' ...
-                    'labTimeSeries. Element i = ' num2str(i) ', j = ' ...
-                    num2str(j)]);
+                    'labTimeSeries. Element i = ' num2str(ii) ', j = ' ...
+                    num2str(jj)]);
             end
         end
     end

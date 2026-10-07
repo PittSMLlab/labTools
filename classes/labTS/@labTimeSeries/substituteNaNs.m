@@ -36,11 +36,11 @@ if any(badColumns)
 end
 % this.Quality = zeros(size(this.Data), 'int8');
 aux = isnan(this.Data);
-for i = 1:size(this.Data, 2) % Going through labels
-    auxIdx = aux(:, i);
+for ii = 1:size(this.Data, 2) % Going through labels
+    auxIdx = aux(:, ii);
     % Extrapolation values are filled with 0
-    this.Data(auxIdx, i) = interp1(this.Time(~auxIdx), ...
-        this.Data(~auxIdx, i), this.Time(auxIdx), method, 0);
+    this.Data(auxIdx, ii) = interp1(this.Time(~auxIdx), ...
+        this.Data(~auxIdx, ii), this.Time(auxIdx), method, 0);
 end
 % Saving quality data (to mark which samples were interpolated): Matlab's
 % timeseries stores this as int8. I would have preferred a sparse array.

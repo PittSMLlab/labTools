@@ -38,13 +38,14 @@ if nargin < 5 || isempty(summaryFunction)
     summaryFunction = 'nanmean';
 end
 eval(['myfun = @(x) ' summaryFunction '(x, 1);']);
-%README: if you fail here due to concatenation issues, make sure nirs-toolbox is
+%README: if you fail here due to concatenation issues, make sure
+%nirs-toolbox is
 %not on your path
 d = cell2mat( ...
     cellfun(@(x) myfun(x.Data), slicedTS, 'UniformOutput', false)');
 [M, N1] = size(expEventTimes);
-M2 = size(d, 2);
-d = permute(reshape(d, sum(N), N1, M2), [1, 3, 2]);
+M2  = size(d, 2);
+d   = permute(reshape(d, sum(N), N1, M2), [1, 3, 2]);
 DTS = alignedTimeSeries(0, 1, d, this.labels, N, eventLabel, eventTimes');
 end
 

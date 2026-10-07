@@ -17,10 +17,10 @@ function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)
 %
 %   See also: align, alignedTimeSeries
 
-eventTimes = labTimeSeries.getArrayedEvents(eventTS, eventLabel);
+eventTimes    = labTimeSeries.getArrayedEvents(eventTS, eventLabel);
 expEventTimes = alignedTimeSeries.expandEventTimes(eventTimes', N);
-Data = permute(this.getSample(expEventTimes), [1, 3, 2]);
-bad = any(isnan(eventTimes(1:end - 1, :)), 2);
+Data          = permute(this.getSample(expEventTimes), [1, 3, 2]);
+bad           = any(isnan(eventTimes(1:end - 1, :)), 2);
 ATS = ...
     alignedTimeSeries(0, 1, Data, this.labels, N, eventLabel, eventTimes');
 end

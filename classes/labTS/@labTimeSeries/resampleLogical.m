@@ -21,12 +21,12 @@ function newThis = resampleLogical(this, newTs, newT0, newN)
 % newN = floor((this.Time(end) - newT0) / newTs + 1);
 % TODO: Can this be deprecated in favor of resample with 'logical' method?
 newTime = [0:newN - 1] * newTs + newT0;
-newN = length(newTime);
+newN    = length(newTime);
 % Sparse logical array of size newN x size(this.Data, 2) and room for
 % up to size(this.Data, 2) true elements.
 newData = sparse([], [], false, newN, size(this.Data, 2), newN);
-for i = 1:size(this.Data, 2) % Go over event labels
-    oldEventTimes = this.Time(this.Data(:, i)); % Find time of old events
+for ii = 1:size(this.Data, 2) % Go over event labels
+    oldEventTimes = this.Time(this.Data(:, ii)); % Find time of old events
     % Find closest index in new event
     closestNewEventIndexes = round((oldEventTimes - newT0) / newTs) + 1;
     % It could happen in case of down-sampling that the closest new
@@ -40,7 +40,7 @@ for i = 1:size(this.Data, 2) % Go over event labels
         % events not changing the number of events
         closestNewEventIndexes(closestNewEventIndexes > newN) = [];
     end
-    newData(closestNewEventIndexes, i) = true;
+    newData(closestNewEventIndexes, ii) = true;
 end
 newThis = labTimeSeries(newData, newT0, newTs, this.labels);
 end

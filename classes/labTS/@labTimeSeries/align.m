@@ -22,7 +22,8 @@ if nargin < 3 || isempty(eventLabel)
     eventLabel = eventTS.labels(1);
 end
 if nargin < 4 || isempty(N)
-    N = 256 * ones(size(eventLabel));
+    samplesPerInterval = 256; % default documented above
+    N = samplesPerInterval * ones(size(eventLabel));
 end
 [ATS, bad] = this.align_v2(eventTS.split(this.Time(1) - ...
     this.sampPeriod, this.Time(end) + this.sampPeriod), eventLabel, N);

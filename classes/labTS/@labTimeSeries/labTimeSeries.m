@@ -104,10 +104,10 @@ classdef labTimeSeries < timeseries
             %   See also: timeseries
 
             if nargin == 0
-                data = [];
-                time = [];
+                data   = [];
+                time   = [];
                 labels = {};
-                Ts = [];
+                Ts     = [];
             else
                 time = [0:size(data, 1) - 1] * Ts + t0';
             end
@@ -342,60 +342,67 @@ classdef labTimeSeries < timeseries
     methods
         % [h, plotHandles] = plot( ...
         %     this, h, labels, plotHandles, events, color, lineWidth)
-        function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) %Alternative plot: all the traces go in different axes
-            if nargin<2 || isempty(h)
-                h=figure;
+        %Alternative plot: all the traces go in different axes
+        function [h,plotHandles] = plot(this,h,labels,plotHandles, ...
+            events,color,lineWidth)
+            if nargin < 2 || isempty(h)
+                h = figure;
             else
                 figure(h)
             end
-            N=length(this.labels);
-            if nargin<3 || isempty(labels)
-                relData=this.Data;
-                relLabels=this.labels;
+            N = length(this.labels);
+            if nargin < 3 || isempty(labels)
+                relData   = this.Data;
+                relLabels = this.labels;
                 if ~isempty(this.Quality)
-                    relQual=this.Quality==1;
+                    relQual = this.Quality == 1;
                 else
-                    relQual=true(size(relData));
+                    relQual = true(size(relData));
                 end
             else
-                [relData,~,relLabels]=this.getDataAsVector(labels);
-                N=size(relData,2);
+                [relData,~,relLabels] = this.getDataAsVector(labels);
+                N = size(relData,2);
             end
-            if nargin<4 || isempty(plotHandles) || length(plotHandles)<length(relLabels)
-                [b,a]=getFigStruct(length(relLabels));
-                plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
+            if nargin < 4 || isempty(plotHandles) || ...
+                    length(plotHandles) < length(relLabels)
+                [b,a] = getFigStruct(length(relLabels));
+                plotHandles = tight_subplot(b,a,[0.05 0.05],[0.05 0.05], ...
+                    [0.05 0.05]); %External function
             end
-            if nargin<7 || isempty(lineWidth)
-                lineWidth=2;
+            if nargin < 7 || isempty(lineWidth)
+                lineWidth = 2;
             end
-            ax2=[];
-            h1=[];
+            ax2 = [];
+            h1  = [];
             if any(~isreal(relData(:)))
-                warning('labTimeSeries:plot','Data is complex, plotting the modulus only.')
-                relData=abs(relData);
+                warning('labTimeSeries:plot', ...
+                    'Data is complex, plotting the modulus only.')
+                relData = abs(relData);
             end
-            for i=1:N
-                h1(i)=plotHandles(i);
-                subplot(h1(i))
+            for ch = 1:N
+                h1(ch) = plotHandles(ch);
+                subplot(h1(ch))
                 hold on
-                if nargin<6 || isempty(color)
-                    pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth);
+                if nargin < 6 || isempty(color)
+                    pp = plot(this.Time,relData(:,ch),'LineWidth', ...
+                        lineWidth);
                 else
-                    pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color);
+                    pp = plot(this.Time,relData(:,ch),'LineWidth', ...
+                        lineWidth,'Color',color);
                 end
                 %plot(this.Time(relQual(:,i)),relData(relQual(:,i),i),'rx')
                 uistack(pp,'top')
-                ylabel(relLabels{i})
+                ylabel(relLabels{ch})
                 %if i==ceil(N/2)
                 %    xlabel('Time (s)')
                 %end
                 hold off
-                if nargin>4 && ~isempty(events)
-                    lls={'LHS','RTO','RHS','LTO'};
-                    [ii,jj]=find(events.getDataAsTS(lls).Data);
-                    [ii,iaux]=sort(ii);
-                    jj=jj(iaux);
-                    ax1=gca;
+                if nargin > 4 && ~isempty(events)
+                    lls = {'LHS','RTO','RHS','LTO'};
+                    [ii,jj] = find(events.getDataAsTS(lls).Data);
+                    [ii,iaux] = sort(ii);
+                    jj  = jj(iaux);
+                    ax1 = gca;
                     %ax2(i) = axes('Position',ax1.Position,...
                     %'XAxisLocation','top',...
                     %'YAxisLocation','right',...
@@ -406,53 +413,60 @@ classdef labTimeSeries < timeseries
                 end
             end
             %linkaxes([h1,ax2],'x')
-            plotHandles=h1;
+            plotHandles = h1;
         end
 
         % [h, plotHandles] = plotAligned( ...
         %     this, h, labels, plotHandles, events, color, lineWidth)
-        function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
+        function [h,plotHandles] = plotAligned(this,h,labels, ...
+            plotHandles,events,color,lineWidth)
             error('Unimplemented')
             %First attempt: align the data to the first column of events
             %provided
-            for i=1:length(ee)
+            for ii = 1:length(ee)
                 this.split(t1,t2).plot
             end
         end
 
         % [h, plotHandles] = bilateralPlot( ...
         %     this, h, labels, plotHandles, events, color, lineWidth)
-        function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
+        function [h,plotHandles] = bilateralPlot(this,h,labels, ...
+            plotHandles,events,color,lineWidth)
             %Ideally we would plot 'L' and 'R' timeseries on top of each
             %other, to do a bilateral comparison. Need to implement.
-            if nargin<2 || isempty(h)
-                h=figure;
+            if nargin < 2 || isempty(h)
+                h = figure;
             else
                 figure(h)
             end
-            if nargin<5 || isempty(events)
-                events=[];
+            if nargin < 5 || isempty(events)
+                events = [];
             end
-            if nargin<6 || isempty(color)
-                color=[];
+            if nargin < 6 || isempty(color)
+                color = [];
             end
-            if nargin<3 || isempty(labels)
-                labels=this.labels;
+            if nargin < 3 || isempty(labels)
+                labels = this.labels;
             end
-            suffix=unique(cellfun(@(x) x(2:end),labels,'UniformOutput',false));
-            if nargin<4 || isempty(plotHandles) || length(plotHandles)<length(suffix)
-                [b,a]=getFigStruct(length(suffix));
-                plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
+            suffix = unique(cellfun(@(x) x(2:end),labels, ...
+                'UniformOutput',false));
+            if nargin < 4 || isempty(plotHandles) || ...
+                    length(plotHandles) < length(suffix)
+                [b,a] = getFigStruct(length(suffix));
+                plotHandles = tight_subplot(b,a,[0.05 0.05],[0.05 0.05], ...
+                    [0.05 0.05]); %External function
             end
-            if nargin<7 || isempty(lineWidth)
-                lineWidth=2;
+            if nargin < 7 || isempty(lineWidth)
+                lineWidth = 2;
             end
-            [h,plotHandles]=plot(this,h,strcat('L',suffix),plotHandles,events,color,lineWidth);
-            [h,plotHandles]=plot(this,h,strcat('R',suffix),plotHandles,events,color,lineWidth);
-            for i=1:length(suffix)
-                subplot(plotHandles(i))
-                ylabel(suffix{i})
-                if i==length(suffix)
+            [h,plotHandles] = plot(this,h,strcat('L',suffix), ...
+                plotHandles,events,color,lineWidth);
+            [h,plotHandles] = plot(this,h,strcat('R',suffix), ...
+                plotHandles,events,color,lineWidth);
+            for ii = 1:length(suffix)
+                subplot(plotHandles(ii))
+                ylabel(suffix{ii})
+                if ii == length(suffix)
                     legend('L','R')
                 end
             end

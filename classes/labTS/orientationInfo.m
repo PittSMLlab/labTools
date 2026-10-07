@@ -25,21 +25,21 @@ classdef orientationInfo
         foreaftAxis (1,:) char ...
             {mustBeMember(foreaftAxis, {'x', 'y', 'z', ''})} = ''
         foreaftSign (1,1) double ...
-            {mustBeMember(foreaftSign, [1, -1])}              = 1
+            {mustBeMember(foreaftSign, [1, -1])} = 1
         sideAxis    (1,:) char ...
             {mustBeMember(sideAxis,    {'x', 'y', 'z', ''})} = ''
         sideSign    (1,1) double ...
-            {mustBeMember(sideSign,    [1, -1])}              = 1
+            {mustBeMember(sideSign,    [1, -1])} = 1
         updownAxis  (1,:) char ...
             {mustBeMember(updownAxis,  {'x', 'y', 'z', ''})} = ''
         updownSign  (1,1) double ...
-            {mustBeMember(updownSign,  [1, -1])}              = 1
+            {mustBeMember(updownSign,  [1, -1])} = 1
     end
 
     %% Constructor
     methods
         function this = orientationInfo(offset, foreaftAx, sideAx, ...
-                updownAx, foreaftSign, sideSign, updownSign)
+            updownAx, foreaftSign, sideSign, updownSign)
             % orientationInfo  Constructor for orientationInfo class.
             %
             %   this = orientationInfo() creates an orientationInfo object
@@ -74,20 +74,20 @@ classdef orientationInfo
 
             arguments
                 offset      (1,3) double = [0 0 0]
-                foreaftAx   (1,:) char   = ''
-                sideAx      (1,:) char   = ''
-                updownAx    (1,:) char   = ''
+                foreaftAx   (1,:) char = ''
+                sideAx      (1,:) char = ''
+                updownAx    (1,:) char = ''
                 foreaftSign (1,1) double = 1
                 sideSign    (1,1) double = 1
                 updownSign  (1,1) double = 1
             end
-            this.offset      = offset;
+            this.offset = offset;
             this.foreaftAxis = foreaftAx;
-            this.sideAxis    = sideAx;
-            this.updownAxis  = updownAx;
+            this.sideAxis = sideAx;
+            this.updownAxis = updownAx;
             this.foreaftSign = foreaftSign;
-            this.sideSign    = sideSign;
-            this.updownSign  = updownSign;
+            this.sideSign = sideSign;
+            this.updownSign = updownSign;
         end
     end
 

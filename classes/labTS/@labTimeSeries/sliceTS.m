@@ -19,14 +19,14 @@ function [slicedTS, initTime, duration] = sliceTS(this, ...
 %   See also: split, splitByEvents
 
 slicedTS = cell(1, length(timeBreakpoints) - 1);
-for i = 1:length(timeBreakpoints) - 1
-    if isnan(timeBreakpoints(i)) || isnan(timeBreakpoints(i + 1)) || ...
-            timeBreakpoints(i + 1) < timeBreakpoints(i)
+for ii = 1:length(timeBreakpoints) - 1
+    if isnan(timeBreakpoints(ii)) || isnan(timeBreakpoints(ii + 1)) || ...
+            timeBreakpoints(ii + 1) < timeBreakpoints(ii)
         % Preventing overload of annoying warnings
         warning('off');
     end
-    slicedTS{i} = this.split(timeBreakpoints(i) - timeMargin, ...
-        timeBreakpoints(i + 1) + timeMargin);
+    slicedTS{ii} = this.split(timeBreakpoints(ii) - timeMargin, ...
+        timeBreakpoints(ii + 1) + timeMargin);
     warning('on');
 end
 initTime = timeBreakpoints(1:end - 1) - timeMargin;

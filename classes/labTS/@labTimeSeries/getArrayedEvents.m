@@ -29,24 +29,24 @@ N = size(eventList, 2); % Number of events & intervals to be found
 % auxList = double(eventList) * 2.^[0:N - 1]';
 % refIdxLst = find(auxList == 1);
 % Alt definition, to match what is returned if a single event was provided
-refIdxLst = find(eventList(:, 1));
-M = length(refIdxLst) - 1;
-auxTime = eventTS.Time;
-initTime = auxTime(refIdxLst); % Initial time of each interval identified
+refIdxLst  = find(eventList(:, 1));
+M          = length(refIdxLst) - 1;
+auxTime    = eventTS.Time;
+initTime   = auxTime(refIdxLst); % Initial time of each interval identified
 eventTimes = nan(M + 1, N); % Duration of each interval
 eventTimes(:, 1) = initTime;
-for i = 1:M % Going over strides
-    t0 = auxTime(refIdxLst(i));
-    lastEventIdx = refIdxLst(i);
-    for j = 1:N - 1 % Going over events
+for ii = 1:M % Going over strides
+    t0           = auxTime(refIdxLst(ii));
+    lastEventIdx = refIdxLst(ii);
+    for jj = 1:N - 1 % Going over events
         % nextEventIdx = lastEventIdx +
         %     find(auxList(lastEventIdx + 1:refIdxLst(i + 1) - 1) ==
         %     2^mod(j, N), 1, 'first');
         nextEventIdx = lastEventIdx + find(eventList( ...
-            lastEventIdx + 1:refIdxLst(i + 1) - 1, j + 1), 1, 'first');
+            lastEventIdx + 1:refIdxLst(ii + 1) - 1, jj + 1), 1, 'first');
         t1 = auxTime(nextEventIdx); % Look for next event
         if ~isempty(t1) && ~isempty(t0)
-            eventTimes(i, j + 1) = t1;
+            eventTimes(ii, jj + 1) = t1;
             lastEventIdx = nextEventIdx;
         end
 

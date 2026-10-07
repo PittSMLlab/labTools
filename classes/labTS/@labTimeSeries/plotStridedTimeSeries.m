@@ -25,7 +25,8 @@ end
 if nargin < 3
     plotHandles = [];
 end
-N = 2^ceil(log2(1.5 / stridedTS{1}.sampPeriod));
+maxStrideDuration = 1.5; % s, TODO: source?
+N         = 2^ceil(log2(maxStrideDuration / stridedTS{1}.sampPeriod));
 structure = labTimeSeries.stridedTSToAlignedTS(stridedTS, N);
 % Using the alignedTimeSeries plot function
 [figHandle, plotHandles] = plot(structure, figHandle, plotHandles);

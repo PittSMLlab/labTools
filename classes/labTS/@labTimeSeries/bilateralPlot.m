@@ -48,8 +48,8 @@ if nargin < 4 || isempty(plotHandles) || ...
         length(plotHandles) < length(suffix)
     [b, a] = getFigStruct(length(suffix));
     % External function
-    plotHandles = tight_subplot(b, a, [.05 .05], [.05 .05], ...
-        [.05 .05]);
+    plotHandles = tight_subplot(b, a, [0.05 0.05], [0.05 0.05], ...
+        [0.05 0.05]);
 end
 if nargin < 7 || isempty(lineWidth)
     lineWidth = 2;
@@ -58,10 +58,10 @@ end
     events, color, lineWidth);
 [h, plotHandles] = plot(this, h, strcat('R', suffix), plotHandles, ...
     events, color, lineWidth);
-for i = 1:length(suffix)
-    subplot(plotHandles(i));
-    ylabel(suffix{i});
-    if i == length(suffix)
+for ii = 1:length(suffix)
+    subplot(plotHandles(ii));
+    ylabel(suffix{ii});
+    if ii == length(suffix)
         legend('L', 'R');
     end
 end

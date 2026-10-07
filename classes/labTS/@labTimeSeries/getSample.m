@@ -49,11 +49,11 @@ if ~isempty(timePoints)
             data(notNaNIdxs, :) = newTS.Data;
         case 'closest'
             data = nan(numel(timePoints), M);
-            aux = this.getIndexClosestToTimePoint(timePoints(:));
+            aux  = this.getIndexClosestToTimePoint(timePoints(:));
             inds = ~isnan(aux);
-            aux = aux(inds); % Eliminating NaNs
+            aux  = aux(inds); % Eliminating NaNs
             % This would be the new data in the simplest case.
-            newData = this.Data(aux, :);
+            newData  = this.Data(aux, :);
             initData = newData;
             % But, if two samples map to the same timePoint (sub-sampling)
             % and that timePoint corresponds to an event, just keep the
@@ -62,10 +62,10 @@ if ~isempty(timePoints)
             trueEventSamples = ...
                 unique(aux(any(newData, 2) & [diff(aux); 1] == 0));
             tt = this.Time(trueEventSamples);
-            for i = 1:length(trueEventSamples)
-                mappedInds = find(aux == trueEventSamples(i));
+            for ii = 1:length(trueEventSamples)
+                mappedInds = find(aux == trueEventSamples(ii));
                 relevantTimePoints = timePoints(mappedInds);
-                Dt = abs(tt(i) - relevantTimePoints);
+                Dt = abs(tt(ii) - relevantTimePoints);
                 % The find() is needed to resolve ties
                 jj = find(Dt == min(Dt), 1, 'first');
                 mappedInds(jj) = [];
