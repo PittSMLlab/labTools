@@ -1,26 +1,27 @@
 function newThis = resampleN(this, newN, method)
-%resampleN  Resamples to N samples over same time range
+%RESAMPLEN Resamples to N samples over same time range.
 %
-%   newThis = resampleN(this, newN) performs uniform resampling of
-%   data over the same time range using Fourier interpolation
+%   newThis = resampleN(this, newN) performs uniform resampling of data over
+% the same time range using Fourier interpolation
 %
-%   newThis = resampleN(this, newN, method) uses specified
-%   interpolation method
+%   newThis = resampleN(this, newN, method) uses specified interpolation
+% method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       newN - target number of samples
-%       method - 'interpft' (default for numeric), 'logical' (default
-%                for logical), 'linear', 'cubic', or any method
-%                accepted by interp1
+% Inputs:
+%   this   - labTimeSeries object
+%   newN   - target number of samples
+%   method - 'interpft' (default for numeric), 'logical' (default for
+%            logical), 'linear', 'cubic', or any method accepted by interp1
 %
-%   Outputs:
-%       newThis - resampled labTimeSeries with same time range
+% Outputs:
+%   newThis - resampled labTimeSeries with same time range
 %
 %   Note: Keeps initial time on same value and returns newN time-
 %         samples in the time interval of the original timeseries
 %
-%   See also: resample, interpft1, interp1
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, INTERPFT1, INTERP1.
 
 if ~isempty(this.Data)
     if nargin < 3 || isempty(method)

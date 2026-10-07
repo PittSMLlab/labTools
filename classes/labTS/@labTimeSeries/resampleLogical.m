@@ -1,22 +1,24 @@
 function newThis = resampleLogical(this, newTs, newT0, newN)
-%resampleLogical  Resamples logical timeseries
+%RESAMPLELOGICAL Resamples logical timeseries.
 %
-%   newThis = resampleLogical(this, newTs, newT0, newN) resamples a
-%   logical (event) timeseries to new sampling
+%   newThis = resampleLogical(this, newTs, newT0, newN) resamples a logical
+% (event) timeseries to new sampling
 %
-%   Inputs:
-%       this - labTimeSeries object with logical data
-%       newTs - new sampling period
-%       newT0 - new initial time
-%       newN - new number of samples
+% Inputs:
+%   this  - labTimeSeries object with logical data
+%   newTs - new sampling period
+%   newT0 - new initial time
+%   newN  - new number of samples
 %
-%   Outputs:
-%       newThis - resampled labTimeSeries with logical data
+% Outputs:
+%   newThis - resampled labTimeSeries with logical data
 %
 %   Note: Can this be deprecated in favor of resample with 'logical'
 %         method?
 %
-%   See also: resample, resampleN, getSample
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, RESAMPLEN, GETSAMPLE.
 
 % newN = floor((this.Time(end) - newT0) / newTs + 1);
 % TODO: Can this be deprecated in favor of resample with 'logical' method?

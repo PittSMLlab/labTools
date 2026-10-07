@@ -1,19 +1,23 @@
 function newThis = castAsSTS(this, F, tWin, tOverlap)
-%castAsSTS  Converts to spectroTimeSeries
+%CASTASSTS Converts to spectroTimeSeries.
 %
 %   newThis = castAsSTS(this, F, tWin, tOverlap) converts to
-%   spectroTimeSeries with specified parameters
+% spectroTimeSeries with specified parameters
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       F - frequency vector
-%       tWin - time window duration
-%       tOverlap - overlap duration
+% Inputs:
+%   this     - labTimeSeries object
+%   F        - frequency vector
+%   tWin     - time window duration
+%   tOverlap - overlap duration
 %
-%   Outputs:
-%       newThis - spectroTimeSeries object
+% Outputs:
+%   newThis - spectroTimeSeries object
 %
-%   See also: spectroTimeSeries, spectrogram
+%   NOTE: the spectroTimeSeries class is not part of this repository.
+%
+% Toolbox Dependencies: None
+%
+% See also SPECTROTIMESERIES, SPECTROGRAM.
 
 % Check if it satisfies STS requirements
 dataF   = this.Data;

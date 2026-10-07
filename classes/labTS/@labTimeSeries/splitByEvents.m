@@ -1,29 +1,30 @@
 function [steppedDataArray, bad, initTime, eventTimes] = ...
     splitByEvents(this, eventTS, eventLabel, timeMargin)
-%splitByEvents  Separates by events in boolean timeseries
+%SPLITBYEVENTS Separates by events in boolean timeseries.
 %
-%   [steppedDataArray, bad, initTime, eventTimes] = splitByEvents(
-%   this, eventTS, eventLabel, timeMargin) separates the timeseries
-%   according to events in a boolean event timeseries
+%   [steppedDataArray, bad, initTime, eventTimes] = splitByEvents( this,
+% eventTS, eventLabel, timeMargin) separates the timeseries according to
+% events in a boolean event timeseries
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       eventTS - labTimeSeries with binary events as data
-%       eventLabel - label of event column to use (optional, default:
-%                    first column)
-%       timeMargin - time margin to add before/after each segment
-%                    (optional, default: 0)
+% Inputs:
+%   this       - labTimeSeries object
+%   eventTS    - labTimeSeries with binary events as data
+%   eventLabel - label of event column to use (optional, default: first
+%                column)
+%   timeMargin - time margin to add before/after each segment (optional,
+%                default: 0)
 %
-%   Outputs:
-%       steppedDataArray - cell array (strides x phases) of split
-%                          timeseries
-%       bad - logical vector indicating strides with event issues
-%       initTime - vector of initial times for each stride
-%       eventTimes - matrix of event times (strides x events)
+% Outputs:
+%   steppedDataArray - cell array (strides x phases) of split timeseries
+%   bad              - logical vector indicating strides with event issues
+%   initTime         - vector of initial times for each stride
+%   eventTimes       - matrix of event times (strides x events)
 %
 %   Note: eventTS needs to be a labTimeSeries with binary events as data
 %
-%   See also: sliceTS, split, getArrayedEvents
+% Toolbox Dependencies: None
+%
+% See also SLICETS, SPLIT, GETARRAYEDEVENTS.
 
 % If eventLabel is not given, the first data column is used as the
 % relevant event marker. If given, eventLabel must be the label of one

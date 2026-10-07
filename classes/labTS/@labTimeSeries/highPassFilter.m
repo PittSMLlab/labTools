@@ -1,17 +1,19 @@
 function newThis = highPassFilter(this, fcut)
-%highPassFilter  Applies high-pass filter
+%HIGHPASSFILTER Applies high-pass filter.
 %
 %   newThis = highPassFilter(this, fcut) applies Butterworth high-pass
-%   filter with specified cutoff frequency
+% filter with specified cutoff frequency
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       fcut - cutoff frequency in Hz
+% Inputs:
+%   this - labTimeSeries object
+%   fcut - cutoff frequency in Hz
 %
-%   Outputs:
-%       newThis - filtered labTimeSeries
+% Outputs:
+%   newThis - filtered labTimeSeries
 %
-%   See also: lowPassFilter, medianFilter, filtfilthd_short
+% Toolbox Dependencies: Signal Processing Toolbox
+%
+% See also LOWPASSFILTER, MEDIANFILTER, FILTFILTHD_SHORT.
 
 passAttenDb  = 3;  % dB, Ap in the fdesign spec
 stopAttenDb  = 10; % dB, Ast in the fdesign spec

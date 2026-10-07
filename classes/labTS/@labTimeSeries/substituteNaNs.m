@@ -1,24 +1,23 @@
 function this = substituteNaNs(this, method)
-%substituteNaNs  Replaces NaN by interpolation
+%SUBSTITUTENANS Replaces NaN by interpolation.
 %
-%   this = substituteNaNs(this) fills NaN values using linear
-%   interpolation
+%   this = substituteNaNs(this) fills NaN values using linear interpolation
 %
-%   this = substituteNaNs(this, method) uses specified interpolation
-%   method
+%   this = substituteNaNs(this, method) uses specified interpolation method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       method - interpolation method for interp1 (optional, default:
-%                'linear')
+% Inputs:
+%   this   - labTimeSeries object
+%   method - interpolation method for interp1 (optional, default: 'linear')
 %
-%   Outputs:
-%       this - labTimeSeries with NaN filled
+% Outputs:
+%   this - labTimeSeries with NaN filled
 %
 %   Note: Labels with all NaN set to 0. Quality field updated to mark
 %         interpolated samples.
 %
-%   See also: fillts, interp1
+% Toolbox Dependencies: None
+%
+% See also FILLTS, INTERP1.
 
 if nargin < 2 || isempty(method)
     method = 'linear';

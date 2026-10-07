@@ -1,28 +1,30 @@
 function [h, plotHandles] = plot(this, h, labels, plotHandles, events, ...
     color, lineWidth)
-%plot  Plots data in subplots
+%PLOT Plots data in subplots.
 %
 %   [h, plotHandles] = plot(this) plots all labels in separate subplots
 %
-%   [h, plotHandles] = plot(this, h, labels, plotHandles, events,
-%   color, lineWidth) plots with specified options
+%   [h, plotHandles] = plot(this, h, labels, plotHandles, events, color,
+% lineWidth) plots with specified options
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       h - figure handle (optional, creates new if empty)
-%       labels - cell array of labels to plot (optional, default: all)
-%       plotHandles - subplot handles (optional, creates if empty)
-%       events - labTimeSeries with events to mark (optional)
-%       color - line color (optional)
-%       lineWidth - line width (optional, default: 2)
+% Inputs:
+%   this        - labTimeSeries object
+%   h           - figure handle (optional, creates new if empty)
+%   labels      - cell array of labels to plot (optional, default: all)
+%   plotHandles - subplot handles (optional, creates if empty)
+%   events      - labTimeSeries with events to mark (optional)
+%   color       - line color (optional)
+%   lineWidth   - line width (optional, default: 2)
 %
-%   Outputs:
-%       h - figure handle
-%       plotHandles - array of subplot handles
+% Outputs:
+%   h           - figure handle
+%   plotHandles - array of subplot handles
 %
 %   Note: Alternative plot - all traces go in different axes
 %
-%   See also: bilateralPlot, plotAligned
+% Toolbox Dependencies: None
+%
+% See also BILATERALPLOT, PLOTALIGNED.
 
 % Alternative plot: all the traces go in different axes
 if nargin < 2 || isempty(h)

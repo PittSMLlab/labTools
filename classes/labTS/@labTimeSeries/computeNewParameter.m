@@ -1,20 +1,18 @@
 function newData = computeNewParameter( ...
     this, newParamLabel, funHandle, inputParameterLabels)
-%computeNewParameter  Computes new parameter without adding to data
+%COMPUTENEWPARAMETER Computes new parameter without adding to data.
 %
 %   newData = computeNewParameter(this, newParamLabel, funHandle,
-%   inputParameterLabels) computes new parameter from existing
-%   parameters
+% inputParameterLabels) computes new parameter from existing parameters
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       newParamLabel - string name for new parameter
-%       funHandle - function handle with N input variables
-%       inputParameterLabels - cell array of N parameter labels to use
-%                              as inputs
+% Inputs:
+%   this                 - labTimeSeries object
+%   newParamLabel        - string name for new parameter
+%   funHandle            - function handle with N input variables
+%   inputParameterLabels - cell array of N parameter labels to use as inputs
 %
-%   Outputs:
-%       newData - computed data for new parameter
+% Outputs:
+%   newData - computed data for new parameter
 %
 %   Note: TODO - support many new parameters together, as long as
 %         they use the same funHandle, with inputParameterLabels an NxM
@@ -22,7 +20,9 @@ function newData = computeNewParameter( ...
 %         computed). Use this change in linearStretch(this, labels,
 %         rangeValues) for efficiency
 %
-%   See also: addNewParameter, parameterSeries
+% Toolbox Dependencies: None
+%
+% See also ADDNEWPARAMETER, PARAMETERSERIES.
 
 if length(inputParameterLabels) ~= nargin(funHandle)
     error('labTS:addNewParameter', ...
@@ -39,7 +39,7 @@ for ii = 1:size(oldData, 2)
     str = [str 'oldData(:,' num2str(ii) '),'];
 end
 str(end) = ')'; % Replacing last comma with parenthesis
-% Isn't there a way to do this without eval?
+% TODO: avoid eval.
 eval(['newData = funHandle' str ';']);
 end
 

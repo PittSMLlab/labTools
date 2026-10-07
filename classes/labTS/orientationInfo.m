@@ -1,9 +1,9 @@
 classdef orientationInfo
-    % orientationInfo  Holds information about a 3-D coordinate system.
+    %ORIENTATIONINFO Holds information about a 3-D coordinate system.
     %
-    %   orientationInfo defines the orientation of a coordinate system
-    % by specifying which physical directions (fore-aft, side-to-side,
-    % up-down) correspond to which axes (x, y, z) and their signs.
+    %   orientationInfo defines the orientation of a coordinate system by
+    % specifying which physical directions (fore-aft, side-to-side, up-down)
+    % correspond to which axes (x, y, z) and their signs.
     %
     % orientationInfo properties:
     %   offset      - 1x3 vector for coordinate system origin offset
@@ -17,7 +17,9 @@ classdef orientationInfo
     % orientationInfo methods:
     %   orientationInfo - constructor for orientationInfo object
     %
-    % See also: orientedLabTimeSeries
+    % Toolbox Dependencies: None
+    %
+    % See also ORIENTEDLABTIMESERIES.
 
     %% Properties
     properties
@@ -40,37 +42,38 @@ classdef orientationInfo
     methods
         function this = orientationInfo(offset, foreaftAx, sideAx, ...
             updownAx, foreaftSign, sideSign, updownSign)
-            % orientationInfo  Constructor for orientationInfo class.
+            %ORIENTATIONINFO Constructor for orientationInfo class.
             %
             %   this = orientationInfo() creates an orientationInfo object
-            %   with default property values.
+            % with default property values.
             %
             %   this = orientationInfo(offset, foreaftAx, sideAx, updownAx,
-            %   foreaftSign, sideSign, updownSign) creates an
-            %   orientationInfo object with the specified parameters.
-            %   Input validation is enforced by property validators on
-            %   assignment; see the property block for permitted values.
+            % foreaftSign, sideSign, updownSign) creates an orientationInfo
+            % object with the specified parameters. Input validation is
+            % enforced by property validators on assignment; see the
+            % property block for permitted values.
             %
-            %   Inputs:
-            %     offset      - (optional) 1x3 origin offset vector;
-            %                   defaults to [0 0 0]
-            %     foreaftAx   - (optional) Fore-aft axis: 'x', 'y', or 'z';
-            %                   defaults to ''
-            %     sideAx      - (optional) Side axis: 'x', 'y', or 'z';
-            %                   defaults to ''
-            %     updownAx    - (optional) Vertical axis: 'x', 'y', or 'z';
-            %                   defaults to ''
-            %     foreaftSign - (optional) Fore-aft sign (1 or -1);
-            %                   defaults to 1
-            %     sideSign    - (optional) Side sign (1 or -1);
-            %                   defaults to 1
-            %     updownSign  - (optional) Vertical sign (1 or -1);
-            %                   defaults to 1
+            % Inputs:
+            %   offset      - (optional) 1x3 origin offset vector; defaults
+            %                 to [0 0 0]
+            %   foreaftAx   - (optional) Fore-aft axis: 'x', 'y', or 'z';
+            %                 defaults to ''
+            %   sideAx      - (optional) Side axis: 'x', 'y', or 'z';
+            %                 defaults to ''
+            %   updownAx    - (optional) Vertical axis: 'x', 'y', or 'z';
+            %                 defaults to ''
+            %   foreaftSign - (optional) Fore-aft sign (1 or -1); defaults
+            %                 to 1
+            %   sideSign    - (optional) Side sign (1 or -1); defaults to 1
+            %   updownSign  - (optional) Vertical sign (1 or -1); defaults
+            %                 to 1
             %
-            %   Outputs:
-            %     this - orientationInfo object
+            % Outputs:
+            %   this - orientationInfo object
             %
-            %   See also: orientedLabTimeSeries
+            % Toolbox Dependencies: None
+            %
+            % See also ORIENTEDLABTIMESERIES.
 
             arguments
                 offset      (1,3) double = [0 0 0]

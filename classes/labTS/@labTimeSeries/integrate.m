@@ -1,24 +1,25 @@
 function newThis = integrate(this, initValues)
-%integrate  Numerical integration
+%INTEGRATE Numerical integration.
 %
-%   newThis = integrate(this) integrates data using zero initial
-%   conditions
+%   newThis = integrate(this) integrates data using zero initial conditions
 %
 %   newThis = integrate(this, initValues) uses specified initial values
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       initValues - initial conditions for integration (optional,
-%                    default: zeros)
+% Inputs:
+%   this       - labTimeSeries object
+%   initValues - initial conditions for integration (optional, default:
+%                zeros)
 %
-%   Outputs:
-%       newThis - integrated labTimeSeries
+% Outputs:
+%   newThis - integrated labTimeSeries
 %
 %   Note: This is inverse operator of derivative when used with
 %         diffOrder = 1. Initial values represent the integrated data
 %         values HALF A SAMPLE before the first sample of this.
 %
-%   See also: derivative
+% Toolbox Dependencies: None
+%
+% See also DERIVATIVE.
 
 % This is the inverse operator of derivative when used with
 % diffOrder = 1;

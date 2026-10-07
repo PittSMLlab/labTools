@@ -1,21 +1,23 @@
 function newThis = split(this, t0, t1)
-%split  Returns timeseries between two timepoints
+%SPLIT Returns timeseries between two timepoints.
 %
-%   newThis = split(this, t0, t1) returns a timeseries containing data
-%   in the semi-closed interval [t0, t1)
+%   newThis = split(this, t0, t1) returns a timeseries containing data in
+% the semi-closed interval [t0, t1)
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       t0 - start time (inclusive)
-%       t1 - end time (exclusive)
+% Inputs:
+%   this - labTimeSeries object
+%   t0   - start time (inclusive)
+%   t1   - end time (exclusive)
 %
-%   Outputs:
-%       newThis - labTimeSeries containing data in [t0, t1)
+% Outputs:
+%   newThis - labTimeSeries containing data in [t0, t1)
 %
 %   Note: Pads with NaN if requested interval extends beyond available
 %         data. Returns empty if interval falls between samples.
 %
-%   See also: sliceTS, getSample
+% Toolbox Dependencies: None
+%
+% See also SLICETS, GETSAMPLE.
 
 % Need to test this chunk of code before enabling:
 % if isnan(t0) || isnan(t1)
@@ -28,11 +30,9 @@ function newThis = split(this, t0, t1)
 % Check t0 >= Time(1)
 % Check t1 <= Time(end)
 initT = this.Time(1) - eps;
-% finalT = this.Time(end) + eps; % SL commented out, this will throw
-% warning when trying to get the last sample the original intention
-% was good to do [t0, t1) to avoid repeated sample, but the last
-% sample (Time(end)) was never retrievable with this approach.
-% To get the last sample without warning.
+% finalT = this.Time(end) + eps;
+% finalT extends one sample past the end so that Time(end) can be
+% retrieved with the [t0, t1) convention without a warning.
 finalT = this.Time(end) + this.sampPeriod;
 if ~(t0 >= initT && t1 <= finalT)
     if (t1 < initT) || (t0 >= finalT)

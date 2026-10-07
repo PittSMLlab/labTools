@@ -1,22 +1,21 @@
 classdef labTimeSeries < timeseries
-    %labTimeSeries  Extends timeseries (built-in MATLAB class) to meet
-    %our lab's needs for storing data
+    %LABTIMESERIES Uniformly sampled time series with labeled channels.
     %
-    %   labTimeSeries forces timeseries to be uniformly sampled and adds
-    %   label-based data access, resampling, filtering, and alignment
-    %   capabilities.
+    %   labTimeSeries extends the built-in timeseries class to meet our
+    % lab's needs. It forces uniform sampling and adds label-based data
+    % access, resampling, filtering, and alignment capabilities.
     %
-    %labTimeSeries properties:
-    %   labels - cell array of strings with labels for columns of Data
+    % labTimeSeries properties:
+    %   labels     - cell array of strings with labels for columns of Data
     %   sampPeriod - time between samples, equal to 1/sampFreq
-    %   sampFreq - sampling rate in Hz, equal to 1/sampPeriod (dependent)
-    %   timeRange - total time duration (dependent)
-    %   Nsamples - total number of samples in timeSeries (dependent)
-    %   Data - matrix of data values, size Nsamples x length(labels)
-    %   Time - time values corresponding to each sample
-    %   Length - should be same as Nsamples
+    %   sampFreq   - sampling rate in Hz, equal to 1/sampPeriod (dependent)
+    %   timeRange  - total time duration (dependent)
+    %   Nsamples   - total number of samples in timeSeries (dependent)
+    %   Data       - matrix of data values, size Nsamples x length(labels)
+    %   Time       - time values corresponding to each sample
+    %   Length     - should be same as Nsamples
     %
-    %labTimeSeries methods:
+    % labTimeSeries methods:
     %   getDataAsVector - gets data vector for given label(s)
     %   getDataAsTS - returns new labTimeSeries with given label(s)
     %   getLabels - returns list of labels
@@ -67,7 +66,9 @@ classdef labTimeSeries < timeseries
     %   assessMissing - assesses and plots missing data
     %   findOutliers - detects outliers using model
     %
-    %See also: timeseries, orientedLabTimeSeries, alignedTimeSeries
+    % Toolbox Dependencies: Signal Processing Toolbox
+    %
+    % See also TIMESERIES, ORIENTEDLABTIMESERIES, ALIGNEDTIMESERIES.
 
     %% Properties
     properties (SetAccess = private)
@@ -84,24 +85,26 @@ classdef labTimeSeries < timeseries
     %% Constructor
     methods
         function this = labTimeSeries(data, t0, Ts, labels)
-            %labTimeSeries  Constructor for labTimeSeries class
+            %LABTIMESERIES Constructor for labTimeSeries class.
             %
             %   this = labTimeSeries(data, t0, Ts, labels) creates a
-            %   uniformly sampled timeseries with specified data, initial
-            %   time, sampling period, and labels
+            % uniformly sampled timeseries with specified data, initial
+            % time, sampling period, and labels
             %
-            %   Inputs:
-            %       data - matrix of data values (samples x channels)
-            %       t0 - initial time in seconds
-            %       Ts - sampling period in seconds
-            %       labels - cell array of label strings for each channel
+            % Inputs:
+            %   data   - matrix of data values (samples x channels)
+            %   t0     - initial time in seconds
+            %   Ts     - sampling period in seconds
+            %   labels - cell array of label strings for each channel
             %
-            %   Outputs:
-            %       this - labTimeSeries object
+            % Outputs:
+            %   this - labTimeSeries object
             %
             %   Note: Necessarily uniformly sampled
             %
-            %   See also: timeseries
+            % Toolbox Dependencies: None
+            %
+            % See also TIMESERIES.
 
             if nargin == 0
                 data   = [];
@@ -143,28 +146,43 @@ classdef labTimeSeries < timeseries
     %% Dependent Property Getters
     methods
         function fs = get.sampFreq(this)
-            %get.sampFreq  Returns sampling frequency
+            %GET.SAMPFREQ Returns sampling frequency.
             %
-            %   Outputs:
-            %       fs - sampling frequency in Hz
+            % Inputs:
+            %   this - labTimeSeries object
+            %
+            % Outputs:
+            %   fs - sampling frequency in Hz
+            %
+            % Toolbox Dependencies: None
 
             fs = 1 / this.sampPeriod;
         end
 
         function tr = get.timeRange(this)
-            %get.timeRange  Returns total time duration
+            %GET.TIMERANGE Returns total time duration.
             %
-            %   Outputs:
-            %       tr - time range in seconds
+            % Inputs:
+            %   this - labTimeSeries object
+            %
+            % Outputs:
+            %   tr - time range in seconds
+            %
+            % Toolbox Dependencies: None
 
             tr = (this.Nsamples) * this.sampPeriod;
         end
 
         function Nsamp = get.Nsamples(this)
-            %get.Nsamples  Returns number of samples
+            %GET.NSAMPLES Returns number of samples.
             %
-            %   Outputs:
-            %       Nsamp - total number of samples
+            % Inputs:
+            %   this - labTimeSeries object
+            %
+            % Outputs:
+            %   Nsamp - total number of samples
+            %
+            % Toolbox Dependencies: None
 
             Nsamp = this.TimeInfo.Length;
         end
@@ -177,17 +195,19 @@ classdef labTimeSeries < timeseries
         [newTS, auxLabel] = getDataAsTS(this, label)
 
         function labelList = getLabels(this)
-            %getLabels  Returns list of labels
+            %GETLABELS Returns list of labels.
             %
             %   labelList = getLabels(this) returns all data labels
             %
-            %   Inputs:
-            %       this - labTimeSeries object
+            % Inputs:
+            %   this - labTimeSeries object
             %
-            %   Outputs:
-            %       labelList - cell array of label strings
+            % Outputs:
+            %   labelList - cell array of label strings
             %
-            %   See also: getLabelsThatMatch, isaLabel
+            % Toolbox Dependencies: Signal Processing Toolbox
+            %
+            % See also GETLABELSTHATMATCH, ISALABEL.
 
             labelList = this.labels;
         end
@@ -295,18 +315,20 @@ classdef labTimeSeries < timeseries
         newThis = concatenate(this, other)
 
         function newThis = cat(this, other)
-            %cat  Alias for concatenate
+            %CAT Alias for concatenate.
             %
             %   newThis = cat(this, other) concatenates two labTimeSeries
             %
-            %   Inputs:
-            %       this - labTimeSeries object
-            %       other - labTimeSeries object to concatenate
+            % Inputs:
+            %   this  - labTimeSeries object
+            %   other - labTimeSeries object to concatenate
             %
-            %   Outputs:
-            %       newThis - concatenated labTimeSeries
+            % Outputs:
+            %   newThis - concatenated labTimeSeries
             %
-            %   See also: concatenate
+            % Toolbox Dependencies: Signal Processing Toolbox
+            %
+            % See also CONCATENATE.
 
             newThis = concatenate(this, other);
         end
@@ -340,11 +362,32 @@ classdef labTimeSeries < timeseries
 
     %% Visualization Methods
     methods
-        % [h, plotHandles] = plot( ...
-        %     this, h, labels, plotHandles, events, color, lineWidth)
-        %Alternative plot: all the traces go in different axes
         function [h,plotHandles] = plot(this,h,labels,plotHandles, ...
             events,color,lineWidth)
+            %PLOT Plots data in subplots, one subplot per label.
+            %
+            %   Inline copy of the plot method that is also defined in
+            % plot.m. The traces go in different axes; events (LHS, RTO,
+            % RHS, LTO) are marked on the x axis when given.
+            %
+            % Inputs:
+            %   this        - labTimeSeries object
+            %   h           - figure handle (optional, creates new if empty)
+            %   labels      - cell array of labels to plot (optional,
+            %                 default: all)
+            %   plotHandles - subplot handles (optional, creates if empty)
+            %   events      - labTimeSeries with events to mark (optional)
+            %   color       - line color (optional)
+            %   lineWidth   - line width (optional)
+            %
+            % Outputs:
+            %   h           - figure handle
+            %   plotHandles - array of subplot handles
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also BILATERALPLOT, PLOTALIGNED.
+
             if nargin < 2 || isempty(h)
                 h = figure;
             else
@@ -416,22 +459,62 @@ classdef labTimeSeries < timeseries
             plotHandles = h1;
         end
 
-        % [h, plotHandles] = plotAligned( ...
-        %     this, h, labels, plotHandles, events, color, lineWidth)
         function [h,plotHandles] = plotAligned(this,h,labels, ...
             plotHandles,events,color,lineWidth)
+            %PLOTALIGNED Plots aligned data (unimplemented).
+            %
+            %   Inline copy of the method that is also defined in
+            % plotAligned.m; it throws an error.
+            %
+            % Inputs:
+            %   this        - labTimeSeries object
+            %   h           - figure handle (optional)
+            %   labels      - labels to plot (optional)
+            %   plotHandles - subplot handles (optional)
+            %   events      - events for alignment (optional)
+            %   color       - line color (optional)
+            %   lineWidth   - line width (optional)
+            %
+            % Outputs:
+            %   h           - figure handle
+            %   plotHandles - subplot handles
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also PLOT, ALIGN.
+
             error('Unimplemented')
-            %First attempt: align the data to the first column of events
-            %provided
+            %Sketch: align the data to the first column of events provided
             for ii = 1:length(ee)
                 this.split(t1,t2).plot
             end
         end
 
-        % [h, plotHandles] = bilateralPlot( ...
-        %     this, h, labels, plotHandles, events, color, lineWidth)
         function [h,plotHandles] = bilateralPlot(this,h,labels, ...
             plotHandles,events,color,lineWidth)
+            %BILATERALPLOT Plots bilateral comparison.
+            %
+            %   Inline copy of the method that is also defined in
+            % bilateralPlot.m. Plots 'L' and 'R' labeled data for
+            % comparison.
+            %
+            % Inputs:
+            %   this        - labTimeSeries object
+            %   h           - figure handle (optional, creates new if empty)
+            %   labels      - labels to plot (optional, default: all)
+            %   plotHandles - subplot handles (optional, creates if empty)
+            %   events      - labTimeSeries with events to mark (optional)
+            %   color       - line color (optional)
+            %   lineWidth   - line width (optional)
+            %
+            % Outputs:
+            %   h           - figure handle
+            %   plotHandles - array of subplot handles
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also PLOT, PLOTALIGNED.
+
             %Ideally we would plot 'L' and 'R' timeseries on top of each
             %other, to do a bilateral comparison. Need to implement.
             if nargin < 2 || isempty(h)

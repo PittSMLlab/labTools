@@ -1,18 +1,20 @@
 function newThis = removeParameter(labels)
-%removeParameter  Removes parameter from timeseries
+%REMOVEPARAMETER Removes parameter from timeseries.
 %
-%   newThis = removeParameter(labels) removes specified labels from
-%   the timeseries
+%   newThis = removeParameter(labels) removes specified labels from the
+% timeseries
 %
-%   Inputs:
-%       labels - cell array of label strings to remove
+% Inputs:
+%   labels - cell array of label strings to remove
 %
-%   Outputs:
-%       newThis - labTimeSeries with parameters removed
+% Outputs:
+%   newThis - labTimeSeries with parameters removed
 %
 %   Note: Issues warning if some labels not present
 %
-%   See also: appendData
+% Toolbox Dependencies: None
+%
+% See also APPENDDATA.
 
 [bool, idxs] = compareLists(this.labels, labels);
 if any(~bool)

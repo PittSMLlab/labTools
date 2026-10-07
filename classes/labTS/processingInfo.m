@@ -1,19 +1,20 @@
 classdef processingInfo
-    %processingInfo  Stores information about signal processing applied
-    %to data
+    %PROCESSINGINFO Record of the processing applied to a time series.
     %
-    %   processingInfo maintains a record of filters and other processing
-    %   steps applied to time series data, enabling traceability of data
-    %   processing pipelines.
+    %   processingInfo maintains a record of the filters and other
+    % processing steps applied to time series data, enabling traceability of
+    % data processing pipelines.
     %
-    %processingInfo properties:
-    %   filterList - cell array of filter design objects or processing
-    %                step descriptors
+    % processingInfo properties:
+    %   filterList - cell array of filter design objects or processing step
+    %                descriptors
     %
-    %processingInfo methods:
+    % processingInfo methods:
     %   processingInfo - constructor for processing info
     %
-    %See also: labTimeSeries, fdesign
+    % Toolbox Dependencies: None
+    %
+    % See also LABTIMESERIES, FDESIGN.
 
     %% Properties
     properties
@@ -32,19 +33,21 @@ classdef processingInfo
     %% Constructor
     methods
         function this = processingInfo(filterList)
-            %processingInfo  Constructor for processingInfo class
+            %PROCESSINGINFO Constructor for processingInfo class.
             %
-            %   this = processingInfo(filterList) creates a processing
-            %   info object with specified filter list
+            %   this = processingInfo(filterList) creates a processing info
+            % object with specified filter list
             %
-            %   Inputs:
-            %       filterList - cell array containing filter design
-            %                    objects or processing step descriptors
+            % Inputs:
+            %   filterList - cell array containing filter design objects or
+            %                processing step descriptors
             %
-            %   Outputs:
-            %       this - processingInfo object
+            % Outputs:
+            %   this - processingInfo object
             %
-            %   See also: fdesign, labTimeSeries/lowPassFilter
+            % Toolbox Dependencies: None
+            %
+            % See also FDESIGN, LABTIMESERIES/LOWPASSFILTER.
 
             % if numel(bw) == 2
             %     this.bandwidth = bw;

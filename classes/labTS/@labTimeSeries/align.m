@@ -1,22 +1,23 @@
 function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)
-%align  Aligns data to gait events
+%ALIGN Aligns data to gait events.
 %
 %   [ATS, bad] = align(this, eventTS, eventLabel, N) aligns data to
-%   specified events with given sample counts between events
+% specified events with given sample counts between events
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       eventTS - labTimeSeries with event markers
-%       eventLabel - cell array of event labels (optional, default:
-%                    first label)
-%       N - vector of sample counts between events (optional, default:
-%           256 for each interval)
+% Inputs:
+%   this       - labTimeSeries object
+%   eventTS    - labTimeSeries with event markers
+%   eventLabel - cell array of event labels (optional, default: first label)
+%   N          - vector of sample counts between events (optional, default:
+%                256 for each interval)
 %
-%   Outputs:
-%       ATS - alignedTimeSeries object
-%       bad - logical vector indicating strides with issues
+% Outputs:
+%   ATS - alignedTimeSeries object
+%   bad - logical vector indicating strides with issues
 %
-%   See also: align_v2, alignedTimeSeries, discretize
+% Toolbox Dependencies: None
+%
+% See also ALIGN_V2, ALIGNEDTIMESERIES, DISCRETIZE.
 
 if nargin < 3 || isempty(eventLabel)
     eventLabel = eventTS.labels(1);

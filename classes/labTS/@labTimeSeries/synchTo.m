@@ -1,18 +1,20 @@
 function newTS = synchTo(this, otherTS)
-%synchTo  Resamples to match another timeseries
+%SYNCHTO Resamples to match another timeseries.
 %
-%   newTS = synchTo(this, otherTS) resamples the timeseries ensuring
-%   that the new time vector coincides with that of otherTS. Pads with
-%   NaN if necessary.
+%   newTS = synchTo(this, otherTS) resamples the timeseries ensuring that
+% the new time vector coincides with that of otherTS. Pads with NaN if
+% necessary.
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       otherTS - labTimeSeries to synchronize to
+% Inputs:
+%   this    - labTimeSeries object
+%   otherTS - labTimeSeries to synchronize to
 %
-%   Outputs:
-%       newTS - resampled labTimeSeries with same time vector as otherTS
+% Outputs:
+%   newTS - resampled labTimeSeries with same time vector as otherTS
 %
-%   See also: resample, getSample
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, GETSAMPLE.
 
 if ~islogical(this.Data)
     method = [];

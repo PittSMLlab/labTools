@@ -1,17 +1,19 @@
 function index = getIndexClosestToTimePoint(this, timePoints)
-%getIndexClosestToTimePoint  Finds index nearest to time point
+%GETINDEXCLOSESTTOTIMEPOINT Finds index nearest to time point.
 %
-%   index = getIndexClosestToTimePoint(this, timePoints) returns
-%   indices of samples closest to specified time points
+%   index = getIndexClosestToTimePoint(this, timePoints) returns indices of
+% samples closest to specified time points
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       timePoints - vector or array of time points
+% Inputs:
+%   this       - labTimeSeries object
+%   timePoints - vector or array of time points
 %
-%   Outputs:
-%       index - indices of nearest samples (NaN returns NaN)
+% Outputs:
+%   index - indices of nearest samples (NaN returns NaN)
 %
-%   See also: getSample
+% Toolbox Dependencies: None
+%
+% See also GETSAMPLE.
 
 % aux = abs(bsxfun(@minus, this.Time(:), timePoints(:)')) <= ...
 %     (this.sampPeriod / 2 + eps);

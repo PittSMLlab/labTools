@@ -1,22 +1,24 @@
 function [newThis, logL] = findOutliers(this, model, verbose)
-%findOutliers  Detects outliers using model
+%FINDOUTLIERS Detects outliers using model.
 %
-%   [newThis, logL] = findOutliers(this, model) uses marker model to
-%   detect outliers
+%   [newThis, logL] = findOutliers(this, model) uses marker model to detect
+% outliers
 %
-%   [newThis, logL] = findOutliers(this, model, verbose) controls
-%   output verbosity
+%   [newThis, logL] = findOutliers(this, model, verbose) controls output
+% verbosity
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       model - marker model for outlier detection
-%       verbose - if true, displays detailed results (optional)
+% Inputs:
+%   this    - labTimeSeries object
+%   model   - marker model for outlier detection
+%   verbose - if true, displays detailed results (optional)
 %
-%   Outputs:
-%       newThis - labTimeSeries with Quality field indicating outliers
-%       logL - log likelihood values
+% Outputs:
+%   newThis - labTimeSeries with Quality field indicating outliers
+%   logL    - log likelihood values
 %
-%   See also: checkMarkerDataHealth
+% Toolbox Dependencies: None
+%
+% See also CHECKMARKERDATAHEALTH.
 
 d = this.getDataAsVector(model.markerLabels)';
 l = this.labels;

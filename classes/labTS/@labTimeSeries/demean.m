@@ -1,15 +1,17 @@
 function newthis = demean(this)
-%demean  Removes mean from each channel
+%DEMEAN Removes mean from each channel.
 %
 %   newthis = demean(this) subtracts the mean from each channel
 %
-%   Inputs:
-%       this - labTimeSeries object
+% Inputs:
+%   this - labTimeSeries object
 %
-%   Outputs:
-%       newthis - demeaned labTimeSeries
+% Outputs:
+%   newthis - demeaned labTimeSeries
 %
-%   See also: equalizeVarPerChannel, equalizeEnergyPerChannel
+% Toolbox Dependencies: None
+%
+% See also EQUALIZEVARPERCHANNEL, EQUALIZEENERGYPERCHANNEL.
 
 newthis = this;
 newthis.Data = bsxfun(@minus, this.Data, mean(this.Data, 'omitnan'));

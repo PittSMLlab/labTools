@@ -1,22 +1,24 @@
 function eventTimes = getArrayedEvents(eventTS, eventLabel)
-%getArrayedEvents  Extracts event times as array
+%GETARRAYEDEVENTS Extracts event times as array.
 %
-%   eventTimes = getArrayedEvents(eventTS) extracts times of all
-%   events in first column
+%   eventTimes = getArrayedEvents(eventTS) extracts times of all events in
+% first column
 %
-%   eventTimes = getArrayedEvents(eventTS, eventLabel) extracts times
-%   for specified event labels
+%   eventTimes = getArrayedEvents(eventTS, eventLabel) extracts times for
+% specified event labels
 %
-%   Inputs:
-%       eventTS - labTimeSeries with boolean event data
-%       eventLabel - cell array of event label strings (optional,
-%                    default: first column)
+% Inputs:
+%   eventTS    - labTimeSeries with boolean event data
+%   eventLabel - cell array of event label strings (optional, default: first
+%                column)
 %
-%   Outputs:
-%       eventTimes - matrix of event times (strides + 1) x events,
-%                    with NaN for missing events
+% Outputs:
+%   eventTimes - matrix of event times (strides + 1) x events, with NaN for
+%                missing events
 %
-%   See also: splitByEvents, align
+% Toolbox Dependencies: None
+%
+% See also SPLITBYEVENTS, ALIGN.
 
 if nargin > 1
     eventList = eventTS.getDataAsVector(eventLabel);

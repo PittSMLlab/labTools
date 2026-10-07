@@ -1,30 +1,32 @@
 function [h, plotHandles] = bilateralPlot(this, h, labels, ...
     plotHandles, events, color, lineWidth)
-%bilateralPlot  Plots bilateral comparison
+%BILATERALPLOT Plots bilateral comparison.
 %
-%   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled
-%   data overlaid for comparison
+%   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled data
+% overlaid for comparison
 %
-%   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles,
-%   events, color, lineWidth) plots with specified options
+%   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles, events,
+% color, lineWidth) plots with specified options
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       h - figure handle (optional, creates new if empty)
-%       labels - labels to plot (optional, default: all)
-%       plotHandles - subplot handles (optional, creates if empty)
-%       events - labTimeSeries with events to mark (optional)
-%       color - line color (optional)
-%       lineWidth - line width (optional, default: 2)
+% Inputs:
+%   this        - labTimeSeries object
+%   h           - figure handle (optional, creates new if empty)
+%   labels      - labels to plot (optional, default: all)
+%   plotHandles - subplot handles (optional, creates if empty)
+%   events      - labTimeSeries with events to mark (optional)
+%   color       - line color (optional)
+%   lineWidth   - line width (optional, default: 2)
 %
-%   Outputs:
-%       h - figure handle
-%       plotHandles - array of subplot handles
+% Outputs:
+%   h           - figure handle
+%   plotHandles - array of subplot handles
 %
 %   Note: Ideally plots 'L' and 'R' timeseries on top of each other
 %         for bilateral comparison
 %
-%   See also: plot, plotAligned
+% Toolbox Dependencies: None
+%
+% See also PLOT, PLOTALIGNED.
 
 % Ideally we would plot 'L' and 'R' timeseries on top of each other,
 % to do a bilateral comparison. Need to implement.

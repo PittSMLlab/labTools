@@ -1,9 +1,9 @@
 function [data, time, auxLabel] = getDataAsVector(this, label)
-%GETDATASVECTOR Extract data vectors for the specified label(s).
+%GETDATAASVECTOR Extract data vectors for the specified label(s).
 %
 %   Returns the data matrix and time vector for the requested channel
-% labels. If a label is not found by exact match, the function falls back
-% to treating the label as a regular expression and returning all matching
+% labels. If a label is not found by exact match, the function falls back to
+% treating the label as a regular expression and returning all matching
 % channels.
 %
 % Inputs:

@@ -1,27 +1,28 @@
 function data = getSample(this, timePoints, method)
-%getSample  Samples timeseries at arbitrary timepoints
+%GETSAMPLE Samples timeseries at arbitrary timepoints.
 %
-%   data = getSample(this, timePoints) samples the timeseries at
-%   specified time points using linear interpolation
+%   data = getSample(this, timePoints) samples the timeseries at specified
+% time points using linear interpolation
 %
-%   data = getSample(this, timePoints, method) uses specified
-%   interpolation method
+%   data = getSample(this, timePoints, method) uses specified interpolation
+% method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       timePoints - vector or array of time points to sample
-%       method - interpolation method: 'linear' or 'closest'
-%                (optional, default: 'linear' for numeric, 'closest'
-%                for logical)
+% Inputs:
+%   this       - labTimeSeries object
+%   timePoints - vector or array of time points to sample
+%   method     - interpolation method: 'linear' or 'closest' (optional,
+%                default: 'linear' for numeric, 'closest' for logical)
 %
-%   Outputs:
-%       data - sampled data with same dimensions as timePoints in
-%              first dimensions, followed by number of labels
+% Outputs:
+%   data - sampled data with same dimensions as timePoints in first
+%          dimensions, followed by number of labels
 %
 %   Note: NaN and Inf timepoints return NaN. Out-of-range points
 %         return NaN.
 %
-%   See also: resample, resampleN, synchTo
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, RESAMPLEN, SYNCHTO.
 
 % This does not seem efficient: we are creating a timeseries object
 % (from native Matlab) and using its resample method.
@@ -72,8 +73,7 @@ if ~isempty(timePoints)
                 newData(mappedInds, :) = 0;
             end
             data(inds, :) = newData;
-            % % Sanity check, this can be deprecated if no errors found by
-            % % Jan 1st 2018. [implemented Sept 11 2017]
+            % % Sanity check; can be removed if no errors are found.
             % % Check that #events did not change:
             % if any(sum(newData) ~= sum(this.split(min(timePoints(:)) - ...
             %         this.sampPeriod / 2, max(timePoints(:)) + ...

@@ -1,17 +1,19 @@
 function this = join(labTSCellArray)
-%join  Joins cell array of labTimeSeries
+%JOIN Joins cell array of labTimeSeries.
 %
-%   this = join(labTSCellArray) concatenates multiple labTimeSeries
-%   along time axis
+%   this = join(labTSCellArray) concatenates multiple labTimeSeries along
+% time axis
 %
-%   Inputs:
-%       labTSCellArray - cell array of labTimeSeries objects with
-%                        consistent labels and sampling periods
+% Inputs:
+%   labTSCellArray - cell array of labTimeSeries objects with consistent
+%                    labels and sampling periods
 %
-%   Outputs:
-%       this - joined labTimeSeries
+% Outputs:
+%   this - joined labTimeSeries
 %
-%   See also: cat, concatenate
+% Toolbox Dependencies: None
+%
+% See also CAT, CONCATENATE.
 
 masterSampPeriod = labTSCellArray{1}.sampPeriod;
 masterLabels     = labTSCellArray{1}.labels;

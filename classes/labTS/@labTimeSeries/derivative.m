@@ -1,30 +1,30 @@
 function [newThis, lag] = derivative(this, diffOrder)
-%derivative  Numerical differentiation
+%DERIVATIVE Numerical differentiation.
 %
-%   [newThis, lag] = derivative(this) computes numerical derivative
-%   using 2nd order finite differences
+%   [newThis, lag] = derivative(this) computes numerical derivative using
+% 2nd order finite differences
 %
-%   [newThis, lag] = derivative(this, diffOrder) uses specified
-%   difference order
+%   [newThis, lag] = derivative(this, diffOrder) uses specified difference
+% order
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       diffOrder - filter order: 1, 2, 4, 6, or 8 (optional, default:
-%                   2)
+% Inputs:
+%   this      - labTimeSeries object
+%   diffOrder - filter order: 1, 2, 4, 6, or 8 (optional, default: 2)
 %
-%   Outputs:
-%       newThis - differentiated labTimeSeries
-%       lag - time lag in samples (diffOrder/2)
+% Outputs:
+%   newThis - differentiated labTimeSeries
+%   lag     - time lag in samples (diffOrder/2)
 %
 %   Note: diffOrder establishes order of FIR filter used for
 %         estimation, NOT higher order derivatives. Approximates IIR
 %         filter (true derivative) through FIR. For even orders, pads
 %         with NaN to preserve time vector.
 %
-%   Reference:
-%   https://en.wikipedia.org/wiki/Finite_difference_coefficient
+%   Reference: https://en.wikipedia.org/wiki/Finite_difference_coefficient
 %
-%   See also: derivate, integrate
+% Toolbox Dependencies: None
+%
+% See also DERIVATE, INTEGRATE.
 
 if nargin < 2 || isempty(diffOrder)
     diffOrder = 2; % Default

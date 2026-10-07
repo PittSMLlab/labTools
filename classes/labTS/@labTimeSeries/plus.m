@@ -1,16 +1,18 @@
 function newThis = plus(this, other)
-%plus  Adds two labTimeSeries
+%PLUS Adds two labTimeSeries.
 %
 %   newThis = plus(this, other) adds two labTimeSeries element-wise
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       other - labTimeSeries object with same time vector
+% Inputs:
+%   this  - labTimeSeries object
+%   other - labTimeSeries object with same time vector
 %
-%   Outputs:
-%       newThis - sum of two timeseries
+% Outputs:
+%   newThis - sum of two timeseries
 %
-%   See also: minus, times
+% Toolbox Dependencies: None
+%
+% See also MINUS, TIMES.
 
 M = size(this.Data, 2);
 if size(other.Data, 2) ~= M
