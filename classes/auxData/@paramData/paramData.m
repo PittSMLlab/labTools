@@ -28,7 +28,7 @@ classdef paramData
         labels = {''};
         Data;
         indsInTrial = {};
-        trialTypes = {};
+        trialTypes  = {};
     end
 
     properties (Dependent)

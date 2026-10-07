@@ -36,7 +36,7 @@ classdef labDate
     properties
         day   (1,1) double {mustBeInteger, mustBeInRange(day,   1, 31)} = 1
         month (1,1) double {mustBeInteger, mustBeInRange(month, 1, 12)} = 1
-        year  (1,1) double {mustBeInteger}                              = 1900
+        year  (1,1) double {mustBeInteger} = 1900
     end
 
     %% Constructor
@@ -161,7 +161,7 @@ classdef labDate
             %
             %   See also: getCurrent, datetime
 
-            t  = datetime('now');
+            t = datetime('now');
             id = sprintf('%04d%02d%02d%02d%02d%02d', ...
                 t.Year, t.Month, t.Day, ...
                 t.Hour, t.Minute, round(t.Second));

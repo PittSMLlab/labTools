@@ -20,7 +20,7 @@ else
     auxLabel = label;
 end
 [boolFlag, labelIdx] = this.isaParameter(auxLabel);
-data = this.Data(:, labelIdx(boolFlag == 1));
+data     = this.Data(:, labelIdx(boolFlag == 1));
 auxLabel = this.labels(labelIdx(boolFlag == 1));
 end
 

@@ -28,13 +28,13 @@ else
     auxLabel = label;
 end
 [boolFlag, labelIdx] = this.isaLabel(auxLabel);
-for i = 1:length(boolFlag)
-    if boolFlag(i) == 0
-        warning(['Label ' auxLabel{i} ...
+for ii = 1:length(boolFlag)
+    if boolFlag(ii) == 0
+        warning(['Label ' auxLabel{ii} ...
             ' is not a labeled value in this data set.']);
     end
 end
-score = this.scores(:, labelIdx(boolFlag == 1));
+score    = this.scores(:, labelIdx(boolFlag == 1));
 auxLabel = this.labels(labelIdx(boolFlag == 1));
 end
 

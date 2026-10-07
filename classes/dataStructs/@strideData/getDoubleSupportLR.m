@@ -14,7 +14,7 @@ function [dsLR, duration] = getDoubleSupportLR(this)
 %   See also: getDoubleSupportRL, getSingleStanceL,
 %             getIntervalBtwEvents
 
-dsLR = getIntervalBtwEvents(this, 'LHS', 'RTO');
+dsLR     = getIntervalBtwEvents(this, 'LHS', 'RTO');
 duration = dsLR.gaitEvents.timeRange;
 end
 

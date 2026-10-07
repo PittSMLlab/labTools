@@ -25,13 +25,13 @@ classdef subjectData
     %% Properties
     properties (SetAccess = private)
         dateOfBirth = labDate.default;
-        sex = '';
-        fastLeg = '';
+        sex         = '';
+        fastLeg     = '';
         dominantLeg = '';
         dominantArm = '';
-        height = []; % centimeters
-        weight = []; % kgs
-        age = []; % in years, at time of experiment
+        height      = []; % centimeters
+        weight      = []; % kgs
+        age         = []; % in years, at time of experiment
     end
 
     properties % other
@@ -42,7 +42,7 @@ classdef subjectData
     %% Constructor
     methods
         function this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, ...
-                age, ID, fLeg)
+            age, ID, fLeg)
             %subjectData  Constructor for subjectData class
             %
             %   this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, age,

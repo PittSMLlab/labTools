@@ -24,15 +24,15 @@ if isa(strides, 'cell') && all(cellisa(strides, 'strideData'))
         eval(['testField = strides{1}.' field ';']);
         if isa(testField, 'labTimeSeries')
             M = length(strides);
-            for i = 1:M
+            for ii = 1:M
                 eval(['testField = strides{i}.' field ';']);
-                strideMat(:, :, i) = testField.resampleN(N)...
+                strideMat(:, :, ii) = testField.resampleN(N)...
                     .getDataAsVector(testField.getLabels);
             end
         elseif ~isa(testField, 'double')
-            for i = 1:length(strides)
+            for ii = 1:length(strides)
                 eval(['testField = strides{i}.' field ';']);
-                strideMat(:, :, i) = testField;
+                strideMat(:, :, ii) = testField;
             end
         end
 

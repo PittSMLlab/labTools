@@ -28,6 +28,9 @@ function [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
 %
 %   See also: plotCell, cell2mat
 
+procEmgPlotGain = 8;   % TODO: source?
+ampNormFill     = 0.9; % TODO: source?
+
 if nargin < 10
     plotEv = 0;
 end
@@ -40,7 +43,7 @@ eval(['testField = strides{1}.' field ';']);
 data = strideData.cell2mat(strides, field, N);
 if numel(ampNorm) > 1
     ampCoefs = ampNorm; % Should check that numel == size(data, 2)
-    ampNorm = 1;
+    ampNorm  = 1;
 else
     ampCoefs = [];
 end
@@ -48,25 +51,25 @@ end
 if isa(testField, 'labTimeSeries')
     eval(['labels = strides{1}.' field '.getLabels;']);
     if strcmp(field, 'procEMGData')
-        data = data * 8;
+        data = data * procEmgPlotGain;
     end
 
     if nargin > 6 && ~isempty(side)
         indLabels = false(size(labels));
-        for i = 1:length(labels)
+        for ii = 1:length(labels)
             if isa(side, 'char') % Assuming it is only 'L' or 'R'
-                if strcmp(labels{i}(1), side)
+                if strcmp(labels{ii}(1), side)
                     % Only the specified side labels
-                    indLabels(i) = true;
+                    indLabels(ii) = true;
                 end
             elseif isa(side, 'cell') && isa(side{1}, 'char')
                 % List of labels
-                if any(strcmp(labels{i}, side))
+                if any(strcmp(labels{ii}, side))
                     % Only the specified side labels
-                    indLabels(i) = true;
+                    indLabels(ii) = true;
                 end
             else
-                indLabels(i) = false; % No labels
+                indLabels(ii) = false; % No labels
             end
         end
     else
@@ -104,8 +107,8 @@ if isa(testField, 'labTimeSeries')
             if isempty(ampCoefs)
                 ampCoefs = mean(max(abs(raw), [], 1), 3);
             end
-            raw = 0.9 * raw ./ repmat(ampCoefs, size(raw, 1), 1, ...
-                size(raw, 3));
+            raw = ampNormFill * raw ./ ...
+                repmat(ampCoefs, size(raw, 1), 1, size(raw, 3));
             mOffset = 2;
     end
 
@@ -122,16 +125,16 @@ if isa(testField, 'labTimeSeries')
 
     if plotEv == 1
         % Add events
-        events = strideData.cell2mat(strides, 'gaitEvents', N);
+        events      = strideData.cell2mat(strides, 'gaitEvents', N);
         eventLabels = strides{1}.gaitEvents.getLabels;
-        idx = strcmp(eventLabels, 'LHS');
-        LHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
-        idx = strcmp(eventLabels, 'RHS');
-        RHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
-        idx = strcmp(eventLabels, 'LTO');
-        LTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
-        idx = strcmp(eventLabels, 'RTO');
-        RTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
+        idx         = strcmp(eventLabels, 'LHS');
+        LHSev       = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
+        idx         = strcmp(eventLabels, 'RHS');
+        RHSev       = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
+        idx         = strcmp(eventLabels, 'LTO');
+        LTOev       = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
+        idx         = strcmp(eventLabels, 'RTO');
+        RTOev       = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
         plot((LHSev - 1) / N, auxMusc(LHSev, :) + ...
             mean(raw(LHSev, :, :), 3), 's', 'Color', color);
         plot((RHSev - 1) / N, auxMusc(RHSev, :) + ...
@@ -156,11 +159,11 @@ if isa(testField, 'labTimeSeries')
     auxTick = [-mOffset / 2:mOffset / 4:...
         (mOffset * size(raw, 2) - mOffset / 2)];
     % auxTick(1:4:end) = [];
-    for i = 1:length(auxTick)
-        if mod(i, 4) == 1
-            auxTickLabel{i} = '';
+    for ii = 1:length(auxTick)
+        if mod(ii, 4) == 1
+            auxTickLabel{ii} = '';
         else
-            auxTickLabel{i} = (mod(i - 1, 4) - 2) * mOffset / 4;
+            auxTickLabel{ii} = (mod(ii - 1, 4) - 2) * mOffset / 4;
         end
     end
     set(ax2, 'YTick', auxTick, 'YTickLabel', auxTickLabel);

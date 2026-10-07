@@ -24,9 +24,9 @@ elseif isa(label, 'cell')
     auxLabel = label;
 end
 [boolFlag, labelIdx] = isaLabel(this, label);
-for i = 1:length(boolFlag)
-    if boolFlag(i) == 0
-        warning(['Label ' auxLabel{i} ...
+for ii = 1:length(boolFlag)
+    if boolFlag(ii) == 0
+        warning(['Label ' auxLabel{ii} ...
             ' is not a parameter in this dataset.']);
     end
 end

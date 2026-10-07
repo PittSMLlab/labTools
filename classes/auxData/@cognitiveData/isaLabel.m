@@ -23,13 +23,13 @@ else
     error('cognitiveData:isaLabel', ['label input argument has to be ' ...
         'a string or a cell array containing strings.']);
 end
-N = length(auxLabel);
+N        = length(auxLabel);
 boolFlag = false(N, 1);
 labelIdx = zeros(N, 1);
-for j = 1:N
-    aux = strcmp(auxLabel{j}, this.labels);
-    boolFlag(j) = any(aux);
-    labelIdx(j) = find(aux);
+for jj = 1:N
+    aux = strcmp(auxLabel{jj}, this.labels);
+    boolFlag(jj) = any(aux);
+    labelIdx(jj) = find(aux);
 end
 end
 

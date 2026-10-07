@@ -18,8 +18,11 @@ function timeInMonths = timeSince(this, other)
 %
 %   See also: isempty
 
-timeInMonths = 12 * (this.year  - other.year)  + ...
+monthsPerYear = 12; % calendar months
+daysPerMonth  = 30; % approximation stated in the description
+
+timeInMonths = monthsPerYear * (this.year  - other.year)  + ...
     (this.month - other.month) + ...
-    (this.day   - other.day) / 30;
+    (this.day   - other.day) / daysPerMonth;
 end
 

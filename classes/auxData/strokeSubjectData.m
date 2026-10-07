@@ -19,13 +19,13 @@ classdef strokeSubjectData < subjectData
     %% Properties
     properties (SetAccess = private)
         affectedSide = '';
-        strokeDate = labDate(01, 'Jan', 0000);
+        strokeDate   = labDate(01, 'Jan', 0000);
     end
 
     %% Constructor
     methods
         function this = strokeSubjectData(DOB, sex, dLeg, dArm, hgt, ...
-                wgt, age, ID, fLeg, affected, strokeDate)
+            wgt, age, ID, fLeg, affected, strokeDate)
             %strokeSubjectData  Constructor for strokeSubjectData class
             %
             %   this = strokeSubjectData(DOB, sex, dLeg, dArm, hgt, wgt,

@@ -22,14 +22,14 @@ if isa(label, 'char')
 elseif isa(label, 'cell')
     auxLabel = label;
 end
-N = length(auxLabel);
+N        = length(auxLabel);
 boolFlag = false(N, 1);
 labelIdx = zeros(N, 1);
-for j = 1:N
-    for i = 1:length(this.labels)
-        if strcmpi(auxLabel{j}, this.labels{i})
-            boolFlag(j) = true;
-            labelIdx(j) = i;
+for jj = 1:N
+    for ii = 1:length(this.labels)
+        if strcmpi(auxLabel{jj}, this.labels{ii})
+            boolFlag(jj) = true;
+            labelIdx(jj) = ii;
             break;
         end
     end

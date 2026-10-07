@@ -46,8 +46,8 @@ classdef strideData < processedLabData
     %% Constructor
     methods
         function this = strideData(metaData, markerData, EMGData, ...
-                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
-                EEGData, footSwitches, events, procEMG)
+            GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+            EEGData, footSwitches, events, procEMG)
             %strideData  Constructor for strideData class
             %
             %   All arguments validated for proper type. metaData must
@@ -106,8 +106,8 @@ classdef strideData < processedLabData
                     initEv = [];
                 else
                     aux = {'LHS', 'RHS', 'LTO', 'RTO'};
-                    for i = 1:length(aux)
-                        evStr = aux{i};
+                    for ii = 1:length(aux)
+                        evStr = aux{ii};
                         event = this.gaitEvents.getDataAsVector(evStr);
                         if event(1)
                             initEv = evStr;
@@ -119,8 +119,9 @@ classdef strideData < processedLabData
 
             function b = get.isBad(this)
                 evList = {'LHS', 'RHS', 'LTO', 'RTO'};
-                for i = 1:length(evList)
-                    eval([evList{i} ' = this.gaitEvents.getDataAsVector(evList{i});']);
+                for ii = 1:length(evList)
+                    eval([evList{ii} ...
+                        ' = this.gaitEvents.getDataAsVector(evList{i});']);
                 end
                 % This should get events in the sequence 1, 2, 3, 4, 1...
                 % with 0 for non-events
@@ -136,7 +137,8 @@ classdef strideData < processedLabData
                 % lastEvIdx = 1;
                 % auxIdx = find(strcmp(initEv, aux), 1);
                 % newAux = aux((auxIdx + 1):(auxIdx + 3));
-                % % newAux = aux{[auxIdx + 1:4, 1:auxIdx - 1]}; % This requires only the
+                % % newAux = aux{[auxIdx + 1:4, 1:auxIdx - 1]}; % This
+                % requires only the
                 % % first four elements of aux.
                 % for i = 1:length(newAux)
                 %     event = this.gaitEvents.getDataAsVector(newAux{i});
@@ -165,37 +167,40 @@ classdef strideData < processedLabData
             newThis = timeNormalize(this, N, newClass)
 
             newThis = alignEvents(this, events, spacing)
-            end
-
-            %% Static Methods
-            methods (Static)
-                strideMat = cell2mat(strides, field, N)
-
-                plotHandles = plotCell(strides, field, ampNorm, ...
-                    plotHandles, reqElements, color, plotEvents)
-
-                [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
-                    field, N, sync_norm, ampNorm, plotHandle, side, ...
-                    color, offset, plotEv)
-
-                % function avgStride = getCellAvg(strides, N) % Pseudo-code
-                %     for i = properties
-                %         strideMat = cell2mat(strides, field, N) % If it is a labTS only
-                %         avgFieldData = mean(strideMat, 3);
-                %         avgField = fieldConstructor(avgFieldTime, avgFieldData);
-                %         avgStride.field = avgField; % If it is not a labTS, make an
-                %         empty field or copy it from first stride
-                %     end
-                % end
-
-                % function [avgEventsTime, Labels] = plotAvgEvent
-                % end
-            end
-
-            %% Private Methods
-            methods (Access = private)
-                interval = getIntervalBtwEvents(this, event1, event2)
-            end
-
         end
+
+        %% Static Methods
+        methods (Static)
+            strideMat = cell2mat(strides, field, N)
+
+            plotHandles = plotCell(strides, field, ampNorm, ...
+                plotHandles, reqElements, color, plotEvents)
+
+            [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
+                field, N, sync_norm, ampNorm, plotHandle, side, ...
+                color, offset, plotEv)
+
+            % function avgStride = getCellAvg(strides, N) % Pseudo-code
+            %     for i = properties
+            %         strideMat = cell2mat(strides, field, ...
+            %    N) % If it is a labTS only
+            %         avgFieldData = mean(strideMat, 3);
+            %         avgField = fieldConstructor(avgFieldTime, ...
+            %    avgFieldData);
+            %         avgStride.field = ...
+            %    avgField; % If it is not a labTS, make an
+            %         empty field or copy it from first stride
+            %     end
+            % end
+
+            % function [avgEventsTime, Labels] = plotAvgEvent
+            % end
+        end
+
+        %% Private Methods
+        methods (Access = private)
+            interval = getIntervalBtwEvents(this, event1, event2)
+        end
+
+    end
 
