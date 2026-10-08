@@ -239,7 +239,8 @@ if ~isRatio                             % if not ratio curve, ...
 end
 
 %% Save Figure
-if ~isempty(pathFig)                    % if figure saving path provided, ...
+% if figure saving path provided, ...
+if ~isempty(pathFig)
     legNoSpace = regexprep(leg, '\s+', '');
     if isempty(nameFile)
         if shouldNormalize

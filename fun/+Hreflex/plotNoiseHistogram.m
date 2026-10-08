@@ -1,4 +1,5 @@
-function fig = plotNoiseHistogram(amplitudesNoise, leg, id, trialNum, options)
+function fig = plotNoiseHistogram( ...
+    amplitudesNoise, leg, id, trialNum, options)
 %PLOTNOISEHISTOGRAM Plot the noise amplitude distribution for the H-reflex.
 %
 %   Plot the H-reflex noise distribution histogram for a single leg.
@@ -32,9 +33,9 @@ noiseMean = mean(amplitudesNoise);      % mean of all noise amplitudes
 noiseMed  = median(amplitudesNoise);    % median noise amplitude
 noise75   = prctile(amplitudesNoise, 75); % 75th percentile
 
-noiseHistMax = 0.30;                    % maximum expected noise amplitude (mV)
+noiseHistMax = 0.30;                    % max expected noise amplitude (mV)
 noiseHistBin = 0.05;                    % histogram bin width (mV)
-propYMax     = 0.80;                    % maximum y-axis proportion for display
+propYMax     = 0.80;                    % max y-axis proportion for display
 
 %% Create Figure
 fig = figure;
@@ -49,15 +50,18 @@ hold off;
 axis([0 noiseHistMax 0 propYMax]);
 xlabel('Noise Amplitude Peak-to-Peak (mV)');
 ylabel('Proportion of Stimuli');
-title(sprintf('%s - Trial %s - %s - Noise Distribution', id, trialNum, leg));
+title(sprintf('%s - Trial %s - %s - Noise Distribution', ...
+    id, trialNum, leg));
 
-if ~isempty(options.pathFig)            % if figure saving path provided, ...
+% if figure saving path provided, ...
+if ~isempty(options.pathFig)
     legNoSpace = regexprep(leg, '\s+', '');
     % TODO: make figure title and filename optional inputs
     nameFile = fullfile(options.pathFig, sprintf( ...
         '%s_NoiseDistribution_Trial%s_%s', id, trialNum, legNoSpace));
     saveas(fig, nameFile + ".png");     % save figure
-    saveas(fig, nameFile + ".fig");     % TODO: just use 'fullfile' if readable
+    % TODO: just use 'fullfile' if readable
+    saveas(fig, nameFile + ".fig");
 end
 
 end

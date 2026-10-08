@@ -1,5 +1,5 @@
 function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
-%GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.
+%GETSTANCEFROMTOENANDHEEL Estimate stance from ankle and toe kinematics.
 %
 %   Combines two stance detection methods — velocity thresholding
 % (getStance) and acceleration thresholding (getStance3) — and removes
@@ -57,10 +57,10 @@ function stance = getStance(ankKin, toeKin, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 
-NAN_FILL_VEL          = 10000; % large sentinel to suppress NaN in idealLPF (mm/s)
-VEL_THRESH_ANK        = 500;   % ankle speed threshold for stance (mm/s); empirical
-VEL_THRESH_TOE        = 250;   % toe speed threshold for stance (mm/s); empirical
-coreStanceSpeedThresh = 150;   % max relative ankle–toe speed for core stance (mm/s)
+NAN_FILL_VEL          = 10000; % large NaN sentinel for idealLPF (mm/s)
+VEL_THRESH_ANK        = 500;   % ankle stance speed thresh (mm/s); empirical
+VEL_THRESH_TOE        = 250;   % toe stance speed thresh (mm/s); empirical
+coreStanceSpeedThresh = 150;   % max ankle–toe speed, core stance (mm/s)
 
 %% Step 1: calculate speed
 % va(:,1) = derive(ankKin(:,1), fsample);
@@ -81,21 +81,24 @@ toeVelFilt   = idealLPF(toeVel, fcut);
 relV    = ankleVelFilt - toeVelFilt;           % relative speed (mm/s)
 modRelV = sqrt(sum(relV .^ 2, 2));             % magnitude of relative speed
 coreStance = (modRelV < coreStanceSpeedThresh);
-coreStance = deleteShortPhases(coreStance, fsample, 0.05); % min core stance duration (s)
+% min core stance duration (s)
+coreStance = deleteShortPhases(coreStance, fsample, 0.05);
 
 % most common stance speed, rounded to nearest cm/s
 stanceSpeed = mode(10 * round(ankleVel(coreStance, :) / 10));
 
 %% Step 3: threshold speed relative to ground for stance candidates
-ankV = ankleVel - ones(size(ankleVel, 1), 1) * stanceSpeed; % ankle speed relative to ground
-toeV = toeVel   - ones(size(toeVel,   1), 1) * stanceSpeed; % toe   speed relative to ground
+% ankle and toe speed relative to ground
+ankV = ankleVel - ones(size(ankleVel, 1), 1) * stanceSpeed;
+toeV = toeVel   - ones(size(toeVel,   1), 1) * stanceSpeed;
 
 modAnkV = sqrt(sum(ankV .^ 2, 2));
 modToeV = sqrt(sum(toeV .^ 2, 2));
 
 %% Step 4: classify stance from ankle OR toe stance
-% velThreshA = 0.8 * median(modAnkV); % empirical threshold, see commented line below
-% velThreshT = 0.8 * median(modToeV); % empirical threshold, see commented line below
+% empirical thresholds, alternative to the fixed ones below:
+% velThreshA = 0.8 * median(modAnkV);
+% velThreshT = 0.8 * median(modToeV);
 ankStance = modAnkV < VEL_THRESH_ANK;
 toeStance = modToeV < VEL_THRESH_TOE;
 
@@ -136,15 +139,17 @@ HEEL_ERODE_RADIUS   = 3;  % morphological erosion half-width, heel (samples)
 TOE_FLOOR_TOL       = 4;  % certain floor contact threshold, toe (mm)
 TOE_EVENT_TOL       = 10; % heel-strike/toe-off boundary, toe (mm)
 TOE_ERODE_RADIUS    = 15; % morphological erosion half-width, toe (samples)
-EVENT_DILATE_RADIUS = 1;  % final dilation half-width after convergence (samples)
+EVENT_DILATE_RADIUS = 1;  % final dilation half-width (samples)
 
-backwards = false; % direction flag; stance detection should not be direction-dependent
+% direction flag; stance detection should not be direction-dependent
+backwards = false;
 for jj = 1:2
     flag = false;
     clear roundedKin projOnFloor dist2Floor RHO THETA H A th r m n
     switch jj
         case 1
-            relevantKin = medfilt1(Rheel); % non-strict filtering to kill far outliers
+            % non-strict filtering to kill far outliers
+            relevantKin = medfilt1(Rheel);
             tol  = HEEL_FLOOR_TOL;
             tol2 = HEEL_EVENT_TOL;
             N    = HEEL_ERODE_RADIUS;
@@ -167,31 +172,41 @@ for jj = 1:2
     % In x: limit values to a 2000mm range
     % Throw everything outside those limits
 
-    % A = zeros(max(roundedKin(:,1) - min(roundedKin(:,1))+1), (max(roundedKin(:,2) - min(roundedKin(:,2))+1)));
+    % A = zeros(max(roundedKin(:,1) - min(roundedKin(:,1))+1), ...
+    %     (max(roundedKin(:,2) - min(roundedKin(:,2))+1)));
     % for i = 1:length(roundedKin(:,1))
-    % A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, roundedKin(i,2) - min(roundedKin(:,2)) + 1) = A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, roundedKin(i,2) - min(roundedKin(:,2)) + 1) + 1;
+    % A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, ...
+    %     roundedKin(i,2) - min(roundedKin(:,2)) + 1) = ...
+    %     A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, ...
+    %     roundedKin(i,2) - min(roundedKin(:,2)) + 1) + 1;
     % end
     A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, ...
         roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
     try
-        [H, THETA, RHO] = hough(full(A)', 'RhoResolution', HOUGH_RHO_RES, ...
-            'Theta', HOUGH_ANGLES);
+        [H, THETA, RHO] = hough(full(A)', ...
+            'RhoResolution', HOUGH_RHO_RES, 'Theta', HOUGH_ANGLES);
     catch
-        warning('getStance2:houghFailed', 'Exception during Hough transform.');
+        warning('getStance2:houghFailed', ...
+            'Exception during Hough transform.');
     end
     [~, ind] = max(H(:));
     [m, n]   = ind2sub(size(H), ind);
     th = -THETA(n) / 90 * pi / 2;
     r  = RHO(m);
-    dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) * cos(th) ...
-        - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) * sin(th) - r + 1;
+    dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) ...
+        * cos(th) - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) ...
+        * sin(th) - r + 1;
 
-    projOnFloor = relevantKin(:, 1) * sin(th) + relevantKin(:, 2) * cos(th); % projection over the floor
-    stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] < 0); % points on the floor for sure
+    % projection over the floor
+    projOnFloor = relevantKin(:, 1) * sin(th) ...
+        + relevantKin(:, 2) * cos(th);
+    % points on the floor for sure
+    stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] < 0);
 
     if sum(stance) < 3
         % probable backwards trial
-        warning('getStance2:backwardsTrial', 'Probable backwards trial detected.')
+        warning('getStance2:backwardsTrial', ...
+            'Probable backwards trial detected.')
         flag   = true;
         stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] > 0);
     end
@@ -199,14 +214,17 @@ for jj = 1:2
     CoM_y = mean(relevantKin(stance, 2));
     M = pca(relevantKin(stance, 1:2));
     try
+        % corrected floor distance
         dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
-            + (relevantKin(:, 2) - CoM_y) * M(2, 2); % corrected floor distance
+            + (relevantKin(:, 2) - CoM_y) * M(2, 2);
     catch
-        warning('getStance2:pcaFailed', 'Exception during floor-distance PCA.');
+        warning('getStance2:pcaFailed', ...
+            'Exception during floor-distance PCA.');
     end
 
     if (~backwards) && (~flag)
-        swing = ([0; diff(projOnFloor)] > 0); % elements surely off the floor
+        % elements surely off the floor
+        swing = ([0; diff(projOnFloor)] > 0);
     else
         swing = ([0; diff(projOnFloor)] < 0);
     end
@@ -231,11 +249,14 @@ for jj = 1:2
                 dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
                     + (relevantKin(:, 2) - CoM_y) * M(2, 2);
             catch
-                warning('getStance2:pcaFailed', 'Exception during floor-distance PCA.');
+                warning('getStance2:pcaFailed', ...
+                    'Exception during floor-distance PCA.');
             end
         else
             change = false;
-            stance = conv(double(stance4), ones(2*N2+1, 1), 'same') == 2*N2+1; % erode by N2
+            % erode by N2
+            stance = conv(double(stance4), ones(2*N2+1, 1), 'same') ...
+                == 2*N2+1;
         end
     end
 
@@ -293,7 +314,7 @@ toeAcc   = [toeAcc(1, :); toeAcc; toeAcc(end, :)];
 ankleAcc(isnan(ankleAcc)) = NAN_FILL_ACC;
 toeAcc(isnan(toeAcc))     = NAN_FILL_ACC;
 
-%% Step 3: low-pass filter accelerations then threshold for stance candidates
+%% Step 3: low-pass filter accelerations, then threshold for stance
 fcut = 30 / (2 * fsample); % ideal lowpass cutoff, normalized (30 Hz)
 ankleAccFilt(:, 1) = idealLPF(ankleAcc(:, 1), fcut);
 ankleAccFilt(:, 2) = idealLPF(ankleAcc(:, 2), fcut);

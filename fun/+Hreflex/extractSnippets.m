@@ -1,4 +1,5 @@
-function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)
+function [snippets, timesSnippet] = extractSnippets( ...
+    indsPeaks, rawEMG, options)
 %EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting.
 %
 %   Extract snippets of the H-reflex from the muscle raw EMG signal based
@@ -92,7 +93,8 @@ function snipCell = extractSnippetsLeg(indsPeaks, EMG, GRFz, leg, ...
 %   period     - sampling period (s)
 %
 % Outputs:
-%   snipCell - 1 x 3 cell: {EMG snippets, ipsilateral GRF, contralateral GRF}
+%   snipCell - 1 x 3 cell: {EMG snippets, ipsilateral GRF,
+%              contralateral GRF}
 %
 % Toolbox Dependencies:
 %   None

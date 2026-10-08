@@ -1,5 +1,5 @@
 function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
-%GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.
+%GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.
 %
 %   Alternative to GETSTANCEFROMFORCES. Detects stance by identifying
 % loading and unloading regions in the force derivative, then expands
@@ -20,7 +20,8 @@ function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
 % See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMFORCES.
 
 fcut = 25; % lowpass cutoff frequency (Hz)
-coarseFilteredFz = medfilt1(Fz, round(0.0025 * fsample)); % median filter: 2.5 ms window
+% median filter: 2.5 ms window
+coarseFilteredFz = medfilt1(Fz, round(0.0025 * fsample));
 forces    = lowpassfiltering2(coarseFilteredFz, fcut, 2, fsample);
 forceSign = sign(mean(Fz, 'omitnan'));
 forces    = forces * forceSign; % ensure forces are positive on average
@@ -41,26 +42,31 @@ unstance     = abs(forceDiff) < lowThreshold; % threshold in N/s
 % expand loading zone rightwards and unloading leftwards until they meet
 while any(diff(loading) == -1 & ~unloading(1:end-1))
     % inward expansion
-    loading(2:end)   = loading(2:end) | (loading(1:end-1) & ~unloading(1:end-1));
+    loading(2:end)     = loading(2:end) ...
+        | (loading(1:end-1) & ~unloading(1:end-1));
     unloading(1:end-1) = unloading(1:end-1) ...
         | (unloading(2:end) & ~loading(2:end));
 end
 while any(diff(loading) == 1 & ~unstance(1:end-1)) ...
         || any(diff(unloading) == -1 & ~unstance(2:end))
     % outward expansion
-    loading(1:end-1)   = loading(1:end-1) | (loading(2:end) & ~unstance(1:end-1));
-    unloading(2:end)   = unloading(2:end) | (unloading(1:end-1) & ~unstance(2:end));
+    loading(1:end-1) = loading(1:end-1) ...
+        | (loading(2:end) & ~unstance(1:end-1));
+    unloading(2:end) = unloading(2:end) ...
+        | (unloading(1:end-1) & ~unstance(2:end));
 end
 stance = loading | unloading;
 
 %% Shorten stance phases to compensate for low-pass filter broadening
 % Erode by applying a length-N kernel and requiring all N values to be
 % stance. This removes up to N-1 samples from each phase boundary to undo
-% broadening introduced by low-pass filtering (half-width ≈ fsample / (2*fcut)).
+% broadening introduced by low-pass filtering (half-width ≈ fsample /
+% (2*fcut)).
 N      = round(0.5 * fsample / fcut);
 stance = conv(double(stance), ones(N, 1), 'same') > N - 1;
 
 %% Eliminate stance and swing phases shorter than 100 ms
-stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but too long for stroke subjects
+% used to be 200 ms, but too long for stroke subjects
+stance = deleteShortPhases(stance, fsample, 0.1);
 
 end

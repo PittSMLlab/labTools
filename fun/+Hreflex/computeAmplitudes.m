@@ -46,7 +46,8 @@ arguments
     % TODO: is noise window correct? GTO requested between M- and H-wave
     options.WindowDefinitions (3,2) double = ...
         [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3]
-    % NOTE: should always be same across trials and should be same for forces
+    % NOTE: should always be same across trials and should be same for
+    % forces
     options.SamplingPeriod (1,1) double {mustBePositive} = 5e-4
 end
 
@@ -111,7 +112,7 @@ function [amplitudes, isOutlierDur] = computeWaveAmplitudes(windowsEMG)
 [valsMax, indsMax] = max(windowsEMG, [], 2);    % maximum value and index
 amplitudes = valsMax - valsMin;                 % compute all amplitudes
 
-durations  = indsMax - indsMin;                 % duration from peak to trough
+durations  = indsMax - indsMin;                 % peak-to-trough duration
 indMinMed  = round(median(indsMin));            % median min. value index
 indMaxMed  = round(median(indsMax));            % median max. value index
 % NOTE: this may be too liberal (or conservative) in the samples it

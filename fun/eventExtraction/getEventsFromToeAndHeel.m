@@ -37,15 +37,18 @@ LTO(badInds) = false;
 RTO(badInds) = false;
 
 % eliminate any events that occur prior to actual activity in the trial
-ENERGY_FRAC = 0.001; % 0.1% of total cumulative energy used as onset threshold
+% onset threshold: 0.1% of total cumulative energy
+ENERGY_FRAC = 0.001;
 
 rHeelShifted   = Rheel(:, 1) - Rheel(1, 1); % zero initial value (right)
 rHeelCumEnergy = cumsum(rHeelShifted .^ 2);
-begin_index1   = find(rHeelCumEnergy > ENERGY_FRAC * rHeelCumEnergy(end), 1);
+begin_index1   = find( ...
+    rHeelCumEnergy > ENERGY_FRAC * rHeelCumEnergy(end), 1);
 
 lHeelShifted   = Lheel(:, 1) - Lheel(1, 1); % zero initial value (left)
 lHeelCumEnergy = cumsum(lHeelShifted .^ 2);
-begin_index2   = find(lHeelCumEnergy > ENERGY_FRAC * lHeelCumEnergy(end), 1);
+begin_index2   = find( ...
+    lHeelCumEnergy > ENERGY_FRAC * lHeelCumEnergy(end), 1);
 
 begin_index = max([begin_index1 begin_index2]);
 
