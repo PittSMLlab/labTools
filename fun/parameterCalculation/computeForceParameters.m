@@ -108,7 +108,7 @@ trialDesc   = trialData.description; %#ok<NASGU>
 tmAngle     = determineTMAngle(trialData);
 numStrides  = length(strideEvents.tSHS);
 
-shoeWeightKg   = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
+shoeWeightKg   = 3.4;   % Nimbus shoe pair mass (kg; update if shoes change)
 gravityAcc     = 9.81;  % gravitational acceleration (m/s^2)
 noiseThreshold = 0.01;  % min std/mean ratio; TODO: confirm threshold
 
@@ -142,8 +142,9 @@ else
     flipSign = 1;
 end
 
-% Low-pass filter forces prior to all further processing (cutoff: 20 Hz)
-filteredGRF = GRFData.lowPassFilter(20);
+% Low-pass filter forces prior to all further processing
+grfCutoffHz = 20;  % GRF low-pass cutoff (Hz)
+filteredGRF = GRFData.lowPassFilter(grfCutoffHz);
 
 %% Remove Anterior-Posterior Force Offsets
 % CJS (8/5/2016): One decline subject (LD30) had a force plate that was not

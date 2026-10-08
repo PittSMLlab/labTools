@@ -329,10 +329,13 @@ end
 % Only compute these parameters if there are overground force recordings.
 OG_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
 OG_idx = contains(trialData.GRFData.labels, OG_names);
+% TODO: source? Minimum max-min range of each Fz channel that counts as
+% real force data (i.e., not a constant value).
+minForceRange = 100;
 
 if sum(OG_idx) == length(OG_names) || ...
         all((max(trialData.GRFData.Data(:, OG_idx)) - ...
-        min(trialData.GRFData.Data(:, OG_idx))) > 100)
+        min(trialData.GRFData.Data(:, OG_idx))) > minForceRange)
     % There are differences in forces throughout the experiment, and
     % not a constant value or NaNs.
     try
