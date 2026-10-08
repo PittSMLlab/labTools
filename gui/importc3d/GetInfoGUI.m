@@ -275,7 +275,7 @@ function description_edit_CreateFcn(hObject, eventdata, handles)
 detailsPath = which('GetInfoGUI');
 detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
 W = what(detailsPath);
-% experiments=cellstr(W.m);   % HH 6/16
+% experiments=cellstr(W.m);
 experiments = cellstr(W.mat);
 for ii = 1:length(experiments)
     fileExt          = find(experiments{ii} == '.');
@@ -842,6 +842,17 @@ end
 % ---- EMGworks file location callbacks --------------------------
 % --- Executes on button press in EMGworksFile1_search.
 function EMGworksFile1_search_Callback(hObject, eventdata, handles)
+%EMGWORKSFILE1_SEARCH_CALLBACK Choose the first EMGworks export folder.
+%
+%   Opens a folder dialog (UIGETDIR); on selection, stores the folder in
+% handles.EMGworksFile_Loc and shows it in the EMGworksLocation field.
+%
+% Inputs:
+%   hObject   - handle of EMGworksFile1_search
+%   eventdata - unused (reserved by GUIDE)
+%   handles   - GUIDE handles structure
+%
+% See also GETINFOGUI, SECFILESEARCHEMGWORKS_CALLBACK.
 handles.EMGworksFile_Loc = uigetdir();
 if ischar(handles.EMGworksFile_Loc)
     set(handles.EMGworksLocation, 'String', handles.EMGworksFile_Loc);
@@ -859,6 +870,18 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
+%SECFILESEARCHEMGWORKS_CALLBACK Choose the second EMGworks export folder.
+%
+%   Opens a folder dialog (UIGETDIR); on selection, stores the folder in
+% handles.EMGworksFile2Loc and shows it in the SecondEMGworksLocation
+% field.
+%
+% Inputs:
+%   hObject   - handle of SecFileSearchEMGworks
+%   eventdata - unused (reserved by GUIDE)
+%   handles   - GUIDE handles structure
+%
+% See also GETINFOGUI, EMGWORKSFILE1_SEARCH_CALLBACK.
 handles.EMGworksFile2Loc = uigetdir();
 if ischar(handles.EMGworksFile2Loc)
     set(handles.SecondEMGworksLocation, 'String', ...
@@ -1601,7 +1624,7 @@ if ischar(file)
         % -- Experiment Info
         descriptionContents = ...
             cellstr(get(handles.description_edit, 'String'));
-        if isfield(subInfo, 'ExpFile')   % processed after 4/2015
+        if isfield(subInfo, 'ExpFile')   % older info files lack ExpFile
             if ~any(strcmp(descriptionContents, subInfo.ExpFile) == 1)
                 set(handles.description_edit, 'String', ...
                     [descriptionContents; subInfo.ExpFile]);
@@ -1650,7 +1673,7 @@ if ischar(file)
         set(handles.height_edit, 'String', subInfo.height);
         set(handles.weight_edit, 'String', subInfo.weight);
 
-        if isfield(subInfo, 'isStroke')   % for files before 11/2014
+        if isfield(subInfo, 'isStroke')   % older info files lack isStroke
             set(handles.strokeCheck, 'Value', subInfo.isStroke);
         else
             set(handles.strokeCheck, 'Value', 0);
@@ -1667,7 +1690,7 @@ if ischar(file)
             set(handles.fastLeg, 'Value', ...
                 find(strcmp(fastLegContents, subInfo.fastLeg)));
         else
-            % For subjects processed before 05/2024: infer fast leg
+            % Info file without fastLeg (older sessions): infer it
             if handles.strokeCheck.Value
                 % Affected side was set as the slow leg; fast leg is
                 % the contralateral limb
@@ -1767,7 +1790,7 @@ if ischar(file)
                 set(handles.(['trialnum', num2str(con)]), ...
                     'String', num2str(trialnums));
             end
-            if isfield(subInfo, 'isOverGround')  % before 7/16/2014
+            if isfield(subInfo, 'isOverGround')  % older info files only
                 if subInfo.isOverGround(condNum)
                     set(handles.(['type', num2str(con)]), 'String', 'OG');
                 else
@@ -1779,7 +1802,7 @@ if ischar(file)
             end
         end
 
-        % -- EMG channel labels (for subjects processed after 7/29/2014)
+        % -- EMG channel labels (absent from older info files)
         if isfield(subInfo, 'EMGList1') && isfield(subInfo, 'EMGList2')
             for ii = 1:16
                 emg1FieldName = ['emg1_' num2str(ii)];

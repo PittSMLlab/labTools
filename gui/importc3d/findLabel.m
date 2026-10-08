@@ -1,10 +1,22 @@
 function markerLabel = findLabel(viconLabel)
-%function to deal with different marker labels from vicon. For the code to
-%run correctly, the label names must be as they are set in this code.
+%FINDLABEL Map a Vicon marker label to the standard label.
 %
-%DO NOT edit the 'markerLabel' declarations, only edit the strings in the
-%case statements
+%   Looks VICONLABEL up in the matchedLabels table of markerLabelKey.mat
+% (column 1: cell of accepted Vicon names, column 2: standard label).
+% Labels with no match are returned unchanged. The MAT file is loaded on
+% every call. Add new aliases with ADDMARKERPAIR.
+%
+% Inputs:
+%   viconLabel - marker label as recorded in the C3D file
+%
+% Outputs:
+%   markerLabel - standard label, or VICONLABEL if no alias matches
+%
+% Toolbox Dependencies: None
+%
+% See also ADDMARKERPAIR.
 
+%% Look up the label
 markerLabel = viconLabel;               % default labels input argument
 load('markerLabelKey.mat');             % contains 'matchedLabels' variable
 
@@ -16,6 +28,7 @@ end
 
 end
 
+% NOTE: the hard-coded alias list this table replaced, kept as a record.
 % switch viconLabel
 %     case {'LGT','OG80_LGT','OG88_LGT'}
 %         markerLabel = 'LHIP';

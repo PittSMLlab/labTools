@@ -1,10 +1,32 @@
 function [ACCList,allData,analogsInfo] = getEMGworksdataAcc( ...
     infoEMGList2,secFileList,fileList,NexusfileList, ...
     emptyChannels1,emptyChannels2,EMGList)
-%GETEMGWORKSDATAACC retrieve accelerometer data from 'EMGworks' software
+%GETEMGWORKSDATAACC Load accelerometer channels exported by EMGworks.
 %
-%INPUTS: EMGList1, EMGList2, secFileList{t}, fileList, analogs
-%OUTPUTS: EMGList,relData,relData2
+%   Reads TrialNN.mat (NN parsed from NEXUSFILELIST) from the EMGworks
+% folder(s), keeps the accelerometer channels, and arranges them as
+% samples x (sensor x axis) with the x, y, z axes of each sensor
+% adjacent. A second folder (second PC) is read when INFOEMGLIST2 is
+% non-empty.
+%
+% Inputs:
+%   infoEMGList2   - cell of labels for PC 2; non-empty enables the
+%                    second-file read
+%   secFileList    - folder of the second EMGworks export
+%   fileList       - folder of the first EMGworks export
+%   NexusfileList  - trial file path ending in 'TrialNN'
+%   emptyChannels1 - logical, unused sensors of PC 1
+%   emptyChannels2 - logical, unused sensors of PC 2
+%   EMGList        - labels of the used sensors (from GETEMGWORKSDATA)
+%
+% Outputs:
+%   ACCList     - channel labels: each EMGList entry + 'x', 'y', 'z'
+%   allData     - accelerometer samples, PC 1 then PC 2 columns
+%   analogsInfo - info (frequency, units) of the channels read
+%
+% Toolbox Dependencies: None
+%
+% See also GETEMGWORKSDATA, LOADTRIALS.
 
 % fileList = ['/Users/dulcemariscal/Box/11_Research_Projects/' ...
 %     'EMGworksSync/EMGworks/eMGworks01/DumbTester7/' ...

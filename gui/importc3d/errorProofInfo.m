@@ -1,5 +1,5 @@
 function out = errorProofInfo(handles, ignoreErrors)
-% errorProofInfo  Validates and extracts all fields from GetInfoGUI.
+%ERRORPROOFINFO Validate and extract all fields from GetInfoGUI.
 %
 %   Reads all control values from the GetInfoGUI handles structure,
 % packages them into an output struct, and optionally validates that all
@@ -19,10 +19,9 @@ function out = errorProofInfo(handles, ignoreErrors)
 %             out.bad - true if a validation error was detected
 %             out.ok  - set to true by ok_button_Callback on success
 %
-%   Toolbox Dependencies:
-%     None
+%   Toolbox Dependencies: None
 %
-%   See also: GetInfoGUI, ok_button_Callback, figure1_CloseRequestFcn
+%   See also GETINFOGUI, OK_BUTTON_CALLBACK, FIGURE1_CLOSEREQUESTFCN.
 
 arguments
     handles      (1,1) struct
@@ -91,27 +90,24 @@ out.backwardCheck   = get(handles.backwardCheck, 'Value');
 if isfield(handles, 'secfolder_location') && out.Nexus == 1
     out.secdir_location = handles.secfolder_location;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated
-    % with the same directory as the primary files, which made no
-    % sense (probably was just done to avoid errors downstream).
+    % Empty, not the primary directory: an unset location must read as
+    % absent downstream.
     out.secdir_location = '';
 end
 
 if isfield(handles, 'EMGworksFile_Loc')
     out.EMGworksdir_location = handles.EMGworksFile_Loc;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated
-    % with the same directory as the primary files, which made no
-    % sense (probably was just done to avoid errors downstream).
+    % Empty, not the primary directory: an unset location must read as
+    % absent downstream.
     out.EMGworksdir_location = '';
 end
 
 if isfield(handles, 'EMGworksFile2Loc')
     out.secEMGworksdir_location = handles.EMGworksFile2Loc;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated
-    % with the same directory as the primary files, which made no
-    % sense (probably was just done to avoid errors downstream).
+    % Empty, not the primary directory: an unset location must read as
+    % absent downstream.
     out.secEMGworksdir_location = '';
 end
 

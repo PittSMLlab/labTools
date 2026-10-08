@@ -1,6 +1,6 @@
 function handles = setExpDescription(handles, expDes)
-% setExpDescription  Populates GetInfoGUI condition fields from an
-%   experiment description struct.
+%SETEXPDESCRIPTION Populate GetInfoGUI condition fields from an
+% experiment description struct.
 %
 %   Reads condition numbers, names, descriptions, trial numbers, and trial
 % types from an experiment description struct (loaded from an ExpDetails
@@ -25,11 +25,10 @@ function handles = setExpDescription(handles, expDes)
 %     handles - updated handles struct with handles.group set to
 %               the experiment group label from expDes
 %
-%   Toolbox Dependencies:
-%     None
+%   Toolbox Dependencies: None
 %
-%   See also: GetInfoGUI, description_edit_Callback,
-%             description_edit_CreateFcn
+%   See also GETINFOGUI, DESCRIPTION_EDIT_CALLBACK,
+%   DESCRIPTION_EDIT_CREATEFCN.
 
 %% Set Experiment Group Label
 handles.group = expDes.group;

@@ -2,12 +2,40 @@ function [analogsNexus,EMGList,relData,relData2,secondFile,analogsInfo2, ...
     emptyChannels1,emptyChannels2,EMGList1, ...
     EMGList2] = getEMGworksdata(infoEMGList1,infoEMGList2 ,secFileList, ...
     fileList, NexusfileList)
-% get EMG from EMGworks
+%GETEMGWORKSDATA Load EMG channels exported by EMGworks for one trial.
+%
+%   Reads TrialNN.mat from the EMGworks folder(s) (NN is the two-digit
+% trial number parsed from NEXUSFILELIST), keeps the EMG (and
+% Analog_16 adapter) channels, and orders them by sensor number. A
+% second EMGworks folder (second PC) is read when SECFILELIST is
+% non-empty. The Nexus C3D of the trial is also read for its analog
+% channels.
+%
+% Inputs:
+%   infoEMGList1  - cell of EMG labels for PC 1 (empty entries mark
+%                  unused sensors)
+%   infoEMGList2  - same for PC 2
+%   secFileList   - folder of the second EMGworks export; empty if none
+%   fileList      - folder of the first EMGworks export
+%   NexusfileList - trial file path without '.c3d', ending in 'TrialNN'
+%
+% Outputs:
+%   analogsNexus   - analog channels of the Nexus C3D (btkGetAnalogs)
+%   EMGList        - labels of the channels returned (PC 1, then PC 2)
+%   relData        - PC 1 EMG samples, one column per used sensor
+%   relData2       - PC 2 EMG samples ([] if no second file)
+%   secondFile     - true if a second EMGworks folder was read
+%   analogsInfo2   - info (frequency, units) of the PC 2 channels
+%   emptyChannels1 - logical, unused sensors of PC 1
+%   emptyChannels2 - logical, unused sensors of PC 2
+%   EMGList1       - labels of the used PC 1 sensors
+%   EMGList2       - labels of the used PC 2 sensors
+%
+% Toolbox Dependencies: None
+%
+% See also GETEMGWORKSDATAACC, LOADTRIALS, BTKGETANALOGS.
 
-%needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs
-% outputs: EMGList relData relData2
-
-% secondFile = false;
+%% Check for a second file
 if isempty(secFileList)
     secondFile = false;
 else
