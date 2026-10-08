@@ -1,4 +1,5 @@
-function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)
+function epochs = defineEpochs(epochNames,condition,strideNo, ...
+    exemptFirst,exemptLast,summaryMethod,shortName)
 %defineEpochs is used to create a dataset object that defines relevant
 %epochs in the analysis of experimental data. It is used by several
 %functions within studyData, groupAdaptationData and adaptationData
@@ -6,14 +7,18 @@ function epochs = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptL
 %condition, strideNo and exemptStrides can be Nx1 or scalars. If scalars,
 %the same value is applied to all conditions.
 %condition has to be cell array of strings, or string
-%strideNo has to be a non-zero integer array: negative numbers are interpreted as
+%strideNo has to be a non-zero integer array: negative numbers are
+%interpreted as
 %'last M strides' while positive numbers are interpreted as 'first M
 %strides'
 %exemptFirst has to be positive
 %exemptLast has to be positive
 %summaryMethod is a cell array of strings, with the name of the function
 %used to summarize accross strides, default is 'nanmean'
-%Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)','Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})
+%Ex: [epochs] = ...
+%    defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'}, ...
+%    {'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)', ...
+%    'Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})
 
 N = length(epochNames);         % number of epoch names
 if isa(condition,'char')        % if character array, ...
@@ -24,7 +29,8 @@ if nargin < 6 || isempty(summaryMethod)
     summaryMethod = 'nanmean';
 end
 
-if isa(summaryMethod,'char') %To allow for summaryMethod to be given as string directly
+%To allow for summaryMethod to be given as string directly
+if isa(summaryMethod,'char')
     summaryMethod = {summaryMethod};
 end
 
@@ -60,16 +66,21 @@ end
 %refEpoch info in any new parameters or any display string to remind us
 %what was done.
 description = cell(N,1);
-for i = 1:N
-    description{i} = sprintf('condition: %s, stride no: %d, exemptfirst: %d, exceptLast: %d, earlyOrLate: %d, summaryMethod: %s, short name: %s',...
-        condition{i},strideNo(i),exemptFirst(i), ...
-    exemptLast(i),earlyOrLate(i),summaryMethod{i},shortName{i});
+for ii = 1:N
+    description{ii} = ...
+        sprintf(['condition: %s, stride no: %d, exemptfirst: %d, ' ...
+        'exceptLast: %d, earlyOrLate: %d, summaryMethod: %s, short ' ...
+        'name: %s'],...
+        condition{ii},strideNo(ii),exemptFirst(ii), ...
+        exemptLast(ii),earlyOrLate(ii),summaryMethod{ii},shortName{ii});
 end
 
 epochs = dataset(condition(:),abs(strideNo(:)),exemptFirst(:), ...
-    exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),description(:), ...
+    exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:), ...
+    description(:), ...
     'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast', ...
-    'EarlyOrLate','summaryMethod','shortName','Description'},'ObsNames',epochNames);
+    'EarlyOrLate','summaryMethod','shortName','Description'},'ObsNames', ...
+    epochNames);
 
 end
 

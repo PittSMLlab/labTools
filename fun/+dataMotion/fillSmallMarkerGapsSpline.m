@@ -1,4 +1,5 @@
-function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, vicon, shouldSave, maxGapSize, interpMethod)
+function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, ...
+    vicon, shouldSave, maxGapSize, interpMethod)
 %FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline
 %   This function fills gaps in all marker trajectories identified in
 % markerGaps using spline interpolation for gaps smaller than the specified
@@ -33,11 +34,11 @@ end
 
 % validate 'markerGaps' structure format
 markers = fieldnames(markerGaps);
-for i = 1:numel(markers)
-    gaps = markerGaps.(markers{i});
+for mrkr = 1:numel(markers)
+    gaps = markerGaps.(markers{mrkr});
     if isempty(gaps) || size(gaps,2) ~= 2
         error(['Invalid format in markerGaps for marker %s. Expecting ' ...
-            'a non-empty Nx2 matrix.'],markers{i});
+            'a non-empty Nx2 matrix.'],markers{mrkr});
     end
 end
 
@@ -61,12 +62,13 @@ end
 subject = subject{1};
 
 % process each marker gap in the 'markerGaps' struct
-fprintf('Filling small marker gaps with %s interpolation...\n', interpMethod);
+fprintf('Filling small marker gaps with %s interpolation...\n', ...
+    interpMethod);
 wasChanged = false;                     % track whether changes were made
 
 for mrkr = 1:numel(markers)
     nameMarker = markers{mrkr};         % get marker name
-    gaps = markerGaps.(nameMarker);     % retrieve gap indices for marker
+    gaps       = markerGaps.(nameMarker); % retrieve gap indices for marker
 
     try                                 % get marker trajectory data
         [trajX,trajY,trajZ,existsTraj] = ...
@@ -79,18 +81,19 @@ for mrkr = 1:numel(markers)
 
     % preallocate remaining gaps array based on initial size
     gapsRemaining = gaps;   % store indices of gaps that were not filled
-    indNextGap = 1;         % track the index for remaining gaps
+    indNextGap    = 1;         % track the index for remaining gaps
 
     % process and fill gaps smaller than 'maxGapSize'
     for indGap = 1:size(gaps,1)
-        gapStart = gaps(indGap,1);
-        gapEnd = gaps(indGap,2);
+        gapStart  = gaps(indGap,1);
+        gapEnd    = gaps(indGap,2);
         gapLength = gapEnd - gapStart + 1;
 
         % fill gap if it is within the allowed 'maxGapSize'
         if gapLength <= maxGapSize && any(existsTraj)
             [trajX,trajY,trajZ,existsTraj] = ...
-                fillGap(trajX,trajY,trajZ,existsTraj,gaps(indGap,:), interpMethod);
+                fillGap(trajX,trajY,trajZ,existsTraj,gaps(indGap,:), ...
+                interpMethod);
             wasChanged = true;              % mark changes made
         else
             % retain the gap in 'gapsRemaining' if it exceeds 'maxGapSize'
@@ -143,12 +146,15 @@ function [trajX,trajY,trajZ,existsTraj] = fillGap( ...
 %   gapRange: 1x2 array with start and end indices of the gap to fill
 
 % frames to process for filling the gap
-framesToFill = gapRange(1):gapRange(2);
+framesToFill   = gapRange(1):gapRange(2);
 existingFrames = find(existsTraj);      % get frames with data
 
-trajX(framesToFill) = interp1(existingFrames, trajX(existingFrames), framesToFill, interpMethod);
-trajY(framesToFill) = interp1(existingFrames, trajY(existingFrames), framesToFill, interpMethod);
-trajZ(framesToFill) = interp1(existingFrames, trajZ(existingFrames), framesToFill, interpMethod);
+trajX(framesToFill) = interp1(existingFrames, trajX(existingFrames), ...
+    framesToFill, interpMethod);
+trajY(framesToFill) = interp1(existingFrames, trajY(existingFrames), ...
+    framesToFill, interpMethod);
+trajZ(framesToFill) = interp1(existingFrames, trajZ(existingFrames), ...
+    framesToFill, interpMethod);
 existsTraj(framesToFill) = true;        % update existence array
 
 end

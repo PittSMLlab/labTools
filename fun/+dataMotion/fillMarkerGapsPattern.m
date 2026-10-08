@@ -66,7 +66,7 @@ wasChanged = false;                     % track whether changes were made
 
 for mrkr = 1:numel(markers)
     nameMarker = markers{mrkr};         % get marker name
-    gaps = markerGaps.(nameMarker);     % retrieve gap indices for marker
+    gaps       = markerGaps.(nameMarker); % retrieve gap indices for marker
 
     try                                 % get marker trajectory data
         [trajX,trajY,trajZ,existsTraj] = ...
@@ -78,12 +78,12 @@ for mrkr = 1:numel(markers)
     end
 
     gapsRemaining = gaps;               % preallocate remaining gaps array
-    indNextGap = 1;
+    indNextGap    = 1;
 
     for indGap = 1:size(gaps,1)         % for each target marker gap, ...
-        gapStart = gaps(indGap,1);
-        gapEnd = gaps(indGap,2);
-        indPreGap = gapStart - 1;       % frame before gap
+        gapStart   = gaps(indGap,1);
+        gapEnd     = gaps(indGap,2);
+        indPreGap  = gapStart - 1;       % frame before gap
         indPostGap = gapEnd + 1;        % frame after gap
 
         % skip gap if 'indPreGap' or 'indPostGap' is invalid

@@ -49,7 +49,7 @@ if nargin < 3 || isempty(vicon)
 end
 
 % define reference and target markers for pattern-based gap filling
-markersRef = {'GT','KNEE','GT','ANK'};
+markersRef  = {'GT','KNEE','GT','ANK'};
 markersTarg = {
     {'ASIS','PSIS','THI','KNEE'}, ...
     {'GT','ANK'}, ...
@@ -71,7 +71,8 @@ for tr = indsTrials     % for each trial specified, ...
     try
         vicon.RunPipeline('RLPrePatternFill1','',1200);
     catch ME
-        warning('Failed to run RLPrePatternFill1 for trial %d: %s', tr, ME.message);
+        warning('Failed to run RLPrePatternFill1 for trial %d: %s', tr, ...
+            ME.message);
         fprintf('Skipping to next trial...\n');
         continue;
     end
@@ -81,7 +82,8 @@ for tr = indsTrials     % for each trial specified, ...
     try
         vicon.RunPipeline('RLPrePatternFill2','',1200);
     catch ME
-        warning('Failed to run RLPrePatternFill2 for trial %d: %s', tr, ME.message);
+        warning('Failed to run RLPrePatternFill2 for trial %d: %s', tr, ...
+            ME.message);
         fprintf('Skipping to next trial...\n');
         continue;
     end
@@ -90,14 +92,15 @@ for tr = indsTrials     % for each trial specified, ...
     try
         markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
     catch ME
-        warning('Failed to extract marker gaps for trial %d: %s', tr, ME.message);
+        warning('Failed to extract marker gaps for trial %d: %s', tr, ...
+            ME.message);
         markerGaps = struct();
     end
 
     % fill gaps using pattern fill for each reference marker
     disp('Running Pattern Fill...');
     for ref = 1:numel(markersRef)       % for each reference marker, ...
-        refMarker = markersRef{ref};    % retrieve reference marker name
+        refMarker     = markersRef{ref};    % retrieve reference marker name
         targetMarkers = markersTarg{ref};
 
         try
@@ -105,17 +108,21 @@ for tr = indsTrials     % for each trial specified, ...
             markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
                 markerGaps,targetMarkers,refMarker,pathTrial,vicon);
         catch ME
-            warning('Failed to fill gaps for reference marker %s for trial %d: %s', refMarker, tr, ME.message)
+            warning(['Failed to fill gaps for reference marker %s for ' ...
+                'trial %d: %s'], refMarker, tr, ME.message)
         end
     end
 
     % fill remaining small gaps with makima
+    maxGapFrames = 250;     % TODO: source?
     if ~isempty(fieldnames(markerGaps))
         disp('Filling remaining small marker gaps with makima...');
         try
-            dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false, 250, 'makima');
+            dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, ...
+                vicon, false, maxGapFrames, 'makima');
         catch ME
-            warning('Failed to fill small marker gaps for trial %d: %s', tr, ME.message);
+            warning('Failed to fill small marker gaps for trial %d: %s', ...
+                tr, ME.message);
         end
     end
 
@@ -125,7 +132,8 @@ for tr = indsTrials     % for each trial specified, ...
     try
         vicon.RunPipeline('RLPostPatternFill','',1200);
     catch ME
-        warning('Failed to run RLPostPatternFill for trial %d: %s', tr, ME.message);
+        warning('Failed to run RLPostPatternFill for trial %d: %s', tr, ...
+            ME.message);
     end
 
     fprintf('Saving trial %d: %s\n',tr,pathTrial);
@@ -137,20 +145,24 @@ for tr = indsTrials     % for each trial specified, ...
         try
             % saveTrajectoryFigures(pathSess, pathTrial, tr, vicon);
             if contains(pathSess, 'C3', 'IgnoreCase', true)
-                saveTrajectoryFigures(pathSess, tr, vicon, true); % pass flag
+                % pass flag
+                saveTrajectoryFigures(pathSess, tr, vicon, true);
             else
                 saveTrajectoryFigures(pathSess, tr, vicon, false);
             end
-            fprintf('Trajectory figures saved successfully for trial %d.\n', tr);
+            fprintf(['Trajectory figures saved successfully for trial ' ...
+                '%d.\n'], tr);
         catch ME
-            warning('Failed to save trajectory figures for trial %d: %s', tr, ME.message);
+            warning(['Failed to save trajectory figures for trial ' ...
+                '%d: %s'], tr, ME.message);
             fprintf('Error details: %s\n', getReport(ME));
         end
 
         fprintf('Trial %d processing completed.\n', tr);
 
     catch ME
-        warning(ME.identifier,'Failed to save trial %d: %s', tr, ME.message);
+        warning(ME.identifier,'Failed to save trial %d: %s', tr, ...
+            ME.message);
     end
 end
 
@@ -166,7 +178,7 @@ function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
 sides = {'R','L'};
 for side = sides
     sidePrefix = side{1};
-    gaps = struct();
+    gaps       = struct();
 
     % collect gaps for the target markers
     for targ = 1:numel(targetMarkers)
@@ -197,7 +209,7 @@ end
 function mrkrTrajs = getRelevantMrkrTrajs(newVicon)
 
 mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
-mrkrTrajs = struct();
+mrkrTrajs     = struct();
 
 subjects = newVicon.GetSubjectNames();
 if isempty(subjects)
@@ -208,38 +220,43 @@ end
 subject = subjects{1};
 fprintf('Getting trajectories for subject: %s\n', subject);
 
-for i = 1:numel(mrkrsRelevant)
-    marker = mrkrsRelevant{i};
+for mrkr = 1:numel(mrkrsRelevant)
+    marker = mrkrsRelevant{mrkr};
     try
-        [trajX, trajY, trajZ, existsTraj] = newVicon.GetTrajectory(subject, marker);
+        [trajX, trajY, trajZ, existsTraj] = ...
+            newVicon.GetTrajectory(subject, marker);
 
         trajX(~existsTraj) = NaN;
         trajY(~existsTraj) = NaN;
         trajZ(~existsTraj) = NaN;
 
-        mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];%, double(exists(:))];
-        fprintf('Successfully retrieved trajectory for marker: %s\n', marker);
+        %, double(exists(:))];
+        mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];
+        fprintf('Successfully retrieved trajectory for marker: %s\n', ...
+            marker);
     catch ME
-        warning('Failed to get trajectory for marker %s: %s', marker, ME.message);
+        warning('Failed to get trajectory for marker %s: %s', marker, ...
+            ME.message);
         mrkrTrajs.(marker) = [];  % Empty array for failed markers
     end
 end
 
 end
 
-function saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)
+function saveTrajectoryFigures(pathSess, trialNum, vicon, ...
+    highlightTurningPoints)
 
 if nargin < 4
     highlightTurningPoints = false;
 end
 
-markers = {'RGT','LGT','RANK','LANK'};
+markers   = {'RGT','LGT','RANK','LANK'};
 mrkrTrajs = getRelevantMrkrTrajs(vicon);
 
 outParent = fileparts(pathSess);
-outDir = fullfile(outParent, 'TrajectoryFigures');
-figDir = fullfile(outDir, 'fig');
-pngDir = fullfile(outDir, 'png');
+outDir    = fullfile(outParent, 'TrajectoryFigures');
+figDir    = fullfile(outDir, 'fig');
+pngDir    = fullfile(outDir, 'png');
 
 if ~exist(figDir, 'dir')
     mkdir(figDir);
@@ -249,11 +266,11 @@ if ~exist(pngDir, 'dir')
     mkdir(pngDir);
 end
 
-lowerBound = -2500;
-upperBound = 4500;
+lowerBound = -2500;     % TODO: source?
+upperBound = 4500;      % TODO: source?
 
-for i = 1:numel(markers)
-    markerName = markers{i};
+for mrkr = 1:numel(markers)
+    markerName = markers{mrkr};
 
     if ~isfield(mrkrTrajs, markerName)
         warning('Marker %s not found in trial.', markerName);
@@ -262,25 +279,30 @@ for i = 1:numel(markers)
 
     traj = mrkrTrajs.(markerName);
     if isempty(traj) || all(isnan(traj(:)))
-        warning('No valid data for marker %s in trial %d.', markerName, trialNum);
+        warning('No valid data for marker %s in trial %d.', markerName, ...
+            trialNum);
         continue;
     end
 
-    frames = 1:size(traj, 1);
+    frames  = 1:size(traj, 1);
     yValues = traj(:,2);
 
     if highlightTurningPoints % only for C3 trajectories
-        outOfBounds = (yValues < lowerBound) | (yValues > upperBound) | isnan(yValues);
+        outOfBounds = (yValues < lowerBound) | (yValues > upperBound) | ...
+            isnan(yValues);
         outOfBounds = [false; outOfBounds(:); false];
-        d = diff(outOfBounds);
-        startIdxs = find(d == 1);
-        endIdxs   = find(d == -1) - 1;
+        d           = diff(outOfBounds);
+        startIdxs   = find(d == 1);
+        endIdxs     = find(d == -1) - 1;
     end
 
     % Create stacked plot
-    fig = figure('Visible','on', 'Name', ['Trajectories for ' markerName], 'NumberTitle', 'off'); % changed this to "on" so that fig will automatically open
-    tl = tiledlayout(3,1, 'TileSpacing', 'Compact');
-    title(tl, sprintf('%s Trajectory - Trial %02d', markerName, trialNum), 'Interpreter', 'none');
+    % changed this to "on" so that fig will automatically open
+    fig = figure('Visible','on', 'Name', ...
+        ['Trajectories for ' markerName], 'NumberTitle', 'off');
+    tl  = tiledlayout(3,1, 'TileSpacing', 'Compact');
+    title(tl, sprintf('%s Trajectory - Trial %02d', markerName, ...
+        trialNum), 'Interpreter', 'none');
 
     componentLabels = {'X','Y','Z'};
     for dim = 1:3
@@ -299,14 +321,16 @@ for i = 1:numel(markers)
         ylim(ax, [dataMin - padding, dataMax + padding]);
 
         if highlightTurningPoints
-            % vertical shading based on Y out-of-bounds, drawn on all subplots
+            % vertical shading based on Y out-of-bounds, drawn on all
+            % subplots
             dataMin = min(traj(:,dim),[],'omitnan');
             dataMax = max(traj(:,dim),[],'omitnan');
-            yMin = dataMin - 100;
-            yMax = dataMax + 100;
+            yMin    = dataMin - 100;
+            yMax    = dataMax + 100;
 
-            for j = 1:numel(startIdxs)
-                fill(ax, [startIdxs(j) endIdxs(j) endIdxs(j) startIdxs(j)], ...
+            for ii = 1:numel(startIdxs)
+                fill(ax, [startIdxs(ii) endIdxs(ii) endIdxs(ii) ...
+                    startIdxs(ii)], ...
                     [yMin yMin yMax yMax], ...
                     [1 0 0], 'FaceAlpha',0.2, 'EdgeColor','none');
             end

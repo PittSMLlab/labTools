@@ -42,7 +42,7 @@ subject = subject{1};
 
 % initialize structure to store marker trajectory gaps
 markerGaps = struct();
-markers = vicon.GetMarkerNames(subject);
+markers    = vicon.GetMarkerNames(subject);
 if isempty(markers)     % if empty array of markers, ...
     warning('No markers found for the subject in the trial.');
     return;
@@ -66,7 +66,7 @@ for mrkr = 1:length(markers)        % for each marker, ...
 
     % identify start and end indices of each trajectory gap
     gapsStarts = indsGap([true diff(indsGap) > 1])';    % start of gaps
-    gapsEnds = indsGap([diff(indsGap) > 1 true])';      % end of gaps
+    gapsEnds   = indsGap([diff(indsGap) > 1 true])';      % end of gaps
 
     % store gap data for this marker in the output structure
     markerGaps.(nameMarker) = [gapsStarts gapsEnds];

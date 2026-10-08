@@ -3,8 +3,8 @@ function  [expData,rawExpData,adaptData] = reviseExperimentInfo()
 
 info = GetInfoGUI();            % retrieve experimental session information
 % load previous raw and processed experimental session data for comparison
-load([info.save_folder filesep info.ID 'RAW.mat']);
-load([info.save_folder filesep info.ID '.mat']);
+load(fullfile(info.save_folder, [info.ID 'RAW.mat']));
+load(fullfile(info.save_folder, [info.ID '.mat']));
 expDate = labDate(info.day,info.month,info.year);
 
 %% Experiment Information
@@ -62,7 +62,7 @@ DOB = labDate(info.DOBday,info.DOBmonth,info.DOByear);
 % compute age at time of experimental session to nearest month
 % TODO: why not compute age to the nearest day?
 ageInMonths = round(expDate.timeSince(DOB));    % round to closest month
-age = ageInMonths / 12;
+age         = ageInMonths / 12;
 
 if ~isfield(info,'isStroke') || info.isStroke == 0  % if no stroke, ...
     subData = subjectData(DOB,info.gender,info.domleg, ...
@@ -80,34 +80,38 @@ end
 for cond = sort(info.cond)
     for t = expData.metaData.trialsInCondition{cond}
         if ~isfield(info,'trialObs')
-            info.trialObs=cell(info.numoftrials,1);
+            info.trialObs = cell(info.numoftrials,1);
         end
         % constructor: (name,desc,obs,refLeg,cond,filename,type)
-        trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-            info.trialObs{t},info.refLeg,cond,expData.data{t}.metaData.rawDataFilename,info.type{cond});
+        trialMD{t} = trialMetaData(info.conditionNames{cond}, ...
+            info.conditionDescriptions{cond},...
+            info.trialObs{t},info.refLeg,cond, ...
+            expData.data{t}.metaData.rawDataFilename,info.type{cond});
     end
 end
 
 % Load trials
 for t = cell2mat(expData.metaData.trialsInCondition)
-    GRFData=rawExpData.data{t}.GRFData;
-    EMGData=rawExpData.data{t}.EMGData;
-    accData=rawExpData.data{t}.accData;
-    markerData=rawExpData.data{t}.markerData;
-    %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);
+    GRFData    = rawExpData.data{t}.GRFData;
+    EMGData    = rawExpData.data{t}.EMGData;
+    accData    = rawExpData.data{t}.accData;
+    markerData = rawExpData.data{t}.markerData;
+    %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData, ...
+    %    beltSpeedReadData,accData,EEGData,footSwitches)
+    trials{t} = rawTrialData(trialMD{t},markerData,EMGData,GRFData,[], ...
+        [],accData,[],[]);
 end
 % NOTE: the below line overwrites any previous file of the same name!
 rawExpData = experimentData(expMD,subData,trials);
 % save updated raw 'rawExperimentalData' object
-save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3')
+save(fullfile(info.save_folder, [info.ID 'RAW.mat']),'rawExpData','-v7.3')
 
 %% "Process" data
 for t = 1:length(rawExpData.data)
     if ~isempty(rawExpData.data{t})
-        procEMGData=expData.data{t}.procEMGData;
-        filteredEMGData=expData.data{t}.EMGData;
-        angleData=expData.data{t}.angleData;
+        procEMGData = expData.data{t}.procEMGData;
+        filteredEMGData = expData.data{t}.EMGData;
+        angleData = expData.data{t}.angleData;
         events = expData.data{t}.gaitEvents;
         beltSpeedReadData = expData.data{t}.beltSpeedReadData;
         jointMomentsData = expData.data{t}.jointMomentsData;
@@ -115,9 +119,13 @@ for t = 1:length(rawExpData.data)
         COMData = expData.data{t}.COMData;
 
         % Generate processedTrial object
-        processedData{t}=processedTrialData(trialMD{t},expData.data{t}.markerData,...
-            filteredEMGData,expData.data{t}.GRFData,expData.data{t}.beltSpeedSetData,beltSpeedReadData,...
-            expData.data{t}.accData,expData.data{t}.EEGData,expData.data{t}.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
+        processedData{t} = processedTrialData(trialMD{t}, ...
+            expData.data{t}.markerData,...
+            filteredEMGData,expData.data{t}.GRFData, ...
+            expData.data{t}.beltSpeedSetData,beltSpeedReadData,...
+            expData.data{t}.accData,expData.data{t}.EEGData, ...
+            expData.data{t}.footSwitchData,events,procEMGData,angleData, ...
+            COPData,COMData,jointMomentsData);
         processedData{t}.adaptParams = expData.data{t}.adaptParams;
     else
         processedData{t} = [];
@@ -126,9 +134,9 @@ end
 % NOTE: the below line overwrites any previous file of the same name!
 expData = experimentData(expMD,subData,processedData);
 % save updated processed 'experimentalData' object
-save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3');
+save(fullfile(info.save_folder, [info.ID '.mat']),'expData','-v7.3');
 % update and save 'adaptationData' object
-adaptData = expData.makeDataObj([info.save_folder filesep info.ID]);
+adaptData = expData.makeDataObj(fullfile(info.save_folder, info.ID));
 
 end
 

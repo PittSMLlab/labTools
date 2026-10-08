@@ -1,6 +1,7 @@
 markersToCompare = {'LGT'};
-subject = 'C3S24';
-trialPath = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
+subject          = 'C3S24';
+trialPath        = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
 
 % Connect to Vicon and open trial
 fprintf('Connecting to Vicon Nexus...\n');
@@ -10,23 +11,27 @@ pause(2);
 
 % Run the optimized pipeline function (assumes this saves the trial)
 fprintf('Running optimized pipeline...\n');
-Part1RL(trialPath);  
+Part1RL(trialPath);
 pause(5);
 
 trajData = struct();
 
+frameRateHz = 100;     % TODO: source?
 for m = 1:numel(markersToCompare)
     nameMarker = markersToCompare{m};
-    try 
-        [trajX, trajY, trajZ, existsTraj] = vicon.GetTrajectory(subject, nameMarker);
-        times = (1:numel(trajX)) / 100;  % or use frameStart/frameEnd for time
-        
+    try
+        [trajX, trajY, trajZ, existsTraj] = ...
+            vicon.GetTrajectory(subject, nameMarker);
+        % or use frameStart/frameEnd for time
+        times = (1:numel(trajX)) / frameRateHz;
+
         if any(existsTraj)
             trajX2 = trajX; trajX2(~existsTraj) = NaN;
             trajY2 = trajY; trajY2(~existsTraj) = NaN;
             trajZ2 = trajZ; trajZ2(~existsTraj) = NaN;
 
-            figure('Name', ['Trajectories for ' nameMarker], 'NumberTitle', 'off');
+            figure('Name', ['Trajectories for ' nameMarker], ...
+                'NumberTitle', 'off');
             tl = tiledlayout(3,1);
 
             ax1 = nexttile;
