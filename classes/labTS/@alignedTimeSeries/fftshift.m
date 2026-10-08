@@ -26,8 +26,8 @@ else
     idxs = 1:length(this.labels);
 end
 newThis = this;
-M = round(length(this.alignmentVector) / 2);
-N = sum(this.alignmentVector(1:M));
+M       = round(length(this.alignmentVector) / 2);
+N       = sum(this.alignmentVector(1:M));
 newThis.Data(:, idxs, :) = ...
     this.Data([N + 1:size(this.Data, 1), 1:N], idxs, :);
 end

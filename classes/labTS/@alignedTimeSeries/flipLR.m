@@ -17,7 +17,7 @@ function [this, iC, iI] = flipLR(this)
 %   See also: getSym, getaSym, fftshift
 
 % Find the side that has the starting event:
-alignedSide = this.alignmentLabels{1}(1);
+alignedSide    = this.alignmentLabels{1}(1);
 nonAlignedSide = getOtherLeg(alignedSide);
 % Flip non-aligned side:
 lC = this.getLabelsThatMatch(['^' nonAlignedSide]); % Get non-aligned side

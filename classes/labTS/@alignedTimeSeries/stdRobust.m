@@ -21,6 +21,7 @@ if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);
 end
 % IQR-based std computation
-stdTS = this.iqr .* (1 / 1.35);
+iqrToStd = 1.35; % IQR of a normal distribution is ~1.349 std
+stdTS    = this.iqr .* (1 / iqrToStd);
 end
 

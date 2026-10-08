@@ -14,7 +14,7 @@ function newThis = markBadWhenMissingAll(this, labels)
 %   See also: markBadWhenMissingAny, markBadStridesAsNan
 
 newThis = this;
-aux = this.getDataAsVector(labels);
+aux     = this.getDataAsVector(labels);
 [~, bi] = this.isaLabel('bad');
 newThis.Data(:, bi) = this.bad | all(isnan(aux), 2);
 [~, bg] = this.isaLabel('good');

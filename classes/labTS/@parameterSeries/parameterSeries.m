@@ -58,14 +58,14 @@ classdef parameterSeries < labTimeSeries
 
     properties (Hidden)
         description_ = {};
-        trialTypes_ = {};
-        fixedParams = 5;
+        trialTypes_  = {};
+        fixedParams  = 5;
     end
 
     %% Constructor
     methods
         function this = parameterSeries( ...
-                data, labels, times, description, types)
+            data, labels, times, description, types)
             %parameterSeries  Constructor for parameterSeries class
             %
             %   this = parameterSeries(data, labels, times, description)
@@ -254,12 +254,14 @@ classdef parameterSeries < labTimeSeries
     methods
         this = normalizeToBaseline(this, labels, rangeValues)
 
-        newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)
+        newThis = linearStretch(this, labels, rangeValues, ...
+            descriptionSuffix)
     end
 
     % function newThis=EMGnormAllData(this,labels,rangeValues)
     %     %This get the stride by stide norm
-    %     %It creates NEW parameters with the same name, and the 'Norm' prefix.
+    %     %It creates NEW parameters with the same name, and the 'Norm'
+    %     prefix.
     %     %This will generate collisions if run multiple times for the
     %     %same parameters
     %     %See also: adaptationData.normalizeToBaselineEpoch
@@ -270,7 +272,8 @@ classdef parameterSeries < labTimeSeries
     %
     %     % More efficient:
     %     N=length(labels);
-    %     newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
+    %     newDesc=repmat({['Normalized to range=[' ...
+    %    num2str(rangeValues(1))  ']']},N,1);
     %     newL=cell(N,1);
     %     nD=zeros(size(this.Data,1),N);
     %
@@ -278,7 +281,8 @@ classdef parameterSeries < labTimeSeries
     %     %     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
     %     %     funHandle=@(x) vecnorm(x'-rangeValues);
     %     %     newL=strcat('NormEMG',labels);
-    %     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
+    %     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle, ...
+    %    labels(1));
     %     % end
     %     newThis=appendData(this,nD,newL,newDesc);
     % end

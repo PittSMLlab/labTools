@@ -58,7 +58,7 @@ classdef alignedTimeSeries % < labTimeSeries
         labels
         alignmentVector = [];
         alignmentLabels = {};
-        eventTimes = [];
+        eventTimes      = [];
     end
 
     properties (Dependent)
@@ -68,7 +68,7 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Constructor
     methods
         function this = alignedTimeSeries(t0, Ts, Data, labels, ...
-                alignmentVector, alignmentLabels, eventTimes)
+            alignmentVector, alignmentLabels, eventTimes)
             %alignedTimeSeries  Constructor for alignedTimeSeries class
             %
             %   this = alignedTimeSeries(t0, Ts, Data, labels,
@@ -254,17 +254,22 @@ classdef alignedTimeSeries % < labTimeSeries
         % [figHandle, plotHandles, plottedInds] = plot(this, figHandle, ...
         %     plotHandles, meanColor, events, individualLineStyle, ...
         %         plottedInds, bounds, medianFlag)
-        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
-            % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
+        function [figHandle,plotHandles,plottedInds] = ...
+            plot(this,figHandle,plotHandles,meanColor,events, ...
+            individualLineStyle,plottedInds,bounds,medianFlag)
+            % Plot individual instances (strides) of the time-series, and
+            % overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
             % labTimeSeries.plot).
-            % If events are given (alignedTimeSeries with the same time vector and number of strides),
+            % If events are given (alignedTimeSeries with the same time
+            % vector and number of strides),
             % it will display the average event-time ocurrence in the plot,
             % instead of the time in the x-axis.
             % See also labTimeSeries.plot
             %
             % SYNTAX:
-            % [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
+            % [figHandle,plotHandles]=plot(this,figHandle,plotHandles, ...
+            %    meanColor,events)
             %
             % INPUTS:
             % this: alignedTimeSeries object to plot
@@ -279,147 +284,176 @@ classdef alignedTimeSeries % < labTimeSeries
             % figHandle: handle to the figure used.
             % plotHandles: handles to the subplots used.
             %
-            if nargin<4 || isempty(meanColor)
-                meanColor=[1,0,0];
+            if nargin < 4 || isempty(meanColor)
+                meanColor = [1,0,0];
             end
-            if nargin<9 || isempty(medianFlag)
-                medianFlag=1;
+            if nargin < 9 || isempty(medianFlag)
+                medianFlag = 1;
             end
-            structure=this.Data;
-            if nargin<2 || isempty(figHandle)
-                figHandle=figure();
+            structure = this.Data;
+            if nargin < 2 || isempty(figHandle)
+                figHandle = figure();
             else
                 figure(figHandle) %Only works for one condition!
             end
             set(figHandle,'Units','normalized','OuterPosition',[0 0 1 1])
-            M=size(structure,2);
-            if nargin<3 || isempty(plotHandles) || length(plotHandles)<size(this.Data,2)
-                [b,a]=getFigStruct(M);
-                plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); %External function
+            M = size(structure,2);
+            if nargin < 3 || isempty(plotHandles) || ...
+                    length(plotHandles) < size(this.Data,2)
+                [b,a] = getFigStruct(M);
+                plotHandles = tight_subplot(b,a,[0.02 0.02],[0.05 0.05], ...
+                    [0.05 0.05]); %External function
             end
-            meanStr=mean(structure,3);
-            if nargin<7 || isempty(plottedInds)
-                plottedInds=1:size(structure,3);
-                if (numel(structure))>1e7
-                    P=floor(1e7/numel(structure(:,:,1)));
-                    warning(['There are too many strides in this condition to plot (' num2str(size(structure,3)) '). Only plotting first ' num2str(P) '.'])
-                    plottedInds=1:P;
-                    structure=structure(:,:,plottedInds);
+            meanStr = mean(structure,3);
+            if nargin < 7 || isempty(plottedInds)
+                plottedInds = 1:size(structure,3);
+                maxPlotElements = 1e7; % TODO: source? (plot sample cap)
+                if (numel(structure)) > maxPlotElements
+                    P = floor(maxPlotElements/numel(structure(:,:,1)));
+                    warning([ ...
+                        'There are too many strides in this condition ' ...
+                        'to plot (' num2str(size(structure, ...
+                        3)) '). Only plotting first ' num2str(P) '.'])
+                    plottedInds = 1:P;
+                    structure   = structure(:,:,plottedInds);
                 end
-            elseif any(plottedInds<=0) %Counting from the back
-                plottedInds(plottedInds<=0)=size(structure,3)+plottedInds(plottedInds<=0);
+            elseif any(plottedInds <= 0) %Counting from the back
+                plottedInds(plottedInds <= 0) = ...
+                    size(structure,3)+plottedInds(plottedInds <= 0);
             end
 
 
             %Define centerline plot:
-            if medianFlag==1
-                centerline=this.median.castAsTS; %Could do mean or median
+            if medianFlag == 1
+                centerline = this.median.castAsTS; %Could do mean or median
             else
-                centerline=this.mean.castAsTS;
+                centerline = this.mean.castAsTS;
             end
 
             %Plot percentiles (bounds)
-            if nargin<5 || isempty(events)
-                events=[];
-                meanEvents=[];
+            if nargin < 5 || isempty(events)
+                events     = [];
+                meanEvents = [];
             else
                 if isa(events,'alignedTimeSeries')
-                    [meanEvents,ss]=mean(events);
-                    meanEvents=meanEvents.castAsTS;
+                    [meanEvents,ss] = mean(events);
+                    meanEvents = meanEvents.castAsTS;
                 else
-                    meanEvents=events;
-                    ss=[];
+                    meanEvents = events;
+                    ss         = [];
                 end
-                [i2,~]=find(meanEvents.Data);
+                [i2,~] = find(meanEvents.Data);
             end
-            if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
-                if length(bounds)==2 %Alt visualization: add patch
-                    if any(bounds)==0
-                        if medianFlag==1
-                            st=this.stdRobust.castAsTS;
+            if ~islogical(this.Data) && nargin > 7 && ~isempty(bounds)
+                if length(bounds) == 2 %Alt visualization: add patch
+                    if any(bounds) == 0
+                        if medianFlag == 1
+                            st = this.stdRobust.castAsTS;
                         else
-                            st=this.std.castAsTS;
+                            st = this.std.castAsTS;
                         end
-                        if all(bounds)==0 %Plots ste
-                            aux1=centerline+(st.* 1/sqrt(size(this.Data,3)));
-                            aux2=centerline-(st .* 1/sqrt(size(this.Data,3)));
+                        if all(bounds) == 0 %Plots ste
+                            aux1 = centerline+(st.* ...
+                                1/sqrt(size(this.Data,3)));
+                            aux2 = centerline-(st .* ...
+                                1/sqrt(size(this.Data,3)));
                         else %Plots std
-                            aux1=centerline+(st);
-                            aux2=centerline-(st);
+                            aux1 = centerline+(st);
+                            aux2 = centerline-(st);
                         end
                     else
-                        aux1=prctile(this,bounds(1));
-                        aux2=prctile(this,bounds(2));
+                        aux1 = prctile(this,bounds(1));
+                        aux2 = prctile(this,bounds(2));
                     end
-                    for i=1:M
-                        subplot(plotHandles(i))
+                    for ii = 1:M
+                        subplot(plotHandles(ii))
                         hold on
-                        if size(aux1.Time,1)==numel(aux1.Time) %column vector
-                            megaTime=[aux1.Time; aux1.Time(end:-1:1)];
+                        %column vector
+                        if size(aux1.Time,1) == numel(aux1.Time)
+                            megaTime = [aux1.Time; aux1.Time(end:-1:1)];
                         else %row vector
-                            megaTime=[aux1.Time, aux1.Time(end:-1:1)];
+                            megaTime = [aux1.Time, aux1.Time(end:-1:1)];
                         end
-                        megaData=[aux1.Data(:,i);aux2.Data(end:-1:1,i)];
-                        megaData(isnan(megaData))=0;
-                        pp=patch(megaTime,megaData,meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                        megaData = [aux1.Data(:,ii);aux2.Data(end:-1:1,ii)];
+                        megaData(isnan(megaData)) = 0;
+                        pp = patch(megaTime,megaData,meanColor, ...
+                            'FaceAlpha',0.4,'EdgeColor','none');
                         uistack(pp,'bottom');
                         hold off
                     end
                 else %Plot each percentile line
-                    for k=1:length(bounds)
-                        [figHandle,plotHandles]=plot(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
+                    for k = 1:length(bounds)
+                        [figHandle,plotHandles] = ...
+                            plot(this.prctile(bounds(k)).castAsTS, ...
+                            figHandle,[],plotHandles,[],meanColor*0.8,0.5);
                     end
                 end
             end
 
             %PLot mean trace
-            [figHandle,plotHandles]=plot(centerline,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+            [figHandle,plotHandles] = ...
+                plot(centerline,figHandle,[],plotHandles,meanEvents, ...
+                meanColor); %Plotting mean data
 
             %Plot individual traces
-            for i=1:M %Go over labels
+            for ii = 1:M %Go over labels
                 %subplot(b,a,i)
-                subplot(plotHandles(i))
+                subplot(plotHandles(ii))
                 hold on
                 %title(aux{1}.(field).labels{i})
-                data=squeeze(structure(:,i,:));
-                N=size(data,1);
-                if nargin<6 || isempty(individualLineStyle)
-                    ppp=plot(this.Time,data,'Color',[.7,.7,.7]);
+                data = squeeze(structure(:,ii,:));
+                N    = size(data,1);
+                if nargin < 6 || isempty(individualLineStyle)
+                    ppp = plot(this.Time,data,'Color',[0.7,0.7,0.7]);
                     uistack(ppp,'bottom')
-                elseif individualLineStyle==0
+                elseif individualLineStyle == 0
                     %nop
                 else
-                    ppp=plot(this.Time,data,individualLineStyle);
+                    ppp = plot(this.Time,data,individualLineStyle);
                     uistack(ppp,'bottom')
                 end
 
-                %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
+                %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color', ...
+                %    meanColor);
                 %legend(this.labels{i})
                 %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
-                meanM(i)=prctile(data(:),50);
-                maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i)+eps;
-                minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
-                axis([this.Time(1) this.Time(end) minM(i) maxM(i)])
+                % TODO: source? (axis padding: 2x the 1st/99th pct spread)
+                meanM(ii) = prctile(data(:),50);
+                maxM(ii) = 2*(prctile(data(:),99)-meanM(ii))+meanM(ii)+eps;
+                minM(ii) = 2*(prctile(data(:),1)-meanM(ii))+meanM(ii);
+                axis([this.Time(1) this.Time(end) minM(ii) maxM(ii)])
                 hold off
             end
 
             if ~isempty(events)
-                for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
-                    eventSampPeriod=(events.Time(2)-events.Time(1));
-                    subplot(plotHandles(i))
+                % For each plot, plot a standard deviation bar indicating
+                %   how disperse are events with respect to their
+                %   mean/median (XTick set).
+                for ii = 1:length(plotHandles)
+                    eventSampPeriod = (events.Time(2)-events.Time(1));
+                    subplot(plotHandles(ii))
                     hold on
-                    for j=1:length(ss)
-                        plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
+                    for jj = 1:length(ss)
+                        plot(events.Time(i2(jj))+ss(jj)*[-1, ...
+                            1]*eventSampPeriod,[0,0],'k','LineWidth',1);
                     end
-                    %axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
+                    %axis tight %TO DO: not use axis tight, ...
+                    % but find proper axes limits by computing the rms value
+                    %   of the signal, or something like that.
                     hold off
                 end
             else
-                for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
-                    subplot(plotHandles(i))
-                    xt=get(gca,'XTick');
-                    xt=[this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector)];
-                    xtl=[[this.alignmentLabels, this.alignmentLabels(1)]];
+                % For each plot, plot a standard deviation bar indicating
+                %   how disperse are events with respect to their
+                %   mean/median (XTick set).
+                for ii = 1:length(plotHandles)
+                    subplot(plotHandles(ii))
+                    xt  = get(gca,'XTick');
+                    xt  = [this.Time(1)+[0, ...
+                        cumsum(this.alignmentVector)]*( ...
+                        this.Time(end)-this.Time(1))/sum( ...
+                        this.alignmentVector)];
+                    xtl = [[this.alignmentLabels, this.alignmentLabels(1)]];
                     set(gca,'XTick',xt,'XTickLabel',xtl)
                     set(gca,'xgrid','on')
                 end

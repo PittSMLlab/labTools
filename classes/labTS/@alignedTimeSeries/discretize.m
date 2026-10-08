@@ -24,10 +24,10 @@ newData = nan(length(averagingVector), size(this.Data, 2), ...
 expEventTimes = alignedTimeSeries.expandEventTimes(this.eventTimes, ...
     this.alignmentVector);
 newEventTimes = nan(length(averagingVector), size(expEventTimes, 2) + 1);
-auxSamp = 1 + [0 cumsum(this.alignmentVector)];
-for i = 1:length(averagingVector)
-    inds = lastInd + [1:averagingVector(i)];
-    newData(i, :, :) = nanmean(this.Data(inds, :, :));
+auxSamp       = 1 + [0 cumsum(this.alignmentVector)];
+for ii = 1:length(averagingVector)
+    inds = lastInd + [1:averagingVector(ii)];
+    newData(ii, :, :) = mean(this.Data(inds, :, :), 'omitnan');
     if ~any(auxSamp == inds(1))
         aux1 = '-';
     else
@@ -44,10 +44,10 @@ for i = 1:length(averagingVector)
     else
         auxM = '-';
     end
-    alignLabel{i} = [aux1 aux2];
+    alignLabel{ii} = [aux1 aux2];
     % Beginning of averaged interval
-    newEventTimes(i, 1:end - 1) = expEventTimes(lastInd + 1, :);
-    lastInd = lastInd + averagingVector(i);
+    newEventTimes(ii, 1:end - 1) = expEventTimes(lastInd + 1, :);
+    lastInd = lastInd + averagingVector(ii);
 end
 newEventTimes(1, end) = this.eventTimes(1, end);
 newThis = alignedTimeSeries(0, 1, newData, this.labels, ...

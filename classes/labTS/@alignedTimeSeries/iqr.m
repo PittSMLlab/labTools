@@ -26,7 +26,7 @@ else
     % Assuming the SAME number of events per stride, and in the same
     % ORDER. % FIXME: check event order.
     histogram = logicalHist(this);
-    iqrTS = iqr(histogram); % Not really a tS
+    iqrTS     = iqr(histogram); % Not really a tS
 end
 end
 

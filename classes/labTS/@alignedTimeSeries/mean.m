@@ -28,7 +28,7 @@ if ~islogical(this.Data(1))
     % meanTS = labTimeSeries(nanmean(this.Data, 3), this.Time(1),
     %     this.Time(2) - this.Time(1), this.labels);
     meanTS = alignedTimeSeries(this.Time(1), ...
-        this.Time(2) - this.Time(1), nanmean(this.Data, 3), ...
+        this.Time(2) - this.Time(1), mean(this.Data, 3, 'omitnan'), ...
         this.labels, this.alignmentVector, this.alignmentLabels);
     stds = [];
 else
@@ -39,21 +39,21 @@ else
     % Compute mean/median:
     newData = sparse([], [], false, size(this.Data, 1), ...
         length(newLabels), size(this.Data, 1));
-    mH = nanmedian(histogram);
-    for i = 1:size(histogram, 2)
-        if mod(mH(i), 1) ~= 0
-            mH(i) = floor(mH(i));
-            warning(['Median event ' num2str(i) ...
+    mH = median(histogram, 'omitnan');
+    for ii = 1:size(histogram, 2)
+        if mod(mH(ii), 1) ~= 0
+            mH(ii) = floor(mH(ii));
+            warning(['Median event ' num2str(ii) ...
                 ' falls between two samples']);
         end
-        newData(mH(i), i) = true;
+        newData(mH(ii), ii) = true;
     end
     % meanTS = labTimeSeries(newData, this.Time(1),
     %     this.Time(2) - this.Time(1), newLabels);
     meanTS = alignedTimeSeries(this.Time(1), ...
         this.Time(2) - this.Time(1), newData, newLabels, ...
         this.alignmentVector, this.alignmentLabels);
-    stds = nanstd(histogram);
+    stds = std(histogram, 0, 'omitnan');
 end
 end
 

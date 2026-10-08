@@ -26,23 +26,24 @@ if nargin < 4 || isempty(dispOpt)
 end
 strides = cell2mat(groupIdxs);
 Ngroups = length(groupIdxs);
-for i = 1:Ngroups
-    groupID{i} = i * ones(size(groupIdxs{i}));
+for ii = 1:Ngroups
+    groupID{ii} = ii * ones(size(groupIdxs{ii}));
 end
 groupID = cell2mat(groupID);
 if isa(params, 'char')
     params = {params};
 end
-Nparams = length(params);
-aux = this.getDataAsPS([], strides);
+Nparams       = length(params);
+aux           = this.getDataAsPS([], strides);
 postHocMatrix = cell(Nparams, 1);
-for i = 1:Nparams
-    postHocMatrix{i} = nan(Ngroups);
-    relevantData = aux.getDataAsVector(params(i));
-    [p(i), ANOVATAB, STATS] = anova1(relevantData, groupID, dispOpt);
+for ii = 1:Nparams
+    postHocMatrix{ii} = nan(Ngroups);
+    relevantData = aux.getDataAsVector(params(ii));
+    [p(ii), ANOVATAB, STATS] = anova1(relevantData, groupID, dispOpt);
     % Default post-hoc is tukey-kramer
     [c, MEANS, H, GNAMES] = multcompare(STATS);
-    postHocMatrix{i}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) =c(:, 6);
+    postHocMatrix{ii}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) = ...
+        c(:, 6);
 end
 end
 

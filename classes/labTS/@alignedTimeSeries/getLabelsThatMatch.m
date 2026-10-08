@@ -14,7 +14,7 @@ function labelList = getLabelsThatMatch(this, exp)
 %   See also: regexp, isaLabel
 
 labelList = this.labels;
-flags = cellfun(@(x) ~isempty(x), regexp(labelList, exp));
+flags     = cellfun(@(x) ~isempty(x), regexp(labelList, exp));
 labelList = labelList(flags);
 end
 

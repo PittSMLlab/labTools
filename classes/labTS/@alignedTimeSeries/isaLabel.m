@@ -17,10 +17,10 @@ function [boolFlag, labelIdx] = isaLabel(this, label)
 boolFlag = false(size(label));
 labelIdx = zeros(size(label));
 [bool, idx] = compareListsFast(label, this.labels);
-for j = 1:length(label)
-    if any(idx == j)
-        boolFlag(j) = true;
-        labelIdx(j) = find(idx == j);
+for jj = 1:length(label)
+    if any(idx == jj)
+        boolFlag(jj) = true;
+        labelIdx(jj) = find(idx == jj);
     end
 end
 end

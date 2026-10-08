@@ -45,8 +45,8 @@ ax.XTickLabel = this.alignmentLabels;
 axis([this.Time(1) 2 * this.Time(end) - this.Time(end - 1) ...
     0 size(m.Data, 2)]);
 % Colormap:
-ex2 = [0.2314    0.2980    0.7529];
-ex1 = [0.7255    0.0863    0.1608];
+ex2   = [0.2314    0.2980    0.7529];
+ex1   = [0.7255    0.0863    0.1608];
 gamma = 0.5;
 map = [bsxfun(@plus, ex1.^(1 / gamma), bsxfun(@times, ...
     1 - ex1.^(1 / gamma), [0:0.01:1]')); ...

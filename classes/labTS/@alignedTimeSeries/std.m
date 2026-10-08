@@ -22,14 +22,14 @@ if ~islogical(this.Data(1))
     % stdTS = labTimeSeries(nanstd(this.Data, [], 3), this.Time(1),
     %     this.Time(2) - this.Time(1), this.labels);
     stdTS = alignedTimeSeries(this.Time(1), ...
-        this.Time(2) - this.Time(1), nanstd(this.Data, [], 3), ...
+        this.Time(2) - this.Time(1), std(this.Data, [], 3, 'omitnan'), ...
         this.labels, this.alignmentVector, this.alignmentLabels);
 else
     % Logical timeseries. Will find events and average appropriately.
     % Assuming the SAME number of events per stride, and in the same
     % ORDER. % FIXME: check event order.
     histogram = logicalHist(this);
-    stdTS = std(histogram); % Not really a tS
+    stdTS     = std(histogram); % Not really a tS
 end
 end
 

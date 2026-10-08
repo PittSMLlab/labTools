@@ -76,8 +76,10 @@ elseif dim == 2 % Cat-ting labels
     % Check alignmentVector & Labels
 
     % Check that all eventTimes match
+    eventTimeTol = 1e-9; % Float-equality tolerance on event times
     if any(size(this.eventTimes) ~= size(other.eventTimes)) || ...
-            any(abs(this.eventTimes(:) - other.eventTimes(:)) > 1e-9)
+            any(abs(this.eventTimes(:) - other.eventTimes(:)) > ...
+            eventTimeTol)
         ME = MException('ATS:cat', ['Trying to cat labels, but event ' ...
             'times are different']);
         throw(ME);

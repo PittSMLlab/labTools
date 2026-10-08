@@ -17,24 +17,24 @@ function newThis = incorporateDependentParameters(this, labels)
 %
 %   See also: addNewParameter, computeNewParameter
 
-ff = load('DependParamRecipes.mat', 'fieldList');
-fTable = ff.fieldList;
+ff      = load('DependParamRecipes.mat', 'fieldList');
+fTable  = ff.fieldList;
 newThis = this;
 if isa(labels, 'char')
     labels = {labels};
 end
 [bool, idxs] = compareLists(fTable(:, 1), labels);
-acceptedLabels = labels(bool);
-acceptedDesc = fTable(idxs(bool), 4);
+acceptedLabels  = labels(bool);
+acceptedDesc    = fTable(idxs(bool), 4);
 acceptedHandles = fTable(idxs(bool), 2);
-acceptedParams = fTable(idxs(bool), 3);
+acceptedParams  = fTable(idxs(bool), 3);
 if any(~bool)
     warning(['Did not find recipes for some of the labels ' ...
         'provided: ' strjoin(labels(~bool), ', ')]);
 end
-for i = 1:length(acceptedLabels)
-    newThis = addNewParameter(newThis, acceptedLabels{i}, ...
-        eval(acceptedHandles{i}), acceptedParams{i}, acceptedDesc{i});
+for ii = 1:length(acceptedLabels)
+    newThis = addNewParameter(newThis, acceptedLabels{ii}, ...
+        eval(acceptedHandles{ii}), acceptedParams{ii}, acceptedDesc{ii});
 end
 end
 

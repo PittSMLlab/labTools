@@ -12,7 +12,7 @@ function newThis = removeStridesWithNaNs(this)
 %
 %   See also: getPartialStridesAsATS
 
-inds = find(all(all(~isnan(this.Data), 2), 1));
+inds    = find(all(all(~isnan(this.Data), 2), 1));
 newThis = getPartialStridesAsATS(this, inds);
 end
 
