@@ -152,8 +152,9 @@ adaptData = adaptData.normalizeToBaselineEpoch(newLabelPrefix, refEp);
 
 % adaptData = adaptData.removeBadStrides;
 
-%at this point, the raw data is in format sTA_s 1, the normalized data
-%is in NormsTA_s 1. A total of length(newLabelPrefix) x 12 new labels will be created.
+%at this point, the raw data is in format sTA_s 1, the normalized data is in
+%NormsTA_s 1. A total of length(newLabelPrefix) x 12 new labels will be
+%created.
 rawDataLabelPrefix        = newLabelPrefix;
 normalizedDataLabelPrefix = strcat('Norm', newLabelPrefix);
 
@@ -170,11 +171,11 @@ newDataCol = 1;
 
 for doRemoveBias = [false, true]
     if doRemoveBias
-        %Bias removal can be done manually or by calling remove bias. They don't
-        %get the same results, checked that the TMBase we get from calling the
-        %getEpochData TMBase is not the same as the base we get rom callig
-        %removeBiasV4. Some values are the same, some are not, didn't figure out
-        %why. For now wil rely on calling removebias
+        %Bias removal can be done manually or by calling remove bias. They
+        %don't get the same results, checked that the TMBase we get from
+        %calling the getEpochData TMBase is not the same as the base we get
+        %rom callig removeBiasV4. Some values are the same, some are not,
+        %didn't figure out why. For now wil rely on calling removebias
         adaptData   = adaptDataOriginal.removeBias(biasRemovalCond);
         labelSuffix = 'Unbiased';
         descpSuffix = ['Before any parameter computation, the data ' ...
@@ -200,8 +201,9 @@ for doRemoveBias = [false, true]
             ['^' normalizedDataLabelPrefix{mscl} '[ ]?\d+$']));
         bothLegsColsIdx(mscl, :) = dataColIdx;
         curdata = adaptData.data.Data(:, dataColIdx);
-        %record #of muscles that are all nan, compute it only once bc normalized vs raw should have the same nan content, will have 1
-        %at a stride for a given muscle i that is all nan at that stride
+        %record #of muscles that are all nan, compute it only once bc
+        %normalized vs raw should have the same nan content, will have 1 at
+        %a stride for a given muscle i that is all nan at that stride
         allnanMuslcesByStride(:, mscl) = all(isnan(curdata), 2);
         %make nan zero to compute the norm, unless the whole 12 sub
         %interval is nan in which case the norm should also be nan.
@@ -212,7 +214,11 @@ for doRemoveBias = [false, true]
         newLabels{newDataCol} = [ ...
             normalizedDataLabelPrefix{mscl} ...
             '_L2normPercentUnit' labelSuffix];
-        newDescp{newDataCol} = ['L2norm of: ' normalizedDataLabelPrefix{mscl} ' in percentage unit after stretching each stride to 100%=max and 0%=min of nanmean of last 40 strides of ' normalizationRefCond '. NaN treated as 0. ' descpSuffix];
+        newDescp{newDataCol} = ['L2norm of: ' ...
+            normalizedDataLabelPrefix{mscl} ' in percentage unit after ' ...
+            'stretching each stride to 100%=max and 0%=min of nanmean ' ...
+            'of last 40 strides of ' normalizationRefCond '. NaN ' ...
+            'treated as 0. ' descpSuffix];
         newDataCol = newDataCol + 1;
 
         dataColIdx = cellfun(@(x) ~isempty(x), regexp( ...
@@ -225,7 +231,8 @@ for doRemoveBias = [false, true]
         newData(allnanMuslcesByStride(:, mscl), newDataCol) = nan;
         newLabels{newDataCol} = [ ...
             rawDataLabelPrefix{mscl} '_L2normRawUnit' labelSuffix];
-        newDescp{newDataCol} = ['L2norm of: ' rawDataLabelPrefix{mscl} ' in original voltage unit. NaN treated as 0. ' descpSuffix];
+        newDescp{newDataCol} = ['L2norm of: ' rawDataLabelPrefix{mscl} ...
+            ' in original voltage unit. NaN treated as 0. ' descpSuffix];
         newDataCol = newDataCol + 1;
     end
 
@@ -236,13 +243,19 @@ for doRemoveBias = [false, true]
     newData(:, newDataCol) = vecnorm(curdata, 2, 2);
     newData(allMsNanStride, newDataCol) = nan;
     newLabels{newDataCol} = ['BothLegEMGL2normPercentUnit' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of all muscles flattened as a 1D vector in percentage unit (100%=max, 0%=min of nanmean of last 40 strides of ' normalizationRefCond '). NaN treated as 0. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of all muscles flattened as a 1D ' ...
+        'vector in percentage unit (100%=max, 0%=min of nanmean of ' ...
+        'last 40 strides of ' normalizationRefCond '). NaN treated as ' ...
+        '0. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
         sum(~allnanMuslcesByStride, 2);
     newLabels{newDataCol} = ['BothLegEMGL2normPercentUnitAvg' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of all muscles divided by number of non-NaN contributing muscles. A muscle is excluded from the denominator only if all its sub-intervals are NaN. In percentage unit. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of all muscles divided by number ' ...
+        'of non-NaN contributing muscles. A muscle is excluded from ' ...
+        'the denominator only if all its sub-intervals are NaN. In ' ...
+        'percentage unit. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     curdata = adaptData.data.Data(:, any(bothLegsColsIdx_rawUnit, 1));
@@ -251,18 +264,23 @@ for doRemoveBias = [false, true]
     newData(:, newDataCol) = vecnorm(curdata, 2, 2);
     newData(allMsNanStride, newDataCol) = nan;
     newLabels{newDataCol} = ['BothLegEMGL2normRawUnit' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of all muscles flattened as a 1D vector in raw voltage unit. NaN treated as 0. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of all muscles flattened as a 1D ' ...
+        'vector in raw voltage unit. NaN treated as 0. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
         sum(~allnanMuslcesByStride, 2);
     newLabels{newDataCol} = ['BothLegEMGL2normRawUnitAvg' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of all muscles divided by number of non-NaN contributing muscles in raw voltage unit. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of all muscles divided by number ' ...
+        'of non-NaN contributing muscles in raw voltage unit. ' ...
+        descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = sum(~allnanMuslcesByStride, 2);
     newLabels{newDataCol} = ['BothLegEMGL2normNumMuscles' labelSuffix];
-    newDescp{newDataCol}  = ['Number of non-NaN muscles contributing to the both-legs norm. A muscle is excluded only if all its sub-intervals are NaN. ' labelSuffix];
+    newDescp{newDataCol}  = ['Number of non-NaN muscles contributing ' ...
+        'to the both-legs norm. A muscle is excluded only if all its ' ...
+        'sub-intervals are NaN. ' labelSuffix];
     newDataCol = newDataCol + 1;
 
     %% Per-Leg L2 Norm
@@ -278,14 +296,19 @@ for doRemoveBias = [false, true]
         curdata(isnan(curdata)) = 0;
         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
         newData(allMsNanStride, newDataCol) = nan;
-        newLabels{newDataCol} = [legName 'LegEMGL2normPercentUnit' labelSuffix];
-        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles in percentage unit. NaN treated as 0. ' descpSuffix];
+        newLabels{newDataCol} = [legName 'LegEMGL2normPercentUnit' ...
+            labelSuffix];
+        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles in ' ...
+            'percentage unit. NaN treated as 0. ' descpSuffix];
         newDataCol = newDataCol + 1;
 
         newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
             sum(~allnanMuslcesByStride(:, normMask), 2);
-        newLabels{newDataCol} = [legName 'LegEMGL2normPercentUnitAvg' labelSuffix];
-        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles divided by number of non-NaN contributing muscles in percentage unit. ' descpSuffix];
+        newLabels{newDataCol} = [legName 'LegEMGL2normPercentUnitAvg' ...
+            labelSuffix];
+        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles ' ...
+            'divided by number of non-NaN contributing muscles in ' ...
+            'percentage unit. ' descpSuffix];
         newDataCol = newDataCol + 1;
 
         curdata = adaptData.data.Data(:, ...
@@ -295,19 +318,27 @@ for doRemoveBias = [false, true]
         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
         newData(allMsNanStride, newDataCol) = nan;
         newLabels{newDataCol} = [legName 'LegEMGL2normRawUnit' labelSuffix];
-        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles in raw voltage unit. NaN treated as 0. ' descpSuffix];
+        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles in ' ...
+            'raw voltage unit. NaN treated as 0. ' descpSuffix];
         newDataCol = newDataCol + 1;
 
         % Denominator is the same for raw and normalized units.
         newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
             sum(~allnanMuslcesByStride(:, normMask), 2);
-        newLabels{newDataCol} = [legName 'LegEMGL2normRawUnitAvg' labelSuffix];
-        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles divided by number of non-NaN contributing muscles in raw voltage unit. ' descpSuffix];
+        newLabels{newDataCol} = [legName 'LegEMGL2normRawUnitAvg' ...
+            labelSuffix];
+        newDescp{newDataCol}  = ['L2norm of ' legName ' leg muscles ' ...
+            'divided by number of non-NaN contributing muscles in raw ' ...
+            'voltage unit. ' descpSuffix];
         newDataCol = newDataCol + 1;
 
-        newData(:, newDataCol) = sum(~allnanMuslcesByStride(:, normMask), 2);
-        newLabels{newDataCol} = [legName 'LegEMGL2normNumMuscles' labelSuffix];
-        newDescp{newDataCol}  = ['Number of non-NaN muscles contributing to the ' legName ' leg norm. A muscle is excluded only if all its sub-intervals are NaN. ' labelSuffix];
+        newData(:, newDataCol) = ...
+            sum(~allnanMuslcesByStride(:, normMask), 2);
+        newLabels{newDataCol} = [legName 'LegEMGL2normNumMuscles' ...
+            labelSuffix];
+        newDescp{newDataCol}  = ['Number of non-NaN muscles ' ...
+            'contributing to the ' legName ' leg norm. A muscle is ' ...
+            'excluded only if all its sub-intervals are NaN. ' labelSuffix];
         newDataCol = newDataCol + 1;
     end
 
@@ -344,8 +375,11 @@ for doRemoveBias = [false, true]
             newData(:, newDataCol) = vecnorm(asymdata, 2, 2);
             newData(allnanAsymMuslcesByStride(:, kk), ...
                 newDataCol) = nan;
-            newLabels{newDataCol} = [muscleName 'AsymL2normPercentUnit' labelSuffix];
-            newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry of ' muscleName ' in percentage unit. NaN treated as 0. ' descpSuffix];
+            newLabels{newDataCol} = [muscleName 'AsymL2normPercentUnit' ...
+                labelSuffix];
+            newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry of ' ...
+                muscleName ' in percentage unit. NaN treated as 0. ' ...
+                descpSuffix];
             newDataCol = newDataCol + 1;
         end
 
@@ -370,8 +404,10 @@ for doRemoveBias = [false, true]
             newData(:, newDataCol) = vecnorm(asymdata, 2, 2);
             newData(allnanAsymMuslcesByStride(:, kk), ...
                 newDataCol) = nan;
-            newLabels{newDataCol} = [muscleName 'AsymL2normRawUnit' labelSuffix];
-            newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry of ' muscleName ' in raw voltage unit. ' descpSuffix];
+            newLabels{newDataCol} = [muscleName 'AsymL2normRawUnit' ...
+                labelSuffix];
+            newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry of ' ...
+                muscleName ' in raw voltage unit. ' descpSuffix];
             newDataCol = newDataCol + 1;
         end
 
@@ -384,13 +420,17 @@ for doRemoveBias = [false, true]
     newData(:, newDataCol) = vecnorm(allmusclesAsym, 2, 2);
     newData(allMsNanStride, newDataCol) = nan;
     newLabels{newDataCol} = ['BothLegsAsymL2normPercentUnit' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all muscles in percentage unit. NaN treated as 0. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all ' ...
+        'muscles in percentage unit. NaN treated as 0. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
         sum(~allnanAsymMuslcesByStride, 2);
-    newLabels{newDataCol} = ['BothLegsAsymL2normPercentUnitAvg' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all muscles divided by number of non-NaN contributing muscles in percentage unit. ' descpSuffix];
+    newLabels{newDataCol} = ['BothLegsAsymL2normPercentUnitAvg' ...
+        labelSuffix];
+    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all ' ...
+        'muscles divided by number of non-NaN contributing muscles in ' ...
+        'percentage unit. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     allMsNanStride = all(isnan(allmusclesAsym_rawUnit), 2);
@@ -398,18 +438,23 @@ for doRemoveBias = [false, true]
     newData(:, newDataCol) = vecnorm(allmusclesAsym_rawUnit, 2, 2);
     newData(allMsNanStride, newDataCol) = nan;
     newLabels{newDataCol} = ['BothLegsAsymL2normRawUnit' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all muscles in raw voltage unit. NaN treated as 0. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all ' ...
+        'muscles in raw voltage unit. NaN treated as 0. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = newData(:, newDataCol-1) ./ ...
         sum(~allnanAsymMuslcesByStride, 2);
     newLabels{newDataCol} = ['BothLegsAsymL2normRawUnitAvg' labelSuffix];
-    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all muscles divided by number of non-NaN contributing muscles in raw voltage unit. ' descpSuffix];
+    newDescp{newDataCol}  = ['L2norm of fast-slow asymmetry across all ' ...
+        'muscles divided by number of non-NaN contributing muscles in ' ...
+        'raw voltage unit. ' descpSuffix];
     newDataCol = newDataCol + 1;
 
     newData(:, newDataCol) = sum(~allnanAsymMuslcesByStride, 2);
     newLabels{newDataCol} = ['BothLegsAsymL2normNumMuscle' labelSuffix];
-    newDescp{newDataCol}  = ['Number of non-NaN muscles contributing to the bilateral asymmetry norm. A muscle is excluded only if all its sub-intervals are NaN. ' labelSuffix];
+    newDescp{newDataCol}  = ['Number of non-NaN muscles contributing ' ...
+        'to the bilateral asymmetry norm. A muscle is excluded only if ' ...
+        'all its sub-intervals are NaN. ' labelSuffix];
     newDataCol = newDataCol + 1;
 end
 
@@ -429,7 +474,8 @@ adaptData.data = adaptData.data.appendData(newData, newLabels, newDescp);
 
 adaptData.data.DataInfo.UserData                      = struct();
 adaptData.data.DataInfo.UserData.muscleLabels         = muscleLabels;
-adaptData.data.DataInfo.UserData.normalizationRefCond = normalizationRefCond;
+adaptData.data.DataInfo.UserData.normalizationRefCond = ...
+    normalizationRefCond;
 adaptData.data.DataInfo.UserData.biasRemovalCond      = biasRemovalCond;
 
 end

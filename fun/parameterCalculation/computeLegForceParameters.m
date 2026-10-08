@@ -52,7 +52,8 @@ propIdx    = find((apForceTrace - forceBaseline) > 0);
 
 % Identify the AP impact peak in the first 15% of the stride
 [ImpactMagS, impactIdx] = max( ...
-    apForceTrace(1:round(impactWinFrac*length(apForceTrace))), [], 'omitnan');
+    apForceTrace(1:round(impactWinFrac*length(apForceTrace))), [], ...
+    'omitnan');
 
 % Exclude pre-impact samples from braking and propulsion classification
 % (new method 2/25/2020)
@@ -86,8 +87,10 @@ end
 % as the true braking or propulsion peak; 2/14/2018 (4/11/2017 CJS)
 brakingIdxAll = brakingIdx;
 propIdxAll    = propIdx;
-brakingIdx(find(brakingIdx >= (1 - peakTrimFrac)*length(apForceTrace))) = [];
-propIdx(find(propIdx <= peakTrimFrac*length(apForceTrace)))              = [];
+brakingIdx(find(brakingIdx >= ...
+    (1 - peakTrimFrac)*length(apForceTrace))) = [];
+propIdx(find(propIdx <= ...
+    peakTrimFrac*length(apForceTrace))) = [];
 
 if isempty(brakingIdx)
     SBmax    = NaN;
@@ -97,7 +100,8 @@ else
     SBmax    = min( ...
         apForceTrace(brakingIdx), [], 'omitnan');  %-forceBaseline
     SBmax    = brakingSign .* SBmax;
-    SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;  % TODO: verify formula
+    % TODO: verify formula
+    SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;
     SBmaxAbs = brakingSign .* ...
         min(apForceTrace - forceBaseline, [], 'omitnan');
 end

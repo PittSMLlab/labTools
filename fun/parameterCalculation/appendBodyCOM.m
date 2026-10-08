@@ -138,7 +138,7 @@ else
     lThighCOM = abs(lHip  - lKnee) .* thighCOMFrac + lKnee;
 
     hipMidpoint = (rHip + lHip) ./ 2;
-    hipMeanPos  = mean([rHip; lHip], 'omitnan');  % grand mean of all hip samples
+    hipMeanPos  = mean([rHip; lHip], 'omitnan'); % grand mean of hip samples
     hatCOM = abs(hipMidpoint - hatPos) .* hatCOMFrac + hipMeanPos;
 
     %% Compile Whole-Body Center of Mass
