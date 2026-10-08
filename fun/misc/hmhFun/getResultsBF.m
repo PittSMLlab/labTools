@@ -18,7 +18,7 @@ function results = getResultsBF(SMatrix, groups, plotFlag, indivFlag)
 %   results - Struct with fields BFafter1, BFafter2, MapShort, MapMid,
 %             MapLong; each has avg, se, indiv sub-structs
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (ttest)
 %
 % See also BARGROUPS, GETHITS.
 

@@ -26,13 +26,16 @@ function results = getForceResults(SMatrix, params, groups, ...
 %             SpeedAdapDiscont, SpeedSSDiscont, SpeedPADiscont, EarlyA,
 %             LateP, Washout2, FlatWash, PLearn, lenA
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%   (anova1, multcompare)
 %
 % See also BARGROUPS.
 
 catchNumPts     = 3;   % catch %#ok<NASGU>
 steadyNumPts    = 40;  % end of adaptation
 transientNumPts = 5;   % OG and washout
+% TODO: source? The body hard-codes stride windows (1:5, 1:20,
+% end-44:end-5).
 
 if nargin < 3 || isempty(groups)
     groups = fields(SMatrix);

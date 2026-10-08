@@ -36,6 +36,7 @@ ColorOrder = [p_red;  p_orange;  p_fade_green; p_fade_blue; ...
 catchNumPts     = 3;   % catch
 steadyNumPts    = 40;  % end of adaptation
 transientNumPts = 5;   % OG and washout
+% TODO: source? The body hard-codes stride windows (1:10, end-5).
 
 if nargin < 2 || isempty(groups)
     groups = fields(SMatrix);

@@ -6,9 +6,6 @@ function gaitMovieHH(subject, trial, start, stop)
 % and spheres, and writes the result to an AVI video file named after
 % the subject.
 %
-%   Original GTO code (May 2013). HH edit 6/2013: replaced avifile
-% with VideoWriter; added horizontal bar graphs for alpha and w*t.
-%
 % Inputs:
 %   subject - Subject ID string; a file named (subject).mat must exist
 %             in the current directory
@@ -228,6 +225,8 @@ function drawsegment(h_axes, X1, Y1, Z1, a, color)
 %
 % Outputs:
 %   None
+%
+% Toolbox Dependencies: None
 
 O = [X1(1) Y1(1) Z1(1)];
 V = [X1(2) - X1(1), Y1(2) - Y1(1), Z1(2) - Z1(1)];
@@ -260,6 +259,8 @@ function drawball(h_axes, X1, Y1, Z1, radius, color)
 %
 % Outputs:
 %   None
+%
+% Toolbox Dependencies: None
 
 O        = [X1 Y1 Z1];
 [X, Y, Z] = sphere;

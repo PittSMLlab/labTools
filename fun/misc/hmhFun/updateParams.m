@@ -21,6 +21,8 @@ function updateParams(subjects, eventClass, ignoreMatFlag)
 % Outputs:
 %   None (saves files to disk)
 %
+% Toolbox Dependencies: None
+%
 % See also EXPERIMENTDATA.RECOMPUTEPARAMETERS, EXPERIMENTDATA.MAKEDATAOBJ,
 %   BATCHREPROCESS.
 

@@ -21,13 +21,14 @@ function results = getResults(Study, params, groups, ...
 %   results - Struct with one field per outcome measure; each field
 %             has avg (nGroups×nParams), se (same), and indiv sub-struct
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies: Signal Processing Toolbox (medfilt1)
 %
 % See also SMOOTHEDMAX, BARGROUPS, GETRESULTSSMART.
 
 catchNumPts     = 5;   % catch
 steadyNumPts    = 40;  % end of adaptation
 transientNumPts = 5;   % OG and washout
+% TODO: source? The body hard-codes stride windows (1:10, end-5, +20).
 
 nParams = length(params);
 
