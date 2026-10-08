@@ -1,6 +1,24 @@
 function [newSignal, filter] = whitenEMG(signal,fs)
+%WHITENEMG Estimate whitening filters for EMG channels.
+%
+%   For each channel, fits a 20th-order autoregressive model with the
+% Yule-Walker equations (ARestim) and returns the magnitude of the
+% frequency response of the model coefficients as the whitening filter.
+%
+% NOTE: newSignal is declared as an output but never assigned.
+%
+% Inputs:
+%   signal - samples x channels
+%   fs     - sampling frequency (Hz)
+%
+% Outputs:
+%   newSignal - declared output, not assigned
+%   filter    - samples x channels magnitude response of the AR model
+%
+% Toolbox Dependencies: None
+%
+% See also ARESTIM.
 
-%Step 1: initialize
 [N,M] = size(signal);
 filter = zeros(N,M);
 %[fft1,ff]=DiscreteTimeFourierTransform(signal,fs);

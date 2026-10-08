@@ -1,26 +1,37 @@
 function data = getDataEMGtraces(expData,muscle,cond,leg,late,strides, ...
     IgnoreStridesEarly,IgnoreStridesLate)
-%% get time series EMG data
-% This function returns the EMG as a time series
+%GETDATAEMGTRACES Get aligned EMG traces of one muscle and leg.
 %
-%INPUTS:
-%expData - file to extract the data
-%muscle - list with the muscle that you want to get data for
-%cond - condition of interest
-%leg - leg of interest
-%late - 1 if you want to plot the last strides 0 if yo uwant to plot
-%the initial strides
-%strides - number of strides that you want to plot
-%OUTPUT:
-%data - Timeseries of the data
+%   Returns the processed EMG of one muscle, aligned to the gait cycle on
+% the events RHS, LTO, LHS, RTO (left leg: LHS, RTO, RHS, LTO) with
+% alignment lengths of 16, 32, 16, and 32 samples, for the last or first
+% strides of a condition.
 %
-%EXAMPLE:
-%data=getDataEMGtraces(expData,{'TA'},{'TM base'},'R',1,40);
-%This will give us the average of the last 40 strides of for the TA muscle
-%during treadmill baseline
+% Side effects: warns when the condition has fewer strides than requested;
+%   errors for an invalid leg or too few strides to skip.
+%
+% Inputs:
+%   expData            - experimentData to read from
+%   muscle             - muscle name without side prefix, e.g., 'TA'
+%   cond               - cell array with the condition name
+%   leg                - 'R' or 'L'
+%   late               - 1 for the last strides, 0 for the first strides
+%   strides            - number of strides to return
+%   IgnoreStridesEarly - number of initial strides to skip
+%   IgnoreStridesLate  - (optional) number of final strides to skip
+%
+% Outputs:
+%   data - alignedTimeSeries of the selected strides
+%
+% Toolbox Dependencies: None
+%
+% EXAMPLE:
+%   data = getDataEMGtraces(expData,'TA',{'TM base'},'R',1,40,[],[]);
+%   returns the last 40 strides of the right TA during treadmill baseline.
+%
+% See also PLOTEMGTRACES.
 
-
-%%
+%% Align the EMG
 alignmentLengths = [16,32,16,32];
 % events={'kinRHS','kinLTO','kinLHS','kinRTO'};
 events = {'RHS','LTO','LHS','RTO'};

@@ -1,4 +1,22 @@
 function h = procEMGhealthCheck(procExperimentData)
+%PROCEMGHEALTHCHECK Plot processed EMG of every trial for a visual check.
+%
+%   For each trial, opens a figure with the processed EMG channels in
+% groups of four per subplot, linked on the time axis.
+%
+% Side effects: opens one figure per non-empty trial (figure number =
+%   trial number).
+%
+% Inputs:
+%   procExperimentData - processed experimentData whose trials hold
+%                        procEMGData
+%
+% Outputs:
+%   h - figure handles, indexed by trial
+%
+% Toolbox Dependencies: None
+%
+% See also RAWEMGHEALTHCHECK.
 
 signalBW = [20,450];
 colors   = {[1,0,0],[0,0,1],[0,0.6,0.3],[0.7,0.7,0.7]};

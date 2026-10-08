@@ -1,6 +1,29 @@
 function [procData,filteredData,filterList,procList] = ...
     extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)
-% Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.
+%EXTRACTMUSCLEACTIVITYFROMEMG Estimate the EMG amplitude envelope.
+%
+%   Wrapper that band-pass filters the raw EMG (and optionally notch
+% filters it) with filterEMG, then estimates the amplitude envelope with
+% amp_estim.
+%
+% Inputs:
+%   data      - raw EMG, samples x channels
+%   fs        - sampling frequency (Hz)
+%   f_cut     - (optional) cutoff frequency (Hz) of the envelope estimate
+%               (default: 10)
+%   BW        - (optional) band-pass edges [low high] (Hz); empty uses the
+%               filterEMG default
+%   notchList - (optional) frequencies (Hz) to notch out (default: none)
+%
+% Outputs:
+%   procData     - amplitude envelope of each channel
+%   filteredData - band-pass (and notch) filtered EMG
+%   filterList   - filter objects used by filterEMG
+%   procList     - filter objects used by amp_estim
+%
+% Toolbox Dependencies: Signal Processing Toolbox (through filterEMG)
+%
+% See also FILTEREMG, AMP_ESTIM.
 
 N = size(data,2); %Number of channels
 if nargin < 3

@@ -1,4 +1,22 @@
-%%Traces from example subject to show how data is summarized
+%% EMG traces per condition (virtual reality study)
+% Script. Plots normalized EMG traces for the virtual reality data with
+% plotEMGtraces, normalized to the TR base condition: the late baseline
+% conditions, the late conditions of the whole experiment, and the early
+% conditions after baseline.
+%
+% Inputs:
+%   expData - (workspace) processed experimentData of the subject
+%
+% Outputs:
+%   fh - (workspace) handle of the last figure
+%
+% Side effects: opens three figures.
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+%   plotEMGtraces)
+%
+% See also PLOTEMGTRACES, NIM_EMG_TRACES_PER_COND.
+
 %% Load data
 % load('/Volumes/Users/Dulce/R01_Nimbus2021/VROG_Devon/VrG_Devon.mat')
 % subID = 'CTR_01';

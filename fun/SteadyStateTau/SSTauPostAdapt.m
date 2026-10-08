@@ -1,9 +1,26 @@
-
-
-%%
 function results = SSTauPostAdapt(adaptDataList,params,groups,plotFlag)
+%SSTAUPOSTADAPT Steady state and strides to steady state after Post 1.
+%
+%   For each group and subject, removes bad strides and baseline bias,
+% takes the mean of the 40 strides that end 5 strides before the end of
+% 'Post 1' as the steady state, and calls CalcStrides2SS_PostAdapt for
+% the number of strides to reach it.
+%
+% Inputs:
+%   adaptDataList - adaptationData or cell array (or cell array of cell
+%                   arrays, one per group) of adaptationData
+%   params        - cell array of parameter names
+%   groups        - not used
+%   plotFlag      - passed to CalcStrides2SS_PostAdapt
+%
+% Outputs:
+%   results - struct with SSpersub and Strides2SS, each a cell array per
+%             group with one row per subject
+%
+% Toolbox Dependencies: None
+%
+% See also CALCSTRIDES2SS_POSTADAPT.
 
-% define number of points to use for calculating values
 steadyNumPts    = 40; %end of adaptation
 exemptLast      = 5;  % strides skipped at the end of Post 1
 transientNumPts = 5; %OG and Washout
@@ -69,12 +86,12 @@ for group = 1:ngroups
 
         steadystate_all{group} = steadystate;
         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        %Compute the %Forgetting, added 07/2015 CJ
+        %Compute the %Forgetting
         idxNET  = find(strcmp(params, 'netContributionnorm2'));
         idxVELO = find(strcmp(params, 'velocityContributionNorm2'));
         idxGOOD = find(strcmp(params, 'good'));
 
-        %Compute the Strides2SS, added 07/2015 CJS
+        %Compute the Strides2SS
 
         if isempty(idxNET) == 0
             Strides2SS = [Strides2SS; ...

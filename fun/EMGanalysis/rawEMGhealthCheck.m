@@ -1,4 +1,31 @@
 function signalStats = rawEMGhealthCheck(rawExperimentData)
+%RAWEMGHEALTHCHECK Estimate noise and signal levels of raw EMG.
+%
+%   For each trial, splits every raw EMG channel into overlapping windows
+% (128 ms, 7/8 overlap, Hann), takes the spectrum of each window, and sums
+% the energy in four bands: movement artifacts (below 20 Hz), 20-50 Hz,
+% the EMG band (50-450 Hz), and high-frequency noise (above 450 Hz). From
+% these it derives RMS levels per band, the signal-to-noise ratio, and
+% checks that the band energies add up to the signal energy within 10%.
+% The noise energy is estimated as twice the low-frequency energy plus the
+% high-frequency estimate, assuming white noise and similar noise inside
+% the EMG band.
+%
+% Side effects: warns for a channel and trial whose band energies do not
+%   match the signal energy.
+%
+% Inputs:
+%   rawExperimentData - raw experimentData whose trials hold EMGData
+%
+% Outputs:
+%   signalStats - cell array per trial of structs with noiseLevelRMS,
+%                 lowFreqSignalRMS, signalRMS, SNR (labTimeSeries), offset,
+%                 avgSNR, rawCrossCorr, and rawMean
+%
+% Toolbox Dependencies: Signal Processing Toolbox (hann, spectrogram),
+%   Statistics and Machine Learning Toolbox (corr)
+%
+% See also PROCEMGHEALTHCHECK.
 
 %% Compute stats
 signalBW = [50,450];

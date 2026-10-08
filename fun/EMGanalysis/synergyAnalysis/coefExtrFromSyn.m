@@ -1,7 +1,20 @@
 function coefs = coefExtrFromSyn(data,syn)
-%coefExtrFromSyn Extract a coeficient (activation) matrix such that it
-%solves the least squares problem data=syn*act; subject to the
-%non-negativity of the activations.
+%COEFEXTRFROMSYN Activation coefficients that fit data from synergies.
+%
+%   Solves the least squares problem data = syn * act for each row of data
+% with non-negative activations (lsqnonneg), in parallel over rows.
+%
+% NOTE: opens and closes a pool with matlabpool, which no longer exists in
+%   current MATLAB releases, so the call fails there.
+%
+% Inputs:
+%   data - samples x channels matrix to reconstruct
+%   syn  - synergy matrix, channels x synergies
+%
+% Outputs:
+%   coefs - activations, synergies x samples
+%
+% Toolbox Dependencies: Parallel Computing Toolbox (parfor)
 
 
 opts = optimset('display','off','TolFun',0.0001/size(data,2)^2,'TolX', ...

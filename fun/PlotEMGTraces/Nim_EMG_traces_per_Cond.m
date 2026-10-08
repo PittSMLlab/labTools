@@ -1,4 +1,22 @@
-%%Traces from example subject to show how data is summarized
+%% EMG traces per condition (Nimbus generalization)
+% Script. Plots normalized EMG traces for the Nimbus generalization data
+% with plotEMGtraces: the late baseline conditions, the late conditions
+% of the whole experiment, and the early conditions after baseline. The
+% saving code and the older loading code are kept as comments.
+%
+% Inputs:
+%   expData - (workspace) processed experimentData of the subject
+%
+% Outputs:
+%   fh - (workspace) handle of the last figure
+%
+% Side effects: opens three figures.
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+%   plotEMGtraces)
+%
+% See also PLOTEMGTRACES, VR_EMG_TRACES_PER_COND.
+
 %% Load data
 % clear all; close all; clc
 % % load('.../GYAAT_01.mat');

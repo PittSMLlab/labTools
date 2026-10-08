@@ -1,9 +1,19 @@
 function [a,b] = getFigStruct(N)
-%UNTITLED Calculate best subfigure divide (a x b) for showing N graphs
-%When you want to plot N graphs in a single figure, you first have to
-%decide how the plots will be arranged in rows & columns. This function
-%determines the optimal number of rows and columns for a 16:9 monitor
-%resolution ratio.
+%GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.
+%
+%   Finds the integer layout a x b with a*b >= N whose ratio is closest to
+% 16:9, to place N graphs in one figure.
+%
+% Inputs:
+%   N - number of graphs
+%
+% Outputs:
+%   a - larger dimension of the layout (a*b >= N)
+%   b - smaller dimension of the layout
+%
+% Toolbox Dependencies: None
+%
+% See also SUBPLOTSIZE, OPTIMIZEDSUBPLOT.
 
 %2x1
 %2x2

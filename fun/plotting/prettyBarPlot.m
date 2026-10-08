@@ -1,9 +1,35 @@
 function [fh,ph] = prettyBarPlot(data,colors,medianFlag,pairingLines, ...
     groupNames, conditionNames,plotHandle)
-%Data is PxMxN, where:
-%M is a number of groups (unpaired factor)
-%N is a number of conditions/epochs/measurements (paired/repeated factor)
-%P is the number of datapoints in each group/condition
+%PRETTYBARPLOT Grouped bar plot with spread and individual data points.
+%
+%   Draws bars of the median (or mean) of each condition and group with
+% IQR (or standard deviation) error bars, and optionally the individual
+% data points or pairing lines.
+%
+% Side effects: opens a figure unless plotHandle is given; loads the
+%   colors through figuresColorMap when colors is empty; adds a legend and
+%   condition tick labels.
+%
+% Inputs:
+%   data           - P x M x N array: P data points, M conditions (x
+%                    axis), N groups (colored)
+%   colors         - (optional) N x 3 colors (default: condColors from
+%                    figuresColorMap)
+%   medianFlag     - (optional) 1 for median and IQR, 0 for mean and SD
+%                    (default: 1)
+%   pairingLines   - (optional) 0 none, 1 lines between groups, 2
+%                    individual data points (default: 2)
+%   groupNames     - (optional) cell array of N group names
+%   conditionNames - (optional) cell array of M condition names
+%   plotHandle     - (optional) axes to plot on (default: new figure)
+%
+% Outputs:
+%   fh - figure handle
+%   ph - axes handle
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (iqr)
+%
+% See also FIGURESCOLORMAP.
 
 P = size(data,1); %#datapoints
 M = size(data,2); %Conditions (x spacing)

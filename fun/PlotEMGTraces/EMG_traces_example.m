@@ -1,11 +1,28 @@
-%%Traces from example subject to show how data is summarized
-
-%You can update this script to your data set
-%Important is to load a ID.mat file
-%Choose the conditions that you want to plot
-%Hoe many strides you want to plot
-%IF you want to plot the early or the late part of the conditions
-% IF you want to ignore stides at the early part of the conditon
+%% EMG traces of an example subject
+% Script. Plots normalized EMG traces of an example session with
+% plotEMGtraces for the treadmill baseline, the three baseline speeds,
+% and early and late adaptation, and saves each figure. Edit the muscles,
+% conditions, number of strides, and the early/late flags for your data
+% set.
+%
+% Inputs:
+%   expData - (workspace) processed experimentData; if it is missing the
+%             script loads <strSess>.mat
+%   strSess - (workspace) session ID; set to 'C3S12_S1' when expData
+%             already exists
+%
+% Outputs:
+%   none - figures only
+%
+% Side effects: loads <strSess>.mat when expData is not in the workspace;
+%   opens one figure per section and saves it as .fig and .png in the
+%   current folder (<strSess>_EMG_Normalized_Base, ..._BaseTMOGFast,
+%   ..._BaseAdapt).
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+%   plotEMGtraces)
+%
+% See also PLOTEMGTRACES, NIM_EMG_TRACES_PER_COND.
 
 %% 1: Load Data
 
@@ -22,7 +39,7 @@ muscle    = {'TFL','GLU','HIP','SEMB','SEMT','BF','VM','VL','RF','SOL', ...
 normalize = 1;  % 1 to normalize data
 % Condition that you want to use to normalize the data
 normCond  = {'TM Base'};
-%%
+
 %% Baseline condtions
 % Here we are plotting treadmill baseline for references
 conds = {'TM Base'};

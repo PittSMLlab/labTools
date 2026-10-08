@@ -1,3 +1,18 @@
+%% Poster colors (HH poster)
+% Script. Defines the named RGB colors of the HH poster: dark, regular,
+% and faded red, orange, yellow, green, and blue, plus indigo, violet,
+% black, and gray. The comments next to each color name the group it
+% was used for.
+%
+% Inputs:
+%   none
+%
+% Outputs:
+%   p_* - (workspace) named RGB colors (0-1)
+%
+% Toolbox Dependencies: None
+%
+% See also POSTER_COLORS, COLORSCHEME.
 
 p_dark_red = [153 0 0]*(1/255); %OASV
 p_red      = [255 0 0]*(1/255); %OA

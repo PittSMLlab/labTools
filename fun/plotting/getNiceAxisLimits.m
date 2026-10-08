@@ -1,12 +1,22 @@
 function [xl,yl] = getNiceAxisLimits(axHandle,pad)
-%Similar to axis tight, but with pre-determined padding so no datapoints
-%are against the limits of the plotting box
-%INPUT:
-%axHandle: axes handle, optional, defaults to gca
-%pad: margin size as % of axis limits with axis tight (e.g. pad=.1 gives a
-%20% larger axis, with 10% on each side). Default pad=.1
-%OUTPUT:
-%xl,yl: axis limits for X and Y respectively
+%GETNICEAXISLIMITS Tight axis limits with a margin around the data.
+%
+%   Like axis tight, but pads each side so that no data point touches the
+% limits of the plot box, and applies the limits to the axes.
+%
+% Side effects: sets the axes to tight and then sets XLim and YLim.
+%
+% Inputs:
+%   axHandle - (optional) axes handle (default: gca)
+%   pad      - (optional) margin on each side as a fraction of the tight
+%              range (default: 0.1, i.e., 20% wider in total)
+%
+% Outputs:
+%   xl - X axis limits
+%   yl - Y axis limits
+%
+% Toolbox Dependencies: None
+
 if nargin < 1 || isempty(axHandle)
     axHandle = gca;
 end

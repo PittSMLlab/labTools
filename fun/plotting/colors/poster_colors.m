@@ -1,7 +1,25 @@
+%% Poster colors
+% Script. Defines the lab color palette and the named colors p_red,
+% p_fade_red, p_green, p_fade_green, p_blue, p_fade_blue, p_black,
+% p_gray, p_yellow, p_orange, p_plum, and p_lime used by plotEMGtraces and
+% optimizedSubPlot. The comment table lists the colors of palette rows
+% 1-12.
+%
+% Inputs:
+%   none
+%
+% Outputs:
+%   color_palette - (workspace) 29 x 3 RGB palette (0-1)
+%   p_*           - (workspace) named RGB colors
+%
+% Toolbox Dependencies: None
+%
+% See also COLORSCHEME, POSTER_COLORSHH.
 %               1          2          3          4          5          6
 %             red   fade red      green fade green       blue  fade blue
 %               7          8          9         10         11         12
 %           black       gray     yellow     orange       plum       lime
+
 %color_palette = [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; ...
 %    44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; ...
 %    171 218 77]*(1/255);

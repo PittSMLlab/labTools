@@ -1,32 +1,47 @@
 function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize, ...
     normCond,IgnoreStridesEarly)
-%% Plot the EMG ttraces for the Nimbus generalization project
+%PLOTEMGTRACES Plot EMG traces of several conditions for each muscle.
 %
-%INPUTS:
-%expData - experimentData file, we are going to
-%use a timeseries approach
-%conds - Conditions that you want to plot ex: 'TM base'
-%muscle - list of the muscles that you want to plot
-%late - 1 if you want to plot the last strides 0 if yo uwant to plot
-%the initial strides
-%strides - number of strides that you want to plot
-%normalize - 1 to normalize the data
-%normCond - Condtions by which to normalize the data
+%   Opens one figure with one subplot per muscle and leg (5 x 6 grid) and
+% draws, for each condition, the average of the requested strides with a
+% 16-84 percentile band. Optionally scales each trace between the minimum
+% and maximum of the average baseline traces of normCond (last 40
+% strides).
 %
-%OUTPUT:
-% fh - figure handle
+% Side effects: opens a figure; errors if normalize is 1 and normCond is
+%   empty.
 %
-%EXAMPLE:
-%fh=plotEMGtraces(expData,{'TM base'},{'TA'},1,40);
-%This will plot the average of the last 40 strides of for the TA muscle
-%during treadmill baseline
+% Inputs:
+%   expData            - experimentData to read from
+%   conds              - cell array of condition names
+%   muscle             - cell array of muscle names without side prefix
+%   late               - per condition, 1 for the last strides, 0 for the
+%                        first
+%   strides            - per condition, number of strides to average
+%   normalize          - (optional) 1 to normalize the traces (default: 0)
+%   normCond           - conditions used for normalization
+%   IgnoreStridesEarly - per condition, initial strides to skip
+%
+% Outputs:
+%   fh - figure handle
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+%   alignedTimeSeries.plot)
+%
+% Example:
+%   fh = plotEMGtraces(expData,{'TM base'},{'TA'},1,40);
+%   plots the average of the last 40 strides of TA during treadmill
+%   baseline.
+%
+% See also GETDATAEMGTRACES, EMG_TRACES_EXAMPLE.
+
 %% Plot config
 
 %this is the setting for a 5x6 subplot
 row   = 5;
 colum = 6;
 
-%%
+%% Check inputs
 if nargin < 6 || isempty(normalize)
     normalize = 0;
 end

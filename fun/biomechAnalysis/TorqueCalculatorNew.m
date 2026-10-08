@@ -1,5 +1,33 @@
 function AllMomentsTS = ...
     TorqueCalculatorNew(COMTS,COPTS,markerData,GRFData,weight)
+%TORQUECALCULATORNEW Joint moments of both legs by inverse dynamics.
+%
+%   Computes ankle, knee, and hip moments of both legs from the segment
+% centers of mass, the center of pressure and ground reaction forces, and
+% the marker positions. Starting at the foot, segment accelerations come
+% from the double derivative of the COM positions (low-passed at 20 Hz),
+% segment masses and moments of inertia from body weight fractions, and
+% each joint inherits the force and moment of the joint below. Moments
+% larger than the limit in momentLimit are set to NaN.
+%
+% Side effects: warns when a marker is missing from markerData or the
+%   orientation has to be assumed.
+%
+% Inputs:
+%   COMTS      - segment centers of mass from COMCalculator
+%   COPTS      - center of pressure and forces from COPCalculator
+%   markerData - orientedLabTimeSeries of marker positions (mm)
+%   GRFData    - GRF time series (LFz and RFz are read but not used; the
+%                body weight comes from weight)
+%   weight     - body weight
+%
+% Outputs:
+%   AllMomentsTS - labTimeSeries with RAnkM, LAnkM, RKneM, LKneM, RHipM,
+%                  LHipM
+%
+% Toolbox Dependencies: Signal Processing Toolbox (butter, filtfilt)
+%
+% See also TORQUECALCULATOR, COMCALCULATOR, COPCALCULATOR.
 
 %% Get Center of Mass Time Series (COMTS) data
 fcomR  = squeeze(COMTS.getOrientedData({'RfCOM'}));  % right foot COM
@@ -102,7 +130,7 @@ for ii = 1:length(markerList)
     %recommended, but it doesnt seem to work)
 end
 
-%%
+%% Segment angles
 fcomRangle     = []; fcomLangle = []; scomRangle = []; scomLangle = ...
     []; tcomRangle = []; tcomLangle = [];
 VerticalVector = [0,0,1];

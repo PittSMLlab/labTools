@@ -1,17 +1,26 @@
 function [rows,cols] = subplotSize(n_plots,relRows,relCols)
-%SUBPLOTSIZE Find the optimal dimensions of a subplot figure
+%SUBPLOTSIZE Rows and columns for a subplot figure.
+%
 %   [rows,cols] = SUBPLOTSIZE(n_plots) returns the number of rows and
-%   columns that would optimally fit the given number of plots into a
-%   single figure
+% columns that fit n_plots into one figure; SUBPLOTSIZE(n_plots,relRows,
+% relCols) uses the layout closest to a relRows:relCols ratio.
 %
-%   [rows,cols] = SUBPLOTSIZE(n_plots,relRows,relCols) finds the optimal
-%   subplot dimensions that most closely has a relRows:relCols ratio
+% Inputs:
+%   n_plots - number of plots
+%   relRows - (optional) relative number of rows (default: 1)
+%   relCols - (optional) relative number of columns (default: 1)
 %
-%   Example: If n_plots = 23
-%     then [r,c] = subplotSize(n_plots) reutrns r = 5 c = 5
-%     and [r,c] = subplotSize(n_plots,2,1) returns r = 6 c = 4
+% Outputs:
+%   rows - number of rows
+%   cols - number of columns
 %
-%   See also subplot optimizedSubPlot
+% Example:
+%   For n_plots = 23, [r,c] = subplotSize(23) gives r = 5, c = 5 and
+%   subplotSize(23,2,1) gives r = 6, c = 4.
+%
+% Toolbox Dependencies: None
+%
+% See also SUBPLOT, OPTIMIZEDSUBPLOT, GETFIGSTRUCT.
 
 %   Copyright 2014 HMRL.
 

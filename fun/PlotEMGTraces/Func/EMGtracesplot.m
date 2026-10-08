@@ -1,3 +1,28 @@
+%% EMG traces plot (script fragment)
+% Script. Plots, for each muscle and leg, the average of the late (or
+% early) strides of several conditions normalized to the mean of the
+% maximum of the TR base condition, in a 5 x 6 subplot grid. Older
+% version of plotEMGtraces; it is not self-contained.
+%
+% Inputs:
+%   expData          - (workspace) processed experimentData
+%   colorOrder       - (workspace) colors of the conditions
+%   alignmentLengths - (workspace) samples per phase of the stride
+%
+% Outputs:
+%   fh - (workspace) figure handle
+%
+% Side effects: opens a figure.
+%
+% NOTE: colorOrder and alignmentLengths are not defined in this file; run
+%   it after a script that defines them (e.g., poster_colors and the
+%   alignment lengths of getDataEMGtraces).
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+%   alignedTimeSeries.plot)
+%
+% See also PLOTEMGTRACES, GETDATAEMGTRACES.
+
 %% Set period to plot
 late     = 1;
 baselate = 1;

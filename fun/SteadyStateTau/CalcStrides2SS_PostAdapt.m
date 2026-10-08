@@ -1,16 +1,34 @@
 function Stride2SS = CalcStrides2SS_PostAdapt(allValues,SSraw, params, ...
     plotFlag, subID)
-% this version was my first attempt to plot the postadaptation stuff,
-% AND DO SO WITHOUT CROPPING THE DATA
-%adaptDataList must be cell array of 'param.mat' file names
-%params is cell array of parameters to plot. List with commas to
-%plot on separate graphs or with semicolons to plot on same graph.
-%conditions is cell array of conditions to plot
-%binwidth is the number of data points to average in time
-%indivFlag - set to true to plot individual subject time courses
-%indivSubs - must be a cell array of 'param.mat' file names that is
-%a subset of those in the adaptDataList. Plots specific subjects
-%instead of all subjects.
+%CALCSTRIDES2SS_POSTADAPT Strides to reach steady state after adaptation.
+%
+%   For each parameter, smooths the post-adaptation curve in bins of 20
+% strides and returns the first stride of the first run of 5 consecutive
+% strides at or below the threshold NewQ/e + SSraw (a 1/e decay towards
+% the steady state), searching only after the extreme of the first 20
+% strides. Optionally plots the curves with the steady state and the
+% threshold.
+%
+% Side effects: opens a figure and a plot per parameter unless plotFlag is
+%   0.
+%
+% Inputs:
+%   allValues - strides x parameters, values per stride
+%   SSraw     - steady-state value per parameter
+%   params    - cell array of parameter names; the velocity and net
+%               contribution parameters get special handling
+%   plotFlag  - plot the curves when empty or 1
+%   subID     - subject ID used in the plot title
+%
+% Outputs:
+%   Stride2SS - 1 x parameters stride index of steady state
+%
+% NOTE: tfinal falls back to the undefined variable t when no stride is
+%   below the threshold, which errors.
+%
+% Toolbox Dependencies: None
+%
+% See also SSTAUPOSTADAPT, BIN_DATAV1.
 
 
 % %%%How to calculate strides to ss
@@ -53,7 +71,7 @@ for var = 1:length(params)
     whereIMall = find(allValuesALL(:, var) == ...
         max(allValuesALL(1:nEarlyStrides,var), [], 'omitnan'),1,'first');
 
-    %%
+    %% Find the stride where the curve reaches steady state
 
     %shifting  the steady state by the maximum value of the postadaptation
     %decay curve
@@ -111,7 +129,7 @@ for var = 1:length(params)
 
     Stride2SS(1, var) = first_t;
 
-    %%
+    %% Plot
     %optional plotting to see where the Tau is being identified
     if plotFlag == 1
         subplot(1, length(params), var)

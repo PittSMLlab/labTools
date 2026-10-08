@@ -1,5 +1,28 @@
 function COPTS = COPCalculator(GRFData)
-%COPCALCULATOR Calculate the center of pressure time series from GRF data
+%COPCALCULATOR Calculate the center of pressure time series from GRF data.
+%
+%   Median-filters (3 samples) and low-pass filters (25 Hz) the force
+% plate data, computes the center of pressure under each foot from the
+% forces and moments, transforms it from the treadmill to the Vicon
+% coordinate system with the matrices in coordinateTransformation_06022017
+% .mat, and interpolates over NaN gaps in the COP while keeping the NaNs
+% in the output.
+%
+% Side effects: loads coordinateTransformation_06022017.mat (must be on
+%   the path).
+%
+% Inputs:
+%   GRFData - orientedLabTimeSeries of force plate data with the channels
+%             LFx..LMz and RFx..RMz
+%
+% Outputs:
+%   COPTS - orientedLabTimeSeries with LCOP/RCOP x,y,z (mm), the ground
+%           reaction forces LGRF/RGRF x,y,z, and moments LGRM/RGRM x,y,z
+%
+% Toolbox Dependencies: Signal Processing Toolbox (through medianFilter
+%   and lowPassFilter)
+%
+% See also TORQUECALCULATOR, COMCALCULATOR.
 
 %% Filter the GRF Time Series Data
 or      = GRFData.orientation;               % retrieve GRF orientation data
@@ -102,7 +125,7 @@ for jj = 1:length(ll)
     eval(['aux=' ll{jj} ';']);
     badInds(jj,:) = isnan(aux);
     goodInds = ~badInds(jj,:);
-    if any(goodInds) %% HH temproary fix.
+    if any(goodInds) % temporary fix: skip channels without valid samples
         aux = interp1(find(~badInds(jj,:)),aux(~badInds(jj,:)), ...
             1:length(aux),'linear','extrap');
         eval([ll{jj} '=aux;']);

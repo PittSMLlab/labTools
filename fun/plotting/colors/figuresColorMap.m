@@ -1,4 +1,24 @@
-%Colormap:
+%% Figures color map
+% Script. Builds the diverging color map `map` (red to white to blue) and
+% the default condition colors `condColors` used by prettyBarPlot and
+% the plotting functions. The CoolWarmMap.mat map that is loaded first
+% is overwritten by the map built from the two extreme colors.
+%
+% Inputs:
+%   none
+%
+% Outputs:
+%   map        - (workspace) 202 x 3 diverging color map
+%   condColors - (workspace) 3 x 3 colors of the default conditions
+%   ex1, ex2   - (workspace) extreme colors of the map
+%   gamma      - (workspace) gamma of the interpolation
+%
+% Side effects: loads CoolWarmMap.mat (must be on the path).
+%
+% Toolbox Dependencies: None
+%
+% See also PRETTYBARPLOT, NICEMAP.
+
 ex1   = [0.85,0,0.1];
 ex2   = [0,0.1,0.6];
 gamma = 0.5;

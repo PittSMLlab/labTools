@@ -1,8 +1,26 @@
-% Define color scheme
+%% Color scheme
+% Script. Defines the lab color palette and the colors of the events,
+% conditions, and groups in plots. The palette columns below are listed
+% as RGB rows (0-255) divided by 255; the named p_* colors are cleared at
+% the end.
+%
+% Inputs:
+%   none
+%
+% Outputs:
+%   color_palette - (workspace) 29 x 3 RGB palette (0-1)
+%   colorEvents   - (workspace) RGB color of the events
+%   colorConds    - (workspace) cell array of condition colors
+%   colorGroups   - (workspace) cell array of group colors
+%
+% Toolbox Dependencies: None
+%
+% See also POSTER_COLORS, FIGURESCOLORMAP.
 %               1          2          3          4          5          6
 %             red   fade red      green fade green       blue  fade blue
 %               7          8          9         10         11         12
 %           black       gray     yellow     orange       plum       lime
+
 %color_palette = [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; ...
 %    44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; ...
 %    171 218 77]*(1/255);
