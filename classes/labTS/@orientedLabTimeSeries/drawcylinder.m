@@ -28,11 +28,11 @@ V = [X1(2) - X1(1) Y1(2) - Y1(1) Z1(2) - Z1(1)]; % vector
 h = surf(X, Y, Z, 'FaceColor', color, 'EdgeColor', 'none');
 t = hgtransform('Parent', h_axes);
 set(h, 'Parent', t);
-Sz = makehgtform('scale', [1, 1, r]);
+Sz  = makehgtform('scale', [1, 1, r]);
 Ry1 = makehgtform('yrotate', pi / 2);
 Ry2 = makehgtform('yrotate', -phi);
-Rz = makehgtform('zrotate', theta);
-Tx = makehgtform('translate', O);
+Rz  = makehgtform('zrotate', theta);
+Tx  = makehgtform('translate', O);
 set(t, 'Matrix', Tx * Rz * Ry2 * Ry1 * Sz);
 end
 

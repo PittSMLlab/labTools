@@ -24,14 +24,14 @@ else
         'containing strings.']);
 end
 
-N = length(auxLabel);
+N        = length(auxLabel);
 boolFlag = false(N, 1);
 labelIdx = zeros(N, 1);
-for j = 1:N
+for jj = 1:N
     % Alternative efficient formulation:
-    boolFlag(j) = any(strcmp(auxLabel{j}, this.getLabelPrefix));
-    if boolFlag(j)
-        labelIdx(j) = find(strcmp(auxLabel{j}, this.getLabelPrefix));
+    boolFlag(jj) = any(strcmp(auxLabel{jj}, this.getLabelPrefix));
+    if boolFlag(jj)
+        labelIdx(jj) = find(strcmp(auxLabel{jj}, this.getLabelPrefix));
     end
 end
 end

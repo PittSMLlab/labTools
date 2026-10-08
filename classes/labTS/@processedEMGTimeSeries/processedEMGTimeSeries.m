@@ -27,7 +27,7 @@ classdef processedEMGTimeSeries < labTimeSeries
     %% Constructor
     methods
         function this = processedEMGTimeSeries(data, t0, Ts, labels, ...
-                processingInfo, Quality, QualInfo)
+            processingInfo, Quality, QualInfo)
             %processedEMGTimeSeries  Constructor for
             %processedEMGTimeSeries class
             %

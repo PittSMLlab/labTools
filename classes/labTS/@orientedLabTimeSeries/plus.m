@@ -17,8 +17,8 @@ newThis = plus@labTimeSeries(this, other);
 tL = this.getLabelPrefix;
 oL = other.getLabelPrefix;
 newLabelPrefixes = cell(size(tL));
-for i = 1:length(newLabelPrefixes)
-    newLabelPrefixes{i} = ['(' tL{i} ' + ' oL{i} ')'];
+for ii = 1:length(newLabelPrefixes)
+    newLabelPrefixes{ii} = ['(' tL{ii} ' + ' oL{ii} ')'];
 end
 newLabels = orientedLabTimeSeries.addLabelSuffix(newLabelPrefixes);
 newThis = orientedLabTimeSeries(newThis.Data, newThis.Time(1), ...

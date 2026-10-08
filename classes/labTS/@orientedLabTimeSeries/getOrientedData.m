@@ -28,7 +28,7 @@ elseif isa(label, 'char')
     label = {label};
 end
 
-data = nan(T, length(label) * 3);
+data           = nan(T, length(label) * 3);
 extendedLabels = this.addLabelSuffix(label);
 if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
     error('orientedLabTS:getOrientedData', ...

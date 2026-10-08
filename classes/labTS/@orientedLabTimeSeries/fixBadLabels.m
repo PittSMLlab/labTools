@@ -26,10 +26,13 @@ function [this, m, permuteList, modelScore, badFlag, modelScore2] = ...
 if nargin < 2
     permuteList = [];
 end
-aux = this;
+minTrainingSecs   = 10; % At least 10 secs of data with true movement
+robustStdQuantile = 0.94; % TODO: source?
+staticStdLimit    = 20; % TODO: source? (median sigma below = static)
+aux      = this;
 duration = aux.timeRange;
 % At least 10 secs of data with true movement for training
-if duration > 10
+if duration > minTrainingSecs
     m = buildNaiveDistancesModel(aux);
     [badFlag, MO, OBO] = validateMarkerModel(m, false);
     bF = badFlag;
@@ -57,8 +60,8 @@ if duration > 10
         if sum(MO | OBO) < nB
             fprintf('Found switched labels:\n');
             auxList = {'NameA', 'NameB'};
-            for i = 1:size(permuteList, 1)
-                preList = m.markerLabels(permuteList(i, :));
+            for ii = 1:size(permuteList, 1)
+                preList = m.markerLabels(permuteList(ii, :));
                 fprintf([preList{1} ' - ' preList{2} '\n']);
                 warning('off');
                 aux = aux.renameLabels(preList, auxList);
@@ -78,15 +81,15 @@ if duration > 10
         end
     end
 
-    sigma = m.getRobustStd(0.94);
-    if median(sigma) < 20 % Static trial most likely
+    sigma = m.getRobustStd(robustStdQuantile);
+    if median(sigma) < staticStdLimit % Static trial most likely
         badFlag = true;
     end
     sigma = naiveDistances.stat2Matrix(sigma);
     sigma = triu(sigma) - triu(sigma, 3);
     sigma(sigma == 0) = NaN;
-    modelScore = nanmax(sigma(:));
-    modelScore2 = nanmean(sigma(:));
+    modelScore  = max(sigma(:), [], 'omitnan');
+    modelScore2 = mean(sigma(:), 'omitnan');
 end
 end
 

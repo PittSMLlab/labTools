@@ -16,7 +16,7 @@ function newThis = referenceToMarker(this, marker)
 %   See also: translate
 
 % Check: marker needs to be a suffix of this object.
-data = getOrientedData(this, marker);
+data    = getOrientedData(this, marker);
 newThis = translate(this, squeeze(-1 * data));
 end
 

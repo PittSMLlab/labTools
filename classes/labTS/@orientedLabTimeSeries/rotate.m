@@ -22,7 +22,7 @@ if ndims(matrix) == 3
 else
     M = 1;
 end
-matrix = reshape(matrix, M, 1, 3, 3);
+matrix  = reshape(matrix, M, 1, 3, 3);
 newData = permute(sum(bsxfun(@times, data, matrix), 3), [1, 4, 2, 3]);
 newThis = orientedLabTimeSeries(newData(:, :), this.Time(1), ...
     this.sampPeriod, this.labels, this.orientation);

@@ -23,8 +23,8 @@ if N ~= 3 || (M ~= 1 && M ~= numel(this.Time))
         ['Translation vector has to be size 3 on second dim, and ' ...
         'singleton or of length(time) in the first.']);
 end
-data = getOrientedData(this);
-vector = reshape(vector, M, 1, 3);
+data    = getOrientedData(this);
+vector  = reshape(vector, M, 1, 3);
 newData = permute(bsxfun(@plus, data, vector), [1 3 2]);
 newThis = orientedLabTimeSeries(newData(:, :), this.Time(1), ...
     this.sampPeriod, this.labels, this.orientation);

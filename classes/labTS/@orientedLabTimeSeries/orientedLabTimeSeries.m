@@ -65,7 +65,7 @@ classdef orientedLabTimeSeries < labTimeSeries
     %% Constructor
     methods
         function this = orientedLabTimeSeries(data, t0, Ts, labels, ...
-                orientation)
+            orientation)
             %orientedLabTimeSeries  Constructor for orientedLabTimeSeries
             %class
             %
@@ -91,10 +91,10 @@ classdef orientedLabTimeSeries < labTimeSeries
             %   See also: labTimeSeries, orientationInfo
 
             if nargin < 1
-                data = [];
-                t0 = 0;
-                Ts = [];
-                labels = {};
+                data        = [];
+                t0          = 0;
+                Ts          = [];
+                labels      = {};
                 orientation = orientationInfo();
             end
             if ~orientedLabTimeSeries.checkLabelSanity(labels)
@@ -107,7 +107,8 @@ classdef orientedLabTimeSeries < labTimeSeries
                 this.orientation = orientation;
             else
                 ME = MException('orientedLabTimeSeries:Constructor', ...
-                    'Orientation parameter is not an OrientationInfo object.');
+                    ['Orientation parameter is not an OrientationInfo ' ...
+                    'object.']);
                 throw(ME);
             end
         end
@@ -201,20 +202,24 @@ classdef orientedLabTimeSeries < labTimeSeries
 
         newThis = times(this, constant)
 
-        function this=renameLabels(this,originalPrefixes,newPrefixes)
-            warning('You should not be renaming the labels. You have been warned. Also, in OTS you can only rename the prefixes.')
+        function this = renameLabels(this, originalPrefixes, newPrefixes)
+            warning(['You should not be renaming the labels. You have ' ...
+                'been warned. Also, in OTS you can only rename the ' ...
+                'prefixes.'])
             if isempty(originalPrefixes)
-                originalPrefixes=this.getLabelPrefix;
+                originalPrefixes = this.getLabelPrefix;
             end
-            if size(newPrefixes)~=size(originalPrefixes)
+            if size(newPrefixes) ~= size(originalPrefixes)
                 error('Inconsistent label sizes')
             end
-            if ~isa(originalPrefixes,'cell')
-                originalPrefixes={originalPrefixes};
-                newPrefixes={newPrefixes};
+            if ~isa(originalPrefixes, 'cell')
+                originalPrefixes = {originalPrefixes};
+                newPrefixes      = {newPrefixes};
             end
-            for i=1:length(originalPrefixes)
-                this=this.renameLabels@labTimeSeries(strcat(originalPrefixes{i},{'x','y','z'}),strcat(newPrefixes{i},{'x','y','z'}));
+            for ii = 1:length(originalPrefixes)
+                this = this.renameLabels@labTimeSeries( ...
+                    strcat(originalPrefixes{ii},{'x','y','z'}), ...
+                    strcat(newPrefixes{ii},{'x','y','z'}));
             end
         end
     end
@@ -253,8 +258,10 @@ classdef orientedLabTimeSeries < labTimeSeries
 
         mov = animate2( ...
             this, t0, t1, frameRate, writeFileFlag, filename, mode)
-        % function mov=animate2(this,t0,t1,frameRate,writeFileFlag,filename,mode)
-        %     %This function renders a movie of the 3-D position stored in the orientedLabData object.
+        % function mov=animate2(this,t0,t1,frameRate,writeFileFlag, ...
+        %    filename,mode)
+        %     %This function renders a movie of the 3-D position stored in
+        %     the orientedLabData object.
         %     %It only makes sense for markerData type objects.
         %
         %     if nargin<2 || isempty(t0) || isempty(t1)
@@ -271,7 +278,8 @@ classdef orientedLabTimeSeries < labTimeSeries
         %         frameRate=25;
         %     end
         %     if nargin<6 || isempty(filename)
-        %         filename=['anim_t=[' num2str(round(t0*10)/10) ',' num2str(round(t1*10)/10) '].avi'];
+        %         filename=['anim_t=[' num2str(round(t0*10)/10) ',' ...
+        %    num2str(round(t1*10)/10) '].avi'];
         %     end
         %     f=round(this.sampFreq/frameRate);
         %     frameRate=this.sampFreq/f;
@@ -286,30 +294,38 @@ classdef orientedLabTimeSeries < labTimeSeries
         %         open(mov)
         %     end
         %
-        %     list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};
+        %     list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE', ...
+        %    'THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};
         %     [b,~]=this.isaLabelPrefix(strcat('L',list));
         %     list=list(b);
-        %     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^L'),'UniformOutput',false)));
+        %     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1), ...
+        %    this.getLabelsThatMatch('^L'),'UniformOutput',false)));
         %     ll=this.getOrientedData(strcat('L',list));
-        %     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^R'),'UniformOutput',false)));
+        %     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1), ...
+        %    this.getLabelsThatMatch('^R'),'UniformOutput',false)));
         %     rr=this.getOrientedData(strcat('R',list));
         %     dd=this.getOrientedData;
         %     fh=figure;
         %     h_axes=gca;
         %     %drawnow limitrate
-        %     %u = uicontrol('Style','slider','Position',[10 50 20 340],'Min',1,'Max',size(ll,1),'Value',1);
+        %     %u = uicontrol('Style','slider','Position',[10 50 20 340], ...
+        %    'Min',1,'Max',size(ll,1),'Value',1);
         %
         %
         %     axis equal
-        %     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:,:,3)))-50 max(max(dd(:,:,3)))+900])
+        %     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 ...
+        %    min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:, ...
+        %    :,3)))-50 max(max(dd(:,:,3)))+900])
         %     view(90,0)
         %     hold on
         %     switch mode
         %         case 1
         %             %Option 1: plain lines
         %
-        %             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');
-        %             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');
+        %             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3), ...
+        %    'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');
+        %             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3), ...
+        %    'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');
         %             %set(gca,'NextPlot','replacechildren')
         %             for k = 1:f:size(ll,1)
         %                 %
@@ -357,39 +373,49 @@ classdef orientedLabTimeSeries < labTimeSeries
         %                         X = s(k,[ind1 ind2],1);
         %                         Y = s(k,[ind1 ind2],2);
         %                         Z = s(k,[ind1 ind2],3);
-        %                         orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,radius,colorLegs)
+        %                         orientedLabTimeSeries.drawsegment( ...
+        %    h_axes,X,Y,Z,radius,colorLegs)
         %                     end
         %                     %draw hip joints
         %                     X = s(k,7,1);
         %                     Y = s(k,7,2);
         %                     Z = s(k,7,3);
-        %                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)
-        %                     %draw shoulder joints: using hip data by default
+        %                     orientedLabTimeSeries.drawball(h_axes,X,Y, ...
+        %    Z,50,color)
+        %                     %draw shoulder joints: using hip data by
+        %                     default
         %                     X = s(k,7,1);
         %                     Y = s(k,7,2);
         %                     Z = s(k,7,3)+530;
-        %                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)
+        %                     orientedLabTimeSeries.drawball(h_axes,X,Y, ...
+        %    Z,50,color)
         %                 end
         %                 %Draw pelvis
         %                 X = [rr(k,7,1) ll(k,7,1)];
         %                 Y = [rr(k,7,2) ll(k,7,2)];
         %                 Z = [rr(k,7,3) ll(k,7,3)];
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .4 .4],color)
         %                 %Draw shoulder
         %                 X = [rr(k,7,1) ll(k,7,1)];
         %                 Y = [rr(k,7,2) ll(k,7,2)];
         %                 Z = [rr(k,7,3) ll(k,7,3)]+530;
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .35 .35],color)
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .35 .35],color)
         %                 %Draw torso
         %                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];
         %                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];
-        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso height
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)
+        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso
+        %                 height
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .4 .4],color)
         %                 %Draw head
         %                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];
         %                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];
-        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake head height
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .75 .75],color)
+        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake
+        %                 head height
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .75 .75],color)
         %
         %                 %Save frame
         %                 camlight headlight
@@ -414,8 +440,10 @@ classdef orientedLabTimeSeries < labTimeSeries
 
         mov = animate( ...
             this, t0, t1, frameRate, writeFileFlag, filename, mode)
-        % function mov=animate(this,t0,t1,frameRate,writeFileFlag,filename,mode)
-        %     %This function renders a movie of the 3-D position stored in the orientedLabData object.
+        % function mov=animate(this,t0,t1,frameRate,writeFileFlag, ...
+        %    filename,mode)
+        %     %This function renders a movie of the 3-D position stored in
+        %     the orientedLabData object.
         %     %It only makes sense for markerData type objects.
         %
         %     if nargin<2 || isempty(t0) || isempty(t1)
@@ -432,7 +460,8 @@ classdef orientedLabTimeSeries < labTimeSeries
         %         frameRate=25;
         %     end
         %     if nargin<6 || isempty(filename)
-        %         filename=['anim_t=[' num2str(round(t0*10)/10) ',' num2str(round(t1*10)/10) '].avi'];
+        %         filename=['anim_t=[' num2str(round(t0*10)/10) ',' ...
+        %    num2str(round(t1*10)/10) '].avi'];
         %     end
         %     f=round(this.sampFreq/frameRate);
         %     frameRate=this.sampFreq/f;
@@ -447,31 +476,40 @@ classdef orientedLabTimeSeries < labTimeSeries
         %         open(mov)
         %     end
         %
-        %     %             list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};
+        %     %             list={'TOE','HEE','HEEL','ANK','SHANK', ...
+        %    'TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS', ...
+        %    'PSI','PSIS'};
         %     list={'ANK','HIP'};
         %     [b,~]=this.isaLabelPrefix(strcat('L',list));
         %     list=list(b);
-        %     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^L'),'UniformOutput',false)));
+        %     ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1), ...
+        %    this.getLabelsThatMatch('^L'),'UniformOutput',false)));
         %     ll=this.getOrientedData(strcat('L',list));
-        %     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^R'),'UniformOutput',false)));
+        %     rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1), ...
+        %    this.getLabelsThatMatch('^R'),'UniformOutput',false)));
         %     rr=this.getOrientedData(strcat('R',list));
         %     dd=this.getOrientedData;
         %     fh=figure;
         %     h_axes=gca;
         %     %drawnow limitrate
-        %     %u = uicontrol('Style','slider','Position',[10 50 20 340],'Min',1,'Max',size(ll,1),'Value',1);
+        %     %u = uicontrol('Style','slider','Position',[10 50 20 340], ...
+        %    'Min',1,'Max',size(ll,1),'Value',1);
         %
         %
         %     axis equal
-        %     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:,:,3)))-50 max(max(dd(:,:,3)))+900])
+        %     axis([min(min(dd(:,:,1)))-50 max(max(dd(:,:,1)))+50 ...
+        %    min(min(dd(:,:,2)))-50 max(max(dd(:,:,2)))+50 min(min(dd(:, ...
+        %    :,3)))-50 max(max(dd(:,:,3)))+900])
         %     view(90,0)
         %     hold on
         %     switch mode
         %         case 1
         %             %Option 1: plain lines
         %
-        %             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');
-        %             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');
+        %             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3), ...
+        %    'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');
+        %             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3), ...
+        %    'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');
         %             %set(gca,'NextPlot','replacechildren')
         %             for k = 1:f:size(ll,1)
         %                 %
@@ -519,39 +557,49 @@ classdef orientedLabTimeSeries < labTimeSeries
         %                         X = s(k,[ind1 ind2],1);
         %                         Y = s(k,[ind1 ind2],2);
         %                         Z = s(k,[ind1 ind2],3);
-        %                         orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,radius,colorLegs)
+        %                         orientedLabTimeSeries.drawsegment( ...
+        %    h_axes,X,Y,Z,radius,colorLegs)
         %                     end
         %                     %draw hip joints
         %                     X = s(k,7,1);
         %                     Y = s(k,7,2);
         %                     Z = s(k,7,3);
-        %                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)
-        %                     %draw shoulder joints: using hip data by default
+        %                     orientedLabTimeSeries.drawball(h_axes,X,Y, ...
+        %    Z,50,color)
+        %                     %draw shoulder joints: using hip data by
+        %                     default
         %                     X = s(k,7,1);
         %                     Y = s(k,7,2);
         %                     Z = s(k,7,3)+530;
-        %                     orientedLabTimeSeries.drawball(h_axes,X,Y,Z,50,color)
+        %                     orientedLabTimeSeries.drawball(h_axes,X,Y, ...
+        %    Z,50,color)
         %                 end
         %                 %Draw pelvis
         %                 X = [rr(k,7,1) ll(k,7,1)];
         %                 Y = [rr(k,7,2) ll(k,7,2)];
         %                 Z = [rr(k,7,3) ll(k,7,3)];
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .4 .4],color)
         %                 %Draw shoulder
         %                 X = [rr(k,7,1) ll(k,7,1)];
         %                 Y = [rr(k,7,2) ll(k,7,2)];
         %                 Z = [rr(k,7,3) ll(k,7,3)]+530;
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .35 .35],color)
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .35 .35],color)
         %                 %Draw torso
         %                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];
         %                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];
-        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso height
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .4 .4],color)
+        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+[0 500]; %Fake torso
+        %                 height
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .4 .4],color)
         %                 %Draw head
         %                 X = .5*(rr(k,7,1)+ll(k,7,1))+[0 0];
         %                 Y = .5*(rr(k,7,2)+ll(k,7,2))+[0 0];
-        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake head height
-        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y,Z,[1 .75 .75],color)
+        %                 Z = .5*(rr(k,7,3)+ll(k,7,3))+500+[60 360]; %Fake
+        %                 head height
+        %                 orientedLabTimeSeries.drawsegment(h_axes,X,Y, ...
+        %    Z,[1 .75 .75],color)
         %
         %                 %Save frame
         %                 camlight headlight
@@ -594,9 +642,12 @@ classdef orientedLabTimeSeries < labTimeSeries
         %     %a defines relative length of the ellipsoid radii
         %     O = [X1(1) Y1(1) Z1(1)]; %vector origin
         %     V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector
-        %     [theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment
+        %     [theta,phi,r] = cart2sph(V(1),V(2), ...
+        %    V(3)); %theta is angle with x-axis, ...
+        %    phi is angle with z-axis, r is length of segment
         %     %build segment surface and rotate/translate
-        %     [X,Y,Z] = ellipsoid(r/2,0,0,r/2,r/2*a(2)/a(1),r/2*a(3)/a(1)); %build segment surface about origin
+        %     [X,Y,Z] = ellipsoid(r/2,0,0,r/2,r/2*a(2)/a(1),r/2*a(3)/a(1));
+        %     %build segment surface about origin
         %     h = surf(X,Y,Z,'FaceColor',color,'EdgeColor','none');
         %     t = hgtransform('Parent',h_axes);
         %     set(h,'Parent',t)
@@ -627,8 +678,11 @@ classdef orientedLabTimeSeries < labTimeSeries
         %     O = [X1(1) Y1(1) Z1(1)]; %vector origin
         %     V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; %vector
         %     %build surface and rotate/translate
-        %     [theta,phi,r] = cart2sph(V(1),V(2),V(3)); %theta is angle with x-axis, phi is angle with z-axis, r is length of segment
-        %     [X,Y,Z] = cylinder(radius); %build segment surface about origin
+        %     [theta,phi,r] = cart2sph(V(1),V(2), ...
+        %    V(3)); %theta is angle with x-axis, ...
+        %    phi is angle with z-axis, r is length of segment
+        %     [X,Y,Z] = cylinder(radius); %build segment surface about
+        %     origin
         %     h = surf(X,Y,Z,'FaceColor',color,'EdgeColor','none');
         %     t = hgtransform('Parent',h_axes);
         %     set(h,'Parent',t)

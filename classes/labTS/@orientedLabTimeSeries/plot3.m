@@ -34,11 +34,11 @@ end
 [data, labelPref] = getOrientedData(this);
 hold on;
 
-for i = 1:length(labelPref)
-    plot3(data(:, i, 1), data(:, i, 2), data(:, i, 3), '.');
+for ii = 1:length(labelPref)
+    plot3(data(:, ii, 1), data(:, ii, 2), data(:, ii, 3), '.');
     if ~isempty(this.Quality)
-        aux = this.Quality(:, i) == 1;
-        plot3(data(aux, i, 1), data(aux, i, 2), data(aux, i, 3), ...
+        aux = this.Quality(:, ii) == 1;
+        plot3(data(aux, ii, 1), data(aux, ii, 2), data(aux, ii, 3), ...
             'rx');
     end
 end

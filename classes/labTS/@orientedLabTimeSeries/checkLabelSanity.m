@@ -36,7 +36,7 @@ if any(~strcmp(aux2(1:3:end), 'x')) || ...
     return;
 end
 % Check: and labels have the same prefix in groups of 3
-aux = cellfun(@(x) x(1:end - 1), labels, 'UniformOutput', false);
+aux     = cellfun(@(x) x(1:end - 1), labels, 'UniformOutput', false);
 labelsx = aux(1:3:end);
 labelsy = aux(2:3:end);
 labelsz = aux(3:3:end);

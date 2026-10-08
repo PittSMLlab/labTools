@@ -29,27 +29,27 @@ end
 ll = this.getLabelPrefix;
 if nargin < 4 || isempty(meanDiff) || isempty(stdDiff)
     differences = this.computeDifferenceMatrix([], [], ll, ll);
-    meanDiff = nanmean(differences, 1); % Mean distance
+    meanDiff    = mean(differences, 1, 'omitnan'); % Mean distance
     % Method: difference Naive Bayes
-    stdDiff = nanstd(differences, [], 1);
+    stdDiff = std(differences, [], 1, 'omitnan');
 end
 
-actualData = this.getOrientedData(ll);
+actualData  = this.getOrientedData(ll);
 virtualData = nan(size(actualData));
 
-for i = 1:length(ll) % For each marker
+for ii = 1:length(ll) % For each marker
     xEstim = nan(size(differences, 1), 3, size(differences, 2));
-    w = 1 ./ stdDiff(1, i, :, :).^2;
-    w(1, 1, i, :) = ww;
-    for j = 1:length(ll)
-        xEstim(:, :, j) = bsxfun(@times, bsxfun(@plus, ...
-            squeeze(actualData(:, j, :)), ...
-            squeeze(meanDiff(1, i, j, :))'), ...
-            squeeze(w(1, 1, j, :))');
+    w      = 1 ./ stdDiff(1, ii, :, :).^2;
+    w(1, 1, ii, :) = ww;
+    for jj = 1:length(ll)
+        xEstim(:, :, jj) = bsxfun(@times, bsxfun(@plus, ...
+            squeeze(actualData(:, jj, :)), ...
+            squeeze(meanDiff(1, ii, jj, :))'), ...
+            squeeze(w(1, 1, jj, :))');
     end
     aux = any(~isnan(xEstim), 2);
 
-    virtualData(:, i, :) = bsxfun(@rdivide, nansum(xEstim, 3), ...
+    virtualData(:, ii, :) = bsxfun(@rdivide, sum(xEstim, 3, 'omitnan'), ...
         squeeze(sum(bsxfun(@times, w, aux), 3)));
 end
 virtualOTS = orientedLabTimeSeries.getOTSfromOrientedData(...

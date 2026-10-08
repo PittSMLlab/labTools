@@ -24,7 +24,7 @@ O = [X1 Y1 Z1]; % vector origin
 h = surf(X, Y, Z, 'FaceColor', color, 'EdgeColor', 'none');
 t = hgtransform('Parent', h_axes);
 set(h, 'Parent', t);
-S = makehgtform('scale', radius);
+S  = makehgtform('scale', radius);
 Tx = makehgtform('translate', O);
 set(t, 'Matrix', Tx * S);
 end

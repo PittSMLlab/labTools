@@ -37,9 +37,9 @@ if nargin > 2 && verbose
     fprintf(['Outlier data in ' num2str(sum(any(out, 1))) '/' ...
         num2str(size(out, 2)) ' frames, avg. ' ...
         num2str(sum(out(:)) / sum(any(out, 1))) ' per frame.\n']);
-    for j = 1:size(out, 1)
-        if sum(out(j, :) == 1) > 0
-            disp([l{j} ': ' num2str(sum(out(j, :) == 1)) ' frames']);
+    for jj = 1:size(out, 1)
+        if sum(out(jj, :) == 1) > 0
+            disp([l{jj} ': ' num2str(sum(out(jj, :) == 1)) ' frames']);
         end
     end
 end

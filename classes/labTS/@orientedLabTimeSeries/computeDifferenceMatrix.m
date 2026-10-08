@@ -27,8 +27,8 @@ function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix( ...
 % Inefficient way: compute the difference matrix for all times and
 % markers, and then reduce it
 diffMatrix = nan(T, N, M, N);
-for i = 1:N
-    diffMatrix(:, :, :, i) = bsxfun(@minus, data, data(:, i, :));
+for ii = 1:N
+    diffMatrix(:, :, :, ii) = bsxfun(@minus, data, data(:, ii, :));
 end
 diffMatrix = permute(diffMatrix, [1, 2, 4, 3]);
 if nargin < 2 || isempty(t0)
@@ -48,7 +48,7 @@ timeIdxs = find(this.Time <= t1 & this.Time >= t0);
 [~, labelIdxs] = isaLabelPrefix(this, labels);
 [~, label2Idxs] = isaLabelPrefix(this, labels2);
 diffMatrix = diffMatrix(timeIdxs, labelIdxs, label2Idxs, :);
-Time = this.Time(timeIdxs);
+Time       = this.Time(timeIdxs);
 
 end
 
