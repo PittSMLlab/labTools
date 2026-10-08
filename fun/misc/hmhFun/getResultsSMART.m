@@ -340,7 +340,8 @@ for gg = 1:ngroups
     nSubs = length(subjects);
 
     results.OGbase.avg(end+1, :) = mean(OGbase, 1, 'omitnan');
-    results.OGbase.se(end+1, :)  = std(OGbase, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.OGbase.se(end+1, :)  = std(OGbase, 0, 1, ...
+        'omitnan') ./ sqrt(nSubs);
 
     results.TMbase.avg(end+1, :) = mean(TMbase, 1, 'omitnan');
     results.TMbase.se(end+1, :)  = std(TMbase, 0, 1, 'omitnan');
@@ -501,7 +502,8 @@ if nargin > 4 && plotFlag
         barGroups(SMatrix, results, groups, params, epochs)
     end
 
-    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
+    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch', ...
+    %    'AvgAdaptAll','TMsteady'};
     %     if nargin>5
     %         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
     %     else

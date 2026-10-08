@@ -223,7 +223,8 @@ for gg = 1:nGroups
             if ~isempty(idx)
                 AdaptExtentBeforeCatch(ss, idx) = ...
                     AdaptExtentBeforeCatch(ss, idx) - mean( ...
-                    adapt1Velocity((end-2)-transientNumPts+1:(end-2), :), ...
+                    adapt1Velocity((end-2)-transientNumPts+1:(end-2), ...
+                    :), ...
                     'omitnan');
             end
 
@@ -380,7 +381,8 @@ if plotFlag
     %         barGroups(Study,results,groups,params,epochs)
     %     end
 
-    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
+    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch', ...
+    %    'AvgAdaptAll','TMsteady'};
     %     if nargin>5
     %         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
     %     else

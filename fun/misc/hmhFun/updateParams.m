@@ -38,7 +38,7 @@ for ss = 1:length(subjects)
         saveloc = [];
     catch
         try
-            load([subjects{ss} filesep char(ss) '.mat'])
+            load(fullfile(subjects{ss}, [char(ss) '.mat']))
             saveloc = [subjects{ss} filesep];
         catch
             ME = MException('makeDataObject:loadSubject', ...

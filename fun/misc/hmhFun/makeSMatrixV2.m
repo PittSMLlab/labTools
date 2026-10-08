@@ -25,7 +25,7 @@ for ii = 1:length(fileList)
     aux1 = strfind(lower(fileList{ii}), 'params');
     if ~isempty(aux1)
         subID      = fileList{ii}(1:(aux1 - 1));
-        % subID = adaptData.subData.ID; % I think this is more appropriate.-Pablo
+        % subID = adaptData.subData.ID;  % probably more appropriate
         load(fileList{ii});
 
         group      = adaptData.metaData.ID;

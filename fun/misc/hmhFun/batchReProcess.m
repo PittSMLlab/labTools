@@ -29,7 +29,7 @@ for sub = subjects
         saveloc = [];
     catch
         try
-            load([char(sub) filesep char(sub) 'RAW.mat'])
+            load(fullfile(char(sub), [char(sub) 'RAW.mat']))
             saveloc = [char(sub) filesep];
         catch
             ME = MException('makeDataObject:loadSubject', ...
