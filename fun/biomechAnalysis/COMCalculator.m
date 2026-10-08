@@ -41,7 +41,8 @@ else                                        % otherwise, ...
 end
 
 %% Retrieve Segment Marker Positions
-u = [orientation.sideSign orientation.foreaftSign orientation.updownSign];
+u          = [orientation.sideSign orientation.foreaftSign ...
+    orientation.updownSign];
 markerList = {'RHip','LHip','RAnk','LAnk','RKne','LKne','RToe','LToe'};
 for mrkr = markerList                           % for each marker, ...
     % get marker name allowing for variants like RKNEx and RKNEEx
@@ -64,31 +65,52 @@ for mrkr = markerList                           % for each marker, ...
     % assignin('base',markerList{i},aux);
 end
 
-% RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis],['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
+% RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis], ...
+%    ['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
 % RHip=RHip.*u;
-% RHip=[orientation.sideSign*RHip(:,1),orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];
-% LHip=markerData.getDataAsVector({['LHIP' orientation.sideAxis],['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
-% LHip=[orientation.sideSign*LHip(:,1),orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];
+% RHip=[orientation.sideSign*RHip(:,1), ...
+%    orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];
+% LHip=markerData.getDataAsVector({['LHIP' orientation.sideAxis], ...
+%    ['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
+% LHip=[orientation.sideSign*LHip(:,1), ...
+%    orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];
 % %get ankle position
-% RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis],['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
-% RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];
-% LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis],['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
-% LAnk=[orientation.sideSign*LAnk(:,1),orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];
+% RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis], ...
+%    ['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
+% RAnk=[orientation.sideSign*RAnk(:,1), ...
+%    orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];
+% LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis], ...
+%    ['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
+% LAnk=[orientation.sideSign*LAnk(:,1), ...
+%    orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];
 % %get knee position
 % RkneeName=markerData.getLabelsThatMatch('^RKNE');
 % RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix
-% RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis],[RkneeName orientation.foreaftAxis],[RkneeName orientation.updownAxis]});
-% RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
+% RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis], ...
+%    [RkneeName orientation.foreaftAxis], ...
+%    [RkneeName orientation.updownAxis]});
+% RKnee=[orientation.sideSign*RKnee(:,1), ...
+%    orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
 %
 % LkneeName=markerData.getLabelsThatMatch('^LKNE');
 % LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix
-% LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis],[LkneeName orientation.foreaftAxis],[LkneeName orientation.updownAxis]});
-% LKnee=[orientation.sideSign*LKnee(:,1),orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];
+% LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis], ...
+%    [LkneeName orientation.foreaftAxis], ...
+%    [LkneeName orientation.updownAxis]});
+% LKnee=[orientation.sideSign*LKnee(:,1), ...
+%    orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];
 % %get toe position
-% RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis],['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
-% RToe=[orientation.sideSign*RToe(:,1),orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];
-% LToe=markerData.getDataAsVector({['LTOE' orientation.sideAxis],['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
-% LToe=[orientation.sideSign*LToe(:,1),orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];
+% RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis], ...
+%    ['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
+% RToe=[orientation.sideSign*RToe(:,1), ...
+%    orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];
+% LToe=markerData.getDataAsVector({['LTOE' orientation.sideAxis], ...
+%    ['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
+% LToe=[orientation.sideSign*LToe(:,1), ...
+%    orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];
+
+shankComFraction = 0.394;  % TODO: source? (COM position along the shank)
+thighComFraction = 0.567;  % TODO: source? (COM position along the thigh)
 
 %% Compute Segment Centers of Mass
 % foot:
@@ -104,8 +126,8 @@ fcomL = (LAnk + LToe) / 2;
 % fcomL=[fcomxL,fcomyL,fcomzL];
 
 % shank:
-scomR = (RKne - RAnk) + 0.394 * RAnk;
-scomL = (LKne - LAnk) + 0.394 * LAnk;
+scomR = (RKne - RAnk) + shankComFraction * RAnk;
+scomL = (LKne - LAnk) + shankComFraction * LAnk;
 % scomxR=(RKnee(:,1)-RAnk(:,1)).*.394+RAnk(:,1);
 % scomxL=(LKnee(:,1)-LAnk(:,1)).*.394+LAnk(:,1);
 % scomyR=(RKnee(:,2)-RAnk(:,2)).*.394+RAnk(:,2);
@@ -116,8 +138,8 @@ scomL = (LKne - LAnk) + 0.394 * LAnk;
 % scomL=[scomxL,scomyL,scomzL];
 
 % thigh:
-tcomR = (RHip - RKne) + 0.567 * RKne;
-tcomL = (LHip - LKne) + 0.567 * LKne;
+tcomR = (RHip - RKne) + thighComFraction * RKne;
+tcomL = (LHip - LKne) + thighComFraction * LKne;
 % tcomxR=(RHip(:,1)-RKnee(:,1)).*.567+RKnee(:,1);
 % tcomxL=(LHip(:,1)-LKnee(:,1)).*.567+LKnee(:,1);
 % tcomyR=(RHip(:,2)-RKnee(:,2)).*.567+RKnee(:,2);

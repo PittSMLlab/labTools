@@ -24,7 +24,8 @@ if isempty(COMTS) || isempty(COPTS)     % if no COM or COP time series, ...
     AllMomentsTS = [];                  % output empty array
 else                                    % otherwise, ...
     % NOT YET IMPLEMENTED
-    AllMomentsTS = []; % TorqueCalculatorNew(COMTS,COPTS,in.markerData,in.GRFData,weight);
+    % TorqueCalculatorNew(COMTS,COPTS,in.markerData,in.GRFData,weight);
+    AllMomentsTS = [];
 end
 
 end
