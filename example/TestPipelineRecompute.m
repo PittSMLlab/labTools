@@ -8,6 +8,8 @@
 %   Requires compareAdaptationData (fun/misc/) and the labTools
 % directory on the MATLAB path.
 %
+% Toolbox Dependencies: None
+%
 % See also COMPAREADAPTATIONDATA, TESTING.md.
 
 %% Configuration — fill in before running

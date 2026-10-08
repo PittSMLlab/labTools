@@ -7,6 +7,10 @@
 %   NOTE: Most functionality here is also wrapped in
 % experimentData.checkMarkerHealth.
 %
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox,
+%   Optimization Toolbox (through extractMarkerModels and naiveDistances;
+%   low confidence: the dependency analyzer reported None)
+%
 % See also EXTRACTMARKERMODELS, BUILDNAIVEDISTANCESMODEL,
 %   VALIDATEMARKERMODEL.
 

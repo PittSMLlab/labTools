@@ -4,6 +4,8 @@
 % parameters across conditions, correlating with biographical data,
 % and visualizing after-effects. Assumes 'gAdaptData' (and optionally
 % 'gAdaptData2' for Example 4) exists in the workspace.
+%
+% Toolbox Dependencies: None
 
 %% Set up figure and subplot axes
 fh = figure;

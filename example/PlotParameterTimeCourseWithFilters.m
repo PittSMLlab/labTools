@@ -3,6 +3,8 @@
 %   Demonstrates adaptationData.plotAvgTimeCourse with and without the
 % monoLS filter to smooth parameter signals. Assumes an adaptationData
 % object named 'adaptData' exists in the workspace.
+%
+% Toolbox Dependencies: None
 
 %% Define parameters and conditions
 % params = {'alphaSlow', 'alphaFast', 'singleStanceSpeedSlowAbs'};

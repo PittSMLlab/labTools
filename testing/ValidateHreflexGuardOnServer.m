@@ -103,13 +103,18 @@ end
 % ============================================================
 
 function checkAccidentalSession(sessionDir)
-%checkAccidentalSession  Confirms recomputation no longer aborts.
+%CHECKACCIDENTALSESSION Confirm recomputation no longer aborts.
 %
-%   Inputs:
-%     sessionDir - char, LOCAL folder containing the session's saved
-%                  '*expData.mat'
+% Inputs:
+%   sessionDir - char, LOCAL folder containing the session's saved
+%                '*expData.mat'
 %
-%   See also: ValidateHreflexGuardOnServer
+% Outputs:
+%   none (prints the result of the check)
+%
+% Toolbox Dependencies: None
+%
+% See also VALIDATEHREFLEXGUARDONSERVER.
 
 expFiles = dir(fullfile(sessionDir, '*expData.mat'));
 if isempty(expFiles)
@@ -152,15 +157,20 @@ end
 end
 
 function checkKnownGoodSession(sessionDir, baselineMatFile)
-%checkKnownGoodSession  Compares recomputed parameters to a baseline.
+%CHECKKNOWNGOODSESSION Compare recomputed parameters to a baseline.
 %
-%   Inputs:
-%     sessionDir      - char, LOCAL folder containing the session's
-%                        saved '*expData.mat'
-%     baselineMatFile - char, path to a previously saved baseline
-%                        snapshot, or '' to save a new one
+% Inputs:
+%   sessionDir      - char, LOCAL folder containing the session's
+%                     saved '*expData.mat'
+%   baselineMatFile - char, path to a previously saved baseline
+%                     snapshot, or '' to save a new one
 %
-%   See also: ValidateHreflexGuardOnServer
+% Outputs:
+%   none (prints the result of the comparison)
+%
+% Toolbox Dependencies: None
+%
+% See also VALIDATEHREFLEXGUARDONSERVER.
 
 expFiles = dir(fullfile(sessionDir, '*expData.mat'));
 if isempty(expFiles)
@@ -223,9 +233,19 @@ end
 end
 
 function out = ternary(cond, trueVal, falseVal)
-%ternary  Small inline conditional helper for a single fprintf call.
+%TERNARY Small inline conditional helper for a single fprintf call.
 %
-%   See also: ValidateHreflexGuardOnServer
+% Inputs:
+%   cond     - logical scalar
+%   trueVal  - value returned when cond is true
+%   falseVal - value returned when cond is false
+%
+% Outputs:
+%   out - trueVal if cond is true, falseVal otherwise
+%
+% Toolbox Dependencies: None
+%
+% See also VALIDATEHREFLEXGUARDONSERVER.
 
 if cond
     out = trueVal;
