@@ -1,4 +1,4 @@
-%TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.
+%TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.
 %
 %   Demonstrates labTimeSeries discretization, stride alignment, and
 % checkerboard plotting for EMG data. Assumes 'expData' exists in the

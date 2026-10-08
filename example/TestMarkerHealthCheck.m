@@ -47,7 +47,8 @@ markerData = markerData.removeOutliers(referenceModel);
 markerData.findOutliers(referenceModel, true);
 
 %% Fill missing and bad data
-newThis = markerData.fillGaps(referenceModel);  % TODO: not fully implemented
+% TODO: not fully implemented
+newThis = markerData.fillGaps(referenceModel);
 
 %% Assess reconstruction quality
 [~, ~, missing] = newThis.assessMissing([], -1);
