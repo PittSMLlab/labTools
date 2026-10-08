@@ -70,7 +70,8 @@ if info.forces          % if there is force data in the trial, ...
     % Collect all raw analog channels for offset calibration
     rawMask       = startsWith(fieldList, 'Raw');
     rawFieldNames = fieldList(rawMask);
-    rawCells = cellfun(@(f) analogs.(f), rawFieldNames, 'UniformOutput', false);
+    rawCells = cellfun(@(f) analogs.(f), rawFieldNames, ...
+        'UniformOutput', false);
     raws = [rawCells{:}];
     raws = zscore(raws);
 
