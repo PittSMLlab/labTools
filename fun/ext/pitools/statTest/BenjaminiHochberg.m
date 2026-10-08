@@ -1,15 +1,14 @@
 function [h, pThreshold, i1, pAdjusted] = ...
     BenjaminiHochberg(p, fdr, twoStageFlag)
-%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction for multiple
-%comparisons.
+%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.
 %
 %   Determines significance across multiple comparisons while controlling
-%   the False Discovery Rate (expected fraction of false positives among
-%   all rejections). Less conservative than Bonferroni correction; FDR
-%   control holds in expectation over many realizations.
+% the False Discovery Rate (expected fraction of false positives among all
+% rejections). Less conservative than Bonferroni correction; FDR control
+% holds in expectation over many realizations.
 %
-%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and
-%   Nov 2018 against the Bioinformatics Toolbox mafdr().
+%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and Nov 2018
+% against the Bioinformatics Toolbox mafdr().
 %
 %   References:
 %     Benjamini & Hochberg 1995

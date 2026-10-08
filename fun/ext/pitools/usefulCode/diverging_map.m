@@ -2,9 +2,9 @@ function map = diverging_map(s, rgb1, rgb2)
 %DIVERGING_MAP Interpolate a perceptual diverging colormap.
 %
 %   For each value in s (range [0, 1]), interpolates between two RGB
-%   endpoint colors via the Msh perceptual color space, optionally
-%   inserting white at the midpoint when the endpoints are distinctly
-%   saturated. Based on Kenneth Moreland's algorithm; adapted by Andy Stein.
+% endpoint colors via the Msh perceptual color space, optionally inserting
+% white at the midpoint when the endpoints are distinctly saturated. Based
+% on Kenneth Moreland's algorithm; adapted by Andy Stein.
 %
 % Inputs:
 %   s    - vector of values in [0, 1]
@@ -27,6 +27,16 @@ end
 % --------------------------------------------------------------------------
 function result = diverging_map_1val(s, rgb1, rgb2)
 %DIVERGING_MAP_1VAL Interpolate one colormap value in Msh space.
+%
+% Inputs:
+%   s    - scalar in [0, 1]
+%   rgb1 - 1-by-3 RGB triplet for the low end
+%   rgb2 - 1-by-3 RGB triplet for the high end
+%
+% Outputs:
+%   result - 1-by-3 RGB triplet
+%
+% Toolbox Dependencies: None
 
 lab1 = RGBToLab(rgb1);
 lab2 = RGBToLab(rgb2);
@@ -73,6 +83,14 @@ end
 % --------------------------------------------------------------------------
 function Msh = LabToMsh(Lab)
 %LABTOMSH Convert CIELab to polar Msh representation.
+%
+% Inputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Outputs:
+%   Msh - 1-by-3 [magnitude, saturation angle, hue angle]
+%
+% Toolbox Dependencies: None
 
 L = Lab(1);
 a = Lab(2);
@@ -88,6 +106,14 @@ end
 % --------------------------------------------------------------------------
 function Lab = MshToLab(Msh)
 %MSHTOLAB Convert polar Msh representation to CIELab.
+%
+% Inputs:
+%   Msh - 1-by-3 [magnitude, saturation angle, hue angle]
+%
+% Outputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Toolbox Dependencies: None
 
 M = Msh(1);
 s = Msh(2);
@@ -103,6 +129,15 @@ end
 % --------------------------------------------------------------------------
 function adiff = AngleDiff(a1, a2)
 %ANGLEDIFF Smallest angle between two orientations (radians).
+%
+% Inputs:
+%   a1 - angle (radians)
+%   a2 - angle (radians)
+%
+% Outputs:
+%   adiff - smallest angle between the two (radians)
+%
+% Toolbox Dependencies: None
 
 v1    = [cos(a1) sin(a1)];
 v2    = [cos(a2) sin(a2)];
@@ -114,6 +149,15 @@ end
 % find a hue for the unsaturated color that makes perceptual sense.
 function h = AdjustHue(msh, unsatM)
 %ADJUSTHUE Compute hue for an unsaturated endpoint during interpolation.
+%
+% Inputs:
+%   msh    - 1-by-3 Msh triplet of the saturated color
+%   unsatM - magnitude of the unsaturated color
+%
+% Outputs:
+%   h - hue (radians) to use for the unsaturated color
+%
+% Toolbox Dependencies: None
 
 if msh(1) >= unsatM - 0.1
     % Best we can do is hold hue constant.
@@ -135,6 +179,14 @@ end
 % --------------------------------------------------------------------------
 function xyz = LabToXYZ(Lab)
 %LABTOXYZ Convert CIELab to XYZ color space.
+%
+% Inputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Outputs:
+%   xyz - 1-by-3 XYZ triplet (D65, 2 degree observer)
+%
+% Toolbox Dependencies: None
 
 L = Lab(1);
 a = Lab(2);
@@ -170,6 +222,14 @@ end
 % --------------------------------------------------------------------------
 function Lab = XYZToLab(xyz)
 %XYZTOLAB Convert XYZ to CIELab color space.
+%
+% Inputs:
+%   xyz - 1-by-3 XYZ triplet (D65, 2 degree observer)
+%
+% Outputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Toolbox Dependencies: None
 
 x = xyz(1);
 y = xyz(2);
@@ -200,6 +260,14 @@ end
 % --------------------------------------------------------------------------
 function rgb = XYZToRGB(xyz)
 %XYZTORGB Convert XYZ to sRGB with gamma correction.
+%
+% Inputs:
+%   xyz - 1-by-3 XYZ triplet
+%
+% Outputs:
+%   rgb - 1-by-3 sRGB triplet in [0, 1] (clipped)
+%
+% Toolbox Dependencies: None
 
 x = xyz(1);
 y = xyz(2);
@@ -236,6 +304,14 @@ end
 % --------------------------------------------------------------------------
 function xyz = RGBToXYZ(rgb)
 %RGBTOXYZ Convert sRGB to XYZ with inverse gamma correction.
+%
+% Inputs:
+%   rgb - 1-by-3 sRGB triplet in [0, 1]
+%
+% Outputs:
+%   xyz - 1-by-3 XYZ triplet
+%
+% Toolbox Dependencies: None
 
 r = rgb(1);
 g = rgb(2);
@@ -260,6 +336,14 @@ end
 % --------------------------------------------------------------------------
 function rgb = LabToRGB(Lab)
 %LABTORGB Convert CIELab to sRGB.
+%
+% Inputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Outputs:
+%   rgb - 1-by-3 sRGB triplet in [0, 1]
+%
+% Toolbox Dependencies: None
 xyz = LabToXYZ(Lab);
 rgb = XYZToRGB(xyz);
 end
@@ -267,6 +351,14 @@ end
 % --------------------------------------------------------------------------
 function Lab = RGBToLab(rgb)
 %RGBTOLAB Convert sRGB to CIELab.
+%
+% Inputs:
+%   rgb - 1-by-3 sRGB triplet in [0, 1]
+%
+% Outputs:
+%   Lab - 1-by-3 CIELab triplet [L a b]
+%
+% Toolbox Dependencies: None
 xyz = RGBToXYZ(rgb);
 Lab = XYZToLab(xyz);
 end

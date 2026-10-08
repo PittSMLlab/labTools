@@ -1,10 +1,10 @@
 function newP = effconvn(pValues1, pValues2, shape)
 %EFFCONVN Convolve N-D arrays via FFT.
 %
-%   Implements convn using FFTs; equivalent to convn(A, B, shape).
-%   Note: FFT-based convolution is generally faster only for large arrays.
-%   Only 'full' output is currently implemented; passing 'valid' or 'same'
-%   triggers a warning and returns an empty array.
+%   Implements convn using FFTs; equivalent to convn(A, B, shape). Note:
+% FFT-based convolution is generally faster only for large arrays. Only
+% 'full' output is currently implemented; passing 'valid' or 'same' triggers
+% a warning and returns an empty array.
 %
 % Inputs:
 %   pValues1 - first N-D numeric array

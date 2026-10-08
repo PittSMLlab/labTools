@@ -3,14 +3,13 @@ function [timeDiff, corrCoef, lagInSamples] = findTimeLag( ...
 %FINDTIMELAG Estimate the sample lag between two signals via correlation.
 %
 %   Zero-pads both signals to the same length, computes their cross-
-% correlation in the frequency domain, then interpolates at 100x
-% resolution to obtain a sub-sample lag estimate. Issues a warning
-% when the peak correlation is below 0.3, indicating unreliable
-% synchronization.
+% correlation in the frequency domain, then interpolates at 100x resolution
+% to obtain a sub-sample lag estimate. Issues a warning when the peak
+% correlation is below 0.3, indicating unreliable synchronization.
 %
 % Inputs:
-%   referenceSignal  - 1-D reference signal (row or column vector)
-%   secondarySignal  - 1-D signal to align to referenceSignal
+%   referenceSignal - 1-D reference signal (row or column vector)
+%   secondarySignal - 1-D signal to align to referenceSignal
 %
 % Outputs:
 %   timeDiff     - reserved; always returns NaN

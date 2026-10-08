@@ -2,11 +2,11 @@ function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
     signal1, signal2, M)
 %ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.
 %
-%   Divides both signals into windows of length M, estimates the time
-% lag between each window pair using FINDTIMELAG, then fits a line to
-% the lag-vs-time relationship. The slope of that line is the relative
-% Doppler shift (fractional sampling-rate difference). Outlier windows
-% are iteratively rejected until convergence.
+%   Divides both signals into windows of length M, estimates the time lag
+% between each window pair using FINDTIMELAG, then fits a line to the
+% lag-vs-time relationship. The slope of that line is the relative Doppler
+% shift (fractional sampling-rate difference). Outlier windows are
+% iteratively rejected until convergence.
 %
 %   Signals should be pre-aligned (relative delay << M) and high-pass
 % filtered for best results. The maximum detectable relative shift is
@@ -15,13 +15,13 @@ function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
 % Inputs:
 %   signal1 - 1-D reference signal (row vector)
 %   signal2 - 1-D secondary signal (row vector)
-%   M       - (optional) window length in samples; defaults to a value
-%             that yields approximately sqrt(N)/4 windows, capped at 128
+%   M       - (optional) window length in samples; defaults to a value that
+%             yields approximately sqrt(N)/4 windows, capped at 128
 %
 % Outputs:
-%   relativeShift  - fractional sampling-rate difference (slope of lag
-%                    vs. time line); positive means signal2 is faster
-%   initTimeDelay  - intercept of the lag-vs-time line, in samples
+%   relativeShift - fractional sampling-rate difference (slope of lag vs.
+%                   time line); positive means signal2 is faster
+%   initTimeDelay - intercept of the lag-vs-time line, in samples
 %
 % Toolbox Dependencies: None
 %

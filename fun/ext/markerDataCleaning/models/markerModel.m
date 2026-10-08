@@ -1,4 +1,25 @@
 classdef markerModel
+    %MARKERMODEL Abstract statistical model of a marker set.
+    %
+    %   Stores the training marker data (markers x 3 x frames) and the
+    % distribution of a set of summary statistics of it, computed with the
+    % subclass method summaryStats(). Subclasses implement loglikelihood,
+    % indicatrix, reconstruct, learn, summaryStats, stat2Matrix and
+    % getRefData. The model scores new data (per marker and per frame),
+    % detects outlier markers and tries label permutations that improve the
+    % fit.
+    %
+    % NOTE: work in progress. validateMarkerModel, labelData, dropMarkers,
+    % sortMarkerOrder and getSharedMarkerList are unimplemented stubs, and
+    % several methods call functions that are not in the repository
+    % (getTranslationAndRotation).
+    %
+    % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+    %   (prctile), Optimization Toolbox (fmincon, linprog, intlinprog,
+    %   optimoptions). Low confidence: the dependency analyzer reported only
+    %   Optimization; prctile was added by hand.
+    %
+    % See also NAIVEDISTANCES.
 
     properties
         markerLabels %Mx1 cell array
@@ -17,6 +38,24 @@ classdef markerModel
 
     methods
         function mm = markerModel(trainData,labels)
+            %MARKERMODEL Train a marker model from marker data.
+            %
+            %   mm = MARKERMODEL(trainData,labels) computes the summary
+            % statistics of the training data and stores their mean,
+            % standard deviation and 0 to 100th percentiles (and the
+            % percentiles of the log-likelihood of the training data). All
+            % statistics start out active.
+            %
+            % Inputs:
+            %   trainData - markers x 3 x frames training positions
+            %   labels    - markers x 1 cell array of marker labels
+            %
+            % Outputs:
+            %   mm - markerModel object
+            %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %   (prctile)
+
             mm.markerLabels = labels;
             mm.trainingData = trainData;
             trainStats = mm.summaryStats(trainData);
@@ -28,9 +67,29 @@ classdef markerModel
             mm.activeStats = true(size(mm.statMean));
         end
         function M = get.Nmarkers(this)
+            %GETNMARKERS Number of markers in the model.
+            %
+            % Inputs:
+            %   this - markerModel object
+            %
+            % Outputs:
+            %   M - number of rows of the training data
+            %
+            % Toolbox Dependencies: None
+
             M = size(this.trainingData,1);
         end
         function mu = get.statMedian(this)
+            %GETSTATMEDIAN Median of each statistic over training data.
+            %
+            % Inputs:
+            %   this - markerModel object
+            %
+            % Outputs:
+            %   mu - 51st column of the stored 0 to 100th percentiles
+            %
+            % Toolbox Dependencies: None
+
             mu = this.statPrctiles(:,51);
         end
 
@@ -41,6 +100,31 @@ classdef markerModel
         mapData = reconstruct(this,dataPrior,priorConfidence)
         function [badFlag,outlierClass1,outlierClass2] = ...
             validateMarkerModel(this,verbose)
+            %VALIDATEMARKERMODEL Compare model to a reference model.
+            %
+            %   [badFlag,outlierClass1,outlierClass2] =
+            % VALIDATEMARKERMODEL(this) checks, against the reference data
+            % of the class (getRefData), that the means and standard
+            % deviations of the statistics are inside their bounds and that
+            % the inequality constraints on the means hold. The model is bad
+            % if any check fails or if, for any marker, the second tightest
+            % standard deviation of its constraints is above 15 mm.
+            %
+            % NOTE: currently errors, because it relies on
+            % getSharedMarkerList and dropMarkers, which are unimplemented.
+            %
+            % Inputs:
+            %   this    - markerModel object
+            %   verbose - (optional) not used (default: true)
+            %
+            % Outputs:
+            %   badFlag       - true if the model fails any check
+            %   outlierClass1 - statistics that violate the inequality
+            %                   constraints
+            %   outlierClass2 - statistics whose mean is outside its bounds
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 2 || isempty(verbose)
                 verbose = true;
             end
@@ -62,6 +146,7 @@ classdef markerModel
                 this.statStd < stdLB(keptStats);
             %Fifth: check inequality constraints
             outlierClass1 = A(:,keptStats)*this.statMean > b;
+            maxSecondStd = 15; % mm: limit on the second tightest std
             %Sixth: check, for the full given model, that each marker has
             %some (2 or more) tight constraints, otherwise that marker is
             %not being modeled properly
@@ -69,19 +154,45 @@ classdef markerModel
             sortedSTD = sort(SS); %Ascending order, along columns
             %Marking as bad if second tightest std of constraints of any
             %marker are above 15mm
-            badFlag   = badFlag | any(sortedSTD(2,:) > 15);
+            badFlag   = badFlag | any(sortedSTD(2,:) > maxSecondStd);
         end
         function newThis = fixLabels(this)
-            %This function tries to permute labels in a model so the model
-            %would pass, or at least do better, at validate()
+            %FIXLABELS Permute labels to pass validation (stub).
+            %
+            %   This function is meant to permute the labels so the model
+            % passes, or at least does better at, validateMarkerModel. It is
+            % not implemented and newThis is never assigned.
+            %
+            % Inputs:
+            %   this - markerModel object
+            %
+            % Outputs:
+            %   newThis - model with fixed labels (never assigned)
+            %
+            % Toolbox Dependencies: None
+
         end
 
         %Convenience functions:
         function s = getRobustStd(this,CI)
-            %Uses the central confidence interval CI to estimate the std of
-            %the distribution
-            %assuming the central part is normally distributed
-            %CI has to be a number in [0.02,.98]
+            %GETROBUSTSTD Std estimated from a central percentile range.
+            %
+            %   s = GETROBUSTSTD(this,CI) estimates the standard deviation
+            % of each statistic from the central confidence interval CI of
+            % its training distribution, assuming the central part is
+            % normally distributed. For the classical 0.95 value the
+            % interval spans 2*1.96 sigma.
+            %
+            % Inputs:
+            %   this - markerModel object
+            %   CI   - (optional) central interval in [0.02, 0.98] (default:
+            %          0.95); errors otherwise
+            %
+            % Outputs:
+            %   s - standard deviation of each statistic
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 2
                 CI = 0.95;
             elseif CI > 0.98 || CI < 0.02
@@ -104,6 +215,21 @@ classdef markerModel
             s      = (pu-pl)/Nsigma;
         end
         function fh = seeModel(this)
+            %SEEMODEL Plot the model.
+            %
+            %   fh = SEEMODEL(this) opens a figure with the cdf of the
+            % training statistics, the median marker positions in 3-D and
+            % the standard deviation and median of the statistics as
+            % matrices.
+            %
+            % Inputs:
+            %   this - markerModel object
+            %
+            % Outputs:
+            %   fh - figure handle
+            %
+            % Toolbox Dependencies: None
+
             data = this.trainingData;
             fh   = figure;
             c    = colormap;
@@ -183,16 +309,29 @@ classdef markerModel
         end
         function [newThis,keptIdx,keptStats] = ...
             dropMarkers(this,markerList,keepMarkersFlag)
-            %Drops the markers in markerList from the model, if present.
-            %If keepMarkersFlag is set, then we only keep the markers in
-            %markerList and drop the rest. The markers are re-ordered to
-            %match the order in the given list.
-            %keptIdx is such that
-            %this.markerLabels(keptIdx)=newThis.markerLabels
-            %And will be equal to markerList if ALL markers in markerList
-            %are present
-            %keptStats is such that
-            %this.statMean(keptStats)=newThis.statMean
+            %DROPMARKERS Drop markers from the model (stub).
+            %
+            %   [newThis,keptIdx,keptStats] =
+            % DROPMARKERS(this,markerList,keepMarkersFlag) is meant to drop
+            % the markers in markerList, or to keep only them (in the order
+            % of the list) if keepMarkersFlag is set. keptIdx is such that
+            % this.markerLabels(keptIdx) = newThis.markerLabels and
+            % keptStats is such that this.statMean(keptStats) =
+            % newThis.statMean. It is not implemented and errors.
+            %
+            % Inputs:
+            %   this            - markerModel object
+            %   markerList      - markers to drop (or keep)
+            %   keepMarkersFlag - (optional) keep only the listed markers
+            %                     (default: false)
+            %
+            % Outputs:
+            %   newThis   - model without the dropped markers
+            %   keptIdx   - indices of the kept markers
+            %   keptStats - indices of the kept statistics
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 3 || isempty(keepMarkersFlag)
                 keepMarkersFlag = false;
             end
@@ -200,6 +339,28 @@ classdef markerModel
         end
         function [outlierMarkers,markerScores,logL] = ...
             outlierDetect(this,data,threshold,fastFlag)
+            %OUTLIERDETECT Detect outlier markers.
+            %
+            %   [outlierMarkers,markerScores,logL] =
+            % OUTLIERDETECT(this,data) scores the markers with scoreMarkers
+            % and flags those with a score below -threshold^2/2.
+            %
+            % Inputs:
+            %   this      - markerModel object
+            %   data      - markers x 3 x frames positions
+            %   threshold - (optional) number of standard deviations
+            %               (default: -5)
+            %   fastFlag  - (optional) use only the fast scoring (default:
+            %               false)
+            %
+            % Outputs:
+            %   outlierMarkers - markers x frames logical, true for outliers
+            %   markerScores   - markers x frames scores
+            %   logL           - empty (not computed)
+            %
+            % Toolbox Dependencies: Optimization Toolbox (through
+            %   scoreMarkers)
+
             if nargin < 3 || isempty(threshold)
                 threshold = -5;
             end
@@ -218,6 +379,28 @@ classdef markerModel
             outlierMarkers = markerScores < (-threshold^2/2);
         end
         function markerScores = scoreMarkers(this,data,fastFlag)
+            %SCOREMARKERS Score each marker in each frame.
+            %
+            %   markerScores = SCOREMARKERS(this,data) scores the markers
+            % with the second-worst log-likelihood of their statistics. This
+            % works well if only one outlier marker is present, or two or
+            % more non-adjacent markers (no strong distance constraints
+            % between them), and is problematic otherwise. Unless fastFlag
+            % is set, frames with more than one outlier marker are re-scored
+            % with untangleLikelihoods.
+            %
+            % Inputs:
+            %   this     - markerModel object
+            %   data     - markers x 3 x frames positions
+            %   fastFlag - (optional) skip the improved scoring (default:
+            %              false)
+            %
+            % Outputs:
+            %   markerScores - markers x frames scores
+            %
+            % Toolbox Dependencies: Optimization Toolbox (through
+            %   untangleLikelihoods)
+
             if nargin < 3 || isempty(fastFlag)
                 fastFlag = false;
             end
@@ -247,6 +430,24 @@ classdef markerModel
             end
         end
         function [labels1,labels2] = labelData(this,dataFrames)
+            %LABELDATA Assign labels to unlabeled marker data (stub).
+            %
+            %   [labels1,labels2] = LABELDATA(this,dataFrames) errors
+            % immediately ('This function doesnt work yet'); the body below
+            % the error call sketches two heuristics: assigning the most
+            % likely pair one at a time, and random labels followed by
+            % pairwise permutations.
+            %
+            % Inputs:
+            %   this       - markerModel object
+            %   dataFrames - markers x 3 x 1 positions (one frame)
+            %
+            % Outputs:
+            %   labels1 - labels from the first heuristic
+            %   labels2 - labels from the second heuristic
+            %
+            % Toolbox Dependencies: None
+
             error('This function doesnt work yet.')
             M2 = size(dataFrames,1); %Markers in data frame
             M1 = this.Nmarkers; %Markers in model (need not be equal)
@@ -314,18 +515,62 @@ classdef markerModel
 
         end
         function sortedData = sortMarkerOrder(model,data,labels)
-            % Convenience function that re-sorts the rows of data, so that
-            % they match the order of the labels in this model.
+            %SORTMARKERORDER Sort data rows to model labels (stub).
+            %
+            %   sortedData = SORTMARKERORDER(model,data,labels) is meant to
+            % re-sort the rows of data so they match the order of the labels
+            % in the model. It is not implemented and errors.
+            %
+            % Inputs:
+            %   model  - markerModel object
+            %   data   - markers x ... data
+            %   labels - labels of the rows of data
+            %
+            % Outputs:
+            %   sortedData - data re-sorted to the model order
+            %
+            % Toolbox Dependencies: None
+
             error('Unimplemented')
             %To do: compare lists of labels and model.markerLabels, find
             %sorting, and sort the data. Use compareLists()
         end
         function sharedMarkerList = getSharedMarkerList(model1,model2)
+            %GETSHAREDMARKERLIST Markers shared by two models (stub).
+            %
+            %   sharedMarkerList = GETSHAREDMARKERLIST(model1,model2) is not
+            % implemented and errors.
+            %
+            % Inputs:
+            %   model1 - markerModel object
+            %   model2 - markerModel object
+            %
+            % Outputs:
+            %   sharedMarkerList - labels present in both models
+            %
+            % Toolbox Dependencies: None
+
             error('Unimplemented')
         end
     end
     methods(Hidden)
         function markerScores = scoreMarkersRanked(this,data,N)
+            %SCOREMARKERSRANKED Score markers by the N-th worst statistic.
+            %
+            %   markerScores = SCOREMARKERSRANKED(this,data,N) scores each
+            % marker with the N-th lowest log-likelihood among the
+            % statistics that involve it (the minimum if N is 1).
+            %
+            % Inputs:
+            %   this - markerModel object
+            %   data - markers x 3 x frames positions
+            %   N    - (optional) rank of the score to use (default: 2)
+            %
+            % Outputs:
+            %   markerScores - markers x frames scores
+            %
+            % Toolbox Dependencies: None
+
             if nargin < 3
                 N = 2; %Using second-worse score
             end
@@ -345,12 +590,33 @@ classdef markerModel
         end
         function [dataFrame,permutationList] = ...
             tryPermutations(model,dataFrame,listToPermute)
-            %Tries to permute labels on single dataFrame to maximize
-            %likelihood of data.
+            %TRYPERMUTATIONS Permute labels in one frame to improve fit.
+            %
+            %   [dataFrame,permutationList] =
+            % TRYPERMUTATIONS(model,dataFrame) tries pairwise permutations
+            % of the markers associated with bad statistics (log-likelihood
+            % below -5^2/2) and then of all markers, keeping each
+            % permutation that increases the total log-likelihood, until no
+            % statistic is bad or no permutation helps.
+            %
+            % Inputs:
+            %   model         - markerModel object
+            %   dataFrame     - markers x 3 positions of a single frame
+            %   listToPermute - (optional) markers to permute (default: bad
+            %                   markers, then all)
+            %
+            % Outputs:
+            %   dataFrame       - frame with the accepted permutations
+            %                     applied
+            %   permutationList - accepted pairwise permutations, one pair
+            %                     per row
+            %
+            % Toolbox Dependencies: None
+
             permutationList = zeros(0,2);
             %Benchmark to compare:
             L0   = model.loglikelihood(dataFrame);
-            bad  = L0 < -5^2/2;
+            bad  = L0 < -5^2/2; % TODO: source? (5 std)
             nBad = sum(model.indicatrix* bad > 0);
             %TODO: start with markers associated to bad distances, and then
             %move to a larger set
@@ -415,32 +681,99 @@ classdef markerModel
 
         %Convenience functions:
         function lL = normalLogL(values,means,stds)
-            %values is PxN, means and stds are Px1
-            %Returns PxN likelihood of value under each normal
+            %NORMALLOGL Log-likelihood under normal distributions.
+            %
+            %   lL = NORMALLOGL(values,means,stds) returns
+            % -0.5*((values-means)./stds).^2, the log-density up to additive
+            % terms that do not depend on the value.
+            %
+            % Inputs:
+            %   values - P x N values
+            %   means  - P x 1 means
+            %   stds   - P x 1 standard deviations
+            %
+            % Outputs:
+            %   lL - P x N log-likelihoods
+            %
+            % Toolbox Dependencies: None
+
             d  = 0.5*((values-means)./stds).^2;
             lL = -d;% -log(stds) -.9189;
             %lL=-sqrt(2*d); %Mahalanobis distance
             %.9189 = log(2*pi)/2
         end
         function frameScores = marker2frameScoresNaive(markerScores)
+            %MARKER2FRAMESCORESNAIVE Mean marker score per frame.
+            %
+            % Inputs:
+            %   markerScores - markers x frames scores
+            %
+            % Outputs:
+            %   frameScores - 1 x frames mean score
+            %
+            % Toolbox Dependencies: None
+
             frameScores = mean(markerScores, 1, 'omitnan');
         end
         function [newDataFrame,params] = ...
             anchor(dataFrame,anchorFrame,anchorWeights)
-            %Convenience function that finds the 3D rotation/translation of
-            %dataFrame to best match the anchorFrame
-            %TODO: use weights to do a weighted optimization
+            %ANCHOR Rotate and translate a frame to match an anchor frame.
+            %
+            %   [newDataFrame,params] =
+            % ANCHOR(dataFrame,anchorFrame,anchorWeights) finds the 3-D
+            % rotation and translation of dataFrame that best match
+            % anchorFrame, using getTranslationAndRotation (not in the
+            % repository).
+            %
+            % TODO: use the weights to do a weighted optimization
+            % (anchorWeights is currently not used).
+            %
+            % Inputs:
+            %   dataFrame     - markers x 3 positions to move
+            %   anchorFrame   - markers x 3 reference positions
+            %   anchorWeights - weights of the anchor markers (not used)
+            %
+            % Outputs:
+            %   newDataFrame - moved positions
+            %   params       - struct with the rotation R and translation t
+            %
+            % Toolbox Dependencies: None
+
             [R,t,newDataFrame] = getTranslationAndRotation(dataFrame, ...
                 anchorFrame);
             params.R = R;
             params.t = t;
         end
         function markerScores = untangleLikelihoods(L,indicatrix)
+            %UNTANGLELIKELIHOODS Assign statistic likelihoods to markers.
+            %
+            %   markerScores = UNTANGLELIKELIHOODS(L,indicatrix) finds, for
+            % each frame, marker deviations x >= 0 (in standard deviations)
+            % that explain the statistic likelihoods: a linear program
+            % minimizes sum(x) subject to indicatrix'*x >= sqrt(-2*L); among
+            % solutions with the same active constraints, fmincon then picks
+            % the one with the largest sum(x.^2), that is, the most unequal
+            % one. The score is -0.5*x.^2. The tolerances are relaxed for
+            % speed. Prints the number of frames and the elapsed time.
+            %
+            % Inputs:
+            %   L          - statistics x frames log-likelihoods
+            %   indicatrix - markers x statistics matrix, 1 where the
+            %                statistic involves the marker
+            %
+            % Outputs:
+            %   markerScores - markers x frames scores
+            %
+            % Toolbox Dependencies: Optimization Toolbox (fmincon, linprog,
+            %   optimoptions)
+
             A = -indicatrix';
             %Relax tolerances for fast compute
+            relaxedTol = 1e-1;
             options = optimoptions('fmincon','Display','off', ...
                 'SpecifyObjectiveGradient',false,'OptimalityTolerance', ...
-                1e-1,'StepTolerance',1e-1,'ConstraintTolerance',1e-1);
+                relaxedTol,'StepTolerance',relaxedTol, ...
+                'ConstraintTolerance',relaxedTol);
             options2 = optimoptions('linprog','Display','off');
             N = size(indicatrix,1);
             LB = zeros(N,1);
@@ -480,14 +813,31 @@ classdef markerModel
         end
         %Single frame: L is vector
         function outMarkers = untangleOutliers(outStats,in)
-            %Solve: min 1'*y s.t. L<=i'*y and y>=(i*L -1'*y), where L =
-            %outlier stats for marker
-            %This means we find the minimum outlier set, such that each
-            %outlier stat has at least one causing outlier marker AND any
-            %marker that has strictly more outlier stats than there are
-            %outlier
-            %markers is an outlier itself [I think this is implied by the
-            %other but am not sure].
+            %UNTANGLEOUTLIERS Smallest marker set explaining outliers.
+            %
+            %   outMarkers = UNTANGLEOUTLIERS(outStats,in) solves, for each
+            % frame, min 1'*y s.t. outStats <= in'*y and y >= (in*outStats -
+            % 1'*y)/K with intlinprog, where K is the largest number of
+            % statistics per marker. This finds the minimum outlier set such
+            % that each outlier statistic has at least one outlier marker
+            % causing it, and any marker with more outlier statistics than
+            % there are outlier markers is itself an outlier. The program is
+            % only solved for a frame when the initial set (markers with
+            % more than one outlier statistic) violates these constraints or
+            % has more than one marker.
+            %
+            % Inputs:
+            %   outStats - statistics x frames logical, true for outlier
+            %              statistics
+            %   in       - markers x statistics indicatrix
+            %
+            % Outputs:
+            %   outMarkers - markers x frames logical, true for outlier
+            %                markers
+            %
+            % Toolbox Dependencies: Optimization Toolbox (intlinprog,
+            %   optimoptions)
+
             [M,P] = size(in);
             uno        = ones(M,1);
             cero       = zeros(M,1);
@@ -520,6 +870,22 @@ classdef markerModel
     end
     methods(Static,Hidden)
         function data = applyPermutationList(data,permutationList)
+            %APPLYPERMUTATIONLIST Apply pairwise row permutations in order.
+            %
+            %   data = APPLYPERMUTATIONLIST(data,permutationList) swaps, for
+            % each row of permutationList, the two listed rows of data
+            % (along dimension 1). A row vector is converted to a column
+            % first.
+            %
+            % Inputs:
+            %   data            - array permuted along dimension 1
+            %   permutationList - n x 2 pairs of row indices to swap
+            %
+            % Outputs:
+            %   data - permuted array
+            %
+            % Toolbox Dependencies: None
+
             if size(data,1) == 1 %Row vector
                 data = data(:);
             end

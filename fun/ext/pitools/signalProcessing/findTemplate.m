@@ -1,11 +1,29 @@
 function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag)
-%findTemplate implements a simple cross-correlation search to find for
-%occurrences (or near-occurrences) of a given template signal within a
-%longer signal (dataseries).
-%p returns the probability of a match for each sample given by a fitted
-%beta distribution to the data. This value can be used to look for
-%statistically significant matches
-%k returns the scaling of the data to the template.
+%FINDTEMPLATE Cross-correlation search for a template in a signal.
+%
+%   [c,k,a,p] = FINDTEMPLATE(template,dataseries,whitenFlag) searches for
+% occurrences (or near-occurrences) of a template within a longer signal
+% (dataseries) with a normalized cross-correlation computed through the FFT.
+% The cosine c is that of the (detrended) window of dataseries with the
+% template at each sample. The match is meant to be tested against a beta
+% distribution fitted to c; the probability p is currently not computed.
+% Errors if the cosines are complex or outside [-1,1].
+%
+% Inputs:
+%   template   - vector, signal to look for
+%   dataseries - vector, signal to search in (NaN counts as 0)
+%   whitenFlag - (optional) 1 to whiten dataseries first (assumes
+%                independent samples; improves detection)
+%
+% Outputs:
+%   c - cosine between the template and the data window at each sample
+%   k - scaling of the data to the template (energy ratio)
+%   a - parameter of the beta distribution fitted to (1+c)/2
+%   p - empty (probability of a match is not computed)
+%
+% Toolbox Dependencies: None
+%
+% See also XCORR.
 
 N        = length(dataseries);
 M        = length(template);

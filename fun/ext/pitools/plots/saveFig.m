@@ -2,13 +2,13 @@ function saveFig(h, dir, fileName, sizeFlag)
 %SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.
 %
 %   Creates fig/, eps/, and png/ subdirectories under dir and writes one
-% file per format. EPS export uses OpenGL rendering (rasterised at 600
-% DPI), which handles transparency correctly but is not true vector
-% output. PNG export renders at 600 DPI with a white background.
+% file per format. EPS export uses OpenGL rendering (rasterised at 600 DPI),
+% which handles transparency correctly but is not true vector output. PNG
+% export renders at 600 DPI with a white background.
 %
-%   When sizeFlag is provided and non-empty, the caller is responsible
-% for setting the figure size before calling saveFig. Otherwise the
-% figure is maximised to fill the screen.
+%   When sizeFlag is provided and non-empty, the caller is responsible for
+% setting the figure size before calling saveFig. Otherwise the figure is
+% maximised to fill the screen.
 %
 % Inputs:
 %   h        - handle to the figure to save

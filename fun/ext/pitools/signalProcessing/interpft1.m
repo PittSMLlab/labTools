@@ -1,7 +1,22 @@
 function y = interpft1(x,N,dim)
-%INTERPFT1 Replacement for the original interpft, with mirroring extension
-%to allow for circular
-%continuity
+%INTERPFT1 Fourier interpolation with mirrored extension.
+%
+%   y = INTERPFT1(x,N,dim) replaces INTERPFT: the signal is first extended
+% with its mirror image, so the interpolation is circularly continuous,
+% interpolated to 2*N points and cut to the first N points.
+%
+% Inputs:
+%   x   - array to interpolate
+%   N   - number of points of the result along dim
+%   dim - (optional) dimension to interpolate along (default: 1)
+%
+% Outputs:
+%   y - interpolated array, N points along dim
+%
+% Toolbox Dependencies: None
+%
+% See also INTERPFT, DEPERMUTE.
+
 if nargin < 3
     dim = 1;
 end

@@ -1,7 +1,27 @@
 function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)
-%Estimation of amplitude of a given EMG signal (envelope detection).
-%Following guidelines in Merletti & Parker's book Electromyography (Section
-%6.4, First Edition, p. 139).
+%AMP_ESTIM Amplitude estimate (envelope) of an EMG signal.
+%
+%   [amplitude,procList] = AMP_ESTIM(signal,fs,mod_ord,cutoff) rectifies the
+% signal (absolute value raised to mod_ord), smooths it with a zero-phase
+% Butterworth lowpass filter (filtfilthd_short with reflected boundaries)
+% and relinearizes it, following the guidelines in Merletti & Parker's book
+% Electromyography (Section 6.4, First Edition, p. 139). No whitening is
+% applied.
+%
+% Inputs:
+%   signal  - samples x channels EMG signal
+%   fs      - sampling frequency (Hz)
+%   mod_ord - order of the rectification (1 is plain rectification)
+%   cutoff  - cutoff frequency of the smoothing filter (Hz)
+%
+% Outputs:
+%   amplitude - samples x channels amplitude estimate
+%   procList  - cell array describing the processing stages (whitening,
+%               rectification, the lowpass filter design)
+%
+% Toolbox Dependencies: Signal Processing Toolbox (fdesign.lowpass, design)
+%
+% See also FILTFILTHD_SHORT, LOWPASSFILTERING.
 
 N = size(signal,1);
 

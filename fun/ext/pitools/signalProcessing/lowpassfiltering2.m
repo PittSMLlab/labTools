@@ -1,6 +1,5 @@
 function data = lowpassfiltering2(data, fcut, filterOrder, fsample)
-%LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with
-%mirrored-boundary padding.
+%LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.
 %
 %   Applies a Butterworth lowpass filter with mirrored boundary padding to
 % avoid edge transients. The filter is applied using an FFT-based zero-phase
@@ -18,7 +17,7 @@ function data = lowpassfiltering2(data, fcut, filterOrder, fsample)
 % Outputs:
 %   data - (N×C) double, filtered data (same size as input)
 %
-% Toolbox Dependencies: None (butter, filter, fft, ifft are core MATLAB)
+% Toolbox Dependencies: Signal Processing Toolbox (butter)
 %
 % See also LOWPASSFILTERING, FILTFILTHD_SHORT.
 
