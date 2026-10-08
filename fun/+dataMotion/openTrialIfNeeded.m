@@ -1,14 +1,20 @@
 function isOpen = openTrialIfNeeded(pathTrial,vicon)
-%OPENTRIALIFNECESSARY Check if the trial is open, open if not, close others
-%   This helper function checks if a specified trial is already open, and
-% if not, it closes any other open trial and opens the desired one.
+%OPENTRIALIFNEEDED Open a trial in Vicon Nexus unless it is already open.
 %
-% input(s):
-%   pathTrial: full path to the trial file (e.g., .x2d or folder path)
-%   vicon: Vicon Nexus SDK object
+%   Compares the open trial with pathTrial; if a different trial is open
+% it is closed first, then the requested trial is opened.
 %
-% output(s):
-%   isOpen: logical, true if the specified trial is open, false otherwise
+% Side effects: closes the currently open Nexus trial when it differs
+%   from pathTrial and opens pathTrial. Failures only warn.
+%
+% Inputs:
+%   pathTrial - full path to the trial file (.x2d or trial folder path)
+%   vicon     - Vicon Nexus SDK object
+%
+% Outputs:
+%   isOpen - true if the requested trial is open on return
+%
+% Toolbox Dependencies: None
 
 narginchk(2,2);                 % verify correct number of input arguments
 

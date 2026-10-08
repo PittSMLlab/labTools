@@ -1,20 +1,35 @@
 function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, ...
     vicon, shouldSave, maxGapSize, interpMethod)
-%FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline
-%   This function fills gaps in all marker trajectories identified in
-% markerGaps using spline interpolation for gaps smaller than the specified
-% maxGapSize variable. It optionally accepts a Vicon Nexus SDK object.
+%FILLSMALLMARKERGAPSSPLINE Fill small marker gaps by interpolation.
 %
-% input(s):
-%   markerGaps: struct with start and end frame indices of gaps in each
-%       marker's trajectory, as obtained from extractMarkerGapsTrial
-%   pathTrial: string or character array of the full path to the trial
-%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
-%   shouldSave: (optional) logical, whether to save changes (default: true)
-%   maxGapSize: (optional) integer specifying maximum gap size to fill,
-%       (default: 10 frames)
-% output(s):
-%   updatedMarkerGaps: struct with only remaining gaps after processing
+%   Fills the gaps listed in markerGaps that are not longer than
+% maxGapSize frames, interpolating each trajectory axis with interpMethod.
+% Longer gaps are left and returned.
+%
+% Side effects: needs a running Vicon Nexus (a connection is opened when
+%   no vicon object is passed); opens the trial, writes the filled
+%   trajectories back to Nexus and, when shouldSave is true and something
+%   changed, saves the trial. Errors on a malformed markerGaps struct or
+%   a trial without a subject.
+%
+% Inputs:
+%   markerGaps   - struct with one field per marker, each an Nx2 array of
+%                  [start end] gap frames (see extractMarkerGapsTrial)
+%   pathTrial    - full path to the trial
+%   vicon        - (optional) Vicon Nexus SDK object
+%   shouldSave   - (optional) logical, save the trial after filling
+%                  (default: true)
+%   maxGapSize   - (optional) largest gap to fill, in frames (default: 10)
+%   interpMethod - (optional) method passed to interp1 (default:
+%                  'spline')
+%
+% Outputs:
+%   markerGapsUpdated - struct with only the gaps that remain unfilled
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.EXTRACTMARKERGAPSTRIAL,
+%   DATAMOTION.FILLMARKERGAPSPATTERN.
 
 % TODO: add a GUI input option if helpful
 narginchk(2,6);         % verify correct number of input arguments
@@ -32,7 +47,7 @@ if nargin < 4 || isempty(shouldSave)       % if no 'shouldSave' input
     shouldSave = true;                     % default to saving changes
 end
 
-% validate 'markerGaps' structure format
+%% Validate inputs and open the trial
 markers = fieldnames(markerGaps);
 for mrkr = 1:numel(markers)
     gaps = markerGaps.(markers{mrkr});
@@ -61,7 +76,7 @@ if isempty(subject)
 end
 subject = subject{1};
 
-% process each marker gap in the 'markerGaps' struct
+%% Fill the gaps
 fprintf('Filling small marker gaps with %s interpolation...\n', ...
     interpMethod);
 wasChanged = false;                     % track whether changes were made
@@ -117,7 +132,7 @@ for mrkr = 1:numel(markers)
 end
 fprintf('Small marker gap spline filling complete.\n');
 
-% save the trial if changes were made and 'shouldSave' is true
+%% Save the trial
 if wasChanged && shouldSave
     fprintf('Saving the trial with changes...\n');
     try
@@ -139,11 +154,24 @@ end
 
 function [trajX,trajY,trajZ,existsTraj] = fillGap( ...
     trajX,trajY,trajZ,existsTraj,gapRange, interpMethod)
-% FILLGAP Interpolates a gap in a marker trajectory using spline
-% input:
-%   trajX, trajY, trajZ: trajectories for x, y, and z coordinates
-%   existsTraj: logical array indicating frame existence
-%   gapRange: 1x2 array with start and end indices of the gap to fill
+%FILLGAP Interpolate one gap of a marker trajectory.
+%
+%   Fills the frames in gapRange of the X, Y, and Z trajectories with
+% interp1 over the frames where the marker exists.
+%
+% Inputs:
+%   trajX        - X trajectory
+%   trajY        - Y trajectory
+%   trajZ        - Z trajectory
+%   existsTraj   - logical array, true where the marker exists
+%   gapRange     - 1x2 [start end] frame indices of the gap to fill
+%   interpMethod - interpolation method passed to interp1
+%
+% Outputs:
+%   trajX, trajY, trajZ - trajectories with the gap filled
+%   existsTraj          - existence array with the gap frames set true
+%
+% Toolbox Dependencies: None
 
 % frames to process for filling the gap
 framesToFill   = gapRange(1):gapRange(2);

@@ -1,5 +1,28 @@
 function  [expData,rawExpData,adaptData] = reviseExperimentInfo()
-%REVISEEEXPERIMENTINFO Revise experimental session information in MAT files
+%REVISEEXPERIMENTINFO Re-enter session information and rebuild the files.
+%
+%   Asks for the experimental session information through GetInfoGUI,
+% reloads the saved raw and processed data of that session, rebuilds the
+% experiment and participant metadata and the trial metadata from the new
+% information, and wraps the existing trial data in new objects. Events
+% and parameters are not recomputed; the files are saved and the params
+% file is regenerated.
+%
+% Side effects: shows GetInfoGUI; loads <ID>RAW.mat and <ID>.mat from
+%   info.save_folder and overwrites both (-v7.3), then writes the params
+%   file through makeDataObj.
+%
+% Inputs:
+%   none
+%
+% Outputs:
+%   expData    - processed experimentData with the revised information
+%   rawExpData - raw experimentData with the revised information
+%   adaptData  - adaptationData built from expData
+%
+% Toolbox Dependencies: None
+%
+% See also GETINFOGUI, EXPERIMENTDATA.PROCESS, EXPERIMENTDATA.MAKEDATAOBJ.
 
 info = GetInfoGUI();            % retrieve experimental session information
 % load previous raw and processed experimental session data for comparison

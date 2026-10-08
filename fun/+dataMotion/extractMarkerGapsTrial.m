@@ -1,22 +1,31 @@
 function markerGaps = extractMarkerGapsTrial(pathTrial,vicon)
-%EXTRACTMARKERGAPSTRIAL Extract indices of all marker gaps to be filled
-%   This function accepts as input the full path to the trial and
-% identifies gaps in all markers' trajectories. Make sure the Vicon Nexus
-% SDK is installed and added to the MATLAB path.
+%EXTRACTMARKERGAPSTRIAL Find the frame ranges of all marker gaps in a trial.
 %
-% input(s):
-%   pathTrial: string or character array of the full path of the trial on
-%       which to run the reconstruct and label processing pipeline
-%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.
-% output:
-%   markerGaps: struct of arrays with start and end frame indices of the
-%       gaps in each marker's trajectory, ...
-%       formatted as [startsGaps endsGaps]
+%   Opens the trial in Vicon Nexus if needed and, for every marker of the
+% first subject, finds the runs of frames where the trajectory does not
+% exist. The Vicon Nexus SDK must be installed and on the MATLAB path.
+%
+% Side effects: needs a running Vicon Nexus (a connection is opened when
+%   no vicon object is passed); opens the trial. Errors if the SDK cannot
+%   be initialized or the trial has no subject.
+%
+% Inputs:
+%   pathTrial - full path to the trial
+%   vicon     - (optional) Vicon Nexus SDK object
+%
+% Outputs:
+%   markerGaps - struct with one field per marker that has gaps, each an
+%                Nx2 array of [start end] frame indices, one row per gap
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.FILLMARKERGAPSPATTERN,
+%   DATAMOTION.FILLSMALLMARKERGAPSSPLINE.
 
 % TODO: add a GUI input option if helpful
 narginchk(1,2);         % verify correct number of input arguments
 
-% initialize the Vicon Nexus object if not provided
+%% Connect to Nexus and open the trial
 if nargin < 2 || isempty(vicon)
     fprintf(['No Vicon SDK object provided. Connecting to Vicon ' ...
         'Nexus...\n']);
@@ -40,7 +49,7 @@ if isempty(subject)
 end
 subject = subject{1};
 
-% initialize structure to store marker trajectory gaps
+%% Find the gaps of each marker
 markerGaps = struct();
 markers    = vicon.GetMarkerNames(subject);
 if isempty(markers)     % if empty array of markers, ...

@@ -1,26 +1,28 @@
-%Script to process a python biofeedback data file and add the columns of
-%data onto the end of the subject's adaptData instance
+%% Add Python biofeedback data to adaptData
+% Script. Processes Python biofeedback data files and appends their
+% columns to the end of a subject's adaptData. Nexus processing must
+% already be done, or the labTools objects cannot be found. Meant for any
+% study that collects biofeedback together with a Nexus gait trial, not
+% for biofeedback outside gait.
 %
-%  No inputs required, inputs are asked for during the execution. However,
-%  it is required that Nexus processing has already been done prior to
-%  calling this function. otherwise it will not be able to find the
-%  labtools objects to update.
+% Inputs:
+%   none - the subject file, subject code, Python files, trial
+%          assignment, and variables to add are requested during the run
 %
-%  No output is returned, however a message is displayed which indicates
-%  success or failure
+% Outputs:
+%   none - a message in the command window reports success or failure
 %
-%This function is intended to be universaly usefull, in other words it
-%will be useful for any study collecting biofeedback in conjunction with a
-%nexus gait trial. This is not designed for biofeedback trials outside of
-%gait (it doesn't make sense to be doing this if there is no gait).
+% Side effects: changes the current folder to the selected subject
+%   folder; loads <ID>RAW.mat, <ID>.mat, and <ID>params.mat; opens
+%   dialogs, tables, and diagnostic figures; leaves many variables in the
+%   base workspace; overwrites <ID>params.mat with the extended
+%   adaptData.
 %
-%written 10/26/2015 WDA
+% Toolbox Dependencies: Signal Processing Toolbox
+%
+% See also SYNCPYTHON_FORSTATIC.
 
-
-% clear
-% clc
-
-
+%% Load subject files
 %select processed subject data to add biofeedback info to:
 %you can pick any of the matlab files SUB.RAW or sub.info or sub.params etc.
 [notname,LTpathname] = uigetfile('.mat','Select Subject File:');
@@ -43,6 +45,7 @@ close(WB)
 maxFrameDiff = 10;     % TODO: source? (frames, Python vs Nexus HS)
 
 
+%% Select Python files
 global t;%variable for uitable later on
 global mdata;
 global ndata;

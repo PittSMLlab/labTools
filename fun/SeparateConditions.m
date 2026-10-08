@@ -1,61 +1,53 @@
-%Chagingparams, create new conditions in 1 trial, currently only need to
-%use it fors the first block for preintervention trials.
 function adaptDataToSep = SeparateConditions(adaptDataToSep, ...
     oldConditionName, newConditionName, Tied2Split, speedDiff, ...
     newDecription, plotSpeed, containsPercTask)
-% Separate 1 condition given by oldConditionName into 2: {oldConditionName,
-% newConditionName}
-% the newConditionName needs to happen after the oldConditionName
-% chronologically, otherwise it doesn't make sense and the code is not
-% handling that right now.
-% The trial numbers after the current trial being separated will be shifted
-% by 1.
+%SEPARATECONDITIONS Split one condition into two using belt speed.
 %
-% [input]
-%   - adaptDataToSep: an adaptationData object that contains conditiosn to
-%   be separated.
-%   - oldConditionName: string of the name of the condition that will be
-%   separated into 2
-%   - newConditionName: string of the condition name of the new trial that
-%   was
-%           separated out. If newConditionName already exists, will assign
-%           the strides in the
-%           oldConditionName a new trial number and put them into part of
-%           the
-%           newConditionName, but this basically only works if the
-%           newConditionName is immediately after the oldConditionName
-%   - speedDiff: integer representing the speed difference in mm/s that we
-%           should use as a cutoff to separate conditions. Should be the
-%           upper bound of
-%           the speed difference measured with noise in the tied condition
-%           so that anything above this uppder bound of tied will be
-%           considered split. A good starting value is 75
-%   - Tied2SplitOrSplit2Tied: true if the conditions split is from tied to
-%           split. False if it's from split to tied walking. OPTIONAL,
-%           default true (from split to tied)
-%   - newDecription: string description of the new condition that will be
-%           added after the split. OPTIONAL, default "Separated
-%           oldConditionName"
-%   - plotSpeed: OPTIONAL. boolean indicating if before and after condition
-%           separating speed figures should be plotted. Default false.
-%   - containsPercTask: OPTIONAL. boolean indicating if perceptual task is
-%           present, default to false.
+%   Separates the condition oldConditionName into {oldConditionName,
+% newConditionName} at the stride where the belt speed difference changes
+% between tied and split walking. The new condition must occur after the
+% old one in time; the reverse is not handled. Trial numbers after the
+% separated trial shift by one. If newConditionName already exists, the
+% strides of oldConditionName are assigned a new trial number and merged
+% into it, which only works when it directly follows oldConditionName.
+% A speed change must hold for 4 consecutive strides to count as a
+% transition rather than speed noise. Currently used for the first block
+% of the pre-intervention trials.
 %
-% [output]
-%   - adaptDataToSep: an adaptationData object that contains the new
-%   conditions that have been separated.
-% Examples:
-%adaptData = AddingConditionsNirs(adaptData, 'TMMidThenAdapt', ...
-%    'Adaptation', speedDiff, true, [], plotSpeed);
-% The above example will separate TMMidThenAdapt in to {TMMidThenAdapt,
-% 'Adaptation'} and group the
-% 2nd half of TMMidThenAdapt in split into Adaptation condition that
-% already exists:
+% Side effects: when plotSpeed is true, plots the belt speed before and
+%   after separating.
 %
-% See also: Github:
-% DulceMariscal/Generalization_Regressions/AddingConditions.m
+% Inputs:
+%   adaptDataToSep   - adaptationData containing the condition to split
+%   oldConditionName - name of the condition to split
+%   newConditionName - name of the condition split off
+%   Tied2Split       - (optional) true if the transition is from tied to
+%                      split, false if from split to tied (default: true)
+%   speedDiff        - (optional) belt speed difference cutoff (mm/s);
+%                      differences above it count as split. Use the upper
+%                      bound of the noise in the tied condition
+%                      (default: 75)
+%   newDecription    - (optional) description of the new condition
+%                      (default: 'Separated <oldConditionName>')
+%   plotSpeed        - (optional) logical, plot the speeds (default:
+%                      false)
+%   containsPercTask - (optional) logical, a perceptual task is present
+%                      (default: false)
 %
-% $Author: Shuqi Liu $  $Date: 2024/11/26 14:58:55 $    $Revision: 0.1 $
+% Outputs:
+%   adaptDataToSep - adaptationData with the separated conditions
+%
+% Example:
+%   adaptData = SeparateConditions(adaptData, 'TMMidThenAdapt', ...
+%       'Adaptation', true, speedDiff, [], plotSpeed);
+%   splits TMMidThenAdapt into {TMMidThenAdapt, Adaptation} and moves the
+%   second half into the existing Adaptation condition.
+%
+% Toolbox Dependencies: None
+%
+% NOTE: adapted from DulceMariscal/Generalization_Regressions/
+%   AddingConditions.m (GitHub).
+%
 % Copyright: Sensorimotor Learning Laboratory 2024
 
 if nargin < 4 || isempty(Tied2Split)
@@ -81,7 +73,7 @@ if nargin < 8 || isempty(containsPercTask)
     containsPercTask = false;
 end
 
-%check if input is valid
+%% Validate inputs
 [condExist, loc] = ismember({oldConditionName, newConditionName}, ...
     adaptDataToSep.metaData.conditionName);
 if ~condExist(1) %oldCondition doesn't exist, error
@@ -101,7 +93,7 @@ if plotSpeed
     title('Before Changing Conditions');
 end
 
-% find the index for the label singleStanceSpeedFastAbsANK
+%% Locate the speed signal
 idxfast = compareListsNested({'singleStanceSpeedFastAbsANK'}, ...
     adaptDataToSep.data.labels) == 1;
 idxslow = compareListsNested({'singleStanceSpeedSlowAbsANK'}, ...
@@ -117,7 +109,7 @@ fast       = adaptDataToSep.data.Data(:,idxfast);
 slow       = adaptDataToSep.data.Data(:,idxslow);
 difference = fast-slow;
 
-% find the index with speed difference or speed at 1 but also within the
+%% Find the speed change
 % current condition of interes
 %find all cases where diff in speed > speedDiff
 diffMask         = (abs(difference) > speedDiff & ...
@@ -168,7 +160,7 @@ else
     idxSplit = idxSplit + thresholdStrides;
 end
 
-%perceptual task, return the idxSplit in the original data frame (where
+%% Map the split back to all strides
 %indices included the perceptual trials)
 if containsPercTask
     idxSplit = nonpercepStrides(idxSplit);
@@ -179,6 +171,7 @@ end
 %    strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};
 
 
+%% Update the condition metadata
 if newCondExist
     %if the new condition name given already exist, add this separated
     %new trial into the existing trials in the existing newCondition,

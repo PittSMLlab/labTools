@@ -1,18 +1,37 @@
 function interpolTraj(pathSess,indsTrials,vicon)
-% %INTERPOLTRAJ Interpolates trajectories to fill in marker gaps
-% %   This function fills in the marker gaps by interpolating the trajectory
-% of each X,Y,Z direction.
-% %   Make sure the Vicon Nexus SDK is installed and added to the MATLAB
-% path.
-% %
-% % input(s):
-% %   pathSess: path to the session folder where all trial data is stored.
-% %   nameMarker: marker of choice for which trajectory you want to fill
-% %   indsTrials: (optional) array of indices indicating which trials to
-% %       process. By default, all files starting with 'Trial' are
-% processed.
-% %   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-% %       object will be created and connected.
+%INTERPOLTRAJ Fill marker gaps by interpolating each trajectory axis.
+%
+%   For each selected trial in a session folder, opens the trial in Vicon
+% Nexus, optionally runs reconstruct and label, and for each requested
+% marker removes outliers (moving mean +/- threshold * moving std), fills
+% the gaps of the X, Y and Z trajectories with 'makima' interpolation,
+% plots original and filled data, writes the trajectories back to Nexus
+% and saves the trial. The Vicon Nexus SDK must be installed and on the
+% MATLAB path.
+%
+% Side effects: prompts in the command window for whether to run
+%   reconstruct and label ("Y" or "N") and for the marker names (a cell
+%   array); opens and closes trials in Nexus, overwrites the marker
+%   trajectories and saves each trial; opens three figures per marker
+%   and trial.
+%
+% Inputs:
+%   pathSess   - path to the session folder holding the Trial*.x1d files
+%   indsTrials - (optional) trial numbers to process; numbers without a
+%                trial file are ignored (default: all trials)
+%   vicon      - (optional) Vicon Nexus SDK object (default: connect to
+%                a new ViconNexus object)
+%
+% Outputs:
+%   none
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.OPENTRIALIFNEEDED,
+%   DATAMOTION.RECONSTRUCTANDLABELTRIAL.
+
+% NOTE: earlier version of this function, kept as commented-out code
+% for reference.
 %
 % narginchk(1,4);                 % verify correct number of input arguments
 %
@@ -143,24 +162,10 @@ function interpolTraj(pathSess,indsTrials,vicon)
 %    Y_data_filled,Z_data_filled,existsTraj);
 %
 % end
-%%
-%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps
-%   This function fills in the marker gaps by interpolating the trajectory
-%   of each X,Y,Z direction.
-%   Make sure the Vicon Nexus SDK is installed and added to the MATLAB path.
-%
-% input(s):
-%   pathSess: path to the session folder where all trial data is stored.
-%   nameMarkers: cell array of marker names for which trajectories you want
-%   to fill (e.g., {'RGT', 'RKNEE', 'RANK'})
-%   indsTrials: (optional) array of indices indicating which trials to
-%   process. By default, all files starting with 'Trial' are processed.
-%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-%   object will be created and connected.
 
 narginchk(1,4);                 % verify correct number of input arguments
 
-% ensure session folder path exists
+%% Validate the session folder
 if ~isfolder(pathSess)
     error('The session folder path specified does not exist: %s',pathSess);
 end
@@ -172,7 +177,7 @@ if isempty(trialFiles)      % if no trial files found, ...
     return;
 end
 
-% extract trial indices from filenames
+%% Select trials
 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
     'UniformOutput',false);
 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);

@@ -1,11 +1,26 @@
 function results = SyncPython_forStatic(subject)
-%function to incorporate biofeedback data from Python scripts into labtools
-%objects. This is specifically for Dulce's distraction study only! this
-%function will not universally work
+%SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.
 %
-% Inputs are a string type that designates the subject code, i.e. "OG103"
+%   Incorporates biofeedback data recorded by Python scripts into the
+% labTools objects of one subject. Written for the distraction study only
+% and not general. For each biofeedback condition (Gradual adaptation,
+% Re-adaptation, TM medium W/Bio, Abrupt adaptation) it loads the next
+% PytonData#.mat, aligns the Python and Nexus time bases by
+% cross-correlation, matches heel strikes, compares the Python and Nexus
+% step lengths with the target band, and appends the TargetHitR,
+% TargetHitL, TargetHit, and TargetNexus parameters to adaptData.
 %
-%by Dulce Mariscal
+% Side effects: loads <subject>params.mat, <subject>.mat, <subject>RAW.mat
+%   and PytonData#.mat from the current folder; opens many diagnostic
+%   figures; overwrites <subject>params.mat and writes <subject>Pyton2.mat.
+%
+% Inputs:
+%   subject - subject code, e.g., 'OG103'
+%
+% Outputs:
+%   results - struct of matched event indices, targets, and scales
+%
+% Toolbox Dependencies: Signal Processing Toolbox
 
 
 typeBiofeedback = 0;
@@ -142,7 +157,7 @@ for p = 1:length(condition)
             newData2(outmat(ii,1),1:end) = outmat(ii,:);
         end
 
-        %%
+        %% Align Python to Nexus
         RANK = [];
         [RANK,~,~] = getDataAsVector(expData.data{j}.markerData,'RANKy');
 
@@ -188,7 +203,7 @@ for p = 1:length(condition)
         plot(newData2(:,16)*1000, 'r')
 
 
-        %%
+        %% Match events from forces
         %Finding HS from Nexus at 100HZ and Interpolated Pyton data,
         %interpolate
         %data is used to make sure that we dont take in consideration extras
@@ -305,7 +320,7 @@ for p = 1:length(condition)
             locLindex2(ii,1) = locLindex(ii+1);
         end
 
-        %%
+        %% Keep good strides
         %Good strides
         GoodEvents = expData.data{j}.adaptParams.Data(:,2);
         locRindex  = locRindex((GoodEvents) == 1,1);
@@ -322,7 +337,7 @@ for p = 1:length(condition)
         results.GoodLHS = [results.GoodLHS;GoodLHS];
 
 
-        %%
+        %% Compute step lengths
         %find alpha value on time
         stepLengthSlow = ...
             (newData2(locLindex2,11)-newData2(locLindex2,10))*1000;
@@ -372,7 +387,7 @@ for p = 1:length(condition)
         end
 
 
-        %%
+        %% Check step classification
         %Comprobando si los pasos fueron clasificados de la manera correcta
         for ii = 1:length(GoodRHS)
             if abs(alphaRPyton(ii)-Rtarget(ii)) <= errorBand
@@ -401,7 +416,7 @@ for p = 1:length(condition)
         end
 
 
-        %%
+        %% Compare with Nexus step lengths
 
         alphaRnexus     = adaptData.getParamInCond({'alphaFast'}, ...
             condition{p});
@@ -560,7 +575,7 @@ for p = 1:length(condition)
         results.GoodnexusL = [results.GoodnexusL;GoodnexusL];
         %
     end
-    %%
+    %% Count good steps
 
     numberSteps = adaptData.getParamInCond('Good',condition{p});
     % stepLengthAsymnexus=adaptData.getParamInCond('stepLengthAsym', ...
@@ -615,7 +630,7 @@ for p = 1:length(condition)
 
 end
 
-%%
+%% Append the parameters and save
 pData  = adaptData.data;
 labels = {'TargetHitR', 'TargetHitL', 'TargetHit','TargetNexus'};
 [aux,idx] = pData.isaLabel(labels);

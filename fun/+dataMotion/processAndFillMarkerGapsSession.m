@@ -1,23 +1,40 @@
 function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)
-%PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps
-%   This function finds all trials in the session folder with filenames
-% starting with 'Trial', filters them based on the specified indices, and
-% runs the reconstruct and label pipelines. Then, the small marker gaps are
-% filled using spline interpolation. Make sure the Vicon Nexus SDK is
-% installed and added to the MATLAB path.
+%PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.
 %
-% input(s):
-%   pathSess: path to the session folder where all trial data is stored.
-%   indsTrials: (optional) array of indices indicating which trials to
-%       process. By default, all files starting with 'Trial' are processed.
-%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-%       object will be created and connected.
+%   For each selected trial in a session folder, runs the Nexus
+% reconstruct-and-label pipelines (RLPrePatternFill1 and 2), fills gaps by
+% reference-marker pattern, fills the remaining small gaps with 'makima'
+% interpolation, runs the post-fill pipeline (Butterworth smoothing),
+% saves the trial, and saves trajectory figures of the hip and ankle
+% markers. A failed pipeline stage only warns; a trial whose first two
+% pipelines fail is skipped.
+%
+% Side effects: needs a running Vicon Nexus (a connection is opened when
+%   no vicon object is passed); opens, edits, and saves each trial.
+%   Writes <fig|png>/<marker>_Trial##.fig/.png under a TrajectoryFigures
+%   folder next to the session folder. Errors if the session folder does
+%   not exist.
+%
+% Inputs:
+%   pathSess   - path to the session folder holding the Trial*.x1d files
+%   indsTrials - (optional) trial numbers to process; numbers without a
+%                trial file are ignored (default: all trials)
+%   vicon      - (optional) Vicon Nexus SDK object
+%
+% Outputs:
+%   none
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.EXTRACTMARKERGAPSTRIAL,
+%   DATAMOTION.FILLMARKERGAPSPATTERN,
+%   DATAMOTION.FILLSMALLMARKERGAPSSPLINE.
 
 % TODO: add optional input for maximum marker gap size to pass along
 % TODO: add a GUI input option if helpful
 narginchk(1,3);                 % verify correct number of input arguments
 
-% ensure session folder path exists
+%% Validate the session folder
 if ~isfolder(pathSess)
     error('The session folder path specified does not exist: %s',pathSess);
 end
@@ -29,7 +46,7 @@ if isempty(trialFiles)      % if no trial files found, ...
     return;
 end
 
-% extract trial indices from filenames
+%% Select trials
 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
     'UniformOutput',false);
 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
@@ -48,7 +65,7 @@ if nargin < 3 || isempty(vicon)
     vicon = ViconNexus();
 end
 
-% define reference and target markers for pattern-based gap filling
+%% Process each trial
 markersRef  = {'GT','KNEE','GT','ANK'};
 markersTarg = {
     {'ASIS','PSIS','THI','KNEE'}, ...
@@ -171,9 +188,26 @@ end
 
 function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
     markerGaps,targetMarkers,refMarker,pathTrial,vicon)
-%PROCESSREFERENCEMARKERGAPS Process marker gaps for a reference marker
-%   Helper function to perform a pattern-based fill of marker gaps for
-% specified target markers and a referencefor right and left markers.
+%FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for one reference.
+%
+%   For the right and left side, fills the gaps of the target markers
+% (side prefix plus each target name) from the side's reference marker
+% with fillMarkerGapsPattern, without saving the trial.
+%
+% Inputs:
+%   markerGaps    - struct of [start end] gap frames per marker
+%   targetMarkers - cell array of target marker names without side prefix
+%   refMarker     - reference marker name without side prefix
+%   pathTrial     - full path to the trial
+%   vicon         - Vicon Nexus SDK object
+%
+% Outputs:
+%   markerGaps - the input struct with the entries of the target markers
+%                replaced by their remaining gaps
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.FILLMARKERGAPSPATTERN.
 
 sides = {'R','L'};
 for side = sides
@@ -207,6 +241,19 @@ end
 end
 
 function mrkrTrajs = getRelevantMrkrTrajs(newVicon)
+%GETRELEVANTMRKRTRAJS Read the hip and ankle trajectories from Nexus.
+%
+%   Returns the RGT, LGT, RANK, and LANK trajectories of the first subject
+% in the open trial, with frames where the marker does not exist set to
+% NaN. A marker that cannot be read is returned as an empty array.
+%
+% Inputs:
+%   newVicon - Vicon Nexus SDK object with a trial open
+%
+% Outputs:
+%   mrkrTrajs - struct with one Nx3 [X Y Z] array per marker (mm)
+%
+% Toolbox Dependencies: None
 
 mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
 mrkrTrajs     = struct();
@@ -245,6 +292,31 @@ end
 
 function saveTrajectoryFigures(pathSess, trialNum, vicon, ...
     highlightTurningPoints)
+%SAVETRAJECTORYFIGURES Save X/Y/Z trajectory figures of the hip and ankle.
+%
+%   Plots the X, Y, and Z trajectories of RGT, LGT, RANK, and LANK of the
+% open trial in a stacked layout and saves each marker as .fig and .png.
+% With highlightTurningPoints, frames whose Y value is outside the walkway
+% bounds are shaded and the bounds drawn on the Y panel.
+%
+% Side effects: creates TrajectoryFigures/fig and TrajectoryFigures/png
+%   next to the session folder if missing and writes
+%   <marker>_Trial##.fig and .png there; each figure is opened and then
+%   closed.
+%
+% Inputs:
+%   pathSess               - path to the session folder
+%   trialNum               - trial number used in titles and file names
+%   vicon                  - Vicon Nexus SDK object with the trial open
+%   highlightTurningPoints - (optional) logical, shade out-of-bounds Y
+%                            frames (default: false)
+%
+% Outputs:
+%   none
+%
+% Toolbox Dependencies: None
+%
+% See also GETRELEVANTMRKRTRAJS.
 
 if nargin < 4
     highlightTurningPoints = false;
@@ -297,7 +369,7 @@ for mrkr = 1:numel(markers)
     end
 
     % Create stacked plot
-    % changed this to "on" so that fig will automatically open
+    % visible so the figure opens automatically
     fig = figure('Visible','on', 'Name', ...
         ['Trajectories for ' markerName], 'NumberTitle', 'off');
     tl  = tiledlayout(3,1, 'TileSpacing', 'Compact');

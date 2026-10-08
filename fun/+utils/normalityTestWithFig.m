@@ -1,33 +1,40 @@
 function [hn_sw,p_sw, h_ks, p_ks] = normalityTestWithFig(data, ...
     dataLabel, subplot_hist, subplot_qq, alpha, plotDiagnostics)
-%Perform normality test on the data vector given using Shapiro-Wilk
-%test and kstest. Though preferred method is SW-test and the diagnostic plot
-%title will reflect SW test result because the SW test is more
-%appropriate for our data.
-%Also plot histogram and QQ plot for data
-%visualization. Normal looking histogram and QQ plot following a y=x
-%line is important indicator for data following a normal distribution.
+%NORMALITYTESTWITHFIG Test a vector for normality and plot diagnostics.
 %
-%[OUTPUTARGS]:
-% - hn_sw: normality decision from SW test (1 is rejecting normal)
-% - p_sw: p-value from sw test: for now use p < alpha as rejecting
-%       normal.
-% - h_ks: normality decision from KS test (1 is rejecting normal)
-% - p_ks: p-value from ks test: for now use p < alpha as rejecting
-%       normal.
+%   Runs the Shapiro-Wilk (SW) and Kolmogorov-Smirnov (KS) tests and warns
+% when either rejects normality; SW is the preferred test for our data
+% and its p-value sets the warning severity. Optionally draws a histogram
+% with a fitted normal and a QQ plot: a normal-looking histogram and a QQ
+% plot along the y = x line support normality.
 %
-%[INPUTARGS]
-% - data: a vector of double, data to test normality
-% - dataLabel: string for name of the data
-% - subplot_hist: subplot handle to plot the histogram on. OPTIONAL,
-%       can be empty or pass filler variable if the plotDiagnostics is false
-% - subplot_qq: subplot handle to plot the QQ plot on. OPTIONAL,
-%       can be empty  or pass filler variable if the plotDiagnostics is
-%       false
-% - alpha: OPTIONA. default is 0.05. alpha for type I error (p < alpha
-%       will be considered evidence to reject null where data is normal).
-% - plotDiagnostics: OPTIONAL. default true. Whether or not to generate
-%       a histogram and QQ plot to visually check for normality
+% Side effects: when plotDiagnostics is true, makes subplot_hist and
+%   subplot_qq the current axes and plots on them. Prints a pass message or
+%   issues a warning with both p-values.
+%
+% Inputs:
+%   data            - vector of doubles to test
+%   dataLabel       - name of the data, used in the title and messages
+%   subplot_hist    - axes for the histogram; may be empty or a filler
+%                     when plotDiagnostics is false
+%   subplot_qq      - axes for the QQ plot; may be empty or a filler when
+%                     plotDiagnostics is false
+%   alpha           - (optional) type I error rate (default: 0.05)
+%   plotDiagnostics - (optional) logical, draw the histogram and QQ plot
+%                     (default: true)
+%
+% Outputs:
+%   hn_sw - SW decision (1 rejects normality)
+%   p_sw  - SW p-value
+%   h_ks  - KS decision (1 rejects normality)
+%   p_ks  - KS p-value
+%
+% NOTE: alpha is accepted but not passed on; swtest and kstest use their
+%   own default of 0.05.
+%
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also SWTEST, KSTEST, HISTFIT, QQPLOT.
 
 if nargin < 5 || isempty(alpha)
     alpha = 0.05; %default to 0.05
