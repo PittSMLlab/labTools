@@ -1783,12 +1783,14 @@ if ischar(file)
         if isfield(subInfo, 'EMGList1') && isfield(subInfo, 'EMGList2')
             for ii = 1:16
                 emg1FieldName = ['emg1_' num2str(ii)];
-                set(handles.(emg1FieldName), 'String', subInfo.EMGList1{ii});
+                set(handles.(emg1FieldName), 'String', ...
+                    subInfo.EMGList1{ii});
                 if ~isempty(subInfo.EMGList1{ii})
                     set(handles.(emg1FieldName), 'Enable', 'On');
                 end
                 emg2FieldName = ['emg2_' num2str(ii)];
-                set(handles.(emg2FieldName), 'String', subInfo.EMGList2{ii});
+                set(handles.(emg2FieldName), 'String', ...
+                    subInfo.EMGList2{ii});
                 if ~isempty(subInfo.EMGList2{ii})
                     set(handles.(emg2FieldName), 'Enable', 'On');
                 end

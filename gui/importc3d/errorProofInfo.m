@@ -166,6 +166,12 @@ end
 % from figure1_CloseRequestFcn for a lenient close-time save).
 
 if ~ignoreErrors
+    minExpYear   = 2010;    % earliest year accepted (see error message)
+    minBirthYear = 1900;    % earliest birth year accepted (see message)
+    maxYear      = 3000;    % TODO: source? upper sanity bound on years
+    maxHeightCm  = 230;     % valid range upper bound (see error message)
+    maxWeightKg  = 170;     % valid range upper bound (see error message)
+
     % -- Experiment Info
     % if strcmp(out.ExpFile,' ')
     %     h_error = errordlg( ...
@@ -195,7 +201,7 @@ if ~ignoreErrors
         out.bad = true;
         return;
     end
-    if isnan(out.year) || out.year < 2010 || out.year > 3000
+    if isnan(out.year) || out.year < minExpYear || out.year > maxYear
         h_error = errordlg( ...
             ['Please enter the year the experiment took place ' ...
             '(2010 or later).'], 'Experiment Year Error');
@@ -224,7 +230,8 @@ if ~ignoreErrors
         out.bad = true;
         return;
     end
-    if isnan(out.DOByear) || out.DOByear < 1900 || out.DOByear > 3000
+    if isnan(out.DOByear) || out.DOByear < minBirthYear || ...
+            out.DOByear > maxYear
         h_error = errordlg( ...
             'Please enter the subject''s birth year (1900 or later).', ...
             'Birth Year Error');
@@ -233,7 +240,7 @@ if ~ignoreErrors
         out.bad = true;
         return;
     end
-    if isnan(out.height) || out.height <= 0 || out.height > 230
+    if isnan(out.height) || out.height <= 0 || out.height > maxHeightCm
         h_error = errordlg( ...
             ['Please enter the subject''s height in cm ' ...
             '(valid range: 1-230 cm).'], 'Height Error');
@@ -242,7 +249,7 @@ if ~ignoreErrors
         out.bad = true;
         return;
     end
-    if isnan(out.weight) || out.weight <= 0 || out.weight > 170
+    if isnan(out.weight) || out.weight <= 0 || out.weight > maxWeightKg
         h_error = errordlg( ...
             ['Please enter the subject''s weight in kg ' ...
             '(valid range: 1-170 kg).'], 'Weight Error');
