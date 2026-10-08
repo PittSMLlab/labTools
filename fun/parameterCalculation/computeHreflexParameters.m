@@ -11,7 +11,9 @@ function out = computeHreflexParameters(strideEvents, HreflexData, ...
 % (mid single-stance). Output is a parameterSeries that can be
 % concatenated with other parameter series from the same trial. The
 % label set is fixed: a muscle not recorded in the session (e.g., no MG
-% in SpinalAdapt) keeps its labels, with NaN values.
+% in SpinalAdapt) keeps its labels, with NaN values. A session that
+% records the trigger channels without stimulating (Hreflex.
+% hasStimTrigger is false) returns the full NaN set.
 %
 % Inputs:
 %   strideEvents - struct of stride event times with fields tSHS, tFTO,
@@ -28,6 +30,10 @@ function out = computeHreflexParameters(strideEvents, HreflexData, ...
 %   out - parameterSeries of H-reflex parameters per stride (66
 %         parameters: timing, amplitude, RMS, and background EMG for
 %         each combination of leg, muscle, and measure)
+%
+% Side effects:
+%   Writes no files. Issues a Hreflex:missingMuscleChannel warning for
+%   each unrecorded SOL/MG/LG channel (its parameters are NaN).
 %
 % Toolbox Dependencies:
 %   None

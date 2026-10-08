@@ -78,8 +78,7 @@ stanceTimeFast = timeFTO2 - timeFHS;
 % Double support phase durations
 doubleSupportSlow = timeSTO - timeFHS;
 doubleSupportTemp = timeFTO - timeSHS;
-% Pablo I. modified (11/11/2014) the parameter below to use the second
-% step rather than the first one, so that:
+% Uses the second step rather than the first one, so that:
 % stance time = step time + double support time (with given indexing)
 doubleSupportFast = timeFTO2 - timeSHS2;
 

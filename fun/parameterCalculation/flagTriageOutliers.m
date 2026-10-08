@@ -8,12 +8,9 @@ function triageOutlier = flagTriageOutliers(paramValues, cfg)
 % multiple of the residual scale. A stride is flagged if ANY input
 % parameter column trips the threshold.
 %
-%   This is the non-destructive successor to the historical (now
-% removed; see CALCPARAMETERS revision history) outlier-detection
-% block, which used a 50-sample running average and a 3.5x IQR cutoff
-% to directly set the 'bad' flag. This version uses a shorter,
-% stride-scaled window and only labels a 'triageOutlier' column for
-% review, leaving 'bad' untouched.
+%   The moving-median window is stride-scaled (cfg.triageWindowStrides).
+% The result only labels a 'triageOutlier' column for review and leaves
+% 'bad' untouched.
 %
 % Inputs:
 %   paramValues - (numStrides x numParams) matrix of parameter values

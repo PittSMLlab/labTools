@@ -109,18 +109,15 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
     percTaskEndStride(indsEndStride)   = 1;
 
     for ii = 1:length(indsInitStride)
-        % Here I am not currently considering the changes in the belt
-        % speed when going back to tied; sometimes it takes a couple of
-        % strides to reach this fully.
-        % Previously used indsEndStride(ii)+3 to account for the
-        % delay before belt speed reaches the tied condition.
+        % NOTE: the window ends at the true perceptual task end; the
+        % belt speed change back to tied (a couple of strides to settle
+        % fully) is not accounted for.
         percTask(indsInitStride(ii):indsEndStride(ii)) = 1;
 
-        % No +3 buffer here: use the true perceptual task end for SLA.
+        % SLA also uses the true perceptual task end (no buffer).
         SLAinPercTask(indsInitStride(ii):indsEndStride(ii)) = ...
             slaParam(indsInitStride(ii):indsEndStride(ii));
 
-        % Previously used indsEndStride(ii)+3 here as well.
         SLAnotPercTask(indsInitStride(ii):indsEndStride(ii)) = nan;
 
         if length(speedDiffPercTask) >= ii

@@ -38,11 +38,10 @@ function cfg = getStrideQualityConfig()
 % See also ADJUDICATESTRIDEQUALITY, FLAGTRIAGEOUTLIERS, CALCPARAMETERS,
 %   REMOVESTRIDESBYREASON.
 
-% Duration/event thresholds (unchanged from the pre-refactor criteria
-% in CALCPARAMETERS; see git history for prior inline location).
+% Duration/event thresholds for the aggregate bad-stride criteria.
 minStrideDur         = 0.4;  % TODO: confirm physiological bound rationale
 maxStrideDur         = 2.5;  % TODO: confirm physiological bound rationale
-durationMedianFactor = 1.5;  % TODO: NWB found 2.5s may be too stringent
+durationMedianFactor = 1.5;  % TODO: 2.5 s may be too stringent
                              % for slower older adult walkers, and this
                              % factor alone may suffice to exclude
                              % outliers (especially in overground
@@ -67,11 +66,10 @@ aux = { ...
 reasonLabels       = aux(:, 1)';
 reasonDescriptions = aux(:, 2)';
 
-% Reasons folded into the aggregate 'bad' flag by default. This
-% reproduces the pre-refactor aggregate exactly: event/duration
-% criteria plus treadmill start/stop. Handrail holding, triage, and
-% the stub reasons above are intentionally excluded (opt-in only; see
-% REMOVESTRIDESBYREASON and REMOVEHANDRAILSTRIDES).
+% Reasons folded into the aggregate 'bad' flag by default: the
+% event/duration criteria plus treadmill start/stop. Handrail holding,
+% triage, and the stub reasons above are intentionally excluded (opt-in
+% only; see REMOVESTRIDESBYREASON and REMOVEHANDRAILSTRIDES).
 defaultBadReasons = { ...
     'badMissingEvent', 'badDisordered', 'badDurationOutlier', ...
     'badDurationShort', 'badDurationLong', 'badStartStop'};

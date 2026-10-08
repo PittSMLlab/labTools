@@ -8,6 +8,13 @@ function out = computeForceParameters(strideEvents, GRFData, slowleg, ...
 % object that can be concatenated with other parameter series objects
 % (e.g., from computeTemporalParameters).
 %
+%   Also computes the handrail parameters HandrailHolding (1/0; NaN
+% with no handrail), HandrailForceNorm (mean |vertical force| per
+% stride, body-weight normalized) and HandrailForceN (same, in N) from
+% the HFz channel. Unlike the belt-plate force parameters, these are
+% not limited to 'TM' trials. HandrailHolding is informational only and
+% is never folded into the bad/good flags.
+%
 % Inputs:
 %   strideEvents - struct of stride-level gait event times generated
 %                  by calcParameters, with fields tSHS, tFTO, tFHS,
@@ -147,11 +154,11 @@ grfCutoffHz = 20;  % GRF low-pass cutoff (Hz)
 filteredGRF = GRFData.lowPassFilter(grfCutoffHz);
 
 %% Remove Anterior-Posterior Force Offsets
-% CJS (8/5/2016): One decline subject (LD30) had a force plate that was not
-% properly zeroed. The Fy offsets are estimated here from the swing phase
-% of each leg (when that leg is airborne, Fy should be ~0). Vertical forces
-% are assumed to be correctly zeroed during c3d2mat; if they are not, gait
-% events will be incorrect and this correction will not help.
+% One decline subject (LD30) had a force plate that was not properly
+% zeroed. The Fy offsets are estimated here from the swing phase of
+% each leg (when that leg is airborne, Fy should be ~0). Vertical
+% forces are assumed to be correctly zeroed during c3d2mat; if they are
+% not, gait events will be incorrect and this correction will not help.
 
 % figure; plot(filteredGRF.getDataAsTS([s 'Fy']).Data, 'b');
 % hold on; plot(filteredGRF.getDataAsTS([f 'Fy']).Data, 'r');
