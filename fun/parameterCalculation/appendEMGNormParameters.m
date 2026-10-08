@@ -171,11 +171,9 @@ newDataCol = 1;
 
 for doRemoveBias = [false, true]
     if doRemoveBias
-        %Bias removal can be done manually or by calling remove bias. They
-        %don't get the same results, checked that the TMBase we get from
-        %calling the getEpochData TMBase is not the same as the base we get
-        %rom callig removeBiasV4. Some values are the same, some are not,
-        %didn't figure out why. For now wil rely on calling removebias
+        % NOTE: use removeBias, not a manual subtraction: the TMBase from
+        % getEpochData differs from the base removeBiasV4 uses (some
+        % values match, some do not; cause not yet understood).
         adaptData   = adaptDataOriginal.removeBias(biasRemovalCond);
         labelSuffix = 'Unbiased';
         descpSuffix = ['Before any parameter computation, the data ' ...

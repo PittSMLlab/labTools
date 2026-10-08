@@ -57,11 +57,11 @@ for tr = trials
 
     % Propagate DataInfo UserData from adaptData
     if isempty(trialAdapt.DataInfo.UserData)
-        % Previously empty: replace entirely with adaptData's UserData
+        % No existing UserData: take adaptData's UserData as is
         trialAdapt.DataInfo.UserData = adaptData.data.DataInfo.UserData;
     else
         % Merge: adaptData fields take precedence; preserve fields
-        % unique to the old expData trial
+        % unique to the existing expData trial
         newUserData = adaptData.data.DataInfo.UserData;
         if isstruct(trialAdapt.DataInfo.UserData)
             uniqueFields = setdiff( ...
@@ -72,7 +72,7 @@ for tr = trials
                     trialAdapt.DataInfo.UserData.(fld{1});
             end
         else
-            % Not a struct: preserve old info in a single field
+            % Not a struct: preserve existing info in a single field
             newUserData.prevUserData = trialAdapt.DataInfo.UserData;
         end
         trialAdapt.DataInfo.UserData = newUserData;

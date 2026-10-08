@@ -56,7 +56,6 @@ propIdx    = find((apForceTrace - forceBaseline) > 0);
     'omitnan');
 
 % Exclude pre-impact samples from braking and propulsion classification
-% (new method 2/25/2020)
 if ~isempty(impactIdx)
     propIdx(find(propIdx < impactIdx))       = [];
     brakingIdx(find(brakingIdx < impactIdx)) = [];
@@ -84,7 +83,7 @@ end
 %% Peak Braking and Propulsion Forces
 % Save pre-trim index copies; then remove the trailing 10% (end-of-stance
 % decay) and leading 10% (impact transient) so neither is misidentified
-% as the true braking or propulsion peak; 2/14/2018 (4/11/2017 CJS)
+% as the true braking or propulsion peak.
 brakingIdxAll = brakingIdx;
 propIdxAll    = propIdx;
 brakingIdx(find(brakingIdx >= ...
