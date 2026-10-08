@@ -40,6 +40,7 @@ if isempty(HreflexPin) || isempty(HreflexPin.Data)
     return;
 end
 
+%% Detect trigger pulses
 tf = any(HreflexPin.Data(:) > threshStim);
 
 end

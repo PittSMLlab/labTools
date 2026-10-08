@@ -16,7 +16,7 @@ function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)
 %
 % Toolbox Dependencies: None
 %
-% See also GETEVENTSFROMFORCES, GETEVENTSFROMTOENANDHEEL.
+% See also GETEVENTSFROMFORCES, GETEVENTSFROMTOEANDHEEL.
 
 LTO = [false; diff(double(stanceL)) == -1];  % & stanceR;
 LHS = [false; diff(double(stanceL)) == 1];   % & stanceR;

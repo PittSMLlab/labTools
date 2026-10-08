@@ -1,10 +1,11 @@
 function [LHS, RHS, LTO, RTO] = ...
     getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)
-%GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.
+%GETEVENTSFROMTOEANDHEEL Detect gait events from toe and heel marker data.
 %
 %   Estimates stance phases from heel and toe marker kinematics, derives
-% gait events from those phases, and masks out events that occur before
-% meaningful limb activity begins (onset detection via cumulative energy).
+% gait events from those phases, masks events at samples where any marker
+% is NaN, and masks events that occur before meaningful limb activity
+% begins (onset detection via cumulative energy of the heel markers).
 %
 % Inputs:
 %   Ltoe    - N×3 double, left toe marker position (mm)
@@ -21,8 +22,9 @@ function [LHS, RHS, LTO, RTO] = ...
 %
 % Toolbox Dependencies: None
 %
-% See also GETSTANCEFROMTOENANDHEEL, GETEVENTSFROMSTANCE.
+% See also GETSTANCEFROMTOEANDHEEL, GETEVENTSFROMSTANCE.
 
+%% Detect events from stance phases
 % retrieve stance gait phases from toe and heel markers
 stanceL = getStanceFromToeAndHeel(Lheel, Ltoe, fsample);
 stanceR = getStanceFromToeAndHeel(Rheel, Rtoe, fsample);
@@ -36,6 +38,7 @@ RHS(badInds) = false;
 LTO(badInds) = false;
 RTO(badInds) = false;
 
+%% Mask events prior to limb activity
 % eliminate any events that occur prior to actual activity in the trial
 % onset threshold: 0.1% of total cumulative energy
 ENERGY_FRAC = 0.001;

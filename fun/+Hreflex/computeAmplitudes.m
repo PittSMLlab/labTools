@@ -117,7 +117,7 @@ indMinMed  = round(median(indsMin));            % median min. value index
 indMaxMed  = round(median(indsMax));            % median max. value index
 % NOTE: this may be too liberal (or conservative) in the samples it
 % includes, although it seems to work quite well for calibration trials
-% (maximum wave duration is ~10ms, which was previous threshold anyway)
+% (maximum wave duration is ~10 ms)
 % may want to check certain indices of indsMin and indsMax if make sense
 % ensure peak and trough occur within physiologically plausible time range.
 % confirm their relative amplitude aligns with what is typically observed.

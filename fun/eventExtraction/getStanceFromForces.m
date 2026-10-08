@@ -13,7 +13,8 @@ function stance = getStanceFromForces(Fz, threshold, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies:
+%   Signal Processing Toolbox (medfilt1)
 %
 % See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.
 
@@ -44,7 +45,7 @@ forces    = forces * forceSign; % ensure forces are positive on average
 stance = forces > threshold;
 
 %% Eliminate stance and swing phases shorter than 100 ms
-% used to be 200 ms, but that is too long for stroke subjects
+% 100 ms; 200 ms is too long for stroke subjects
 stance = deleteShortPhases(stance, fsample, 0.1);
 
 end

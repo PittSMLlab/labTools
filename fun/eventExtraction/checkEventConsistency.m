@@ -19,6 +19,7 @@ function isConsistent = checkEventConsistency(LHS, RHS, LTO, RTO)
 %
 % See also GETEVENTSFROMSTANCE, GETEVENTSFROMFORCES.
 
+%% Encode events
 % gait event binary encoding (powers of two for unique difference values)
 LHS_CODE = 1;
 RTO_CODE = 2;
@@ -33,6 +34,7 @@ eventSequence = LHS * LHS_CODE + RTO * RTO_CODE ...
 nonZeroEvents = eventSequence(eventSequence ~= 0);
 eventDiffs    = diff(nonZeroEvents);
 
+%% Check transitions
 % Valid transitions: +1 (LHS→RTO), +2 (RTO→RHS), +4 (RHS→LTO),
 % -7 (LTO→LHS wrap: code 8 back to code 1, so 1-8 = -7)
 if any((eventDiffs ~= 1) & (eventDiffs ~= 2) ...

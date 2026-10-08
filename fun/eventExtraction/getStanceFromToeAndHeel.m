@@ -1,10 +1,11 @@
 function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
-%GETSTANCEFROMTOENANDHEEL Estimate stance from ankle and toe kinematics.
+%GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.
 %
-%   Combines two stance detection methods — velocity thresholding
-% (getStance) and acceleration thresholding (getStance3) — and removes
-% short phases. getStance2 (Hough-transform based) is available as an
-% alternative but is currently disabled.
+%   Thresholds ankle and toe marker speed relative to the ground
+% (getStance) and removes stance phases shorter than 200 ms.
+% getStance2 (Hough-transform floor detection) and getStance3
+% (acceleration thresholding) are kept as alternatives but are
+% currently unused.
 %
 % Inputs:
 %   ankKin  - N×3 double, ankle marker position (mm)
@@ -14,13 +15,17 @@ function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies:
+%   Image Processing Toolbox (hough; unused getStance2 only)
+%   Signal Processing Toolbox (medfilt1; unused getStance2 only)
+%   Statistics and Machine Learning Toolbox (pca; unused getStance2 only)
 %
-% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.
+% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOEANDHEEL.
 
+%% Detect stance
 % stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations
 % NOTE: getStance2 (Hough-transform floor detection) is an alternative
-% that may be more robust for non-standard gait; see that nested function.
+% that may be more robust for non-standard gait; see that local function.
 stance1 = getStance(ankKin, toeKin, fsample);   % threshold velocities
 % stance1 = stance2;
 % stance3 = stance2;
@@ -30,13 +35,13 @@ stance = stance1;
 % remove stance phases of less than 200 ms
 stance = deleteShortPhases(stance, fsample, 0.2);
 
-%IDEA: instead of using pure (classical) logic, use fuzzy logic, with a
-%smoothing kernel, so that all samples in a neighbourhood get a say on the
-%value of a particular sample.
-%This might be particularly helpful to get rid of quantization noise
-%(kernel with support of 3 samples: the central one, and one to each side),
-%and also with some other types of noise (NOT SURE: it might make it more
-%sensible to big errors in only one of the estimations)
+% IDEA: instead of using pure (classical) logic, use fuzzy logic, with a
+% smoothing kernel, so that all samples in a neighbourhood get a say on
+% the value of a particular sample.
+% This might be particularly helpful to get rid of quantization noise
+% (kernel with support of 3 samples: the central one, and one to each
+% side), and also with some other types of noise (NOT SURE: it might make
+% it more sensible to big errors in only one of the estimations)
 
 end
 
@@ -56,6 +61,8 @@ function stance = getStance(ankKin, toeKin, fsample)
 %
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies: None
 
 NAN_FILL_VEL          = 10000; % large NaN sentinel for idealLPF (mm/s)
 VEL_THRESH_ANK        = 500;   % ankle stance speed thresh (mm/s); empirical
@@ -125,6 +132,11 @@ function stance = getStance2(Rheel, Rtoe, fsample)
 %
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies:
+%   Image Processing Toolbox (hough)
+%   Signal Processing Toolbox (medfilt1)
+%   Statistics and Machine Learning Toolbox (pca)
 
 % Named constants for Hough-based floor-plane detection
 % Two-segment angle range: near-vertical lines in both directions (deg)
@@ -291,6 +303,8 @@ function stance = getStance3(ankKin, toeKin, fsample)
 %
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies: None
 
 NAN_FILL_ACC = 100000; % large sentinel to suppress NaN in idealLPF (mm/s²)
 accThresh    = 5000;   % acceleration threshold (mm/s²); empirical

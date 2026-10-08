@@ -144,8 +144,8 @@ LeftTO(rdata(LeftTO) == 0)   = [];
 LeftHS(rdata(LeftHS) == 0)   = [];
 
 %% Remove events outside valid y-position range
-% added by Yashar on 10/8/2019 to remove end-of-OG-walking events based
-% on global position in the right hip y direction
+% remove end-of-OG-walking events based on the global y position of the
+% average hip marker
 RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
 LeftHip  = trialData.markerData.getDataAsVector({'LHIPy'});
 bodyYPos = (RightHip + LeftHip) / 2;
@@ -187,13 +187,14 @@ LeftTO(ldata(LeftTO) > angleToThresh ...
 LeftHS(ldata(LeftHS) < 0 ...
     | abs(ldata(LeftHS)) > angleRangeThresh) = [];
 
+%% Assemble event vectors
 LHSevent(LeftHS)  = true;
 RTOevent(RightTO) = true;
 RHSevent(RightHS) = true;
 LTOevent(LeftTO)  = true;
 
 %[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);
-%These functions are similar to the built-in 'findpeaks' matlab function.
+% These functions are similar to the built-in 'findpeaks' MATLAB function.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function HS = FindKinHS(start, stop, ankdata, n)

@@ -17,7 +17,8 @@ function fig = plotNoiseHistogram( ...
 %   fig - handle to the figure generated
 %
 % Toolbox Dependencies:
-%   None
+%   Statistics and Machine Learning Toolbox (prctile; core MATLAB
+%   from R2024a)
 %
 % See also HREFLEX.PLOTCAL, GENERATEHREFLEXRECRUITMENTCURVES.
 

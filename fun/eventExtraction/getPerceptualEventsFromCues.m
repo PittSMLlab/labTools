@@ -26,6 +26,7 @@ function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = ...
 %
 % See also GETEVENTS.
 
+%% Offset cue times
 % grab auditory cue times from the datalog, offset by synchronization
 startCue = datlog.audioCues.start + datlog.dataLogTimeOffsetBest;
 stopCue  = datlog.audioCues.stop  + datlog.dataLogTimeOffsetBest;
