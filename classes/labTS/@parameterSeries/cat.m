@@ -1,17 +1,19 @@
 function newThis = cat(this, other)
-%cat  Concatenates two parameterSeries
+%CAT Concatenates two parameterSeries.
 %
 %   newThis = cat(this, other) concatenates parameters from two
-%   parameterSeries with same number of strides
+% parameterSeries with same number of strides
 %
-%   Inputs:
-%       this - parameterSeries object
-%       other - parameterSeries object with same stride count
+% Inputs:
+%   this  - parameterSeries object
+%   other - parameterSeries object with same stride count
 %
-%   Outputs:
-%       newThis - concatenated parameterSeries
+% Outputs:
+%   newThis - concatenated parameterSeries
 %
-%   See also: addStrides, appendData
+% Toolbox Dependencies: None
+%
+% See also ADDSTRIDES, APPENDDATA.
 
 if size(this.Data, 1) == size(other.Data, 1)
     if isempty(this.description)

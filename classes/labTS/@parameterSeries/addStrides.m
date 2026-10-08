@@ -1,20 +1,22 @@
 function newThis = addStrides(this, other)
-%addStrides  Adds strides from another parameterSeries
+%ADDSTRIDES Adds strides from another parameterSeries.
 %
 %   newThis = addStrides(this, other) concatenates strides from two
-%   parameterSeries, handling mismatched parameter lists
+% parameterSeries, handling mismatched parameter lists
 %
-%   Inputs:
-%       this - parameterSeries object
-%       other - parameterSeries object to add
+% Inputs:
+%   this  - parameterSeries object
+%   other - parameterSeries object to add
 %
-%   Outputs:
-%       newThis - combined parameterSeries
+% Outputs:
+%   newThis - combined parameterSeries
 %
 %   Note: If parameter lists don't match, merges lists and fills NaN
 %         for missing parameters. You should fix this issue.
 %
-%   See also: cat, appendData
+% Toolbox Dependencies: None
+%
+% See also CAT, APPENDDATA.
 
 % TODO: Check that the labels are actually the same
 if ~isempty(other.Data)
@@ -38,7 +40,7 @@ if ~isempty(other.Data)
                 nan(size(this.Data, 1), sum(~bool2)), ...
                 other.labels(~bool2), other.description(~bool2));
         else
-            newThis = this; % digna added this, review
+            newThis = this; % Nothing to add to this
         end
         if any(~bool1)
             % Expanding other
@@ -46,7 +48,7 @@ if ~isempty(other.Data)
                 nan(size(other.Data, 1), sum(~bool1)), ...
                 this.labels(~bool1), this.description(~bool1));
         else
-            newOther = other; % Digna added this, review
+            newOther = other; % Nothing to add to other
         end
         newThis = addStrides(newThis, newOther);
     end

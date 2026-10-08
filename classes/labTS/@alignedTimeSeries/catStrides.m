@@ -1,16 +1,18 @@
 function newThis = catStrides(this)
-%catStrides  Concatenates strides into labTimeSeries
+%CATSTRIDES Concatenates strides into labTimeSeries.
 %
-%   newThis = catStrides(this) concatenates all strides sequentially
-%   into a single labTimeSeries
+%   newThis = catStrides(this) concatenates all strides sequentially into a
+% single labTimeSeries
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       newThis - labTimeSeries with concatenated stride data
+% Outputs:
+%   newThis - labTimeSeries with concatenated stride data
 %
-%   See also: concatenateAsTS, castAsTS
+% Toolbox Dependencies: None
+%
+% See also CONCATENATEASTS, CASTASTS.
 
 auxData = permute(this.Data, [2, 1, 3]);
 newThis = labTimeSeries(auxData(:, :)', this.Time(1), ...

@@ -1,25 +1,26 @@
 function newThis = cat(this, other, dim, forceFlag)
-%cat  Concatenates alignedTimeSeries
+%CAT Concatenates alignedTimeSeries.
 %
 %   newThis = cat(this, other) concatenates strides (dim = 3)
 %
-%   newThis = cat(this, other, dim, forceFlag) concatenates along
-%   specified dimension with optional force flag
+%   newThis = cat(this, other, dim, forceFlag) concatenates along specified
+% dimension with optional force flag
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       other - alignedTimeSeries to concatenate
-%       dim - dimension: 2 (labels) or 3 (strides) (optional, default:
-%             3)
-%       forceFlag - if true, ignores label/alignment mismatches
-%                   (optional, default: false)
+% Inputs:
+%   this      - alignedTimeSeries object
+%   other     - alignedTimeSeries to concatenate
+%   dim       - dimension: 2 (labels) or 3 (strides) (optional, default: 3)
+%   forceFlag - if true, ignores label/alignment mismatches (optional,
+%               default: false)
 %
-%   Outputs:
-%       newThis - concatenated alignedTimeSeries
+% Outputs:
+%   newThis - concatenated alignedTimeSeries
 %
 %   Note: Cat-ting strides loses consecutive event timing
 %
-%   See also: getPartialStridesAsATS, getPartialDataAsATS
+% Toolbox Dependencies: None
+%
+% See also GETPARTIALSTRIDESASATS, GETPARTIALDATAASATS.
 
 if nargin < 4
     forceFlag = false;

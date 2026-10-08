@@ -1,22 +1,24 @@
 function newThis = getDataAsPS(this, labels, strides, skipFixedParams)
-%getDataAsPS  Extracts subset as new parameterSeries
+%GETDATAASPS Extracts subset as new parameterSeries.
 %
-%   newThis = getDataAsPS(this, labels, strides, skipFixedParams)
-%   creates a new parameterSeries with specified labels and strides
+%   newThis = getDataAsPS(this, labels, strides, skipFixedParams) creates a
+% new parameterSeries with specified labels and strides
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - cell array of parameter labels to extract (optional,
-%                default: all)
-%       strides - vector of stride indices to extract (optional,
-%                 default: all)
-%       skipFixedParams - if 1, excludes fixed parameters like bad,
-%                         trial, initTime (optional, default: 0)
+% Inputs:
+%   this            - parameterSeries object
+%   labels          - cell array of parameter labels to extract (optional,
+%                     default: all)
+%   strides         - vector of stride indices to extract (optional,
+%                     default: all)
+%   skipFixedParams - if 1, excludes fixed parameters like bad, trial,
+%                     initTime (optional, default: 0)
 %
-%   Outputs:
-%       newThis - new parameterSeries with extracted data
+% Outputs:
+%   newThis - new parameterSeries with extracted data
 %
-%   See also: getDataAsVector, getParameter
+% Toolbox Dependencies: None
+%
+% See also GETDATAASVECTOR, GETPARAMETER.
 
 if nargin < 2 || isempty(labels)
     labels = this.labels;

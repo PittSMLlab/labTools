@@ -1,19 +1,21 @@
 function [histogram, newLabels] = logicalHist(this)
-%logicalHist  Generates histogram from logical event data
+%LOGICALHIST Generates histogram from logical event data.
 %
-%   [histogram, newLabels] = logicalHist(this) creates histogram of
-%   event timing across strides
+%   [histogram, newLabels] = logicalHist(this) creates histogram of event
+% timing across strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object with logical data
+% Inputs:
+%   this - alignedTimeSeries object with logical data
 %
-%   Outputs:
-%       histogram - matrix of event sample indices (strides x events)
-%       newLabels - cell array of event labels
+% Outputs:
+%   histogram - matrix of event sample indices (strides x events)
+%   newLabels - cell array of event labels
 %
 %   Note: Assumes all aligned TS contain same events in same order
 %
-%   See also: mean, std
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEAN, STD.
 
 % TODO: Check this is a logical alignedTS
 % TODO: determine number of expected events. Currently this is as many

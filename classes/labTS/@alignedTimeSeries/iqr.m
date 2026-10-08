@@ -1,18 +1,20 @@
 function iqrTS = iqr(this, strideIdxs)
-%iqr  Computes interquartile range
+%IQR Computes interquartile range.
 %
 %   iqrTS = iqr(this) computes interquartile range across all strides
 %
 %   iqrTS = iqr(this, strideIdxs) computes for specified strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       strideIdxs - vector of stride indices (optional, default: all)
+% Inputs:
+%   this       - alignedTimeSeries object
+%   strideIdxs - vector of stride indices (optional, default: all)
 %
-%   Outputs:
-%       iqrTS - alignedTimeSeries with IQR values
+% Outputs:
+%   iqrTS - alignedTimeSeries with IQR values
 %
-%   See also: prctile, std, stdRobust
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also PRCTILE, STD, STDROBUST.
 
 if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);

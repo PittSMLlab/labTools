@@ -1,20 +1,22 @@
 function prctileTS = prctile(this, p, strideIdxs)
-%prctile  Computes percentile
+%PRCTILE Computes percentile.
 %
-%   prctileTS = prctile(this, p) computes specified percentile across
-%   all strides
+%   prctileTS = prctile(this, p) computes specified percentile across all
+% strides
 %
 %   prctileTS = prctile(this, p, strideIdxs) computes for specified strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       p - percentile value (0-100)
-%       strideIdxs - vector of stride indices (optional, default: all)
+% Inputs:
+%   this       - alignedTimeSeries object
+%   p          - percentile value (0-100)
+%   strideIdxs - vector of stride indices (optional, default: all)
 %
-%   Outputs:
-%       prctileTS - alignedTimeSeries with percentile values
+% Outputs:
+%   prctileTS - alignedTimeSeries with percentile values
 %
-%   See also: median, iqr, mean
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEDIAN, IQR, MEAN.
 
 if nargin > 2 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);

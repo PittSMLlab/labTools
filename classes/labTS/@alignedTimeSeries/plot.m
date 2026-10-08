@@ -1,39 +1,41 @@
 function [figHandle, plotHandles, plottedInds] = plot(this, ...
     figHandle, plotHandles, meanColor, events, ...
     individualLineStyle, plottedInds, bounds, medianFlag)
-%plot  Plots aligned data with mean
+%PLOT Plots aligned data with mean.
 %
-%   [figHandle, plotHandles, plottedInds] = plot(this) plots
-%   individual strides and mean
+%   [figHandle, plotHandles, plottedInds] = plot(this) plots individual
+% strides and mean
 %
 %   [figHandle, plotHandles, plottedInds] = plot(this, figHandle,
-%   plotHandles, meanColor, events, individualLineStyle, plottedInds,
-%   bounds, medianFlag) plots with full customization
+% plotHandles, meanColor, events, individualLineStyle, plottedInds, bounds,
+% medianFlag) plots with full customization
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       figHandle - figure handle (optional)
-%       plotHandles - subplot handles (optional)
-%       meanColor - RGB color for mean line (optional, default: red)
-%       events - alignedTimeSeries with events to mark (optional)
-%       individualLineStyle - line style for individual strides
-%                             (optional, 0 to skip)
-%       plottedInds - stride indices to plot (optional, auto-limited
-%                     if too many)
-%       bounds - percentile bounds for shading or lines (optional)
-%       medianFlag - if 1 uses median, if 0 uses mean (optional,
-%                    default: 1)
+% Inputs:
+%   this                - alignedTimeSeries object
+%   figHandle           - figure handle (optional)
+%   plotHandles         - subplot handles (optional)
+%   meanColor           - RGB color for mean line (optional, default: red)
+%   events              - alignedTimeSeries with events to mark (optional)
+%   individualLineStyle - line style for individual strides (optional, 0 to
+%                         skip)
+%   plottedInds         - stride indices to plot (optional, auto-limited if
+%                         too many)
+%   bounds              - percentile bounds for shading or lines (optional)
+%   medianFlag          - if 1 uses median, if 0 uses mean (optional,
+%                         default: 1)
 %
-%   Outputs:
-%       figHandle - figure handle
-%       plotHandles - subplot handles
-%       plottedInds - indices of strides actually plotted
+% Outputs:
+%   figHandle   - figure handle
+%   plotHandles - subplot handles
+%   plottedInds - indices of strides actually plotted
 %
 %   Note: Plots individual instances (strides) and overlays mean. Uses
 %         one subplot per label. If events given, displays average
 %         event times.
 %
-%   See also: labTimeSeries/plot, plotCheckerboard
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also LABTIMESERIES/PLOT, PLOTCHECKERBOARD.
 
 % Plot individual instances (strides) of the time-series, and overlays
 % the mean of all of them Uses one subplot for each label in the

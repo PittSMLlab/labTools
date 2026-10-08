@@ -1,30 +1,32 @@
 function newThis = linearStretch(this, labels, rangeValues, ...
     descriptionSuffix)
-%linearStretch  Linearly transforms parameter values
+%LINEARSTRETCH Linearly transforms parameter values.
 %
-%   newThis = linearStretch(this, labels, rangeValues) transforms
-%   parameters such that rangeValues(1) maps to 0 and rangeValues(2)
-%   maps to 1
+%   newThis = linearStretch(this, labels, rangeValues) transforms parameters
+% such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - cell array of parameter labels to transform
-%       rangeValues - 2-element vector [min max] defining range to
-%                     normalize
-%       descriptionSuffix - OPTIONAL. a string representing a description
-%           suffix to append to the new parameter's descriptions. Default
-%           empty. By default, the new parameter's description will be
-%           normalized to range =[rangemin, rangemax]. if suffix is provided
-%           will be appended to the description.
+% Inputs:
+%   this              - parameterSeries object
+%   labels            - cell array of parameter labels to transform
+%   rangeValues       - 2-element vector [min max] defining range to
+%                       normalize
+%   descriptionSuffix - OPTIONAL. a string representing a description suffix
+%                       to append to the new parameter's descriptions.
+%                       Default empty. By default, the new parameter's
+%                       description will be normalized to range =[rangemin,
+%                       rangemax]. if suffix is provided will be appended to
+%                       the description.
 %
-%   Outputs:
-%       newThis - parameterSeries with normalized parameters added as
-%                 'Norm' + original label
+% Outputs:
+%   newThis - parameterSeries with normalized parameters added as 'Norm' +
+%             original label
 %
 %   Note: Creates NEW parameters with 'Norm' prefix. Will generate
 %         collisions if run multiple times for same parameters.
 %
-%   See also: adaptationData.normalizeToBaselineEpoch, addNewParameter
+% Toolbox Dependencies: None
+%
+% See also ADAPTATIONDATA.NORMALIZETOBASELINEEPOCH, ADDNEWPARAMETER.
 
 if numel(rangeValues) ~= 2
     error('parameterSeries:linearStretch', ...

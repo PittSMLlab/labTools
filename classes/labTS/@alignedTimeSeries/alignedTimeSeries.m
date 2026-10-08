@@ -1,55 +1,59 @@
 classdef alignedTimeSeries % < labTimeSeries
-    % TODO: make this inherit from labTimeSeries, as it should
-    %alignedTimeSeries  Time-series-like object for aligned/repeated data
+    %ALIGNEDTIMESERIES Time-series-like object for repeated, aligned data.
     %
     %   alignedTimeSeries stores multiple repetitions of recorded data
-    %   aligned to common events (e.g., gait cycles aligned to heel
-    %   strikes). Data is organized as (samples x channels x repetitions).
+    % aligned to common events (e.g., gait cycles aligned to heel strikes).
+    % Data is organized as (samples x channels x repetitions).
     %
-    %alignedTimeSeries properties:
-    %   Data - 3D matrix (samples x channels x strides)
-    %   Time - time vector for one stride cycle
-    %   labels - cell array of channel labels
-    %   alignmentVector - vector specifying samples per phase
-    %   alignmentLabels - cell array of phase/event labels
-    %   eventTimes - matrix of actual event times (events x strides+1)
+    % TODO: make this inherit from labTimeSeries, as it should.
+    %
+    % alignedTimeSeries properties:
+    %   Data               - 3D matrix (samples x channels x strides)
+    %   Time               - time vector for one stride cycle
+    %   labels             - cell array of channel labels
+    %   alignmentVector    - vector specifying samples per phase
+    %   alignmentLabels    - cell array of phase/event labels
+    %   eventTimes         - matrix of actual event times (events x
+    %                        strides+1)
     %   expandedEventTimes - sample times for all events (dependent)
     %
-    %alignedTimeSeries methods:
-    %   alignedTimeSeries - constructor
-    %   getPartialStridesAsATS - extracts subset of strides
-    %   removeStridesWithNaNs - removes strides with missing data
-    %   getPartialDataAsATS - extracts subset of channels
-    %   mean - computes mean across strides
-    %   std - computes standard deviation
-    %   iqr - computes interquartile range
-    %   stdRobust - computes robust standard deviation
-    %   prctile - computes percentile
-    %   median - computes median
-    %   energyDecomposition - decomposes variance
-    %   abs - takes absolute value
+    % alignedTimeSeries methods:
+    %   alignedTimeSeries        - constructor
+    %   getPartialStridesAsATS   - extracts subset of strides
+    %   removeStridesWithNaNs    - removes strides with missing data
+    %   getPartialDataAsATS      - extracts subset of channels
+    %   mean                     - computes mean across strides
+    %   std                      - computes standard deviation
+    %   iqr                      - computes interquartile range
+    %   stdRobust                - computes robust standard deviation
+    %   prctile                  - computes percentile
+    %   median                   - computes median
+    %   energyDecomposition      - decomposes variance
+    %   abs                      - takes absolute value
     %   equalizeEnergyPerChannel - normalizes by RMS
-    %   demean - removes mean
-    %   minus - subtracts two alignedTimeSeries
-    %   plus - adds two alignedTimeSeries
-    %   times - multiplies by constant
-    %   catStrides - concatenates strides into labTimeSeries
-    %   castAsTS - converts to labTimeSeries
-    %   concatenateAsTS - concatenates strides sequentially
-    %   isaLabel - checks if labels exist
-    %   getLabelsThatMatch - finds labels matching pattern
-    %   renameLabels - renames labels
-    %   cat - concatenates alignedTimeSeries
-    %   fftshift - shifts alignment by half cycle
-    %   discretize - averages data across phases
-    %   flipLR - flips left/right alignment
-    %   getSym - computes symmetric components
-    %   getaSym - computes asymmetric components
-    %   rescaleTime - redefines time vector
-    %   plot - plots aligned data with mean
-    %   plotCheckerboard - displays data as heatmap
+    %   demean                   - removes mean
+    %   minus                    - subtracts two alignedTimeSeries
+    %   plus                     - adds two alignedTimeSeries
+    %   times                    - multiplies by constant
+    %   catStrides               - concatenates strides into labTimeSeries
+    %   castAsTS                 - converts to labTimeSeries
+    %   concatenateAsTS          - concatenates strides sequentially
+    %   isaLabel                 - checks if labels exist
+    %   getLabelsThatMatch       - finds labels matching pattern
+    %   renameLabels             - renames labels
+    %   cat                      - concatenates alignedTimeSeries
+    %   fftshift                 - shifts alignment by half cycle
+    %   discretize               - averages data across phases
+    %   flipLR                   - flips left/right alignment
+    %   getSym                   - computes symmetric components
+    %   getaSym                  - computes asymmetric components
+    %   rescaleTime              - redefines time vector
+    %   plot                     - plots aligned data with mean
+    %   plotCheckerboard         - displays data as heatmap
     %
-    %See also: labTimeSeries, processedLabData
+    % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+    %
+    % See also LABTIMESERIES, PROCESSEDLABDATA.
 
     %% Properties
     properties
@@ -69,30 +73,32 @@ classdef alignedTimeSeries % < labTimeSeries
     methods
         function this = alignedTimeSeries(t0, Ts, Data, labels, ...
             alignmentVector, alignmentLabels, eventTimes)
-            %alignedTimeSeries  Constructor for alignedTimeSeries class
+            %ALIGNEDTIMESERIES Constructor for alignedTimeSeries class.
             %
             %   this = alignedTimeSeries(t0, Ts, Data, labels,
-            %   alignmentVector, alignmentLabels) creates aligned
-            %   timeseries without event times
+            % alignmentVector, alignmentLabels) creates aligned timeseries
+            % without event times
             %
             %   this = alignedTimeSeries(t0, Ts, Data, labels,
-            %   alignmentVector, alignmentLabels, eventTimes) includes
-            %   event timing information
+            % alignmentVector, alignmentLabels, eventTimes) includes event
+            % timing information
             %
-            %   Inputs:
-            %       t0 - initial time
-            %       Ts - sampling period
-            %       Data - 3D matrix (samples x channels x strides)
-            %       labels - cell array of channel labels
-            %       alignmentVector - vector specifying number of samples
-            %                         per phase
-            %       alignmentLabels - cell array of phase/event labels
-            %       eventTimes - matrix of event times (optional)
+            % Inputs:
+            %   t0              - initial time
+            %   Ts              - sampling period
+            %   Data            - 3D matrix (samples x channels x strides)
+            %   labels          - cell array of channel labels
+            %   alignmentVector - vector specifying number of samples per
+            %                     phase
+            %   alignmentLabels - cell array of phase/event labels
+            %   eventTimes      - matrix of event times (optional)
             %
-            %   Outputs:
-            %       this - alignedTimeSeries object
+            % Outputs:
+            %   this - alignedTimeSeries object
             %
-            %   See also: labTimeSeries, processedLabData/reduce
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, PROCESSEDLABDATA/REDUCE.
 
             if nargin < 6
                 warning(['alignedTimeSeries being created without ' ...
@@ -125,26 +131,33 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Property Getters and Setters
     methods
         function eET = get.expandedEventTimes(this)
-            %get.expandedEventTimes  Returns sample times for all events
+            %GET.EXPANDEDEVENTTIMES Returns sample times for all events.
             %
-            %   Outputs:
-            %       eET - matrix of sample times for each event
+            % Inputs:
+            %   this - alignedTimeSeries object
+            %
+            % Outputs:
+            %   eET - matrix of sample times for each event
+            %
+            % Toolbox Dependencies: None
 
             if ~isempty(this.eventTimes)
                 eET = alignedTimeSeries.expandEventTimes(...
                     this.eventTimes, this.alignmentVector);
-            else % legacy version
+            else % eventTimes not set (not mandatory)
                 error('alignedTS:expandedEventTimes', ...
                     'eventTimes are not determined');
             end
         end
 
         function this = set.eventTimes(this, eventTimes)
-            %set.eventTimes  Validates and sets event times
+            %SET.EVENTTIMES Validates and sets event times.
             %
-            %   Inputs:
-            %       this - alignedTimeSeries object
-            %       eventTimes - matrix of event times
+            % Inputs:
+            %   this       - alignedTimeSeries object
+            %   eventTimes - matrix of event times
+            %
+            % Toolbox Dependencies: None
 
             if any(size(eventTimes) ~= [length(this.alignmentVector) ...
                     size(this.Data, 3) + 1])
@@ -193,15 +206,17 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Arithmetic Operations
     methods
         function newThis = abs(this)
-            %abs  Takes absolute value
+            %ABS Takes absolute value.
             %
             %   newThis = abs(this) computes absolute value of data
             %
-            %   Inputs:
-            %       this - alignedTimeSeries object
+            % Inputs:
+            %   this - alignedTimeSeries object
             %
-            %   Outputs:
-            %       newThis - alignedTimeSeries with absolute values
+            % Outputs:
+            %   newThis - alignedTimeSeries with absolute values
+            %
+            % Toolbox Dependencies: None
 
             newThis = this;
             newThis.Data = abs(this.Data);
@@ -257,33 +272,48 @@ classdef alignedTimeSeries % < labTimeSeries
         function [figHandle,plotHandles,plottedInds] = ...
             plot(this,figHandle,plotHandles,meanColor,events, ...
             individualLineStyle,plottedInds,bounds,medianFlag)
-            % Plot individual instances (strides) of the time-series, and
-            % overlays the mean of all of them
-            % Uses one subplot for each label in the timeseries (same as
-            % labTimeSeries.plot).
-            % If events are given (alignedTimeSeries with the same time
-            % vector and number of strides),
-            % it will display the average event-time ocurrence in the plot,
-            % instead of the time in the x-axis.
-            % See also labTimeSeries.plot
+            %PLOT Plot every stride of the series and overlay their mean.
             %
-            % SYNTAX:
-            % [figHandle,plotHandles]=plot(this,figHandle,plotHandles, ...
-            %    meanColor,events)
+            %   [figHandle, plotHandles, plottedInds] = plot(this, ...
+            %   figHandle, plotHandles, meanColor, events, ...
+            %   individualLineStyle, plottedInds, bounds, medianFlag)
+            %   plots the individual instances (strides) of the series
+            %   and overlays their mean (or median), one subplot per
+            %   label (same as labTimeSeries.plot). If events are given
+            %   (alignedTimeSeries with the same time vector and number
+            %   of strides), the x-axis shows the average event-time
+            %   occurrence instead of the time.
             %
-            % INPUTS:
-            % this: alignedTimeSeries object to plot
-            % figHandle: handle to the figure to be used. If absent,
-            % creates a new figure.
-            % plotHandles: handles to the subplots being used. There need
-            % to be at least as many handles as labels in the data.
-            % meanColor: color to use for the plot of the mean. %FIXME
-            % events: alignedTimeSeries of events.
+            % Inputs:
+            %   this                - alignedTimeSeries object to plot
+            %   figHandle           - figure to use; a new figure is
+            %                         created if absent
+            %   plotHandles         - subplot handles; at least one per
+            %                         label
+            %   meanColor           - color of the mean trace
+            %                         (default [1 0 0])
+            %   events              - alignedTimeSeries of events
+            %   individualLineStyle - line style of individual strides;
+            %                         0 hides them (default gray)
+            %   plottedInds         - strides to plot (default all, capped
+            %                         for very large data)
+            %   bounds              - percentile(s) to show around the
+            %                         central trace: two values draw a
+            %                         shaded band, otherwise one line
+            %                         per percentile (zeros select the
+            %                         standard deviation or error)
+            %   medianFlag          - 1 plots the median (default), 0 the
+            %                         mean
             %
-            % OUTPUT:
-            % figHandle: handle to the figure used.
-            % plotHandles: handles to the subplots used.
+            % Outputs:
+            %   figHandle   - figure used
+            %   plotHandles - subplots used
+            %   plottedInds - strides plotted
             %
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also LABTIMESERIES/PLOT.
+
             if nargin < 4 || isempty(meanColor)
                 meanColor = [1,0,0];
             end

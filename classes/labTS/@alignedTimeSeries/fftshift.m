@@ -1,24 +1,26 @@
 function newThis = fftshift(this, labels)
-%fftshift  Shifts alignment by half cycle
+%FFTSHIFT Shifts alignment by half cycle.
 %
-%   newThis = fftshift(this) shifts first and second halves of
-%   alignment cycle for all labels
+%   newThis = fftshift(this) shifts first and second halves of alignment
+% cycle for all labels
 %
 %   newThis = fftshift(this, labels) shifts only specified labels
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       labels - cell array of labels to shift (optional, default: all)
+% Inputs:
+%   this   - alignedTimeSeries object
+%   labels - cell array of labels to shift (optional, default: all)
 %
-%   Outputs:
-%       newThis - shifted alignedTimeSeries
+% Outputs:
+%   newThis - shifted alignedTimeSeries
 %
-%   Example:
-%       If first half starts at FHS and second half starts at SHS, the
-%       shifted version will start at SHS and FHS will be the midpoint
-%       of the cycle
+% Example:
+%   If first half starts at FHS and second half starts at SHS, the
+%   shifted version will start at SHS and FHS will be the midpoint
+%   of the cycle
 %
-%   See also: flipLR
+% Toolbox Dependencies: None
+%
+% See also FLIPLR.
 
 if nargin > 1 && ~isempty(labels)
     [~, idxs] = this.isaLabel(labels);

@@ -1,17 +1,19 @@
 function newThis = markBadWhenMissingAny(this, labels)
-%markBadWhenMissingAny  Marks strides bad if any param missing
+%MARKBADWHENMISSINGANY Marks strides bad if any param missing.
 %
-%   newThis = markBadWhenMissingAny(this, labels) marks strides as bad
-%   if any of the specified parameters have NaN values
+%   newThis = markBadWhenMissingAny(this, labels) marks strides as bad if
+% any of the specified parameters have NaN values
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - cell array of parameter labels to check
+% Inputs:
+%   this   - parameterSeries object
+%   labels - cell array of parameter labels to check
 %
-%   Outputs:
-%       newThis - parameterSeries with updated bad flags
+% Outputs:
+%   newThis - parameterSeries with updated bad flags
 %
-%   See also: markBadWhenMissingAll, markBadStridesAsNan
+% Toolbox Dependencies: None
+%
+% See also MARKBADWHENMISSINGALL, MARKBADSTRIDESASNAN.
 
 newThis = this;
 aux     = this.getDataAsVector(labels);

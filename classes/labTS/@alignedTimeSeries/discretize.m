@@ -1,18 +1,20 @@
 function newThis = discretize(this, averagingVector)
-%discretize  Averages data across phases
+%DISCRETIZE Averages data across phases.
 %
-%   newThis = discretize(this, averagingVector) averages data
-%   according to specified averaging vector
+%   newThis = discretize(this, averagingVector) averages data according to
+% specified averaging vector
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       averagingVector - vector specifying samples to average per new
-%                         phase (must sum to total samples)
+% Inputs:
+%   this            - alignedTimeSeries object
+%   averagingVector - vector specifying samples to average per new phase
+%                     (must sum to total samples)
 %
-%   Outputs:
-%       newThis - discretized alignedTimeSeries
+% Outputs:
+%   newThis - discretized alignedTimeSeries
 %
-%   See also: mean, labTimeSeries/discretize
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEAN, LABTIMESERIES/DISCRETIZE.
 
 if sum(averagingVector) ~= sum(this.alignmentVector)
     error('alignedTS:discretize', ['The averaging vector must sum to ' ...

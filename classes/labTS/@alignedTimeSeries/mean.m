@@ -1,25 +1,26 @@
 function [meanTS, stds] = mean(this, strideIdxs)
-%mean  Computes mean across strides
+%MEAN Computes mean across strides.
 %
-%   [meanTS, stds] = mean(this) computes mean and standard deviation
-%   across all aligned timeseries
+%   [meanTS, stds] = mean(this) computes mean and standard deviation across
+% all aligned timeseries
 %
-%   [meanTS, stds] = mean(this, strideIdxs) computes for specified
-%   strides
+%   [meanTS, stds] = mean(this, strideIdxs) computes for specified strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       strideIdxs - vector of stride indices (optional, default: all)
+% Inputs:
+%   this       - alignedTimeSeries object
+%   strideIdxs - vector of stride indices (optional, default: all)
 %
-%   Outputs:
-%       meanTS - alignedTimeSeries with mean data (single stride)
-%       stds - standard deviations (for logical data) or empty
+% Outputs:
+%   meanTS - alignedTimeSeries with mean data (single stride)
+%   stds   - standard deviations (for logical data) or empty
 %
 %   Note: For logical data (events), assumes all aligned timeSeries
 %         have same number of events in same order. Returns median
 %         event times.
 %
-%   See also: median, std, prctile
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEDIAN, STD, PRCTILE.
 
 if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);

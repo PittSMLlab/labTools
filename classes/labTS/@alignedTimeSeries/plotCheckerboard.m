@@ -1,24 +1,26 @@
 function [fh, ph] = plotCheckerboard(this, fh, ph)
-%plotCheckerboard  Displays data as heatmap
+%PLOTCHECKERBOARD Displays data as heatmap.
 %
-%   [fh, ph] = plotCheckerboard(this) creates heatmap visualization of
-%   mean aligned data
+%   [fh, ph] = plotCheckerboard(this) creates heatmap visualization of mean
+% aligned data
 %
 %   [fh, ph] = plotCheckerboard(this, fh, ph) uses existing handles
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       fh - figure handle (optional)
-%       ph - plot handle (optional)
+% Inputs:
+%   this - alignedTimeSeries object
+%   fh   - figure handle (optional)
+%   ph   - plot handle (optional)
 %
-%   Outputs:
-%       fh - figure handle
-%       ph - plot handle
+% Outputs:
+%   fh - figure handle
+%   ph - plot handle
 %
 %   Note: To do - check if events exist and add DS/STANCE/DS/SWING
 %         labels
 %
-%   See also: plot
+% Toolbox Dependencies: None
+%
+% See also PLOT.
 
 if nargin < 2
     fh = figure();

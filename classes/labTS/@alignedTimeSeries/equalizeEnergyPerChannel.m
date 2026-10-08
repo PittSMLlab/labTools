@@ -1,16 +1,18 @@
 function newThis = equalizeEnergyPerChannel(this)
-%equalizeEnergyPerChannel  Normalizes by RMS
+%EQUALIZEENERGYPERCHANNEL Normalizes by RMS.
 %
-%   newThis = equalizeEnergyPerChannel(this) normalizes each channel
-%   by its RMS value across time and strides
+%   newThis = equalizeEnergyPerChannel(this) normalizes each channel by its
+% RMS value across time and strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       newThis - normalized alignedTimeSeries
+% Outputs:
+%   newThis - normalized alignedTimeSeries
 %
-%   See also: demean, labTimeSeries/equalizeEnergyPerChannel
+% Toolbox Dependencies: None
+%
+% See also DEMEAN, LABTIMESERIES/EQUALIZEENERGYPERCHANNEL.
 
 newThis = this;
 newThis.Data = bsxfun(@rdivide, newThis.Data, ...

@@ -1,21 +1,22 @@
 function newThis = incorporateDependentParameters(this, labels)
-%incorporateDependentParameters  Adds computed dependent parameters
+%INCORPORATEDEPENDENTPARAMETERS Adds computed dependent parameters.
 %
-%   newThis = incorporateDependentParameters(this, labels) adds
-%   parameters computed from existing parameters using recipes from
-%   DependParamRecipes.mat
+%   newThis = incorporateDependentParameters(this, labels) adds parameters
+% computed from existing parameters using recipes from
+% DependParamRecipes.mat
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - string or cell array of dependent parameter names to
-%                add
+% Inputs:
+%   this   - parameterSeries object
+%   labels - string or cell array of dependent parameter names to add
 %
-%   Outputs:
-%       newThis - parameterSeries with added parameters
+% Outputs:
+%   newThis - parameterSeries with added parameters
 %
 %   Note: Loads recipes from 'DependParamRecipes.mat' file
 %
-%   See also: addNewParameter, computeNewParameter
+% Toolbox Dependencies: None
+%
+% See also ADDNEWPARAMETER, COMPUTENEWPARAMETER.
 
 ff      = load('DependParamRecipes.mat', 'fieldList');
 fTable  = ff.fieldList;

@@ -1,20 +1,22 @@
 function this = renameLabels(this, originalLabels, newLabels)
-%renameLabels  Renames labels
+%RENAMELABELS Renames labels.
 %
-%   this = renameLabels(this, originalLabels, newLabels) renames
-%   specified labels
+%   this = renameLabels(this, originalLabels, newLabels) renames specified
+% labels
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       originalLabels - cell array of current labels (empty for all)
-%       newLabels - cell array of new label names
+% Inputs:
+%   this           - alignedTimeSeries object
+%   originalLabels - cell array of current labels (empty for all)
+%   newLabels      - cell array of new label names
 %
-%   Outputs:
-%       this - alignedTimeSeries with renamed labels
+% Outputs:
+%   this - alignedTimeSeries with renamed labels
 %
 %   Note: You should not be renaming labels. You have been warned.
 %
-%   See also: isaLabel
+% Toolbox Dependencies: None
+%
+% See also ISALABEL.
 
 warning('labTS:renameLabels:dont', ...
     'You should not be renaming the labels. You have been warned.');

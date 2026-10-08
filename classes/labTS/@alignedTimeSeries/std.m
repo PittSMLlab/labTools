@@ -1,19 +1,21 @@
 function stdTS = std(this, strideIdxs)
-%std  Computes standard deviation
+%STD Computes standard deviation.
 %
 %   stdTS = std(this) computes standard deviation across all strides
 %
 %   stdTS = std(this, strideIdxs) computes for specified strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       strideIdxs - vector of stride indices (optional, default: all)
+% Inputs:
+%   this       - alignedTimeSeries object
+%   strideIdxs - vector of stride indices (optional, default: all)
 %
-%   Outputs:
-%       stdTS - alignedTimeSeries with standard deviation (for numeric)
-%               or vector (for logical)
+% Outputs:
+%   stdTS - alignedTimeSeries with standard deviation (for numeric) or
+%           vector (for logical)
 %
-%   See also: mean, stdRobust, iqr
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEAN, STDROBUST, IQR.
 
 if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);

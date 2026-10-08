@@ -1,16 +1,18 @@
 function newThis = minus(this, other)
-%minus  Subtracts two alignedTimeSeries
+%MINUS Subtracts two alignedTimeSeries.
 %
 %   newThis = minus(this, other) subtracts other from this element-wise
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       other - alignedTimeSeries with compatible dimensions
+% Inputs:
+%   this  - alignedTimeSeries object
+%   other - alignedTimeSeries with compatible dimensions
 %
-%   Outputs:
-%       newThis - difference of two alignedTimeSeries
+% Outputs:
+%   newThis - difference of two alignedTimeSeries
 %
-%   See also: plus, times
+% Toolbox Dependencies: None
+%
+% See also PLUS, TIMES.
 
 newThis = this;
 newThis.Data = this.Data - other.Data;
