@@ -16,6 +16,11 @@ function OGspeed = getOGspeed(expData)
 %
 % See also EXPERIMENTDATA, DELETESHORTPHASES.
 
+%% Set thresholds
+maxHipStepMm = 50;                      % larger per-frame steps are dropout
+minWalkSec   = 0.5;                     % shorter phases are turn-arounds
+mmPerM       = 1000;                    % mm to m
+
 %% Get overground baseline trial indices
 OGtrials = cell2mat(expData.metaData.trialsInCondition( ...
     expData.metaData.getConditionIdxsFromName('OG base')));
@@ -36,14 +41,14 @@ for tr = 1:length(OGtrials)            % for each OG trial, ...
 
     % compute hip velocity and remove dropout artifacts (>50 mm/frame)
     HipVel = diff(avghip);
-    HipVel(abs(HipVel) > 50) = 0;
+    HipVel(abs(HipVel) > maxHipStepMm) = 0;
 
     % identify frames at or above median speed
     midHipVel = median(abs(HipVel), 'omitnan');
     walking   = abs(HipVel) > midHipVel;
     % eliminate phases shorter than 0.5 s (turn-around / artifacts)
     walking = deleteShortPhases( ...
-        walking, trialData.markerData.sampFreq, 0.5);
+        walking, trialData.markerData.sampFreq, minWalkSec);
 
     % split walking into individual bouts
     walkingSamples = find(walking);
@@ -63,7 +68,7 @@ for tr = 1:length(OGtrials)            % for each OG trial, ...
     sampDiff = boutStops - boutStarts;
     distDiff = avghip(boutStops) - avghip(boutStarts);
     speeds   = [speeds; ...                             %#ok<AGROW>
-        (distDiff / 1000) ./ ...
+        (distDiff / mmPerM) ./ ...
         (sampDiff' / trialData.markerData.sampFreq)];
 end
 

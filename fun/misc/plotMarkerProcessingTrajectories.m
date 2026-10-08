@@ -82,7 +82,8 @@ end
 %                 traj = mrkrTrajs.(stepName).(marker);
 %
 %                 if size(traj,2) < 3
-%                     warning('Trajectory for %s in %s is incomplete.', marker, stepName);
+%                     warning('Trajectory for %s in %s is incomplete.', ...
+%                         marker, stepName);
 %                     continue;
 %                 end
 %
