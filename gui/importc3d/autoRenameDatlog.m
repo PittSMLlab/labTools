@@ -1,35 +1,40 @@
 function autoRenameDatlog(datlogFolder, viconDataFolder)
-% autoRenameDatlog using timestamps and trial names from .x1d files in
-% the viconDataFolder
-% 1. Will first create a back up folder within the datlogFolder with the
-% folder name 'datlog-original'
-% 2. Then Will rename the datlog file that's the best match within a
-% +-1min window of each .x1d file under viconDataFolder. If found, will
-% rename the corresponding datlog file as Trial##.mat
-% If no match found will skip (.e.,g if no match for Trial10.x1d
-% in the datlog file that has time stamp within +-1mins, will not have a
-% datlog file renamed as Trial10.mat)
+%AUTORENAMEDATLOG Rename datlog files to match the Vicon Trial##.x1d names.
 %
-% OUTPUTARGS = none
+%   Matches each Trial##.x1d file in viconDataFolder to the datlog file in
+% datlogFolder with the closest timestamp within 1 minute (searching
+% forward from the previous match), and renames that datlog file to
+% Trial##.mat. A Vicon trial with no datlog within 1 minute (e.g., a
+% trial started in Vicon without a datlog) is skipped with a warning and
+% keeps no renamed datlog. Before renaming, copies all contents of
+% datlogFolder into a 'datlog-original' subfolder for recovery. The match
+% table (matchResults) is displayed in the command window so the matches
+% can be checked by eye.
 %
-% [INPUTARGS]:
-%   - datlogFolder: string of the full path to the datlog files copied
-%       from an experiment session
-%   - viconDataFolder: string of the full path to the vicon files copied
-%       from an experiment session, should include .x1d files for each
-%       trial that you collected.
+%   Can be called standalone or by GETTRIALMETADATA when a datlog folder
+% exists but a trial's datlog file cannot be found.
 %
+% Inputs:
+%   datlogFolder    - char, full path to the datlog files copied from an
+%                     experiment session
+%   viconDataFolder - char, full path to the Vicon files copied from an
+%                     experiment session; should include a .x1d file for
+%                     each trial that was collected
+%
+% Outputs:
+%   None
 %
 % Examples:
 %   dataDir = '/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data';
 %   autoRenameDatlog(fullfile(dataDir, 'AUF01', 'V02', 'datlog'), ...
 %       fullfile(dataDir, 'AUF01', 'V02', 'Vicon'))
-%   This will rename AUF01V02's datlog to be Trial## matching the .x1d file
-%   in Vicon folder
-% This function can be called standalone or as part of the c3d2mat call
-% after finding the datlog folder is present in getTrialMetaData(info)
+%   renames AUF01V02's datlog files to Trial## to match the .x1d files in
+%   the Vicon folder.
 %
-% See also: labTools/gui/importc3d/getTrialMetaData.m
+% Toolbox Dependencies:
+%   None
+%
+% See also GETTRIALMETADATA.
 %
 % $Author: Shuqi Liu $	$Date: 2025/11/03 12:32:31 $	$Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2025

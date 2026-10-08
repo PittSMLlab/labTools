@@ -1,59 +1,64 @@
 function [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
     resSavePath, subjectID, eventClass, studyName, muscleLabels, ...
     normalizationRefCond, biasRemovalCond)
-% Separate 1 condition into multiple in expData using timing information
-% from audioCue.
-% The function saves the new expData and adaptData in [resSavePath
-% subjectID] and copies the old files into [resSavePath subjectID
-% originalCondName]
-% Always separate on sTO to presever sHS in new conditions as much as
-% possible.
-% This is specific for the SpinalAdaptation study (uses prior knowledge
-% of what's in the audioCue to separate the trials).
-% ***NOTE**** Logic in here can be generalized for other studies who want
-% to split trials, search and fill in the blank for sections with "study
-% specific logic"
+%SEPCONDSINEXPBYAUDIOCUE Split conditions of a session at audio-cue times.
 %
-% OUTPUTARGS: -expData: experimentData object with conditions
-%                   separated.
-%             -adaptData: adaptationData object with conitions separated.
-% INPUTARGS:
-%       - expData: rawExperimentData object with datlog loaded.
-%       - resSavePath: string, the directory to save the exp and adapt
-%                   data with conditions separated.
-%       - subjectID: string, subject ID.
-%       - eventClass: string, allowed values: 'force',
-%                  'kin',''(default), this usually comes from the info file
-%                   in c3d2mat
-%       - studyName: string, name of the study (use this to add in
-%                   study specific logic when separating trials).
-%       - shouldComputeEMGNorm - boolean, indicating if EMG norm
-%           parameters should be computed (optional), default false.
-%       - muscleLabels: cell array of strings that represent the
-%           muscleLabels, contains unique muscle names only. e.g.,
-%           {'BF'	'GLU'	'LG'	'MG'	'PER'	'SEMT'	'SOL'	'TA'	'VL'
-%          'VM'}. If shouldComputeEMGNorm, this arg needs to be provided.
-%           If not provided. will throw a warning and make no norm
-%           calculations.
-%           note only the muscles provided in the list will have norm per
-%           muscle calculated and the whole leg norm assumes these are all
-%         the muscles available
-%       - normalizationRefCond: string representing the conditon name that
-%           will be used to normalize the EMG data, i.e., all EMG data
-%           will be stretched in reference to the last 40 stirdes
-%           (excluding the last 5) of this refcondition such that 100%
-%           = max of the ref condition, 0 = min of the ref condition.
-%       - biasRemovalCond: OPTIONAL. string representing the condition
-%           name to use to compute bias removed EMG norm. if provided,
-%           will remove bias using the providec condition and
-%           ignore the trial type (e.g., if provided 'OGBase' will remove
-%           OGBase for all types of trials including TM, etc.)
-%           If not provided, will use default bias removal behavior which
-%           looks for trial type specific baseline (see
-%           labTools\classes\dataStructs\@adaptationData\removeBiasV4.m)
+%   Separates conditions of a SpinalAdaptation session into multiple
+% conditions using the audio-cue timing in the datlog (study specific: it
+% uses prior knowledge of what is in the audio cues; add other studies in
+% the "study specific logic" branches). New trials are split at the sTO
+% event closest to each cue (s = reference leg) so that sHS strides are
+% preserved in the new conditions as much as possible. The parameters are
+% then recomputed (flushAndRecomputeParameters), an adaptationData object
+% is built, and the average speed time courses are plotted. For subject
+% 'SAS01V02' in a SpinalAdaptation study, trial 9 is additionally cut at
+% 180 s (hard coded).
 %
-% Examples: see loadSubject.m,
-% See Also: labTools\fun\parameterCalculation\appendEMGNormParameters.m
+%   Side effects: saves <ID>Separated.mat (no file separator is inserted
+% between resSavePath and subjectID, so resSavePath must end with one);
+% copies <ID>.mat and <ID>params.mat, when present, to
+% <ID>OriginalCondName.mat and <ID>OriginalCondNameparams.mat; saves the
+% new <ID>.mat, <ID>params.mat, and <ID>SeparatedSpeeds (.fig and .png)
+% in resSavePath; opens GRF inspection figures; and displays some
+% intermediate values in the command window.
+%
+% Inputs:
+%   expData              - rawExperimentData object with datlog loaded
+%   resSavePath          - char, directory to save the exp and adapt data
+%                          with conditions separated
+%   subjectID            - char, subject ID
+%   eventClass           - char, 'force', 'kin', or '' (default); usually
+%                          comes from the info file in c3d2mat
+%   studyName            - char, name of the study (selects the study
+%                          specific logic when separating trials)
+%   muscleLabels         - cell array of char, unique muscle names (e.g.,
+%                          {'BF', 'GLU', 'LG', 'MG', 'PER', 'SEMT',
+%                          'SOL', 'TA', 'VL', 'VM'}). Optional: EMG norm
+%                          parameters are computed only when all eight
+%                          arguments are given and this is nonempty; if
+%                          the norm calculation fails, a warning is issued
+%                          and the parameters are computed without it
+%   normalizationRefCond - char, name of the condition used to normalize
+%                          the EMG: all EMG is stretched relative to the
+%                          last 40 strides (excluding the last 5) of this
+%                          condition so that 100% = its max and 0 = its
+%                          min
+%   biasRemovalCond      - char, optional, name of the condition used to
+%                          compute bias-removed EMG norms for all trial
+%                          types (e.g., 'OGBase'); if omitted, trial-type
+%                          specific baselines are used (see REMOVEBIASV4)
+%
+% Outputs:
+%   expData   - experimentData object with conditions separated
+%   adaptData - adaptationData object with conditions separated
+%
+% Examples:
+%   see loadSubject.m
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also LOADSUBJECT, SYNCDATALOG, APPENDEMGNORMPARAMETERS.
 
 
 % $Author: Shuqi Liu $	$Date: 2024/05/22 13:24:55 $	$Revision: 0.1 $

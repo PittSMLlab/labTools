@@ -1,20 +1,39 @@
 function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)
-%getTrialMetaData creates trialMetaData object for each trial of experiment
+%GETTRIALMETADATA Create trialMetaData objects and file lists for a session.
 %
-%INPUT:
-%info: structured array output from GetInfoGUI
+%   Builds one trialMetaData object per trial of the experiment, plus the
+% C3D file lists (primary PC and secondary EMG PC) that LOADTRIALS reads.
+% Assumes C3D files are named basename01, ..., basename10, ... Looks for
+% a datlog folder ('datalog', 'datalogs', 'datlog', or 'datlogs', case
+% insensitive) in info.dir_location and info.save_folder. If one exists,
+% each trial's datlog .mat file is loaded into its trial meta data; when
+% a trial's datlog file is missing, AUTORENAMEDATLOG renames the datlog
+% files by timestamp (this copies and renames files in the datlog
+% folder), and an error is thrown if the file is still missing.
 %
-%OUTPUTS:
-%trialMD: cell array of trialMetaData objects where the cell index
-%corresponds to the trial number
-%fileList: list of .c3d files containing kinematic and force data for a
-%given experiment
-%secFileList: list of files containing EMG data for a given experiment
-%datlogExist: boolean indicating if datlog folder exists (if so will sync
-%it later)
+% Inputs:
+%   info - struct, session information returned by GetInfoGUI. Fields
+%          used: dir_location, save_folder, secdir_location, basename,
+%          cond, trialnums, numoftrials, trialObs (optional),
+%          conditionNames, conditionDescriptions, refLeg, type,
+%          schenleyLab, perceptualTasks, and ExpDescription
 %
-%See also: trialMetaData
+% Outputs:
+%   trialMD     - cell array of trialMetaData objects; cell index
+%                 corresponds to trial number
+%   fileList    - cell array of C3D file paths (without extension)
+%                 containing kinematic and force data
+%   secFileList - cell array of file paths (without extension)
+%                 containing EMG data from a second PC; '' if none
+%   datlogExist - logical, true if a datlog folder was found (the datlogs
+%                 are synchronized later)
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also TRIALMETADATA, AUTORENAMEDATLOG, LOADSUBJECT.
 
+%% Initialize outputs
 dirStr = info.dir_location;
 basename = info.basename;
 
@@ -23,6 +42,7 @@ fileList = {};
 secFileList = {};
 trialMD = {};
 
+%% Locate the datlog folder
 % check if 'datalog' folder exists in 'save_folder' or 'dir_location'
 datlogExist = false;                    % boolean for data log existance
 filesInDir = [dir(info.dir_location); dir(info.save_folder)];
@@ -38,6 +58,7 @@ for fi = 1:numel(filesInDir)            % for each file in directory, ...
     end
 end
 
+%% Build the trial meta data for each condition and trial
 for cond = sort(info.cond)              % for each exp. condition, ...
     for t = info.trialnums{cond}        % for each trial in condition, ...
         % assumes C3D files are named basename01, ..., basename10, ...
@@ -73,7 +94,7 @@ for cond = sort(info.cond)              % for each exp. condition, ...
         end
         fileList{t} = filename;
 
-        % Pablo I. changed 07/16/2015 to consider case of EMG from one file
+        % EMG may come from a single file (no second directory)
         if ~isempty(info.secdir_location)   % if no second directory, ...
             if t < 10                       % if fewer than ten trials, ...
                 % append '0' to file name

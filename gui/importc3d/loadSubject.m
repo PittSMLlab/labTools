@@ -1,33 +1,44 @@
 function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)
-% loadSubject  Load, organize, process, and save experimental session
-%   data from C3D files into labTools data objects.
+%LOADSUBJECT Load, process, and save an experimental session from C3D.
 %
-%   Reads raw trial data from the .c3d files specified by info, constructs
-% labTools data objects (experimentData, subjectData), detects gait events,
-% computes adaptation parameters, and saves the results to disk. If datlog
-% files are present for all trials, data logs are synchronized prior to
-% processing.
+%   Reads raw trial data from the .c3d files specified by info,
+% constructs labTools data objects (experimentData, subjectData), detects
+% gait events, computes stride parameters, and saves the results to disk.
+% If datlog files are present for all trials, data logs are synchronized
+% prior to processing. 'SpinalAdapt' sessions then have each bout trial
+% split into per-bout conditions (see SPLITSPINALADAPTBOUTCONDS), and
+% 'SpinalAdaptation' sessions have their conditions separated by audio
+% cue (see SEPCONDSINEXPBYAUDIOCUE).
 %
-%   Inputs:
-%     info       - Struct of session information returned by GetInfoGUI,
-%                  containing participant demographics, file paths, trial
-%                  and condition assignments, and EMG channel labels
-%     eventClass - (optional) String specifying the gait event detection
-%                  method. Defaults to '' if omitted or empty:
-%                    ''      - default (forces for TM, kinematics for OG)
-%                    'kin'   - strictly from kinematics (OG trials)
-%                    'force' - strictly from forces (TM trials)
+%   Side effects: starts a diary (<ID>loading.log) in info.save_folder;
+% asks for the EMG normalization reference condition and the EMG bias
+% removal condition (listdlg/questdlg) when EMG channels are present;
+% closes all figures, clears the command window, and clears the
+% workspace variables it no longer needs (a memory workaround, see the
+% FIXME in the code); writes <ID>RAW.mat, <ID>.mat, and <ID>params.mat to
+% info.save_folder, the datlog sync figures to its DatlogSyncRes folder,
+% and, for split sessions, the unsplit <ID>OriginalCondName copies.
 %
-%   Outputs:
-%     expData    - Processed experimentData object
-%     rawExpData - Unprocessed experimentData object
-%     adaptData  - adaptationData object with computed adaptation params
+% Inputs:
+%   info       - struct, session information returned by GetInfoGUI
+%                (participant demographics, file paths, trial and
+%                condition assignments, and EMG channel labels)
+%   eventClass - char, optional gait event detection method; defaults to
+%                '' if omitted or empty:
+%                  ''      - default (forces for TM, kinematics for OG)
+%                  'kin'   - strictly from kinematics (OG trials)
+%                  'force' - strictly from forces (TM trials)
 %
-%   Toolbox Dependencies:
-%     None
+% Outputs:
+%   expData    - processed experimentData object
+%   rawExpData - unprocessed experimentData object
+%   adaptData  - adaptationData object with computed stride parameters
 %
-%   See also: GetInfoGUI, c3d2mat, getTrialMetaData, loadTrials,
-%     experimentData, experimentData.process, SyncDatalog, determineRefLeg
+% Toolbox Dependencies:
+%   None
+%
+% See also GETINFOGUI, C3D2MAT, GETTRIALMETADATA, LOADTRIALS,
+% EXPERIMENTDATA, SYNCDATALOG.
 
 arguments
     info       (1,1) struct
@@ -306,8 +317,7 @@ adaptData = expData.makeDataObj(filePrefix);
 end
 
 function info = determineRefLeg(info)
-% determineRefLeg  Resolves info.refLeg and info.fastLeg from the
-%   available session information.
+%DETERMINEREFLEG Resolve info.refLeg and info.fastLeg from session info.
 %
 %   Determines the reference leg (slow-belt leg) using the first
 % available source of information in the following priority order:
@@ -316,16 +326,20 @@ function info = determineRefLeg(info)
 %   3) info.domleg, as a fallback (dominant leg assumed to be the
 %      fast-belt leg)
 %
-%   Inputs:
-%     info - Session info struct from GetInfoGUI. Must contain at least
-%            one of: info.fastLeg, info.affectedSide (with
-%            info.isStroke == 1), or info.domleg
+% Inputs:
+%   info - struct, session info from GetInfoGUI. Must contain at least
+%          one of: info.fastLeg, info.affectedSide (with
+%          info.isStroke == 1), or info.domleg
 %
-%   Outputs:
-%     info - Session info struct with info.refLeg ('L' or 'R') and, if not
-%            already present, info.fastLeg ('Left' or 'Right') populated
+% Outputs:
+%   info - struct, session info with info.refLeg ('L' or 'R') and, if
+%          not already present, info.fastLeg ('Left' or 'Right')
+%          populated
 %
-%   See also: loadSubject
+% Toolbox Dependencies:
+%   None
+%
+% See also LOADSUBJECT.
 
 if isfield(info, 'fastLeg')                 % if fast leg specified, ...
     if strcmpi(info.fastLeg, 'right')

@@ -1,29 +1,47 @@
 function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)
-%Synchronize the datlog with the rawExpData using the force signal.
-% In each trial's datalog will have a new field
-% datlog.dataLogTimeOffsetBest, which = delay in seconds between
-% (datlog - rawExpData) where positive number means datlog started after
-% rawExpData, which is usually the case, unless the trial has been cut in
-% Vicon.
-% This function assume the datlog has already been loaded in
-% rawExpData.metaData.datlog{trial} and that object will be updated.
+%SYNCDATALOG Synchronize the datlog with rawExpData using the force signal.
 %
-% OUTPUTARGS:
-%           -rawExpData: the same rawExpeirmentData object in inputarg
-%                   with datlog updated with the new field
-%                   dataLogTimeOffsetBest
-% INPUTARGS:
-%           - rawExpData: rawExperimentData object with datlog loaded.
-%           - synImgSavePath: string, the directory to save the datlog sync
-%                   result image.
+%   For each treadmill ('TM') trial, upsamples the datlog's left and right
+% vertical forces to the C3D force sampling rate and finds the delay that
+% best aligns them with the raw LFz and RFz channels (finddelay). The
+% delay of the leg with the better correlation is stored in the trial's
+% datlog as dataLogTimeOffsetBest (s; positive means the datlog started
+% after rawExpData, the usual case unless the trial was cut in Vicon),
+% and the per-leg delays as dataLogTimeOffsetL and dataLogTimeOffsetR.
+% Non-TM trials and trials whose datlog has no force data are skipped. If
+% neither leg correlates above 0.90, a dialog (questdlg) asks which leg
+% to trust, or to abort with an error.
+%
+%   Side effects: creates syncImgSavePath if missing and saves one figure
+% per synchronized trial there ('Trial## Sync' as .fig and .png); closes
+% all figures, clears the command window, and clears all variables except
+% its own (a memory workaround, see the FIXME in the code).
+%
+% Inputs:
+%   rawExpData      - rawExperimentData object with the datlog loaded in
+%                     rawExpData.metaData.datlog{trial}
+%   syncImgSavePath - char, directory to save the datlog sync result
+%                     figures
+%
+% Outputs:
+%   rawExpData - the input object with each synchronized trial's datlog
+%                (in metaData.datlog{trial} and in
+%                data{trial}.metaData.datlog) updated with
+%                dataLogTimeOffsetL, dataLogTimeOffsetR, and
+%                dataLogTimeOffsetBest
+%
 % Examples:
-% [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)
-% next can do:
-% TMReadSyncedTime = ...
-%   rawExpData.metaData.datlog{trial}.dataLogTimeOffsetBest + ...
-%   rawExpData.metaData.datlog{trial}.TreadmillCommands.read(:,5)
+%   rawExpData = SyncDatalog(rawExpData, syncImgSavePath);
+%   % synced treadmill read time:
+%   TMReadSyncedTime = ...
+%       rawExpData.metaData.datlog{trial}.dataLogTimeOffsetBest + ...
+%       rawExpData.metaData.datlog{trial}.TreadmillCommands.read(:,5);
 %
-% See also: SepCondsInExpByAudioCue.m
+% Toolbox Dependencies:
+%   Signal Processing Toolbox (finddelay)
+%   Statistics and Machine Learning Toolbox (corr)
+%
+% See also SEPCONDSINEXPBYAUDIOCUE, LOADSUBJECT.
 
 % $Author: Shuqi Liu $	$Date: 2024/05/22 13:24:55 $	$Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2024
