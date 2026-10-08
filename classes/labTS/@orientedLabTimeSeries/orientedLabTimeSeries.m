@@ -1,56 +1,58 @@
 classdef orientedLabTimeSeries < labTimeSeries
-    %orientedLabTimeSeries  Time series for 3D oriented/vector data
+    %ORIENTEDLABTIMESERIES Time series for 3D oriented/vector data.
     %
     %   orientedLabTimeSeries extends labTimeSeries for data with spatial
-    %   orientation (e.g., marker positions, forces). Each variable has
-    %   three components (x, y, z) and the class maintains orientation
-    %   information for coordinate transformations.
+    % orientation (e.g., marker positions, forces). Each variable has three
+    % components (x, y, z) and the class maintains orientation information
+    % for coordinate transformations.
     %
-    %orientedLabTimeSeries properties:
+    % orientedLabTimeSeries properties:
     %   orientation - orientationInfo object defining coordinate system
-    %   (inherits all properties from labTimeSeries)
+    %                 (inherits all properties from labTimeSeries)
     %
-    %orientedLabTimeSeries methods:
-    %   orientedLabTimeSeries - constructor
-    %   getDataAsTS - returns labTimeSeries (override)
-    %   getOrientedData - returns data as 3D tensor
-    %   getDataAsOTS - returns subset as orientedLabTimeSeries
-    %   getLabelPrefix - returns label prefixes without x/y/z
-    %   isaLabelPrefix - checks if prefix exists
-    %   computeDifferenceMatrix - computes inter-marker differences
-    %   computeDifferenceOTS - difference matrix as OTS
-    %   computeDistanceMatrix - computes inter-marker distances
-    %   vectorNorm - computes 2-norm of vectors
+    % orientedLabTimeSeries methods:
+    %   orientedLabTimeSeries    - constructor
+    %   getDataAsTS              - returns labTimeSeries (override)
+    %   getOrientedData          - returns data as 3D tensor
+    %   getDataAsOTS             - returns subset as orientedLabTimeSeries
+    %   getLabelPrefix           - returns label prefixes without x/y/z
+    %   isaLabelPrefix           - checks if prefix exists
+    %   computeDifferenceMatrix  - computes inter-marker differences
+    %   computeDifferenceOTS     - difference matrix as OTS
+    %   computeDistanceMatrix    - computes inter-marker distances
+    %   vectorNorm               - computes 2-norm of vectors
     %   buildNaiveDistancesModel - builds statistical marker model
-    %   getVirtualOTS - computes virtual markers from model
-    %   findOutliers - detects outliers using model
-    %   fixBadLabels - detects and fixes label swaps
-    %   fillGaps - fills missing marker data
-    %   removeOutliers - removes outlier data points
-    %   assessMissing - assesses missing data
-    %   translate - translates data by vector
-    %   rotate - rotates data by matrix
-    %   flipAxis - flips specified axis
-    %   alignRotate - aligns to new coordinate system
-    %   referenceToMarker - references data to marker position
-    %   threshold - thresholds by vector magnitude
-    %   thresholdByChannel - thresholds by channel (override)
-    %   cat - concatenates (override)
-    %   resample - resamples (override)
-    %   resampleN - resamples to N samples (override)
-    %   split - splits timeseries (override)
-    %   derivate - differentiates (override)
-    %   derivative - numerical derivative (override)
-    %   lowPassFilter - applies low-pass filter (override)
-    %   highPassFilter - applies high-pass filter (override)
-    %   substituteNaNs - fills NaN values (override)
-    %   plus - adds two OTS (override)
-    %   times - multiplies by constant (override)
-    %   plot3 - plots 3D trajectories
-    %   animate2 - creates animation with balloon model
-    %   animate - creates animation (alternate version)
+    %   getVirtualOTS            - computes virtual markers from model
+    %   findOutliers             - detects outliers using model
+    %   fixBadLabels             - detects and fixes label swaps
+    %   fillGaps                 - fills missing marker data
+    %   removeOutliers           - removes outlier data points
+    %   assessMissing            - assesses missing data
+    %   translate                - translates data by vector
+    %   rotate                   - rotates data by matrix
+    %   flipAxis                 - flips specified axis
+    %   alignRotate              - aligns to new coordinate system
+    %   referenceToMarker        - references data to marker position
+    %   threshold                - thresholds by vector magnitude
+    %   thresholdByChannel       - thresholds by channel (override)
+    %   cat                      - concatenates (override)
+    %   resample                 - resamples (override)
+    %   resampleN                - resamples to N samples (override)
+    %   split                    - splits timeseries (override)
+    %   derivate                 - differentiates (override)
+    %   derivative               - numerical derivative (override)
+    %   lowPassFilter            - applies low-pass filter (override)
+    %   highPassFilter           - applies high-pass filter (override)
+    %   substituteNaNs           - fills NaN values (override)
+    %   plus                     - adds two OTS (override)
+    %   times                    - multiplies by constant (override)
+    %   plot3                    - plots 3D trajectories
+    %   animate2                 - creates animation with balloon model
+    %   animate                  - creates animation (alternate version)
     %
-    %See also: labTimeSeries, orientationInfo, naiveDistances
+    % Toolbox Dependencies: None
+    %
+    % See also LABTIMESERIES, ORIENTATIONINFO, NAIVEDISTANCES.
 
     %% Properties
     properties (SetAccess = private)
@@ -66,29 +68,30 @@ classdef orientedLabTimeSeries < labTimeSeries
     methods
         function this = orientedLabTimeSeries(data, t0, Ts, labels, ...
             orientation)
-            %orientedLabTimeSeries  Constructor for orientedLabTimeSeries
-            %class
+            %ORIENTEDLABTIMESERIES Construct an oriented time series.
             %
-            %   this = orientedLabTimeSeries(data, t0, Ts, labels,
-            %   orientation) creates oriented timeseries with specified
-            %   data and orientation
+            %   this = orientedLabTimeSeries(data, t0, Ts, labels, ...
+            %   orientation) creates an oriented time series with the
+            %   specified data and orientation.
             %
-            %   Inputs:
-            %       data - matrix of data values (samples x 3*channels),
-            %              organized as [x1 y1 z1 x2 y2 z2 ...]
-            %       t0 - initial time in seconds
-            %       Ts - sampling period in seconds
-            %       labels - cell array of labels ending in 'x', 'y', 'z'
-            %       orientation - orientationInfo object defining
-            %                     coordinate system
+            % Inputs:
+            %   data        - matrix of data values (samples x 3*channels),
+            %                 organized as [x1 y1 z1 x2 y2 z2 ...]
+            %   t0          - initial time in seconds
+            %   Ts          - sampling period in seconds
+            %   labels      - cell array of labels ending in 'x', 'y', 'z'
+            %   orientation - orientationInfo object defining coordinate
+            %                 system
             %
-            %   Outputs:
-            %       this - orientedLabTimeSeries object
+            % Outputs:
+            %   this - orientedLabTimeSeries object
             %
-            %   Note: Necessarily uniformly sampled. Labels must pass
-            %         sanity check.
+            % Note: Necessarily uniformly sampled. Labels must pass the
+            % sanity check.
             %
-            %   See also: labTimeSeries, orientationInfo
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, ORIENTATIONINFO.
 
             if nargin < 1
                 data        = [];
@@ -203,6 +206,26 @@ classdef orientedLabTimeSeries < labTimeSeries
         newThis = times(this, constant)
 
         function this = renameLabels(this, originalPrefixes, newPrefixes)
+            %RENAMELABELS Rename the label prefixes of the series.
+            %
+            %   this = renameLabels(this, originalPrefixes, ...
+            %   newPrefixes) renames label prefixes, keeping the x, y,
+            %   z suffixes. Warns because renaming labels is discouraged.
+            %
+            % Inputs:
+            %   this             - orientedLabTimeSeries object
+            %   originalPrefixes - prefix(es) to rename (cell or char);
+            %                      empty renames all prefixes
+            %   newPrefixes      - new prefix(es), same size as
+            %                      originalPrefixes
+            %
+            % Outputs:
+            %   this - orientedLabTimeSeries with renamed labels
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, GETLABELPREFIX.
+
             warning(['You should not be renaming the labels. You have ' ...
                 'been warned. Also, in OTS you can only rename the ' ...
                 'prefixes.'])

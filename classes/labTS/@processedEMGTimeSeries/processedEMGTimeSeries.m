@@ -1,23 +1,27 @@
 classdef processedEMGTimeSeries < labTimeSeries
-    %processedEMGTimeSeries  Time series for processed EMG data
+    %PROCESSEDEMGTIMESERIES Time series for processed EMG data.
     %
-    %   processedEMGTimeSeries extends labTimeSeries to include
-    %   information about the signal processing applied to raw EMG data.
-    %   It maintains a record of filters used and overrides key methods to
-    %   preserve processing information when manipulating data.
+    %   processedEMGTimeSeries extends labTimeSeries to include information
+    % about the signal processing applied to raw EMG data. It maintains a
+    % record of filters used and overrides key methods to preserve
+    % processing information when manipulating data.
     %
-    %processedEMGTimeSeries properties:
+    % processedEMGTimeSeries properties:
     %   processingInfo - processingInfo object describing filters applied
-    %   (inherits all properties from labTimeSeries)
+    %                    (inherits all properties from labTimeSeries)
     %
-    %processedEMGTimeSeries methods:
+    % processedEMGTimeSeries methods:
     %   processedEMGTimeSeries - constructor for processed EMG timeseries
-    %   getDataAsTS - returns processedEMGTimeSeries with specified
-    %                 label(s)
-    %   resampleN - resamples to N samples, preserving processing info
-    %   split - splits timeseries, preserving processing info
+    %   getDataAsTS            - returns processedEMGTimeSeries with
+    %                            specified label(s)
+    %   resampleN              - resamples to N samples, preserving
+    %                            processing info
+    %   split                  - splits timeseries, preserving processing
+    %                            info
     %
-    %See also: labTimeSeries, processingInfo, EMGData
+    % Toolbox Dependencies: None
+    %
+    % See also LABTIMESERIES, PROCESSINGINFO, EMGDATA.
 
     %% Properties
     properties (SetAccess = private)
@@ -28,33 +32,35 @@ classdef processedEMGTimeSeries < labTimeSeries
     methods
         function this = processedEMGTimeSeries(data, t0, Ts, labels, ...
             processingInfo, Quality, QualInfo)
-            %processedEMGTimeSeries  Constructor for
-            %processedEMGTimeSeries class
+            %PROCESSEDEMGTIMESERIES Construct a processed EMG time series.
             %
-            %   this = processedEMGTimeSeries(data, t0, Ts, labels,
-            %   processingInfo) creates a processed EMG timeseries with
-            %   specified data and processing information
+            %   this = processedEMGTimeSeries(data, t0, Ts, labels, ...
+            %   processingInfo) creates a processed EMG time series with
+            %   the specified data and processing information.
             %
-            %   this = processedEMGTimeSeries(data, t0, Ts, labels,
-            %   processingInfo, Quality, QualInfo) includes quality flags
+            %   this = processedEMGTimeSeries(data, t0, Ts, labels, ...
+            %   processingInfo, Quality, QualInfo) also sets the quality
+            %   flags and their description.
             %
-            %   Inputs:
-            %       data - matrix of processed EMG amplitudes (samples x
-            %              channels)
-            %       t0 - initial time in seconds
-            %       Ts - sampling period in seconds
-            %       labels - cell array of EMG channel labels
-            %       processingInfo - processingInfo object describing
-            %                        filters applied
-            %       Quality - quality flags for samples (optional)
-            %       QualInfo - quality information structure (optional)
+            % Inputs:
+            %   data           - matrix of processed EMG amplitudes (samples
+            %                    x channels)
+            %   t0             - initial time in seconds
+            %   Ts             - sampling period in seconds
+            %   labels         - cell array of EMG channel labels
+            %   processingInfo - processingInfo object describing filters
+            %                    applied
+            %   Quality        - quality flags for samples (optional)
+            %   QualInfo       - quality information structure (optional)
             %
-            %   Outputs:
-            %       this - processedEMGTimeSeries object
+            % Outputs:
+            %   this - processedEMGTimeSeries object
             %
             %   Note: Necessarily uniformly sampled
             %
-            %   See also: labTimeSeries, processingInfo
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, PROCESSINGINFO.
 
             this@labTimeSeries(data, t0, Ts, labels);
             if isa(processingInfo, 'processingInfo')

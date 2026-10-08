@@ -1,25 +1,26 @@
 function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(...
     this, t0, t1, labels, labels2)
-%computeDistanceMatrix  Computes inter-marker distances
+%COMPUTEDISTANCEMATRIX Computes inter-marker distances.
 %
-%   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this,
-%   t0, t1, labels, labels2) computes Euclidean distances between
-%   markers
+%   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0,
+% t1, labels, labels2) computes Euclidean distances between markers
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       t0 - start time (optional)
-%       t1 - end time (optional)
-%       labels - markers to compute from (optional)
-%       labels2 - markers to compute to (optional)
+% Inputs:
+%   this    - orientedLabTimeSeries object
+%   t0      - start time (optional)
+%   t1      - end time (optional)
+%   labels  - markers to compute from (optional)
+%   labels2 - markers to compute to (optional)
 %
-%   Outputs:
-%       distMatrix - 3D matrix (time x markers1 x markers2) of distances
-%       labels - cell array of marker1 labels used
-%       labels2 - cell array of marker2 labels used
-%       Time - time vector
+% Outputs:
+%   distMatrix - 3D matrix (time x markers1 x markers2) of distances
+%   labels     - cell array of marker1 labels used
+%   labels2    - cell array of marker2 labels used
+%   Time       - time vector
 %
-%   See also: computeDifferenceMatrix
+% Toolbox Dependencies: None
+%
+% See also COMPUTEDIFFERENCEMATRIX.
 
 if nargin < 2 || isempty(t0)
     t0 = [];

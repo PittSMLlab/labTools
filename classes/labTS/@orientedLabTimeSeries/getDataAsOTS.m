@@ -1,19 +1,21 @@
 function newThis = getDataAsOTS(this, label)
-%getDataAsOTS  Returns subset as orientedLabTimeSeries
+%GETDATAASOTS Returns subset as orientedLabTimeSeries.
 %
 %   newThis = getDataAsOTS(this) returns all data as OTS
 %
-%   newThis = getDataAsOTS(this, label) returns data for specified
-%   marker prefixes
+%   newThis = getDataAsOTS(this, label) returns data for specified marker
+% prefixes
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       label - cell array of marker prefixes (optional, default: all)
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   label - cell array of marker prefixes (optional, default: all)
 %
-%   Outputs:
-%       newThis - orientedLabTimeSeries with requested data
+% Outputs:
+%   newThis - orientedLabTimeSeries with requested data
 %
-%   See also: getOrientedData, getDataAsTS
+% Toolbox Dependencies: None
+%
+% See also GETORIENTEDDATA, GETDATAASTS.
 
 if nargin < 2 || isempty(label)
     label = [];

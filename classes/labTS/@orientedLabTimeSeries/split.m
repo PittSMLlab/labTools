@@ -1,18 +1,20 @@
 function newThis = split(this, t0, t1)
-%split  Splits timeseries (override)
+%SPLIT Splits timeseries (override).
 %
-%   newThis = split(this, t0, t1) splits and preserves
-%   orientedLabTimeSeries type
+%   newThis = split(this, t0, t1) splits and preserves orientedLabTimeSeries
+% type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       t0 - start time
-%       t1 - end time
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   t0   - start time
+%   t1   - end time
 %
-%   Outputs:
-%       newThis - split orientedLabTimeSeries
+% Outputs:
+%   newThis - split orientedLabTimeSeries
 %
-%   See also: labTimeSeries/split
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/SPLIT.
 
 auxThis = this.split@labTimeSeries(t0, t1);
 newThis = orientedLabTimeSeries(auxThis.Data, t0, auxThis.sampPeriod, ...

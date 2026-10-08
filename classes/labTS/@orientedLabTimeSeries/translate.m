@@ -1,20 +1,22 @@
 function newThis = translate(this, vector)
-%translate  Translates data by vector
+%TRANSLATE Translates data by vector.
 %
 %   newThis = translate(this, vector) applies vector translation to all
-%   oriented data
+% oriented data
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       vector - 1x3 or Tx3 translation vector
+% Inputs:
+%   this   - orientedLabTimeSeries object
+%   vector - 1x3 or Tx3 translation vector
 %
-%   Outputs:
-%       newThis - translated orientedLabTimeSeries
+% Outputs:
+%   newThis - translated orientedLabTimeSeries
 %
 %   Note: Vector has to be size 3 on second dim, and singleton or of
 %         length(time) in first
 %
-%   See also: rotate, referenceToMarker
+% Toolbox Dependencies: None
+%
+% See also ROTATE, REFERENCETOMARKER.
 
 % Check: vector is 1x3 or Tx3
 [M, N] = size(vector);

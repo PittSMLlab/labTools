@@ -1,26 +1,28 @@
 function mov = animate2(this, t0, t1, frameRate, writeFileFlag, ...
     filename, mode)
-%animate2  Creates animation with balloon model
+%ANIMATE2 Creates animation with balloon model.
 %
-%   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename,
-%   mode) renders movie of 3D marker positions
+%   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename, mode)
+% renders movie of 3D marker positions
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       t0 - start time (optional, default: beginning)
-%       t1 - end time (optional, default: end)
-%       frameRate - frames per second (optional, default: 25)
-%       writeFileFlag - if 1, writes to file (optional, default: 0)
-%       filename - output filename (optional, auto-generated)
-%       mode - visualization mode: 1 (lines) or 2 (balloon) (optional,
-%              default: 2)
+% Inputs:
+%   this          - orientedLabTimeSeries object
+%   t0            - start time (optional, default: beginning)
+%   t1            - end time (optional, default: end)
+%   frameRate     - frames per second (optional, default: 25)
+%   writeFileFlag - if 1, writes to file (optional, default: 0)
+%   filename      - output filename (optional, auto-generated)
+%   mode          - visualization mode: 1 (lines) or 2 (balloon) (optional,
+%                   default: 2)
 %
-%   Outputs:
-%       mov - video writer object if writing to file
+% Outputs:
+%   mov - video writer object if writing to file
 %
 %   Note: Only makes sense for markerData type objects
 %
-%   See also: animate, plot3
+% Toolbox Dependencies: None
+%
+% See also ANIMATE, PLOT3.
 
 % This function renders a movie of the 3-D position stored in the
 % orientedLabData object. It only makes sense for markerData type

@@ -1,20 +1,21 @@
 function newThis = thresholdByChannel(this, th, label, moreThanFlag)
-%thresholdByChannel  Thresholds by channel (override)
+%THRESHOLDBYCHANNEL Thresholds by channel (override).
 %
-%   newThis = thresholdByChannel(this, th, label, moreThanFlag)
-%   thresholds and preserves orientedLabTimeSeries type
+%   newThis = thresholdByChannel(this, th, label, moreThanFlag) thresholds
+% and preserves orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       th - threshold value
-%       label - label to use for thresholding
-%       moreThanFlag - if 1, zeros when greater than threshold
-%                      (optional)
+% Inputs:
+%   this         - orientedLabTimeSeries object
+%   th           - threshold value
+%   label        - label to use for thresholding
+%   moreThanFlag - if 1, zeros when greater than threshold (optional)
 %
-%   Outputs:
-%       newThis - thresholded orientedLabTimeSeries
+% Outputs:
+%   newThis - thresholded orientedLabTimeSeries
 %
-%   See also: labTimeSeries/thresholdByChannel, threshold
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/THRESHOLDBYCHANNEL, THRESHOLD.
 
 if nargin < 4 || isempty(moreThanFlag)
     moreThanFlag = [];

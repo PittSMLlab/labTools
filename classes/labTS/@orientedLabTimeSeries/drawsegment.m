@@ -1,20 +1,22 @@
 function drawsegment(h_axes, X1, Y1, Z1, a, color)
-%drawsegment  Draws 3D ellipsoid segment
+%DRAWSEGMENT Draw a 3-D ellipsoid segment.
 %
 %   drawsegment(h_axes, X1, Y1, Z1, a, color) draws ellipsoid aligned
 %   to line between two points
 %
-%   Inputs:
-%       h_axes - axes handle
-%       X1 - x-coordinates of endpoints [x1 x2]
-%       Y1 - y-coordinates of endpoints [y1 y2]
-%       Z1 - z-coordinates of endpoints [z1 z2]
-%       a - relative radii [1 a2 a3] defining ellipsoid shape
-%       color - RGB color vector
+% Inputs:
+%   h_axes - axes handle
+%   X1 - x-coordinates of endpoints [x1 x2]
+%   Y1 - y-coordinates of endpoints [y1 y2]
+%   Z1 - z-coordinates of endpoints [z1 z2]
+%   a - relative radii [1 a2 a3] defining ellipsoid shape
+%   color - RGB color vector
 %
-%   Note: Helper function for animate methods
+% Note: Helper function for the animate methods.
 %
-%   See also: drawball, drawcylinder, animate
+% Toolbox Dependencies: None
+%
+% See also DRAWBALL, DRAWCYLINDER, ANIMATE.
 
 % Hidden Static
 % Auxiliar functions for this.animate()

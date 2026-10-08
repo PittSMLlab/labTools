@@ -1,21 +1,23 @@
 function fh = plot3(this, fh)
-%plot3  Plots 3D trajectories
+%PLOT3 Plots 3D trajectories.
 %
 %   fh = plot3(this) plots 3D trajectories for all markers
 %
 %   fh = plot3(this, fh) plots in existing figure
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       fh - figure handle (optional)
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   fh   - figure handle (optional)
 %
-%   Outputs:
-%       fh - figure handle
+% Outputs:
+%   fh - figure handle
 %
 %   Note: Plots all 3 components of all variables in OTS instance, with
 %         outliers marked in red if Quality field exists
 %
-%   See also: animate, animate2
+% Toolbox Dependencies: None
+%
+% See also ANIMATE, ANIMATE2.
 
 % -------------------
 % plots all 3 components of all variables in OTS instance

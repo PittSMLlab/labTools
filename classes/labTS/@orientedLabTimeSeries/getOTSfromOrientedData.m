@@ -1,21 +1,23 @@
 function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes, ...
     orientation)
-%getOTSfromOrientedData  Creates OTS from 3D data array
+%GETOTSFROMORIENTEDDATA Creates OTS from 3D data array.
 %
-%   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,
-%   orientation) creates orientedLabTimeSeries from oriented data
+%   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes, orientation)
+% creates orientedLabTimeSeries from oriented data
 %
-%   Inputs:
-%       data - 3D matrix (time x markers x 3)
-%       t0 - initial time
-%       Ts - sampling period
-%       labelPrefixes - cell array of marker prefixes
-%       orientation - orientationInfo object
+% Inputs:
+%   data          - 3D matrix (time x markers x 3)
+%   t0            - initial time
+%   Ts            - sampling period
+%   labelPrefixes - cell array of marker prefixes
+%   orientation   - orientationInfo object
 %
-%   Outputs:
-%       OTS - orientedLabTimeSeries object
+% Outputs:
+%   OTS - orientedLabTimeSeries object
 %
-%   See also: getOrientedData, addLabelSuffix
+% Toolbox Dependencies: None
+%
+% See also GETORIENTEDDATA, ADDLABELSUFFIX.
 
 % Static
 labels = [strcat(labelPrefixes, 'x'); strcat(labelPrefixes, 'y'); ...

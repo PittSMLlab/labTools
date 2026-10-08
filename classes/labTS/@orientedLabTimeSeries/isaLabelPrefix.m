@@ -1,18 +1,20 @@
 function [boolFlag, labelIdx] = isaLabelPrefix(this, label)
-%isaLabelPrefix  Checks if prefix exists
+%ISALABELPREFIX Checks if prefix exists.
 %
-%   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if
-%   label(s) are valid prefixes
+%   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if label(s)
+% are valid prefixes
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       label - string or cell array of label prefixes to check
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   label - string or cell array of label prefixes to check
 %
-%   Outputs:
-%       boolFlag - logical vector, true for matches, false if not
-%       labelIdx - vector containing indices of matched labels
+% Outputs:
+%   boolFlag - logical vector, true for matches, false if not
+%   labelIdx - vector containing indices of matched labels
 %
-%   See also: getLabelPrefix, isaLabel
+% Toolbox Dependencies: None
+%
+% See also GETLABELPREFIX, ISALABEL.
 
 if isa(label, 'char')
     auxLabel{1} = label;

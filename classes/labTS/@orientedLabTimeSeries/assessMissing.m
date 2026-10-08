@@ -1,25 +1,27 @@
 function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)
-%assessMissing  Assesses missing data
+%ASSESSMISSING Assesses missing data.
 %
 %   [fh, ph, this] = assessMissing(this) creates plot showing missing
-%   markers
+% markers
 %
 %   [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph) uses
-%   specified labels and handles
+% specified labels and handles
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       labelPrefixes - marker prefixes to assess (optional, currently
-%                       ignored - uses all)
-%       fh - figure handle (optional, -1 to suppress display)
-%       ph - plot handle (optional)
+% Inputs:
+%   this          - orientedLabTimeSeries object
+%   labelPrefixes - marker prefixes to assess (optional, currently ignored -
+%                   uses all)
+%   fh            - figure handle (optional, -1 to suppress display)
+%   ph            - plot handle (optional)
 %
-%   Outputs:
-%       fh - figure handle
-%       ph - plot handle
-%       this - orientedLabTimeSeries with Quality field updated
+% Outputs:
+%   fh   - figure handle
+%   ph   - plot handle
+%   this - orientedLabTimeSeries with Quality field updated
 %
-%   See also: labTimeSeries/assessMissing
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/ASSESSMISSING.
 
 if nargin < 3 || isempty(fh)
     fh = figure();

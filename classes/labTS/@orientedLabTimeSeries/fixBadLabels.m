@@ -1,26 +1,28 @@
 function [this, m, permuteList, modelScore, badFlag, modelScore2] = ...
     fixBadLabels(this, permuteList)
-%fixBadLabels  Detects and fixes label swaps
+%FIXBADLABELS Detects and fixes label swaps.
 %
 %   [this, m, permuteList, modelScore, badFlag, modelScore2] =
-%   fixBadLabels(this) attempts to detect and fix swapped marker labels
+% fixBadLabels(this) attempts to detect and fix swapped marker labels
 %
 %   [this, m, permuteList, modelScore, badFlag, modelScore2] =
-%   fixBadLabels(this, permuteList) applies known permutations first
+% fixBadLabels(this, permuteList) applies known permutations first
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       permuteList - known label permutations to try (optional)
+% Inputs:
+%   this        - orientedLabTimeSeries object
+%   permuteList - known label permutations to try (optional)
 %
-%   Outputs:
-%       this - orientedLabTimeSeries with fixed labels
-%       m - validated marker model
-%       permuteList - permutations applied
-%       modelScore - model quality score (max robust std)
-%       badFlag - true if model validation failed
-%       modelScore2 - alternate model score (mean robust std)
+% Outputs:
+%   this        - orientedLabTimeSeries with fixed labels
+%   m           - validated marker model
+%   permuteList - permutations applied
+%   modelScore  - model quality score (max robust std)
+%   badFlag     - true if model validation failed
+%   modelScore2 - alternate model score (mean robust std)
 %
-%   See also: buildNaiveDistancesModel, validateMarkerModel
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also BUILDNAIVEDISTANCESMODEL, VALIDATEMARKERMODEL.
 
 % error('Unimplemented');
 if nargin < 2

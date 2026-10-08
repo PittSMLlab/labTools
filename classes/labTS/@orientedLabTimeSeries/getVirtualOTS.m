@@ -1,26 +1,28 @@
 function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)
-%getVirtualOTS  Computes virtual markers from model
+%GETVIRTUALOTS Computes virtual markers from model.
 %
-%   virtualOTS = getVirtualOTS(this) computes virtual markers using
-%   maximum likelihood estimation
+%   virtualOTS = getVirtualOTS(this) computes virtual markers using maximum
+% likelihood estimation
 %
-%   virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff) uses
-%   specified weights and statistics
+%   virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff) uses specified
+% weights and statistics
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       ww - weight for actual data in units of 1/mm^2 (optional,
-%            default: 0)
-%       meanDiff - mean difference matrix (optional, computed from data)
-%       stdDiff - std of differences (optional, computed from data)
+% Inputs:
+%   this     - orientedLabTimeSeries object
+%   ww       - weight for actual data in units of 1/mm^2 (optional, default:
+%              0)
+%   meanDiff - mean difference matrix (optional, computed from data)
+%   stdDiff  - std of differences (optional, computed from data)
 %
-%   Outputs:
-%       virtualOTS - orientedLabTimeSeries with virtual markers
+% Outputs:
+%   virtualOTS - orientedLabTimeSeries with virtual markers
 %
 %   Note: Uses naive Bayes approach assuming distances are normally
 %         distributed
 %
-%   See also: buildNaiveDistancesModel, fillGaps
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also BUILDNAIVEDISTANCESMODEL, FILLGAPS.
 
 if nargin < 2 || isempty(ww)
     % ww represents the weight given to actual data from the marker

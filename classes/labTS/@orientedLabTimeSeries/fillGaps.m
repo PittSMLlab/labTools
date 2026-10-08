@@ -1,21 +1,23 @@
 function newThis = fillGaps(this, model)
-%fillGaps  Fills missing marker data
+%FILLGAPS Fills missing marker data.
 %
 %   newThis = fillGaps(this) fills gaps using self-learned model
 %
 %   newThis = fillGaps(this, model) uses specified model
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       model - naiveDistances model (optional, learned from data)
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   model - naiveDistances model (optional, learned from data)
 %
-%   Outputs:
-%       newThis - orientedLabTimeSeries with filled gaps
+% Outputs:
+%   newThis - orientedLabTimeSeries with filled gaps
 %
 %   Note: Meant to be used with markerData only. Uses Bayesian
 %         reconstruction.
 %
-%   See also: buildNaiveDistancesModel, getVirtualOTS
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also BUILDNAIVEDISTANCESMODEL, GETVIRTUALOTS.
 
 if nargin < 2 || isempty(model)
     % Try to learn from the data itself!

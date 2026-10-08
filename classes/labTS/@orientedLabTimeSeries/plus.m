@@ -1,17 +1,19 @@
 function newThis = plus(this, other)
-%plus  Adds two OTS (override)
+%PLUS Adds two OTS (override).
 %
 %   newThis = plus(this, other) adds and preserves orientedLabTimeSeries
-%   type with updated labels
+% type with updated labels
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       other - orientedLabTimeSeries to add
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   other - orientedLabTimeSeries to add
 %
-%   Outputs:
-%       newThis - sum as orientedLabTimeSeries
+% Outputs:
+%   newThis - sum as orientedLabTimeSeries
 %
-%   See also: labTimeSeries/plus, minus, times
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/PLUS, MINUS, TIMES.
 
 newThis = plus@labTimeSeries(this, other);
 tL = this.getLabelPrefix;

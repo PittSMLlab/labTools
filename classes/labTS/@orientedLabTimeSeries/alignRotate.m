@@ -1,22 +1,24 @@
 function newThis = alignRotate(this, newX, newZ)
-%alignRotate  Aligns to new coordinate system
+%ALIGNROTATE Aligns to new coordinate system.
 %
-%   newThis = alignRotate(this, newX, newZ) rotates data to align with
-%   new coordinate system
+%   newThis = alignRotate(this, newX, newZ) rotates data to align with new
+% coordinate system
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       newX - desired x-axis direction (1x3 or Nx3)
-%       newZ - desired z-axis direction (1x3 or Nx3)
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   newX - desired x-axis direction (1x3 or Nx3)
+%   newZ - desired z-axis direction (1x3 or Nx3)
 %
-%   Outputs:
-%       newThis - aligned orientedLabTimeSeries
+% Outputs:
+%   newThis - aligned orientedLabTimeSeries
 %
 %   Note: newX and newZ need to be 1x3 or Nx3 where N =
 %         size(this.Data, 1). FIXME - Align z to newZ, and x to newX
 %         projected in direction orthogonal to newZ
 %
-%   See also: rotate, translate
+% Toolbox Dependencies: None
+%
+% See also ROTATE, TRANSLATE.
 
 % newX and newZ need to be 1x3 or Nx3 where N = size(this.Data, 1)
 % Check:

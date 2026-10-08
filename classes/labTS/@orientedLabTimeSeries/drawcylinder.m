@@ -1,20 +1,22 @@
 function drawcylinder(h_axes, X1, Y1, Z1, radius, color)
-%drawcylinder  Draws 3D cylinder
+%DRAWCYLINDER Draw a 3-D cylinder.
 %
 %   drawcylinder(h_axes, X1, Y1, Z1, radius, color) draws cylinder
 %   between two points
 %
-%   Inputs:
-%       h_axes - axes handle
-%       X1 - x-coordinates of endpoints [x1 x2]
-%       Y1 - y-coordinates of endpoints [y1 y2]
-%       Z1 - z-coordinates of endpoints [z1 z2]
-%       radius - cylinder radii (can vary for coned cylinder)
-%       color - RGB color vector
+% Inputs:
+%   h_axes - axes handle
+%   X1 - x-coordinates of endpoints [x1 x2]
+%   Y1 - y-coordinates of endpoints [y1 y2]
+%   Z1 - z-coordinates of endpoints [z1 z2]
+%   radius - cylinder radii (can vary for coned cylinder)
+%   color - RGB color vector
 %
-%   Note: Helper function for animate methods
+% Note: Helper function for the animate methods.
 %
-%   See also: drawsegment, drawball, animate
+% Toolbox Dependencies: None
+%
+% See also DRAWSEGMENT, DRAWBALL, ANIMATE.
 
 % Hidden Static
 % draw a cylinder centered around line defined by 2 points radius

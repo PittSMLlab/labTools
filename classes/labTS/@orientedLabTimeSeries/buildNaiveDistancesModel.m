@@ -1,19 +1,21 @@
 function model = buildNaiveDistancesModel(this)
-%buildNaiveDistancesModel  Builds statistical marker model
+%BUILDNAIVEDISTANCESMODEL Builds statistical marker model.
 %
-%   model = buildNaiveDistancesModel(this) creates naive Bayes model
-%   of inter-marker distances
+%   model = buildNaiveDistancesModel(this) creates naive Bayes model of
+% inter-marker distances
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
+% Inputs:
+%   this - orientedLabTimeSeries object
 %
-%   Outputs:
-%       model - naiveDistances model object
+% Outputs:
+%   model - naiveDistances model object
 %
 %   Note: Assumes data is bilateral and sorts L/R by magnitude of third
 %         component
 %
-%   See also: naiveDistances, fixBadLabels, findOutliers
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also NAIVEDISTANCES, FIXBADLABELS, FINDOUTLIERS.
 
 labels = this.getLabelPrefix;
 data   = this.getOrientedData;

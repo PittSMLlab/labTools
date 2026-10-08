@@ -1,21 +1,23 @@
 function extendedLabels = addLabelSuffix(labels)
-%addLabelSuffix  Adds x/y/z suffix to labels
+%ADDLABELSUFFIX Adds x/y/z suffix to labels.
 %
-%   extendedLabels = addLabelSuffix(labels) adds component suffixes to
-%   each label
+%   extendedLabels = addLabelSuffix(labels) adds component suffixes to each
+% label
 %
-%   Inputs:
-%       labels - cell array or string of label prefixes
+% Inputs:
+%   labels - cell array or string of label prefixes
 %
-%   Outputs:
-%       extendedLabels - cell array with x, y, z suffixes added
+% Outputs:
+%   extendedLabels - cell array with x, y, z suffixes added
 %
-%   Example:
-%       labels = {'RHIP', 'LHIP', ...}
-%       extendedLabels = addLabelSuffix(labels);
-%       extendedLabels = {'RHIPx', 'RHIPy', 'RHIPz', 'LHIPx', ...}
+% Example:
+%   labels = {'RHIP', 'LHIP', ...}
+%   extendedLabels = addLabelSuffix(labels);
+%   extendedLabels = {'RHIPx', 'RHIPy', 'RHIPz', 'LHIPx', ...}
 %
-%   See also: getLabelPrefix, checkLabelSanity
+% Toolbox Dependencies: None
+%
+% See also GETLABELPREFIX, CHECKLABELSANITY.
 
 % Static
 % Add component suffix to each label

@@ -1,22 +1,24 @@
 function [this, logL] = findOutliers(this, model, verbose)
-%findOutliers  Detects outliers using model
+%FINDOUTLIERS Detects outliers using model.
 %
-%   [this, logL] = findOutliers(this, model) uses marker model to
-%   detect outliers
+%   [this, logL] = findOutliers(this, model) uses marker model to detect
+% outliers
 %
 %   [this, logL] = findOutliers(this, model, verbose) controls output
-%   verbosity
+% verbosity
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       model - naiveDistances model for outlier detection
-%       verbose - if true, displays detailed results (optional)
+% Inputs:
+%   this    - orientedLabTimeSeries object
+%   model   - naiveDistances model for outlier detection
+%   verbose - if true, displays detailed results (optional)
 %
-%   Outputs:
-%       this - orientedLabTimeSeries with Quality field updated
-%       logL - log likelihood values (currently unused)
+% Outputs:
+%   this - orientedLabTimeSeries with Quality field updated
+%   logL - log likelihood values (currently unused)
 %
-%   See also: buildNaiveDistancesModel, removeOutliers
+% Toolbox Dependencies: None
+%
+% See also BUILDNAIVEDISTANCESMODEL, REMOVEOUTLIERS.
 
 % This assumes ALL markerLabels are present
 [d, l] = this.getOrientedData(model.markerLabels);

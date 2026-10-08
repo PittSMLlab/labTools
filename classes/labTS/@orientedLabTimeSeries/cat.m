@@ -1,17 +1,19 @@
 function newThis = cat(this, other)
-%cat  Concatenates (override)
+%CAT Concatenates (override).
 %
 %   newThis = cat(this, other) concatenates and preserves
-%   orientedLabTimeSeries type
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       other - orientedLabTimeSeries to concatenate
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   other - orientedLabTimeSeries to concatenate
 %
-%   Outputs:
-%       newThis - concatenated orientedLabTimeSeries
+% Outputs:
+%   newThis - concatenated orientedLabTimeSeries
 %
-%   See also: labTimeSeries/cat
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/CAT.
 
 newThis = cat@labTimeSeries(this, other);
 newThis = orientedLabTimeSeries(newThis.Data, this.Time(1), ...
