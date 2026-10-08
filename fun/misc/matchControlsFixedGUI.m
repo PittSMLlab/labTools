@@ -95,8 +95,8 @@ colIdx.matched = findColumnByKeywords(fixedVars.matched);
 % -----------------------------
 numericVars = {'age','height','weight','education'};
 defaultTol = struct();
-for i = 1:numel(numericVars)
-    key = numericVars{i};
+for vv = 1:numel(numericVars)
+    key = numericVars{vv};
     idx = colIdx.(key);
     if ~isempty(idx)
         col = T.(varNames{idx});
@@ -192,68 +192,68 @@ edWeight = gobjects(1,numVars);
 edTol = gobjects(1,numVars);
 dataUnitDd = gobjects(1,numVars);
 
-for i = 1:numVars
-    row = i + 1;
+for vv = 1:numVars
+    row = vv + 1;
     % checkbox: include this variable in the matching
-    chkUse(i) = uicheckbox(pv);
-    chkUse(i).Text = ''; chkUse(i).Value = true;
-    chkUse(i).Layout.Row = row; chkUse(i).Layout.Column = 1;
+    chkUse(vv) = uicheckbox(pv);
+    chkUse(vv).Text = ''; chkUse(vv).Value = true;
+    chkUse(vv).Layout.Row = row; chkUse(vv).Layout.Column = 1;
 
     % variable name label
-    lbl = uilabel(pv); lbl.Text = labels{i};
+    lbl = uilabel(pv); lbl.Text = labels{vv};
     lbl.Layout.Row = row; lbl.Layout.Column = 2;
     lbl.HorizontalAlignment = 'left';
 
-    if isNumericArr(i)
+    if isNumericArr(vv)
         % numeric: weight & tolerance numeric fields
-        edWeight(i) = uieditfield(pv,'numeric');
-        edTol(i) = uieditfield(pv,'numeric');
-        if i == 2
-            edWeight(i).Value = 3;          % Age weight preset
-            edTol(i).Value = 2.5;             % Age tolerance preset
-        elseif i == 3
-            edWeight(i).Value = 1;
-            edTol(i).Value = 4;             % height in inches
-        elseif i == 4
-            edWeight(i).Value = 1;
-            edTol(i).Value = 30;            % weight in pounds
-        elseif i == 5
-            edWeight(i).Value = 2;
-            edTol(i).Value = 3;             % years education
+        edWeight(vv) = uieditfield(pv,'numeric');
+        edTol(vv) = uieditfield(pv,'numeric');
+        if vv == 2
+            edWeight(vv).Value = 3;          % Age weight preset
+            edTol(vv).Value = 2.5;             % Age tolerance preset
+        elseif vv == 3
+            edWeight(vv).Value = 1;
+            edTol(vv).Value = 4;             % height in inches
+        elseif vv == 4
+            edWeight(vv).Value = 1;
+            edTol(vv).Value = 30;            % weight in pounds
+        elseif vv == 5
+            edWeight(vv).Value = 2;
+            edTol(vv).Value = 3;             % years education
         else
-            edWeight(i).Value = 1;
-            edTol(i).Value = 1;
+            edWeight(vv).Value = 1;
+            edTol(vv).Value = 1;
         end
-        edWeight(i).Limits = [0 Inf];
-        edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
-        edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
+        edWeight(vv).Limits = [0 Inf];
+        edWeight(vv).Layout.Row = row; edWeight(vv).Layout.Column = 3;
+        edTol(vv).Layout.Row = row; edTol(vv).Layout.Column = 4;
     else
         % non-numeric: show 'N/A' placeholders (disabled)
-        edWeight(i) = uieditfield(pv,'text');
-        edWeight(i).Value = 'N/A'; edWeight(i).Editable = 'off';
-        edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
-        edTol(i) = uieditfield(pv,'text');
-        edTol(i).Value = 'N/A'; edTol(i).Editable = 'off';
-        edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
+        edWeight(vv) = uieditfield(pv,'text');
+        edWeight(vv).Value = 'N/A'; edWeight(vv).Editable = 'off';
+        edWeight(vv).Layout.Row = row; edWeight(vv).Layout.Column = 3;
+        edTol(vv) = uieditfield(pv,'text');
+        edTol(vv).Value = 'N/A'; edTol(vv).Editable = 'off';
+        edTol(vv).Layout.Row = row; edTol(vv).Layout.Column = 4;
     end
 
     % data unit dropdown only for height/weight rows (indices 3 and 4)
-    if i == 3
+    if vv == 3
         % dataset unit for height (user should pick units from table)
-        dataUnitDd(i) = uidropdown(pv);
-        dataUnitDd(i).Items = {'meters','centimeters','inches'};
-        dataUnitDd(i).Value = 'inches';
-        dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
-    elseif i == 4
+        dataUnitDd(vv) = uidropdown(pv);
+        dataUnitDd(vv).Items = {'meters','centimeters','inches'};
+        dataUnitDd(vv).Value = 'inches';
+        dataUnitDd(vv).Layout.Row = row; dataUnitDd(vv).Layout.Column = 5;
+    elseif vv == 4
         % dataset unit for weight
-        dataUnitDd(i) = uidropdown(pv);
-        dataUnitDd(i).Items = {'kilograms','pounds'};
-        dataUnitDd(i).Value = defaultDataUnits.weight;
-        dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
+        dataUnitDd(vv) = uidropdown(pv);
+        dataUnitDd(vv).Items = {'kilograms','pounds'};
+        dataUnitDd(vv).Value = defaultDataUnits.weight;
+        dataUnitDd(vv).Layout.Row = row; dataUnitDd(vv).Layout.Column = 5;
     else
-        dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {'--'};
-        dataUnitDd(i).Value = '--'; dataUnitDd(i).Enable = 'off';
-        dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
+        dataUnitDd(vv) = uidropdown(pv); dataUnitDd(vv).Items = {'--'};
+        dataUnitDd(vv).Value = '--'; dataUnitDd(vv).Enable = 'off';
+        dataUnitDd(vv).Layout.Row = row; dataUnitDd(vv).Layout.Column = 5;
     end
 end
 
@@ -277,26 +277,35 @@ lblEntryHeader.Text = 'Entry'; lblEntryHeader.FontWeight = 'bold';
 lblEntryHeader.Layout.Row = 1; lblEntryHeader.Layout.Column = 2;
 
 % Row 2: Sex (dropdown)
-lblSex = uilabel(pt); lblSex.Text = 'Sex'; lblSex.Layout.Row = 2; lblSex.Layout.Column = 1;
+lblSex = uilabel(pt); lblSex.Text = 'Sex'; lblSex.Layout.Row = ...
+    2; lblSex.Layout.Column = 1;
 targetSex = uidropdown(pt,'Items',{'','Male','Female','Other'},'Value','');
 targetSex.Layout.Row = 2; targetSex.Layout.Column = 2;
 
 % Row 3-5: DOB, assessment date, computed age
-lblDOB = uilabel(pt); lblDOB.Text = 'Date of birth (DOB)'; lblDOB.Layout.Row = 3; lblDOB.Layout.Column = 1;
-targetDOB = uidatepicker(pt,'Value',datetime('2000-01-01'),'DisplayFormat','yyyy-MM-dd');
+lblDOB = uilabel(pt); lblDOB.Text = ...
+    'Date of birth (DOB)'; lblDOB.Layout.Row = 3; lblDOB.Layout.Column = 1;
+targetDOB = uidatepicker(pt,'Value',datetime('2000-01-01'), ...
+    'DisplayFormat','yyyy-MM-dd');
 targetDOB.Layout.Row = 3; targetDOB.Layout.Column = 2;
 
-lblAssess = uilabel(pt); lblAssess.Text = 'Assessment date (for age calc)'; lblAssess.Layout.Row = 4; lblAssess.Layout.Column = 1;
-targetAssessDate = uidatepicker(pt,'Value',datetime('today'),'DisplayFormat','yyyy-MM-dd');
+lblAssess = uilabel(pt); lblAssess.Text = ...
+    'Assessment date (for age calc)'; lblAssess.Layout.Row = ...
+    4; lblAssess.Layout.Column = 1;
+targetAssessDate = uidatepicker(pt,'Value',datetime('today'), ...
+    'DisplayFormat','yyyy-MM-dd');
 targetAssessDate.Layout.Row = 4; targetAssessDate.Layout.Column = 2;
 
-lblAgeDisp = uilabel(pt); lblAgeDisp.Text = 'Computed age (years)'; lblAgeDisp.Layout.Row = 5; lblAgeDisp.Layout.Column = 1;
+lblAgeDisp = uilabel(pt); lblAgeDisp.Text = ...
+    'Computed age (years)'; lblAgeDisp.Layout.Row = ...
+    5; lblAgeDisp.Layout.Column = 1;
 % computed age displayed read-only
 targetAgeDisp = uieditfield(pt,'numeric','Value',-Inf,'Editable','off');
 targetAgeDisp.Layout.Row = 5; targetAgeDisp.Layout.Column = 2;
 
 % Height input (target) - feet/inches or single field
-lblHt = uilabel(pt); lblHt.Text = 'Height'; lblHt.Layout.Row = 8; lblHt.Layout.Column = 1;
+lblHt = uilabel(pt); lblHt.Text = 'Height'; lblHt.Layout.Row = ...
+    8; lblHt.Layout.Column = 1;
 
 htFeet = uieditfield(pt,'numeric','Value',0,'Limits',[0 Inf]);
 htFeet.Layout.Row = 9; htFeet.Layout.Column = 2;
@@ -311,8 +320,12 @@ htSingle.Layout.Row = 9; htSingle.Layout.Column = 2;
 htSingle.Placeholder = 'Height';
 htSingle.Visible = false; % Start hidden
 
-lblHtUnit = uilabel(pt); lblHtUnit.Text = 'Height unit (target)'; lblHtUnit.Layout.Row = 9; lblHtUnit.Layout.Column = 1;
-targetHeightUnit = uidropdown(pt,'Items',{'meters','centimeters','inches','Feet and Inches'},'Value','Feet and Inches');
+lblHtUnit = uilabel(pt); lblHtUnit.Text = ...
+    'Height unit (target)'; lblHtUnit.Layout.Row = ...
+    9; lblHtUnit.Layout.Column = 1;
+targetHeightUnit = uidropdown(pt,'Items', ...
+    {'meters','centimeters','inches','Feet and Inches'},'Value', ...
+    'Feet and Inches');
 targetHeightUnit.Layout.Row = 8; targetHeightUnit.Layout.Column = 2;
 
 % Callback to update visibility
@@ -334,16 +347,22 @@ targetHeightUnit.ValueChangedFcn = @(src,evt) updateHeightFields();
 updateHeightFields();
 
 % Weight input
-lblWt = uilabel(pt); lblWt.Text = 'Weight (target)'; lblWt.Layout.Row = 6; lblWt.Layout.Column = 1;
+lblWt = uilabel(pt); lblWt.Text = 'Weight (target)'; lblWt.Layout.Row = ...
+    6; lblWt.Layout.Column = 1;
 targetWeight = uieditfield(pt,'numeric','Value',Inf,'Limits',[0 Inf]);
 targetWeight.Layout.Row = 7; targetWeight.Layout.Column = 2;
 
-lblWtUnit = uilabel(pt); lblWtUnit.Text = 'Weight unit (target)'; lblWtUnit.Layout.Row = 7; lblWtUnit.Layout.Column = 1;
-targetWeightUnit = uidropdown(pt,'Items',{'kilograms','pounds'},'Value',defaultDataUnits.weight);
+lblWtUnit = uilabel(pt); lblWtUnit.Text = ...
+    'Weight unit (target)'; lblWtUnit.Layout.Row = ...
+    7; lblWtUnit.Layout.Column = 1;
+targetWeightUnit = uidropdown(pt,'Items',{'kilograms','pounds'},'Value', ...
+    defaultDataUnits.weight);
 targetWeightUnit.Layout.Row = 6; targetWeightUnit.Layout.Column = 2;
 
 % Education
-lblEd = uilabel(pt); lblEd.Text = 'Years formal education'; lblEd.Layout.Row = 10; lblEd.Layout.Column = 1;
+lblEd = uilabel(pt); lblEd.Text = ...
+    'Years formal education'; lblEd.Layout.Row = ...
+    10; lblEd.Layout.Column = 1;
 targetEducation = uieditfield(pt,'numeric','Value',16,'Limits',[0 100]);
 targetEducation.Layout.Row = 10; targetEducation.Layout.Column = 2;
 
@@ -366,11 +385,13 @@ targetAssessDate.ValueChangedFcn = @(s,e) updateComputedAge();
 updateComputedAge();
 
 % Buttons
-btnCompute = uibutton(g,'push','Text','Compute Matches','FontWeight','bold');
+btnCompute = uibutton(g,'push','Text','Compute Matches','FontWeight', ...
+    'bold');
 btnCompute.Layout.Row = 9; btnCompute.Layout.Column = 1;
 btnCompute.ButtonPushedFcn = @(btn,event) computeMatches();
 
-btnPreview = uibutton(g,'push','Text','Preview candidates after categorical filters');
+btnPreview = uibutton(g,'push','Text', ...
+    'Preview candidates after categorical filters');
 btnPreview.Layout.Row = 9; btnPreview.Layout.Column = 2;
 btnPreview.ButtonPushedFcn = @(btn,event) previewCandidates();
 
@@ -378,24 +399,29 @@ btnViewTable = uibutton(g,'push','Text','View demographic table');
 btnViewTable.Layout.Row = 9; btnViewTable.Layout.Column = 3;
 btnViewTable.ButtonPushedFcn = @(btn,event) openTable();
 
-% Results area (now gets more vertical space due to RowHeight '2x' on last row)
+% Results area (now gets more vertical space due to RowHeight '2x' on last
+% row)
 resPanel = uipanel(g);
 resPanel.Title = 'Results (top matches + within-tolerance)';
 % place results in the last row which has '2x' to give more room
 resPanel.Layout.Row = 11; resPanel.Layout.Column = [1 6];
 
-% inside results, two columns: matches table (left) and within-tolerance (right)
+% inside results, ...
+%    two columns: matches table (left) and within-tolerance (right)
 resGrid = uigridlayout(resPanel,[2,2]);
 resGrid.RowHeight = {'fit','1x'};
 % Give more horizontal room to left matches table and a bit to right
 resGrid.ColumnWidth = {'2x','1x'};
 
-lblMatches = uilabel(resGrid); lblMatches.Text = 'Top matches (closest first):'; lblMatches.FontWeight = 'bold';
+lblMatches = uilabel(resGrid); lblMatches.Text = ...
+    'Top matches (closest first):'; lblMatches.FontWeight = 'bold';
 lblMatches.Layout.Row = 1; lblMatches.Layout.Column = 1;
 tblMatches = uitable(resGrid);
 tblMatches.Layout.Row = 2; tblMatches.Layout.Column = 1;
 
-lblWithin = uilabel(resGrid); lblWithin.Text = 'Within-tolerance for numeric variables (rows = matches):'; lblWithin.FontWeight = 'bold';
+lblWithin = uilabel(resGrid); lblWithin.Text = ...
+    'Within-tolerance for numeric variables (rows = matches):';
+lblWithin.FontWeight = 'bold';
 lblWithin.Layout.Row = 1; lblWithin.Layout.Column = 2;
 tblWithin = uitable(resGrid);
 tblWithin.Layout.Row = 2; tblWithin.Layout.Column = 2;
@@ -446,9 +472,11 @@ end
 % - for other categorical variables we use trimmed lowercase strings.
 % -----------------------------
     function out = normalizeCategorical(vals,varKey)
-        % normalize input values (vals can be string array, char, numeric, cell)
-        % varKey: name of the variable (e.g., 'sex','race') to allow special-casing
-        s = string(vals);              % convert to string array (handles mixed types)
+        % normalize input values (vals can be string array, char, numeric,
+        % cell)
+        % varKey: name of the variable (e.g., 'sex','race') to allow
+        % special-casing
+        s = string(vals); % convert to string array (handles mixed types)
         s = lower(strtrim(s));         % lowercase and trim whitespace
         % replace missing with empty string
         s(ismissing(s)) = "";
@@ -457,11 +485,13 @@ end
         if contains(lower(varKey),'sex')
             femaleTokens = ["f","female","fem","woman","w"];
             maleTokens   = ["m","male","man"];
-            otherTokens  = ["other","o","nonbinary","non-binary","nb","genderqueer","trans","nonbinary"];
+            otherTokens  = ["other","o","nonbinary","non-binary","nb", ...
+                "genderqueer","trans","nonbinary"];
             for ii = 1:numel(out)
                 v = out(ii);
                 if v=="" , continue; end
-                cleaned = regexprep(char(v),'[^a-z0-9]',''); % strip punctuation/spaces
+                % strip punctuation/spaces
+                cleaned = regexprep(char(v),'[^a-z0-9]','');
                 cleaned = string(cleaned);
                 if any(cleaned == femaleTokens)
                     out(ii) = "female";
@@ -479,7 +509,8 @@ end
                 v = out(ii);
                 if v=="" , continue; end
                 cleaned = regexprep(char(v),'^\s+|\s+$','');    % trim ends
-                cleaned = regexprep(cleaned,'\s+',' ');        % collapse interior whitespace
+                % collapse interior whitespace
+                cleaned = regexprep(cleaned,'\s+',' ');
                 out(ii) = lower(string(cleaned));
             end
         end
@@ -493,10 +524,12 @@ end
 % -----------------------------
     function out = convertUnits(varName, fromUnit, toUnit, vals)
         out = vals;
-        if isempty(fromUnit) || isempty(toUnit) || strcmpi(fromUnit,toUnit), return; end
+        if isempty(fromUnit) || isempty(toUnit) || ...
+                strcmpi(fromUnit,toUnit), return; end
         lname = lower(varName);
         if contains(lname,'height')
-            % normalize: convert 'fromUnit' values into meters, then to 'toUnit'
+            % normalize: convert 'fromUnit' values into meters, then to
+            % 'toUnit'
             switch lower(fromUnit)
                 case 'meters'
                     meters = vals;
@@ -507,11 +540,13 @@ end
                 case {'feet', 'ft'}
                     meters = vals*0.3048;
                 case {'feet and inches', 'ftin', 'ft/in'}
-                    % Expect vals as Nx2: [feet, inches] or a single value (total inches)
+                    % Expect vals as Nx2: [feet, ...
+                    %    inches] or a single value (total inches)
                     if ismatrix(vals) && size(vals,2) == 2
                         meters = vals(:,1)*0.3048 + vals(:,2)*0.0254;
                     else
-                        meters = vals*0.0254; % fallback: treat as total inches
+                        % fallback: treat as total inches
+                        meters = vals*0.0254;
                     end
                 otherwise
                     meters = vals; % assume already meters if unknown
@@ -834,14 +869,18 @@ end
                 return;
             end
             % Convert target height to canonical unit (meters)
-            targetVals.height = double(convertUnits('height', tUnit, canonicalUnits.height, ht));
+            targetVals.height = ...
+                double(convertUnits('height', tUnit, ...
+                canonicalUnits.height, ht));
             % also convert tolerance (entered in edTol(3)) -> canonical
             tol_raw = edTol(3).Value;
             if isempty(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
                 tol_raw = defaultTol.height;
             end
             dataUnit = dataUnitDd(3).Value;
-            tol_canonical = double(convertUnits('height', dataUnit, canonicalUnits.height, tol_raw));
+            tol_canonical = ...
+                double(convertUnits('height', dataUnit, ...
+                canonicalUnits.height, tol_raw));
             if tol_canonical <= 0
                 tol_canonical = defaultTol.height;
             end
@@ -940,7 +979,8 @@ end
             % candidate raw values as stored in dataset (user indicates
             % their unit with dataUnitDd(3))
             cvals_raw = double(candidates.(varNames{colIdx.height}));
-            % dataUnit = dataUnitDd(3).Value; % dataset unit selection (height)
+            % dataUnit = dataUnitDd(3).Value; % dataset unit selection
+            % (height)
             % convert candidates from 'dataUnit' -> canonical (meters)
             cvals_canonical = double(convertUnits('height','meters', ...
                 canonicalUnits.height,cvals_raw));

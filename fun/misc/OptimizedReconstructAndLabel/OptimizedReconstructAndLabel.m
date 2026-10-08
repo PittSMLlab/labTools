@@ -5,7 +5,8 @@
 %% 1) Define Paths & Trial List
 
 pathSess   = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\';
-pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\ShanthiTry_Results.csv';
+pathOutCSV = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\ShanthiTry_Results.csv';
 
 trialFiles = dir(fullfile(pathSess, '**', 'Trial*.x1d'));
 if isempty(trialFiles)

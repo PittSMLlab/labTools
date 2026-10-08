@@ -145,7 +145,8 @@ for mrkr = 1:numel(mrkrsRelevant)
 end
 % for mrkr = mrkrsRelevant
 %     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});
-%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
+%     mrkrTrajs.(mrkrsRelevant{mrkr}) = ...
+%    [trajX; trajY; trajZ; double(exists)];
 % end
 
 end

@@ -202,17 +202,20 @@ relDataTemp = [];
 fieldList = fields(analogs);
 idxList = [];
 for ii = 1:length(fieldList)
-    if ~isempty(strfind(fieldList{ii}, 'EMG'))  %Getting fields that start with 'EMG' only
+    %Getting fields that start with 'EMG' only
+    if ~isempty(strfind(fieldList{ii}, 'EMG'))
         relDataTemp = [relDataTemp, analogs.(fieldList{ii})];
         idxList(end+1) = str2num(fieldList{ii}( ...
             strfind(fieldList{ii}, 'EMG') + 3:end)); %#ok<ST2NM>
-        analogs = rmfield(analogs, fieldList{ii}); %Just to save memory space
+        %Just to save memory space
+        analogs = rmfield(analogs, fieldList{ii});
     end
 end
 emptyChannels1 = cellfun( ...
     @(x) contains(x, 'NA') || contains(x, 'sync'), EMGList1);
 EMGList1 = EMGList1(~emptyChannels1);
-relData(:, idxList) = relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+relData(:, idxList) = relDataTemp;
 relData = relData(:, ~emptyChannels1);
 EMGList = EMGList1;
 
@@ -227,7 +230,9 @@ for kk = 1:length(EMGList)
             EMGList{kk} '). Acceptable values are ' ...
             cell2mat(strcat(orderedEMGList, ', ')) ' or ''sync''.'], 's');
         if kk <= length(EMGList1)
-            EMGList1{idxList(kk)} = aux{1}; %This is to keep the same message from being prompted for each trial processed.
+            % Keeps the same message from being prompted for each trial
+            % processed.
+            EMGList1{idxList(kk)} = aux{1};
         end
         EMGList{kk} = aux{1};
     end
@@ -249,13 +254,16 @@ filtWinPre  = 20;   % median filter window: ~10 ms at 2 kHz
 filtWinPost = 10;   % median filter window: ~5 ms at 2 kHz
 
 %Pre-process:
-refSync = clipSignals(refSync(:), 0.1); %Clipping top & bottom samples (1 out of 1e3!)
+%Clipping top & bottom samples (1 out of 1e3!)
+refSync = clipSignals(refSync(:), 0.1);
 refAux  = medfilt1(refSync, filtWinPre);
-%refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
+%refAux(refAux<(median(refAux)-5*iqr(refAux)) | ...
+%    refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
 refAux  = medfilt1(diff(refAux), filtWinPost);
 clear auxData*
 
-%Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
+%Sorting muscles (orderedEMGList was created previously) so that they are
+%always stored in the same order
 orderedIndexes = zeros(length(orderedEMGList), 1);
 for ii = 1:length(orderedEMGList)
     for kk = 1:length(EMGList)
@@ -265,13 +273,17 @@ for ii = 1:length(orderedEMGList)
         end
     end
 end
-orderedIndexes = orderedIndexes(orderedIndexes ~= 0); %Avoiding missing muscles
+%Avoiding missing muscles
+orderedIndexes = orderedIndexes(orderedIndexes ~= 0);
 aux = zeros(length(EMGList), 1);
 aux(orderedIndexes) = 1;
 if any(aux == 0) && ~all(strcmpi(EMGList(aux == 0), 'sync'))
-    warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux == 0}])
+    warning([ ...
+        'loadTrials: Not all of the provided muscles are in the ' ...
+        'ordered list, ignoring ' EMGList{aux == 0}])
 end
-allData(allData == 0) = NaN; %Eliminating samples that are exactly 0: these are unavailable samples
+%Eliminating samples that are exactly 0: these are unavailable samples
+allData(allData == 0) = NaN;
 EMG = labTimeSeries(allData(:, orderedIndexes), 0, ...
     1 / EMGfrequency, EMGList(orderedIndexes)); %Throw away the synch signal
 clear allData* relData* auxData*
@@ -304,7 +316,8 @@ clear relData
 hasStimTrig = false;        % assume no trigger pulse data until found
 HreflexStimPin = [];
 if shouldUseStimTrig    % if stimulation trigger data should be used, ...
-    % NOTE: the below code block is copied from loadTrials (implemented by SL)
+    % NOTE: the below code block is copied from loadTrials (implemented by
+    % SL)
     relData = [];
     stimLabels = {};
     units = {};
@@ -326,8 +339,10 @@ if shouldUseStimTrig    % if stimulation trigger data should be used, ...
         % verify that the # of frames matches that of the GRF data
         if ~isempty(GRF)    % if there is GRF data present, ...
             if (GRF.Length ~= HreflexStimPin.Length)
-                error(['Hreflex stimulator pins have different length than' ...
-                    'GRF data. This should never happen. Data is compromised.']);
+                error(['Hreflex stimulator pins have different length ' ...
+                    'than' ...
+                    'GRF data. This should never happen. Data is ' ...
+                    'compromised.']);
             end
         end
     else
@@ -354,7 +369,8 @@ if shouldUseStimTrig    % if stimulation trigger data should be used, ...
     end
 end
 
-% clear analogs* %Save memory space, no longer need analog data, it was already loaded
+% clear analogs* %Save memory space, no longer need analog data, it was
+% already loaded
 
 %% Save the Data
 % TODO: implement data saving if valuable for this script
@@ -576,8 +592,9 @@ tileTitles = {'Right & Left Fz - Right Stim', ...
     'Left & Right Fz - Left Stim', ...
     ['Right ' muscleHreflex],['Left ' muscleHreflex]};
 yLabels = {'Force (N)','Force (N)','Raw EMG (V)','Raw EMG (V)'};
+% Plot all snippets for visual verification
 Hreflex.plotSnippets(timesSnippet, snippets, yLabels, tileTitles, ...
-    id, trialNum, 'pathFig', pathFigs); % plot all snippets for visual verification
+    id, trialNum, 'pathFig', pathFigs);
 
 %% 10. Compute M- & H-wave Amplitudes
 % TODO: reject measurements if GRF reveals not in single stance

@@ -5,8 +5,10 @@
 
 markersToCompare = {'RANK'};
 subject          = 'C3S24';
-trialOld         = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
-trialNew         = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
+trialOld         = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
+trialNew         = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
 
 trajData = struct();
 

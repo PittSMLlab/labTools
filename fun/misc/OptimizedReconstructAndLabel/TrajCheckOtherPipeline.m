@@ -5,7 +5,8 @@
 
 markersToCompare = {'LGT'};
 subject          = 'C3S24';
-trialPath        = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
+trialPath        = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
 
 fprintf('Connecting to Vicon Nexus...\n');
 vicon = ViconNexus();
