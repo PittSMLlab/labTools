@@ -1,6 +1,10 @@
 %% V2P_Tester — Parse and Inspect V2P Data File
 % purpose: Load a data file (JSON or CSV), extract force and event
 %   columns, and report basic timing statistics.
+%
+% Toolbox Dependencies: None
+%
+% See also JSONTXT2CELL.
 
 clear
 clc
