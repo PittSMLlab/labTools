@@ -23,7 +23,7 @@ arguments
 end
 
 % 9-tap smoothing-derivative filter (antisymmetric, normalized by 1/128)
-DERIV_SCALE      = 1 / 128;  % filter normalizer
+DERIV_SCALE = 1 / 128;  % filter normalizer
 derivativeFilter = fsample * DERIV_SCALE ...
     * [1, 6, 14, 14, 0, -14, -14, -6, -1];
 

@@ -43,8 +43,8 @@ minCorrWarningThresh = 0.3; % below this, synchronization is unreliable
 
 %% Zero-Pad to Equal Length
 M = max([length(referenceSignal) length(secondarySignal)]);
-referenceSignal(end+1:M)  = 0;
-secondarySignal(end+1:M)  = 0;
+referenceSignal(end+1:M) = 0;
+secondarySignal(end+1:M) = 0;
 
 %% Compute Cross-Correlation
 F1 = fft(referenceSignal);
@@ -56,12 +56,12 @@ P  = ifft(F);
 % 100× resolution spline interpolation; load-bearing for accuracy —
 % do not reduce without re-validating sync parameter outputs.
 interpResolution = 0.01; % sub-sample lag resolution (fraction of a sample)
-fineLags = 0:interpResolution:length(P) - 1;
-P2       = interp1(0:length(P) - 1, P, fineLags, 'spline') ...
+fineLags         = 0:interpResolution:length(P) - 1;
+P2 = interp1(0:length(P) - 1, P, fineLags, 'spline') ...
     / sqrt(sum(referenceSignal.^2) * sum(secondarySignal.^2));
 
 %% Find Peak Correlation
-[~, t]       = max(abs(P2));
+[~, t] = max(abs(P2));
 lagInSamples = fineLags(t) - floor(M / 2); % fftshift offset correction
 corrCoef     = P2(t);
 

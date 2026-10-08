@@ -7,7 +7,8 @@ function filteredData = filtfilthd(filterObj, data, method)
 % Inputs:
 %   filterObj - DSP toolbox filter object
 %   data      - (N×C) double, data to filter (columns are channels)
-%   method    - char, boundary method ('reflect' or other); default 'reflect'
+%   method    - char, boundary method ('reflect' or other); default
+%   'reflect'
 %
 % Outputs:
 %   filteredData - (N×C) double, zero-phase filtered data

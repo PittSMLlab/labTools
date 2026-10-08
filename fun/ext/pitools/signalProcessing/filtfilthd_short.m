@@ -41,7 +41,8 @@ end
 if nargin < 4 || isempty(M1)
     M1 = min(DEFAULT_REFLECT_LEN, M);
     warning('filtfilthd_short:defaultPad', ...
-        sprintf('Reflection pad length unspecified; using %d samples.', M1));
+        sprintf('Reflection pad length unspecified; using %d samples.', ...
+        M1));
 else
     M1 = min(round(M1), M);
 end

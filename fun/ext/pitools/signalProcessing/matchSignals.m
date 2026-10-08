@@ -47,8 +47,8 @@ end
 
 % Correct for Doppler shift (sampling-rate mismatch)
 [relativeShift, ~] = estimateDopplerShift(signal1, newSignal2);
-timeScaleFactor    = 1 - relativeShift;
-newSignal2         = resampleShiftAndScale(newSignal2, timeScaleFactor, 0, 1);
+timeScaleFactor = 1 - relativeShift;
+newSignal2      = resampleShiftAndScale(newSignal2, timeScaleFactor, 0, 1);
 
 % Refine lag after resampling
 [~, ~, lagInSamples2] = findTimeLag(signal1, newSignal2);
@@ -65,10 +65,10 @@ gain = newSignal2' / signal1';
 if ~isfinite(gain) || gain == 0
     warning('matchSignals:degenerateGain', ...
         'Gain is %g (non-finite or zero); returning identity.', gain);
-    alignedSignal2  = signal2;
+    alignedSignal2 = signal2;
     timeScaleFactor = 1;
-    lagInSamples    = 0;
-    gain            = 1;
+    lagInSamples = 0;
+    gain = 1;
     return
 end
 alignedSignal2 = newSignal2 / gain;

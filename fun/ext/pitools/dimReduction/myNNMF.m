@@ -24,8 +24,8 @@ function [W, C, d] = myNNMF(data, rank, reps, useParallel)
 arguments
     data
     rank        (1,1) {mustBeInteger, mustBeNonnegative}
-    reps        (1,1) {mustBeInteger, mustBePositive}   = 8
-    useParallel                                          = 'always'
+    reps        (1,1) {mustBeInteger, mustBePositive} = 8
+    useParallel = 'always'
 end
 
 if size(data, 1) < size(data, 2)

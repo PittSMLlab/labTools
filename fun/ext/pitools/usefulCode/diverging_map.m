@@ -24,7 +24,7 @@ for ii = 1:length(s)
 end
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function result = diverging_map_1val(s, rgb1, rgb2)
 %DIVERGING_MAP_1VAL Interpolate one colormap value in Msh space.
 
@@ -70,7 +70,7 @@ labTmp = MshToLab(mshTmp);
 result = LabToRGB(labTmp);
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function Msh = LabToMsh(Lab)
 %LABTOMSH Convert CIELab to polar Msh representation.
 
@@ -85,7 +85,7 @@ h = (s > 0.001) * atan2(b, a);
 Msh = [M s h];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function Lab = MshToLab(Msh)
 %MSHTOLAB Convert polar Msh representation to CIELab.
 
@@ -100,7 +100,7 @@ b = M * sin(s) * sin(h);
 Lab = [L a b];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function adiff = AngleDiff(a1, a2)
 %ANGLEDIFF Smallest angle between two orientations (radians).
 
@@ -109,7 +109,7 @@ v2    = [cos(a2) sin(a2)];
 adiff = acos(dot(v1, v2));
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 % For the case when interpolating from a saturated to an unsaturated color,
 % find a hue for the unsaturated color that makes perceptual sense.
 function h = AdjustHue(msh, unsatM)
@@ -132,7 +132,7 @@ else
 end
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function xyz = LabToXYZ(Lab)
 %LABTOXYZ Convert CIELab to XYZ color space.
 
@@ -167,7 +167,7 @@ ref_Z = 1.089;
 xyz = [ref_X * var_X, ref_Y * var_Y, ref_Z * var_Z];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function Lab = XYZToLab(xyz)
 %XYZTOLAB Convert XYZ to CIELab color space.
 
@@ -197,7 +197,7 @@ b = 200 * (var_Y - var_Z);
 Lab = [L a b];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function rgb = XYZToRGB(xyz)
 %XYZTORGB Convert XYZ to sRGB with gamma correction.
 
@@ -233,7 +233,7 @@ if b < 0, b = 0; end
 rgb = [r g b];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function xyz = RGBToXYZ(rgb)
 %RGBTOXYZ Convert sRGB to XYZ with inverse gamma correction.
 
@@ -257,14 +257,14 @@ z = r * 0.0193 + g * 0.1192 + b * 0.9505;
 xyz = [x y z];
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function rgb = LabToRGB(Lab)
 %LABTORGB Convert CIELab to sRGB.
 xyz = LabToXYZ(Lab);
 rgb = XYZToRGB(xyz);
 end
 
-% ---------------------------------------------------------------------------
+% --------------------------------------------------------------------------
 function Lab = RGBToLab(rgb)
 %RGBTOLAB Convert sRGB to CIELab.
 xyz = RGBToXYZ(rgb);

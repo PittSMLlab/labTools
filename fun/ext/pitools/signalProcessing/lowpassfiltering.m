@@ -25,8 +25,8 @@ arguments
     fsample     (1,1) double {mustBePositive}
 end
 
-nyquist    = 0.5 * fsample;  % Nyquist frequency (Hz)
-[b, a]     = butter(filterOrder, fcut / nyquist);
-data       = filtfilt(b, a, data);  % zero-phase filtering
+nyquist = 0.5 * fsample;  % Nyquist frequency (Hz)
+[b, a] = butter(filterOrder, fcut / nyquist);
+data = filtfilt(b, a, data);  % zero-phase filtering
 
 end

@@ -65,8 +65,8 @@ while differences
     clear x t lineFit;
     t = nan(1, N);
     for win = 1:N
-        winSlice2      = signal2((win-1)*M + 1:win*M);
-        winSlice1      = signal1((win-1)*M + 1:win*M);
+        winSlice2 = signal2((win-1)*M + 1:win*M);
+        winSlice1 = signal1((win-1)*M + 1:win*M);
         [~, ~, t(win)] = findTimeLag(winSlice1, winSlice2);
         % F1 = fft(winSlice1);
         % F2 = fft(winSlice2);
@@ -95,10 +95,10 @@ while differences
         inlierT = t(ii);
         lineFit = polyfit(inlierX(validMask(ii)), ...
             inlierT(validMask(ii)), 1);
-        iiOld   = ii;
+        iiOld = ii;
     end
     residuals = abs(t - x*lineFit(1) - lineFit(2));
-    pp = prctile(residuals, 50);
+    pp        = prctile(residuals, 50);
     if pp < 0.5
         pp = 0.5; % quantization floor: expect at least 0.5-sample error
     end
@@ -112,7 +112,7 @@ while differences
     end
 end
 
-relativeShift  = lineFit(1);
-initTimeDelay  = lineFit(2); % in samples
+relativeShift = lineFit(1);
+initTimeDelay = lineFit(2); % in samples
 
 end
