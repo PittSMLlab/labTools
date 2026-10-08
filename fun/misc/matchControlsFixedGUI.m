@@ -1,32 +1,40 @@
 function matchControlsFixedGUI(demoFile)
-% matchControlsFixedGUI  Fixed GUI to choose demographic matching factors
-% Compatible with MATLAB R2024a.
-% This tool was created via ChatGPT. NWB
+%MATCHCONTROLSFIXEDGUI Match control participants to a target participant.
 %
-% Usage:
+%   Opens a GUI to choose the demographic matching factors (Sex, Age via
+% DOB, Height, Weight, Years formal education, Race, Ethnicity), enter a
+% target participant, and list the closest candidates in a demographics
+% table. Categorical factors filter the candidates; numeric factors are
+% ranked by a weighted, tolerance-normalized Euclidean distance. Target
+% and candidate height/weight are converted to a canonical unit (see
+% canonicalUnits) before distances and tolerances are computed. Rows
+% already marked as matched are excluded. The five closest candidates are
+% shown with a table of which numeric factors fall within tolerance.
+% This tool was created via ChatGPT. Needs a MATLAB release with
+% uidatepicker (newer than R2021a).
+%
+% Inputs:
+%   demoFile - (optional) Path to a demographics .xlsx, .xls, or .csv
+%              file; opens a file dialog when empty (default '')
+%
+% Outputs:
+%   None
+%
+% Side effects: opens the GUI figure and, from its buttons, table
+%   windows; reads demoFile; nothing is written.
+%
+% Example:
 %   matchControlsFixedGUI()                      % choose file with dialog
 %   matchControlsFixedGUI('Demographics.xlsx')   % pass path
 %
-% GUI fields shown: Sex, Age (via DOB), Height, Weight, Years formal
-% education, Race, Ethnicity
-% Computes weighted distance across numeric variables and returns the top-2
-% matches.
+% Toolbox Dependencies: None
 %
-% Changes in this version:
-%  - BOTH candidate and target height/weight values are converted to a
-%    canonical unit (meters for height, kilograms for weight) *before*
-%    computing distance and tolerance comparisons.
-%  - Tolerances for height/weight are also converted into canonical unit.
-%  - Adjusted layout: results area given more vertical space; left-panel
-%    Weight / Tolerance / Data-units columns narrowed for readability.
-
+% See also READTABLE, UIFIGURE, UITABLE.
 arguments
     demoFile (1,:) char = ''
 end
 
-%% -----------------------------
-% 0. Fixed variable keywords we want in GUI (used to find columns)
-% -----------------------------
+%% 0. Fixed variable keywords we want in GUI (used to find columns)
 fixedVars = struct;
 fixedVars.sex = {'sex','gender'};
 fixedVars.age = {'age','age_years','age_year'};
@@ -39,9 +47,7 @@ fixedVars.race = {'race'};
 fixedVars.ethnicity = {'ethnicity'};
 fixedVars.matched = {'match'};
 
-%% -----------------------------
-% 1. Load table
-% -----------------------------
+%% 1. Load table
 if isempty(demoFile)
     [file,path] = uigetfile( ...
         {'*.xlsx;*.xls;*.csv','Demographic files (*.xlsx,*.xls,*.csv)'},...
@@ -67,6 +73,18 @@ nCols = numel(varNames);
 
 % helper to find column by keywords (first match)
     function idx = findColumnByKeywords(keywords)
+        %FINDCOLUMNBYKEYWORDS Find first table column matching a keyword.
+        %
+        %   Searches the table variable names (varNames) for the first
+        % one that contains any keyword, ignoring case.
+        %
+        % Inputs:
+        %   keywords - Cell array of keyword strings
+        %
+        % Outputs:
+        %   idx - Column index of the first match; [] if none
+        %
+        % Toolbox Dependencies: None
         idx = [];
         for jj = 1:nCols
             vn = lower(varNames{jj});
@@ -90,9 +108,7 @@ colIdx.race = findColumnByKeywords(fixedVars.race);
 colIdx.ethnicity = findColumnByKeywords(fixedVars.ethnicity);
 colIdx.matched = findColumnByKeywords(fixedVars.matched);
 
-%% -----------------------------
-% 2. Prepare defaults (tolerances, unit assumptions)
-% -----------------------------
+%% 2. Prepare defaults (tolerances, unit assumptions)
 numericVars = {'age','height','weight','education'};
 defaultTol = struct();
 for vv = 1:numel(numericVars)
@@ -123,9 +139,19 @@ defaultDataUnits.weight = 'pounds';
 canonicalUnits.height = 'meters';
 canonicalUnits.weight = 'pounds';
 
-%% -----------------------------
-% 3. Build GUI (fixed layout) - R2024a: set Layout.* AFTER creation
-% -----------------------------
+% unit-conversion and matching constants (also used by nested functions)
+metersPerInch   = 0.0254;       % exact, by definition
+metersPerFoot   = 0.3048;       % exact, by definition
+kgPerPound      = 0.45359237;   % exact, by definition
+cmPerMeter      = 100;          % centimeters per meter
+inchesPerFoot   = 12;           % inches per foot
+daysPerYear     = 365.2425;     % mean Gregorian year (days)
+numMatchesShown = 5;            % candidates listed in the results table
+missingPenalty  = 1e6;          % added to the largest squared difference
+                                % so candidates with missing values rank
+                                % last
+
+%% 3. Build GUI (fixed layout) - R2024a: set Layout.* AFTER creation
 fig = uifigure('Name','Match Controls (Fixed GUI)', ...
     'Position',[150 100 980 760]);
 g = uigridlayout(fig,[11 6]);   % extra row for more space for results
@@ -332,6 +358,19 @@ targetHeightUnit.Layout.Row = 8; targetHeightUnit.Layout.Column = 2;
 targetHeightUnit.ValueChangedFcn = @(src,evt) updateHeightFields();
 
     function updateHeightFields()
+        %UPDATEHEIGHTFIELDS Show the height fields that match the unit.
+        %
+        %   Callback of the target height unit dropdown. 'Feet and
+        % Inches' shows the feet and inches fields; any other unit shows
+        % the single field.
+        %
+        % Inputs:
+        %   None
+        %
+        % Outputs:
+        %   None
+        %
+        % Toolbox Dependencies: None
         if strcmp(targetHeightUnit.Value, 'Feet and Inches')
             htFeet.Visible = true;
             htInches.Visible = true;
@@ -466,12 +505,25 @@ if ~isempty(mappingMessages)
     statusLabel.Text = strjoin(mappingMessages,' ');
 end
 
-%% -----------------------------
-% helper function: normalize categorical values for reliable comparison
+%% helper function: normalize categorical values for reliable comparison
 % - special handling for Sex: maps common short codes to canonical labels.
 % - for other categorical variables we use trimmed lowercase strings.
-% -----------------------------
     function out = normalizeCategorical(vals,varKey)
+        %NORMALIZECATEGORICAL Normalize categorical values for comparison.
+        %
+        %   Converts values to lowercase, trimmed strings (missing
+        % become ""). For a sex-like variable, common short codes and
+        % spellings are mapped to 'female', 'male', or 'other'.
+        %
+        % Inputs:
+        %   vals   - String array, char, numeric, or cell array of values
+        %   varKey - Variable name; a name containing 'sex' enables the sex
+        %            mapping
+        %
+        % Outputs:
+        %   out - String array the size of vals
+        %
+        % Toolbox Dependencies: None
         % normalize input values (vals can be string array, char, numeric,
         % cell)
         % varKey: name of the variable (e.g., 'sex','race') to allow
@@ -516,13 +568,31 @@ end
         end
     end
 
-%% -----------------------------
-% Unit conversion helper
+%% Unit conversion helper
 % - Note: convertUnits(varName, fromUnit, toUnit, vals)
 % - Supports height units: meters, centimeters, inches
 % - Supports weight units: kilograms, pounds
-% -----------------------------
     function out = convertUnits(varName, fromUnit, toUnit, vals)
+        %CONVERTUNITS Convert height or weight values between units.
+        %
+        %   Height units: meters, centimeters, inches, feet, and 'Feet and
+        % Inches' (N-by-2 [feet, inches]). Weight units: kilograms,
+        % pounds. An unrecognized input unit is taken as meters (height)
+        % or kilograms (weight); a variable that is neither height nor
+        % weight, or an empty or identical unit pair, returns vals
+        % unchanged.
+        %
+        % Inputs:
+        %   varName  - Variable name containing 'height' or 'weight'
+        %   fromUnit - Unit of vals
+        %   toUnit   - Unit to convert to
+        %   vals     - Numeric values to convert
+        %
+        % Outputs:
+        %   out - Converted values; N-by-2 [feet, inches] for
+        %         'Feet and Inches'
+        %
+        % Toolbox Dependencies: None
         out = vals;
         if isempty(fromUnit) || isempty(toUnit) || ...
                 strcmpi(fromUnit,toUnit), return; end
@@ -534,19 +604,20 @@ end
                 case 'meters'
                     meters = vals;
                 case 'centimeters'
-                    meters = vals/100;
+                    meters = vals/cmPerMeter;
                 case 'inches'
-                    meters = vals*0.0254;
+                    meters = vals*metersPerInch;
                 case {'feet', 'ft'}
-                    meters = vals*0.3048;
+                    meters = vals*metersPerFoot;
                 case {'feet and inches', 'ftin', 'ft/in'}
                     % Expect vals as Nx2: [feet, ...
                     %    inches] or a single value (total inches)
                     if ismatrix(vals) && size(vals,2) == 2
-                        meters = vals(:,1)*0.3048 + vals(:,2)*0.0254;
+                        meters = vals(:,1)*metersPerFoot + ...
+                            vals(:,2)*metersPerInch;
                     else
                         % fallback: treat as total inches
-                        meters = vals*0.0254;
+                        meters = vals*metersPerInch;
                     end
                 otherwise
                     meters = vals; % assume already meters if unknown
@@ -555,15 +626,15 @@ end
                 case 'meters'
                     out = meters;
                 case 'centimeters'
-                    out = meters*100;
+                    out = meters*cmPerMeter;
                 case 'inches'
-                    out = meters/0.0254; % meters -> inches
+                    out = meters/metersPerInch; % meters -> inches
                 case {'feet', 'ft'}
-                    out = meters/0.3048;
+                    out = meters/metersPerFoot;
                 case {'feet and inches', 'ftin', 'ft/in'}
                     % Return Nx2: [feet, inches]
-                    feet = floor(meters/0.3048);
-                    inches = (meters - feet*0.3048)/0.0254;
+                    feet = floor(meters/metersPerFoot);
+                    inches = (meters - feet*metersPerFoot)/metersPerInch;
                     out = [feet, inches];
                 otherwise
                     out = meters;
@@ -572,21 +643,33 @@ end
             % convert 'fromUnit' values into kilograms, then to 'toUnit'
             switch lower(fromUnit)
                 case 'kilograms', kg = vals;
-                case 'pounds', kg = vals*0.45359237;
+                case 'pounds', kg = vals*kgPerPound;
                 otherwise, kg = vals; % assume kilograms if unknown
             end
             switch lower(toUnit)
                 case 'kilograms', out = kg;
-                case 'pounds', out = kg / 0.45359237;
+                case 'pounds', out = kg / kgPerPound;
                 otherwise, out = kg;
             end
         end
     end
 
-%% -----------------------------
-% update computed age display (DOB -> decimal years)
-% -----------------------------
+%% update computed age display (DOB -> decimal years)
     function updateComputedAge()
+        %UPDATECOMPUTEDAGE Update the computed age display from DOB.
+        %
+        %   Sets the read-only age field to the decimal years between
+        % the target date of birth and the assessment date; NaN if
+        % either is empty or the assessment date precedes the date of
+        % birth.
+        %
+        % Inputs:
+        %   None
+        %
+        % Outputs:
+        %   None
+        %
+        % Toolbox Dependencies: None
         dob = targetDOB.Value;
         ref = targetAssessDate.Value;
         if isempty(dob) || isempty(ref) || ref < dob
@@ -594,15 +677,27 @@ end
             return;
         end
         daysDiff = days(ref - dob);
-        ageYears = daysDiff / 365.2425;
+        ageYears = daysDiff / daysPerYear;
         targetAgeDisp.Value = round(ageYears,4);
     end
 
-%% -----------------------------
-% preview candidates (categorical filters)
+%% preview candidates (categorical filters)
 %   uses normalized categorical comparison
-% -----------------------------
     function previewCandidates()
+        %PREVIEWCANDIDATES Show candidates left by categorical filters.
+        %
+        %   Applies the selected Sex, Race, and Ethnicity filters (and the
+        % not-yet-matched filter) to the demographics table and opens the
+        % remaining rows in a new table window. Shows an alert when a
+        % selected target value is missing or no candidates remain.
+        %
+        % Inputs:
+        %   None
+        %
+        % Outputs:
+        %   None
+        %
+        % Toolbox Dependencies: None
         selCats = struct();
         if chkUse(1).Value && ~isempty(colIdx.sex)
             val = string(targetSex.Value);
@@ -678,10 +773,17 @@ end
         end
     end
 
-%% -----------------------------
-% open table (full demographics)
-% -----------------------------
+%% open table (full demographics)
     function openTable()
+        %OPENTABLE Show the full demographics table in a new window.
+        %
+        % Inputs:
+        %   None
+        %
+        % Outputs:
+        %   None
+        %
+        % Toolbox Dependencies: None
         if isempty(T) || height(T) == 0
             uialert(fig,'Table empty.','Table');
             return;
@@ -691,14 +793,31 @@ end
         uitable(w,'Data',T,'Position',[10 10 880 430]);
     end
 
-%% -----------------------------
-% main: computeMatches
+%% main: computeMatches
 % - applies categorical filters using normalizeCategorical (robust)
 % - converts target & candidate height/weight to canonical units BEFORE
 %   computing distance
 % - converts tolerance into canonical units too
-% -----------------------------
     function computeMatches()
+        %COMPUTEMATCHES Rank candidates against the target participant.
+        %
+        %   Filters candidates with the selected categorical factors,
+        % converts target and candidate height/weight (and the
+        % tolerances) to canonical units, and ranks the remainder by the
+        % Euclidean distance of the weighted, tolerance-normalized
+        % squared differences. Missing candidate values rank last. Fills
+        % the matches table with the closest candidates
+        % and the within-tolerance table with the distance and a flag per
+        % numeric factor; shows an alert when required target values are
+        % missing.
+        %
+        % Inputs:
+        %   None
+        %
+        % Outputs:
+        %   None
+        %
+        % Toolbox Dependencies: None
         % which checkboxes selected
         useIdx = find(arrayfun(@(c) c.Value,chkUse));
         if isempty(useIdx)
@@ -825,10 +944,11 @@ end
             end
         end
 
-        % if no numeric variables, return top 5 rows in filtered table
+        % if no numeric variables, return the first rows of the filtered
+        % table
         if ~any(numericSelected)
             candidates = T(catMask,:);
-            nReturn = min(5,height(candidates));
+            nReturn = min(numMatchesShown,height(candidates));
             tblMatches.Data = candidates(1:nReturn,:);
             tblWithin.Data = {};
             statusLabel.Text = sprintf(['Status: %d candidates after ' ...
@@ -848,7 +968,7 @@ end
                     'calculation.'],'Error');
                 return;
             end
-            targetVals.age = days(ref - dob)/365.2425;
+            targetVals.age = days(ref - dob)/daysPerYear;
         end
 
         % height: convert target to canonical unit (meters)
@@ -888,7 +1008,7 @@ end
             % convert candidate heights (from dataset) to canonical later
         end
 
-        % weight: convert target to canonical unit (kilograms)
+        % weight: convert target to canonical unit (pounds)
         if numericSelected(3)
             wt = targetWeight.Value;
             if isempty(wt) || isnan(wt)
@@ -948,7 +1068,7 @@ end
                             dt = datetime(val);
                         end
                         candAges(r) = ...
-                            days(targetAssessDate.Value - dt) / 365.2425;
+                            days(targetAssessDate.Value - dt) / daysPerYear;
                     catch
                         candAges(r) = NaN;
                     end
@@ -967,7 +1087,7 @@ end
             else
                 mx = 1;
             end
-            diffsq(isnan(diffsq)) = (mx + 1e6);
+            diffsq(isnan(diffsq)) = (mx + missingPenalty);
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
                 'Age (\x00B1%g yrs)',tol);
@@ -996,7 +1116,7 @@ end
                 mx = 1;
             end
             % penalize missing candidate values strongly
-            diffsq(isnan(diffsq)) = (mx + 1e6);
+            diffsq(isnan(diffsq)) = (mx + missingPenalty);
             w = edWeight(3).Value;
             dist2 = dist2 + w .* diffsq;
             % TODO: fix hardcoding
@@ -1020,7 +1140,7 @@ end
             else
                 mx = 1;
             end
-            diffsq(isnan(diffsq)) = (mx + 1e6);
+            diffsq(isnan(diffsq)) = (mx + missingPenalty);
             w = edWeight(4).Value;
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
@@ -1043,7 +1163,7 @@ end
             else
                 mx = 1;
             end
-            diffsq(isnan(diffsq)) = (mx + 1e6);
+            diffsq(isnan(diffsq)) = (mx + missingPenalty);
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
                 'Education (\x00B1%g yrs)',tol);
@@ -1053,7 +1173,7 @@ end
         % finalize: compute Euclidean distance (sqrt of weighted sum)
         dist = sqrt(dist2);
         [sortedDist, sidx] = sort(dist,'ascend','ComparisonMethod','real');
-        nReturn = min(5,numel(sortedDist));
+        nReturn = min(numMatchesShown,numel(sortedDist));
         if nReturn == 0
             statusLabel.Text = 'No numeric comparisons available.';
             tblMatches.Data = {}; tblWithin.Data = {};
@@ -1087,5 +1207,5 @@ end
 % Combine feet and inches to total inches
 feet = htFeet.Value;
 inches = htInches.Value;
-totalInches = feet * 12 + inches;
+totalInches = feet * inchesPerFoot + inches;
 end

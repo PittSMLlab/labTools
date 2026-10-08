@@ -1,6 +1,23 @@
-%% Take 1 at Optimizing Reconstruct & Label Pipeline
-% author: SB
-% date (created): 13 May 2025
+%% Optimizing Reconstruct & Label Pipeline
+% Script. Runs, for every Trial*.x1d under pathSess: the pre-pattern
+% Nexus pipeline (RLPrePatternFill), a custom MATLAB pattern fill
+% (runCustomPatternFill with getPatternFillReferenceMap), and the
+% post-pattern Nexus pipeline (RLPostPatternFill).
+%
+% Inputs:
+%   none - edit pathSess and pathOutCSV below
+%
+% Outputs:
+%   none - results is preallocated for per-trial gap summaries but is
+%          not filled or written (pathOutCSV is currently unused)
+%
+% Side effects: needs a running Vicon Nexus; opens, processes, and saves
+%   every trial found under pathSess (the saved trials are overwritten).
+%
+% Toolbox Dependencies: None (Vicon Nexus SDK, ViconNexus class)
+%
+% See also GETPATTERNFILLREFERENCEMAP, RUNCUSTOMPATTERNFILL, PART1RL,
+% DATAMOTION.OPENTRIALIFNEEDED.
 
 %% 1) Define Paths & Trial List
 

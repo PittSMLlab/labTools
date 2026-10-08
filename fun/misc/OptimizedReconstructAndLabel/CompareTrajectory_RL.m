@@ -1,7 +1,22 @@
 %% Compare Trajectory — Old vs. New Reconstruct & Label
-% Runs the old pipeline on a backup copy of the trial and the new
+% Script. Runs the old pipeline on a backup copy of the trial and the new
 % (optimized) pipeline on the original, then overlays resulting marker
 % trajectories for comparison.
+%
+% Inputs:
+%   none - edit markersToCompare, subject, basePath, and trialName below
+%
+% Outputs:
+%   none - plots one figure per marker (X/Y/Z, old vs. new); trajData
+%          holds the retrieved trajectories (frames x 3, NaN where absent)
+%
+% Side effects: needs a running Vicon Nexus with the trial available;
+%   opens the trial in Nexus and runs Part1RL on it (the new pipeline
+%   edits and saves the trial).
+%
+% Toolbox Dependencies: None (Vicon Nexus SDK, ViconNexus class)
+%
+% See also PART1RL, DATAMOTION.OPENTRIALIFNEEDED.
 
 markersToCompare = {'LGT', 'LANK'};
 subject          = 'C3S24';

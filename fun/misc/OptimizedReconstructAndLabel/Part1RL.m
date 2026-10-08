@@ -6,6 +6,11 @@ function mrkrTrajs = Part1RL(trialPath)
 % gap filling, then runs the post-pattern pipeline and saves the result.
 % Returns marker trajectories captured at each processing stage.
 %
+% Side effects: needs a running Vicon Nexus; opens the trial, runs the
+%   Nexus pipelines (RLPrePatternFill1/2, RLPostPatternFill), and
+%   overwrites the saved trial. A pipeline that fails only warns, so
+%   the later steps still run.
+%
 % Inputs:
 %   trialPath - Full path to the trial folder (string)
 %

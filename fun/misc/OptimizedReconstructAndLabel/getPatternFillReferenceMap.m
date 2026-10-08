@@ -1,6 +1,5 @@
 function refMap = getPatternFillReferenceMap()
-%GETPATTERNFILLREFERENCEMAP Build reference-to-target marker map for pattern
-%fill.
+%GETPATTERNFILLREFERENCEMAP Build marker map for pattern fill.
 %
 %   Returns a containers.Map mapping each target marker name to its
 % designated reference marker for pattern-based gap filling. The map
