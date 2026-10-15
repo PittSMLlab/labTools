@@ -3,7 +3,8 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %
 %   Reads kinematic, force, and EMG data from C3D files for each trial
 % in the experimental session. For each trial, the function imports
-% analog and marker data via the Biomechanics Toolkit (BTK), delegates
+% analog and marker data via the Biomechanics Toolkit (BTK), or ezc3d on
+% platforms without BTK binaries (see readC3DAcquisition), delegates
 % ground reaction force processing to processGRFData, synchronizes and
 % sorts EMG channels via syncEMGData, processes accelerometer data, and
 % packages everything into a rawTrialData object.
@@ -29,11 +30,13 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %              corresponds to trial number
 %
 %   Toolbox Dependencies:
-%     BTK - Biomechanics Toolkit     (btkReadAcquisition, btkGetAnalogs,
-%                                     btkGetMarkers; external dependency)
+%     BTK - Biomechanics Toolkit     (default C3D reader; external
+%                                     dependency)
+%     ezc3d - pyomeca C3D reader     (used only where BTK has no
+%                                     binary, e.g. Apple Silicon Macs)
 %
 %   See also: rawTrialData, loadSubject, getTrialMetaData,
-%   syncEMGData, processGRFData
+%   syncEMGData, processGRFData, readC3DAcquisition
 
 arguments
     trialMD     cell
@@ -95,9 +98,10 @@ for tr = trialNums                      % for each trial, ...
         orderedEMGList orientation trials sessionHasPC2 trialNums ...
         accDownsampleFactor rateRatioTolerance;
 
-    % Import C3D data using BTK (Biomechanics Toolkit)
-    H = btkReadAcquisition([fileList{tr} '.c3d']);
-    [analogs, analogsInfo] = btkGetAnalogs(H);
+    % Import C3D data using BTK (Biomechanics Toolkit), or ezc3d where
+    % BTK cannot run; both return BTK-format structs
+    H = readC3DAcquisition([fileList{tr} '.c3d']);
+    [analogs, analogsInfo] = getC3DAnalogs(H);
 
     % Load secondary PC file if present; flag missing file separately
     % from single-PC sessions so PC2 channels can be NaN-filled
@@ -105,8 +109,8 @@ for tr = trialNums                      % for each trial, ...
     pc2Missing  = false;
     secFilePath = [secFileList{tr} '.c3d'];
     if isfile(secFilePath)              % if C3D files (EMG) on PC2,...
-        H2 = btkReadAcquisition(secFilePath);
-        [analogs2, analogsInfo2] = btkGetAnalogs(H2);
+        H2 = readC3DAcquisition(secFilePath);
+        [analogs2, analogsInfo2] = getC3DAnalogs(H2);
         secondFile = true;              % indicate two PCs of EMG data
     elseif sessionHasPC2                % PC2 expected but file absent
         pc2Missing = true;
@@ -460,7 +464,7 @@ for tr = trialNums                      % for each trial, ...
     % Clear analog data to free memory; no longer needed after loading
     clear analogs*;
     if info.kinematics          % if there is kinematic data, ...
-        [markers, markerInfo] = btkGetMarkers(H);
+        [markers, markerInfo] = getC3DMarkers(H);
         relData    = [];
         fieldList  = fieldnames(markers);
         markerList = {};

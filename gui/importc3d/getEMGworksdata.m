@@ -165,8 +165,8 @@ end
 
 
 %%
-H=btkReadAcquisition([NexusfileList '.c3d']);
-[analogsNexus,analogsInfoNexus]=btkGetAnalogs(H);
+H=readC3DAcquisition([NexusfileList '.c3d']); % BTK, or ezc3d if no BTK
+[analogsNexus,analogsInfoNexus]=getC3DAnalogs(H);
 analogsInfoNexus=analogsInfo;
 
 
