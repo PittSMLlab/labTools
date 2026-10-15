@@ -59,9 +59,25 @@ for trialIdx = trials
     currTrial = rawExpData.data{trialIdx};
     sampleFrq = currTrial.GRFData.sampFreq;
     intervalAt2000 = 0:1/sampleFrq:totalTime;
+
+    % NOTE: the datlog occasionally logs two force packets with the same
+    % relative time stamp (or a NaN time), which makes interp1 error with
+    % "Sample points must be unique". Keep the first sample at each
+    % finite time stamp so the datlog can still be synchronized.
+    forceData = datlog.forces.data;
+    forceData = forceData(isfinite(forceData(:,5)), :);
+    [~, idxUnique] = unique(forceData(:,5));    % sorted, first occurrence
+    numDropped = size(datlog.forces.data, 1) - numel(idxUnique);
+    if numDropped > 0
+        warning(['Trial %d: dropped %d datlog force samples with ' ...
+            'duplicate or non-finite time stamps before syncing.'], ...
+            trialIdx, numDropped);
+    end
+    forceData = forceData(idxUnique, :);
+
     %1st arg is time, 2nd arg is data,  %{'frame #','U time','Rfz','Lfz','Relative Time'}
-    FL_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,4),intervalAt2000)';
-    FR_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,3),intervalAt2000)';
+    FL_datlog = interp1(forceData(:,5), forceData(:,4), intervalAt2000)';
+    FR_datlog = interp1(forceData(:,5), forceData(:,3), intervalAt2000)';
 
     % find force data from rawExpData.
     labelIdx = ismember(currTrial.GRFData.labels,{'LFz','RFz'}); %TODO: add new labels here
