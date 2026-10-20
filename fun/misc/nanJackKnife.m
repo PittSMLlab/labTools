@@ -31,79 +31,44 @@ function [Pa, Li] = nanJackKnife(varargin)
 % Toolbox Dependencies: None
 %
 % See also ERRORBAR, PATCH, LINE.
-switch nargin
-    case 3
-        x = varargin{1};
-        y = varargin{2};
-        E = varargin{3};
-        x(isnan(y)) = [];
-        E(isnan(y)) = [];
-        y(isnan(y)) = [];
-        L         = y - E;
-        U         = y + E;
-        LineColor  = 'k';
-        PatchColor = [0.85 0.85 0.85];
-        EdgeColor  = LineColor;
-        Opacity    = 1;
 
-    case 4
+% Defaults for the 3- and 4-argument forms
+LineColor  = 'k';
+PatchColor = [0.85 0.85 0.85];
+EdgeColor  = LineColor;
+Opacity    = 1;
+
+if nargin >= 3 && nargin <= 7
+    x   = varargin{1};
+    y   = varargin{2};
+    bad = isnan(y);
+    x(bad) = [];
+    if nargin == 4
         % lower and upper bounds supplied directly
-        x = varargin{1};
-        y = varargin{2};
         L = varargin{3};
         U = varargin{4};
-        x(isnan(y)) = [];
-        L(isnan(y)) = [];
-        U(isnan(y)) = [];
-        y(isnan(y)) = [];
-        LineColor  = 'k';
-        PatchColor = [0.85 0.85 0.85];
-        EdgeColor  = LineColor;
-        Opacity    = 1;
-
-    case 5
-        x = varargin{1};
-        y = varargin{2};
+        L(bad) = [];
+        U(bad) = [];
+        y(bad) = [];
+    else
         E = varargin{3};
-        x(isnan(y)) = [];
-        E(isnan(y)) = [];
-        y(isnan(y)) = [];
-        L          = y - E;
-        U          = y + E;
+        E(bad) = [];
+        y(bad) = [];
+        L = y - E;
+        U = y + E;
+    end
+    if nargin >= 5
         LineColor  = varargin{4};
         EdgeColor  = LineColor - 0.5 .* abs(LineColor);
         PatchColor = varargin{5};
-        Opacity    = 1;
-
-    case 6
-        x = varargin{1};
-        y = varargin{2};
-        E = varargin{3};
-        x(isnan(y)) = [];
-        E(isnan(y)) = [];
-        y(isnan(y)) = [];
-        L          = y - E;
-        U          = y + E;
-        LineColor  = varargin{4};
-        EdgeColor  = LineColor - 0.5 .* abs(LineColor);
-        PatchColor = varargin{5};
-        Opacity    = varargin{6};
-
-    case 7
-        x = varargin{1};
-        y = varargin{2};
-        E = varargin{3};
-        x(isnan(y)) = [];
-        E(isnan(y)) = [];
-        y(isnan(y)) = [];
-        L          = y - E;
-        U          = y + E;
-        LineColor  = varargin{4};
-        EdgeColor  = LineColor - 0.5 .* abs(LineColor);
-        EdgeColor  = 'none';
-        PatchColor = varargin{5};
-        Opacity    = varargin{6};
-        w          = varargin{7};   % binary: 0 = black fill, 1 = line color
+    end
+    if nargin >= 6
+        Opacity = varargin{6};
+    end
+    if nargin == 7
+        EdgeColor = 'none';   % overrides the EdgeColor set above
+        w         = varargin{7};   % binary: 0 = black fill, 1 = line color
+    end
 end
 
 Xcoords = [x x(end:-1:1)];
