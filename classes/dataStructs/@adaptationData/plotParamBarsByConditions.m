@@ -20,6 +20,8 @@ function figHandle = plotParamBarsByConditions(this,label,earlyNumber, ...
 % Outputs:
 %   figHandle - figure handle
 %
+% NOTE: superseded by PLOTPARAMBARSBYCONDITIONSV2. No repo caller.
+%
 % Toolbox Dependencies: None
 %
 % See also PLOTPARAMBARSBYCONDITIONSV2, GETEARLYLATEDATA.

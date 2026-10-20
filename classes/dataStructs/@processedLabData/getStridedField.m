@@ -21,6 +21,10 @@ function [stridedField, bad, initTime, events] = ...
 %   initTime     - vector of stride start times
 %   events       - cell array of event labels used
 %
+% NOTE: shadowed. processedLabData.m defines GETSTRIDEDFIELD inline, and
+%       that definition takes precedence over this file. Keep both in
+%       sync until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: None
 %
 % See also GETALIGNEDFIELD, GETSTRIDEINFO.

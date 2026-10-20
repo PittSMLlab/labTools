@@ -33,6 +33,10 @@ function [figHandle, plotHandles, plottedInds] = plot(this, ...
 %         one subplot per label. If events given, displays average
 %         event times.
 %
+% NOTE: shadowed. alignedTimeSeries.m defines PLOT inline, and that
+%       definition takes precedence over this file. Keep both in sync
+%       until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: Statistics and Machine Learning Toolbox
 %
 % See also LABTIMESERIES/PLOT, PLOTCHECKERBOARD.

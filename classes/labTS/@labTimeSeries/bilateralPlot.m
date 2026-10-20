@@ -24,6 +24,10 @@ function [h, plotHandles] = bilateralPlot(this, h, labels, ...
 %   Note: Ideally plots 'L' and 'R' timeseries on top of each other
 %         for bilateral comparison
 %
+% NOTE: shadowed. labTimeSeries.m defines BILATERALPLOT inline, and that
+%       definition takes precedence over this file. Keep both in sync
+%       until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: None
 %
 % See also PLOT, PLOTALIGNED.

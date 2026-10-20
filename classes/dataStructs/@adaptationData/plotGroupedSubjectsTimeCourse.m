@@ -23,6 +23,10 @@ function [figHandle,allData] = ...
 %   figHandle - figure handle
 %   allData   - plotted data
 %
+% NOTE: superseded by PLOTAVGTIMECOURSE. This function errors on its
+%       first statement; the only reference is the inline wrapper in
+%       adaptationData.m, which is documented as not functional.
+%
 % Toolbox Dependencies: None
 %
 % See also PLOTAVGTIMECOURSE, PLOTGROUPEDSUBJECTSBARSV2.

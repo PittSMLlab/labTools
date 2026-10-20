@@ -20,6 +20,10 @@ function [h, plotHandles] = plotAligned(this, h, labels, plotHandles, ...
 %
 %   Note: Unimplemented
 %
+% NOTE: shadowed. labTimeSeries.m defines PLOTALIGNED inline, and that
+%       definition takes precedence over this file. Keep both in sync
+%       until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: None
 %
 % See also PLOT, ALIGN.

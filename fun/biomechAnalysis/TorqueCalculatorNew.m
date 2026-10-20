@@ -25,6 +25,10 @@ function AllMomentsTS = ...
 %   AllMomentsTS - labTimeSeries with RAnkM, LAnkM, RKneM, LKneM, RHipM,
 %                  LHipM
 %
+% NOTE: no live caller. TORQUECALCULATOR (called by
+%       labData.computeTorques) is the live driver; its call to this
+%       function is commented out.
+%
 % Toolbox Dependencies: Signal Processing Toolbox (butter, filtfilt)
 %
 % See also TORQUECALCULATOR, COMCALCULATOR, COPCALCULATOR.

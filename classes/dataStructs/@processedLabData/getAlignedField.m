@@ -17,6 +17,10 @@ function [alignedField, bad] = getAlignedField(this, field, events, ...
 %   bad          - logical vector indicating strides with incomplete or
 %                  missing events
 %
+% NOTE: shadowed. processedLabData.m defines GETALIGNEDFIELD inline, and
+%       that definition takes precedence over this file. Keep both in
+%       sync until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: None
 %
 % See also LABTIMESERIES.ALIGN, REDUCE.

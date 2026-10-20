@@ -16,6 +16,13 @@ function Demographics = GroupDemographics(SMatrix)
 %                  StudyDemographics with N, MeanAge, StdAge, and NMale
 %                  over all groups
 %
+% NOTE: shadowed. groupAdaptationData.m defines the method
+%       GroupDemographics(this) inline, and that definition takes
+%       precedence over this file. The call below passes an argument
+%       (SMatrix.(group).GroupDemographics(group)) that the inline method
+%       does not accept; the working study-level function is
+%       fun/misc/hmhFun/GroupDemographics.m.
+%
 % Toolbox Dependencies: None
 %
 % See also MAKESMATRIXV2, UICREATESTUDY.
