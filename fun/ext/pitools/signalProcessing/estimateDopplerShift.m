@@ -2,11 +2,11 @@ function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
     signal1, signal2, M)
 %ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.
 %
-%   Divides both signals into windows of length M, estimates the time
-% lag between each window pair using FINDTIMELAG, then fits a line to
-% the lag-vs-time relationship. The slope of that line is the relative
-% Doppler shift (fractional sampling-rate difference). Outlier windows
-% are iteratively rejected until convergence.
+%   Divides both signals into windows of length M, estimates the time lag
+% between each window pair using FINDTIMELAG, then fits a line to the
+% lag-vs-time relationship. The slope of that line is the relative Doppler
+% shift (fractional sampling-rate difference). Outlier windows are
+% iteratively rejected until convergence.
 %
 %   Signals should be pre-aligned (relative delay << M) and high-pass
 % filtered for best results. The maximum detectable relative shift is
@@ -15,13 +15,13 @@ function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
 % Inputs:
 %   signal1 - 1-D reference signal (row vector)
 %   signal2 - 1-D secondary signal (row vector)
-%   M       - (optional) window length in samples; defaults to a value
-%             that yields approximately sqrt(N)/4 windows, capped at 128
+%   M       - (optional) window length in samples; defaults to a value that
+%             yields approximately sqrt(N)/4 windows, capped at 128
 %
 % Outputs:
-%   relativeShift  - fractional sampling-rate difference (slope of lag
-%                    vs. time line); positive means signal2 is faster
-%   initTimeDelay  - intercept of the lag-vs-time line, in samples
+%   relativeShift - fractional sampling-rate difference (slope of lag vs.
+%                   time line); positive means signal2 is faster
+%   initTimeDelay - intercept of the lag-vs-time line, in samples
 %
 % Toolbox Dependencies: None
 %
@@ -65,8 +65,8 @@ while differences
     clear x t lineFit;
     t = nan(1, N);
     for win = 1:N
-        winSlice2      = signal2((win-1)*M + 1:win*M);
-        winSlice1      = signal1((win-1)*M + 1:win*M);
+        winSlice2 = signal2((win-1)*M + 1:win*M);
+        winSlice1 = signal1((win-1)*M + 1:win*M);
         [~, ~, t(win)] = findTimeLag(winSlice1, winSlice2);
         % F1 = fft(winSlice1);
         % F2 = fft(winSlice2);
@@ -95,10 +95,10 @@ while differences
         inlierT = t(ii);
         lineFit = polyfit(inlierX(validMask(ii)), ...
             inlierT(validMask(ii)), 1);
-        iiOld   = ii;
+        iiOld = ii;
     end
     residuals = abs(t - x*lineFit(1) - lineFit(2));
-    pp = prctile(residuals, 50);
+    pp        = prctile(residuals, 50);
     if pp < 0.5
         pp = 0.5; % quantization floor: expect at least 0.5-sample error
     end
@@ -112,7 +112,7 @@ while differences
     end
 end
 
-relativeShift  = lineFit(1);
-initTimeDelay  = lineFit(2); % in samples
+relativeShift = lineFit(1);
+initTimeDelay = lineFit(2); % in samples
 
 end

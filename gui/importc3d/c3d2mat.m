@@ -1,14 +1,13 @@
-% c3d2mat  Main script for parsing C3D session files into a MAT file.
+%C3D2MAT Main script for parsing C3D session files into a MAT file.
 %
 % This script collects information regarding the experiment conducted and
 % transforms data from the C3D format into 'labTools' objects. It then
 % processes that data to compute heel strike and toe off events, limb
 % angles, adaptation parameters, and processed EMG data (if present).
 %
-% Toolbox Dependencies:
-%   None
+% Toolbox Dependencies: None
 %
-% See also: GetInfoGUI, loadSubject
+% See also GETINFOGUI, LOADSUBJECT.
 
 %% Collect Experimental Session Information
 

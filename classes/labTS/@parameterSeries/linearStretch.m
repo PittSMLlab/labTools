@@ -1,29 +1,32 @@
-function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)
-%linearStretch  Linearly transforms parameter values
+function newThis = linearStretch(this, labels, rangeValues, ...
+    descriptionSuffix)
+%LINEARSTRETCH Linearly transforms parameter values.
 %
-%   newThis = linearStretch(this, labels, rangeValues) transforms
-%   parameters such that rangeValues(1) maps to 0 and rangeValues(2)
-%   maps to 1
+%   newThis = linearStretch(this, labels, rangeValues) transforms parameters
+% such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - cell array of parameter labels to transform
-%       rangeValues - 2-element vector [min max] defining range to
-%                     normalize
-%       descriptionSuffix - OPTIONAL. a string representing a description
-%           suffix to append to the new parameter's descriptions. Default
-%           empty. By default, the new parameter's description will be
-%           normalized to range =[rangemin, rangemax]. if suffix is provided
-%           will be appended to the description.
+% Inputs:
+%   this              - parameterSeries object
+%   labels            - cell array of parameter labels to transform
+%   rangeValues       - 2-element vector [min max] defining range to
+%                       normalize
+%   descriptionSuffix - OPTIONAL. a string representing a description suffix
+%                       to append to the new parameter's descriptions.
+%                       Default empty. By default, the new parameter's
+%                       description will be normalized to range =[rangemin,
+%                       rangemax]. if suffix is provided will be appended to
+%                       the description.
 %
-%   Outputs:
-%       newThis - parameterSeries with normalized parameters added as
-%                 'Norm' + original label
+% Outputs:
+%   newThis - parameterSeries with normalized parameters added as 'Norm' +
+%             original label
 %
 %   Note: Creates NEW parameters with 'Norm' prefix. Will generate
 %         collisions if run multiple times for same parameters.
 %
-%   See also: adaptationData.normalizeToBaselineEpoch, addNewParameter
+% Toolbox Dependencies: None
+%
+% See also ADAPTATIONDATA.NORMALIZETOBASELINEEPOCH, ADDNEWPARAMETER.
 
 if numel(rangeValues) ~= 2
     error('parameterSeries:linearStretch', ...
@@ -34,31 +37,37 @@ if nargin < 4 || isempty(descriptionSuffix)
     descriptionSuffix = '';
 elseif iscell(descriptionSuffix)
     descriptionSuffix = descriptionSuffix{1};
-    fprintf('A cell is provided for descriptionSuffix, will use the 1st element only.\n')
+    fprintf(['A cell is provided for descriptionSuffix, will use the ' ...
+        '1st element only.\n'])
 end
 
 if ~ischar(descriptionSuffix)
-    error('A non character string was given for descriptionSuffix, which will not be compatible with the existing description format. Check your input. ')
+    error(['A non character string was given for descriptionSuffix, ' ...
+        'which will not be compatible with the existing description ' ...
+        'format. Check your input. '])
 end
 % [boolFlag, labelIdx] = isaLabel(this, labels);
 % for i = 1:length(labels)
 %     if boolFlag(i)
 %         oldDesc = this.description(labelIdx(i));
-%         newDesc = ['Normalized (range = ' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
+%         newDesc = ['Normalized (range = ' num2str(rangeValues(1)) ',' ...
+%    num2str(rangeValues(2)) ') ' oldDesc];
 %         funHandle = @(x) (x - rangeValues(1)) / diff(rangeValues);
-%         this = addNewParameter(this, strcat('Norm', labels{i}), funHandle, labels(i), newDesc);
+%         this = addNewParameter(this, strcat('Norm', labels{i}), ...
+%    funHandle, labels(i), newDesc);
 %     end
 % end
 % More efficient:
 N = length(labels);
 newDesc = repmat({['Normalized to range = [' ...
-    num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ']. ' descriptionSuffix]}, N, 1);
+    num2str(rangeValues(1)) ',' num2str( ...
+    rangeValues(2)) ']. ' descriptionSuffix]}, N, 1);
 newL = cell(N, 1);
-nD = zeros(size(this.Data, 1), N);
-for i = 1:N
+nD   = zeros(size(this.Data, 1), N);
+for ii = 1:N
     funHandle = @(x) (x - rangeValues(1)) / diff(rangeValues);
-    newL{i} = strcat('Norm', labels{i});
-    nD(:, i) = this.computeNewParameter(newL{i}, funHandle, labels(i));
+    newL{ii} = strcat('Norm', labels{ii});
+    nD(:, ii) = this.computeNewParameter(newL{ii}, funHandle, labels(ii));
 end
 newThis = appendData(this, nD, newL, newDesc);
 end

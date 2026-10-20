@@ -28,6 +28,7 @@ function results = getResultsSMART(SMatrix, params, groups, ...
 catchNumPts     = 3;   % catch
 steadyNumPts    = 40;  % end of adaptation
 transientNumPts = 5;   % OG and washout
+% TODO: source? The body hard-codes stride windows (1:10, end-5).
 
 if nargin < 3 || isempty(groups)
     groups = fields(SMatrix);
@@ -65,7 +66,7 @@ results.Transfer2.se            = [];
 results.Washout2.avg            = [];
 results.Washout2.se             = [];
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ From CJS
+%~~~~~~~~~~~~~~~~ Strides-to-SS and percent-forgetting
 results.Strides2SS.avg = [];
 results.Strides2SS.se  = [];
 results.PerForget.avg  = [];
@@ -239,7 +240,7 @@ for gg = 1:ngroups
         end
 
         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        % Compute percent-forgetting (CJS, 07/2015)
+        % Compute percent-forgetting
         test = adaptData.metaData.conditionName;
         test(cellfun(@isempty, test)) = {''};
         epoch       = find(ismember(test, 'adaptation') == 1);
@@ -291,7 +292,7 @@ for gg = 1:ngroups
         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        % Compute strides-to-steady-state (CJS, 07/2015)
+        % Compute strides-to-steady-state
         if isempty(idxNET) == 0
             Strides2SS = [Strides2SS; CalcStrides2SS(adaptAllData, ...
                 tmsteady(ss, :), params, 0, ...
@@ -340,7 +341,8 @@ for gg = 1:ngroups
     nSubs = length(subjects);
 
     results.OGbase.avg(end+1, :) = mean(OGbase, 1, 'omitnan');
-    results.OGbase.se(end+1, :)  = std(OGbase, 0, 1, 'omitnan') ./ sqrt(nSubs);
+    results.OGbase.se(end+1, :)  = std(OGbase, 0, 1, ...
+        'omitnan') ./ sqrt(nSubs);
 
     results.TMbase.avg(end+1, :) = mean(TMbase, 1, 'omitnan');
     results.TMbase.se(end+1, :)  = std(TMbase, 0, 1, 'omitnan');
@@ -501,7 +503,8 @@ if nargin > 4 && plotFlag
         barGroups(SMatrix, results, groups, params, epochs)
     end
 
-    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
+    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch', ...
+    %    'AvgAdaptAll','TMsteady'};
     %     if nargin>5
     %         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
     %     else

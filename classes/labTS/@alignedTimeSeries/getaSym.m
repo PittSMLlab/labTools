@@ -1,20 +1,22 @@
 function [this, iC, iI] = getaSym(this)
-%getaSym  Computes asymmetric components
+%GETASYM Computes asymmetric components.
 %
 %   [this, iC, iI] = getaSym(this) computes asymmetric (difference)
-%   components of bilateral data
+% components of bilateral data
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       this - alignedTimeSeries with asymmetric components
-%       iC - indices of contralateral labels
-%       iI - indices of ipsilateral labels
+% Outputs:
+%   this - alignedTimeSeries with asymmetric components
+%   iC   - indices of contralateral labels
+%   iI   - indices of ipsilateral labels
 %
 %   Note: Computes slow - fast
 %
-%   See also: getSym, flipLR
+% Toolbox Dependencies: None
+%
+% See also GETSYM, FLIPLR.
 
 [this, iC, iI] = this.flipLR; % First, flip the non-aligned side.
 % Then: compute asym data and replace it.

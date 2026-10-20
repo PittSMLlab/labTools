@@ -1,21 +1,23 @@
 function [decomposition, meanValue, avgStride, ...
     trial2trialVariability] = energyDecomposition(this)
-%energyDecomposition  Decomposes variance
+%ENERGYDECOMPOSITION Decomposes variance.
 %
 %   [decomposition, meanValue, avgStride, trial2trialVariability] =
-%   energyDecomposition(this) decomposes variance into mean, average
-%   stride pattern, and trial-to-trial variability
+% energyDecomposition(this) decomposes variance into mean, average stride
+% pattern, and trial-to-trial variability
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       decomposition - variance decomposition results
-%       meanValue - mean value component
-%       avgStride - average stride pattern component
-%       trial2trialVariability - trial-to-trial variability component
+% Outputs:
+%   decomposition          - variance decomposition results
+%   meanValue              - mean value component
+%   avgStride              - average stride pattern component
+%   trial2trialVariability - trial-to-trial variability component
 %
-%   See also: getVarianceDecomposition
+% Toolbox Dependencies: None
+%
+% See also GETVARIANCEDECOMPOSITION.
 
 alignedData = this.Data;
 [decomposition, meanValue, avgStride, trial2trialVariability] = ...

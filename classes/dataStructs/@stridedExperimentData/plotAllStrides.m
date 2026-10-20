@@ -1,29 +1,30 @@
 function [figHandle, plotHandles] = plotAllStrides(this, field, ...
     conditions, plotHandles, figHandle)
-%plotAllStrides  Plots all individual strides for a field
+%PLOTALLSTRIDES Plots all individual strides for a field.
 %
 %   [figHandle, plotHandles] = plotAllStrides(this, field,
-%   conditions) creates plots showing all individual strides for the
-%   specified field and conditions
+% conditions) creates plots showing all individual strides for the
+% specified field and conditions
 %
 %   [figHandle, plotHandles] = plotAllStrides(this, field,
-%   conditions, plotHandles, figHandle) uses existing plot handles
+% conditions, plotHandles, figHandle) uses existing plot handles
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       field - name of field to plot (e.g., 'procEMGData',
-%               'angleData')
-%       conditions - vector of condition indices to plot
-%       plotHandles - existing subplot handles (optional)
-%       figHandle - existing figure handle (optional)
+% Inputs:
+%   this        - stridedExperimentData object
+%   field       - name of field to plot (e.g., 'procEMGData', 'angleData')
+%   conditions  - vector of condition indices to plot
+%   plotHandles - existing subplot handles (optional)
+%   figHandle   - existing figure handle (optional)
 %
-%   Outputs:
-%       figHandle - handle to figure
-%       plotHandles - array of subplot handles
+% Outputs:
+%   figHandle   - handle to figure
+%   plotHandles - array of subplot handles
 %
-%   Note: To Do - need to add gait events markers
+% TODO: add gait event markers.
 %
-%   See also: plotAvgStride, plotAllStridesBilateral
+% Toolbox Dependencies: None
+%
+% See also PLOTAVGSTRIDE, PLOTALLSTRIDESBILATERAL.
 
 % TODO: need to add gait event markers
 
@@ -42,10 +43,10 @@ for cond = conditions
         figure(figHandle); % Only works for one condition!
     end
     set(figHandle, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
-    aux = this.getStridesFromCondition(cond);
-    N = 2^ceil(log2(1.5 / aux{1}.(field).sampPeriod));
+    aux       = this.getStridesFromCondition(cond);
+    N         = 2^ceil(log2(1.5 / aux{1}.(field).sampPeriod));
     structure = this.getDataAsMatrices(field, cond, N);
-    M = size(structure{cond}, 2);
+    M         = size(structure{cond}, 2);
     if nargin < 4 || isempty(plotHandles)
         [b, a] = getFigStruct(M);
         % External function
@@ -60,17 +61,17 @@ for cond = conditions
         meanStr{cond} = mean(structure{cond}, 3);
         structure{cond} = structure{cond}(:, :, 1:P);
     end
-    for i = 1:M
+    for ii = 1:M
         % subplot(b, a, i)
-        subplot(plotHandles(i));
+        subplot(plotHandles(ii));
         hold on;
         % title(aux{1}.(field).labels{i})
-        data = squeeze(structure{cond}(:, i, :));
+        data = squeeze(structure{cond}(:, ii, :));
         plot([0:N - 1] / N, data, 'Color', [0.7, 0.7, 0.7]);
-        plot([0:N - 1] / N, meanStr{cond}(:, i), 'LineWidth', 2, ...
+        plot([0:N - 1] / N, meanStr{cond}(:, ii), 'LineWidth', 2, ...
             'Color', ColorOrder(mod(cond - 1, size(ColorOrder, 1)) + ...
             1, :));
-        legend(aux{1}.(field).labels{i});
+        legend(aux{1}.(field).labels{ii});
         hold off;
     end
 end

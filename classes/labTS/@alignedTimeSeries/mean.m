@@ -1,25 +1,26 @@
 function [meanTS, stds] = mean(this, strideIdxs)
-%mean  Computes mean across strides
+%MEAN Computes mean across strides.
 %
-%   [meanTS, stds] = mean(this) computes mean and standard deviation
-%   across all aligned timeseries
+%   [meanTS, stds] = mean(this) computes mean and standard deviation across
+% all aligned timeseries
 %
-%   [meanTS, stds] = mean(this, strideIdxs) computes for specified
-%   strides
+%   [meanTS, stds] = mean(this, strideIdxs) computes for specified strides
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       strideIdxs - vector of stride indices (optional, default: all)
+% Inputs:
+%   this       - alignedTimeSeries object
+%   strideIdxs - vector of stride indices (optional, default: all)
 %
-%   Outputs:
-%       meanTS - alignedTimeSeries with mean data (single stride)
-%       stds - standard deviations (for logical data) or empty
+% Outputs:
+%   meanTS - alignedTimeSeries with mean data (single stride)
+%   stds   - standard deviations (for logical data) or empty
 %
 %   Note: For logical data (events), assumes all aligned timeSeries
 %         have same number of events in same order. Returns median
 %         event times.
 %
-%   See also: median, std, prctile
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also MEDIAN, STD, PRCTILE.
 
 if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);
@@ -28,7 +29,7 @@ if ~islogical(this.Data(1))
     % meanTS = labTimeSeries(nanmean(this.Data, 3), this.Time(1),
     %     this.Time(2) - this.Time(1), this.labels);
     meanTS = alignedTimeSeries(this.Time(1), ...
-        this.Time(2) - this.Time(1), nanmean(this.Data, 3), ...
+        this.Time(2) - this.Time(1), mean(this.Data, 3, 'omitnan'), ...
         this.labels, this.alignmentVector, this.alignmentLabels);
     stds = [];
 else
@@ -39,21 +40,21 @@ else
     % Compute mean/median:
     newData = sparse([], [], false, size(this.Data, 1), ...
         length(newLabels), size(this.Data, 1));
-    mH = nanmedian(histogram);
-    for i = 1:size(histogram, 2)
-        if mod(mH(i), 1) ~= 0
-            mH(i) = floor(mH(i));
-            warning(['Median event ' num2str(i) ...
+    mH = median(histogram, 'omitnan');
+    for ii = 1:size(histogram, 2)
+        if mod(mH(ii), 1) ~= 0
+            mH(ii) = floor(mH(ii));
+            warning(['Median event ' num2str(ii) ...
                 ' falls between two samples']);
         end
-        newData(mH(i), i) = true;
+        newData(mH(ii), ii) = true;
     end
     % meanTS = labTimeSeries(newData, this.Time(1),
     %     this.Time(2) - this.Time(1), newLabels);
     meanTS = alignedTimeSeries(this.Time(1), ...
         this.Time(2) - this.Time(1), newData, newLabels, ...
         this.alignmentVector, this.alignmentLabels);
-    stds = nanstd(histogram);
+    stds = std(histogram, 0, 'omitnan');
 end
 end
 

@@ -2,9 +2,9 @@ function filteredData = filtfilthd_short(filterObj, data, method, M1)
 %FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.
 %
 %   Implements zero-phase filtering using a DSP toolbox filter object by
-% applying the filter forward and then backward. Reflective boundary
-% padding reduces edge transients; the padding length is capped at M1
-% samples (default 1000) for efficiency on long signals.
+% applying the filter forward and then backward. Reflective boundary padding
+% reduces edge transients; the padding length is capped at M1 samples
+% (default 1000) for efficiency on long signals.
 %
 % Inputs:
 %   filterObj - DSP toolbox filter object
@@ -41,7 +41,8 @@ end
 if nargin < 4 || isempty(M1)
     M1 = min(DEFAULT_REFLECT_LEN, M);
     warning('filtfilthd_short:defaultPad', ...
-        sprintf('Reflection pad length unspecified; using %d samples.', M1));
+        sprintf('Reflection pad length unspecified; using %d samples.', ...
+        M1));
 else
     M1 = min(round(M1), M);
 end

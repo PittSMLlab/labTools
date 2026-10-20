@@ -1,31 +1,32 @@
 function [numStrides, initTime, endTime] = getStrideInfo(this, ...
     triggerEvent, endEvent)
-%getStrideInfo  Returns stride count and timing information
+%GETSTRIDEINFO Returns stride count and timing information
 %
 %   [numStrides, initTime, endTime] = getStrideInfo(this) returns stride
-%   information using the reference leg heel strike as the default trigger
-%   event
+% information using the reference leg heel strike as the default trigger
+% event
 %
 %   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent)
-%   returns stride information using the specified trigger event
+% returns stride information using the specified trigger event
 %
 %   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent,
-%   endEvent) returns stride information where each stride is defined from
-%   triggerEvent to endEvent
+% endEvent) returns stride information where each stride is defined from
+% triggerEvent to endEvent
 %
-%   Inputs:
-%       this - processedLabData object
-%       triggerEvent - event label for stride start
-%                      (default: [refLeg 'HS'])
-%       endEvent - event label for stride end
-%                  (default: same as triggerEvent)
+% Inputs:
+%   this         - processedLabData object
+%   triggerEvent - event label for stride start (default: [refLeg 'HS'])
+%   endEvent     - event label for stride end (default: same as
+%                  triggerEvent)
 %
-%   Outputs:
-%       numStrides - number of complete strides
-%       initTime - vector of stride start times
-%       endTime - vector of stride end times
+% Outputs:
+%   numStrides - number of complete strides
+%   initTime   - vector of stride start times
+%   endTime    - vector of stride end times
 %
-%   See also: getStepInfo, separateIntoStrides
+% Toolbox Dependencies: None
+%
+% See also GETSTEPINFO, SEPARATEINTOSTRIDES.
 
 if nargin < 2 || isempty(triggerEvent)
     triggerEvent = [this.metaData.refLeg 'HS'];
@@ -36,15 +37,15 @@ end
 if nargin < 3 || isempty(endEvent)
     % using triggerEvent for endEvent
     arrayedEvents = getArrayedEvents(this, {triggerEvent});
-    initTime = arrayedEvents(1:end - 1, 1);
-    endTime = arrayedEvents(2:end, 1);
+    initTime      = arrayedEvents(1:end - 1, 1);
+    endTime       = arrayedEvents(2:end, 1);
 else
     arrayedEvents = getArrayedEvents(this, {triggerEvent, endEvent});
     if ~isnan(arrayedEvents(end, 2)) % Last stride is incomplete
         arrayedEvents = arrayedEvents(1:end - 1, :);
     end
     initTime = arrayedEvents(:, 1);
-    endTime = arrayedEvents(:, 2);
+    endTime  = arrayedEvents(:, 2);
 end
 numStrides = size(initTime, 1);
 

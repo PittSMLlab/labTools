@@ -4,12 +4,11 @@ function [bad, reasons] = adjudicateStrideQuality( ...
 %ADJUDICATESTRIDEQUALITY Label per-reason and aggregate stride quality.
 %
 %   Central, pure (no parameterSeries dependency) stride-quality
-% adjudication used by CALCPARAMETERS. Splitting the historical
-% aggregate 'bad' criteria into named reason columns lets the
-% aggregate flag stay backward compatible while exposing WHY a stride
-% failed, so marker-based and marker-less pipelines can apply an
-% identical reason schema and threshold set (see
-% GETSTRIDEQUALITYCONFIG) and callers can censor a chosen subset of
+% adjudication used by CALCPARAMETERS. The aggregate 'bad' criteria are
+% split into named reason columns, so the aggregate flag exposes WHY a
+% stride failed. Marker-based and marker-less pipelines can therefore
+% apply an identical reason schema and threshold set (see
+% GETSTRIDEQUALITYCONFIG), and callers can censor a chosen subset of
 % reasons (see REMOVESTRIDESBYREASON).
 %
 %   CALCPARAMETERS calls this function twice: once early, with
@@ -35,7 +34,7 @@ function [bad, reasons] = adjudicateStrideQuality( ...
 %
 % Outputs:
 %   bad     - (numStrides x 1) logical, OR of cfg.defaultBadReasons;
-%             identical to the pre-refactor aggregate criterion
+%             the aggregate stride-quality criterion
 %   reasons - struct with one (numStrides x 1) logical field per name
 %             in cfg.reasonLabels
 %

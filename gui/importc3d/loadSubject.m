@@ -1,33 +1,44 @@
 function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)
-% loadSubject  Load, organize, process, and save experimental session
-%   data from C3D files into labTools data objects.
+%LOADSUBJECT Load, process, and save an experimental session from C3D.
 %
-%   Reads raw trial data from the .c3d files specified by info, constructs
-% labTools data objects (experimentData, subjectData), detects gait events,
-% computes adaptation parameters, and saves the results to disk. If datlog
-% files are present for all trials, data logs are synchronized prior to
-% processing.
+%   Reads raw trial data from the .c3d files specified by info,
+% constructs labTools data objects (experimentData, subjectData), detects
+% gait events, computes stride parameters, and saves the results to disk.
+% If datlog files are present for all trials, data logs are synchronized
+% prior to processing. 'SpinalAdapt' sessions then have each bout trial
+% split into per-bout conditions (see SPLITSPINALADAPTBOUTCONDS), and
+% 'SpinalAdaptation' sessions have their conditions separated by audio
+% cue (see SEPCONDSINEXPBYAUDIOCUE).
 %
-%   Inputs:
-%     info       - Struct of session information returned by GetInfoGUI,
-%                  containing participant demographics, file paths, trial
-%                  and condition assignments, and EMG channel labels
-%     eventClass - (optional) String specifying the gait event detection
-%                  method. Defaults to '' if omitted or empty:
-%                    ''      - default (forces for TM, kinematics for OG)
-%                    'kin'   - strictly from kinematics (OG trials)
-%                    'force' - strictly from forces (TM trials)
+%   Side effects: starts a diary (<ID>loading.log) in info.save_folder;
+% asks for the EMG normalization reference condition and the EMG bias
+% removal condition (listdlg/questdlg) when EMG channels are present;
+% closes all figures, clears the command window, and clears the
+% workspace variables it no longer needs (a memory workaround, see the
+% FIXME in the code); writes <ID>RAW.mat, <ID>.mat, and <ID>params.mat to
+% info.save_folder, the datlog sync figures to its DatlogSyncRes folder,
+% and, for split sessions, the unsplit <ID>OriginalCondName copies.
 %
-%   Outputs:
-%     expData    - Processed experimentData object
-%     rawExpData - Unprocessed experimentData object
-%     adaptData  - adaptationData object with computed adaptation params
+% Inputs:
+%   info       - struct, session information returned by GetInfoGUI
+%                (participant demographics, file paths, trial and
+%                condition assignments, and EMG channel labels)
+%   eventClass - char, optional gait event detection method; defaults to
+%                '' if omitted or empty:
+%                  ''      - default (forces for TM, kinematics for OG)
+%                  'kin'   - strictly from kinematics (OG trials)
+%                  'force' - strictly from forces (TM trials)
 %
-%   Toolbox Dependencies:
-%     None
+% Outputs:
+%   expData    - processed experimentData object
+%   rawExpData - unprocessed experimentData object
+%   adaptData  - adaptationData object with computed stride parameters
 %
-%   See also: GetInfoGUI, c3d2mat, getTrialMetaData, loadTrials,
-%     experimentData, experimentData.process, SyncDatalog, determineRefLeg
+% Toolbox Dependencies:
+%   None
+%
+% See also GETINFOGUI, C3D2MAT, GETTRIALMETADATA, LOADTRIALS,
+% EXPERIMENTDATA, SYNCDATALOG.
 
 arguments
     info       (1,1) struct
@@ -46,47 +57,66 @@ if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
     %use. If none provided will use OGBase first is available
     %Then TMBase, Then NIM base, if none is present will do trial1
     %
-     [indx,tf] = listdlg('PromptString',{'EMG data is present.',...
-         'Select a condition to normalize the EMG data (all data will be strecthed %',...
-         'where 0% = min and 100% = max of this condition'},...
-        'SelectionMode','single','ListString',info.conditionNames,...
-        'ListSize',[400,250],'InitialValue',1);
-     if tf == 0 %no selection was made
-         warning(['EMG data present but no normalization reference condition was provided to compute EMG norms',...
-             'Will use default (look inforder for OGBase, TMBase, NimBase, TRBase, TSBase and use the first one found.',...
-             'When still cannot find, will normalize use any conditions containing base matching type of the 1st condition'])
-         normalizationRefCond = '';
-     else
-         normalizationRefCond = info.conditionNames{indx};
-         fprintf('EMG data present, will normalize to reference condition using %s based on users choice.\n',normalizationRefCond)
-     end
+    [indx, tf] = listdlg('PromptString', {'EMG data is present.', ...
+        ['Select a condition to normalize the EMG data (all data ' ...
+        'will be strecthed %'], ...
+        'where 0% = min and 100% = max of this condition'}, ...
+        'SelectionMode', 'single', 'ListString', info.conditionNames, ...
+        'ListSize', [400,250], 'InitialValue', 1);
+    if tf == 0 %no selection was made
+        warning(['EMG data present but no normalization reference ' ...
+            'condition was provided to compute EMG norms', ...
+            'Will use default (look inforder for OGBase, TMBase, ' ...
+            'NimBase, TRBase, TSBase and use the first one found.', ...
+            'When still cannot find, will normalize use any ' ...
+            'conditions containing base matching type of the 1st ' ...
+            'condition'])
+        normalizationRefCond = '';
+    else
+        normalizationRefCond = info.conditionNames{indx};
+        fprintf(['EMG data present, will normalize to reference ' ...
+            'condition using %s based on users choice.\n'], ...
+            normalizationRefCond)
+    end
 
     %next ask the user to choose how they want to bias the data.
     opts.Interpreter = 'tex';
     % Include the desired Default answer
     opts.Default = 'Default';
-    answer = questdlg(['After normalization, we will also compute bias removed norms.',...
-        'Do you want to default bias removal (remove based on trial type, this is default behavior) ',...
-        'or do you want to force bias removal to use the same condition throughout?'],...
-         '||EMG|| bias removal condition',...
-                  'Default','Select my own',opts);
-    if strcmp(answer,'Default')
+    answer = questdlg(['After normalization, we will also compute ' ...
+        'bias removed norms.', ...
+        'Do you want to default bias removal (remove based on trial ' ...
+        'type, this is default behavior) ', ...
+        'or do you want to force bias removal to use the same ' ...
+        'condition throughout?'], ...
+        '||EMG|| bias removal condition', ...
+        'Default', 'Select my own', opts);
+    if strcmp(answer, 'Default')
         biasRemovalCond = '';
-        fprintf('Will compute unbiased EMG norm using default bias removal where trial type specific bias will be removed\n');
+        fprintf(['Will compute unbiased EMG norm using default bias ' ...
+            'removal where trial type specific bias will be removed\n']);
     else
-        
-        [indx,tf] = listdlg('PromptString',{'Force bias removal to use the same condition for all trials.',...
-                'Select a condition to unbias the EMG data'},...
-                'SelectionMode','single','ListString',info.conditionNames,...
-                'ListSize',[400,250],'InitialValue',1);
-         if tf == 0 %no selection was made
-             warning(['User wanted to choose their own bias removal conditions to remove bias when computing unbiased EMG norms, ',...
-                 'but no selection was made. Will revert to use default (remove condition type specific bias)'])
-             biasRemovalCond = '';
-         else
-             biasRemovalCond = info.conditionNames{indx};
-             fprintf('When computing EMG norm will unbias the data for all trials using %s based on users choice',biasRemovalCond)
-         end
+
+        [indx, tf] = listdlg('PromptString', ...
+            {['Force bias removal to use the same condition for all ' ...
+            'trials.'], ...
+            'Select a condition to unbias the EMG data'}, ...
+            'SelectionMode', 'single', ...
+            'ListString', info.conditionNames, ...
+            'ListSize', [400,250], 'InitialValue', 1);
+        if tf == 0 %no selection was made
+            warning(['User wanted to choose their own bias removal ' ...
+                'conditions to remove bias when computing unbiased ' ...
+                'EMG norms, ', ...
+                'but no selection was made. Will revert to use ' ...
+                'default (remove condition type specific bias)'])
+            biasRemovalCond = '';
+        else
+            biasRemovalCond = info.conditionNames{indx};
+            fprintf(['When computing EMG norm will unbias the data ' ...
+                'for all trials using %s based on users choice'], ...
+                biasRemovalCond)
+        end
     end
 end
 
@@ -164,13 +194,14 @@ rawExpData = experimentData(expMD, subData, rawTrialData);
 % variables is a temporary workaround to allow the code to run.
 close('all');
 clc();
-clearvars -except info eventClass rawExpData datlogExist normalizationRefCond biasRemovalCond;
+clearvars('-except', 'info', 'eventClass', 'rawExpData', ...
+    'datlogExist', 'normalizationRefCond', 'biasRemovalCond');
 
 % Synchronize data logs if datlog files exist for all trials and the
 % forces exist within those files.
 if datlogExist                          % if there are data log files, ...
     rawExpData = SyncDatalog(rawExpData, ...
-        [fullfile(info.save_folder, 'DatlogSyncRes') filesep]);
+        fullfile(info.save_folder, 'DatlogSyncRes'));
 end
 save(fullfile(info.save_folder, [info.ID 'RAW.mat']), ...
     'rawExpData', '-v7.3');
@@ -184,15 +215,19 @@ adaptData = expData.makeDataObj([]); %make one without saving it.
 if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
     try
         muscleLabels = [info.EMGList1, info.EMGList2];
-        muscleLabels = muscleLabels(~(cellfun(@isempty,muscleLabels) | startsWith(muscleLabels,'sync')));
-        muscleLabels = unique(cellfun(@(x) x(2:end),muscleLabels,'UniformOutput',false));
-        adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
-        expData = populateNewParamBackToExpData(expData,adaptData);
+        muscleLabels = muscleLabels(~(cellfun(@isempty, muscleLabels) ...
+            | startsWith(muscleLabels, 'sync')));
+        muscleLabels = unique(cellfun(@(x) x(2:end), muscleLabels, ...
+            'UniformOutput', false));
+        adaptData = appendEMGNormParameters(adaptData, muscleLabels, ...
+            normalizationRefCond, biasRemovalCond);
+        expData = populateNewParamBackToExpData(expData, adaptData);
     catch ME
         %if the adapt creation or the appending new data fails, save the
         %expData anyway to have some intermediate data to work with.
         % Save processed data object
-        warning('EMG data present but norm calculation failed. Saving the data without EMG norm.\n')
+        warning(['EMG data present but norm calculation failed. ' ...
+            'Saving the data without EMG norm.\n'])
         fprintf(2, '%s\n', getReport(ME, 'extended', 'hyperlinks', 'off'))
     end
 end
@@ -234,7 +269,7 @@ if strcmp(expDescription, 'SpinalAdapt')
 elseif contains(expDescription, 'SpinalAdaptation')
     if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
         [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
-            info.save_folder, info.ID, eventClass, info.ExpDescription,...
+            info.save_folder, info.ID, eventClass, info.ExpDescription, ...
             muscleLabels, normalizationRefCond, biasRemovalCond);
     else
         [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
@@ -282,8 +317,7 @@ adaptData = expData.makeDataObj(filePrefix);
 end
 
 function info = determineRefLeg(info)
-% determineRefLeg  Resolves info.refLeg and info.fastLeg from the
-%   available session information.
+%DETERMINEREFLEG Resolve info.refLeg and info.fastLeg from session info.
 %
 %   Determines the reference leg (slow-belt leg) using the first
 % available source of information in the following priority order:
@@ -292,16 +326,20 @@ function info = determineRefLeg(info)
 %   3) info.domleg, as a fallback (dominant leg assumed to be the
 %      fast-belt leg)
 %
-%   Inputs:
-%     info - Session info struct from GetInfoGUI. Must contain at least
-%            one of: info.fastLeg, info.affectedSide (with
-%            info.isStroke == 1), or info.domleg
+% Inputs:
+%   info - struct, session info from GetInfoGUI. Must contain at least
+%          one of: info.fastLeg, info.affectedSide (with
+%          info.isStroke == 1), or info.domleg
 %
-%   Outputs:
-%     info - Session info struct with info.refLeg ('L' or 'R') and, if not
-%            already present, info.fastLeg ('Left' or 'Right') populated
+% Outputs:
+%   info - struct, session info with info.refLeg ('L' or 'R') and, if
+%          not already present, info.fastLeg ('Left' or 'Right')
+%          populated
 %
-%   See also: loadSubject
+% Toolbox Dependencies:
+%   None
+%
+% See also LOADSUBJECT.
 
 if isfield(info, 'fastLeg')                 % if fast leg specified, ...
     if strcmpi(info.fastLeg, 'right')

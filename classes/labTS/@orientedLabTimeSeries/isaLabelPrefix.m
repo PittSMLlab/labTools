@@ -1,18 +1,20 @@
 function [boolFlag, labelIdx] = isaLabelPrefix(this, label)
-%isaLabelPrefix  Checks if prefix exists
+%ISALABELPREFIX Checks if prefix exists.
 %
-%   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if
-%   label(s) are valid prefixes
+%   [boolFlag, labelIdx] = isaLabelPrefix(this, label) checks if label(s)
+% are valid prefixes
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       label - string or cell array of label prefixes to check
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   label - string or cell array of label prefixes to check
 %
-%   Outputs:
-%       boolFlag - logical vector, true for matches, false if not
-%       labelIdx - vector containing indices of matched labels
+% Outputs:
+%   boolFlag - logical vector, true for matches, false if not
+%   labelIdx - vector containing indices of matched labels
 %
-%   See also: getLabelPrefix, isaLabel
+% Toolbox Dependencies: None
+%
+% See also GETLABELPREFIX, ISALABEL.
 
 if isa(label, 'char')
     auxLabel{1} = label;
@@ -24,14 +26,14 @@ else
         'containing strings.']);
 end
 
-N = length(auxLabel);
+N        = length(auxLabel);
 boolFlag = false(N, 1);
 labelIdx = zeros(N, 1);
-for j = 1:N
+for jj = 1:N
     % Alternative efficient formulation:
-    boolFlag(j) = any(strcmp(auxLabel{j}, this.getLabelPrefix));
-    if boolFlag(j)
-        labelIdx(j) = find(strcmp(auxLabel{j}, this.getLabelPrefix));
+    boolFlag(jj) = any(strcmp(auxLabel{jj}, this.getLabelPrefix));
+    if boolFlag(jj)
+        labelIdx(jj) = find(strcmp(auxLabel{jj}, this.getLabelPrefix));
     end
 end
 end

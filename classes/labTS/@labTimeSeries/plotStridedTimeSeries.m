@@ -1,23 +1,25 @@
 function [figHandle, plotHandles] = plotStridedTimeSeries( ...
     stridedTS, figHandle, plotHandles)
-%plotStridedTimeSeries  Plots strided timeseries
+%PLOTSTRIDEDTIMESERIES Plots strided timeseries.
 %
 %   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS) plots
-%   strided timeseries data
+% strided timeseries data
 %
-%   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS,
-%   figHandle, plotHandles) uses existing handles
+%   [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle,
+% plotHandles) uses existing handles
 %
-%   Inputs:
-%       stridedTS - cell array of strided timeseries
-%       figHandle - figure handle (optional)
-%       plotHandles - subplot handles (optional)
+% Inputs:
+%   stridedTS   - cell array of strided timeseries
+%   figHandle   - figure handle (optional)
+%   plotHandles - subplot handles (optional)
 %
-%   Outputs:
-%       figHandle - figure handle
-%       plotHandles - array of subplot handles
+% Outputs:
+%   figHandle   - figure handle
+%   plotHandles - array of subplot handles
 %
-%   See also: plot, stridedTSToAlignedTS, alignedTimeSeries/plot
+% Toolbox Dependencies: None
+%
+% See also PLOT, STRIDEDTSTOALIGNEDTS, ALIGNEDTIMESERIES/PLOT.
 
 if nargin < 2
     figHandle = [];
@@ -25,7 +27,8 @@ end
 if nargin < 3
     plotHandles = [];
 end
-N = 2^ceil(log2(1.5 / stridedTS{1}.sampPeriod));
+maxStrideDuration = 1.5; % s, TODO: source?
+N         = 2^ceil(log2(maxStrideDuration / stridedTS{1}.sampPeriod));
 structure = labTimeSeries.stridedTSToAlignedTS(stridedTS, N);
 % Using the alignedTimeSeries plot function
 [figHandle, plotHandles] = plot(structure, figHandle, plotHandles);

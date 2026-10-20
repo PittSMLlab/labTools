@@ -1,4 +1,4 @@
-%TESTPIPELINERECOMPUTE Template script for regression-testing recompute pipelines.
+%TESTPIPELINERECOMPUTE Template: regression-test recompute pipelines.
 %
 %   Loads a reference experimentData object, runs three recompute
 % pipeline variants, and compares each result against the reference
@@ -7,6 +7,8 @@
 %
 %   Requires compareAdaptationData (fun/misc/) and the labTools
 % directory on the MATLAB path.
+%
+% Toolbox Dependencies: None
 %
 % See also COMPAREADAPTATIONDATA, TESTING.md.
 

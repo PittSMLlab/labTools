@@ -1,17 +1,19 @@
 function newThis = resampleN(this, newN)
-%resampleN  Resamples to N samples, preserving processing info
+%RESAMPLEN Resamples to N samples, preserving processing info.
 %
-%   newThis = resampleN(this, newN) resamples the timeseries to newN
-%   samples while preserving processing information
+%   newThis = resampleN(this, newN) resamples the timeseries to newN samples
+% while preserving processing information
 %
-%   Inputs:
-%       this - processedEMGTimeSeries object
-%       newN - target number of samples
+% Inputs:
+%   this - processedEMGTimeSeries object
+%   newN - target number of samples
 %
-%   Outputs:
-%       newThis - resampled processedEMGTimeSeries
+% Outputs:
+%   newThis - resampled processedEMGTimeSeries
 %
-%   See also: labTimeSeries/resampleN, split
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/RESAMPLEN, SPLIT.
 
 auxThis = this.resampleN@labTimeSeries(newN);
 newThis = processedEMGTimeSeries(auxThis.Data, auxThis.Time(1), ...

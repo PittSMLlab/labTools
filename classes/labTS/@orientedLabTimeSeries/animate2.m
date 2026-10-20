@@ -1,31 +1,38 @@
 function mov = animate2(this, t0, t1, frameRate, writeFileFlag, ...
     filename, mode)
-%animate2  Creates animation with balloon model
+%ANIMATE2 Creates animation with balloon model.
 %
-%   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename,
-%   mode) renders movie of 3D marker positions
+%   mov = animate2(this, t0, t1, frameRate, writeFileFlag, filename, mode)
+% renders movie of 3D marker positions
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       t0 - start time (optional, default: beginning)
-%       t1 - end time (optional, default: end)
-%       frameRate - frames per second (optional, default: 25)
-%       writeFileFlag - if 1, writes to file (optional, default: 0)
-%       filename - output filename (optional, auto-generated)
-%       mode - visualization mode: 1 (lines) or 2 (balloon) (optional,
-%              default: 2)
+% Inputs:
+%   this          - orientedLabTimeSeries object
+%   t0            - start time (optional, default: beginning)
+%   t1            - end time (optional, default: end)
+%   frameRate     - frames per second (optional, default: 25)
+%   writeFileFlag - if 1, writes to file (optional, default: 0)
+%   filename      - output filename (optional, auto-generated)
+%   mode          - visualization mode: 1 (lines) or 2 (balloon) (optional,
+%                   default: 2)
 %
-%   Outputs:
-%       mov - video writer object if writing to file
+% Outputs:
+%   mov - video writer object if writing to file
 %
 %   Note: Only makes sense for markerData type objects
 %
-%   See also: animate, plot3
+% Toolbox Dependencies: None
+%
+% See also ANIMATE, PLOT3.
 
 % This function renders a movie of the 3-D position stored in the
 % orientedLabData object. It only makes sense for markerData type
 % objects.
 
+defaultFrameRate = 25; % frames/s used when frameRate is empty
+shoulderOffset   = 530; % TODO: source? (shoulder above hip)
+torsoHeight      = 500; % Fake torso height (data units)
+headBaseOffset   = 500; % Fake head base above hip (data units)
+headSpan         = [60 360]; % Fake head extent above head base
 if nargin < 2 || isempty(t0) || isempty(t1)
     t0 = this.Time(1);
     t1 = this.Time(end);
@@ -37,15 +44,15 @@ if nargin < 5 || isempty(writeFileFlag)
     writeFileFlag = 0;
 end
 if nargin < 4 || isempty(frameRate)
-    frameRate = 25;
+    frameRate = defaultFrameRate;
 end
 if nargin < 6 || isempty(filename)
     filename = ['anim_t=[' num2str(round(t0 * 10) / 10) ',' ...
         num2str(round(t1 * 10) / 10) '].avi'];
 end
-f = round(this.sampFreq / frameRate);
+f         = round(this.sampFreq / frameRate);
 frameRate = this.sampFreq / f;
-this = this.split(t0, t1); % Keeping the requested data only
+this      = this.split(t0, t1); % Keeping the requested data only
 
 if writeFileFlag == 1
 
@@ -65,9 +72,9 @@ ll = this.getOrientedData(unique(cellfun(@(x) x(1:end - 1), ...
 ll = this.getOrientedData(strcat('L', list));
 rr = this.getOrientedData(unique(cellfun(@(x) x(1:end - 1), ...
     this.getLabelsThatMatch('^R'), 'UniformOutput', false)));
-rr = this.getOrientedData(strcat('R', list));
-dd = this.getOrientedData;
-fh = figure;
+rr     = this.getOrientedData(strcat('R', list));
+dd     = this.getOrientedData;
+fh     = figure;
 h_axes = gca;
 % drawnow limitrate
 % u = uicontrol('Style', 'slider', 'Position', [10 50 20 340], 'Min',
@@ -111,26 +118,26 @@ switch mode
             for side = 1:2 % For each side
                 switch side
                     case 1
-                        s = rr; % Right side
+                        s         = rr; % Right side
                         colorLegs = [0 160 198] / 255;
                     case 2
-                        s = ll; % Left side
+                        s         = ll; % Left side
                         colorLegs = [255 153 0] / 255;
                 end
                 for seg = 1:3
                     switch seg
                         case 1
-                            ind1 = 1; % Toe
-                            ind2 = 3; % Ank
-                            radius = [1 .5 .5];
+                            ind1   = 1; % Toe
+                            ind2   = 3; % Ank
+                            radius = [1 0.5 0.5];
                         case 2
-                            ind1 = 3; % Ank
-                            ind2 = 5; % Knee
-                            radius = [1 .25 .25];
+                            ind1   = 3; % Ank
+                            ind2   = 5; % Knee
+                            radius = [1 0.25 0.25];
                         case 3
-                            ind1 = 5; % Knee
-                            ind2 = 7; % hip
-                            radius = [1 .35 .35];
+                            ind1   = 5; % Knee
+                            ind2   = 7; % hip
+                            radius = [1 0.35 0.35];
                     end
                     X = s(k, [ind1 ind2], 1);
                     Y = s(k, [ind1 ind2], 2);
@@ -147,7 +154,7 @@ switch mode
                 % draw shoulder joints: using hip data by default
                 X = s(k, 7, 1);
                 Y = s(k, 7, 2);
-                Z = s(k, 7, 3) + 530;
+                Z = s(k, 7, 3) + shoulderOffset;
                 orientedLabTimeSeries.drawball(h_axes, X, Y, Z, 50, ...
                     color);
             end
@@ -156,35 +163,36 @@ switch mode
             Y = [rr(k, 7, 2) ll(k, 7, 2)];
             Z = [rr(k, 7, 3) ll(k, 7, 3)];
             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, ...
-                [1 .4 .4], color);
+                [1 0.4 0.4], color);
             % Draw shoulder
             X = [rr(k, 7, 1) ll(k, 7, 1)];
             Y = [rr(k, 7, 2) ll(k, 7, 2)];
-            Z = [rr(k, 7, 3) ll(k, 7, 3)] + 530;
+            Z = [rr(k, 7, 3) ll(k, 7, 3)] + shoulderOffset;
             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, ...
-                [1 .35 .35], color);
+                [1 0.35 0.35], color);
             % Draw torso
-            X = .5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
-            Y = .5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
+            X = 0.5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
+            Y = 0.5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
             % Fake torso height
-            Z = .5 * (rr(k, 7, 3) + ll(k, 7, 3)) + [0 500];
+            Z = 0.5 * (rr(k, 7, 3) + ll(k, 7, 3)) + [0 torsoHeight];
             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, ...
-                [1 .4 .4], color);
+                [1 0.4 0.4], color);
             % Draw head
-            X = .5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
-            Y = .5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
+            X = 0.5 * (rr(k, 7, 1) + ll(k, 7, 1)) + [0 0];
+            Y = 0.5 * (rr(k, 7, 2) + ll(k, 7, 2)) + [0 0];
             % Fake head height
-            Z = .5 * (rr(k, 7, 3) + ll(k, 7, 3)) + 500 + [60 360];
+            Z = 0.5 * (rr(k, 7, 3) + ll(k, 7, 3)) + headBaseOffset ...
+                + headSpan;
             orientedLabTimeSeries.drawsegment(h_axes, X, Y, Z, ...
-                [1 .75 .75], color);
+                [1 0.75 0.75], color);
 
             % Save frame
             camlight headlight;
             set(findobj(gca, 'type', 'surface'), ...
                 'FaceLighting', 'gouraud', ...
-                'AmbientStrength', .3, ...
-                'DiffuseStrength', .8, ...
-                'SpecularStrength', .8, ...
+                'AmbientStrength', 0.3, ...
+                'DiffuseStrength', 0.8, ...
+                'SpecularStrength', 0.8, ...
                 'SpecularExponent', 25, ...
                 'BackFaceLighting', 'reverselit');
             currFrame = getframe;

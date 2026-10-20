@@ -1,21 +1,22 @@
 classdef parameterSeries < labTimeSeries
-    %parameterSeries  Extends labTimeSeries to hold adaptation parameters
+    %PARAMETERSERIES Extends labTimeSeries to hold adaptation parameters.
     %
     %   parameterSeries stores stride-by-stride adaptation parameters with
-    %   associated metadata including trial information, timing, and
-    %   parameter descriptions. It provides specialized methods for
-    %   parameter manipulation, normalization, and analysis.
+    % associated metadata including trial information, timing, and parameter
+    % descriptions. It provides specialized methods for parameter
+    % manipulation, normalization, and analysis.
     %
-    %parameterSeries properties:
-    %   hiddenTime - actual time values for each stride
-    %   trialTypes - cell array of trial type identifiers
-    %   bad - logical vector indicating bad strides (dependent)
-    %   stridesTrial - vector of trial numbers for each stride (dependent)
+    % parameterSeries properties:
+    %   hiddenTime      - actual time values for each stride
+    %   trialTypes      - cell array of trial type identifiers
+    %   bad             - logical vector indicating bad strides (dependent)
+    %   stridesTrial    - vector of trial numbers for each stride
+    %                     (dependent)
     %   stridesInitTime - vector of initial times for each stride
     %                     (dependent)
-    %   description - cell array of parameter descriptions (dependent)
+    %   description     - cell array of parameter descriptions (dependent)
     %
-    %parameterSeries methods:
+    % parameterSeries methods:
     %   parameterSeries - constructor for parameter series
     %   setTrialTypes - sets trial type information
     %   isaParameter - checks if parameter exists (alias for isaLabel)
@@ -40,7 +41,9 @@ classdef parameterSeries < labTimeSeries
     %   plotAlt - plots parameters as scatter
     %   anova - performs one-way ANOVA on parameters
     %
-    %See also: labTimeSeries, adaptationData
+    % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+    %
+    % See also LABTIMESERIES, ADAPTATIONDATA.
 
     %% Properties
     properties
@@ -58,37 +61,39 @@ classdef parameterSeries < labTimeSeries
 
     properties (Hidden)
         description_ = {};
-        trialTypes_ = {};
-        fixedParams = 5;
+        trialTypes_  = {};
+        fixedParams  = 5;
     end
 
     %% Constructor
     methods
         function this = parameterSeries( ...
-                data, labels, times, description, types)
-            %parameterSeries  Constructor for parameterSeries class
+            data, labels, times, description, types)
+            %PARAMETERSERIES Constructor for parameterSeries class.
             %
             %   this = parameterSeries(data, labels, times, description)
-            %   creates a parameter series with specified data, labels,
-            %   times, and descriptions
+            % creates a parameter series with specified data, labels, times,
+            % and descriptions
             %
             %   this = parameterSeries(data, labels, times, description,
-            %   types) includes trial type information
+            % types) includes trial type information
             %
-            %   Inputs:
-            %       data - matrix of parameter values (strides x
-            %              parameters)
-            %       labels - cell array of parameter name strings
-            %       times - vector of stride initial times
-            %       description - cell array of parameter descriptions
-            %                     (same length as labels)
-            %       types - cell array of trial type identifiers
-            %               (optional)
+            % Inputs:
+            %   data        - matrix of parameter values (strides x
+            %                 parameters)
+            %   labels      - cell array of parameter name strings
+            %   times       - vector of stride initial times
+            %   description - cell array of parameter descriptions (same
+            %                 length as labels)
+            %   types       - cell array of trial type identifiers
+            %                 (optional)
             %
-            %   Outputs:
-            %       this - parameterSeries object
+            % Outputs:
+            %   this - parameterSeries object
             %
-            %   See also: labTimeSeries, adaptationData
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, ADAPTATIONDATA.
 
             this@labTimeSeries(data, 1, 1, labels);
             this.hiddenTime = times;
@@ -105,17 +110,19 @@ classdef parameterSeries < labTimeSeries
         end
 
         function this = setTrialTypes(this, types)
-            %setTrialTypes  Sets trial type information
+            %SETTRIALTYPES Sets trial type information.
             %
-            %   this = setTrialTypes(this, types) sets the trial types
-            %   for the parameter series
+            %   this = setTrialTypes(this, types) sets the trial types for
+            % the parameter series
             %
-            %   Inputs:
-            %       this - parameterSeries object
-            %       types - cell array of trial type identifiers
+            % Inputs:
+            %   this  - parameterSeries object
+            %   types - cell array of trial type identifiers
             %
-            %   Outputs:
-            %       this - parameterSeries with updated trial types
+            % Outputs:
+            %   this - parameterSeries with updated trial types
+            %
+            % Toolbox Dependencies: None
 
             this.trialTypes_ = types;
         end
@@ -127,14 +134,19 @@ classdef parameterSeries < labTimeSeries
         % parameters (which is something that already happens in practice)
         % and doing direct indexing to data
         function vals = get.bad(this)
-            %get.bad  Returns bad stride flags
+            %GET.BAD Returns bad stride flags.
             %
-            %   Outputs:
-            %       vals - logical vector indicating bad strides
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Outputs:
+            %   vals - logical vector indicating bad strides
             %
             %   Note: This could be made more efficient by fixing the
             %         indexes for these parameters and doing direct
             %         indexing to data
+            %
+            % Toolbox Dependencies: None
 
             if this.isaParameter('bad')
                 vals = this.getDataAsVector('bad');
@@ -148,28 +160,43 @@ classdef parameterSeries < labTimeSeries
         end
 
         function vals = get.stridesTrial(this)
-            %get.stridesTrial  Returns trial number for each stride
+            %GET.STRIDESTRIAL Returns trial number for each stride.
             %
-            %   Outputs:
-            %       vals - vector of trial numbers
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Outputs:
+            %   vals - vector of trial numbers
+            %
+            % Toolbox Dependencies: None
 
             vals = this.getDataAsVector('trial');
         end
 
         function vals = get.stridesInitTime(this)
-            %get.stridesInitTime  Returns initial time for each stride
+            %GET.STRIDESINITTIME Returns initial time for each stride.
             %
-            %   Outputs:
-            %       vals - vector of stride initial times
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Outputs:
+            %   vals - vector of stride initial times
+            %
+            % Toolbox Dependencies: None
 
             vals = this.getDataAsVector('initTime');
         end
 
         function vals = get.description(this)
-            %get.description  Returns parameter descriptions
+            %GET.DESCRIPTION Returns parameter descriptions.
             %
-            %   Outputs:
-            %       vals - cell array of description strings
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Outputs:
+            %   vals - cell array of description strings
+            %
+            % Toolbox Dependencies: None
 
             % if isfield(this, 'description_')
             vals = this.description_;
@@ -179,10 +206,15 @@ classdef parameterSeries < labTimeSeries
         end
 
         function vals = get.trialTypes(this)
-            %get.trialTypes  Returns trial types
+            %GET.TRIALTYPES Returns trial types.
             %
-            %   Outputs:
-            %       vals - cell array of trial type identifiers
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Outputs:
+            %   vals - cell array of trial type identifiers
+            %
+            % Toolbox Dependencies: None
 
             % if isfield(this, 'trialTypes_')
             vals = this.trialTypes_;
@@ -196,22 +228,24 @@ classdef parameterSeries < labTimeSeries
     %% Data Access Methods
     methods
         function [bool, idx] = isaParameter(this, labels)
-            %isaParameter  Checks if parameter exists
+            %ISAPARAMETER Checks if parameter exists.
             %
             %   [bool, idx] = isaParameter(this, labels) is an alias for
-            %   isaLabel for backward compatibility
+            % isaLabel for backward compatibility
             %
-            %   Inputs:
-            %       this - parameterSeries object
-            %       labels - string or cell array of parameter name(s)
+            % Inputs:
+            %   this   - parameterSeries object
+            %   labels - string or cell array of parameter name(s)
             %
-            %   Outputs:
-            %       bool - logical vector indicating which parameters exist
-            %       idx - vector of parameter indices
+            % Outputs:
+            %   bool - logical vector indicating which parameters exist
+            %   idx  - vector of parameter indices
             %
             %   Note: Another name for isaLabel, backwards compatibility
             %
-            %   See also: isaLabel
+            % Toolbox Dependencies: None
+            %
+            % See also ISALABEL.
 
             [bool, idx] = this.isaLabel(labels);
         end
@@ -254,12 +288,14 @@ classdef parameterSeries < labTimeSeries
     methods
         this = normalizeToBaseline(this, labels, rangeValues)
 
-        newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)
+        newThis = linearStretch(this, labels, rangeValues, ...
+            descriptionSuffix)
     end
 
     % function newThis=EMGnormAllData(this,labels,rangeValues)
     %     %This get the stride by stide norm
-    %     %It creates NEW parameters with the same name, and the 'Norm' prefix.
+    %     %It creates NEW parameters with the same name, and the 'Norm'
+    %     prefix.
     %     %This will generate collisions if run multiple times for the
     %     %same parameters
     %     %See also: adaptationData.normalizeToBaselineEpoch
@@ -270,7 +306,8 @@ classdef parameterSeries < labTimeSeries
     %
     %     % More efficient:
     %     N=length(labels);
-    %     newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
+    %     newDesc=repmat({['Normalized to range=[' ...
+    %    num2str(rangeValues(1))  ']']},N,1);
     %     newL=cell(N,1);
     %     nD=zeros(size(this.Data,1),N);
     %
@@ -278,7 +315,8 @@ classdef parameterSeries < labTimeSeries
     %     %     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
     %     %     funHandle=@(x) vecnorm(x'-rangeValues);
     %     %     newL=strcat('NormEMG',labels);
-    %     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
+    %     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle, ...
+    %    labels(1));
     %     % end
     %     newThis=appendData(this,nD,newL,newDesc);
     % end
@@ -286,18 +324,20 @@ classdef parameterSeries < labTimeSeries
     %% Overridden Methods
     methods
         function F = fourierTransform(this)
-            %fourierTransform  Computes Fourier transform
+            %FOURIERTRANSFORM Computes Fourier transform.
             %
             %   F = fourierTransform(this) computes Fourier transform with
-            %   appropriate units for stride data
+            % appropriate units for stride data
             %
-            %   Inputs:
-            %       this - parameterSeries object
+            % Inputs:
+            %   this - parameterSeries object
             %
-            %   Outputs:
-            %       F - labTimeSeries with Fourier transform
+            % Outputs:
+            %   F - labTimeSeries with Fourier transform
             %
-            %   See also: labTimeSeries/fourierTransform
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES/FOURIERTRANSFORM.
 
             % error('parameterSeries:fourierTransform',
             %     'You cannot do that!')
@@ -306,10 +346,15 @@ classdef parameterSeries < labTimeSeries
         end
 
         function newThis = resample(this)
-            %resample  Disabled for parameterSeries
+            %RESAMPLE Disabled for parameterSeries.
             %
             %   Note: Resampling is disabled for parameterSeries as time
             %         is not meaningful (strides are discrete events)
+            %
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Toolbox Dependencies: None
 
             % the newTS is respected as much as possible, but forcing it
             % to be a divisor of the total time range
@@ -318,10 +363,15 @@ classdef parameterSeries < labTimeSeries
         end
 
         function newThis = resampleN(this)
-            %resampleN  Disabled for parameterSeries
+            %RESAMPLEN Disabled for parameterSeries.
             %
             %   Note: Resampling is disabled for parameterSeries as time
             %         is not meaningful (strides are discrete events)
+            %
+            % Inputs:
+            %   this - parameterSeries object
+            %
+            % Toolbox Dependencies: None
 
             % Same as resample function, but directly fixing the number of
             % samples instead of TS

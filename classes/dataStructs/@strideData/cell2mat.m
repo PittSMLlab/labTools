@@ -1,21 +1,23 @@
 function strideMat = cell2mat(strides, field, N)
-%cell2mat  Converts cell array of strideData to matrix
+%CELL2MAT Converts cell array of strideData to matrix.
 %
-%   strideMat = cell2mat(strides, field, N) converts a cell
-%   array of strideData objects to a 3D matrix by extracting and
-%   resampling the specified field
+%   strideMat = cell2mat(strides, field, N) converts a cell array of
+% strideData objects to a 3D matrix by extracting and resampling the
+% specified field
 %
-%   Inputs:
-%       strides - cell array of strideData objects
-%       field - name of property to extract (e.g.,
-%               'markerData', 'procEMGData')
-%       N - number of samples for resampling
+% Inputs:
+%   strides - cell array of strideData objects
+%   field   - name of property to extract (e.g., 'markerData',
+%             'procEMGData')
+%   N       - number of samples for resampling
 %
-%   Outputs:
-%       strideMat - 3D matrix (samples x channels x strides)
-%                   containing resampled data
+% Outputs:
+%   strideMat - 3D matrix (samples x channels x strides) containing
+%               resampled data
 %
-%   See also: plotCell, plotCellAvg
+% Toolbox Dependencies: None
+%
+% See also PLOTCELL, PLOTCELLAVG.
 
 strideMat = [];
 if isa(strides, 'cell') && all(cellisa(strides, 'strideData'))
@@ -24,15 +26,15 @@ if isa(strides, 'cell') && all(cellisa(strides, 'strideData'))
         eval(['testField = strides{1}.' field ';']);
         if isa(testField, 'labTimeSeries')
             M = length(strides);
-            for i = 1:M
-                eval(['testField = strides{i}.' field ';']);
-                strideMat(:, :, i) = testField.resampleN(N)...
+            for ii = 1:M
+                eval(['testField = strides{ii}.' field ';']);
+                strideMat(:, :, ii) = testField.resampleN(N)...
                     .getDataAsVector(testField.getLabels);
             end
         elseif ~isa(testField, 'double')
-            for i = 1:length(strides)
-                eval(['testField = strides{i}.' field ';']);
-                strideMat(:, :, i) = testField;
+            for ii = 1:length(strides)
+                eval(['testField = strides{ii}.' field ';']);
+                strideMat(:, :, ii) = testField;
             end
         end
 

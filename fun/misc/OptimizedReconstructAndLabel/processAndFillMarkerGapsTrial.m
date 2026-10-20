@@ -5,6 +5,9 @@ function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)
 % via spline interpolation, then applies pattern-based filling for each
 % reference/target group. Returns marker trajectories at each stage.
 %
+% Side effects: needs a running Vicon Nexus; edits the open trial and
+%   overwrites the saved trial (a failed save only warns).
+%
 % Inputs:
 %   pathTrial - Full path to the trial folder
 %   vicon     - (optional) Vicon Nexus SDK object; connects if not
@@ -145,7 +148,8 @@ for mrkr = 1:numel(mrkrsRelevant)
 end
 % for mrkr = mrkrsRelevant
 %     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});
-%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
+%     mrkrTrajs.(mrkrsRelevant{mrkr}) = ...
+%    [trajX; trajY; trajZ; double(exists)];
 % end
 
 end

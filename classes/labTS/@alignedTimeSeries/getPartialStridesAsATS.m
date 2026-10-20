@@ -1,23 +1,25 @@
 function newThis = getPartialStridesAsATS(this, inds)
-%getPartialStridesAsATS  Extracts subset of strides
+%GETPARTIALSTRIDESASATS Extracts subset of strides.
 %
 %   newThis = getPartialStridesAsATS(this, inds) creates new
-%   alignedTimeSeries with specified stride indices
+% alignedTimeSeries with specified stride indices
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       inds - vector of stride indices to extract
+% Inputs:
+%   this - alignedTimeSeries object
+%   inds - vector of stride indices to extract
 %
-%   Outputs:
-%       newThis - alignedTimeSeries with extracted strides
+% Outputs:
+%   newThis - alignedTimeSeries with extracted strides
 %
-%   See also: getPartialDataAsATS, removeStridesWithNaNs
+% Toolbox Dependencies: None
+%
+% See also GETPARTIALDATAASATS, REMOVESTRIDESWITHNANS.
 
 if ~isempty(this.eventTimes)
     % This can fail if eventTimes was not assigned (not mandatory)
     % newTimes = this.eventTimes(:, [inds inds(end) + 1]);
-    % Changed by DMMO 10/4/2019 the dimension were not consistent
-    % with previous code
+    % NOTE: inds may be a row or a column vector, so the appended index
+    % must follow the orientation of inds
     if size(inds, 1) == 1
         newTimes = this.eventTimes(:, [inds inds(end) + 1]);
     else

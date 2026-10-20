@@ -3,6 +3,8 @@
 %   Demonstrates derivative, integration, and label-based data access
 % for labTimeSeries objects. Assumes a labTimeSeries variable is
 % available in the workspace — replace 'allMarkers' with your own.
+%
+% Toolbox Dependencies: None
 
 %% Load labTimeSeries object
 % NOTE: Replace allMarkers with your own labTimeSeries variable.

@@ -1,16 +1,27 @@
 function exportTrialToC3D(pathTrial,vicon)
-%EXPORTTRIALTOC3D Saves a trial as a C3D file with no additional processing
-%   This function checks if the specified trial is already open, only
-% opening it if necessary, and saves it as a C3D file with no processing
-% applied.
+%EXPORTTRIALTOC3D Save a trial as a C3D file with no processing.
 %
-% input(s):
-%   pathTrial: full path to the trial file
-%   vicon: (optional) Vicon Nexus SDK object; connects if not provided
+%   Opens the trial in Vicon Nexus if it is not already open and runs the
+% SaveC3D pipeline on it.
+%
+% Side effects: needs a running Vicon Nexus (a connection is opened when
+%   no vicon object is passed); opens the trial and writes its C3D file.
+%   A failed export only warns.
+%
+% Inputs:
+%   pathTrial - full path to the trial file
+%   vicon     - (optional) Vicon Nexus SDK object
+%
+% Outputs:
+%   none
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.EXPORTSESSIONTOC3D, DATAMOTION.OPENTRIALIFNEEDED.
 
 narginchk(1,2);                 % verify correct number of input arguments
 
-% initialize the Vicon Nexus object if not provided
+%% Connect to Nexus and open the trial
 if nargin < 2 || isempty(vicon)
     fprintf(['No Vicon SDK object provided. Connecting to Vicon ' ...
         'Nexus...\n']);
@@ -22,7 +33,7 @@ if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
     return;     % exit if the trial could not be opened
 end
 
-% export to C3D file
+%% Export
 fprintf('Exporting trial to C3D file\n');
 try
     vicon.RunPipeline('SaveC3D','',200);

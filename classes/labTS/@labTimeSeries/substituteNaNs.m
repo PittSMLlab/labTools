@@ -1,24 +1,23 @@
 function this = substituteNaNs(this, method)
-%substituteNaNs  Replaces NaN by interpolation
+%SUBSTITUTENANS Replaces NaN by interpolation.
 %
-%   this = substituteNaNs(this) fills NaN values using linear
-%   interpolation
+%   this = substituteNaNs(this) fills NaN values using linear interpolation
 %
-%   this = substituteNaNs(this, method) uses specified interpolation
-%   method
+%   this = substituteNaNs(this, method) uses specified interpolation method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       method - interpolation method for interp1 (optional, default:
-%                'linear')
+% Inputs:
+%   this   - labTimeSeries object
+%   method - interpolation method for interp1 (optional, default: 'linear')
 %
-%   Outputs:
-%       this - labTimeSeries with NaN filled
+% Outputs:
+%   this - labTimeSeries with NaN filled
 %
 %   Note: Labels with all NaN set to 0. Quality field updated to mark
 %         interpolated samples.
 %
-%   See also: fillts, interp1
+% Toolbox Dependencies: None
+%
+% See also FILLTS, INTERP1.
 
 if nargin < 2 || isempty(method)
     method = 'linear';
@@ -36,11 +35,11 @@ if any(badColumns)
 end
 % this.Quality = zeros(size(this.Data), 'int8');
 aux = isnan(this.Data);
-for i = 1:size(this.Data, 2) % Going through labels
-    auxIdx = aux(:, i);
+for ii = 1:size(this.Data, 2) % Going through labels
+    auxIdx = aux(:, ii);
     % Extrapolation values are filled with 0
-    this.Data(auxIdx, i) = interp1(this.Time(~auxIdx), ...
-        this.Data(~auxIdx, i), this.Time(auxIdx), method, 0);
+    this.Data(auxIdx, ii) = interp1(this.Time(~auxIdx), ...
+        this.Data(~auxIdx, ii), this.Time(auxIdx), method, 0);
 end
 % Saving quality data (to mark which samples were interpolated): Matlab's
 % timeseries stores this as int8. I would have preferred a sparse array.

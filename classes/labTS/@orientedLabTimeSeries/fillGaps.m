@@ -1,21 +1,23 @@
 function newThis = fillGaps(this, model)
-%fillGaps  Fills missing marker data
+%FILLGAPS Fills missing marker data.
 %
 %   newThis = fillGaps(this) fills gaps using self-learned model
 %
 %   newThis = fillGaps(this, model) uses specified model
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       model - naiveDistances model (optional, learned from data)
+% Inputs:
+%   this  - orientedLabTimeSeries object
+%   model - naiveDistances model (optional, learned from data)
 %
-%   Outputs:
-%       newThis - orientedLabTimeSeries with filled gaps
+% Outputs:
+%   newThis - orientedLabTimeSeries with filled gaps
 %
 %   Note: Meant to be used with markerData only. Uses Bayesian
 %         reconstruction.
 %
-%   See also: buildNaiveDistancesModel, getVirtualOTS
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also BUILDNAIVEDISTANCESMODEL, GETVIRTUALOTS.
 
 if nargin < 2 || isempty(model)
     % Try to learn from the data itself!
@@ -31,17 +33,20 @@ end
 % bad = (this.Quality(:, 1:3:end) ~= 0); % Working around anything
 % where Quality ~= 0
 
-data = this.getOrientedData(model.markerLabels);
-bad = isnan(data(:, :));
-data = permute(data, [2, 3, 1]);
-idx = any(bad, 2);
-idx = find(idx, 50, 'last'); % Fixing 50 frames only
-data = data(:, :, idx); % Data to be fixed
-D = reshape(nanmedian(this.Data, 1), size(data, 1), size(data, 2));
-posSTD = 1.3 * ones(size(data, 1), size(data, 3)); % For good measurements
-bad2 = bad(idx, 1:3:end);
+data   = this.getOrientedData(model.markerLabels);
+bad    = isnan(data(:, :));
+data   = permute(data, [2, 3, 1]);
+idx    = any(bad, 2);
+idx    = find(idx, 50, 'last'); % Fixing 50 frames only
+data   = data(:, :, idx); % Data to be fixed
+D      = reshape(median(this.Data, 1, 'omitnan'), size(data, 1), ...
+    size(data, 2));
+goodMeasStd = 1.3; % TODO: source? (position STD, good measurements)
+badMeasStd  = 1e3; % Position STD for bad measurements: ~no weight
+posSTD = goodMeasStd * ones(size(data, 1), size(data, 3));
+bad2   = bad(idx, 1:3:end);
 data(isnan(data)) = 0; % NaNs need to be removed
-posSTD(bad2') = 1e3; % For bad ones
+posSTD(bad2') = badMeasStd; % For bad ones
 mleData = model.reconstruct(data, posSTD);
 
 % PART 3: merge the two estimations through mle or something

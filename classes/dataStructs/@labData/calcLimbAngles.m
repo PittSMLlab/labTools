@@ -1,5 +1,5 @@
 function angleData = calcLimbAngles(this)
-% calcLimbAngles  Calculates limb and joint angles from marker data.
+%CALCLIMBANGLES Calculate limb and joint angles from marker data.
 %
 %   Computes sagittal-plane limb, thigh, shank, foot, hip, knee, and
 % ankle angles and their angular velocities for both legs from the 2D
@@ -11,21 +11,17 @@ function angleData = calcLimbAngles(this)
 %   - Knee angle:  between the thigh and shank segments
 %   - Ankle angle: between the shank and foot segments
 %
-%   Inputs:
-%     this - labData object containing markerData with hip, ankle,
-%            knee, toe, and heel marker trajectories
+% Inputs:
+%   this - labData object containing markerData with hip, ankle, knee,
+%          toe, and heel marker trajectories
 %
-%   Outputs:
-%     angleData - labTimeSeries with 20 channels of angle and angular
-%                 velocity time series for both legs (degrees, deg/s)
+% Outputs:
+%   angleData - labTimeSeries with 20 channels of angle and angular
+%               velocity time series for both legs (degrees, deg/s)
 %
-%   Toolbox Dependencies:
-%     None
+% Toolbox Dependencies: None
 %
-%   See also: labTimeSeries, orientationInfo, calcangle, labData/process
-%
-%   Created:  2014-05-14  HMH
-%   Modified: Adapted by Digna de Kam to compute individual joint angles
+% See also LABTIMESERIES, ORIENTATIONINFO, CALCANGLE, LABDATA/PROCESS.
 
 arguments
     this (1,1) labData
@@ -92,7 +88,7 @@ elseif this.markerData.isaLabel('RKNEEx') && ...
 else
     warning(['There are missing knee markers in ' file ...
         '. Unable to calculate limb angles.']);
-    % % Marcela temporary fix
+    % % Disabled temporary fix: NaN-fill the knee positions
     % temp = this.markerData.getDataAsVector( ...
     %     {['RHIP' orientation.foreaftAxis], ...
     %     ['RHIP' orientation.updownAxis]});
@@ -165,10 +161,10 @@ LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ ...
 
 % ---- Joint angles and angular velocities ----------------------------
 % Hip: thigh angle from vertical, assuming trunk is vertical
-RhipAngle   = RThighAngle;
-LhipAngle   = LThighAngle;
-RhipAngVel  = angVel(RhipAngle);
-LhipAngVel  = angVel(LhipAngle);
+RhipAngle  = RThighAngle;
+LhipAngle  = LThighAngle;
+RhipAngVel = angVel(RhipAngle);
+LhipAngVel = angVel(LhipAngle);
 
 % Knee: angle between the thigh and shank segments.
 % Derivation: 180 - ((90 - thighAngle) + (90 + shankAngle))
@@ -183,10 +179,10 @@ LkneeAngVel = angVel(LkneeAngle);
 % Derivation: 90 - (shankAngle + 90 + footAngle)
 %           = 90 - shankAngle - 90 - footAngle
 %           = -(shankAngle + footAngle)
-RankAngle   = -(RShankAngle + RfootAngle);
-LankAngle   = -(LShankAngle + LfootAngle);
-RankAngVel  = angVel(RankAngle);
-LankAngVel  = angVel(LankAngle);
+RankAngle  = -(RShankAngle + RfootAngle);
+LankAngle  = -(LShankAngle + LfootAngle);
+RankAngVel = angVel(RankAngle);
+LankAngVel = angVel(LankAngle);
 
 % keyboard
 % Commented-out alternative joint angle calculations using calcangle
@@ -236,21 +232,25 @@ end
 % ============================================================
 
 function pos2D = getMarker2D(markerData, markerName, orientation)
-% getMarker2D  Retrieves a single marker's signed 2D position.
+%GETMARKER2D Retrieve a single marker's signed 2D position.
 %
 %   Extracts the fore-aft and up-down position components for the
 % named marker and applies the orientation sign conventions, returning
 % a two-column matrix ready for angle computation.
 %
-%   Inputs:
-%     markerData  - orientedLabTimeSeries containing marker trajectories
-%     markerName  - String marker label prefix, e.g. 'RHIP', 'LANK'
-%     orientation - orientationInfo object specifying axis names and signs
+% Inputs:
+%   markerData  - orientedLabTimeSeries containing marker trajectories
+%   markerName  - String marker label prefix, e.g. 'RHIP', 'LANK'
+%   orientation - orientationInfo object specifying axis names and signs
 %
-%   Outputs:
-%     pos2D - Nx2 matrix of signed [foreaft, updown] positions
+% Outputs:
+%   pos2D - Nx2 matrix of signed [foreaft, updown] positions
+%
+% Toolbox Dependencies: None
+%
+% See also LABDATA/CALCLIMBANGLES.
 
-raw   = markerData.getDataAsVector( ...
+raw = markerData.getDataAsVector( ...
     {[markerName orientation.foreaftAxis], ...
     [markerName orientation.updownAxis]});
 pos2D = [orientation.foreaftSign * raw(:, 1), ...

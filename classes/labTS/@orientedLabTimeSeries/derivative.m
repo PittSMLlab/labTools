@@ -1,17 +1,19 @@
 function newThis = derivative(this, diffOrder)
-%derivative  Numerical derivative (override)
+%DERIVATIVE Numerical derivative (override).
 %
-%   newThis = derivative(this, diffOrder) computes derivative and
-%   preserves orientedLabTimeSeries type
+%   newThis = derivative(this, diffOrder) computes derivative and preserves
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       diffOrder - order of finite difference filter (optional)
+% Inputs:
+%   this      - orientedLabTimeSeries object
+%   diffOrder - order of finite difference filter (optional)
 %
-%   Outputs:
-%       newThis - differentiated orientedLabTimeSeries
+% Outputs:
+%   newThis - differentiated orientedLabTimeSeries
 %
-%   See also: labTimeSeries/derivative, derivate
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/DERIVATIVE, DERIVATE.
 
 if nargin < 2
     diffOrder = [];

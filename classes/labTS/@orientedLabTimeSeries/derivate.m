@@ -1,16 +1,18 @@
 function newThis = derivate(this)
-%derivate  Differentiates (override)
+%DERIVATE Differentiates (override).
 %
 %   newThis = derivate(this) takes derivative and preserves
-%   orientedLabTimeSeries type
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
+% Inputs:
+%   this - orientedLabTimeSeries object
 %
-%   Outputs:
-%       newThis - differentiated orientedLabTimeSeries
+% Outputs:
+%   newThis - differentiated orientedLabTimeSeries
 %
-%   See also: labTimeSeries/derivate, derivative
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/DERIVATE, DERIVATIVE.
 
 auxThis = this.derivate@labTimeSeries;
 newThis = orientedLabTimeSeries(auxThis.Data, auxThis.Time(1), ...

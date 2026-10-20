@@ -1,5 +1,5 @@
 function report = compareAdaptationData(refInput, newInput, options)
-%COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.
+%COMPAREADAPTATIONDATA Compare two adaptationData objects or files.
 %
 %   Loads two adaptationData objects and reports differences in computed
 % stride-by-stride parameters. Comparisons are restricted to trials
@@ -76,11 +76,11 @@ newOnlyLabels  = setdiff(newCompLabels, refCompLabels, 'stable');
 nCommon    = length(commonLabels);
 refColIdx  = zeros(1, nCommon);
 newColIdx  = zeros(1, nCommon);
-for iLabel = 1:nCommon
-    refColIdx(iLabel) = find( ...
-        strcmp(refAllLabels, commonLabels{iLabel}), 1);
-    newColIdx(iLabel) = find( ...
-        strcmp(newAllLabels, commonLabels{iLabel}), 1);
+for lbl = 1:nCommon
+    refColIdx(lbl) = find( ...
+        strcmp(refAllLabels, commonLabels{lbl}), 1);
+    newColIdx(lbl) = find( ...
+        strcmp(newAllLabels, commonLabels{lbl}), 1);
 end
 refInitCol = find(strcmp(refAllLabels, 'initTime'), 1);
 newInitCol  = find(strcmp(newAllLabels, 'initTime'), 1);
@@ -98,8 +98,8 @@ nUnmatchedNew   = 0;
 % any real stride-to-stride interval (typically 0.8–1.5 s)
 initTimeTol = 0.01;
 
-for iTrial = 1:length(commonTrials)
-    t = commonTrials(iTrial);
+for tr = 1:length(commonTrials)
+    t = commonTrials(tr);
     refIdxCell = refData.data.indsInTrial(t);
     newIdxCell  = newData.data.indsInTrial(t);
     refInds = refIdxCell{1};
@@ -134,32 +134,32 @@ for iTrial = 1:length(commonTrials)
     newMatchedGlobal  = newInds(matchedNewIdx);
 
     % Compare each common parameter across matched strides
-    for iLabel = 1:nCommon
+    for lbl = 1:nCommon
         refVals = refData.data.Data( ...
-            refMatchedGlobal, refColIdx(iLabel));
+            refMatchedGlobal, refColIdx(lbl));
         newVals  = newData.data.Data( ...
-            newMatchedGlobal, newColIdx(iLabel));
+            newMatchedGlobal, newColIdx(lbl));
 
         oneNaN      = isnan(refVals) ~= isnan(newVals);
         bothNumeric = ~isnan(refVals) & ~isnan(newVals);
 
-        nNanMismatchAcc(iLabel) = nNanMismatchAcc(iLabel) ...
+        nNanMismatchAcc(lbl) = nNanMismatchAcc(lbl) ...
             + sum(oneNaN);
         if any(oneNaN)
-            isChangedAcc(iLabel) = true;
+            isChangedAcc(lbl) = true;
         end
 
         if any(bothNumeric)
             rV    = refVals(bothNumeric);
             nV    = newVals(bothNumeric);
             diffs = abs(nV - rV);
-            maxAbsDiffAcc(iLabel) = max( ...
-                maxAbsDiffAcc(iLabel), max(diffs));
+            maxAbsDiffAcc(lbl) = max( ...
+                maxAbsDiffAcc(lbl), max(diffs));
             relDiffs = diffs ./ (abs(rV) + options.AbsTol);
-            maxRelDiffAcc(iLabel) = max( ...
-                maxRelDiffAcc(iLabel), max(relDiffs));
+            maxRelDiffAcc(lbl) = max( ...
+                maxRelDiffAcc(lbl), max(relDiffs));
             if any(diffs > options.AbsTol + options.RelTol * abs(rV))
-                isChangedAcc(iLabel) = true;
+                isChangedAcc(lbl) = true;
             end
         end
     end
@@ -172,12 +172,12 @@ if nCommon > 0
     paramResults(nCommon, 1).maxRelDiff     = 0;
     paramResults(nCommon, 1).nNanMismatches = 0;
     paramResults(nCommon, 1).isChanged      = false;
-    for iLabel = 1:nCommon
-        paramResults(iLabel).label          = commonLabels{iLabel};
-        paramResults(iLabel).maxAbsDiff     = maxAbsDiffAcc(iLabel);
-        paramResults(iLabel).maxRelDiff     = maxRelDiffAcc(iLabel);
-        paramResults(iLabel).nNanMismatches = nNanMismatchAcc(iLabel);
-        paramResults(iLabel).isChanged      = isChangedAcc(iLabel);
+    for lbl = 1:nCommon
+        paramResults(lbl).label          = commonLabels{lbl};
+        paramResults(lbl).maxAbsDiff     = maxAbsDiffAcc(lbl);
+        paramResults(lbl).maxRelDiff     = maxRelDiffAcc(lbl);
+        paramResults(lbl).nNanMismatches = nNanMismatchAcc(lbl);
+        paramResults(lbl).isChanged      = isChangedAcc(lbl);
     end
 else
     paramResults = struct( ...
@@ -237,7 +237,7 @@ end
 % =========================================================================
 
 function printComparisonReport(report, relTol, absTol)
-%PRINTCOMPARISONREPORT Print formatted comparison report to the command window.
+%PRINTCOMPARISONREPORT Print the comparison report to the command window.
 
 arguments
     report struct

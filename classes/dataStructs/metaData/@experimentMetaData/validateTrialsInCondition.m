@@ -1,27 +1,29 @@
 function conditionOrder = validateTrialsInCondition(this)
-%validateTrialsInCondition  Validates trial organization
+%VALIDATETRIALSINCONDITION Validates trial organization.
 %
 %   conditionOrder = validateTrialsInCondition(this) checks that there
-%   are no repeated trials and that conditions do not interleave trials
+% are no repeated trials and that conditions do not interleave trials
 %
-%   Inputs:
-%       this - experimentMetaData object
+% Inputs:
+%   this - experimentMetaData object
 %
-%   Outputs:
-%       conditionOrder - vector indicating proper order of conditions
-%                        based on trial numbers
+% Outputs:
+%   conditionOrder - vector indicating proper order of conditions based on
+%                    trial numbers
 %
-%   Note: Throws error if trials are repeated or interleaved between
-%         conditions (e.g., condition 'A' has trials 1 and 3, and
-%         condition 'B' has trial 2)
+% NOTE: Throws error if trials are repeated or interleaved between
+%       conditions (e.g., condition 'A' has trials 1 and 3, and condition
+%       'B' has trial 2)
 %
-%   See also: checkConditionOrder, sortConditions
+% Toolbox Dependencies: None
+%
+% See also CHECKCONDITIONORDER, SORTCONDITIONS.
 
 conditionNamesInOrder = this.conditionName;
-for i = 1:length(conditionNamesInOrder)
-    trialNo{i} = this.getTrialsInCondition(conditionNamesInOrder{i});
+for ii = 1:length(conditionNamesInOrder)
+    trialNo{ii} = this.getTrialsInCondition(conditionNamesInOrder{ii});
 end
-allTrials = cell2mat(trialNo);
+allTrials    = cell2mat(trialNo);
 uniqueTrials = unique(allTrials);
 if numel(uniqueTrials) ~= numel(allTrials)
     error(['Some trials are repeated, in the same or different ' ...

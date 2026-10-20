@@ -1,12 +1,28 @@
 %% Trajectory Check — Optimized Reconstruct & Label
-% Loads OLD and NEW pipeline versions of the same trial from Vicon
-% Nexus, then overlays their trajectories per marker for visual
+% Script. Loads OLD and NEW pipeline versions of the same trial from
+% Vicon Nexus, then overlays their trajectories per marker for visual
 % comparison.
+%
+% Inputs:
+%   none - edit markersToCompare, trialOld, and trialNew below (subject
+%          is replaced by the first subject found in each trial)
+%
+% Outputs:
+%   none - one overlay figure per marker (X/Y/Z, old vs. new)
+%
+% Side effects: needs a running Vicon Nexus; opens both trials (read
+%   only; nothing is saved).
+%
+% Toolbox Dependencies: None (Vicon Nexus SDK, ViconNexus class)
+%
+% See also COMPARETRAJECTORY_RL, DATAMOTION.OPENTRIALIFNEEDED.
 
 markersToCompare = {'RANK'};
 subject          = 'C3S24';
-trialOld         = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
-trialNew         = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
+trialOld         = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
+trialNew         = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
 
 trajData = struct();
 

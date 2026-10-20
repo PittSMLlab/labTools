@@ -138,7 +138,7 @@ else
     lThighCOM = abs(lHip  - lKnee) .* thighCOMFrac + lKnee;
 
     hipMidpoint = (rHip + lHip) ./ 2;
-    hipMeanPos  = mean([rHip; lHip], 'omitnan');  % grand mean of all hip samples
+    hipMeanPos  = mean([rHip; lHip], 'omitnan'); % grand mean of hip samples
     hatCOM = abs(hipMidpoint - hatPos) .* hatCOMFrac + hipMeanPos;
 
     %% Compile Whole-Body Center of Mass
@@ -161,7 +161,7 @@ else
         (rightLegCOM + leftLegCOM + hatCOM*hatWeight);
     bCOM = bodyCOM;
 
-    % CJS note: change here to change what is stored in the COM dataset
+    % NOTE: change here to change what is stored in the COM dataset
     segCOMData = [rFootCOM lFootCOM rShankCOM lShankCOM ...
         rThighCOM lThighCOM hatCOM bodyCOM];
     segLabels = { ...

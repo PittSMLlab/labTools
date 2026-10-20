@@ -1,27 +1,29 @@
 function newThis = splitConditionIntoTrials(this, condList)
-%splitConditionIntoTrials  Splits conditions into individual trials
+%SPLITCONDITIONINTOTRIALS Splits conditions into individual trials.
 %
 %   newThis = splitConditionIntoTrials(this, condList) takes specified
-%   conditions and splits each into separate conditions, one per trial,
-%   with unique names
+% conditions and splits each into separate conditions, one per trial,
+% with unique names
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       condList - cell array of condition names to split
+% Inputs:
+%   this     - experimentMetaData object
+%   condList - cell array of condition names to split
 %
-%   Outputs:
-%       newThis - experimentMetaData object with split conditions
+% Outputs:
+%   newThis - experimentMetaData object with split conditions
 %
-%   Example:
-%       If condition 'Adaptation' contains trials [5 6 7], this method
-%       will create three conditions: 'Adaptation1', 'Adaptation2',
-%       'Adaptation3'
+% Example:
+%   If condition 'Adaptation' contains trials [5 6 7], this method
+%   will create three conditions: 'Adaptation1', 'Adaptation2',
+%   'Adaptation3'
 %
-%   See also: getConditionIdxsFromName, numerateRepeatedConditionNames
+% Toolbox Dependencies: None
+%
+% See also GETCONDITIONIDXSFROMNAME, NUMERATEREPEATEDCONDITIONNAMES.
 
 newThis = this;
-for i = 1:length(condList)
-    id = this.getConditionIdxsFromName(condList{i});
+for ii = 1:length(condList)
+    id = this.getConditionIdxsFromName(condList{ii});
     Nt = newThis.trialsInCondition{id};
     newCondNames = mat2cell(strcat(newThis.conditionName{id}, ...
         num2str([1:numel(Nt)]')), ones(size(Nt')), ...

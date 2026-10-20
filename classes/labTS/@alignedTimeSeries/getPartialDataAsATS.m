@@ -1,17 +1,19 @@
 function newThis = getPartialDataAsATS(this, labels)
-%getPartialDataAsATS  Extracts subset of channels
+%GETPARTIALDATAASATS Extracts subset of channels.
 %
 %   newThis = getPartialDataAsATS(this, labels) creates new
-%   alignedTimeSeries with only specified channel labels
+% alignedTimeSeries with only specified channel labels
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       labels - cell array of channel labels to extract
+% Inputs:
+%   this   - alignedTimeSeries object
+%   labels - cell array of channel labels to extract
 %
-%   Outputs:
-%       newThis - alignedTimeSeries with extracted channels
+% Outputs:
+%   newThis - alignedTimeSeries with extracted channels
 %
-%   See also: getPartialStridesAsATS, isaLabel
+% Toolbox Dependencies: None
+%
+% See also GETPARTIALSTRIDESASATS, ISALABEL.
 
 [boolIdx, relIdx] = this.isaLabel(labels);
 this.Data = this.Data(:, relIdx(boolIdx), :);

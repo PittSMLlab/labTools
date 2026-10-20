@@ -1,9 +1,9 @@
 function [data, time, auxLabel] = getDataAsVector(this, label)
-%GETDATASVECTOR Extract data vectors for the specified label(s).
+%GETDATAASVECTOR Extract data vectors for the specified label(s).
 %
 %   Returns the data matrix and time vector for the requested channel
-% labels. If a label is not found by exact match, the function falls back
-% to treating the label as a regular expression and returning all matching
+% labels. If a label is not found by exact match, the function falls back to
+% treating the label as a regular expression and returning all matching
 % channels.
 %
 % Inputs:
@@ -39,12 +39,13 @@ time = this.Time;
 if ~any(boolFlag)
     matchedLabels = [];
     for ii = 1:length(auxLabel)
-        matchedLabels = [matchedLabels this.getLabelsThatMatch(auxLabel{ii})]; %#ok<AGROW>
+        matchedLabels = [matchedLabels ...
+            this.getLabelsThatMatch(auxLabel{ii})]; %#ok<AGROW>
     end
     [boolFlag, labelIdx] = this.isaLabel(matchedLabels);
     warning('labTimeSeries:labelNotFound', sprintf( ...
         ['None of the provided labels are in this timeSeries. ' ...
-         'Trying regex match: found %d match(es).'], numel(matchedLabels)));
+        'Trying regex match: found %d match(es).'], numel(matchedLabels)));
 else
     for ii = 1:length(boolFlag)
         if ~boolFlag(ii)

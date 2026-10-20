@@ -1,32 +1,36 @@
 function checkMarkerDataHealth(this)
-%checkMarkerDataHealth  Diagnoses issues with marker data
+%CHECKMARKERDATAHEALTH Diagnoses issues with marker data.
 %
 %   checkMarkerDataHealth(this) analyzes marker data for missing frames,
-%   gap distributions, and potential outliers. Generates diagnostic plots.
+% gap distributions, and potential outliers. Generates diagnostic plots.
 %
-%   Inputs:
-%       this - labData object
+% Inputs:
+%   this - labData object
 %
-%   Outputs:
-%       None - generates diagnostic figures
+% Outputs:
+%   None - generates diagnostic figures
 %
-%   See also: orientedLabTimeSeries
+% Toolbox Dependencies: None
+%
+% See also ORIENTEDLABTIMESERIES.
 
 ts = this.markerData;
+minMissingFrac = 0.01; % plot gap histogram only if >1% of frames missing
+maxGapFrames   = 50;   % upper edge of gap-length histogram (frames)
 
 % First: diagnose missing markers
-ll = ts.getLabelPrefix;
-dd = ts.getOrientedData;
+ll  = ts.getLabelPrefix;
+dd  = ts.getOrientedData;
 aux = zeros(size(dd, 1), size(dd, 2));
-for i = 1:length(ll)
-    l = ll{i};
-    aux(:, i) = any(isnan(dd(:, i, :)), 3);
-    if any(aux(i, :))
+for mrkr = 1:length(ll)
+    l = ll{mrkr};
+    aux(:, mrkr) = any(isnan(dd(:, mrkr, :)), 3);
+    if any(aux(mrkr, :))
         warning('labData:checkMarkerDataHealth', ['Marker ' l ...
             ' is missing for ' num2str(sum(aux) * ts.sampPeriod) ' secs.']);
-        for j = 1:3
+        for jj = 1:3
             % Filling gaps just for healthCheck purposes
-            dd(aux, i, j) = nanmean(dd(:, i, j));
+            dd(aux, mrkr, jj) = mean(dd(:, mrkr, jj), 'omitnan');
         end
     end
 end
@@ -43,12 +47,13 @@ subplot(2, 2, 2); % Distribution of gap lengths
 hold on;
 h = [];
 s = {};
-for i = 1:length(ll)
-    if c(i) > 0.01
-        w = [0; aux(:, i); 0]; % auxiliary vector
+for mrkr = 1:length(ll)
+    if c(mrkr) > minMissingFrac
+        w         = [0; aux(:, mrkr); 0]; % auxiliary vector
         runs_ones = find(diff(w) == -1) - find(diff(w) == 1);
-        h(end + 1) = histogram(runs_ones, .5:1:50, 'DisplayName', ll{i});
-        s{end + 1} = ll{i};
+        h(end + 1) = histogram(runs_ones, 0.5:1:maxGapFrames, ...
+            'DisplayName', ll{mrkr});
+        s{end + 1} = ll{mrkr};
     end
 end
 legend(h, s);
@@ -60,7 +65,7 @@ axis tight;
 subplot(2, 2, 3);
 hold on;
 d = sum(aux, 2);
-histogram(d, -.5:1:5.5, 'Normalization', 'probability');
+histogram(d, -0.5:1:5.5, 'Normalization', 'probability');
 title('Distribution of # missing in each frame');
 ylabel('% of frames with missing markers');
 xlabel('# missing markers');
@@ -74,32 +79,35 @@ subplot(2, 2, 4);
 hold on;
 minLike = min(lp, [], 1);
 plot(minLike);
-medLike = nanmedian(lp, 1);
+medLike = median(lp, 1, 'omitnan');
 plot(medLike, 'r');
 legend(ll);
 ii = find(medLike < -1);
-for j = 1:length(ii)
+for kk = 1:length(ii)
     figure;
-    plot3(dd(:, 1, ii(j)), dd(:, 2, ii(j)), dd(:, 3, ii(j)), 'o');
-    text(dd(:, 1, ii(j)), dd(:, 2, ii(j)), dd(:, 3, ii(j)), ll);
+    plot3(dd(:, 1, ii(kk)), dd(:, 2, ii(kk)), dd(:, 3, ii(kk)), 'o');
+    text(dd(:, 1, ii(kk)), dd(:, 2, ii(kk)), dd(:, 3, ii(kk)), ll);
     hold on;
-    [~, zz] = min(lp(:, ii(j)));
-    plot3(dd(zz, 1, ii(j)), dd(zz, 2, ii(j)), dd(zz, 3, ii(j)), 'ro');
-    title(['median likeli = ' num2str(medLike(ii(j))) ', frame ' ...
-        num2str(ii(j))]);
+    [~, zz] = min(lp(:, ii(kk)));
+    plot3(dd(zz, 1, ii(kk)), dd(zz, 2, ii(kk)), dd(zz, 3, ii(kk)), 'ro');
+    title(['median likeli = ' num2str(medLike(ii(kk))) ', frame ' ...
+        num2str(ii(kk))]);
     pause;
 end
 
 % % Check for outliers:
 % % Do a data translation:
-% % refMarker = squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}), 2)); % Assuming these markers exist
+% % refMarker = squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}), 2)); %
+% Assuming these markers exist
 % % Do a label-agnostic data translation:
 % refMarker = squeeze(nanmean(dd, 2));
-% newTS = ts.translate([-refMarker(:, 1:2), zeros(size(refMarker, 1), 1)]); % Assuming z is a known fixed axis
+% newTS = ts.translate([-refMarker(:, 1:2), zeros(size(refMarker, 1), 1)]);
+% % Assuming z is a known fixed axis
 % % Not agnostic rotation:
 % % relData = squeeze(markerData.getOrientedData('RHIP'));
 % % Label agnostic data rotation:
-% newTS = newTS.alignRotate([refMarker(:, 2), -refMarker(:, 1), zeros(size(refMarker, 1), 1)], [0, 0, 1]);
+% newTS = newTS.alignRotate([refMarker(:, 2), -refMarker(:, 1), ...
+%    zeros(size(refMarker, 1), 1)], [0, 0, 1]);
 % medianTS = newTS.median; % Gets the median skeleton of the markers
 %
 % % With this median skeleton, a minimization can be done to
@@ -109,10 +117,15 @@ end
 % % Another attempt at label agnostic rotation (not using
 % % velocity, but actually some info about the skeleton
 % % having Left and Right)
-% % l1 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^L'), 'UniformOutput', false);
-% % l2 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^R'), 'UniformOutput', false);
-% % relDataOTS = newTS.computeDifferenceOTS([], [], l1(1:3:end), l2(1:3:end));
-% % relData = squeeze(nanmedian(relDataOTS.getOrientedData, 2)); % Need to work on this
+% % l1 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^L'), ...
+%    'UniformOutput', false);
+% % l2 = cellfun(@(x) x(1:end - 1), ts.getLabelsThatMatch('^R'), ...
+%    'UniformOutput', false);
+% % relDataOTS = newTS.computeDifferenceOTS([], [], l1(1:3:end), ...
+%    l2(1:3:end));
+% % relData = ...
+%    squeeze(nanmedian(relDataOTS.getOrientedData, ...
+%    2)); % Need to work on this
 %
 % % Try to fit a 2-cluster model, to see if some marker
 % % labels are switched at some point during experiment

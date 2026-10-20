@@ -1,17 +1,19 @@
 function this = times(this, constant)
-%times  Multiplies by constant
+%TIMES Multiplies by constant.
 %
-%   this = times(this, constant) multiplies data by constant and
-%   updates labels
+%   this = times(this, constant) multiplies data by constant and updates
+% labels
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       constant - scalar or array to multiply by
+% Inputs:
+%   this     - alignedTimeSeries object
+%   constant - scalar or array to multiply by
 %
-%   Outputs:
-%       this - scaled alignedTimeSeries
+% Outputs:
+%   this - scaled alignedTimeSeries
 %
-%   See also: plus, minus
+% Toolbox Dependencies: None
+%
+% See also PLUS, MINUS.
 
 this.Data = this.Data .* constant;
 if numel(constant) == 1

@@ -1,19 +1,21 @@
 function newThis = castAsOTS(this, orientation)
-%castAsOTS  Converts to orientedLabTimeSeries
+%CASTASOTS Converts to orientedLabTimeSeries.
 %
-%   newThis = castAsOTS(this) converts to orientedLabTimeSeries with
-%   default orientation
+%   newThis = castAsOTS(this) converts to orientedLabTimeSeries with default
+% orientation
 %
 %   newThis = castAsOTS(this, orientation) uses specified orientation
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       orientation - orientationInfo object (optional)
+% Inputs:
+%   this        - labTimeSeries object
+%   orientation - orientationInfo object (optional)
 %
-%   Outputs:
-%       newThis - orientedLabTimeSeries object
+% Outputs:
+%   newThis - orientedLabTimeSeries object
 %
-%   See also: orientedLabTimeSeries, castAsSTS
+% Toolbox Dependencies: None
+%
+% See also ORIENTEDLABTIMESERIES, CASTASSTS.
 
 if nargin < 2 || isempty(orientation)
     orientation = orientationInfo;

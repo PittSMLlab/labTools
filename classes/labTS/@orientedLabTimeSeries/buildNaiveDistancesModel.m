@@ -1,22 +1,24 @@
 function model = buildNaiveDistancesModel(this)
-%buildNaiveDistancesModel  Builds statistical marker model
+%BUILDNAIVEDISTANCESMODEL Builds statistical marker model.
 %
-%   model = buildNaiveDistancesModel(this) creates naive Bayes model
-%   of inter-marker distances
+%   model = buildNaiveDistancesModel(this) creates naive Bayes model of
+% inter-marker distances
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
+% Inputs:
+%   this - orientedLabTimeSeries object
 %
-%   Outputs:
-%       model - naiveDistances model object
+% Outputs:
+%   model - naiveDistances model object
 %
 %   Note: Assumes data is bilateral and sorts L/R by magnitude of third
 %         component
 %
-%   See also: naiveDistances, fixBadLabels, findOutliers
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also NAIVEDISTANCES, FIXBADLABELS, FINDOUTLIERS.
 
 labels = this.getLabelPrefix;
-data = this.getOrientedData;
+data   = this.getOrientedData;
 % Assuming the data is bilateral & sorting L/R and by magnitude of
 % third component
 iL = cellfun(@(x) ~isempty(x), regexp(labels, '^L*'));
@@ -41,11 +43,11 @@ dL = data(:, iL, :);
 lL = labels(iL);
 dR = data(:, iR, :);
 lR = labels(iR);
-[~, idx1] = sort(nanmean(dL(:, :, 3)), 'ascend');
-[~, idx2] = sort(nanmean(dR(:, :, 3)), 'descend');
+[~, idx1] = sort(mean(dL(:, :, 3), 'omitnan'), 'ascend');
+[~, idx2] = sort(mean(dR(:, :, 3), 'omitnan'), 'descend');
 labels = [lL(idx1) lR(idx2)];
-data = cat(2, dL(:, idx1, :), dR(:, idx2, :));
-d = permute(data, [2, 3, 1]);
-model = naiveDistances.learn(d, labels, true);
+data   = cat(2, dL(:, idx1, :), dR(:, idx2, :));
+d      = permute(data, [2, 3, 1]);
+model  = naiveDistances.learn(d, labels, true);
 end
 

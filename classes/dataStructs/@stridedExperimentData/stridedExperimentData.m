@@ -1,12 +1,12 @@
 classdef stridedExperimentData
-    %stridedExperimentData  Contains stride-level data for an experiment
+    %STRIDEDEXPERIMENTDATA Contain stride-level data for an experiment.
     %
     %   stridedExperimentData organizes experimental data that has been
-    %   separated into individual stride cycles. Each trial contains a
-    %   cell array of strideData objects, enabling stride-by-stride
-    %   analysis and visualization.
+    % separated into individual stride cycles. Each trial contains a
+    % cell array of strideData objects, enabling stride-by-stride
+    % analysis and visualization.
     %
-    %stridedExperimentData properties:
+    % stridedExperimentData properties:
     %   metaData - experimentMetaData object containing experimental
     %              conditions
     %   subData - subjectData object containing subject information
@@ -14,7 +14,7 @@ classdef stridedExperimentData
     %   isTimeNormalized - flag indicating if strides have been time-
     %                      normalized
     %
-    %stridedExperimentData methods:
+    % stridedExperimentData methods:
     %   timeNormalize - resamples all strides to uniform length
     %   getStridesFromCondition - extracts strides from specific
     %                             condition
@@ -26,7 +26,9 @@ classdef stridedExperimentData
     %   getAlignedData - extracts phase-aligned data
     %   getDataAsMatrices - converts stride data to matrices
     %
-    %See also: experimentData, strideData, experimentMetaData
+    % Toolbox Dependencies: None
+    %
+    % See also EXPERIMENTDATA, STRIDEDATA, EXPERIMENTMETADATA.
 
     %% Properties
     properties
@@ -45,23 +47,23 @@ classdef stridedExperimentData
     %% Constructor
     methods
         function this = stridedExperimentData(meta, sub, strides)
-            %stridedExperimentData  Constructor for
-            %stridedExperimentData class
+            %STRIDEDEXPERIMENTDATA Constructor for stridedExperimentData.
             %
             %   this = stridedExperimentData(meta, sub, strides) creates
-            %   a strided experiment data object with specified metadata,
-            %   subject data, and strided trials
+            % a strided experiment data object with specified metadata,
+            % subject data, and strided trials.
             %
-            %   Inputs:
-            %       meta - experimentMetaData object
-            %       sub - subjectData object
-            %       strides - cell array of cell arrays of strideData
-            %                 objects
+            % Inputs:
+            %   meta    - experimentMetaData object
+            %   sub     - subjectData object
+            %   strides - cell array of cell arrays of strideData objects
             %
-            %   Outputs:
-            %       this - stridedExperimentData object
+            % Outputs:
+            %   this - stridedExperimentData object
             %
-            %   See also: experimentData/splitIntoStrides, strideData
+            % Toolbox Dependencies: None
+            %
+            % See also EXPERIMENTDATA/SPLITINTOSTRIDES, STRIDEDATA.
 
             if isa(meta, 'experimentMetaData')
                 this.metaData = meta;

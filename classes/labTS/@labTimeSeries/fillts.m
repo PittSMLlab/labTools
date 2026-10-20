@@ -1,17 +1,19 @@
 function this = fillts(this)
-%fillts  Substitutes NaN values (deprecated)
+%FILLTS Substitutes NaN values (deprecated).
 %
 %   this = fillts(this) fills NaN values using linear interpolation
 %
-%   Inputs:
-%       this - labTimeSeries object
+% Inputs:
+%   this - labTimeSeries object
 %
-%   Outputs:
-%       this - labTimeSeries with NaN filled
+% Outputs:
+%   this - labTimeSeries with NaN filled
 %
 %   Note: TODO - Deprecate. Use substituteNaNs instead.
 %
-%   See also: substituteNaNs
+% Toolbox Dependencies: None
+%
+% See also SUBSTITUTENANS.
 
 warning('labTS:fillts', ...
     'labTS.fillts is being deprecated. Use substituteNaNs instead.');

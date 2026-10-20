@@ -2,7 +2,7 @@ function [W, C, d] = myNNMF(data, rank, reps, useParallel)
 %MYNNMF Non-negative matrix factorisation with robust defaults.
 %
 %   Calls nnmf() with custom convergence tolerances and multiple random
-%   initialisations to obtain more consistent results than a single run.
+% initialisations to obtain more consistent results than a single run.
 %
 % Inputs:
 %   data        - matrix to factorize (observations-by-features; transposed
@@ -24,8 +24,8 @@ function [W, C, d] = myNNMF(data, rank, reps, useParallel)
 arguments
     data
     rank        (1,1) {mustBeInteger, mustBeNonnegative}
-    reps        (1,1) {mustBeInteger, mustBePositive}   = 8
-    useParallel                                          = 'always'
+    reps        (1,1) {mustBeInteger, mustBePositive} = 8
+    useParallel = 'always'
 end
 
 if size(data, 1) < size(data, 2)

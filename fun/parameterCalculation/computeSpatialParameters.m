@@ -437,7 +437,7 @@ stepTimeContributionPNorm = stepTimeContributionP ./ Dist;
 velocityContributionPNorm = velocityContributionP ./ Dist;
 netContributionPNorm      = netContributionP      ./ Dist;
 
-% Added by Marcela 06/01/2021: displacement for single stance.
+% Displacement for single stance.
 % FIXME: DO NOT use absolute value; if the sign is supposed to be the
 % opposite one, just leave it as is since the absolute value makes it
 % murky to know what this quantity means.
@@ -452,8 +452,8 @@ singleStanceSpeedAvg  = ...
 singleStanceSpeedDiff = singleStanceSpeedFast - singleStanceSpeedSlow;
 
 % Contributions in absolute frame using rotated marker data.
-% NOTE: modified by Digna de Kam (April 2018) to use rotated markerdata,
-% which allows using these values for overground trials.
+% NOTE: uses rotated marker data, which allows using these values for
+% overground trials.
 aux = -rotatedMarkerDataAbs.getDataAsTS( ...
     {[f 'ANKy'], [s 'ANKy']}).getSample(eventTimes, 'closest');
 spatialContributionP2 = ...

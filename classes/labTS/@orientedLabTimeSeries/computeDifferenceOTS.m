@@ -1,20 +1,22 @@
 function diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)
-%computeDifferenceOTS  Difference matrix as OTS
+%COMPUTEDIFFERENCEOTS Difference matrix as OTS.
 %
-%   diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)
-%   computes difference matrix and returns as orientedLabTimeSeries
+%   diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2) computes
+% difference matrix and returns as orientedLabTimeSeries
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       t0 - start time (optional, default: beginning)
-%       t1 - end time (optional, default: end)
-%       labels - markers to compute from (optional, default: all)
-%       labels2 - markers to compute to (optional, default: all)
+% Inputs:
+%   this    - orientedLabTimeSeries object
+%   t0      - start time (optional, default: beginning)
+%   t1      - end time (optional, default: end)
+%   labels  - markers to compute from (optional, default: all)
+%   labels2 - markers to compute to (optional, default: all)
 %
-%   Outputs:
-%       diffOTS - orientedLabTimeSeries with difference vectors
+% Outputs:
+%   diffOTS - orientedLabTimeSeries with difference vectors
 %
-%   See also: computeDifferenceMatrix, computeDistanceMatrix
+% Toolbox Dependencies: None
+%
+% See also COMPUTEDIFFERENCEMATRIX, COMPUTEDISTANCEMATRIX.
 
 if nargin < 2 || isempty(t0)
     t0 = this.Time(1);
@@ -31,9 +33,9 @@ end
 [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, ...
     t0, t1, labels, labels2);
 newLabels = cell(1, length(labels) * length(labels2));
-for i = 1:length(labels2)
-    newLabels((i - 1) * length(labels) + 1:i * length(labels)) = ...
-        strcat(labels, [' - ' labels2{i}]);
+for ii = 1:length(labels2)
+    newLabels((ii - 1) * length(labels) + 1:ii * length(labels)) = ...
+        strcat(labels, [' - ' labels2{ii}]);
 end
 newLabels2 = [strcat(newLabels, 'x'); strcat(newLabels, 'y'); ...
     strcat(newLabels, 'z')];

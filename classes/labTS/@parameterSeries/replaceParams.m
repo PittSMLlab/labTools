@@ -1,20 +1,22 @@
 function this = replaceParams(this, other)
-%replaceParams  Replaces existing parameters
+%REPLACEPARAMS Replaces existing parameters.
 %
-%   this = replaceParams(this, other) replaces existing parameters in
-%   this with parameter data from other
+%   this = replaceParams(this, other) replaces existing parameters in this
+% with parameter data from other
 %
-%   Inputs:
-%       this - parameterSeries object
-%       other - parameterSeries with parameters to replace
+% Inputs:
+%   this  - parameterSeries object
+%   other - parameterSeries with parameters to replace
 %
-%   Outputs:
-%       this - parameterSeries with replaced parameters
+% Outputs:
+%   this - parameterSeries with replaced parameters
 %
 %   Note: If other contains parameters that don't exist in this, they
 %         are appended
 %
-%   See also: cat, appendData
+% Toolbox Dependencies: None
+%
+% See also CAT, APPENDDATA.
 
 % Finding parameters that already existed
 [bool, idx] = this.isaLabel(other.labels);

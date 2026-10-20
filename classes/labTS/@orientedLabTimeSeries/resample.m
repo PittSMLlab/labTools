@@ -1,19 +1,21 @@
 function newThis = resample(this, newTs, newT0, hiddenFlag)
-%resample  Resamples (override)
+%RESAMPLE Resamples (override).
 %
 %   newThis = resample(this, newTs, newT0, hiddenFlag) resamples and
-%   preserves orientedLabTimeSeries type
+% preserves orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       newTs - new sampling period
-%       newT0 - new initial time
-%       hiddenFlag - flag for non-uniform resampling (optional)
+% Inputs:
+%   this       - orientedLabTimeSeries object
+%   newTs      - new sampling period
+%   newT0      - new initial time
+%   hiddenFlag - flag for non-uniform resampling (optional)
 %
-%   Outputs:
-%       newThis - resampled orientedLabTimeSeries
+% Outputs:
+%   newThis - resampled orientedLabTimeSeries
 %
-%   See also: labTimeSeries/resample, resampleN
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/RESAMPLE, RESAMPLEN.
 
 % Resample to a new sampling period
 if nargin < 4

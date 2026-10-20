@@ -1,16 +1,18 @@
 function newThis = recomputeEvents(this)
-%recomputeEvents  Re-calculates gait events from angle data
+%RECOMPUTEEVENTS Re-calculates gait events from angle data.
 %
 %   newThis = recomputeEvents(this) re-computes gait events from the angle
-%   data and updates the object
+% data and updates the object
 %
-%   Inputs:
-%       this - labData object
+% Inputs:
+%   this - labData object
 %
-%   Outputs:
-%       newThis - updated labData object with recomputed events
+% Outputs:
+%   newThis - updated labData object with recomputed events
 %
-%   See also: getEvents
+% Toolbox Dependencies: None
+%
+% See also GETEVENTS.
 
 events = getEvents(this, this.angleData);
 this.gaitEvents = events;

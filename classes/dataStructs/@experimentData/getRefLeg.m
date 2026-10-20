@@ -1,21 +1,23 @@
 function refLeg = getRefLeg(this)
-%getRefLeg  Returns reference leg for parameter computations
+%GETREFLEG Returns reference leg for parameter computations
 %
 %   refLeg = getRefLeg(this) determines the reference leg by majority vote
-%   over all trials in the experiment
+% over all trials in the experiment
 %
-%   Inputs:
-%       this - experimentData object
+% Inputs:
+%   this - experimentData object
 %
-%   Outputs:
-%       refLeg - 'R' or 'L'
+% Outputs:
+%   refLeg - 'R' or 'L'
 %
-%   See also: getNonRefLeg, getSlowLeg
+% Toolbox Dependencies: None
+%
+% See also GETNONREFLEG, GETSLOWLEG.
 
 refLeg = {};
-for i = 1:length(this.data) % Going over trials
-    if ~isempty(this.data{i})
-        refLeg{i} = this.data{i}.metaData.refLeg;
+for ii = 1:length(this.data) % Going over trials
+    if ~isempty(this.data{ii})
+        refLeg{ii} = this.data{ii}.metaData.refLeg;
     end
 end
 Rvotes = sum(strcmp(refLeg, 'R'));

@@ -1,30 +1,32 @@
 function [h, plotHandles] = bilateralPlot(this, h, labels, ...
     plotHandles, events, color, lineWidth)
-%bilateralPlot  Plots bilateral comparison
+%BILATERALPLOT Plots bilateral comparison.
 %
-%   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled
-%   data overlaid for comparison
+%   [h, plotHandles] = bilateralPlot(this) plots 'L' and 'R' labeled data
+% overlaid for comparison
 %
-%   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles,
-%   events, color, lineWidth) plots with specified options
+%   [h, plotHandles] = bilateralPlot(this, h, labels, plotHandles, events,
+% color, lineWidth) plots with specified options
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       h - figure handle (optional, creates new if empty)
-%       labels - labels to plot (optional, default: all)
-%       plotHandles - subplot handles (optional, creates if empty)
-%       events - labTimeSeries with events to mark (optional)
-%       color - line color (optional)
-%       lineWidth - line width (optional, default: 2)
+% Inputs:
+%   this        - labTimeSeries object
+%   h           - figure handle (optional, creates new if empty)
+%   labels      - labels to plot (optional, default: all)
+%   plotHandles - subplot handles (optional, creates if empty)
+%   events      - labTimeSeries with events to mark (optional)
+%   color       - line color (optional)
+%   lineWidth   - line width (optional, default: 2)
 %
-%   Outputs:
-%       h - figure handle
-%       plotHandles - array of subplot handles
+% Outputs:
+%   h           - figure handle
+%   plotHandles - array of subplot handles
 %
 %   Note: Ideally plots 'L' and 'R' timeseries on top of each other
 %         for bilateral comparison
 %
-%   See also: plot, plotAligned
+% Toolbox Dependencies: None
+%
+% See also PLOT, PLOTALIGNED.
 
 % Ideally we would plot 'L' and 'R' timeseries on top of each other,
 % to do a bilateral comparison. Need to implement.
@@ -48,8 +50,8 @@ if nargin < 4 || isempty(plotHandles) || ...
         length(plotHandles) < length(suffix)
     [b, a] = getFigStruct(length(suffix));
     % External function
-    plotHandles = tight_subplot(b, a, [.05 .05], [.05 .05], ...
-        [.05 .05]);
+    plotHandles = tight_subplot(b, a, [0.05 0.05], [0.05 0.05], ...
+        [0.05 0.05]);
 end
 if nargin < 7 || isempty(lineWidth)
     lineWidth = 2;
@@ -58,10 +60,10 @@ end
     events, color, lineWidth);
 [h, plotHandles] = plot(this, h, strcat('R', suffix), plotHandles, ...
     events, color, lineWidth);
-for i = 1:length(suffix)
-    subplot(plotHandles(i));
-    ylabel(suffix{i});
-    if i == length(suffix)
+for ii = 1:length(suffix)
+    subplot(plotHandles(ii));
+    ylabel(suffix{ii});
+    if ii == length(suffix)
         legend('L', 'R');
     end
 end

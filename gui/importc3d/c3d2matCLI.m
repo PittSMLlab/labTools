@@ -1,5 +1,5 @@
 function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass)
-% c3d2matCLI  Parses C3D session files into a MAT file without a GUI.
+%C3D2MATCLI Parse C3D session files into a MAT file without a GUI.
 %
 %   Performs the same processing as the c3d2mat script, but accepts a
 % previously saved session info file in place of the GetInfoGUI interactive
@@ -24,10 +24,9 @@ function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass)
 %     rawExpData - Raw experimental data object
 %     adaptData  - Adaptation parameters data object
 %
-%   Toolbox Dependencies:
-%     None
+%   Toolbox Dependencies: None
 %
-%   See also: c3d2mat, GetInfoGUI, loadSubject, errorProofInfo
+%   See also C3D2MAT, GETINFOGUI, LOADSUBJECT, ERRORPROOFINFO.
 
 arguments
     infoFile   (1,:) char

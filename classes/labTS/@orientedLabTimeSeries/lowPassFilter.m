@@ -1,17 +1,19 @@
 function newThis = lowPassFilter(this, fcut)
-%lowPassFilter  Applies low-pass filter (override)
+%LOWPASSFILTER Applies low-pass filter (override).
 %
 %   newThis = lowPassFilter(this, fcut) filters and preserves
-%   orientedLabTimeSeries type
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       fcut - cutoff frequency in Hz
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   fcut - cutoff frequency in Hz
 %
-%   Outputs:
-%       newThis - filtered orientedLabTimeSeries
+% Outputs:
+%   newThis - filtered orientedLabTimeSeries
 %
-%   See also: labTimeSeries/lowPassFilter, highPassFilter
+% Toolbox Dependencies: Signal Processing Toolbox (via labTimeSeries)
+%
+% See also LABTIMESERIES/LOWPASSFILTER, HIGHPASSFILTER.
 
 newThis = lowPassFilter@labTimeSeries(this, fcut);
 newThis = orientedLabTimeSeries(newThis.Data, newThis.Time(1), ...

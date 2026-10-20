@@ -1,23 +1,25 @@
 function alignedData = alignEvents(this, spacing, trial, fieldName, ...
     labelList)
-%alignEvents  Aligns data to gait events (deprecated)
+%ALIGNEVENTS Aligns data to gait events (deprecated).
 %
 %   alignedData = alignEvents(this, spacing, trial, fieldName,
-%   labelList) aligns data to gait events with specified spacing
+% labelList) aligns data to gait events with specified spacing
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       spacing - vector specifying samples per phase
-%       trial - trial number
-%       fieldName - name of field to align
-%       labelList - cell array of labels to extract
+% Inputs:
+%   this      - stridedExperimentData object
+%   spacing   - vector specifying samples per phase
+%   trial     - trial number
+%   fieldName - name of field to align
+%   labelList - cell array of labels to extract
 %
-%   Outputs:
-%       alignedData - aligned data array
+% Outputs:
+%   alignedData - aligned data array
 %
-%   Note: This function will be deprecated, use getAlignedData instead
+% NOTE: This function will be deprecated, use getAlignedData instead
 %
-%   See also: getAlignedData
+% Toolbox Dependencies: None
+%
+% See also GETALIGNEDDATA.
 
 alignedData = [];
 end

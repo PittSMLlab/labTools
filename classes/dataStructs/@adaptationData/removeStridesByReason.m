@@ -38,8 +38,11 @@ function newThis = removeStridesByReason(this, reasonLabels, markAsNaNflag)
 %             NaN'd); unchanged (with a warning) if none of
 %             'reasonLabels' are present, or all are entirely NaN
 %
+% Toolbox Dependencies: None
+%
 % See also REMOVEBADSTRIDES, REMOVEHANDRAILSTRIDES,
 %   GETSTRIDEQUALITYCONFIG, MARKBADSTRIDESASNAN.
+
 if nargin < 3 || isempty(markAsNaNflag)
     markAsNaNflag = false;
 end
@@ -76,7 +79,7 @@ if ~markAsNaNflag
         aux.labels, aux.hiddenTime(inds), aux.description);
     newParamData = newParamData.setTrialTypes(aux.trialTypes);
 else
-    newParamData = aux.markBadStridesAsNan;
+    newParamData = aux.markBadStridesAsNan();
 end
 newThis = adaptationData(this.metaData, this.subData, newParamData);
 

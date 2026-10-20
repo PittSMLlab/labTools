@@ -1,9 +1,8 @@
 classdef labData
-    % labData  Contains data collected in the lab, including
-    %   kinematics, kinetics, and EMG signals.
+    %LABDATA Contain data collected in the lab for one trial.
     %
-    % Toolbox Dependencies:
-    %   None
+    %   labData holds the kinematic, kinetic, EMG, EEG, and treadmill
+    % signals recorded in one trial, together with the trial metadata.
     %
     % labData properties:
     %   metaData          - labMetaData object
@@ -41,7 +40,9 @@ classdef labData
     %   split                     - splits data into time segments
     %   alignAllTS (unimplemented)- aligns all time series data
     %
-    % See also: labMetaData, orientedLabTimeSeries, labTimeSeries
+    % Toolbox Dependencies: None
+    %
+    % See also LABMETADATA, ORIENTEDLABTIMESERIES, LABTIMESERIES.
 
     %% Properties
     properties % (SetAccess = private)
@@ -60,38 +61,40 @@ classdef labData
     %% Constructor
     methods
         function this = labData(metaData, markerData, EMGData, ...
-                GRFData, beltSpeedSetData, beltSpeedReadData, ...
-                accData, EEGData, footSwitches, HreflexPin)
-            % labData  Constructor for labData class.
+            GRFData, beltSpeedSetData, beltSpeedReadData, ...
+            accData, EEGData, footSwitches, HreflexPin)
+            %LABDATA Constructor for labData class.
             %
-            %   All input arguments except metaData are optional
-            %   and validated for proper type.
+            %   All input arguments except metaData are optional and
+            % validated for proper type.
             %
-            %   Inputs:
-            %     metaData          - labMetaData object
-            %     markerData        - (optional) orientedLabTimeSeries
-            %                        with kinematic marker data
-            %     EMGData           - (optional) labTimeSeries with
-            %                        EMG recordings
-            %     GRFData           - (optional) orientedLabTimeSeries
-            %                        with ground reaction force data
-            %     beltSpeedSetData  - (optional) labTimeSeries with
-            %                        treadmill speed commands
-            %     beltSpeedReadData - (optional) labTimeSeries with
-            %                        treadmill speed readings
-            %     accData           - (optional) orientedLabTimeSeries
-            %                        with acceleration data
-            %     EEGData           - (optional) labTimeSeries with
-            %                        EEG recordings
-            %     footSwitches      - (optional) labTimeSeries with
-            %                        foot switch data
-            %     HreflexPin        - (optional) labTimeSeries with
-            %                        H-reflex sync signal
+            % Inputs:
+            %   metaData          - labMetaData object
+            %   markerData        - (optional) orientedLabTimeSeries with
+            %                       kinematic marker data
+            %   EMGData           - (optional) labTimeSeries with EMG
+            %                       recordings
+            %   GRFData           - (optional) orientedLabTimeSeries with
+            %                       ground reaction force data
+            %   beltSpeedSetData  - (optional) labTimeSeries with treadmill
+            %                       speed commands
+            %   beltSpeedReadData - (optional) labTimeSeries with treadmill
+            %                       speed readings
+            %   accData           - (optional) orientedLabTimeSeries with
+            %                       acceleration data
+            %   EEGData           - (optional) labTimeSeries with EEG
+            %                       recordings
+            %   footSwitches      - (optional) labTimeSeries with foot
+            %                       switch data
+            %   HreflexPin        - (optional) labTimeSeries with H-reflex
+            %                       sync signal
             %
-            %   Outputs:
-            %     this - labData object
+            % Outputs:
+            %   this - labData object
             %
-            %   See also: labMetaData, orientedLabTimeSeries, labTimeSeries
+            % Toolbox Dependencies: None
+            %
+            % See also LABMETADATA, ORIENTEDLABTIMESERIES, LABTIMESERIES.
 
             arguments
                 metaData
@@ -110,8 +113,8 @@ classdef labData
             %     % should be mandatory and fail instead of empty metaData
             %     this.metaData = labMetaData();
             % end
-            % commented because trialMetaData and experimentMetaData are
-            % no longer labMetaData objects
+            % NOTE: metaData is not validated as a labMetaData object
+            % because trialMetaData and experimentMetaData do not extend it
             % if isa(metaData, 'trialMetaData')
             this.metaData = metaData;
             % else

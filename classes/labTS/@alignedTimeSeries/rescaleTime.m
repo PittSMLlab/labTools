@@ -1,23 +1,25 @@
 function newThis = rescaleTime(this, newTs, newT0)
-%rescaleTime  Redefines time vector
+%RESCALETIME Redefines time vector.
 %
 %   newThis = rescaleTime(this) rescales time to [0, 1] range
 %
-%   newThis = rescaleTime(this, newTs, newT0) uses specified sampling
-%   period and initial time
+%   newThis = rescaleTime(this, newTs, newT0) uses specified sampling period
+% and initial time
 %
-%   Inputs:
-%       this - alignedTimeSeries object
-%       newTs - new sampling period (optional, default: 1/numSamples)
-%       newT0 - new initial time (optional, default: 0)
+% Inputs:
+%   this  - alignedTimeSeries object
+%   newTs - new sampling period (optional, default: 1/numSamples)
+%   newT0 - new initial time (optional, default: 0)
 %
-%   Outputs:
-%       newThis - alignedTimeSeries with rescaled time
+% Outputs:
+%   newThis - alignedTimeSeries with rescaled time
 %
 %   Note: Made for backwards compatibility of aligned series always
 %         being defined with time in [0 1]
 %
-%   See also: alignedTimeSeries
+% Toolbox Dependencies: None
+%
+% See also ALIGNEDTIMESERIES.
 
 % Re-defines the Time vector to force a new sampling time Made for
 % backwards compatibility of aligned series always being defined with

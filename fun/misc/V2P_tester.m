@@ -1,6 +1,10 @@
 %% V2P_Tester — Parse and Inspect V2P Data File
 % purpose: Load a data file (JSON or CSV), extract force and event
 %   columns, and report basic timing statistics.
+%
+% Toolbox Dependencies: None
+%
+% See also JSONTXT2CELL.
 
 clear
 clc
@@ -29,12 +33,15 @@ RHS = data(:, 4);
 LHS = data(:, 5);
 
 %% Compute timing statistics
-bframe    = frame(10:end);
+% TODO: source? first frame kept (earlier frames skipped) and frame rate
+firstFrame = 10;
+frameRate  = 100;                       % frame counter units per second
+bframe    = frame(firstFrame:end);
 framediff = diff(bframe);
 mean(framediff)                 % display mean frame interval (diagnostic)
 disp(['% data received: ' ...
     num2str(length(bframe) / (bframe(end) - bframe(1)) * 100)]);
-timeelap = (bframe(end) - bframe(1)) / 100;
+timeelap = (bframe(end) - bframe(1)) / frameRate;
 freq = length(bframe) / timeelap   % display computed frequency (diagnostic)
 
 %% Plot

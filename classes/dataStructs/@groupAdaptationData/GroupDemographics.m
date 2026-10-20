@@ -1,25 +1,37 @@
-function [ Demographics ] = GroupDemographics(SMatrix)
-%GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17
-%   Calculates number subjects, mean and std of age and number of males
-%   The input is either the output of "makeSMatrixV2" or "uiCreateStudy".
-%   Lets say the output of these funciton you called "DumbTester7", you
-%   would then call this funciton like this:
-%   Demographics=GroupDemographics(DumbTester7)
-%   Now Demographics has all the things you might want to know about your
-%   study for inclusion in paper and posters and the like
+function Demographics = GroupDemographics(SMatrix)
+%GROUPDEMOGRAPHICS Compute group and study demographics.
+%
+%   Demographics = GroupDemographics(SMatrix) calls the
+% GroupDemographics method of every group in SMatrix and adds study-wide
+% totals (number of subjects, mean and std of age, number of males).
+% SMatrix is the output of MAKESMATRIXV2 or UICREATESTUDY.
+%
+% Inputs:
+%   SMatrix - struct with one groupAdaptationData object per field
+%             (one field per group)
+%
+% Outputs:
+%   Demographics - struct with one field per group (the output of that
+%                  group's GroupDemographics method) and a field
+%                  StudyDemographics with N, MeanAge, StdAge, and NMale
+%                  over all groups
+%
+% Toolbox Dependencies: None
+%
+% See also MAKESMATRIXV2, UICREATESTUDY.
 
-grps=fieldnames(SMatrix);
-StudyAge=[];
-StudyMale=[];
-for g=1:length(grps)  
-    [Demographics.(grps{g})]=SMatrix.(grps{g}).GroupDemographics(grps{g});
-    StudyAge=[StudyAge Demographics.(grps{g}).AllAge];
-    StudyMale=[StudyMale Demographics.(grps{g}).NMale];
+grps      = fieldnames(SMatrix);
+StudyAge  = [];
+StudyMale = [];
+for g = 1:length(grps)
+    Demographics.(grps{g}) = SMatrix.(grps{g}).GroupDemographics(grps{g});
+    StudyAge  = [StudyAge Demographics.(grps{g}).AllAge];
+    StudyMale = [StudyMale Demographics.(grps{g}).NMale];
 end
 
-Demographics.StudyDemographics.N=length(StudyAge);
-Demographics.StudyDemographics.MeanAge=mean(StudyAge);
-Demographics.StudyDemographics.StdAge=std(StudyAge);
-Demographics.StudyDemographics.NMale=sum(StudyMale);
+Demographics.StudyDemographics.N = length(StudyAge);
+Demographics.StudyDemographics.MeanAge = mean(StudyAge);
+Demographics.StudyDemographics.StdAge = std(StudyAge);
+Demographics.StudyDemographics.NMale = sum(StudyMale);
 end
 

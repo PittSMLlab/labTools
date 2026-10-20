@@ -1,31 +1,33 @@
 function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)
-%assessMissing  Assesses missing data
+%ASSESSMISSING Assesses missing data.
 %
 %   [fh, ph, this] = assessMissing(this) creates plot showing missing
-%   markers
+% markers
 %
 %   [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph) uses
-%   specified labels and handles
+% specified labels and handles
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       labelPrefixes - marker prefixes to assess (optional, currently
-%                       ignored - uses all)
-%       fh - figure handle (optional, -1 to suppress display)
-%       ph - plot handle (optional)
+% Inputs:
+%   this          - orientedLabTimeSeries object
+%   labelPrefixes - marker prefixes to assess (optional, currently ignored -
+%                   uses all)
+%   fh            - figure handle (optional, -1 to suppress display)
+%   ph            - plot handle (optional)
 %
-%   Outputs:
-%       fh - figure handle
-%       ph - plot handle
-%       this - orientedLabTimeSeries with Quality field updated
+% Outputs:
+%   fh   - figure handle
+%   ph   - plot handle
+%   this - orientedLabTimeSeries with Quality field updated
 %
-%   See also: labTimeSeries/assessMissing
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/ASSESSMISSING.
 
 if nargin < 3 || isempty(fh)
     fh = figure();
 elseif fh == -1
     noDisp = true;
-    ph = [];
+    ph     = [];
 else
     figure(fh);
     if nargin < 4
@@ -37,15 +39,15 @@ end
 % if nargin < 2
 labelPrefixes = this.getLabelPrefix; % Ignoring labelPrefixes input
 % end
-data = this.getOrientedData(labelPrefixes);
+data    = this.getOrientedData(labelPrefixes);
 missing = any(isnan(data), 3);
-miss = missing(:, any(missing));
+miss    = missing(:, any(missing));
 if ~noDisp
-    pp = plot(miss, 'o');
+    pp  = plot(miss, 'o');
     aux = labelPrefixes(any(missing));
-    for i = 1:length(pp)
-        set(pp(i), 'DisplayName', [aux{i} ' (' ...
-            num2str(sum(miss(:, i))) ' frames)']);
+    for ii = 1:length(pp)
+        set(pp(ii), 'DisplayName', [aux{ii} ' (' ...
+            num2str(sum(miss(:, ii))) ' frames)']);
     end
     legend(pp);
     title('Missing markers');
@@ -62,8 +64,8 @@ if isempty(this.Quality)
 end
 Q = zeros(size(missing));
 Q(missing) = -1;
-for j = 1:3 % x, y, z
-    this.Quality(:, j:3:end) = Q;
+for jj = 1:3 % x, y, z
+    this.Quality(:, jj:3:end) = Q;
 end
 end
 

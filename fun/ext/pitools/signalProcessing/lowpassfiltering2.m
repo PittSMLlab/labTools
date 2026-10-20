@@ -1,6 +1,5 @@
 function data = lowpassfiltering2(data, fcut, filterOrder, fsample)
-%LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with
-%mirrored-boundary padding.
+%LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.
 %
 %   Applies a Butterworth lowpass filter with mirrored boundary padding to
 % avoid edge transients. The filter is applied using an FFT-based zero-phase
@@ -18,7 +17,7 @@ function data = lowpassfiltering2(data, fcut, filterOrder, fsample)
 % Outputs:
 %   data - (N×C) double, filtered data (same size as input)
 %
-% Toolbox Dependencies: None (butter, filter, fft, ifft are core MATLAB)
+% Toolbox Dependencies: Signal Processing Toolbox (butter)
 %
 % See also LOWPASSFILTERING, FILTFILTHD_SHORT.
 
@@ -33,16 +32,17 @@ end
 dataMirrored = [data; data(end:-1:1, :)];
 
 %% Design filter and compute its impulse response
-nyquist      = 0.5 * fsample;             % Nyquist frequency (Hz)
-[b, a]       = butter(filterOrder, fcut / nyquist);
-impulse      = [1; zeros(size(dataMirrored, 1) - 1, 1)];
+nyquist = 0.5 * fsample;             % Nyquist frequency (Hz)
+[b, a] = butter(filterOrder, fcut / nyquist);
+impulse       = [1; zeros(size(dataMirrored, 1) - 1, 1)];
 filterImpulse = filter(b, a, impulse);
 
 %% Apply zero-phase filter via FFT: convolve spectra, take magnitude squared
 % Squaring the magnitude of the impulse spectrum implements zero-phase
 % (forward + backward) filtering without running the filter twice.
 filteredMirrored = ifft( ...
-    fft(dataMirrored) .* abs(fft(filterImpulse * ones(1, size(data, 2)))) .^ 2);
+    fft(dataMirrored) .* abs(fft(filterImpulse * ...
+    ones(1, size(data, 2)))) .^ 2);
 
 %% Return only the original (un-mirrored) portion
 data = filteredMirrored(1:size(data, 1), :);

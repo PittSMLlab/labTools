@@ -49,6 +49,12 @@ function out = calcParameters(trialData, subData, eventClass, ...
 %         parameters with good/bad stride labels, per-reason stride-
 %         quality columns, and a non-destructive 'triageOutlier' flag
 %
+% Side effects:
+%   Writes no files. Prints a warning line with disp when a trial has
+%   no strides or has 'bad' strides, and issues calcParameters:*
+%   warnings when an optional parameter block (harmonic ratio, OG
+%   force, H-reflex, perceptual task) fails or is skipped.
+%
 % Toolbox Dependencies:
 %   None
 %
@@ -329,10 +335,13 @@ end
 % Only compute these parameters if there are overground force recordings.
 OG_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
 OG_idx = contains(trialData.GRFData.labels, OG_names);
+% TODO: source? Minimum max-min range of each Fz channel that counts as
+% real force data (i.e., not a constant value).
+minForceRange = 100;
 
 if sum(OG_idx) == length(OG_names) || ...
         all((max(trialData.GRFData.Data(:, OG_idx)) - ...
-        min(trialData.GRFData.Data(:, OG_idx))) > 100)
+        min(trialData.GRFData.Data(:, OG_idx))) > minForceRange)
     % There are differences in forces throughout the experiment, and
     % not a constant value or NaNs.
     try
@@ -409,16 +418,11 @@ if any(strcmpi(parameterClasses, 'basic'))
     badOriginal = bad;  % copy 'bad' strides array for later comparison
 
     % ------------------- REMOVE OUTLIER STRIDES ----------------------
-    % NOTE: Pablo I. commented this outlier strides block (13 Mar.
-    % 2017) with rationale that the code does not do anything (i.e.,
-    % it defines an 'aux' variable that is not used elsewhere).
-    % NOTE: NWB is confused because it appears this block was doing
-    % something, namely updating strides labeled 'bad' based on
-    % outliers.
-    % NOTE: this block's role is now filled non-destructively by
+    % NOTE: this block's role is filled non-destructively by
     % FLAGTRIAGEOUTLIERS below, which flags candidate outliers in the
-    % 'triageOutlier' column WITHOUT folding them into 'bad'. Preserved
-    % here as historical reference only; do not restore verbatim.
+    % 'triageOutlier' column WITHOUT folding them into 'bad'. The
+    % commented-out code is kept for reference only; do not restore it
+    % verbatim.
     % TODO: generalize below process to potentially filter any param.
     % TODO: make this a method of 'parameterSeries' or 'labTimeSeries'
     % TODO: consider a different method of filtering the parameters
@@ -436,7 +440,7 @@ if any(strcmpi(parameterClasses, 'basic'))
     %             3.5*iqr(paramVals)) = true;
     %
     %         % Criterion 2: ignore the first five strides of any trial
-    %         % NOTE: NWB how does this add anything from criterion 1?
+    %         % NOTE: how does this add anything from criterion 1?
     %         inds = find(abs(paramVals - ...
     %             median(paramVals,'omitnan')) > 3.5*iqr(paramVals));
     %         inds = inds(inds > 5);
@@ -496,8 +500,8 @@ if any(strcmpi(parameterClasses, 'basic'))
 
     % Identify strides newly marked 'bad' since the initial labeling
     outlierStrides = find(bad & ~badOriginal);
-    % TODO: confusing — NWB sees no code removing 'bad' strides from
-    % data; why are not all 'bad' strides displayed in below warning?
+    % TODO: confusing — no code removes 'bad' strides from the data;
+    % why are not all 'bad' strides displayed in the warning below?
     disp(['Removed ' num2str(numel(outlierStrides)) ...
         ' stopping/starting strides from ' file ' at stride(s) ' ...
         num2str(outlierStrides')]);

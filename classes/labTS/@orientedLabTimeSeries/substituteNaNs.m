@@ -1,17 +1,19 @@
 function newThis = substituteNaNs(this, method)
-%substituteNaNs  Fills NaN values (override)
+%SUBSTITUTENANS Fills NaN values (override).
 %
 %   newThis = substituteNaNs(this, method) fills NaN and preserves
-%   orientedLabTimeSeries type
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       method - interpolation method (optional)
+% Inputs:
+%   this   - orientedLabTimeSeries object
+%   method - interpolation method (optional)
 %
-%   Outputs:
-%       newThis - orientedLabTimeSeries with NaN filled
+% Outputs:
+%   newThis - orientedLabTimeSeries with NaN filled
 %
-%   See also: labTimeSeries/substituteNaNs
+% Toolbox Dependencies: None
+%
+% See also LABTIMESERIES/SUBSTITUTENANS.
 
 if nargin < 2 || isempty(method)
     method = [];

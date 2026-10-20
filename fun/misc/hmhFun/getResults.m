@@ -21,13 +21,14 @@ function results = getResults(Study, params, groups, ...
 %   results - Struct with one field per outcome measure; each field
 %             has avg (nGroups×nParams), se (same), and indiv sub-struct
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies: Signal Processing Toolbox (medfilt1)
 %
 % See also SMOOTHEDMAX, BARGROUPS, GETRESULTSSMART.
 
 catchNumPts     = 5;   % catch
 steadyNumPts    = 40;  % end of adaptation
 transientNumPts = 5;   % OG and washout
+% TODO: source? The body hard-codes stride windows (1:10, end-5, +20).
 
 nParams = length(params);
 
@@ -223,7 +224,8 @@ for gg = 1:nGroups
             if ~isempty(idx)
                 AdaptExtentBeforeCatch(ss, idx) = ...
                     AdaptExtentBeforeCatch(ss, idx) - mean( ...
-                    adapt1Velocity((end-2)-transientNumPts+1:(end-2), :), ...
+                    adapt1Velocity((end-2)-transientNumPts+1:(end-2), ...
+                    :), ...
                     'omitnan');
             end
 
@@ -380,7 +382,8 @@ if plotFlag
     %         barGroups(Study,results,groups,params,epochs)
     %     end
 
-    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
+    %     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch', ...
+    %    'AvgAdaptAll','TMsteady'};
     %     if nargin>5
     %         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
     %     else

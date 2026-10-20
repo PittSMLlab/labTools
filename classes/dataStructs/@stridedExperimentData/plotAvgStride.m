@@ -1,26 +1,27 @@
 function [figHandle, plotHandles] = plotAvgStride(this, field, ...
     conditions, plotHandles, figHandle)
-%plotAvgStride  Plots average stride across conditions
+%PLOTAVGSTRIDE Plots average stride across conditions.
 %
 %   [figHandle, plotHandles] = plotAvgStride(this, field, conditions)
-%   creates plots showing the average stride for each condition
+% creates plots showing the average stride for each condition
 %
 %   [figHandle, plotHandles] = plotAvgStride(this, field, conditions,
-%   plotHandles, figHandle) uses existing plot handles
+% plotHandles, figHandle) uses existing plot handles
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       field - name of field to plot (e.g., 'procEMGData',
-%               'angleData')
-%       conditions - vector of condition indices to plot
-%       plotHandles - existing subplot handles (optional)
-%       figHandle - existing figure handle (optional)
+% Inputs:
+%   this        - stridedExperimentData object
+%   field       - name of field to plot (e.g., 'procEMGData', 'angleData')
+%   conditions  - vector of condition indices to plot
+%   plotHandles - existing subplot handles (optional)
+%   figHandle   - existing figure handle (optional)
 %
-%   Outputs:
-%       figHandle - handle to figure
-%       plotHandles - array of subplot handles
+% Outputs:
+%   figHandle   - handle to figure
+%   plotHandles - array of subplot handles
 %
-%   See also: plotAllStrides, strideData/plotCellAvg
+% Toolbox Dependencies: None
+%
+% See also PLOTALLSTRIDES, STRIDEDATA/PLOTCELLAVG.
 
 % Set colors
 poster_colors;
@@ -36,8 +37,8 @@ else
     figure(figHandle); % Only works for one condition!
 end
 set(figHandle, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
-aux = this.getStridesFromCondition(conditions(1));
-N = 2^ceil(log2(size(aux{1}.(field).Data, 1)));
+aux       = this.getStridesFromCondition(conditions(1));
+N         = 2^ceil(log2(size(aux{1}.(field).Data, 1)));
 structure = this.getDataAsMatrices(field, conditions, N);
 if nargin < 4 || isempty(plotHandles)
     M = size(structure{1}, 2);
@@ -45,19 +46,19 @@ if nargin < 4 || isempty(plotHandles)
     plotHandles = tight_subplot(b, a, [0.04 0.02], [0.05 0.02], ...
         [0.04 0.05]);
 end
-for i = 1:M
+for ii = 1:M
     % subplot(b, a, i)
-    subplot(plotHandles(i));
+    subplot(plotHandles(ii));
     hold on;
     legStr = {};
-    title(aux{1}.(field).labels{i});
+    title(aux{1}.(field).labels{ii});
     for cond = conditions
-        data = mean(squeeze(structure{cond}(:, i, :)), 2);
+        data = mean(squeeze(structure{cond}(:, ii, :)), 2);
         plot([0:N - 1] / N, data, 'LineWidth', 2, 'Color', ...
             ColorOrder(mod(cond - 1, size(ColorOrder, 1)) + 1, :));
         legStr{end + 1} = ['Condition ' num2str(cond)];
     end
-    if i == M
+    if ii == M
         legend(legStr);
     end
     hold off;

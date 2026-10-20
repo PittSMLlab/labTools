@@ -1,32 +1,33 @@
 function condNames = getConditionsThatMatchV2(this, name, type)
-%getConditionsThatMatchV2  Returns condition names matching pattern
-%with fallback
+%GETCONDITIONSTHATMATCHV2 Return matching condition names, with fallback.
 %
 %   condNames = getConditionsThatMatchV2(this, name, type) returns
-%   condition names matching both name and type patterns, with fallback
-%   to 'TR' (training) type if no matches found for 'NIM' or 'TM' types
+% condition names matching both name and type patterns, with fallback
+% to 'TR' (training) type if no matches found for 'NIM' or 'TM' types
 %
-%   Inputs:
-%       this - experimentMetaData object
-%       name - string pattern to search for in condition names
-%       type - string pattern for type filtering (optional)
+% Inputs:
+%   this - experimentMetaData object
+%   name - string pattern to search for in condition names
+%   type - string pattern for type filtering (optional)
 %
-%   Outputs:
-%       condNames - cell array of matching condition names
+% Outputs:
+%   condNames - cell array of matching condition names
 %
-%   Note: This is a variant of getConditionsThatMatch with special
-%         handling for training conditions. When searching for 'NIM' or
-%         'TM' type conditions and finding none, it falls back to
-%         searching for 'TR' (training) conditions.
+% NOTE: This is a variant of getConditionsThatMatch with special handling
+%       for training conditions. When searching for 'NIM' or 'TM' type
+%       conditions and finding none, it falls back to searching for 'TR'
+%       (training) conditions.
 %
-%   See also: getConditionsThatMatch, getConditionIdxsFromName
+% Toolbox Dependencies: None
+%
+% See also GETCONDITIONSTHATMATCH, GETCONDITIONIDXSFROMNAME.
 
 if nargin < 2 || isempty(name) || ~isa(name, 'char')
     error('Pattern name to search for needs to be a string');
 end
 
 ccNames = this.conditionName;
-idx = cellfun(@(x) isempty(x), ccNames);
+idx     = cellfun(@(x) isempty(x), ccNames);
 if sum(idx) >= 1
     r = find(idx == 1);
     for q = 1:length(r)
@@ -39,22 +40,27 @@ patternMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), ...
 if nargin > 2 && ~isempty(type) && isa(type, 'char')
     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), ...
         lower(type))));
-    % if sum(typeMatches) == 0 || strcmp(type, 'TM') % Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
-    %     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), lower('TR'))));
+    % if sum(typeMatches) == 0 || strcmp(type, ...
+    %    'TM')
+    % (disabled alternative of the 'TR' fallback below)
+    %     typeMatches = cellfun(@(x) ~isempty(x), ...
+    %    (strfind(lower(ccNames), lower('TR'))));
     % end
 else
     typeMatches = true(size(patternMatches));
 end
-% patternMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(name))));
+% patternMatches = cellfun(@(x) ~isempty(x), ...
+%    (strfind(lower(this.conditionName), lower(name))));
 % if nargin > 2 && ~isempty(type) && isa(type, 'char')
-%     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(type))));
+%     typeMatches = cellfun(@(x) ~isempty(x), ...
+%    (strfind(lower(this.conditionName), lower(type))));
 % else
 %     typeMatches = true(size(patternMatches));
 % end
 condNames = this.conditionName(patternMatches & typeMatches);
 
-% Marcela & DMMO: I am not sure if this is the best way to do this but
-% its a temporal fix for R01
+% TODO: temporary fix for R01; confirm the 'TR' fallback is the best
+% approach.
 if isempty(condNames) && strcmp(type, 'NIM') || ...
         isempty(condNames) && strcmp(type, 'TM')
     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), ...

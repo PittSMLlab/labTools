@@ -1,28 +1,40 @@
-function [figHandle] = plot(this)
-%PLOT Implementation of the plot method for SynergySetCollections
+function figHandle = plot(this)
+%PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.
+%
+%   NOTE: collections with more than one dimension are not plotted; cluster
+% them first and plot the ClusteredSynergySetCollection, which overrides
+% this method.
+%
+% Inputs:
+%   this - SynergySetCollection object
+%
+% Outputs:
+%   figHandle - handle of the new figure
+%
+% Toolbox Dependencies: None
 
 %clusteredSynergySetCollections override this plotting function!
 
 
-figHandle=figure('Name',['Plot of ' this.name ' Collection']);
+figHandle = figure('Name',['Plot of ' this.name ' Collection']);
 hold on
 %IF collection is 1D, plot each set in the collection as a row of a 2D
 %array of plots
-if numel(this.content)==length(this.content)
-    N=numel(this.content);
-    M=size(this.content{1}.content,1);
-    h1=zeros(M,N);
-    h2=zeros(M,N);
-    for i=1:N
-        for j=1:M
-            h1(j,i)=subplot(3*N,M,[3*M*(i-1)+j, 3*M*(i-1)+j+M]);
-            h2(j,i)=subplot(3*N,M,[3*M*(i-1)+j+2*M]);
+if numel(this.content) == length(this.content)
+    N  = numel(this.content);
+    M  = size(this.content{1}.content,1);
+    h1 = zeros(M,N);
+    h2 = zeros(M,N);
+    for ii = 1:N
+        for jj = 1:M
+            h1(jj,ii) = subplot(3*N,M,[3*M*(ii-1)+jj, 3*M*(ii-1)+jj+M]);
+            h2(jj,ii) = subplot(3*N,M,[3*M*(ii-1)+jj+2*M]);
         end
     end
-    for i=1:N
-        this.content{i}.plot(h1(:,i));
-        subplot(h1(1,i))
-        ylabel(this.indexLabels{1}{i})
+    for ii = 1:N
+        this.content{ii}.plot(h1(:,ii));
+        subplot(h1(1,ii))
+        ylabel(this.indexLabels{1}{ii})
     end
 end
 hold off

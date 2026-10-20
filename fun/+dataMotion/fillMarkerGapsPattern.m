@@ -1,19 +1,34 @@
 function markerGapsUpdated = ...
     fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon,shouldSave)
-%FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern
-%   This function fills gaps in all marker trajectories identified in
-% markerGaps by applying a transformed pattern from a specified reference
-% marker's trajectory over the gap range.
+%FILLMARKERGAPSPATTERN Fill marker gaps using a reference marker pattern.
 %
-% input(s):
-%   markerGaps: struct with start and end frame indices of gaps in each
-%       marker's trajectory, as obtained from extractMarkerGapsTrial
-%   pathTrial: string or character array of the full path to the trial
-%   refMarker: name of the reference marker to use for gap filling pattern
-%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
-%   shouldSave: (optional) logical, whether to save changes (default: true)
-% output(s):
-%   updatedMarkerGaps: struct with only remaining gaps after processing
+%   Fills the gaps listed in markerGaps by applying a transformed copy of
+% the reference marker's trajectory over each gap range. Gaps whose
+% neighboring frames or reference frames are missing are skipped and
+% returned.
+%
+% Side effects: needs a running Vicon Nexus (a connection is opened when
+%   no vicon object is passed); opens the trial, writes the filled
+%   trajectories back to Nexus and, when shouldSave is true and something
+%   changed, saves the trial. Errors on a malformed markerGaps struct or
+%   a trial without a subject.
+%
+% Inputs:
+%   markerGaps - struct with one field per marker, each an Nx2 array of
+%                [start end] gap frames (see extractMarkerGapsTrial)
+%   pathTrial  - full path to the trial
+%   refMarker  - name of the reference marker supplying the pattern
+%   vicon      - (optional) Vicon Nexus SDK object
+%   shouldSave - (optional) logical, save the trial after filling
+%                (default: true)
+%
+% Outputs:
+%   markerGapsUpdated - struct with only the gaps that remain unfilled
+%
+% Toolbox Dependencies: None
+%
+% See also DATAMOTION.EXTRACTMARKERGAPSTRIAL,
+%   DATAMOTION.FILLSMALLMARKERGAPSSPLINE.
 
 narginchk(3,5);                 % verify correct number of input arguments
 
@@ -21,7 +36,7 @@ if nargin < 5 || isempty(shouldSave)        % if no 'shouldSave' input
     shouldSave = true;                      % default to saving changes
 end
 
-% validate 'markerGaps' structure format
+%% Validate inputs and open the trial
 markers = fieldnames(markerGaps);
 for mrkr = 1:numel(markers)                 % for each marker, ...
     gaps = markerGaps.(markers{mrkr});      % retrieve the 'gaps' array
@@ -59,14 +74,14 @@ catch
     return;
 end
 
-% process each marker gap in the 'markerGaps' struct
+%% Fill the gaps
 fprintf(['Filling marker gaps using reference marker %s pattern ' ...
     'fill...\n'],refMarker);
 wasChanged = false;                     % track whether changes were made
 
 for mrkr = 1:numel(markers)
     nameMarker = markers{mrkr};         % get marker name
-    gaps = markerGaps.(nameMarker);     % retrieve gap indices for marker
+    gaps       = markerGaps.(nameMarker); % retrieve gap indices for marker
 
     try                                 % get marker trajectory data
         [trajX,trajY,trajZ,existsTraj] = ...
@@ -78,12 +93,12 @@ for mrkr = 1:numel(markers)
     end
 
     gapsRemaining = gaps;               % preallocate remaining gaps array
-    indNextGap = 1;
+    indNextGap    = 1;
 
     for indGap = 1:size(gaps,1)         % for each target marker gap, ...
-        gapStart = gaps(indGap,1);
-        gapEnd = gaps(indGap,2);
-        indPreGap = gapStart - 1;       % frame before gap
+        gapStart   = gaps(indGap,1);
+        gapEnd     = gaps(indGap,2);
+        indPreGap  = gapStart - 1;       % frame before gap
         indPostGap = gapEnd + 1;        % frame after gap
 
         % skip gap if 'indPreGap' or 'indPostGap' is invalid
@@ -152,7 +167,7 @@ end
 fprintf('%s reference pattern-based marker gap filling complete.\n', ...
     refMarker);
 
-% save the trial if changes were made and 'shouldSave' is true
+%% Save the trial
 if wasChanged && shouldSave
     fprintf('Saving the trial with changes...\n');
     try

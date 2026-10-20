@@ -11,7 +11,9 @@ function out = computeHreflexParameters(strideEvents, HreflexData, ...
 % (mid single-stance). Output is a parameterSeries that can be
 % concatenated with other parameter series from the same trial. The
 % label set is fixed: a muscle not recorded in the session (e.g., no MG
-% in SpinalAdapt) keeps its labels, with NaN values.
+% in SpinalAdapt) keeps its labels, with NaN values. A session that
+% records the trigger channels without stimulating (Hreflex.
+% hasStimTrigger is false) returns the full NaN set.
 %
 % Inputs:
 %   strideEvents - struct of stride event times with fields tSHS, tFTO,
@@ -28,6 +30,10 @@ function out = computeHreflexParameters(strideEvents, HreflexData, ...
 %   out - parameterSeries of H-reflex parameters per stride (66
 %         parameters: timing, amplitude, RMS, and background EMG for
 %         each combination of leg, muscle, and measure)
+%
+% Side effects:
+%   Writes no files. Issues a Hreflex:missingMuscleChannel warning for
+%   each unrecorded SOL/MG/LG channel (its parameters are NaN).
 %
 % Toolbox Dependencies:
 %   None
@@ -398,6 +404,7 @@ numSampsBeforeSlow = round(numSampsSingleStanceSlow * percentBefore);
 numSampsBeforeFast = round(numSampsSingleStanceFast * percentBefore);
 bemgDur    = 0.050;     % 50 ms background EMG window
 bemgOffset = 50;        % 25 ms sample offset into mid-stance window (2 kHz)
+mvPerV     = 1000;      % millivolts per volt (amplitudes are in mV)
 % use valid stimulation strides only when setting numSampsBeforePerLeg
 if indSlow == 1                             % if right leg is slow, ...
     numSampsBeforePerLeg = {numSampsBeforeSlow(isStimStrideSlow); ...
@@ -421,15 +428,15 @@ for mscl = 1:length(muscles)            % for each muscle of interest, ...
         indsStimArtValid, EMGDataByMuscle(mscl, :)');
     [amps, rms] = Hreflex.computeAmplitudes(snippets(:, 1));
     % convert wave amplitudes from Volts to Millivolts
-    amps = cellfun(@(x) 1000.*x, amps, 'UniformOutput', false);
-    rms = cellfun(@(x) 1000.*x, rms, 'UniformOutput', false);
+    amps = cellfun(@(x) mvPerV.*x, amps, 'UniformOutput', false);
+    rms = cellfun(@(x) mvPerV.*x, rms, 'UniformOutput', false);
 
     if any(cellfun(@(x) ~isempty(x), indsNoStimBEMG))
         snippetsNoStimBEMG = Hreflex.extractBackgroundEMG( ...
             indsNoStimBEMG, EMGDataByMuscle(mscl, :)');
         % compute root mean square of background EMG windows
         rmsNoStimBEMG = cellfun( ...
-            @(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
+            @(x) mvPerV.*sqrt(mean(x.^2, 2, 'omitnan')), ...
             snippetsNoStimBEMG, 'UniformOutput', false);
         eval(['NoStimBEMGRMSSlow' muscle ...
             '(~isStimStrideSlow) = rmsNoStimBEMG{indSlow};']);
@@ -441,7 +448,8 @@ for mscl = 1:length(muscles)            % for each muscle of interest, ...
         indsStimArtValid, EMGDataByMuscle(mscl, :)', ...
         'dur', bemgDur, 'numSampsBefore', numSampsBeforePerLeg);
     % compute root mean square of background EMG windows
-    rmsHreflexBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
+    rmsHreflexBEMG = cellfun( ...
+        @(x) mvPerV.*sqrt(mean(x.^2, 2, 'omitnan')), ...
         snippetsHreflexBEMG, 'UniformOutput', false);
 
     for lg = 1:2                        % for slow (1) & fast (2) leg, ...

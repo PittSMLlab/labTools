@@ -1,20 +1,22 @@
 classdef derivedMetaData < trialMetaData
-    %derivedMetaData  Metadata for data derived from a parent trial
+    %DERIVEDMETADATA Metadata for data derived from a parent trial.
     %
-    %   derivedMetaData extends trialMetaData to represent metadata
-    %   for data segments or processed data derived from a parent
-    %   trial. It maintains a reference to the parent trial's
-    %   metadata and can inherit properties from it.
+    %   derivedMetaData extends trialMetaData to represent metadata for
+    % data segments or processed data derived from a parent trial. It
+    % maintains a reference to the parent trial's metadata and can
+    % inherit properties from it.
     %
-    %derivedMetaData properties:
+    % derivedMetaData properties:
     %   parentMetaData - reference to the parent trial's metadata
     %                    object
     %   (inherits all properties from trialMetaData)
     %
-    %derivedMetaData methods:
+    % derivedMetaData methods:
     %   derivedMetaData - constructor for derived metadata
     %
-    %See also: trialMetaData, strideMetaData
+    % Toolbox Dependencies: None
+    %
+    % See also TRIALMETADATA, STRIDEMETADATA.
 
     %% Properties
     properties (SetAccess = private)
@@ -24,50 +26,52 @@ classdef derivedMetaData < trialMetaData
     %% Constructor
     methods
         function this = derivedMetaData(ID, date, experimenter, desc, ...
-                obs, refLeg, parentMeta, condition, rawDataFilename, ...
-                type, schenleyLab, perceptualTasks, datlog, fastLeg)
-            %derivedMetaData  Constructor for derivedMetaData class
+            obs, refLeg, parentMeta, condition, rawDataFilename, ...
+            type, schenleyLab, perceptualTasks, datlog, fastLeg)
+            %DERIVEDMETADATA Constructor for derivedMetaData class.
             %
-            %   this = derivedMetaData(ID, date, experimenter, desc,
-            %   obs, refLeg, parentMeta) creates a derived metadata
-            %   object with specified parameters and inherits
-            %   remaining properties from parent metadata
+            %   this = derivedMetaData(ID, date, experimenter, desc, obs,
+            % refLeg, parentMeta) creates a derived metadata object with
+            % specified parameters and inherits the remaining properties
+            % from the parent metadata.
             %
-            %   this = derivedMetaData(ID, date, experimenter, desc,
-            %   obs, refLeg, parentMeta, condition, rawDataFilename,
-            %   type, schenleyLab, perceptualTasks, datlog, fastLeg)
-            %   creates a derived metadata object with all specified
-            %   parameters
+            %   this = derivedMetaData(ID, date, experimenter, desc, obs,
+            % refLeg, parentMeta, condition, rawDataFilename, type,
+            % schenleyLab, perceptualTasks, datlog, fastLeg) creates a
+            % derived metadata object with all specified parameters.
             %
-            %   Inputs:
-            %       ID - identifier string for the derived data
-            %       date - date of data creation
-            %       experimenter - name of experimenter
-            %       desc - description of the derived data
-            %       obs - observations about the derived data
-            %       refLeg - reference leg, 'L' or 'R'
-            %       parentMeta - parent trial's metadata object
-            %       condition - condition number (optional, inherits
-            %                   from parent if only 7 args)
-            %       rawDataFilename - raw data filename(s) (optional,
-            %                         inherits from parent if only 7
-            %                         args)
-            %       type - trial type (optional, inherits from parent
-            %              if only 7 args)
-            %       schenleyLab - Schenley lab flag (optional,
-            %                     inherits from parent if only 7 args)
-            %       perceptualTasks - perceptual tasks flag (optional,
-            %                         inherits from parent if only 7
-            %                         args)
-            %       datlog - data log structure (optional, inherits
-            %                from parent if only 7 args)
-            %       fastLeg - fast leg designation (optional,
-            %                 defaults to refLeg)
+            % Inputs:
+            %   ID              - identifier string for the derived data
+            %   date            - date of data creation
+            %   experimenter    - name of experimenter
+            %   desc            - description of the derived data
+            %   obs             - observations about the derived data
+            %   refLeg          - reference leg, 'L' or 'R'
+            %   parentMeta      - parent trial's metadata object
+            %   condition       - (optional) condition number; inherited
+            %                     from parent if only 7 args
+            %   rawDataFilename - (optional) raw data filename(s);
+            %                     inherited from parent if only 7 args
+            %   type            - (optional) trial type; inherited from
+            %                     parent if only 7 args
+            %   schenleyLab     - (optional) Schenley lab flag; inherited
+            %                     from parent if only 7 args
+            %   perceptualTasks - (optional) perceptual tasks flag;
+            %                     inherited from parent if only 7 args
+            %   datlog          - (optional) data log structure; inherited
+            %                     from parent if only 7 args
+            %   fastLeg         - (optional) fast leg designation;
+            %                     defaults to refLeg
             %
-            %   Outputs:
-            %       this - derivedMetaData object
+            % Outputs:
+            %   this - derivedMetaData object
             %
-            %   See also: trialMetaData, strideMetaData
+            % NOTE: The superclass constructor receives parentMeta.type,
+            %       not the type argument.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also TRIALMETADATA, STRIDEMETADATA.
 
             % parentMeta is given, but no other args are given, set
             % it to the parent
@@ -111,9 +115,9 @@ classdef derivedMetaData < trialMetaData
             this@trialMetaData(ID, desc, obs, refLeg, condition, ...
                 rawDataFilename, parentMeta.type, schenleyLab, ...
                 perceptualTasks, datlog)
-            % if isa(parentMeta, 'labMetaData'); % Had to comment this on
-            %   10/7/2014, because trialMetaData and experimentMetaData are
-            %   no longer labMetaData objects. -Pablo
+            % NOTE: parentMeta is not validated as a labMetaData object
+            % because trialMetaData and experimentMetaData do not extend it
+            % if isa(parentMeta, 'labMetaData');
             this.parentMetaData = parentMeta;
             % else
             %     ME = MException('derivedMetaData:Constructor',

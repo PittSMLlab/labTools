@@ -1,35 +1,37 @@
 function adaptData = makeDataObj(this, filename, experimentalFlag, ...
     contraLateralFlag)
-%makeDataObj  Creates an adaptationData object
+%MAKEDATAOBJ Creates an adaptationData object
 %
-%   adaptData = makeDataObj(this, filename) creates an adaptationData
-%   object and saves it to file
+%   adaptData = makeDataObj(this, filename) creates an adaptationData object
+% and saves it to file
 %
 %   adaptData = makeDataObj(this, filename, experimentalFlag,
-%   contraLateralFlag) controls inclusion of experimental parameters
-%   and contralateral computation
+% contraLateralFlag) controls inclusion of experimental parameters and
+% contralateral computation
 %
-%   Inputs:
-%       this - experimentData object
-%       filename - string for saving (typically subject identifier,
-%                  optional)
-%       experimentalFlag - false (or 0) prevents experimental
-%                          parameter calculation (optional)
-%       contraLateralFlag - if true, computes parameters using
-%                           non-reference leg (optional)
+% Inputs:
+%   this              - experimentData object
+%   filename          - string for saving (typically subject identifier,
+%                       optional)
+%   experimentalFlag  - false (or 0) prevents experimental parameter
+%                       calculation (optional)
+%   contraLateralFlag - if true, computes parameters using non-reference leg
+%                       (optional)
 %
-%   Outputs:
-%       adaptData - adaptationData object, saved to present working
-%                   directory if filename specified
+% Outputs:
+%   adaptData - adaptationData object, saved to present working directory if
+%               filename specified
 %
-%   Examples:
-%       adaptData = expData.makeDataObj('Sub01'); saves
-%       adaptationData object to Sub01params.mat
+% Toolbox Dependencies: None
 %
-%       adaptData = expData.makeDataObj('', false); does not include
-%       experimentalParams and does not save to file
+% Example:
+%   adaptData = expData.makeDataObj('Sub01'); saves
+%   adaptationData object to Sub01params.mat
 %
-%   See also: adaptationData, makeDataObjNew
+%   adaptData = expData.makeDataObj('', false); does not include
+%   experimentalParams and does not save to file
+%
+% See also ADAPTATIONDATA, MAKEDATAOBJNEW.
 
 if ~(this.isProcessed)
     ME = MException('experimentData:makeDataObj', ...

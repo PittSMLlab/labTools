@@ -1,35 +1,40 @@
 function [this, m, permuteList, modelScore, badFlag, modelScore2] = ...
     fixBadLabels(this, permuteList)
-%fixBadLabels  Detects and fixes label swaps
+%FIXBADLABELS Detects and fixes label swaps.
 %
 %   [this, m, permuteList, modelScore, badFlag, modelScore2] =
-%   fixBadLabels(this) attempts to detect and fix swapped marker labels
+% fixBadLabels(this) attempts to detect and fix swapped marker labels
 %
 %   [this, m, permuteList, modelScore, badFlag, modelScore2] =
-%   fixBadLabels(this, permuteList) applies known permutations first
+% fixBadLabels(this, permuteList) applies known permutations first
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       permuteList - known label permutations to try (optional)
+% Inputs:
+%   this        - orientedLabTimeSeries object
+%   permuteList - known label permutations to try (optional)
 %
-%   Outputs:
-%       this - orientedLabTimeSeries with fixed labels
-%       m - validated marker model
-%       permuteList - permutations applied
-%       modelScore - model quality score (max robust std)
-%       badFlag - true if model validation failed
-%       modelScore2 - alternate model score (mean robust std)
+% Outputs:
+%   this        - orientedLabTimeSeries with fixed labels
+%   m           - validated marker model
+%   permuteList - permutations applied
+%   modelScore  - model quality score (max robust std)
+%   badFlag     - true if model validation failed
+%   modelScore2 - alternate model score (mean robust std)
 %
-%   See also: buildNaiveDistancesModel, validateMarkerModel
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox
+%
+% See also BUILDNAIVEDISTANCESMODEL, VALIDATEMARKERMODEL.
 
 % error('Unimplemented');
 if nargin < 2
     permuteList = [];
 end
-aux = this;
+minTrainingSecs   = 10; % At least 10 secs of data with true movement
+robustStdQuantile = 0.94; % TODO: source?
+staticStdLimit    = 20; % TODO: source? (median sigma below = static)
+aux      = this;
 duration = aux.timeRange;
 % At least 10 secs of data with true movement for training
-if duration > 10
+if duration > minTrainingSecs
     m = buildNaiveDistancesModel(aux);
     [badFlag, MO, OBO] = validateMarkerModel(m, false);
     bF = badFlag;
@@ -57,8 +62,8 @@ if duration > 10
         if sum(MO | OBO) < nB
             fprintf('Found switched labels:\n');
             auxList = {'NameA', 'NameB'};
-            for i = 1:size(permuteList, 1)
-                preList = m.markerLabels(permuteList(i, :));
+            for ii = 1:size(permuteList, 1)
+                preList = m.markerLabels(permuteList(ii, :));
                 fprintf([preList{1} ' - ' preList{2} '\n']);
                 warning('off');
                 aux = aux.renameLabels(preList, auxList);
@@ -78,15 +83,15 @@ if duration > 10
         end
     end
 
-    sigma = m.getRobustStd(0.94);
-    if median(sigma) < 20 % Static trial most likely
+    sigma = m.getRobustStd(robustStdQuantile);
+    if median(sigma) < staticStdLimit % Static trial most likely
         badFlag = true;
     end
     sigma = naiveDistances.stat2Matrix(sigma);
     sigma = triu(sigma) - triu(sigma, 3);
     sigma(sigma == 0) = NaN;
-    modelScore = nanmax(sigma(:));
-    modelScore2 = nanmean(sigma(:));
+    modelScore  = max(sigma(:), [], 'omitnan');
+    modelScore2 = mean(sigma(:), 'omitnan');
 end
 end
 

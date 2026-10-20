@@ -1,19 +1,20 @@
 function newThis = castAsTS(this)
-%castAsTS  Converts to labTimeSeries
+%CASTASTS Converts to labTimeSeries.
 %
-%   newThis = castAsTS(this) converts alignedTimeSeries to
-%   labTimeSeries
+%   newThis = castAsTS(this) converts alignedTimeSeries to labTimeSeries
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       newThis - labTimeSeries object
+% Outputs:
+%   newThis - labTimeSeries object
 %
 %   Note: Temp function until alignedTS inherits from labTS. Requires
 %         single stride.
 %
-%   See also: concatenateAsTS, catStrides
+% Toolbox Dependencies: None
+%
+% See also CONCATENATEASTS, CATSTRIDES.
 
 if size(this.Data, 3) > 1
     ME = MException('alignedTS:castAsTS', ...

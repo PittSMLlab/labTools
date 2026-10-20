@@ -1,27 +1,28 @@
 function data = getSample(this, timePoints, method)
-%getSample  Samples timeseries at arbitrary timepoints
+%GETSAMPLE Samples timeseries at arbitrary timepoints.
 %
-%   data = getSample(this, timePoints) samples the timeseries at
-%   specified time points using linear interpolation
+%   data = getSample(this, timePoints) samples the timeseries at specified
+% time points using linear interpolation
 %
-%   data = getSample(this, timePoints, method) uses specified
-%   interpolation method
+%   data = getSample(this, timePoints, method) uses specified interpolation
+% method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       timePoints - vector or array of time points to sample
-%       method - interpolation method: 'linear' or 'closest'
-%                (optional, default: 'linear' for numeric, 'closest'
-%                for logical)
+% Inputs:
+%   this       - labTimeSeries object
+%   timePoints - vector or array of time points to sample
+%   method     - interpolation method: 'linear' or 'closest' (optional,
+%                default: 'linear' for numeric, 'closest' for logical)
 %
-%   Outputs:
-%       data - sampled data with same dimensions as timePoints in
-%              first dimensions, followed by number of labels
+% Outputs:
+%   data - sampled data with same dimensions as timePoints in first
+%          dimensions, followed by number of labels
 %
 %   Note: NaN and Inf timepoints return NaN. Out-of-range points
 %         return NaN.
 %
-%   See also: resample, resampleN, synchTo
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, RESAMPLEN, SYNCHTO.
 
 % This does not seem efficient: we are creating a timeseries object
 % (from native Matlab) and using its resample method.
@@ -49,11 +50,11 @@ if ~isempty(timePoints)
             data(notNaNIdxs, :) = newTS.Data;
         case 'closest'
             data = nan(numel(timePoints), M);
-            aux = this.getIndexClosestToTimePoint(timePoints(:));
+            aux  = this.getIndexClosestToTimePoint(timePoints(:));
             inds = ~isnan(aux);
-            aux = aux(inds); % Eliminating NaNs
+            aux  = aux(inds); % Eliminating NaNs
             % This would be the new data in the simplest case.
-            newData = this.Data(aux, :);
+            newData  = this.Data(aux, :);
             initData = newData;
             % But, if two samples map to the same timePoint (sub-sampling)
             % and that timePoint corresponds to an event, just keep the
@@ -62,18 +63,17 @@ if ~isempty(timePoints)
             trueEventSamples = ...
                 unique(aux(any(newData, 2) & [diff(aux); 1] == 0));
             tt = this.Time(trueEventSamples);
-            for i = 1:length(trueEventSamples)
-                mappedInds = find(aux == trueEventSamples(i));
+            for ii = 1:length(trueEventSamples)
+                mappedInds = find(aux == trueEventSamples(ii));
                 relevantTimePoints = timePoints(mappedInds);
-                Dt = abs(tt(i) - relevantTimePoints);
+                Dt = abs(tt(ii) - relevantTimePoints);
                 % The find() is needed to resolve ties
                 jj = find(Dt == min(Dt), 1, 'first');
                 mappedInds(jj) = [];
                 newData(mappedInds, :) = 0;
             end
             data(inds, :) = newData;
-            % % Sanity check, this can be deprecated if no errors found by
-            % % Jan 1st 2018. [implemented Sept 11 2017]
+            % % Sanity check; can be removed if no errors are found.
             % % Check that #events did not change:
             % if any(sum(newData) ~= sum(this.split(min(timePoints(:)) - ...
             %         this.sampPeriod / 2, max(timePoints(:)) + ...

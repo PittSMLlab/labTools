@@ -7,6 +7,10 @@
 %   NOTE: Most functionality here is also wrapped in
 % experimentData.checkMarkerHealth.
 %
+% Toolbox Dependencies: Statistics and Machine Learning Toolbox,
+%   Optimization Toolbox (through extractMarkerModels and naiveDistances;
+%   low confidence: the dependency analyzer reported None)
+%
 % See also EXTRACTMARKERMODELS, BUILDNAIVEDISTANCESMODEL,
 %   VALIDATEMARKERMODEL.
 
@@ -47,7 +51,8 @@ markerData = markerData.removeOutliers(referenceModel);
 markerData.findOutliers(referenceModel, true);
 
 %% Fill missing and bad data
-newThis = markerData.fillGaps(referenceModel);  % TODO: not fully implemented
+% TODO: not fully implemented
+newThis = markerData.fillGaps(referenceModel);
 
 %% Assess reconstruction quality
 [~, ~, missing] = newThis.assessMissing([], -1);

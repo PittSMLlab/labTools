@@ -1,5 +1,5 @@
 function trials = loadTrials(trialMD, fileList, secFileList, info)
-% loadTrials  Generates rawTrialData instances for each trial.
+%LOADTRIALS Generate rawTrialData instances for each trial.
 %
 %   Reads kinematic, force, and EMG data from C3D files for each trial
 % in the experimental session. For each trial, the function imports
@@ -13,27 +13,27 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 % filled PC2 channels so that all rawTrialData objects in the session
 % share a consistent channel layout.
 %
-%   Inputs:
-%     trialMD     - Cell array of trialMetaData objects; cell index
-%                   corresponds to trial number
-%     fileList    - Cell array of C3D file paths (without extension)
-%                   containing kinematic and force data; index
-%                   corresponds to trial number
-%     secFileList - Cell array of secondary file paths (without extension)
-%                   containing EMG data from a second PC; empty entries
-%                   indicate no secondary file for that trial
-%     info        - Struct of session information returned by GetInfoGUI
+% Inputs:
+%   trialMD     - cell array of trialMetaData objects; cell index
+%                 corresponds to trial number
+%   fileList    - cell array of C3D file paths (without extension)
+%                 containing kinematic and force data; index
+%                 corresponds to trial number
+%   secFileList - cell array of secondary file paths (without extension)
+%                 containing EMG data from a second PC; empty entries
+%                 indicate no secondary file for that trial
+%   info        - struct, session information returned by GetInfoGUI
 %
-%   Outputs:
-%     trials - Cell array of rawTrialData objects; cell index
-%              corresponds to trial number
+% Outputs:
+%   trials - cell array of rawTrialData objects; cell index
+%            corresponds to trial number
 %
-%   Toolbox Dependencies:
-%     BTK - Biomechanics Toolkit     (btkReadAcquisition, btkGetAnalogs,
-%                                     btkGetMarkers; external dependency)
+% Toolbox Dependencies:
+%   BTK - Biomechanics Toolkit (btkReadAcquisition, btkGetAnalogs,
+%   btkGetMarkers; external dependency)
 %
-%   See also: rawTrialData, loadSubject, getTrialMetaData,
-%   syncEMGData, processGRFData
+% See also RAWTRIALDATA, LOADSUBJECT, GETTRIALMETADATA, SYNCEMGDATA,
+% PROCESSGRFDATA.
 
 arguments
     trialMD     cell
@@ -285,7 +285,8 @@ for tr = trialNums                      % for each trial, ...
         % warn if any are found that are not sync signals
         inOrdered = ismember(lower(EMGList(:)), lower(orderedEMGList(:)));
         isSync    = cellfun( ...
-            @(x) ~isempty(regexpi(x, '^sync', 'once')), EMGList(~inOrdered));
+            @(x) ~isempty(regexpi(x, '^sync', 'once')), ...
+            EMGList(~inOrdered));
         if any(~inOrdered) && ~all(isSync)
             ignoredLabels = strjoin(EMGList(~inOrdered & ~isSync), ', ');
             warning(['loadTrials: Some provided EMG channels are not ' ...

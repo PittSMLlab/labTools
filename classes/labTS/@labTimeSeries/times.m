@@ -1,17 +1,19 @@
 function this = times(this, constant)
-%times  Multiplies data by constant
+%TIMES Multiplies data by constant.
 %
 %   this = times(this, constant) multiplies all data by a constant and
-%   updates labels
+% updates labels
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       constant - scalar or vector to multiply by
+% Inputs:
+%   this     - labTimeSeries object
+%   constant - scalar or vector to multiply by
 %
-%   Outputs:
-%       this - labTimeSeries with scaled data
+% Outputs:
+%   this - labTimeSeries with scaled data
 %
-%   See also: plus, minus
+% Toolbox Dependencies: None
+%
+% See also PLUS, MINUS.
 
 this.Data = this.Data .* constant;
 if numel(constant) == 1

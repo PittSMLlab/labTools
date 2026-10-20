@@ -21,6 +21,8 @@ function updateParams(subjects, eventClass, ignoreMatFlag)
 % Outputs:
 %   None (saves files to disk)
 %
+% Toolbox Dependencies: None
+%
 % See also EXPERIMENTDATA.RECOMPUTEPARAMETERS, EXPERIMENTDATA.MAKEDATAOBJ,
 %   BATCHREPROCESS.
 
@@ -38,7 +40,7 @@ for ss = 1:length(subjects)
         saveloc = [];
     catch
         try
-            load([subjects{ss} filesep char(ss) '.mat'])
+            load(fullfile(subjects{ss}, [char(ss) '.mat']))
             saveloc = [subjects{ss} filesep];
         catch
             ME = MException('makeDataObject:loadSubject', ...

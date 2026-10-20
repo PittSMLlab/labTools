@@ -1,9 +1,9 @@
 function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)
 %TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.
 %
-%   Compares the row counts of matrix1 and matrix2 and truncates the
-% longer one so both have the same number of rows. Operates along
-% dimension 1 only; columns are preserved.
+%   Compares the row counts of matrix1 and matrix2 and truncates the longer
+% one so both have the same number of rows. Operates along dimension 1 only;
+% columns are preserved.
 %
 % Inputs:
 %   matrix1 - first input matrix

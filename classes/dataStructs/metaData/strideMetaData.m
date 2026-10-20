@@ -1,19 +1,21 @@
 classdef strideMetaData < derivedMetaData
-    %strideMetaData  Metadata for individual stride data
+    %STRIDEMETADATA Metadata for individual stride data.
     %
     %   strideMetaData extends derivedMetaData to represent metadata
-    %   for individual stride segments extracted from a parent trial.
-    %   It maintains a reference to the parent trial's metadata and
-    %   inherits all properties from it.
+    % for individual stride segments extracted from a parent trial. It
+    % maintains a reference to the parent trial's metadata and inherits
+    % all properties from it.
     %
-    %strideMetaData properties:
+    % strideMetaData properties:
     %   (inherits all properties from derivedMetaData and
     %   trialMetaData)
     %
-    %strideMetaData methods:
+    % strideMetaData methods:
     %   strideMetaData - constructor for stride metadata
     %
-    %See also: derivedMetaData, trialMetaData, strideData
+    % Toolbox Dependencies: None
+    %
+    % See also DERIVEDMETADATA, TRIALMETADATA, STRIDEDATA.
 
     %% Properties
     properties (SetAccess = private)
@@ -24,27 +26,30 @@ classdef strideMetaData < derivedMetaData
     %% Constructor
     methods
         function this = strideMetaData(ID, date, experimenter, desc, ...
-                obs, refLeg, parentMeta)
-            %strideMetaData  Constructor for strideMetaData class
+            obs, refLeg, parentMeta)
+            %STRIDEMETADATA Constructor for strideMetaData class.
             %
             %   this = strideMetaData(ID, date, experimenter, desc, obs,
-            %   refLeg, parentMeta) creates a stride metadata object with
-            %   specified parameters, inheriting properties from parent
-            %   metadata
+            % refLeg, parentMeta) creates a stride metadata object with
+            % specified parameters, inheriting properties from parent
+            % metadata.
             %
-            %   Inputs:
-            %       ID - identifier string for the stride
-            %       date - date of stride extraction
-            %       experimenter - name of experimenter
-            %       desc - description of the stride (e.g., stride number)
-            %       obs - observations about the stride
-            %       refLeg - reference leg, 'L' or 'R'
-            %       parentMeta - parent trial's metadata object
+            % Inputs:
+            %   ID           - identifier string for the stride
+            %   date         - date of stride extraction
+            %   experimenter - name of experimenter
+            %   desc         - description of the stride (e.g., stride
+            %                  number)
+            %   obs          - observations about the stride
+            %   refLeg       - reference leg, 'L' or 'R'
+            %   parentMeta   - parent trial's metadata object
             %
-            %   Outputs:
-            %       this - strideMetaData object
+            % Outputs:
+            %   this - strideMetaData object
             %
-            %   See also: derivedMetaData, trialMetaData, strideData
+            % Toolbox Dependencies: None
+            %
+            % See also DERIVEDMETADATA, TRIALMETADATA, STRIDEDATA.
 
             this@derivedMetaData(ID, date, experimenter, desc, obs, ...
                 refLeg, parentMeta);

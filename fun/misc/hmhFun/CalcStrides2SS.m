@@ -1,4 +1,5 @@
-function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag, subID)
+function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag, ...
+    subID)
 %CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.
 %
 %   Applies a 63.2% threshold criterion to the smoothed time course of
@@ -27,6 +28,8 @@ idxNET  = find(strcmp(params, 'netContributionNorm2'));
 
 %% Smooth data and initialize steady-state values
 binWidth     = 20;              % running-average window (strides)
+minSearchLen = 20;              % strides searched for the raw minimum
+ssFraction   = 0.632;           % 1 - 1/e of steady state
 smoothLabel  = 'Whole, BW=20, first not before raw min';
 allValuesALL = bin_dataV1(allValues, binWidth);
 ss           = SSraw;
@@ -35,7 +38,8 @@ for var = 1:length(params)
 
     % locate minimum within first 20 strides of raw data
     whereIS = find( ...
-        allValues(:, var) == min(allValues(1:20, var), [], 'omitnan'), ...
+        allValues(:, var) == ...
+        min(allValues(1:minSearchLen, var), [], 'omitnan'), ...
         1, 'first');
 
     if var == idxNET || var == idxVELO
@@ -46,7 +50,7 @@ for var = 1:length(params)
     end
 
     % find first stride at or above 63.2% of steady state (1/e criterion)
-    t = find(allValuesALL(:, var) >= ss(var) * 0.632);
+    t = find(allValuesALL(:, var) >= ss(var) * ssFraction);
     if isempty(t)
         Stride2SS(1, var) = NaN;                %#ok<AGROW>
     else
@@ -72,7 +76,7 @@ for var = 1:length(params)
         hold on
         line([0 900], [ss(var) ss(var)], ...
             'Color', 'k', 'LineWidth', 1)
-        line([0 900], [ss(var)*0.632 ss(var)*0.632], ...
+        line([0 900], [ss(var)*ssFraction ss(var)*ssFraction], ...
             'Color', 'k', 'LineWidth', 1, 'LineStyle', ':')
         line([0 900], [0 0])
 

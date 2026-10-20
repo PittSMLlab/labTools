@@ -1,11 +1,25 @@
 %% Trajectory Check — Other Pipeline
-% Connects to Vicon Nexus, runs the optimized processing pipeline on a
-% specified trial, and plots X/Y/Z trajectories for each marker of
+% Script. Connects to Vicon Nexus, runs the optimized processing pipeline
+% on a specified trial, and plots X/Y/Z trajectories for each marker of
 % interest.
+%
+% Inputs:
+%   none - edit markersToCompare, subject, and trialPath below
+%
+% Outputs:
+%   none - one figure per marker with data (X/Y/Z over time)
+%
+% Side effects: needs a running Vicon Nexus; opens the trial and runs
+%   processAndFillMarkerGapsTrial on it (edits and saves the trial).
+%
+% Toolbox Dependencies: None (Vicon Nexus SDK, ViconNexus class)
+%
+% See also PROCESSANDFILLMARKERGAPSTRIAL, DATAMOTION.OPENTRIALIFNEEDED.
 
 markersToCompare = {'LGT'};
 subject          = 'C3S24';
-trialPath        = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
+trialPath        = ...
+    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
 
 fprintf('Connecting to Vicon Nexus...\n');
 vicon = ViconNexus();

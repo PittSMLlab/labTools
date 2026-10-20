@@ -1,18 +1,20 @@
 function newThis = removeStridesWithNaNs(this)
-%removeStridesWithNaNs  Removes strides with missing data
+%REMOVESTRIDESWITHNANS Removes strides with missing data.
 %
-%   newThis = removeStridesWithNaNs(this) removes all strides that
-%   contain any NaN values
+%   newThis = removeStridesWithNaNs(this) removes all strides that contain
+% any NaN values
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       newThis - alignedTimeSeries with complete strides only
+% Outputs:
+%   newThis - alignedTimeSeries with complete strides only
 %
-%   See also: getPartialStridesAsATS
+% Toolbox Dependencies: None
+%
+% See also GETPARTIALSTRIDESASATS.
 
-inds = find(all(all(~isnan(this.Data), 2), 1));
+inds    = find(all(all(~isnan(this.Data), 2), 1));
 newThis = getPartialStridesAsATS(this, inds);
 end
 

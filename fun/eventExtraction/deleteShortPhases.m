@@ -16,7 +16,7 @@ function stance = deleteShortPhases(stance, fsample, minDuration)
 %
 % Toolbox Dependencies: None
 %
-% See also GETSTANCEFROMFORCES, GETSTANCEFROMTOENANDHEEL.
+% See also GETSTANCEFROMFORCES, GETSTANCEFROMTOEANDHEEL.
 
 N = ceil(minDuration * fsample);
 

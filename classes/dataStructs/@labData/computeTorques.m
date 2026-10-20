@@ -1,24 +1,26 @@
 function [momentData, COP, COM] = computeTorques(this, ...
     subjectWeight)
-%computeTorques  Computes joint torques from kinematics and kinetics
+%COMPUTETORQUES Computes joint torques from kinematics and kinetics.
 %
 %   [momentData, COP, COM] = computeTorques(this) computes joint torques
-%   using estimated subject weight from GRF data
+% using estimated subject weight from GRF data
 %
 %   [momentData, COP, COM] = computeTorques(this, subjectWeight) computes
-%   joint torques using specified subject weight
+% joint torques using specified subject weight
 %
-%   Inputs:
-%       this - labData object
-%       subjectWeight - subject body weight in kg (optional, estimated from
-%                       GRF if not provided)
+% Inputs:
+%   this          - labData object
+%   subjectWeight - subject body weight in kg (optional, estimated from GRF
+%                   if not provided)
 %
-%   Outputs:
-%       momentData - labTimeSeries containing joint moment data
-%       COP - center of pressure data
-%       COM - center of mass data
+% Outputs:
+%   momentData - labTimeSeries containing joint moment data
+%   COP        - center of pressure data
+%   COM        - center of mass data
 %
-%   See also: TorqueCalculator, estimateSubjectBodyWeight
+% Toolbox Dependencies: None
+%
+% See also TORQUECALCULATOR, ESTIMATESUBJECTBODYWEIGHT.
 
 if nargin < 2 || isempty(subjectWeight)
     warning(['Subject weight not given, estimating from GRFs. This ' ...

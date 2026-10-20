@@ -1,5 +1,5 @@
 function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)
-%GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.
+%GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.
 %
 %   Determines heel-strike (HS) and toe-off (TO) events for left and right
 % legs by thresholding vertical GRF signals. Delegates stance detection to
@@ -26,9 +26,11 @@ forceThresh = 10; % stance detection threshold (N); ~8% of typical BW
 % % Temporarily filter force data (4th order butterworth Low pass filter
 % % with cutoff frequency of 10 Hz)
 % Wn = 2*10 / fsample;
-% Ast=10dB (/octave) results in 4th order Butterworth filter (-80dB/dec fall)
-% filterList = fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),1.5,20);
-% Changed Oct 21, 2014 to have less ripple in impulse response (4th order filter)
+% Ast=10dB (/octave) results in 4th order Butterworth filter
+% (-80dB/dec fall)
+% filterList = fdesign.lowpass('Fp,Fst,Ap,Ast',Wn, ...
+%     Wn+0.2*(1-Wn),1.5,20);
+% NOTE: a 4th order filter has less ripple in its impulse response.
 % lowPassFilter = design(filterList,'butter');
 % FzL = filtfilthd(lowPassFilter, FzL); % ext function
 % FzR = filtfilthd(lowPassFilter, FzR); % ext function
@@ -42,8 +44,8 @@ stanceR = getStanceFromForces(FzR, forceThresh, fsample);
 
 %% Check consistency
 % consistent = checkEventConsistency(LHS, RHS, LTO, RTO);
-% NOTE: energy-onset masking (removing events before first GRF activity)
-% was removed because it suppressed the very first step of a trial, which
-% is often the most important event for adaptation analysis (Pablo, 2015).
+% NOTE: events before the first GRF activity are not masked, because
+% that suppressed the very first step of a trial, which is often the
+% most important event for adaptation analysis.
 
 end

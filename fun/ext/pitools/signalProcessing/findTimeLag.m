@@ -3,14 +3,13 @@ function [timeDiff, corrCoef, lagInSamples] = findTimeLag( ...
 %FINDTIMELAG Estimate the sample lag between two signals via correlation.
 %
 %   Zero-pads both signals to the same length, computes their cross-
-% correlation in the frequency domain, then interpolates at 100x
-% resolution to obtain a sub-sample lag estimate. Issues a warning
-% when the peak correlation is below 0.3, indicating unreliable
-% synchronization.
+% correlation in the frequency domain, then interpolates at 100x resolution
+% to obtain a sub-sample lag estimate. Issues a warning when the peak
+% correlation is below 0.3, indicating unreliable synchronization.
 %
 % Inputs:
-%   referenceSignal  - 1-D reference signal (row or column vector)
-%   secondarySignal  - 1-D signal to align to referenceSignal
+%   referenceSignal - 1-D reference signal (row or column vector)
+%   secondarySignal - 1-D signal to align to referenceSignal
 %
 % Outputs:
 %   timeDiff     - reserved; always returns NaN
@@ -43,8 +42,8 @@ minCorrWarningThresh = 0.3; % below this, synchronization is unreliable
 
 %% Zero-Pad to Equal Length
 M = max([length(referenceSignal) length(secondarySignal)]);
-referenceSignal(end+1:M)  = 0;
-secondarySignal(end+1:M)  = 0;
+referenceSignal(end+1:M) = 0;
+secondarySignal(end+1:M) = 0;
 
 %% Compute Cross-Correlation
 F1 = fft(referenceSignal);
@@ -56,12 +55,12 @@ P  = ifft(F);
 % 100× resolution spline interpolation; load-bearing for accuracy —
 % do not reduce without re-validating sync parameter outputs.
 interpResolution = 0.01; % sub-sample lag resolution (fraction of a sample)
-fineLags = 0:interpResolution:length(P) - 1;
-P2       = interp1(0:length(P) - 1, P, fineLags, 'spline') ...
+fineLags         = 0:interpResolution:length(P) - 1;
+P2 = interp1(0:length(P) - 1, P, fineLags, 'spline') ...
     / sqrt(sum(referenceSignal.^2) * sum(secondarySignal.^2));
 
 %% Find Peak Correlation
-[~, t]       = max(abs(P2));
+[~, t] = max(abs(P2));
 lagInSamples = fineLags(t) - floor(M / 2); % fftshift offset correction
 corrCoef     = P2(t);
 

@@ -1,9 +1,8 @@
 classdef labDate
-    % labDate  Stores a single date as day, month, and year.
+    %LABDATE Stores a single date as day, month, and year.
     %
-    %   labDate provides a simple date representation and utilities for
-    % date manipulation, comparison, and generation of date-based
-    % identifiers.
+    %   labDate provides a simple date representation and utilities for date
+    % manipulation, comparison, and generation of date-based identifiers.
     %
     % labDate properties:
     %   day   - day of month (1-31)
@@ -21,43 +20,42 @@ classdef labDate
     %   getCurrent     - creates labDate for current date
     %   default        - generates the default date (Jan 1, 1900)
     %
-    % See also: datetime
+    % Toolbox Dependencies: None
+    %
+    % See also DATETIME.
 
-    % TODO: labDate essentially reimplements a small subset of what
-    % datetime already provides — storage, construction from components,
-    % and elapsed-time arithmetic — with less accuracy and no timezone or
-    % DST awareness. Wrapping or replacing it with datetime would eliminate
-    % the 30-days/month approximation in timeSince, remove the need for the
-    % custom setters, and make the class interoperable with the rest of
-    % MATLAB's date/time ecosystem. This is admittedly a large refactor
-    % given how widely labDate is presumably used across labTools.
+    % TODO: replace labDate with datetime. It would remove the
+    % 30-days/month approximation in timeSince and the custom setters, but
+    % labDate is used widely across labTools (large refactor).
 
     %% Properties
     properties
         day   (1,1) double {mustBeInteger, mustBeInRange(day,   1, 31)} = 1
         month (1,1) double {mustBeInteger, mustBeInRange(month, 1, 12)} = 1
-        year  (1,1) double {mustBeInteger}                              = 1900
+        year  (1,1) double {mustBeInteger} = 1900
     end
 
     %% Constructor
     methods
         function this = labDate(dd, mm, year)
-            % labDate  Constructor for labDate class.
+            %LABDATE Constructor for labDate class.
             %
-            %   Inputs:
-            %     dd   - Day of month; integer in range [1, 31]
-            %     mm   - Month; either integer (1-12) or 3-character
-            %            string (e.g., 'jan', 'dec')
-            %     year - Four-digit year number
+            % Inputs:
+            %   dd   - Day of month; integer in range [1, 31]
+            %   mm   - Month; either integer (1-12) or 3-character string
+            %          (e.g., 'jan', 'dec')
+            %   year - Four-digit year number
             %
-            %   Outputs:
-            %     this - labDate object
+            % Outputs:
+            %   this - labDate object
             %
-            %   Examples:
-            %     d = labDate(15, 3,     2015);
-            %     d = labDate(15, 'mar', 2015);
+            % Examples:
+            %   d = labDate(15, 3,     2015);
+            %   d = labDate(15, 'mar', 2015);
             %
-            %   See also: getCurrent, default
+            % Toolbox Dependencies: None
+            %
+            % See also GETCURRENT, DEFAULT.
 
             this.day = dd;
             if ischar(mm) && length(mm) == 3
@@ -117,18 +115,20 @@ classdef labDate
     %% Static Methods
     methods (Static)
         function str = monthString(a)
-            % monthString  Converts a numeric month to a 3-letter string.
+            %MONTHSTRING Converts a numeric month to a 3-letter string.
             %
-            %   Inputs:
-            %     a - Month number (1-12)
+            % Inputs:
+            %   a - Month number (1-12)
             %
-            %   Outputs:
-            %     str - Three-character month abbreviation (lowercase)
+            % Outputs:
+            %   str - Three-character month abbreviation (lowercase)
             %
-            %   Example:
-            %     str = labDate.monthString(1);  % returns 'jan'
+            % Example:
+            %   str = labDate.monthString(1);  % returns 'jan'
             %
-            %   See also: labDate
+            % Toolbox Dependencies: None
+            %
+            % See also LABDATE.
 
             switch a
                 case 1,  str = 'jan';
@@ -148,47 +148,53 @@ classdef labDate
         end
 
         function id = genIDFromClock()
-            % genIDFromClock  Generates timestamp ID from the current time.
+            %GENIDFROMCLOCK Generates timestamp ID from the current time.
             %
             %   Formats the current wall-clock time as a zero-padded string
             % in the form yyyymmddHHMMSS.
             %
-            %   Outputs:
-            %     id - String timestamp (e.g., '20150821111631')
+            % Outputs:
+            %   id - String timestamp (e.g., '20150821111631')
             %
-            %   Example:
-            %     id = labDate.genIDFromClock();
+            % Example:
+            %   id = labDate.genIDFromClock();
             %
-            %   See also: getCurrent, datetime
+            % Toolbox Dependencies: None
+            %
+            % See also GETCURRENT, DATETIME.
 
-            t  = datetime('now');
+            t = datetime('now');
             id = sprintf('%04d%02d%02d%02d%02d%02d', ...
                 t.Year, t.Month, t.Day, ...
                 t.Hour, t.Minute, round(t.Second));
         end
 
         function d = getCurrent()
-            % getCurrent  Creates a labDate for the current date.
+            %GETCURRENT Creates a labDate for the current date.
             %
-            %   Outputs:
-            %     d - labDate object representing today's date
+            % Outputs:
+            %   d - labDate object representing today's date
             %
-            %   Example:
-            %     d = labDate.getCurrent();
+            % Example:
+            %   d = labDate.getCurrent();
             %
-            %   See also: default, datetime
+            % Toolbox Dependencies: None
+            %
+            % See also DEFAULT, DATETIME.
 
             t = datetime('now');
             d = labDate(t.Day, labDate.monthString(t.Month), t.Year);
         end
 
         function d = default()
-            % default  Generates the default sentinel date (Jan 1, 1900).
+            %DEFAULT Generates the default sentinel date (Jan 1, 1900).
             %
-            %   Outputs:
-            %     d - labDate object set to Jan 1, 1900
+            % Outputs:
+            %   d - labDate object set to Jan 1, 1900
             %
-            %   See also: getCurrent, isempty
+            % Toolbox Dependencies: None
+            %
+            % See also GETCURRENT, ISEMPTY.
 
             d = labDate(1, 'jan', 1900);
         end

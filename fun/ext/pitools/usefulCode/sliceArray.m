@@ -2,8 +2,8 @@ function slices = sliceArray(data, inds, dim)
 %SLICEARRAY Extract slices of an array along a given dimension.
 %
 %   Returns the subset of slices indexed by inds along dimension dim.
-%   Equivalent to data(:,...,inds,...,:) where inds occupies position dim.
-%   Preferable to permute-based solutions, which copy the full array.
+% Equivalent to data(:,...,inds,...,:) where inds occupies position dim.
+% Preferable to permute-based solutions, which copy the full array.
 %
 % Inputs:
 %   data - N-D array to index into

@@ -1,8 +1,10 @@
-%TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.
+%TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.
 %
 %   Demonstrates labTimeSeries discretization, stride alignment, and
 % checkerboard plotting for EMG data. Assumes 'expData' exists in the
 % workspace with procEMGData and gaitEvents on trials 4 and 6.
+%
+% Toolbox Dependencies: None
 
 %% Load EMG data and events
 mList = {'TA', 'PER', 'SOL', 'MG', 'LG', 'SEMT', 'SEMB', 'BF', ...

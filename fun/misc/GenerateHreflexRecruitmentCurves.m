@@ -1,11 +1,28 @@
 %% Generate H-Reflex Calibration Recruitment Curves & Other Figures
-% author: NWB
-% date (started): 05 May 2024
-% purpose: to extract the M-wave and H-wave amplitudes from the H-reflex
-% calibration EMG data shortly after the creation of the calibration trial
-% C3D file in a Vicon Nexus software processing pipeline during experiment.
-% NOTE: this processing script uses 'SL_Realtime.m' as a template to use
-% the Vicon Nexus sofware tools.
+% Script. Extracts the M-wave and H-wave amplitudes from the H-reflex
+% calibration EMG data shortly after the calibration trial C3D file is
+% created in a Vicon Nexus processing pipeline during the experiment,
+% then plots the recruitment curves, normalized curves, and H:M ratios.
+%
+% Inputs:
+%   none - uses the trial open in Vicon Nexus (offline) or asks for a
+%          C3D file; then asks for the participant ID and the
+%          calibration settings (muscle list, stimulation amplitudes,
+%          artifact threshold, H-reflex and artifact muscles)
+%
+% Outputs:
+%   none - figures saved to the HreflexCalFigs folder next to the C3D
+%          file (via the Hreflex package); the workspace holds the
+%          amplitudes, fit, and ratios per leg
+%
+% Side effects: shows input, warning, and confirmation dialogs; saves
+%   the answers to <ID>Config<trial>.mat in HreflexCalFigs and reuses
+%   the most recent one as the default. Stops (without error) when the
+%   experimenter aborts at the missing-trigger or artifact-check dialog.
+%
+% Toolbox Dependencies: Signal Processing Toolbox (findpeaks, medfilt1)
+%
+% See also HREFLEX.FITCAL, HREFLEX.PLOTCAL, LABTIMESERIES.
 
 % TODO:
 %   1. use the feature of the stimulator to set the current output
@@ -180,9 +197,8 @@ disp('Data extraction completed successfully.');
 % below are the muscle names (abbrev.) in the desired order
 % NOTE: keep this the FULL 'loadTrials.m' list, not a subset: a sensor
 % labeled with a muscle missing from it drops into the re-entry prompt
-% below, and with the thigh and hip muscles removed that crashed on any
-% 3-letter name such as 'RRF' (SpinalAdapt participant SAYA90,
-% 2026-09-18). Muscles this script does not analyze are simply unused.
+% below and crashes on any 3-letter name such as 'RRF'. Muscles this
+% script does not analyze are simply unused.
 orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG', ...
     'RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'};
 if ~ismember(muscleHreflex,orderedMuscleList) || ...
@@ -202,17 +218,20 @@ relDataTemp = [];
 fieldList = fields(analogs);
 idxList = [];
 for ii = 1:length(fieldList)
-    if ~isempty(strfind(fieldList{ii}, 'EMG'))  %Getting fields that start with 'EMG' only
+    %Getting fields that start with 'EMG' only
+    if ~isempty(strfind(fieldList{ii}, 'EMG'))
         relDataTemp = [relDataTemp, analogs.(fieldList{ii})];
         idxList(end+1) = str2num(fieldList{ii}( ...
             strfind(fieldList{ii}, 'EMG') + 3:end)); %#ok<ST2NM>
-        analogs = rmfield(analogs, fieldList{ii}); %Just to save memory space
+        %Just to save memory space
+        analogs = rmfield(analogs, fieldList{ii});
     end
 end
 emptyChannels1 = cellfun( ...
     @(x) contains(x, 'NA') || contains(x, 'sync'), EMGList1);
 EMGList1 = EMGList1(~emptyChannels1);
-relData(:, idxList) = relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+relData(:, idxList) = relDataTemp;
 relData = relData(:, ~emptyChannels1);
 EMGList = EMGList1;
 
@@ -227,7 +246,9 @@ for kk = 1:length(EMGList)
             EMGList{kk} '). Acceptable values are ' ...
             cell2mat(strcat(orderedEMGList, ', ')) ' or ''sync''.'], 's');
         if kk <= length(EMGList1)
-            EMGList1{idxList(kk)} = aux{1}; %This is to keep the same message from being prompted for each trial processed.
+            % Keeps the same message from being prompted for each trial
+            % processed.
+            EMGList1{idxList(kk)} = aux{1};
         end
         EMGList{kk} = aux{1};
     end
@@ -247,15 +268,19 @@ allData      = relData;
 
 filtWinPre  = 20;   % median filter window: ~10 ms at 2 kHz
 filtWinPost = 10;   % median filter window: ~5 ms at 2 kHz
+clipPercentile = 0.1;   % percent clipped at each end (1 sample in 1e3)
 
 %Pre-process:
-refSync = clipSignals(refSync(:), 0.1); %Clipping top & bottom samples (1 out of 1e3!)
+%Clipping top & bottom samples (1 out of 1e3!)
+refSync = clipSignals(refSync(:), clipPercentile);
 refAux  = medfilt1(refSync, filtWinPre);
-%refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
+%refAux(refAux<(median(refAux)-5*iqr(refAux)) | ...
+%    refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
 refAux  = medfilt1(diff(refAux), filtWinPost);
 clear auxData*
 
-%Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
+%Sorting muscles (orderedEMGList was created previously) so that they are
+%always stored in the same order
 orderedIndexes = zeros(length(orderedEMGList), 1);
 for ii = 1:length(orderedEMGList)
     for kk = 1:length(EMGList)
@@ -265,13 +290,17 @@ for ii = 1:length(orderedEMGList)
         end
     end
 end
-orderedIndexes = orderedIndexes(orderedIndexes ~= 0); %Avoiding missing muscles
+%Avoiding missing muscles
+orderedIndexes = orderedIndexes(orderedIndexes ~= 0);
 aux = zeros(length(EMGList), 1);
 aux(orderedIndexes) = 1;
 if any(aux == 0) && ~all(strcmpi(EMGList(aux == 0), 'sync'))
-    warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux == 0}])
+    warning([ ...
+        'loadTrials: Not all of the provided muscles are in the ' ...
+        'ordered list, ignoring ' EMGList{aux == 0}])
 end
-allData(allData == 0) = NaN; %Eliminating samples that are exactly 0: these are unavailable samples
+%Eliminating samples that are exactly 0: these are unavailable samples
+allData(allData == 0) = NaN;
 EMG = labTimeSeries(allData(:, orderedIndexes), 0, ...
     1 / EMGfrequency, EMGList(orderedIndexes)); %Throw away the synch signal
 clear allData* relData* auxData*
@@ -281,8 +310,9 @@ relData    = [];
 forceLabels = {};
 units       = {};
 fieldList   = fields(analogs);
+numForcePlates = 2;     % FP 1 (Left) & 2 (Right)
 forceLabelIdx = contains(fieldList,'Force_Fz'); % only care about Fz
-forceLabelIdx = find(forceLabelIdx,2,'first');  % FP 1 (Left) & 2 (Right)
+forceLabelIdx = find(forceLabelIdx,numForcePlates,'first');
 hasForces = ~isempty(forceLabelIdx);
 if hasForces     % if force data found, ...
     for ii = 1:length(forceLabelIdx)   % for each relevant force label, ...
@@ -304,7 +334,7 @@ clear relData
 hasStimTrig = false;        % assume no trigger pulse data until found
 HreflexStimPin = [];
 if shouldUseStimTrig    % if stimulation trigger data should be used, ...
-    % NOTE: the below code block is copied from loadTrials (implemented by SL)
+    % NOTE: the below code block is copied from loadTrials
     relData = [];
     stimLabels = {};
     units = {};
@@ -326,17 +356,18 @@ if shouldUseStimTrig    % if stimulation trigger data should be used, ...
         % verify that the # of frames matches that of the GRF data
         if ~isempty(GRF)    % if there is GRF data present, ...
             if (GRF.Length ~= HreflexStimPin.Length)
-                error(['Hreflex stimulator pins have different length than' ...
-                    'GRF data. This should never happen. Data is compromised.']);
+                error(['Hreflex stimulator pins have different length ' ...
+                    'than' ...
+                    'GRF data. This should never happen. Data is ' ...
+                    'compromised.']);
             end
         end
     else
         % NOTE: without the trigger pulses the artifact must be found by
         % a blind search over the entire trial, which is far less
         % accurate than searching a window anchored to a known pulse.
-        % Make the experimenter decide rather than silently degrading:
-        % the 2026-08-21 SpinalAdapt dry run's C3D had no trigger
-        % channels and the resulting fallback went unnoticed.
+        % Make the experimenter decide rather than silently degrading
+        % when the C3D has no trigger channels.
         msgNoTrig = ['User indicated stimulation trigger data should ' ...
             'be used to identify the artifact peak times, but no ' ...
             'trigger pulse data is present in this trial. Artifact ' ...
@@ -354,7 +385,8 @@ if shouldUseStimTrig    % if stimulation trigger data should be used, ...
     end
 end
 
-% clear analogs* %Save memory space, no longer need analog data, it was already loaded
+% clear analogs* %Save memory space, no longer need analog data, it was
+% already loaded
 
 %% Save the Data
 % TODO: implement data saving if valuable for this script
@@ -502,9 +534,8 @@ else
     % deflections are ranked by size and the number of stimuli the
     % experimenter entered is kept. The stimulus count is known, so
     % ranking avoids depending on a threshold that must be retuned per
-    % participant: on the 2026-08-21 dry run, keeping the first N peaks
-    % above 0.3 mV both excluded 3 of 60 real artifacts and admitted
-    % walking EMG bursts, while ranking located all 60. The artifact
+    % participant: keeping the first N peaks above a fixed amplitude can
+    % exclude real artifacts and admit walking EMG bursts. The artifact
     % threshold instead flags small artifacts, exactly as it does on the
     % trigger path. Absolute deflection is used because the artifact is
     % commonly negative-dominant.
@@ -576,17 +607,19 @@ tileTitles = {'Right & Left Fz - Right Stim', ...
     'Left & Right Fz - Left Stim', ...
     ['Right ' muscleHreflex],['Left ' muscleHreflex]};
 yLabels = {'Force (N)','Force (N)','Raw EMG (V)','Raw EMG (V)'};
+% Plot all snippets for visual verification
 Hreflex.plotSnippets(timesSnippet, snippets, yLabels, tileTitles, ...
-    id, trialNum, 'pathFig', pathFigs); % plot all snippets for visual verification
+    id, trialNum, 'pathFig', pathFigs);
 
 %% 10. Compute M- & H-wave Amplitudes
 % TODO: reject measurements if GRF reveals not in single stance
 % a leg that was not stimulated has no snippets by design, so suppress
 % the expected warning about it rather than alarm the experimenter
 warnState = warning('off','Hreflex:noSnippets');
+mVPerV = 1000;      % millivolts per volt
 amps = Hreflex.computeAmplitudes(snippets(:,1));        % EMG snippets only
 warning(warnState);
-amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);% convert V to mV
+amps = cellfun(@(x) mVPerV.*x,amps,'UniformOutput',false); % V to mV
 
 ampsMwave = amps(:,1);  % unpack amplitudes by leg for readability
 ampsHwave = amps(:,2);
@@ -628,13 +661,14 @@ fit = Hreflex.fitCal(cellfun(@(x) x(:),ampsStim(:), ...
 warning(warnState);
 
 threshFitR2 = 0.95; % minimum M-wave fit R^2 to trust the 3rd derivative
+numFitPoints = 1000;    % samples of the fitted curve for peak finding
 for leg = 1:2                           % for each leg, ...
     if ~isLegStim(leg)                  % if leg not being analyzed, ...
         continue;                       % advance to next leg
     end
     idLeg = idsLegs{leg};
     % fit intensities across this leg's own stimulation range
-    I_fit = linspace(min(ampsStim{leg}),max(ampsStim{leg}),1000);
+    I_fit = linspace(min(ampsStim{leg}),max(ampsStim{leg}),numFitPoints);
     M_fit = fit.M.modHyperbolic(fit.M.(idLeg).params,I_fit);
     % find index at which peak of 3rd derivative of modified hyperbolic
     % occurs

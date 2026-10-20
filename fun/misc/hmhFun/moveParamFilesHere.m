@@ -32,8 +32,8 @@ for ii = 1:length(things)
                     nameEnd = thingsInFolder(jj).name( ...
                         max([1 end-9]):end);
                     if strcmp(nameEnd, 'params.mat')
-                        copyfile([path things(ii).name filesep ...
-                            thingsInFolder(jj).name], './')
+                        copyfile(fullfile([path things(ii).name], ...
+                            thingsInFolder(jj).name), './')
                     end
                 end
             end

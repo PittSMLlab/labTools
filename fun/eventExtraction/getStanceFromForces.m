@@ -1,5 +1,5 @@
 function stance = getStanceFromForces(Fz, threshold, fsample)
-%GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.
+%GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.
 %
 %   Applies median filtering to remove quantization noise, corrects for
 % non-zeroed force plates, and thresholds the result to produce a binary
@@ -13,7 +13,8 @@ function stance = getStanceFromForces(Fz, threshold, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 %
-% Toolbox Dependencies: None
+% Toolbox Dependencies:
+%   Signal Processing Toolbox (medfilt1)
 %
 % See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.
 
@@ -37,12 +38,14 @@ if mode(forces) ~= 0
     forces = forces - mode(forces);
 end
 
-forceSign = sign(mean(forces, 'omitnan')); % use filtered forces in case plates were not zeroed
+% use filtered forces in case plates were not zeroed
+forceSign = sign(mean(forces, 'omitnan'));
 forces    = forces * forceSign; % ensure forces are positive on average
 
 stance = forces > threshold;
 
 %% Eliminate stance and swing phases shorter than 100 ms
-stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but that is too long for stroke subjects
+% 100 ms; 200 ms is too long for stroke subjects
+stance = deleteShortPhases(stance, fsample, 0.1);
 
 end

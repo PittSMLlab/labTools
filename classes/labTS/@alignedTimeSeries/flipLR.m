@@ -1,23 +1,25 @@
 function [this, iC, iI] = flipLR(this)
-%flipLR  Flips left/right alignment
+%FLIPLR Flips left/right alignment.
 %
 %   [this, iC, iI] = flipLR(this) flips the non-aligned side to match
-%   aligned side timing
+% aligned side timing
 %
-%   Inputs:
-%       this - alignedTimeSeries object
+% Inputs:
+%   this - alignedTimeSeries object
 %
-%   Outputs:
-%       this - flipped alignedTimeSeries
-%       iC - indices of contralateral (flipped) labels
-%       iI - indices of ipsilateral (aligned) labels
+% Outputs:
+%   this - flipped alignedTimeSeries
+%   iC   - indices of contralateral (flipped) labels
+%   iI   - indices of ipsilateral (aligned) labels
 %
 %   Note: Finds side with starting event and flips the other side
 %
-%   See also: getSym, getaSym, fftshift
+% Toolbox Dependencies: None
+%
+% See also GETSYM, GETASYM, FFTSHIFT.
 
 % Find the side that has the starting event:
-alignedSide = this.alignmentLabels{1}(1);
+alignedSide    = this.alignmentLabels{1}(1);
 nonAlignedSide = getOtherLeg(alignedSide);
 % Flip non-aligned side:
 lC = this.getLabelsThatMatch(['^' nonAlignedSide]); % Get non-aligned side

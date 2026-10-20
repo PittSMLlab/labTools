@@ -1,18 +1,20 @@
 function [boolFlag, labelIdx] = isaLabel(this, label)
-%isaLabel  Checks if string is contained in label array
+%ISALABEL Checks if string is contained in label array.
 %
-%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether
-%   specified label(s) exist in the timeseries
+%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether specified
+% label(s) exist in the timeseries
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       label - string or cell array of label(s) to check
+% Inputs:
+%   this  - labTimeSeries object
+%   label - string or cell array of label(s) to check
 %
-%   Outputs:
-%       boolFlag - logical vector indicating which labels were found
-%       labelIdx - vector of indices for found labels
+% Outputs:
+%   boolFlag - logical vector indicating which labels were found
+%   labelIdx - vector of indices for found labels
 %
-%   See also: getLabelsThatMatch, getDataAsVector
+% Toolbox Dependencies: None
+%
+% See also GETLABELSTHATMATCH, GETDATAASVECTOR.
 
 if isa(label, 'char')
     auxLabel{1} = label;
@@ -23,8 +25,8 @@ else
         'string or a cell array containing strings.']);
 end
 auxLabel = auxLabel(:);
-N = length(auxLabel);
-M = length(this.labels);
+N        = length(auxLabel);
+M        = length(this.labels);
 % Case in which the list is identical to the label list, save time by
 % not calling find() recursively. If this is true, it saves about 50ms
 % per call, or 5 secs every 100 calls. If false, it adds a small

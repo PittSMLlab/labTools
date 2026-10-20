@@ -1,18 +1,20 @@
 function [newTS, auxLabel] = getDataAsTS(this, label)
-%getDataAsTS  Returns new labTimeSeries with given label(s)
+%GETDATAASTS Returns new labTimeSeries with given label(s).
 %
-%   [newTS, auxLabel] = getDataAsTS(this, label) creates a new
-%   labTimeSeries containing only the specified label(s)
+%   [newTS, auxLabel] = getDataAsTS(this, label) creates a new labTimeSeries
+% containing only the specified label(s)
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       label - string or cell array of label(s) to extract
+% Inputs:
+%   this  - labTimeSeries object
+%   label - string or cell array of label(s) to extract
 %
-%   Outputs:
-%       newTS - new labTimeSeries with requested data
-%       auxLabel - cell array of labels in new timeseries
+% Outputs:
+%   newTS    - new labTimeSeries with requested data
+%   auxLabel - cell array of labels in new timeseries
 %
-%   See also: getDataAsVector, split
+% Toolbox Dependencies: None
+%
+% See also GETDATAASVECTOR, SPLIT.
 
 [data, time, auxLabel] = getDataAsVector(this, label);
 newTS = labTimeSeries(data, time(1), this.sampPeriod, auxLabel);

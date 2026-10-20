@@ -1,27 +1,28 @@
 function newThis = resample(this, newTs, newT0, hiddenFlag)
-%resample  Resamples timeseries to different sampling period
+%RESAMPLE Resamples timeseries to different sampling period.
 %
-%   newThis = resample(this, newTs, newT0) resamples the timeseries to
-%   new sampling period starting at newT0
+%   newThis = resample(this, newTs, newT0) resamples the timeseries to new
+% sampling period starting at newT0
 %
-%   newThis = resample(this, newTs, newT0, hiddenFlag) allows
-%   non-uniform resampling when hiddenFlag = 1
+%   newThis = resample(this, newTs, newT0, hiddenFlag) allows non-uniform
+% resampling when hiddenFlag = 1
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       newTs - new sampling period (or time vector if hiddenFlag = 1)
-%       newT0 - new initial time
-%       hiddenFlag - if 1, allows non-uniform resampling (optional,
-%                    default: 0)
+% Inputs:
+%   this       - labTimeSeries object
+%   newTs      - new sampling period (or time vector if hiddenFlag = 1)
+%   newT0      - new initial time
+%   hiddenFlag - if 1, allows non-uniform resampling (optional, default: 0)
 %
-%   Outputs:
-%       newThis - resampled labTimeSeries
+% Outputs:
+%   newThis - resampled labTimeSeries
 %
 %   Note: Resampling using only the new sampling period is no longer
 %         supported. Use resampleN to interpolate keeping exact same
 %         time range.
 %
-%   See also: resampleN, getSample
+% Toolbox Dependencies: None
+%
+% See also RESAMPLEN, GETSAMPLE.
 
 this.Quality = []; % So Quality is not resampled if it exists
 if nargin < 3 || isempty(newT0)
@@ -36,10 +37,8 @@ if nargin < 4 || isempty(hiddenFlag) || hiddenFlag == 0
         warning('labTS:resample', ...
             'Under-sampling data, be careful of aliasing!');
     end
-    % Pablo I. (4/4/2015) No longer think this is a good idea. If we are
-    % explicitly trying to do uniform resampling on the same range, should
-    % use resampleN. Otherwise, if we try to synch two signals, and there
-    % is an offset in initial time, this returns something else.
+    % Use resampleN to keep the exact time range; newT0 sets the new start,
+    % which matters when synchronizing two signals with offset times.
     newN = ceil(this.timeRange / newTs) + 1;
     % newThis = resampleN(this, newN);
     newTime = newT0:newTs:this.Time(end);

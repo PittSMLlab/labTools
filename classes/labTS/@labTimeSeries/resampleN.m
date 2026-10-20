@@ -1,26 +1,27 @@
 function newThis = resampleN(this, newN, method)
-%resampleN  Resamples to N samples over same time range
+%RESAMPLEN Resamples to N samples over same time range.
 %
-%   newThis = resampleN(this, newN) performs uniform resampling of
-%   data over the same time range using Fourier interpolation
+%   newThis = resampleN(this, newN) performs uniform resampling of data over
+% the same time range using Fourier interpolation
 %
-%   newThis = resampleN(this, newN, method) uses specified
-%   interpolation method
+%   newThis = resampleN(this, newN, method) uses specified interpolation
+% method
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       newN - target number of samples
-%       method - 'interpft' (default for numeric), 'logical' (default
-%                for logical), 'linear', 'cubic', or any method
-%                accepted by interp1
+% Inputs:
+%   this   - labTimeSeries object
+%   newN   - target number of samples
+%   method - 'interpft' (default for numeric), 'logical' (default for
+%            logical), 'linear', 'cubic', or any method accepted by interp1
 %
-%   Outputs:
-%       newThis - resampled labTimeSeries with same time range
+% Outputs:
+%   newThis - resampled labTimeSeries with same time range
 %
 %   Note: Keeps initial time on same value and returns newN time-
 %         samples in the time interval of the original timeseries
 %
-%   See also: resample, interpft1, interp1
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, INTERPFT1, INTERP1.
 
 if ~isempty(this.Data)
     if nargin < 3 || isempty(method)
@@ -30,7 +31,7 @@ if ~isempty(this.Data)
             method = 'logical';
         end
     end
-    modNewTs = this.timeRange / newN;
+    modNewTs   = this.timeRange / newN;
     newTimeVec = [0:newN - 1] * modNewTs + this.Time(1);
     switch method
         case 'interpft'
@@ -67,12 +68,12 @@ if ~isempty(this.Data)
         otherwise
             % Method is 'linear', 'cubic' or any interp1 accepted methods
             newData = zeros(length(newTimeVec), size(this.Data, 2));
-            for i = 1:size(this.Data, 2)
-                newData(:, i) = interp1(this.Time, this.Data(:, i), ...
+            for ii = 1:size(this.Data, 2)
+                newData(:, ii) = interp1(this.Time, this.Data(:, ii), ...
                     newTimeVec, method, nan);
             end
     end
-    t0 = this.Time(1);
+    t0      = this.Time(1);
     newThis = labTimeSeries(newData, t0, modNewTs, this.labels);
 else % this.Data == []
     error('labTimeSeries:resampleN', ...

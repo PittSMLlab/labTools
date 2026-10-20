@@ -47,16 +47,20 @@ if strcmpi(trialData.metaData.type, 'OG') ...
     hipVel = diff(avghip);
 
     % clean up velocities to remove artifacts of marker drop-outs
-    velArtifactThresh           = 50; % threshold above which velocity is a dropout artifact (mm/frame)
+    % threshold above which velocity is a dropout artifact (mm/frame)
+    velArtifactThresh = 50;
     hipVel(abs(hipVel) > velArtifactThresh) = 0;
 
     % use hip velocity to determine when subject is walking
-    walkVelFrac = 0.5; % fraction of median absolute hip velocity to threshold walking
+    % fraction of median absolute hip velocity to threshold walking
+    walkVelFrac = 0.5;
     midhipVel   = median(abs(hipVel), 'omitnan');
     walking     = abs(hipVel) > walkVelFrac * midhipVel;
 
     % eliminate walking or turn-around phases shorter than 0.25 seconds
-    walking = deleteShortPhases(walking, trialData.markerData.sampFreq, 0.25); % min bout duration (s)
+    minBoutDuration = 0.25; % min walking/turn-around bout duration (s)
+    walking = deleteShortPhases(walking, ...
+        trialData.markerData.sampFreq, minBoutDuration);
 
     % split walking into individual bouts
     walkingSamples = find(walking);
@@ -68,7 +72,8 @@ if strcmpi(trialData.metaData.type, 'OG') ...
             walkingSamples(end)];
         StartStop = sort(StartStop);
     else
-        warning('Subject was not walking during one of the overground trials');
+        warning(['Subject was not walking during one of the ' ...
+            'overground trials']);
         return
     end
 else
@@ -139,8 +144,8 @@ LeftTO(rdata(LeftTO) == 0)   = [];
 LeftHS(rdata(LeftHS) == 0)   = [];
 
 %% Remove events outside valid y-position range
-% added by Yashar on 10/8/2019 to remove end-of-OG-walking events based
-% on global position in the right hip y direction
+% remove end-of-OG-walking events based on the global y position of the
+% average hip marker
 RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
 LeftHip  = trialData.markerData.getDataAsVector({'LHIPy'});
 bodyYPos = (RightHip + LeftHip) / 2;
@@ -182,13 +187,14 @@ LeftTO(ldata(LeftTO) > angleToThresh ...
 LeftHS(ldata(LeftHS) < 0 ...
     | abs(ldata(LeftHS)) > angleRangeThresh) = [];
 
+%% Assemble event vectors
 LHSevent(LeftHS)  = true;
 RTOevent(RightTO) = true;
 RHSevent(RightHS) = true;
 LTOevent(LeftTO)  = true;
 
 %[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);
-%These functions are similar to the built-in 'findpeaks' matlab function.
+% These functions are similar to the built-in 'findpeaks' MATLAB function.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function HS = FindKinHS(start, stop, ankdata, n)
@@ -222,7 +228,8 @@ for ii = start:stop
     else
         nextWin = ii+1:ii+n;
     end
-    % "=" included for the rare case where two adjacent samples share the max
+    % "=" included for the rare case where two adjacent samples share
+    % the max
     if all(ankdata(ii) >= ankdata(prevWin)) ...
             && all(ankdata(ii) >= ankdata(nextWin))
         break;

@@ -3,6 +3,8 @@
 %   Demonstrates automated EMG normalization using
 % adaptationData.normalizeToBaseline. Assumes an adaptationData object
 % named 'adaptData' exists in the workspace with EMG parameter data.
+%
+% Toolbox Dependencies: None
 
 %% Define muscle list
 mList = {'TA', 'PER', 'MG', 'LG', 'SOL', 'BF', 'SEMT', 'SEMB', ...

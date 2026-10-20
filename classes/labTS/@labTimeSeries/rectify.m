@@ -1,15 +1,17 @@
 function this = rectify(this)
-%rectify  Takes absolute value of data
+%RECTIFY Takes absolute value of data.
 %
 %   this = rectify(this) computes absolute value of all data
 %
-%   Inputs:
-%       this - labTimeSeries object
+% Inputs:
+%   this - labTimeSeries object
 %
-%   Outputs:
-%       this - labTimeSeries with rectified data
+% Outputs:
+%   this - labTimeSeries with rectified data
 %
-%   See also: times
+% Toolbox Dependencies: None
+%
+% See also TIMES.
 
 this.Data = abs(this.Data);
 this.labels = strcat(strcat(this.labels), 'abs');

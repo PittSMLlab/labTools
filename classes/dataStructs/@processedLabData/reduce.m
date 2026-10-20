@@ -1,25 +1,29 @@
 function reducedThis = reduce(this, eventLabels, N)
-%reduce  Aligns and resamples all timeseries to the same indexes and puts
-%them all together in a single timeseries
+%REDUCE Align and resample all time series into a single one.
+%
+%   Aligns and resamples all timeseries to the same indexes and puts them
+% all together in a single timeseries.
 %
 %   reducedThis = reduce(this) reduces the processedLabData object using
-%   default event labels and resampling parameters
+% default event labels and resampling parameters
 %
 %   reducedThis = reduce(this, eventLabels, N) reduces the processedLabData
-%   object using specified event labels and resampling parameters
+% object using specified event labels and resampling parameters
 %
-%   Inputs:
-%       this - processedLabData object
-%       eventLabels - cell array of event labels to use for alignment
-%                     (default: based on refLeg)
-%       N - vector of sample counts between events
-%           (default: [18 57 18 57])
+% Inputs:
+%   this        - processedLabData object
+%   eventLabels - cell array of event labels to use for alignment (default:
+%                 based on refLeg)
+%   N           - vector of sample counts between events (default: [18 57 18
+%                 57])
 %
-%   Outputs:
-%       reducedThis - reducedLabData object containing aligned and
-%                     resampled data
+% Outputs:
+%   reducedThis - reducedLabData object containing aligned and resampled
+%                 data
 %
-%   See also: reducedLabData, labTimeSeries/align
+% Toolbox Dependencies: None
+%
+% See also REDUCEDLABDATA, LABTIMESERIES.ALIGN.
 
 % Define the events that will be used for all further computations
 if nargin < 2 || isempty(eventLabels)
@@ -32,7 +36,8 @@ if nargin < 2 || isempty(eventLabels)
         f = 'R';
     else
         ME = MException('processedLabData:reduce:refLegError', ...
-            'the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.');
+            ['the refLeg/initEventSide property of metaData must be ' ...
+            'either ''L'' or ''R''.']);
         throw(ME);
     end
     eventLabels = {[s, 'HS'], [f, 'TO'], [f, 'HS'], [s, 'TO']};
@@ -55,15 +60,15 @@ ff = {'markerData', 'GRFData', 'accData', 'procEMGData', ...
     'angleData', 'COPData', 'COMData', 'jointMomentsData'};
 ffShort = {'mrk', 'GRF', 'acc', 'EMG', 'ang', 'COP', 'COM', 'mom'};
 
-for i = 1:length(ff)
-    field = this.(ff{i});
+for ii = 1:length(ff)
+    field = this.(ff{ii});
     if ~isempty(field) && isa(field, 'labTimeSeries') && ...
-            ~strcmp(ff{i}, 'gaitEvents') && ...
-            ~strcmp(ff{i}, 'markerData') && ...
-            ~strcmp(ff{i}, 'EMGData') && ~strcmp(ff{i}, 'adaptParams')
-        reducedFields{end + 1} = ff{i};
-        fieldLabels{end + 1} = strcat(ffShort{i}, field.labels);
-        fieldPrefixes{end + 1} = ffShort{i};
+            ~strcmp(ff{ii}, 'gaitEvents') && ...
+            ~strcmp(ff{ii}, 'markerData') && ...
+            ~strcmp(ff{ii}, 'EMGData') && ~strcmp(ff{ii}, 'adaptParams')
+        reducedFields{end + 1} = ff{ii};
+        fieldLabels{end + 1} = strcat(ffShort{ii}, field.labels);
+        fieldPrefixes{end + 1} = ffShort{ii};
         allTS = allTS.cat(field.getDataAsTS(field.labels).renameLabels( ...
             [], fieldLabels{end}).synchTo(allTS));
     end

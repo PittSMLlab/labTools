@@ -1,17 +1,19 @@
 function newThis = concatenate(this, other)
-%concatenate  Merges two timeseries
+%CONCATENATE Merges two timeseries.
 %
-%   newThis = concatenate(this, other) concatenates data from two
-%   timeseries with same time vector
+%   newThis = concatenate(this, other) concatenates data from two timeseries
+% with same time vector
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       other - labTimeSeries with same time vector
+% Inputs:
+%   this  - labTimeSeries object
+%   other - labTimeSeries with same time vector
 %
-%   Outputs:
-%       newThis - concatenated labTimeSeries
+% Outputs:
+%   newThis - concatenated labTimeSeries
 %
-%   See also: cat, appendData
+% Toolbox Dependencies: None
+%
+% See also CAT, APPENDDATA.
 
 % Check if time vectors are the same
 if all(this.Time == other.Time)

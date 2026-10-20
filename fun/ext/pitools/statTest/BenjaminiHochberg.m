@@ -1,13 +1,14 @@
-function [h, pThreshold, i1, pAdjusted] = BenjaminiHochberg(p, fdr, twoStageFlag)
-%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction for multiple comparisons.
+function [h, pThreshold, i1, pAdjusted] = ...
+    BenjaminiHochberg(p, fdr, twoStageFlag)
+%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.
 %
 %   Determines significance across multiple comparisons while controlling
-%   the False Discovery Rate (expected fraction of false positives among
-%   all rejections). Less conservative than Bonferroni correction; FDR
-%   control holds in expectation over many realizations.
+% the False Discovery Rate (expected fraction of false positives among all
+% rejections). Less conservative than Bonferroni correction; FDR control
+% holds in expectation over many realizations.
 %
-%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and
-%   Nov 2018 against the Bioinformatics Toolbox mafdr().
+%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and Nov 2018
+% against the Bioinformatics Toolbox mafdr().
 %
 %   References:
 %     Benjamini & Hochberg 1995
@@ -47,8 +48,8 @@ M = numel(p);  % total number of comparisons
 
 %% Sort and Apply BH Threshold
 [p1, idx] = sort(p(:), 'ascend');
-h1        = zeros(size(p1));
-lastSig   = find(p1 < fdr * (1:M)' / M, 1, 'last');
+h1      = zeros(size(p1));
+lastSig = find(p1 < fdr * (1:M)' / M, 1, 'last');
 if isempty(lastSig)
     i1 = 0;
 else
@@ -56,8 +57,8 @@ else
 end
 
 h1(1:i1) = 1;  % significant results
-h         = nan(size(p));
-h(idx)    = h1;  % restore original ordering
+h = nan(size(p));
+h(idx) = h1;  % restore original ordering
 
 pThreshold = p1(lastSig);
 

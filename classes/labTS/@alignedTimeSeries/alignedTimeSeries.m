@@ -1,55 +1,59 @@
 classdef alignedTimeSeries % < labTimeSeries
-    % TODO: make this inherit from labTimeSeries, as it should
-    %alignedTimeSeries  Time-series-like object for aligned/repeated data
+    %ALIGNEDTIMESERIES Time-series-like object for repeated, aligned data.
     %
     %   alignedTimeSeries stores multiple repetitions of recorded data
-    %   aligned to common events (e.g., gait cycles aligned to heel
-    %   strikes). Data is organized as (samples x channels x repetitions).
+    % aligned to common events (e.g., gait cycles aligned to heel strikes).
+    % Data is organized as (samples x channels x repetitions).
     %
-    %alignedTimeSeries properties:
-    %   Data - 3D matrix (samples x channels x strides)
-    %   Time - time vector for one stride cycle
-    %   labels - cell array of channel labels
-    %   alignmentVector - vector specifying samples per phase
-    %   alignmentLabels - cell array of phase/event labels
-    %   eventTimes - matrix of actual event times (events x strides+1)
+    % TODO: make this inherit from labTimeSeries, as it should.
+    %
+    % alignedTimeSeries properties:
+    %   Data               - 3D matrix (samples x channels x strides)
+    %   Time               - time vector for one stride cycle
+    %   labels             - cell array of channel labels
+    %   alignmentVector    - vector specifying samples per phase
+    %   alignmentLabels    - cell array of phase/event labels
+    %   eventTimes         - matrix of actual event times (events x
+    %                        strides+1)
     %   expandedEventTimes - sample times for all events (dependent)
     %
-    %alignedTimeSeries methods:
-    %   alignedTimeSeries - constructor
-    %   getPartialStridesAsATS - extracts subset of strides
-    %   removeStridesWithNaNs - removes strides with missing data
-    %   getPartialDataAsATS - extracts subset of channels
-    %   mean - computes mean across strides
-    %   std - computes standard deviation
-    %   iqr - computes interquartile range
-    %   stdRobust - computes robust standard deviation
-    %   prctile - computes percentile
-    %   median - computes median
-    %   energyDecomposition - decomposes variance
-    %   abs - takes absolute value
+    % alignedTimeSeries methods:
+    %   alignedTimeSeries        - constructor
+    %   getPartialStridesAsATS   - extracts subset of strides
+    %   removeStridesWithNaNs    - removes strides with missing data
+    %   getPartialDataAsATS      - extracts subset of channels
+    %   mean                     - computes mean across strides
+    %   std                      - computes standard deviation
+    %   iqr                      - computes interquartile range
+    %   stdRobust                - computes robust standard deviation
+    %   prctile                  - computes percentile
+    %   median                   - computes median
+    %   energyDecomposition      - decomposes variance
+    %   abs                      - takes absolute value
     %   equalizeEnergyPerChannel - normalizes by RMS
-    %   demean - removes mean
-    %   minus - subtracts two alignedTimeSeries
-    %   plus - adds two alignedTimeSeries
-    %   times - multiplies by constant
-    %   catStrides - concatenates strides into labTimeSeries
-    %   castAsTS - converts to labTimeSeries
-    %   concatenateAsTS - concatenates strides sequentially
-    %   isaLabel - checks if labels exist
-    %   getLabelsThatMatch - finds labels matching pattern
-    %   renameLabels - renames labels
-    %   cat - concatenates alignedTimeSeries
-    %   fftshift - shifts alignment by half cycle
-    %   discretize - averages data across phases
-    %   flipLR - flips left/right alignment
-    %   getSym - computes symmetric components
-    %   getaSym - computes asymmetric components
-    %   rescaleTime - redefines time vector
-    %   plot - plots aligned data with mean
-    %   plotCheckerboard - displays data as heatmap
+    %   demean                   - removes mean
+    %   minus                    - subtracts two alignedTimeSeries
+    %   plus                     - adds two alignedTimeSeries
+    %   times                    - multiplies by constant
+    %   catStrides               - concatenates strides into labTimeSeries
+    %   castAsTS                 - converts to labTimeSeries
+    %   concatenateAsTS          - concatenates strides sequentially
+    %   isaLabel                 - checks if labels exist
+    %   getLabelsThatMatch       - finds labels matching pattern
+    %   renameLabels             - renames labels
+    %   cat                      - concatenates alignedTimeSeries
+    %   fftshift                 - shifts alignment by half cycle
+    %   discretize               - averages data across phases
+    %   flipLR                   - flips left/right alignment
+    %   getSym                   - computes symmetric components
+    %   getaSym                  - computes asymmetric components
+    %   rescaleTime              - redefines time vector
+    %   plot                     - plots aligned data with mean
+    %   plotCheckerboard         - displays data as heatmap
     %
-    %See also: labTimeSeries, processedLabData
+    % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+    %
+    % See also LABTIMESERIES, PROCESSEDLABDATA.
 
     %% Properties
     properties
@@ -58,7 +62,7 @@ classdef alignedTimeSeries % < labTimeSeries
         labels
         alignmentVector = [];
         alignmentLabels = {};
-        eventTimes = [];
+        eventTimes      = [];
     end
 
     properties (Dependent)
@@ -68,31 +72,33 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Constructor
     methods
         function this = alignedTimeSeries(t0, Ts, Data, labels, ...
-                alignmentVector, alignmentLabels, eventTimes)
-            %alignedTimeSeries  Constructor for alignedTimeSeries class
+            alignmentVector, alignmentLabels, eventTimes)
+            %ALIGNEDTIMESERIES Constructor for alignedTimeSeries class.
             %
             %   this = alignedTimeSeries(t0, Ts, Data, labels,
-            %   alignmentVector, alignmentLabels) creates aligned
-            %   timeseries without event times
+            % alignmentVector, alignmentLabels) creates aligned timeseries
+            % without event times
             %
             %   this = alignedTimeSeries(t0, Ts, Data, labels,
-            %   alignmentVector, alignmentLabels, eventTimes) includes
-            %   event timing information
+            % alignmentVector, alignmentLabels, eventTimes) includes event
+            % timing information
             %
-            %   Inputs:
-            %       t0 - initial time
-            %       Ts - sampling period
-            %       Data - 3D matrix (samples x channels x strides)
-            %       labels - cell array of channel labels
-            %       alignmentVector - vector specifying number of samples
-            %                         per phase
-            %       alignmentLabels - cell array of phase/event labels
-            %       eventTimes - matrix of event times (optional)
+            % Inputs:
+            %   t0              - initial time
+            %   Ts              - sampling period
+            %   Data            - 3D matrix (samples x channels x strides)
+            %   labels          - cell array of channel labels
+            %   alignmentVector - vector specifying number of samples per
+            %                     phase
+            %   alignmentLabels - cell array of phase/event labels
+            %   eventTimes      - matrix of event times (optional)
             %
-            %   Outputs:
-            %       this - alignedTimeSeries object
+            % Outputs:
+            %   this - alignedTimeSeries object
             %
-            %   See also: labTimeSeries, processedLabData/reduce
+            % Toolbox Dependencies: None
+            %
+            % See also LABTIMESERIES, PROCESSEDLABDATA/REDUCE.
 
             if nargin < 6
                 warning(['alignedTimeSeries being created without ' ...
@@ -125,26 +131,33 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Property Getters and Setters
     methods
         function eET = get.expandedEventTimes(this)
-            %get.expandedEventTimes  Returns sample times for all events
+            %GET.EXPANDEDEVENTTIMES Returns sample times for all events.
             %
-            %   Outputs:
-            %       eET - matrix of sample times for each event
+            % Inputs:
+            %   this - alignedTimeSeries object
+            %
+            % Outputs:
+            %   eET - matrix of sample times for each event
+            %
+            % Toolbox Dependencies: None
 
             if ~isempty(this.eventTimes)
                 eET = alignedTimeSeries.expandEventTimes(...
                     this.eventTimes, this.alignmentVector);
-            else % legacy version
+            else % eventTimes not set (not mandatory)
                 error('alignedTS:expandedEventTimes', ...
                     'eventTimes are not determined');
             end
         end
 
         function this = set.eventTimes(this, eventTimes)
-            %set.eventTimes  Validates and sets event times
+            %SET.EVENTTIMES Validates and sets event times.
             %
-            %   Inputs:
-            %       this - alignedTimeSeries object
-            %       eventTimes - matrix of event times
+            % Inputs:
+            %   this       - alignedTimeSeries object
+            %   eventTimes - matrix of event times
+            %
+            % Toolbox Dependencies: None
 
             if any(size(eventTimes) ~= [length(this.alignmentVector) ...
                     size(this.Data, 3) + 1])
@@ -193,15 +206,17 @@ classdef alignedTimeSeries % < labTimeSeries
     %% Arithmetic Operations
     methods
         function newThis = abs(this)
-            %abs  Takes absolute value
+            %ABS Takes absolute value.
             %
             %   newThis = abs(this) computes absolute value of data
             %
-            %   Inputs:
-            %       this - alignedTimeSeries object
+            % Inputs:
+            %   this - alignedTimeSeries object
             %
-            %   Outputs:
-            %       newThis - alignedTimeSeries with absolute values
+            % Outputs:
+            %   newThis - alignedTimeSeries with absolute values
+            %
+            % Toolbox Dependencies: None
 
             newThis = this;
             newThis.Data = abs(this.Data);
@@ -254,172 +269,221 @@ classdef alignedTimeSeries % < labTimeSeries
         % [figHandle, plotHandles, plottedInds] = plot(this, figHandle, ...
         %     plotHandles, meanColor, events, individualLineStyle, ...
         %         plottedInds, bounds, medianFlag)
-        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
-            % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
-            % Uses one subplot for each label in the timeseries (same as
-            % labTimeSeries.plot).
-            % If events are given (alignedTimeSeries with the same time vector and number of strides),
-            % it will display the average event-time ocurrence in the plot,
-            % instead of the time in the x-axis.
-            % See also labTimeSeries.plot
+        function [figHandle,plotHandles,plottedInds] = ...
+            plot(this,figHandle,plotHandles,meanColor,events, ...
+            individualLineStyle,plottedInds,bounds,medianFlag)
+            %PLOT Plot every stride of the series and overlay their mean.
             %
-            % SYNTAX:
-            % [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
+            %   [figHandle, plotHandles, plottedInds] = plot(this, ...
+            %   figHandle, plotHandles, meanColor, events, ...
+            %   individualLineStyle, plottedInds, bounds, medianFlag)
+            %   plots the individual instances (strides) of the series
+            %   and overlays their mean (or median), one subplot per
+            %   label (same as labTimeSeries.plot). If events are given
+            %   (alignedTimeSeries with the same time vector and number
+            %   of strides), the x-axis shows the average event-time
+            %   occurrence instead of the time.
             %
-            % INPUTS:
-            % this: alignedTimeSeries object to plot
-            % figHandle: handle to the figure to be used. If absent,
-            % creates a new figure.
-            % plotHandles: handles to the subplots being used. There need
-            % to be at least as many handles as labels in the data.
-            % meanColor: color to use for the plot of the mean. %FIXME
-            % events: alignedTimeSeries of events.
+            % Inputs:
+            %   this                - alignedTimeSeries object to plot
+            %   figHandle           - figure to use; a new figure is
+            %                         created if absent
+            %   plotHandles         - subplot handles; at least one per
+            %                         label
+            %   meanColor           - color of the mean trace
+            %                         (default [1 0 0])
+            %   events              - alignedTimeSeries of events
+            %   individualLineStyle - line style of individual strides;
+            %                         0 hides them (default gray)
+            %   plottedInds         - strides to plot (default all, capped
+            %                         for very large data)
+            %   bounds              - percentile(s) to show around the
+            %                         central trace: two values draw a
+            %                         shaded band, otherwise one line
+            %                         per percentile (zeros select the
+            %                         standard deviation or error)
+            %   medianFlag          - 1 plots the median (default), 0 the
+            %                         mean
             %
-            % OUTPUT:
-            % figHandle: handle to the figure used.
-            % plotHandles: handles to the subplots used.
+            % Outputs:
+            %   figHandle   - figure used
+            %   plotHandles - subplots used
+            %   plottedInds - strides plotted
             %
-            if nargin<4 || isempty(meanColor)
-                meanColor=[1,0,0];
+            % Toolbox Dependencies: Statistics and Machine Learning Toolbox
+            %
+            % See also LABTIMESERIES/PLOT.
+
+            if nargin < 4 || isempty(meanColor)
+                meanColor = [1,0,0];
             end
-            if nargin<9 || isempty(medianFlag)
-                medianFlag=1;
+            if nargin < 9 || isempty(medianFlag)
+                medianFlag = 1;
             end
-            structure=this.Data;
-            if nargin<2 || isempty(figHandle)
-                figHandle=figure();
+            structure = this.Data;
+            if nargin < 2 || isempty(figHandle)
+                figHandle = figure();
             else
                 figure(figHandle) %Only works for one condition!
             end
             set(figHandle,'Units','normalized','OuterPosition',[0 0 1 1])
-            M=size(structure,2);
-            if nargin<3 || isempty(plotHandles) || length(plotHandles)<size(this.Data,2)
-                [b,a]=getFigStruct(M);
-                plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); %External function
+            M = size(structure,2);
+            if nargin < 3 || isempty(plotHandles) || ...
+                    length(plotHandles) < size(this.Data,2)
+                [b,a] = getFigStruct(M);
+                plotHandles = tight_subplot(b,a,[0.02 0.02],[0.05 0.05], ...
+                    [0.05 0.05]); %External function
             end
-            meanStr=mean(structure,3);
-            if nargin<7 || isempty(plottedInds)
-                plottedInds=1:size(structure,3);
-                if (numel(structure))>1e7
-                    P=floor(1e7/numel(structure(:,:,1)));
-                    warning(['There are too many strides in this condition to plot (' num2str(size(structure,3)) '). Only plotting first ' num2str(P) '.'])
-                    plottedInds=1:P;
-                    structure=structure(:,:,plottedInds);
+            meanStr = mean(structure,3);
+            if nargin < 7 || isempty(plottedInds)
+                plottedInds = 1:size(structure,3);
+                maxPlotElements = 1e7; % TODO: source? (plot sample cap)
+                if (numel(structure)) > maxPlotElements
+                    P = floor(maxPlotElements/numel(structure(:,:,1)));
+                    warning([ ...
+                        'There are too many strides in this condition ' ...
+                        'to plot (' num2str(size(structure, ...
+                        3)) '). Only plotting first ' num2str(P) '.'])
+                    plottedInds = 1:P;
+                    structure   = structure(:,:,plottedInds);
                 end
-            elseif any(plottedInds<=0) %Counting from the back
-                plottedInds(plottedInds<=0)=size(structure,3)+plottedInds(plottedInds<=0);
+            elseif any(plottedInds <= 0) %Counting from the back
+                plottedInds(plottedInds <= 0) = ...
+                    size(structure,3)+plottedInds(plottedInds <= 0);
             end
 
 
             %Define centerline plot:
-            if medianFlag==1
-                centerline=this.median.castAsTS; %Could do mean or median
+            if medianFlag == 1
+                centerline = this.median.castAsTS; %Could do mean or median
             else
-                centerline=this.mean.castAsTS;
+                centerline = this.mean.castAsTS;
             end
 
             %Plot percentiles (bounds)
-            if nargin<5 || isempty(events)
-                events=[];
-                meanEvents=[];
+            if nargin < 5 || isempty(events)
+                events     = [];
+                meanEvents = [];
             else
                 if isa(events,'alignedTimeSeries')
-                    [meanEvents,ss]=mean(events);
-                    meanEvents=meanEvents.castAsTS;
+                    [meanEvents,ss] = mean(events);
+                    meanEvents = meanEvents.castAsTS;
                 else
-                    meanEvents=events;
-                    ss=[];
+                    meanEvents = events;
+                    ss         = [];
                 end
-                [i2,~]=find(meanEvents.Data);
+                [i2,~] = find(meanEvents.Data);
             end
-            if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
-                if length(bounds)==2 %Alt visualization: add patch
-                    if any(bounds)==0
-                        if medianFlag==1
-                            st=this.stdRobust.castAsTS;
+            if ~islogical(this.Data) && nargin > 7 && ~isempty(bounds)
+                if length(bounds) == 2 %Alt visualization: add patch
+                    if any(bounds) == 0
+                        if medianFlag == 1
+                            st = this.stdRobust.castAsTS;
                         else
-                            st=this.std.castAsTS;
+                            st = this.std.castAsTS;
                         end
-                        if all(bounds)==0 %Plots ste
-                            aux1=centerline+(st.* 1/sqrt(size(this.Data,3)));
-                            aux2=centerline-(st .* 1/sqrt(size(this.Data,3)));
+                        if all(bounds) == 0 %Plots ste
+                            aux1 = centerline+(st.* ...
+                                1/sqrt(size(this.Data,3)));
+                            aux2 = centerline-(st .* ...
+                                1/sqrt(size(this.Data,3)));
                         else %Plots std
-                            aux1=centerline+(st);
-                            aux2=centerline-(st);
+                            aux1 = centerline+(st);
+                            aux2 = centerline-(st);
                         end
                     else
-                        aux1=prctile(this,bounds(1));
-                        aux2=prctile(this,bounds(2));
+                        aux1 = prctile(this,bounds(1));
+                        aux2 = prctile(this,bounds(2));
                     end
-                    for i=1:M
-                        subplot(plotHandles(i))
+                    for ii = 1:M
+                        subplot(plotHandles(ii))
                         hold on
-                        if size(aux1.Time,1)==numel(aux1.Time) %column vector
-                            megaTime=[aux1.Time; aux1.Time(end:-1:1)];
+                        %column vector
+                        if size(aux1.Time,1) == numel(aux1.Time)
+                            megaTime = [aux1.Time; aux1.Time(end:-1:1)];
                         else %row vector
-                            megaTime=[aux1.Time, aux1.Time(end:-1:1)];
+                            megaTime = [aux1.Time, aux1.Time(end:-1:1)];
                         end
-                        megaData=[aux1.Data(:,i);aux2.Data(end:-1:1,i)];
-                        megaData(isnan(megaData))=0;
-                        pp=patch(megaTime,megaData,meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                        megaData = [aux1.Data(:,ii);aux2.Data(end:-1:1,ii)];
+                        megaData(isnan(megaData)) = 0;
+                        pp = patch(megaTime,megaData,meanColor, ...
+                            'FaceAlpha',0.4,'EdgeColor','none');
                         uistack(pp,'bottom');
                         hold off
                     end
                 else %Plot each percentile line
-                    for k=1:length(bounds)
-                        [figHandle,plotHandles]=plot(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
+                    for k = 1:length(bounds)
+                        [figHandle,plotHandles] = ...
+                            plot(this.prctile(bounds(k)).castAsTS, ...
+                            figHandle,[],plotHandles,[],meanColor*0.8,0.5);
                     end
                 end
             end
 
             %PLot mean trace
-            [figHandle,plotHandles]=plot(centerline,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+            [figHandle,plotHandles] = ...
+                plot(centerline,figHandle,[],plotHandles,meanEvents, ...
+                meanColor); %Plotting mean data
 
             %Plot individual traces
-            for i=1:M %Go over labels
+            for ii = 1:M %Go over labels
                 %subplot(b,a,i)
-                subplot(plotHandles(i))
+                subplot(plotHandles(ii))
                 hold on
                 %title(aux{1}.(field).labels{i})
-                data=squeeze(structure(:,i,:));
-                N=size(data,1);
-                if nargin<6 || isempty(individualLineStyle)
-                    ppp=plot(this.Time,data,'Color',[.7,.7,.7]);
+                data = squeeze(structure(:,ii,:));
+                N    = size(data,1);
+                if nargin < 6 || isempty(individualLineStyle)
+                    ppp = plot(this.Time,data,'Color',[0.7,0.7,0.7]);
                     uistack(ppp,'bottom')
-                elseif individualLineStyle==0
+                elseif individualLineStyle == 0
                     %nop
                 else
-                    ppp=plot(this.Time,data,individualLineStyle);
+                    ppp = plot(this.Time,data,individualLineStyle);
                     uistack(ppp,'bottom')
                 end
 
-                %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
+                %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color', ...
+                %    meanColor);
                 %legend(this.labels{i})
                 %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
-                meanM(i)=prctile(data(:),50);
-                maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i)+eps;
-                minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
-                axis([this.Time(1) this.Time(end) minM(i) maxM(i)])
+                % TODO: source? (axis padding: 2x the 1st/99th pct spread)
+                meanM(ii) = prctile(data(:),50);
+                maxM(ii) = 2*(prctile(data(:),99)-meanM(ii))+meanM(ii)+eps;
+                minM(ii) = 2*(prctile(data(:),1)-meanM(ii))+meanM(ii);
+                axis([this.Time(1) this.Time(end) minM(ii) maxM(ii)])
                 hold off
             end
 
             if ~isempty(events)
-                for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
-                    eventSampPeriod=(events.Time(2)-events.Time(1));
-                    subplot(plotHandles(i))
+                % For each plot, plot a standard deviation bar indicating
+                %   how disperse are events with respect to their
+                %   mean/median (XTick set).
+                for ii = 1:length(plotHandles)
+                    eventSampPeriod = (events.Time(2)-events.Time(1));
+                    subplot(plotHandles(ii))
                     hold on
-                    for j=1:length(ss)
-                        plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
+                    for jj = 1:length(ss)
+                        plot(events.Time(i2(jj))+ss(jj)*[-1, ...
+                            1]*eventSampPeriod,[0,0],'k','LineWidth',1);
                     end
-                    %axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
+                    %axis tight %TO DO: not use axis tight, ...
+                    % but find proper axes limits by computing the rms value
+                    %   of the signal, or something like that.
                     hold off
                 end
             else
-                for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
-                    subplot(plotHandles(i))
-                    xt=get(gca,'XTick');
-                    xt=[this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector)];
-                    xtl=[[this.alignmentLabels, this.alignmentLabels(1)]];
+                % For each plot, plot a standard deviation bar indicating
+                %   how disperse are events with respect to their
+                %   mean/median (XTick set).
+                for ii = 1:length(plotHandles)
+                    subplot(plotHandles(ii))
+                    xt  = get(gca,'XTick');
+                    xt  = [this.Time(1)+[0, ...
+                        cumsum(this.alignmentVector)]*( ...
+                        this.Time(end)-this.Time(1))/sum( ...
+                        this.alignmentVector)];
+                    xtl = [[this.alignmentLabels, this.alignmentLabels(1)]];
                     set(gca,'XTick',xt,'XTickLabel',xtl)
                     set(gca,'xgrid','on')
                 end

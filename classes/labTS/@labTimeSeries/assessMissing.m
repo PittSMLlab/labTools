@@ -1,24 +1,26 @@
 function [fh, ph, missing] = assessMissing(this, labels, fh, ph)
-%assessMissing  Assesses and plots missing data
+%ASSESSMISSING Assesses and plots missing data.
 %
-%   [fh, ph, missing] = assessMissing(this) creates plot showing
-%   missing data patterns
+%   [fh, ph, missing] = assessMissing(this) creates plot showing missing
+% data patterns
 %
-%   [fh, ph, missing] = assessMissing(this, labels, fh, ph) plots
-%   specified labels in existing figure
+%   [fh, ph, missing] = assessMissing(this, labels, fh, ph) plots specified
+% labels in existing figure
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       labels - labels to assess (optional, default: all)
-%       fh - figure handle (optional, -1 to suppress display)
-%       ph - plot handle (optional)
+% Inputs:
+%   this   - labTimeSeries object
+%   labels - labels to assess (optional, default: all)
+%   fh     - figure handle (optional, -1 to suppress display)
+%   ph     - plot handle (optional)
 %
-%   Outputs:
-%       fh - figure handle
-%       ph - plot handle
-%       missing - logical matrix indicating missing samples
+% Outputs:
+%   fh      - figure handle
+%   ph      - plot handle
+%   missing - logical matrix indicating missing samples
 %
-%   See also: substituteNaNs
+% Toolbox Dependencies: None
+%
+% See also SUBSTITUTENANS.
 
 noDisp = false;
 if nargin < 3 || isempty(fh)
@@ -37,15 +39,16 @@ end
 if nargin < 2
     labels = this.labels;
 end
-data = this.getDataAsVector(labels);
+data    = this.getDataAsVector(labels);
 missing = isnan(data);
-miss = missing(:, any(missing));
+miss    = missing(:, any(missing));
 
 if ~noDisp
-    pp = plot(miss, 'o');
+    pp  = plot(miss, 'o');
     aux = labels(any(missing));
-    for i = 1:length(pp)
-        set(pp(i), 'DisplayName', [aux{i} ' (' num2str(sum(miss(:, i))) ...
+    for ii = 1:length(pp)
+        set(pp(ii), 'DisplayName', [aux{ii} ' (' ...
+            num2str(sum(miss(:, ii))) ...
             ' frames)']);
     end
     legend(pp);

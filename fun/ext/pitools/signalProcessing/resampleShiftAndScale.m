@@ -3,15 +3,15 @@ function newSignals = resampleShiftAndScale( ...
 %RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.
 %
 %   Transforms signals by resampling at timeScaleFactor, shifting by
-% lagInSamples samples, and dividing by scaleGain. Resampling uses
-% linear interpolation and is skipped when the scale factor would
-% produce less than half a sample of drift over the full signal length.
-% The integer portion of lagInSamples is applied by padding or
-% truncating; sub-sample correction is reserved for future use.
+% lagInSamples samples, and dividing by scaleGain. Resampling uses linear
+% interpolation and is skipped when the scale factor would produce less than
+% half a sample of drift over the full signal length. The integer portion of
+% lagInSamples is applied by padding or truncating; sub-sample correction is
+% reserved for future use.
 %
 % Inputs:
-%   signals         - (M x N) double array of N time series, each M
-%                     samples long
+%   signals         - (M x N) double array of N time series, each M samples
+%                     long
 %   timeScaleFactor - resampling factor; values > 1 interpolate (upscale),
 %                     values < 1 decimate (downscale)
 %   lagInSamples    - time shift in samples; positive pads leading zeros,

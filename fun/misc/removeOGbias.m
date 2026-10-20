@@ -53,10 +53,11 @@ for ii = 1:size(allData, 1)
 end
 
 %% Fit baseline spatial trend and subtract from data
+runAvgWidth = 5;                        % running-average width (strides)
 baseOG1     = sortrows(baseOG1, 2);         % sort by hip position
-baseOG1Fit  = bin_dataV1(baseOG1, 5);       % 5-point running average
+baseOG1Fit  = bin_dataV1(baseOG1, runAvgWidth);
 baseOG2     = sortrows(baseOG2, 2);
-baseOG2Fit  = bin_dataV1(baseOG2, 5);
+baseOG2Fit  = bin_dataV1(baseOG2, runAvgWidth);
 
 for ii = 1:size(allOG1, 1)
     % find fit point closest to data point spatially

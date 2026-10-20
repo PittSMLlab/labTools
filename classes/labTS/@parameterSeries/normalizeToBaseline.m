@@ -1,20 +1,22 @@
 function this = normalizeToBaseline(this, labels, rangeValues)
-%normalizeToBaseline  Normalizes parameters (deprecated)
+%NORMALIZETOBASELINE Normalizes parameters (deprecated).
 %
 %   this = normalizeToBaseline(this, labels, rangeValues) linearly
-%   transforms parameters
+% transforms parameters
 %
-%   Inputs:
-%       this - parameterSeries object
-%       labels - cell array of parameter labels to normalize
-%       rangeValues - 2-element vector [min max] defining range
+% Inputs:
+%   this        - parameterSeries object
+%   labels      - cell array of parameter labels to normalize
+%   rangeValues - 2-element vector [min max] defining range
 %
-%   Outputs:
-%       this - parameterSeries with normalized parameters
+% Outputs:
+%   this - parameterSeries with normalized parameters
 %
 %   Note: Deprecated, use linearStretch instead
 %
-%   See also: linearStretch
+% Toolbox Dependencies: None
+%
+% See also LINEARSTRETCH.
 
 warning('parameterSeries:normalizeToBaseline', ...
     'Deprecated, use linearStretch');

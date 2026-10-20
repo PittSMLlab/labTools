@@ -1,20 +1,22 @@
 function out = getCommonParameters(this)
-%getCommonParameters  Returns parameters common to all groups
+%GETCOMMONPARAMETERS Returns parameters common to all groups.
 %
 %   out = getCommonParameters(this) identifies and returns the
-%   adaptation parameters that are available in all groups within the
-%   study
+% adaptation parameters that are available in all groups within the
+% study
 %
-%   Inputs:
-%       this - studyData object
+% Inputs:
+%   this - studyData object
 %
-%   Outputs:
-%       out - list of common parameter labels
+% Outputs:
+%   out - list of common parameter labels
 %
-%   Note: Method not yet implemented
+% NOTE: Method not yet implemented
 %
-%   See also: getCommonConditions, getEpochData
+% Toolbox Dependencies: None
+%
+% See also GETCOMMONCONDITIONS, GETEPOCHDATA.
 
-out = []; % Doxy
+out = []; % placeholder (not implemented)
 end
 

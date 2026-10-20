@@ -6,6 +6,11 @@ function mrkrTrajs = Part1RL(trialPath)
 % gap filling, then runs the post-pattern pipeline and saves the result.
 % Returns marker trajectories captured at each processing stage.
 %
+% Side effects: needs a running Vicon Nexus; opens the trial, runs the
+%   Nexus pipelines (RLPrePatternFill1/2, RLPostPatternFill), and
+%   overwrites the saved trial. A pipeline that fails only warns, so
+%   the later steps still run.
+%
 % Inputs:
 %   trialPath - Full path to the trial folder (string)
 %
@@ -18,7 +23,8 @@ function mrkrTrajs = Part1RL(trialPath)
 %
 % See also PROCESSANDFILLMARKERGAPSTRIAL, RECONSTRUCTANDLABELTRIAL.
 
-% pathTrial = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
+% pathTrial = ...
+%    'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
 
 fprintf('Connecting to Vicon Nexus...\n');
 newVicon = ViconNexus();
@@ -40,7 +46,8 @@ fprintf('\n--- Processing trial: %s ---\n', trialName);
 %% Step 1a — Pre-pattern pipeline (Reconstruct & Label)
 
 fprintf('Running RLPrePatternFill1 pipeline...\n');
-%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPrePatternFill1';
+%pipelinePath = fullfile('C:\Users\Public\Documents\Vicon\Nexus2.x', ...
+%    'Configurations\Pipelines\RLPrePatternFill1');
 try
     %newVicon.RunPipeline(pipelinePath, '', 200);
     newVicon.RunPipeline('RLPrePatternFill1', '', 200);
@@ -54,7 +61,8 @@ end
 %% Step 1b — Pre-pattern pipeline (Woltring)
 
 fprintf('Running RLPrePatternFill2 pipeline...\n');
-%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPrePatternFill1';
+%pipelinePath = fullfile('C:\Users\Public\Documents\Vicon\Nexus2.x', ...
+%    'Configurations\Pipelines\RLPrePatternFill1');
 try
     %newVicon.RunPipeline(pipelinePath, '', 200);
     newVicon.RunPipeline('RLPrePatternFill2', '', 200);
@@ -77,7 +85,8 @@ markersTarg = { ...
 
 markerGaps = dataMotion.extractMarkerGapsTrial(trialPath, newVicon);
 
-%     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, trialPath,newVicon,false);
+%     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
+%    trialPath,newVicon,false);
 
 for ref = 1:numel(markersRef)
     refMarker     = markersRef{ref};
@@ -100,7 +109,8 @@ mrkrTrajs.Step3Pattern = getRelevantMrkrTrajs(newVicon);
 %% Step 3 — Post-pattern pipeline
 
 fprintf('Running RLPostPatternFill pipeline...\n');
-%pipelinePath = 'C:\Users\Public\Documents\Vicon\Nexus2.x\Configurations\Pipelines\RLPostPatternFill';
+%pipelinePath = fullfile('C:\Users\Public\Documents\Vicon\Nexus2.x', ...
+%    'Configurations\Pipelines\RLPostPatternFill');
 try
     %vicon.RunPipeline(pipelinePath, '', 200);
     newVicon.RunPipeline('RLPostPatternFill', '', 200);
@@ -200,8 +210,10 @@ for mrkr = 1:numel(mrkrsRelevant)
     mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];
 end
 % for mrkr = mrkrsRelevant
-%     [trajX,trajY,trajZ,exists] = newVicon.getTrajectory(mrkrsRelevant{mrkr});
-%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
+%     [trajX,trajY,trajZ,exists] = ...
+%    newVicon.getTrajectory(mrkrsRelevant{mrkr});
+%     mrkrTrajs.(mrkrsRelevant{mrkr}) = ...
+%    [trajX; trajY; trajZ; double(exists)];
 % end
 
 end

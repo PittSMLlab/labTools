@@ -1,7 +1,7 @@
 classdef trialMetaData
-    %trialMetaData  Information that is specific to an individual trial
+    %TRIALMETADATA Information that is specific to an individual trial.
     %
-    %trialMetaData properties:
+    % trialMetaData properties:
     %   name - short description of condition (e.g., 'slow base')
     %   description - long description of condition (e.g., '300
     %                 strides at 0.5 m/s')
@@ -21,16 +21,20 @@ classdef trialMetaData
     %   ID - trial identifier string
     %   datlog - data log structure
     %
-    %trialMetaData methods:
+    % trialMetaData methods:
     %   trialMetaData - constructor for trial metadata
+    %
+    % Toolbox Dependencies: None
+    %
+    % See also EXPERIMENTMETADATA, DERIVEDMETADATA.
 
     %% Properties
     properties
-        name = '';
-        description = ''; % describes condition
+        name         = '';
+        description  = ''; % describes condition
         observations = '';
-        refLeg = '';
-        condition = [];
+        refLeg       = '';
+        condition    = [];
         % string or cell array of strings, if there are many files
         rawDataFilename = '';
         type = '';
@@ -43,36 +47,46 @@ classdef trialMetaData
     %% Constructor
     methods
         function this = trialMetaData(name, desc, obs, refLeg, cond, ...
-                filename, type, schenleyLab, perceptualTasks, ID, datlog)
-            %trialMetaData  Constructor for trialMetaData class
+            filename, type, schenleyLab, perceptualTasks, ID, datlog)
+            %TRIALMETADATA Constructor for trialMetaData class.
             %
-            %   this = trialMetaData(name) creates a trial metadata object
-            %   with the specified trial name
+            %   this = trialMetaData(name) creates a trial metadata
+            % object with the specified trial name.
             %
             %   this = trialMetaData(name, desc, obs, refLeg, cond,
-            %   filename, type, schenleyLab, perceptualTasks, ID, datlog)
-            %   creates trial metadata object with all specified parameters
+            % filename, type, schenleyLab, perceptualTasks, ID, datlog)
+            % creates a trial metadata object with all specified
+            % parameters.
             %
-            %   Inputs:
-            %       name - short name/label for the trial condition
-            %       desc - detailed description of the condition (optional)
-            %       obs - observations or notes about the trial (optional)
-            %       refLeg - reference leg, 'L' or 'R' (optional)
-            %       cond - condition number (optional)
-            %       filename - raw data filename(s), string or cell array
-            %                  (optional)
-            %       type - trial type: 'TM' (treadmill), 'OG' (overground),
-            %              'NIM' (Nimbus), or 'IN' (instrumented)
-            %              (optional, default: 'TM')
-            %       schenleyLab - flag for Schenley lab data (optional,
-            %                     default: 0)
-            %       perceptualTasks - flag for perceptual tasks (optional,
-            %                         default: 0)
-            %       ID - trial identifier (optional)
-            %       datlog - data log structure (optional)
+            % Inputs:
+            %   name            - short name/label for the trial condition
+            %   desc            - (optional) detailed description of the
+            %                     condition
+            %   obs             - (optional) observations or notes about
+            %                     the trial
+            %   refLeg          - (optional) reference leg, 'L' or 'R'
+            %   cond            - (optional) condition number
+            %   filename        - (optional) raw data filename(s), string
+            %                     or cell array
+            %   type            - (optional) trial type: 'TM' (treadmill),
+            %                     'OG' (overground), 'NIM' (Nimbus), or
+            %                     'IN' (instrumented); default 'TM'
+            %   schenleyLab     - (optional) flag for Schenley lab data;
+            %                     default 0
+            %   perceptualTasks - (optional) flag for perceptual tasks;
+            %                     default 0
+            %   ID              - (optional) trial identifier
+            %   datlog          - (optional) data log structure
             %
-            %   Outputs:
-            %       this - trialMetaData object
+            % Outputs:
+            %   this - trialMetaData object
+            %
+            % NOTE: Omitted type, schenleyLab, and perceptualTasks fall
+            %       back to their defaults with a warning.
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also EXPERIMENTMETADATA, DERIVEDMETADATA.
 
             if isa(name, 'char')
                 this.name = name;

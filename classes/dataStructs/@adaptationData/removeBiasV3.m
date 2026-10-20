@@ -1,84 +1,118 @@
-function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)
-% removeBias('condition') or removeBias({'Condition1','Condition2',...})
-% removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
-% from each trial that is the same type as the condition entered. If no
-% condition is specified, then the condition name that contains both the
-% type string and the string 'base' is used as the baseline condition.
-%INPUT:
-%this: adaptationData object
-%conditions: list of conditions to be used as reference for bias removal,
-%if none given, will search for conditions that contain the string 'base'
+function [newThis,baseValues,typeList] = ...
+    removeBiasV3(this,refConditions,normalizeFlag)
+%REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).
 %
-%TO DO: see what happens when 2+ conditions of the same type are entered
-%TO DO: see what happens when 0 conditions are given for a certain type
-%TODO: implement a check of conditions such that only one condition per
-%trialType is accepted
+%   [newThis,baseValues,typeList] = REMOVEBIASV3(this,refConditions,
+% normalizeFlag) subtracts from, or divides, every parameter of all trials
+% of a trial type by its mean over the last 40 strides of that type's
+% baseline condition, exempting the very last 5 and the first 10 strides and
+% ignoring bad strides. Without refConditions, the baseline is the condition
+% whose name contains 'base' and the trial type. Prints a warning (and the
+% candidates) if several baseline conditions are found and uses the first;
+% trial types without a baseline are left unchanged. Columns that must not
+% change (bad, good, trial, initTime, finalTime, direction, the
+% stride-quality reason columns, triageOutlier and HandrailHolding) are
+% copied unchanged.
+%
+% Inputs:
+%   this           - adaptationData object
+%   refConditions  - baseline condition name(s) or number(s), one per trial
+%                    type; [] searches by name (default [])
+%   normalizeFlag  - 0 subtracts the baseline, 1 divides by it (default 0)
+%
+% Outputs:
+%   newThis    - adaptationData object with the bias removed
+%   baseValues - types x parameters baseline values (NaN if none)
+%   typeList   - cell array of the trial types, in the order of baseValues
+%
+% Toolbox Dependencies: None
+%
+% See also REMOVEBIASV4, ADAPTATIONDATA.REMOVEBIAS, GETEARLYLATEDATA_V2,
+%   GETSTRIDEQUALITYCONFIG.
 
-conds=this.metaData.conditionName;
-if nargin<2 || isempty(refConditions)
-    warning('No condition names passed to removeBiasV3, will find reference conditions by name search.')
-    refConditions=[];
+conds = this.metaData.conditionName;
+if nargin < 2 || isempty(refConditions)
+    warning(['No condition names passed to removeBiasV3, will find ' ...
+        'reference conditions by name search.'])
+    refConditions = [];
 end
-%if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
-    %convert input to standardized format
-    if isa(refConditions,'char')
-        refConditions={refConditions};
-    elseif isa(refConditions,'double')
-        refConditions=conds(refConditions);
-    end
-    % validate condition(s)
-    cInput=refConditions(this.isaCondition(refConditions));
+%if nargin>1 && ~isempty(conditions) %Ideally, ...
+% number of conditions given should be the same as the amount of types that
+%     exist (i.e. one for OG, one for TM, ...)
+%convert input to standardized format
+if isa(refConditions,'char')
+    refConditions = {refConditions};
+elseif isa(refConditions,'double')
+    refConditions = conds(refConditions);
+end
+% validate condition(s)
+cInput = refConditions(this.isaCondition(refConditions));
 %end
-if nargin<3 || isempty(normalizeFlag)
-    normalizeFlag=0;
+if nargin < 3 || isempty(normalizeFlag)
+    normalizeFlag = 0;
 end
 
 
-trialsInCond=this.metaData.trialsInCondition;
+trialsInCond = this.metaData.trialsInCondition;
 % trialTypes=this.data.trialTypes;
-trialTypes=this.trialTypes; %Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible
-types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
-labels=this.data.labels; %all labels
-baseValues=NaN(length(types),length(labels));
-newData=nan(size(this.data.Data));
+% Pablo added this on 5/18 and a function in adaptationData that makes this
+%     code back compatible
+trialTypes = this.trialTypes;
+types      = unique(trialTypes(~cellfun(@isempty,trialTypes)));
+labels     = this.data.labels; %all labels
+baseValues = NaN(length(types),length(labels));
+newData    = nan(size(this.data.Data));
 
-for itype=1:length(types)
-    allTrials=find(strcmp(this.trialTypes,types{itype}));
+baseNumStrides = -40; % negative = count from the end of the condition
+exemptLast     = 5;
+exemptFirst    = 10;
+for itype = 1:length(types)
+    allTrials = find(strcmp(this.trialTypes,types{itype}));
     if isempty(refConditions)
-        [baseCond]=this.metaData.getConditionsThatMatch('base',types{itype});
+        baseCond = this.metaData.getConditionsThatMatch('base', ...
+            types{itype});
     else
-        baseCond=refConditions{itype};
+        baseCond = refConditions{itype};
     end
-    if length(baseCond)>1
-        warning('More than one base condition was provided/found. Using only the first one.')
+    if length(baseCond) > 1
+        warning(['More than one base condition was provided/found. ' ...
+            'Using only the first one.'])
         disp('List of baseline conditions provided:')
         disp(baseCond)
-        baseCond=baseCond{1};
+        baseCond = baseCond{1};
     end
     %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
-        % CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline 
-        base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,10); %Last 40, exempting very last 5 and first 10
-        base=nanmean(squeeze(base{1}));
-        [data, inds]=this.getParamInTrial(labels,allTrials);
-        if normalizeFlag==0
+        % OG and TM are treated the same: the baseline is the last 40
+        % strides, exempting the very last 5 and the first 10
+        base = getEarlyLateData_v2(this.removeBadStrides,labels, ...
+            baseCond,0,baseNumStrides,exemptLast,exemptFirst);
+        base = mean(squeeze(base{1}), 'omitnan');
+        [data, inds] = this.getParamInTrial(labels,allTrials);
+        if normalizeFlag == 0
             %added lines to ensure that if certain parameters never
             %have a baseline to remove the bias, they are not assigned
             %as NaN from the bsxfun @minus.
-            base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
-            newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
-            base(base==0)=nan;
+            %do not subtract a bias if there is no bias to remove
+            base(isnan(base)) = 0;
+            %Substracting baseline
+            newData(inds,:) = bsxfun(@minus,data,base);
+            base(base == 0) = nan;
         else
-            base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
-            newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
-            base(base==1)=nan;
+            %do not subtract a bias if there is no bias to remove
+            base(isnan(base)) = 1;
+            %Dividing by baseline
+            newData(inds,:) = bsxfun(@rdivide,data,base);
+            base(base == 1) = nan;
         end
-        baseValues(itype,:)=base;
-    
+        baseValues(itype,:) = base;
+
     else
-        warning(['No ' types{itype} ' baseline trials detected. Bias not removed from ' types{itype} ' trials.'])
-        [~, inds]=this.getParamInTrial(labels,allTrials);
-        newData(inds,:)=this.data.Data(inds,:);
+        warning(['No ' types{itype} ...
+            ' baseline trials detected. Bias not removed from ' types{ ...
+            itype} ' trials.'])
+        [~, inds] = this.getParamInTrial(labels,allTrials);
+        newData(inds,:) = this.data.Data(inds,:);
     end
 end
 %fix any parameters that should not have bias removal
@@ -88,18 +122,20 @@ end
 protectedLabels = [{'bad', 'good', 'trial', 'initTime', ...
     'finalTime', 'direction'}, getStrideQualityConfig().reasonLabels, ...
     {'triageOutlier', 'HandrailHolding'}];
-[~,idxs]=this.data.isaParameter(protectedLabels);
+[~,idxs] = this.data.isaParameter(protectedLabels);
 if ~isempty(idxs)
-    newData(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
+    newData(:,idxs(idxs > 0)) = this.data.Data(:,idxs(idxs > 0));
 end
 
 %Construct parameterSeries and maintain backwards compatibility:
 if isa(this.data,'paramData')
-    newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
+    newParamData = paramData(newData,labels,this.data.indsInTrial, ...
+        this.data.trialTypes);
 else
-    newParamData=parameterSeries(newData,labels,this.data.hiddenTime,this.data.description);
+    newParamData = parameterSeries(newData,labels,this.data.hiddenTime, ...
+        this.data.description);
 end
-newThis=adaptationData(this.metaData,this.subData,newParamData);
-typeList=types;
+newThis  = adaptationData(this.metaData,this.subData,newParamData);
+typeList = types;
 
 end

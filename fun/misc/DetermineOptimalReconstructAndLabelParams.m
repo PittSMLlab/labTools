@@ -1,11 +1,27 @@
 %% Determine the Optimal Reconstruct & Label Pipeline Parameters
-% author: NWB (with assistance from ChatGPT)
-% date (created): 18 May 2025
-% purpose: Iterate through various Vicon Nexus 'Reconstruct & Label'
-%   pipeline parameters to determine the optimal configuration based
-%   on metrics such as percentage of frames missing, average number of
-%   gaps per marker, maximum gap length, and median gap length — both
-%   across all markers and a subset.
+% Script. Iterates through Vicon Nexus 'Reconstruct & Label' pipeline
+% parameters to determine the optimal configuration based on metrics
+% such as percentage of frames missing, average number of gaps per
+% marker, maximum gap length, and median gap length, both across all
+% markers and a subset (RGT, LGT, RANK, LANK).
+%
+% Inputs:
+%   none - edit pathData (folder of session folders with Trial*.x1d),
+%          pathOutCSV, and the parameter ranges in section 5
+%
+% Outputs:
+%   none - prints the best parameter set (lowest mean percent missing)
+%          for all markers and for the subset, and writes one row per
+%          parameter set and trial to pathOutCSV
+%
+% Side effects: needs a running Vicon Nexus. Overwrites the Nexus
+%   pipeline file 'Reconstruct And Label Test.Pipeline' once per
+%   parameter set, runs it on every trial found, and writes the CSV.
+%
+% Toolbox Dependencies: None (Vicon Nexus SDK; uses allcomb from
+% fun/misc/allcomb)
+%
+% See also DATAMOTION.OPENTRIALIFNEEDED, ALLCOMB.
 
 % TODO:
 %   1. Loop through exemplar trials from all SML Lab studies or

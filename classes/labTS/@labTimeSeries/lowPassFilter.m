@@ -1,21 +1,29 @@
 function newThis = lowPassFilter(this, fcut)
-%lowPassFilter  Applies low-pass filter
+%LOWPASSFILTER Applies low-pass filter.
 %
-%   newThis = lowPassFilter(this, fcut) applies Butterworth low-pass
-%   filter with specified cutoff frequency
+%   newThis = lowPassFilter(this, fcut) applies Butterworth low-pass filter
+% with specified cutoff frequency
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       fcut - cutoff frequency in Hz
+% Inputs:
+%   this - labTimeSeries object
+%   fcut - cutoff frequency in Hz
 %
-%   Outputs:
-%       newThis - filtered labTimeSeries
+% Outputs:
+%   newThis - filtered labTimeSeries
 %
-%   See also: highPassFilter, medianFilter, filtfilthd_short
+% Toolbox Dependencies: Signal Processing Toolbox
+%
+% See also HIGHPASSFILTER, MEDIANFILTER, FILTFILTHD_SHORT.
 
-Wn = fcut * 2 / this.sampFreq;
-Wst = min([2 * Wn, Wn + 0.2 * (1 - Wn)]);
-filterList{1} = fdesign.lowpass('Fp,Fst,Ap,Ast', Wn, Wst, 3, 10);
+passAttenDb  = 3;   % dB, Ap in the fdesign spec
+stopAttenDb  = 10;  % dB, Ast in the fdesign spec
+stopFreqMult = 2;   % TODO: source? (stopband edge = 2 * cutoff, capped)
+stopBandFrac = 0.2; % TODO: source? (cap: 20% of the band above cutoff)
+
+Wn  = fcut * 2 / this.sampFreq;
+Wst = min([stopFreqMult * Wn, Wn + stopBandFrac * (1 - Wn)]);
+filterList{1} = fdesign.lowpass('Fp,Fst,Ap,Ast', Wn, Wst, ...
+    passAttenDb, stopAttenDb);
 lowPassFilter = design(filterList{1}, 'butter');
 newData = ...
     filtfilthd_short(lowPassFilter, this.Data, 'reflect', this.sampFreq);

@@ -1,18 +1,20 @@
 function h = dispCov(this)
-%dispCov  Displays covariance matrix
+%DISPCOV Displays covariance matrix.
 %
-%   h = dispCov(this) creates a figure displaying the covariance
-%   matrix of the data
+%   h = dispCov(this) creates a figure displaying the covariance matrix of
+% the data
 %
-%   Inputs:
-%       this - labTimeSeries object
+% Inputs:
+%   this - labTimeSeries object
 %
-%   Outputs:
-%       h - figure handle
+% Outputs:
+%   h - figure handle
 %
-%   See also: cov
+% Toolbox Dependencies: None
+%
+% See also COV.
 
-h = figure;
+h  = figure;
 dd = cov(this.Data);
 imagesc(dd);
 set(gca, 'XTick', 1:length(this.labels), 'XTickLabels', this.labels, ...

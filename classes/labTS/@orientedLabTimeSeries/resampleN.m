@@ -1,21 +1,23 @@
 function newThis = resampleN(this, newN, method)
-%resampleN  Resamples to N samples (override)
+%RESAMPLEN Resamples to N samples (override).
 %
 %   newThis = resampleN(this, newN, method) resamples and preserves
-%   orientedLabTimeSeries type
+% orientedLabTimeSeries type
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       newN - target number of samples
-%       method - interpolation method (optional)
+% Inputs:
+%   this   - orientedLabTimeSeries object
+%   newN   - target number of samples
+%   method - interpolation method (optional)
 %
-%   Outputs:
-%       newThis - resampled orientedLabTimeSeries
+% Outputs:
+%   newThis - resampled orientedLabTimeSeries
 %
 %   Note: Same as resample function, but directly fixing number of
 %         samples instead of Ts
 %
-%   See also: resample, labTimeSeries/resampleN
+% Toolbox Dependencies: None
+%
+% See also RESAMPLE, LABTIMESERIES/RESAMPLEN.
 
 if nargin < 3
     method = [];

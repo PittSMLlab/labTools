@@ -1,20 +1,22 @@
 function newThis = rotate(this, matrix)
-%rotate  Rotates data by matrix
+%ROTATE Rotates data by matrix.
 %
-%   newThis = rotate(this, matrix) applies rotation/transformation
-%   matrix to data
+%   newThis = rotate(this, matrix) applies rotation/transformation matrix to
+% data
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       matrix - 3x3 or Tx3x3 transformation matrix
+% Inputs:
+%   this   - orientedLabTimeSeries object
+%   matrix - 3x3 or Tx3x3 transformation matrix
 %
-%   Outputs:
-%       newThis - transformed orientedLabTimeSeries
+% Outputs:
+%   newThis - transformed orientedLabTimeSeries
 %
 %   Note: Since no check is done on matrix, allows any linear
 %         transformation including contractions/expansions and inversions
 %
-%   See also: translate, alignRotate, flipAxis
+% Toolbox Dependencies: None
+%
+% See also TRANSLATE, ALIGNROTATE, FLIPAXIS.
 
 [data, label] = getOrientedData(this);
 if ndims(matrix) == 3
@@ -22,7 +24,7 @@ if ndims(matrix) == 3
 else
     M = 1;
 end
-matrix = reshape(matrix, M, 1, 3, 3);
+matrix  = reshape(matrix, M, 1, 3, 3);
 newData = permute(sum(bsxfun(@times, data, matrix), 3), [1, 4, 2, 3]);
 newThis = orientedLabTimeSeries(newData(:, :), this.Time(1), ...
     this.sampPeriod, this.labels, this.orientation);

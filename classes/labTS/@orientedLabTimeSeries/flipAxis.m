@@ -1,16 +1,18 @@
 function newThis = flipAxis(this, axis)
-%flipAxis  Flips specified axis
+%FLIPAXIS Flips specified axis.
 %
 %   newThis = flipAxis(this, axis) flips sign of specified axis
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3
 %
-%   Outputs:
-%       newThis - flipped orientedLabTimeSeries
+% Outputs:
+%   newThis - flipped orientedLabTimeSeries
 %
-%   See also: rotate
+% Toolbox Dependencies: None
+%
+% See also ROTATE.
 
 matrix = eye(3);
 if isa(axis, 'char')

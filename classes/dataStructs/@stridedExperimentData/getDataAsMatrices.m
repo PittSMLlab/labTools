@@ -1,22 +1,24 @@
 function structure = getDataAsMatrices(this, fields, conditions, N)
-%getDataAsMatrices  Converts stride data to matrices
+%GETDATAASMATRICES Converts stride data to matrices.
 %
 %   structure = getDataAsMatrices(this, fields, conditions, N)
-%   extracts and organizes stride data into matrices for analysis
+% extracts and organizes stride data into matrices for analysis
 %
-%   Inputs:
-%       this - stridedExperimentData object
-%       fields - field name or cell array of field names to extract
-%       conditions - vector of condition indices
-%       N - number of samples for resampling
+% Inputs:
+%   this       - stridedExperimentData object
+%   fields     - field name or cell array of field names to extract
+%   conditions - vector of condition indices
+%   N          - number of samples for resampling
 %
-%   Outputs:
-%       structure - cell array (one per condition) containing matrices
-%                   of size (samples x channels x strides). If multiple
-%                   fields requested, structure contains a struct with
-%                   one field per requested data field
+% Outputs:
+%   structure - cell array (one per condition) containing matrices of size
+%               (samples x channels x strides). If multiple fields
+%               requested, structure contains a struct with one field per
+%               requested data field
 %
-%   See also: strideData/cell2mat, getStridesFromCondition
+% Toolbox Dependencies: None
+%
+% See also STRIDEDATA/CELL2MAT, GETSTRIDESFROMCONDITION.
 
 for cond = conditions
     strides = this.getStridesFromCondition(cond);

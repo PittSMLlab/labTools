@@ -1,17 +1,19 @@
 function newThis = threshold(this, th)
-%threshold  Thresholds by vector magnitude
+%THRESHOLD Thresholds by vector magnitude.
 %
-%   newThis = threshold(this, th) zeros samples where vector magnitude
-%   is below threshold
+%   newThis = threshold(this, th) zeros samples where vector magnitude is
+% below threshold
 %
-%   Inputs:
-%       this - orientedLabTimeSeries object
-%       th - magnitude threshold value
+% Inputs:
+%   this - orientedLabTimeSeries object
+%   th   - magnitude threshold value
 %
-%   Outputs:
-%       newThis - thresholded orientedLabTimeSeries
+% Outputs:
+%   newThis - thresholded orientedLabTimeSeries
 %
-%   See also: thresholdByChannel
+% Toolbox Dependencies: None
+%
+% See also THRESHOLDBYCHANNEL.
 
 newThis = this;
 newThis.Data(sqrt(sum(newThis.Data.^2)) < th, :) = 0;

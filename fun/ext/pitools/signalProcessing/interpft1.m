@@ -1,8 +1,24 @@
-function [y] = interpft1(x,N,dim)
-%INTERPFT1 Replacement for the original interpft, with mirroring extension to allow for circular
-%continuity
-if nargin<3
-    dim=1;
+function y = interpft1(x,N,dim)
+%INTERPFT1 Fourier interpolation with mirrored extension.
+%
+%   y = INTERPFT1(x,N,dim) replaces INTERPFT: the signal is first extended
+% with its mirror image, so the interpolation is circularly continuous,
+% interpolated to 2*N points and cut to the first N points.
+%
+% Inputs:
+%   x   - array to interpolate
+%   N   - number of points of the result along dim
+%   dim - (optional) dimension to interpolate along (default: 1)
+%
+% Outputs:
+%   y - interpolated array, N points along dim
+%
+% Toolbox Dependencies: None
+%
+% See also INTERPFT, DEPERMUTE.
+
+if nargin < 3
+    dim = 1;
 end
 
 %% To work for all dimensions
@@ -30,14 +46,14 @@ end
 
 %% To work with only dim=1
 
-x=permute(x,[dim 1:dim-1 dim+1:ndims(x)]);
+x = permute(x,[dim 1:dim-1 dim+1:ndims(x)]);
 
-x2=[x;flipud(x)];
-y2=interpft(x2,2*N,1);
+x2 = [x;flipud(x)];
+y2 = interpft(x2,2*N,1);
 %y=y2(1:N,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:);
-y=y2;
-y(N+1:end,:)=[];
+y = y2;
+y(N+1:end,:) = [];
 
-y=depermute(y,[dim 1:dim-1 dim+1:ndims(x)]);
+y = depermute(y,[dim 1:dim-1 dim+1:ndims(x)]);
 
 end

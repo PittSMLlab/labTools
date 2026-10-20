@@ -1,18 +1,20 @@
 classdef rawTrialData < rawLabData
-    %rawTrialData  Raw data container for individual trial data
+    %RAWTRIALDATA Raw data container for individual trial data
     %
     %   rawTrialData extends rawLabData to enforce that the metadata is
-    %   of trialMetaData type rather than the more general labMetaData
-    %   type. This ensures proper trial-specific metadata is associated
-    %   with the data.
+    % of trialMetaData type rather than the more general labMetaData
+    % type. This ensures proper trial-specific metadata is associated
+    % with the data.
     %
-    %rawTrialData properties:
+    % rawTrialData properties:
     %   (inherits all properties from rawLabData and labData)
     %
-    %rawTrialData methods:
+    % rawTrialData methods:
     %   rawTrialData - constructor for raw trial data
     %
-    %See also: rawLabData, labData, trialMetaData, processedTrialData
+    % Toolbox Dependencies: None
+    %
+    % See also RAWLABDATA, LABDATA, TRIALMETADATA, PROCESSEDTRIALDATA.
 
     %% Properties
     properties
@@ -21,37 +23,37 @@ classdef rawTrialData < rawLabData
     %% Constructor
     methods
         function this = rawTrialData(metaData, markerData, EMGData, ...
-                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
-                EEGData, footSwitches, HreflexPin)
-            %rawTrialData  Constructor for rawTrialData class
+            GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+            EEGData, footSwitches, HreflexPin)
+            %RAWTRIALDATA Constructor for rawTrialData class
             %
-            %   this = rawTrialData(metaData, markerData, EMGData,
-            %   GRFData, beltSpeedSetData, beltSpeedReadData, accData,
-            %   EEGData, footSwitches, HreflexPin) creates a raw trial
-            %   data object with specified data and metadata
+            %   this = rawTrialData(metaData, markerData, EMGData, GRFData,
+            % beltSpeedSetData, beltSpeedReadData, accData, EEGData,
+            % footSwitches, HreflexPin) creates a raw trial data object with
+            % specified data and metadata
             %
-            %   Inputs:
-            %       metaData - trialMetaData or derivedMetaData object
-            %       markerData - orientedLabTimeSeries with marker
-            %                    trajectories
-            %       EMGData - labTimeSeries with EMG signals
-            %       GRFData - orientedLabTimeSeries with ground reaction
-            %                 forces
-            %       beltSpeedSetData - labTimeSeries with commanded belt
-            %                          speeds
-            %       beltSpeedReadData - labTimeSeries with actual belt
-            %                           speeds
-            %       accData - orientedLabTimeSeries with acceleration
-            %                 data
-            %       EEGData - labTimeSeries with EEG signals
-            %       footSwitches - labTimeSeries with foot switch data
-            %       HreflexPin - labTimeSeries with H-reflex stimulus
-            %                    timing
+            % Inputs:
+            %   metaData          - trialMetaData or derivedMetaData object
+            %   markerData        - orientedLabTimeSeries with marker
+            %                       trajectories
+            %   EMGData           - labTimeSeries with EMG signals
+            %   GRFData           - orientedLabTimeSeries with ground
+            %                       reaction forces
+            %   beltSpeedSetData  - labTimeSeries with commanded belt speeds
+            %   beltSpeedReadData - labTimeSeries with actual belt speeds
+            %   accData           - orientedLabTimeSeries with acceleration
+            %                       data
+            %   EEGData           - labTimeSeries with EEG signals
+            %   footSwitches      - labTimeSeries with foot switch data
+            %   HreflexPin        - labTimeSeries with H-reflex stimulus
+            %                       timing
             %
-            %   Outputs:
-            %       this - rawTrialData object
+            % Outputs:
+            %   this - rawTrialData object
             %
-            %   See also: rawLabData, trialMetaData, processedTrialData
+            % Toolbox Dependencies: None
+            %
+            % See also RAWLABDATA, TRIALMETADATA, PROCESSEDTRIALDATA.
 
             if ~isa(metaData, 'trialMetaData') && ...
                     ~isa(metaData, 'derivedMetaData') && ~isempty(metaData)

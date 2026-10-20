@@ -50,7 +50,6 @@ grfOffsetTol             = 10;    % N or N.m
 % activity threshold in the offset calibration (empirical)
 prctileThreshMultiplier  = 4;
 % Zero-threshold = offsetThreshMultiplier × tolerance; must not be < 2×
-% (comment preserved from original)
 offsetThreshMultiplier   = 4;
 % Raw pin histogram parameters for mode-based offset estimation
 pinHistBinWidth          = 0.001; % histogram bin width (V)
@@ -70,7 +69,8 @@ if info.forces          % if there is force data in the trial, ...
     % Collect all raw analog channels for offset calibration
     rawMask       = startsWith(fieldList, 'Raw');
     rawFieldNames = fieldList(rawMask);
-    rawCells = cellfun(@(f) analogs.(f), rawFieldNames, 'UniformOutput', false);
+    rawCells = cellfun(@(f) analogs.(f), rawFieldNames, ...
+        'UniformOutput', false);
     raws = [rawCells{:}];
     raws = zscore(raws);
 
@@ -129,7 +129,7 @@ if info.forces          % if there is force data in the trial, ...
             % Unrecognized channel suffix; set warning flag and
             % remove field to keep analogs clean, then skip the
             % label/data append. Warning is deferred outside the
-            % loop to reduce command window output (HH, 6/3/2015)
+            % loop to reduce command window output
             showWarning = true;
             analogs     = rmfield(analogs, fieldList{jj});
             continue;
@@ -152,8 +152,9 @@ if info.forces          % if there is force data in the trial, ...
     % Sanity check: offset calibration — verify that force values
     % from analog pins have zero mode and correct scale/units.
     try
-        % map=[1:6,8:13,46:51]; % Forces and moments to
-        % corresponding pin in. Not current. Pablo, 22/11/2019.
+        % NOTE: outdated pin map (forces and moments to corresponding
+        % pin in), kept for reference:
+        % map=[1:6,8:13,46:51];
         list = {'LFx', 'LFy', 'LFz', 'LMx', 'LMy', 'LMz', ...
             'RFx', 'RFy', 'RFz', 'RMx', 'RMy', 'RMz', ...
             'HFx', 'HFy', 'HFz', 'HMx', 'HMy', 'HMz'};
@@ -213,7 +214,7 @@ if info.forces          % if there is force data in the trial, ...
                         error('');
                 end
                 if differenceInForceUnits(jj) > toleranceScaled
-                    % figure % Commented out by MGR 01/24/24
+                    % figure
                     % hold on
                     % plot(raw(rel),proc(rel),'.')
                     % plot([-0.01 0.01], ...

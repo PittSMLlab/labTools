@@ -1,23 +1,26 @@
 function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)
-%spectrogram  Computes spectrogram
+%SPECTROGRAM Computes spectrogram.
 %
-%   Sthis = spectrogram(this) computes spectrogram with default
-%   parameters
+%   Sthis = spectrogram(this) computes spectrogram with default parameters
 %
-%   Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap) computes
-%   for specified labels and parameters
+%   Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap) computes for
+% specified labels and parameters
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       labels - labels to include (optional)
-%       nFFT - FFT length (optional)
-%       tWin - window duration (optional)
-%       tOverlap - overlap duration (optional)
+% Inputs:
+%   this     - labTimeSeries object
+%   labels   - labels to include (optional)
+%   nFFT     - FFT length (optional)
+%   tWin     - window duration (optional)
+%   tOverlap - overlap duration (optional)
 %
-%   Outputs:
-%       Sthis - spectroTimeSeries object
+% Outputs:
+%   Sthis - spectroTimeSeries object
 %
-%   See also: spectroTimeSeries, fourierTransform
+%   NOTE: the spectroTimeSeries class is not part of this repository.
+%
+% Toolbox Dependencies: None
+%
+% See also SPECTROTIMESERIES, FOURIERTRANSFORM.
 
 if nargin < 2
     labels = [];

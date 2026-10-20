@@ -2,18 +2,18 @@ function [bool, idxs] = compareListsNested(list1, list2)
 %COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).
 %
 %   For each element of list2, checks whether it matches any string in
-%   list1. list1 may contain plain strings or nested cell arrays of
-%   strings (multiple alternative spellings for one entry). If there are
-%   multiple matches, idxs points to the LAST match found.
+% list1. list1 may contain plain strings or nested cell arrays of strings
+% (multiple alternative spellings for one entry). If there are multiple
+% matches, idxs points to the LAST match found.
 %
 % Inputs:
-%   list1 - cell array of strings or nested cell arrays of strings,
-%           allowing multiple alternative spellings per entry
+%   list1 - cell array of strings or nested cell arrays of strings, allowing
+%           multiple alternative spellings per entry
 %   list2 - cell array of strings (or a single char) to search for
 %
 % Outputs:
-%   bool - logical array, same size as list2; true where list2{ii} was
-%          found in list1
+%   bool - logical array, same size as list2; true where list2{ii} was found
+%          in list1
 %   idxs - double array, same size as list2; idxs(ii) is the index into
 %          list1 containing list2{ii} (NaN where bool(ii) is false)
 %
