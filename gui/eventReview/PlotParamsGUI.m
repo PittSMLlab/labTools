@@ -224,8 +224,9 @@ end
 % --- Executes on selection change in subjectList.
 function subjectList_Callback(hObject, eventdata, handles)
 
-    if ~isempty(get(hObject,'Value')) %only enter if no groups are selected but at least one subjects is
 if isempty(get(handles.groupList, 'Value'))
+    %only enter if no groups are selected but at least one subjects is
+    if ~isempty(get(hObject, 'Value'))
 
         conditionContents    = get(handles.conditionList,    'String');
         selectedConds        = conditionContents(get(handles.conditionList, 'Value'));
@@ -443,9 +444,9 @@ if handles.filename ~= 0
     child     = get(msgHandle, 'Children');
     delete(child(1));   % remove the OK button so the dialog is non-interactive
     drawnow
-    aux=load([handles.dir handles.filename]); %.mat file can only contain 1 variable: structure with groupAdaptationData objects
-                auxSubs{s}= ['<html><b>' auxSubs{s} '</b></html>']; %html tags allow for formating font
 
+    %.mat file can only contain 1 variable: structure with groupAdaptationData objects
+    loaded = load([handles.dir handles.filename]);
     close(msgHandle)
 
     fieldNames      = fieldnames(loaded);
@@ -463,6 +464,8 @@ if handles.filename ~= 0
         handles.subjects = [handles.subjects groupSubs];
         if mod(ii, 2) == 1   % bold odd-numbered groups for visual grouping
             for jj = 1:length(groupSubs)
+                %html tags allow for formating font
+                groupSubs{jj} = ['<html><b>' groupSubs{jj} '</b></html>'];
             end
         end
         subEntries = [subEntries; groupSubs']; %#ok<AGROW>
@@ -587,9 +590,11 @@ switch handles.plotType
             disp(['trialMarkerFlag = [' num2str(trialMarkerFlag') '];'])
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])
             disp(['IndivSubList = ' indivSubStr ';'])
-            disp(['removeBias = ' removeBias ';'])
-            disp(['groups = ' groups ';'])
-            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' num2str(biofeedbackFlag) ')','removeBias','groups'])
+            disp(['removeBias = ' num2str(removeBias) ';'])
+            disp('% groups variable comes from the loaded studyData struct')
+            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,' ...
+                'conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' ...
+                num2str(biofeedbackFlag) ',removeBias,groups)'])
         end
     case 2  % early/late bars
         removeBiasFlag      = get(handles.removeBiasCheck, 'Value');

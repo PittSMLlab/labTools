@@ -122,12 +122,14 @@ if handles.filename ~= 0
         'showBadCheck');
     drawnow
 
-    aux=load([handles.Dir handles.filename]); %.mat file can only contain 1 variable, of the experimentData type
-    if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
+    % .mat file can only contain 1 variable, of the experimentData type
+    loaded     = load([handles.Dir handles.filename]);
     fieldNames = fieldnames(loaded);
     handles.varName = fieldNames{1};
 
     expData = loaded.(fieldNames{1});
+    % if not processed, there will be no events to review
+    if isa(expData, 'experimentData') && expData.isProcessed
 
         handles = enableFields(handles, 'plot_button', 'next_button', ...
             'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
@@ -438,18 +440,15 @@ if times(end) < handles.tstop || get(handles.maxCheck, 'Value')
     startSamp = max([1, endSamp - find(times <= handles.timeWindow, 1, 'last')]);
     last      = 1;
 else
-time=times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
-    %get data to plot
-        %plot data
-        %found error 3/30/2016 this is plotting the same values regardless
-        %of time scale, fixed
-        %         plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
-        %         plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
     startSamp = max([1, find(times >= handles.tstart, 1, 'first')]);
     endSamp   = max([startSamp, find(times <= handles.tstop, 1, 'last')]);
     last      = 0;
 end
 
+%get data to plot
+%plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
+%plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
+time = times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
 set(axesHandle, 'NextPlot', 'Replace')
 
 if length(fieldList{fieldIdx}) == 2
@@ -495,8 +494,6 @@ if length(fieldList{fieldIdx}) == 2
                     ceil((startSamp - 1) .* ECF + 1) : ...
                     floor((endSamp - 1) .* ECF + 1)) == 1);
         end
-        if eval(['~isempty(',handles.fast,'HStimes)'])
-            eval(['plot(axesHandle,',type,handles.fast,'HStimes,FdataTS.getSample(',type,handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
 
         % Overlay events; only events in the time window are plotted to
         % avoid spurious legend entries from empty marker calls.
@@ -505,20 +502,27 @@ if length(fieldList{fieldIdx}) == 2
         fastTOtimes = eventTimes.([type handles.fast 'TO']);
         slowHStimes = eventTimes.([type handles.slow 'HS']);
         slowTOtimes = eventTimes.([type handles.slow 'TO']);
+        if ~isempty(fastHStimes)
+            plot(axesHandle, fastHStimes, ...
+                FdataTS.getSample(fastHStimes), 'kx', 'LineWidth', 2);
             legendEntries{end + 1} = 'FHS';
         end
-            eval(['plot(axesHandle,',type,handles.fast,'TOtimes,FdataTS.getSample(',type,handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
         if ~isempty(fastTOtimes)
+            plot(axesHandle, fastTOtimes, ...
+                FdataTS.getSample(fastTOtimes), 'ks', 'LineWidth', 2);
             legendEntries{end + 1} = 'FTO';
         end
-            eval(['plot(axesHandle,',type,handles.slow,'HStimes,SdataTS.getSample(',type,handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
         if ~isempty(slowHStimes)
+            plot(axesHandle, slowHStimes, ...
+                SdataTS.getSample(slowHStimes), 'ko', 'LineWidth', 2);
             legendEntries{end + 1} = 'SHS';
         end
-        if eval(['~isempty(',handles.slow,'TOtimes)'])
-            eval(['plot(axesHandle,',type,handles.slow,'TOtimes,SdataTS.getSample(',type,handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
+        if ~isempty(slowTOtimes)
+            plot(axesHandle, slowTOtimes, ...
+                SdataTS.getSample(slowTOtimes), 'k*', 'LineWidth', 2);
             legendEntries{end + 1} = 'STO';
         end
+        clear eventTimes events
     end
 else
     label  = fieldList{fieldIdx};
@@ -547,8 +551,8 @@ set(axesHandle, 'XLim', [handles.tstart handles.tstop]);
 legendHandle = legend(axesHandle, legendEntries);
 set(legendHandle, 'FontSize', 6)
 
-clear RHS* LHS* LTO* RTO* events time
 title(axesHandle, [label, ' ', dataType, ' Trial ', num2str(handles.idx)])
+clear time
 end
 
 % --- Executes on button press in next_button.
@@ -556,8 +560,9 @@ function next_button_Callback(hObject, eventdata, handles)
 
 set(handles.back_button, 'Enable', 'On')
 if handles.last
-        set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
     if length(get(handles.trialMenu, 'String')) > get(handles.trialMenu, 'Value')
+        %Add one to current trial, does this update what the GUI shows?
+        set(handles.trialMenu, 'Value', get(handles.trialMenu, 'Value') + 1);
         trialMenu_Callback(handles.trialMenu, eventdata, handles)
     elseif get(handles.condMenu, 'Value') < length(get(handles.condMenu, 'String'))
         set(handles.condMenu,  'Value', get(handles.condMenu, 'Value') + 1);
@@ -583,8 +588,9 @@ if handles.tstart > 0
     handles.tstart = handles.tstart - handles.timeWindow;
     handles.tstop  = handles.tstop  - handles.timeWindow;
     plot_button_Callback(handles.plot_button, eventdata, handles)
-    set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')-1); %Add one to current trial, does this update what the GUI shows?
 elseif get(handles.trialMenu, 'Value') > 1
+    %Subtract one from current trial, does this update what the GUI shows?
+    set(handles.trialMenu, 'Value', get(handles.trialMenu, 'Value') - 1);
     trialMenu_Callback(handles.trialMenu, eventdata, handles)
 elseif get(handles.condMenu, 'Value') > 1
     set(handles.condMenu, 'Value', get(handles.condMenu, 'Value') - 1);
@@ -718,18 +724,13 @@ function labelBadButton_Callback(hObject, eventdata, handles)
 global expData
 
 axes(handles.axes1)
-[boolFlag,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
 [x, ~] = ginput;
+[~, idxs] = expData.data{handles.idx}.adaptParams.isaLabel({'bad', 'good'});
 
 for ii = 1:length(x)
-    %update 'bad' and 'good'
-    if all(boolFlag)
-        expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false];
-    else
-        expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false];
-    end
     deltaT    = expData.data{handles.idx}.adaptParams.hiddenTime - x(ii);
     [~, loc]  = min(abs(deltaT));
+    expData.data{handles.idx}.adaptParams.Data(loc, idxs) = [true, false];
 end
 
 guidata(hObject, handles)
@@ -793,7 +794,7 @@ drawnow
 %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName
 %''');']); %PI: replaced this with the line below on 28/4/2015
 %expData=expData.recomputeParameters; %% HH: I don't think this is necessary, should have already been re-computed earlier.
-% eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj method automatically saves file.
+% eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj
 %Enable everything
 % Save expData under its original workspace variable name
 saveData.(handles.varName) = expData;
