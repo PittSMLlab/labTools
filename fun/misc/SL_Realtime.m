@@ -26,11 +26,11 @@ H = btkReadAcquisition([path filename]);
 % use same method as labTools to determine analog data
 [analogs, analogsInfo] = btkGetAnalogs(H);
 
-relData      = [];
-forceLabels  = {};
-units        = {};
-fieldList    = fields(analogs);
-showWarning  = false;
+relData     = [];
+forceLabels = {};
+units       = {};
+fieldList   = fields(analogs);
+showWarning = false;
 
 for jj = 1:length(fieldList)   % parse analog channels by force/moment
     fld = fieldList{jj};
@@ -45,16 +45,22 @@ for jj = 1:length(fieldList)   % parse analog channels by force/moment
         else
             switch fld(end)     % parse by device number
                 case '1'        % left treadmill belt
-                    forceLabels{end+1} = ['L', fld(end-2:end-1)]; %#ok<AGROW>
-                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    forceLabels{end+1} = ...
+                        ['L', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = ...
+                        eval(['analogsInfo.units.' fld]); %#ok<AGROW>
                     relData = [relData, analogs.(fld)]; %#ok<AGROW>
                 case '2'        % right treadmill belt
-                    forceLabels{end+1} = ['R', fld(end-2:end-1)]; %#ok<AGROW>
-                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    forceLabels{end+1} = ...
+                        ['R', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = ...
+                        eval(['analogsInfo.units.' fld]); %#ok<AGROW>
                     relData = [relData, analogs.(fld)]; %#ok<AGROW>
                 case '4'        % handrail
-                    forceLabels{end+1} = ['H', fld(end-2:end-1)]; %#ok<AGROW>
-                    units{end+1} = eval(['analogsInfo.units.' fld]); %#ok<AGROW>
+                    forceLabels{end+1} = ...
+                        ['H', fld(end-2:end-1)]; %#ok<AGROW>
+                    units{end+1} = ...
+                        eval(['analogsInfo.units.' fld]); %#ok<AGROW>
                     relData = [relData, analogs.(fld)]; %#ok<AGROW>
                 otherwise
                     showWarning = true; % warn outside loop to reduce output
@@ -74,8 +80,8 @@ clear analogs* relData
 
 %% Load Marker Data
 [markers, markerInfo] = btkGetMarkers(H);
-relData   = [];
-fieldList = fields(markers);
+relData    = [];
+fieldList  = fields(markers);
 markerList = {};
 
 % verify required marker labels are present
@@ -92,7 +98,7 @@ for jj = 1:length(fieldList)
     fld = fieldList{jj};
     % skip unlabeled markers (Vicon names them with 'C_' prefix)
     if length(fld) > 2 && ~strcmp(fld(1:2), 'C_')
-        relData = [relData, markers.(fld)]; %#ok<AGROW>
+        relData     = [relData, markers.(fld)]; %#ok<AGROW>
         markerLabel = findLabel(fld);   % normalize marker name
         markerList{end+1} = [markerLabel 'x']; %#ok<AGROW>
         markerList{end+1} = [markerLabel 'y']; %#ok<AGROW>
@@ -136,7 +142,7 @@ RHS = find(RHS);
 LHS = find(LHS);
 
 short = min([length(RHS) length(LHS)]);
-stepDisparityThresh = 0.75;     % flag if short leg has <75% of other's steps
+stepDisparityThresh = 0.75; % flag if short leg has <75% of other's steps
 if short < stepDisparityThresh * max([length(RHS) length(LHS)])
     disp(['Warning!! Missing significant # of steps. Large disparity ' ...
         'in # of steps between limbs. Please verify data.']);
@@ -149,8 +155,8 @@ Lgamma = RANKY(LHS(1:short)) - LANKY(LHS(1:short));
 edgeTrimSL = 5;                 % strides to remove from each end (artifact)
 Rgamma(Rgamma == 0) = [];
 Lgamma(Lgamma == 0) = [];
-Rgamma(Rgamma < 0)  = [];
-Lgamma(Lgamma < 0)  = [];
+Rgamma(Rgamma < 0) = [];
+Lgamma(Lgamma < 0) = [];
 Rgamma(1:edgeTrimSL) = [];
 Lgamma(1:edgeTrimSL) = [];
 Rgamma(end-edgeTrimSL:end) = [];
@@ -172,25 +178,25 @@ title('Left Leg Step Lengths (mm)');
 %% Cadence
 if length(forces) / forceHz1 == length(markers) / markerHz
     duration = length(RANKY) / forceHz1;
-    time = 0:0.001:duration;
+    time     = 0:0.001:duration;
 elseif length(forces) / forceHz2 == length(markers) / markerHz
     duration = length(RANKY) / forceHz2;
-    time = 0:0.0005:duration;
+    time     = 0:0.0005:duration;
 else
     disp('Warning: Unknown sampling frequency in analog data!');
 end
 
-time(end)  = [];
-Rcadence   = 60 ./ diff(time(RHS));
-Lcadence   = 60 ./ diff(time(LHS));
+time(end) = [];
+Rcadence = 60 ./ diff(time(RHS));
+Lcadence = 60 ./ diff(time(LHS));
 
-Rcadence(1:edgeTrimSL)       = [];
-Lcadence(1:edgeTrimSL)       = [];
+Rcadence(1:edgeTrimSL) = [];
+Lcadence(1:edgeTrimSL) = [];
 Rcadence(end-edgeTrimSL:end) = [];
 Lcadence(end-edgeTrimSL:end) = [];
-Rcadence(Rcadence < 0)  = [];
-Lcadence(Lcadence < 0)  = [];
-maxCadence = 75;                % discard obviously erroneous cadence (steps/min)
+Rcadence(Rcadence < 0) = [];
+Lcadence(Lcadence < 0) = [];
+maxCadence = 75; % discard obviously erroneous cadence (steps/min)
 Rcadence(Rcadence > maxCadence) = [];
 Lcadence(Lcadence > maxCadence) = [];
 
@@ -218,10 +224,10 @@ else
     end
 end
 
-Rsteptime(Rsteptime <= 0)   = [];
-Lsteptime(Lsteptime <= 0)   = [];
-Rsteptime(1:edgeTrimST)     = [];
-Lsteptime(1:edgeTrimST)     = [];
+Rsteptime(Rsteptime <= 0) = [];
+Lsteptime(Lsteptime <= 0) = [];
+Rsteptime(1:edgeTrimST) = [];
+Lsteptime(1:edgeTrimST) = [];
 Rsteptime(end-edgeTrimST:end) = [];
 Lsteptime(end-edgeTrimST:end) = [];
 
@@ -269,21 +275,21 @@ disp(mesg)
 
 %% Save Data
 try
-    RTdata             = struct();
-    RTdata.trialname   = filename;
-    RTdata.path        = path;
+    RTdata = struct();
+    RTdata.trialname = filename;
+    RTdata.path = path;
     RTdata.creationdate = clock;
-    RTdata.forcedata   = forces;
+    RTdata.forcedata = forces;
     RTdata.forcelabels = forceLabels;
-    RTdata.markerdata  = markers;
+    RTdata.markerdata = markers;
     RTdata.markerlabels = markerList;
     RTdata.Rsteplengths = Rgamma;
     RTdata.Lsteplengths = Lgamma;
-    RTdata.Rcadence    = Rcadence;
-    RTdata.Lcadence    = Lcadence;
-    RTdata.Rsteptime   = Rsteptime;
-    RTdata.Lsteptime   = Lsteptime;
-    RTdata.time        = time;
+    RTdata.Rcadence = Rcadence;
+    RTdata.Lcadence = Lcadence;
+    RTdata.Rsteptime = Rsteptime;
+    RTdata.Lsteptime = Lsteptime;
+    RTdata.time = time;
 
     fn       = strrep(datestr(clock), '-', '');
     filesave = [path fn(1:9) '_' filename(1:end-4) '_SL_Realtime'];
