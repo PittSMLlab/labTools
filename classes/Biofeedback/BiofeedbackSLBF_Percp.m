@@ -2,7 +2,6 @@ classdef BiofeedbackSLBF_Percp
     %BIOFEEDBACKSLBF_PERCP Step length biofeedback with perception.
     %   Holds the subject metadata and trial list of a step length
     % biofeedback session and the methods that process its trials.
-    % The analysis closely follows BiofeedbackSL.
     %
     % Properties:
     %   subjectcode  - subject code string, e.g. 'SLP001'
