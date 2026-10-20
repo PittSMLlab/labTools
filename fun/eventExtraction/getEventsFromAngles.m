@@ -254,25 +254,8 @@ function TO = FindKinTO(start, stop, ankdata, n)
 % Outputs:
 %   TO - scalar integer, index of the detected toe-off
 
-for ii = start:stop
-    if ii == 1
-        prevWin = 1;
-    elseif (ii - n) < 1
-        prevWin = 1:ii-1;
-    else
-        prevWin = ii-n:ii-1;
-    end
-    if ii == stop
-        nextWin = stop;
-    elseif (ii + n) > stop
-        nextWin = ii+1:stop;
-    else
-        nextWin = ii+1:ii+n;
-    end
-    if all(ankdata(ii) <= ankdata(prevWin)) ...
-            && all(ankdata(ii) <= ankdata(nextWin))
-        break;
-    end
-end
-TO = ii;
+% A local minimum of the trace is a local maximum of the negated trace
+% (negation is exact, and ">=" becomes "<="), so FindKinHS does the
+% search.
+TO = FindKinHS(start, stop, -ankdata, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
