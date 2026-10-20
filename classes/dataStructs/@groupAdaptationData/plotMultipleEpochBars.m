@@ -1,4 +1,52 @@
-function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)
+function [figHandle,allData] = plotMultipleEpochBars(groups,labels,eps, ...
+    plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag, ...
+    significanceThreshold,posthocGroupFlag,posthocEpochFlag, ...
+    posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)
+%PLOTMULTIPLEEPOCHBARS Bar plot of epoch means for several groups.
+%
+%   Plots, on one axes per parameter label, a bar for every group and
+% epoch (mean or median across subjects, with standard-error bars).
+% Optionally overlays individual subjects and, when a significance
+% threshold is given, ANOVA post-hoc significance bars computed by
+% groupAdaptationData.AnovaEpochs. Draws into the supplied axes and
+% creates no files or dialogs.
+%
+% Inputs:
+%   groups                  - cell array (or struct) of
+%                             groupAdaptationData objects
+%   labels                  - cell array of parameter labels, one per
+%                             axes in plotHandles
+%   eps                     - epoch definitions (rows = epochs), or a
+%                             cell array with one definition per group
+%   plotIndividualsFlag     - 1 to overlay individual subject values
+%   legendNames             - cell array of group names (legend, stats)
+%   plotHandles             - axes handles, one per label (required)
+%   colors                  - nGroups x 3 bar colors; [] uses
+%                             color_palette from colorScheme
+%   medianFlag              - 1 to plot medians; [] means 0 (means)
+%   significanceThreshold   - p-value threshold for post-hoc bars; []
+%                             skips the statistics
+%   posthocGroupFlag        - group post-hoc selector (currently draws
+%                             nothing)
+%   posthocEpochFlag        - 1 to mark epoch differences, groups
+%                             combined
+%   posthocGroupByEpochFlag - 1 to mark group differences within epoch
+%   posthocEpochByGroupFlag - 1 to mark epoch differences within group
+%   removeBaseEpochFlag     - 1 to remove the baseline epoch (first row
+%                             of eps) for plotting but not for stats;
+%                             [] means 0
+%
+% Outputs:
+%   figHandle - handle of the current figure
+%   allData   - nGroups x nLabels x nEpochs x nSubjects epoch data
+%
+% Toolbox Dependencies:
+%   Statistics and Machine Learning Toolbox (only when
+%   significanceThreshold is given; groupAdaptationData.AnovaEpochs
+%   calls anova1, multcompare, fitrm and ranova)
+%
+% See also GROUPADAPTATIONDATA.GETEPOCHDATA,
+%   GROUPADAPTATIONDATA.ANOVAEPOCHS.
 
 
 
@@ -11,177 +59,231 @@ set(plotHandles,'Clipping','off')
 
 if isempty(colors)
     colorScheme
-    colors=color_palette;
+    colors = color_palette;
 end
 
 %make doing stats optimal
 if isempty(significanceThreshold)
-    statsFlag=0;
+    statsFlag = 0;
 else
-    statsFlag=1;
+    statsFlag = 1;
 end
 
 if isa(eps,'cell')
-    dt=NaN(length(groups,1));
-    for i=1:length(groups)
-        dt(i)=size(eps{1},1);
+    dt = NaN(length(groups,1));
+    for ii = 1:length(groups)
+        dt(ii) = size(eps{1},1);
     end
-    nep=max(dt);
+    nep = max(dt);
 else
-    nep=size(eps,1);
+    nep = size(eps,1);
 end
 
 if isempty(medianFlag)
-    medianFlag=0;
+    medianFlag = 0;
 end
 
 if isa(groups,'struct')
-    ff=fields(groups);
-    aux=cell(size(ff));
-    for i=1:length(ff)
-        aux{i}=getfield(groups,ff{i});
+    ff  = fields(groups);
+    aux = cell(size(ff));
+    for ii = 1:length(ff)
+        aux{ii} = getfield(groups,ff{ii});
     end
-    groups=aux;
+    groups = aux;
 end
 if ~isa(groups,'cell') || ~isa(groups{1},'groupAdaptationData')
-    error('First argument needs to be a cell array of groupAdaptationData objects')
+    error(['First argument needs to be a cell array of ' ...
+        'groupAdaptationData objects'])
 end
 
 
 if isempty(removeBaseEpochFlag)
-    removeBaseEpochFlag=0;
+    removeBaseEpochFlag = 0;
 end
 
-nsubs=NaN(length(groups),1);
-for i=1:length(groups)
-    nsubs(i)=length(groups{i}.adaptData);
+nsubs = NaN(length(groups),1);
+for ii = 1:length(groups)
+    nsubs(ii) = length(groups{ii}.adaptData);
 end
-nsub=max(nsubs);
+nsub = max(nsubs);
 
-if removeBaseEpochFlag==1%remove baseline epoch for plotting, but not for stats
-    for i=1:length(groups)
-        group2{i}=groups{i};
-        groups{i}=groups{i}.removeBadStrides;
-        groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
+% remove baseline epoch for plotting, but not for stats
+if removeBaseEpochFlag == 1
+    for ii = 1:length(groups)
+        group2{ii} = groups{ii};
+        groups{ii} = groups{ii}.removeBadStrides;
+        groups{ii} = groups{ii}.removeBaselineEpoch(eps(1,:),[]);
     end
-else group2=groups;
+else group2 = groups;
 end
 
-%[figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
-allData=NaN(length(groups),length(labels),nep,nsub);
-for i=1:length(groups)
+%% Get Epoch Data
+%[figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups, ...
+%    label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides, ...
+%    exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
+allData = NaN(length(groups),length(labels),nep,nsub);
+for ii = 1:length(groups)
     if isa(eps,'cell')%this allows for different eps for each group
-        groupOutcomes{i}=groups{i}.getEpochData(eps{i},labels);% nLabels x neps x nSubjects
+        % nLabels x neps x nSubjects
+        groupOutcomes{ii} = groups{ii}.getEpochData(eps{ii},labels);
     else
-        groupOutcomes{i}=groups{i}.getEpochData(eps,labels);% nLabels x neps x nSubjects
+        % nLabels x neps x nSubjects
+        groupOutcomes{ii} = groups{ii}.getEpochData(eps,labels);
     end
-    allData(i,1:length(labels),1:nep,1:size(groupOutcomes{i},3))=groupOutcomes{i};%nGroups x nLabels x neps x nSubjects
-    %I think this will fail if different # of epochs are defined for each group
+    allData(ii,1:length(labels),1:nep,1:size(groupOutcomes{ii},3)) = ...
+        groupOutcomes{ii}; %nGroups x nLabels x neps x nSubjects
+    % NOTE: probably fails if a different number of epochs is defined for
+    % each group
 end
 
-
-
-
+%% Compute Bar Positions and Heights
 %generate xlocations and matrices to plot
-xData=1:nep+1;xData=xData*(length(groups)+1);xData=xData-length(groups);
-for i=1:length(groups)
-    xval(:,i)=xData+(i-1)';
-
+xData = 1:nep+1;
+xData = xData*(length(groups)+1);
+xData = xData-length(groups);
+for ii = 1:length(groups)
+    xval(:,ii) = xData+(ii-1)';
 end
-xval=xval(1:end-1,:);
+xval = xval(1:end-1,:);
 
-if medianFlag==0;
-    plotData=nanmean(allData,4);
-    tempVarData=nanstd(allData,false,4);
-    varData=NaN(size(tempVarData));
-    for i=1:length(groups)
-        varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
+if medianFlag == 0;
+    plotData    = mean(allData, 4, 'omitnan');
+    tempVarData = std(allData, false, 4, 'omitnan');
+    varData     = NaN(size(tempVarData));
+    for ii = 1:length(groups)
+        varData(ii,:,:) = tempVarData(ii,:,:) ./ ...
+            sqrt(size(groupOutcomes{ii},3));
     end
 else
-    plotData=nanmedian(allData,4);
-    tempVarData=nanstd(allData,false,4);
-    varData=NaN(size(tempVarData));
-    for i=1:length(groups)
-        varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
+    plotData    = median(allData, 4, 'omitnan');
+    tempVarData = std(allData, false, 4, 'omitnan');
+    varData     = NaN(size(tempVarData));
+    for ii = 1:length(groups)
+        varData(ii,:,:) = tempVarData(ii,:,:) ./ ...
+            sqrt(size(groupOutcomes{ii},3));
     end
 
 end
 
-%plot each parameter in different axis
-for p=1:length(labels)%each parameter has different axis, eps are plotted in single axis
+%% Plot Bars and Significance
+%each parameter has its own axes; eps are plotted in a single axis
+for p = 1:length(labels)
     hold(plotHandles(p))
-    for i=1:length(groups)
-        bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),'FaceColor',colors(i,:),'BarWidth',0.2)
-        errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),'LineStyle','none','color','k','LineWidth',2)
-        if plotIndividualsFlag==1
-            plot(plotHandles(p),xval(:,i)-.3,squeeze(allData(i,p,:,:)),'.','MarkerSize', 15, 'Color',[150 150 150]./255)
+    for ii = 1:length(groups)
+        bar(plotHandles(p),xval(:,ii),squeeze(plotData(ii,p,:)), ...
+            'FaceColor',colors(ii,:),'BarWidth',0.2)
+        errorbar(plotHandles(p),xval(:,ii),squeeze(plotData(ii,p,:)), ...
+            squeeze(varData(ii,p,:)),'LineStyle','none','color','k', ...
+            'LineWidth',2)
+        if plotIndividualsFlag == 1
+            plot(plotHandles(p),xval(:,ii)-0.3, ...
+                squeeze(allData(ii,p,:,:)),'.','MarkerSize',15, ...
+                'Color',[150 150 150]./255)
         end
     end
 
 
     if isa(eps,'cell')
-        set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps{1}.Properties.ObsNames,'FontSize',12)
+        set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels', ...
+            eps{1}.Properties.ObsNames,'FontSize',12)
     else
-        set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)
+        set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels', ...
+            eps.Properties.ObsNames,'FontSize',12)
     end
     title(plotHandles(p),labels{p});
 
+    if statsFlag == 1
+        %perform stats
+        [model,btab,wtab,maineff,posthocGroup,posthocEpoch, ...
+            posthocEpochByGroup, ...
+            posthocGroupByEpoch] = groupAdaptationData.AnovaEpochs( ...
+            group2,legendNames,labels(p),eps,significanceThreshold);
+        %determine y positions of sign bars
+        yrange = get(gca,'Ylim');
+        delta  = abs(yrange(1)-yrange(2))/20;
 
-   if  statsFlag==1
-    %perform stats
-    [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=groupAdaptationData.AnovaEpochs(group2,legendNames,labels(p),eps,significanceThreshold);
-    %determine y positions of sign bars
-    yrange=get(gca,'Ylim');
-    delta=abs(yrange(1)-yrange(2))/20;
-
-    if posthocGroupFlag==1
-    elseif posthocEpochFlag==1 && maineff.p(2)<significanceThreshold%indicate signficant differences between epochs for the groups combined
-        ymax=max(yrange)+delta;
-        % find comparison of interest and check for significance
-        for c=1:size(posthocEpoch,1)
-            if posthocEpoch.pvalBonferroni(c)<significanceThreshold
-                ep1=find(not(cellfun('isempty',regexp(eps.Properties.ObsNames,['^',posthocEpoch.ep1{c}]))));
-                ep2=find(not(cellfun('isempty',regexp(eps.Properties.ObsNames,['^',posthocEpoch.ep2{c}]))));
-                plot(plotHandles(p),[mean(xval(ep1,:)) mean(xval(ep2,:))],[ymax,ymax],'Color',[0.5 0.5 0.5],'LineWidth',2)
-                ymax=ymax+delta;
+        if posthocGroupFlag == 1
+            % no bars are drawn for the group main effect
+        elseif posthocEpochFlag == 1 && maineff.p(2) < significanceThreshold
+            % indicate significant differences between epochs for the
+            % groups combined
+            ymax = max(yrange)+delta;
+            % find comparison of interest and check for significance
+            for c = 1:size(posthocEpoch,1)
+                if posthocEpoch.pvalBonferroni(c) < significanceThreshold
+                    ep1 = find(not(cellfun('isempty', ...
+                        regexp(eps.Properties.ObsNames, ...
+                        ['^',posthocEpoch.ep1{c}]))));
+                    ep2 = find(not(cellfun('isempty', ...
+                        regexp(eps.Properties.ObsNames, ...
+                        ['^',posthocEpoch.ep2{c}]))));
+                    plot(plotHandles(p), ...
+                        [mean(xval(ep1,:)) mean(xval(ep2,:))], ...
+                        [ymax,ymax],'Color',[0.5 0.5 0.5],'LineWidth',2)
+                    ymax = ymax+delta;
+                end
+            end
+            %indicate significant differences between epochs per group
+        % TODO: probably missing an && before the parenthesis; MATLAB may
+        % parse the parenthesized test as a separate statement (kept as is)
+        elseif posthocEpochByGroupFlag == 1 (maineff.p(2) < ...
+                significanceThreshold || ...
+                maineff.p(3) < significanceThreshold)
+            ymax = max(yrange)+0.5*delta;
+            % find comparison of interest and check for significance
+            for c = 1:size(posthocEpochByGroup,1)
+                if posthocEpochByGroup.pvalBonferroni( ...
+                        c) < significanceThreshold
+                    ep1 = find(not(cellfun('isempty', ...
+                        regexp(eps.Properties.ObsNames, ...
+                        ['^',posthocEpochByGroup.ep1{c}]))));
+                    ep2 = find(not(cellfun('isempty', ...
+                        regexp(eps.Properties.ObsNames, ...
+                        ['^',posthocEpochByGroup.ep2{c}]))));
+                    g   = find(not(cellfun('isempty', ...
+                        regexp(legendNames, ...
+                        ['^',posthocEpochByGroup.group{c}]))));
+                    plot(plotHandles(p),[xval(ep1,g),xval(ep2,g)], ...
+                        [ymax,ymax],'Color',colors(g,:))
+                    ymax = ymax+0.5*delta;
+                end
+            end
+            %indicate significant differences between groups by epoch
+        elseif posthocGroupByEpochFlag == 1 && ...
+                (maineff.p(1) < significanceThreshold || maineff.p(3) < ...
+                significanceThreshold)
+            prevEpoch = 0;ymax = max(yrange);
+            for c = 1:size(posthocGroupByEpoch,1)
+                epoch = find(not(cellfun('isempty', ...
+                    regexp(eps.Properties.ObsNames, ...
+                    ['^',posthocGroupByEpoch.epoch{c}]))));
+                if epoch > prevEpoch;
+                    ymax = max(yrange);
+                end
+                if posthocGroupByEpoch.pvalBonferroni( ...
+                        c) < significanceThreshold
+                    g1 = find(not(cellfun('isempty', ...
+                        regexp(legendNames, ...
+                        ['^',posthocGroupByEpoch.group_1{c}]))));
+                    g2 = find(not(cellfun('isempty', ...
+                        regexp(legendNames, ...
+                        ['^',posthocGroupByEpoch.group_2{c}]))));
+                    plot(plotHandles(p), ...
+                        [xval(epoch,g1), xval(epoch,g2)],[ymax,ymax], ...
+                        'Color',[0.5 0.5 0.5],'LineWidth',2)
+                    ymax = ymax+delta;
+                end
+                prevEpoch = epoch;
             end
         end
-    elseif posthocEpochByGroupFlag==1 (maineff.p(2)<significanceThreshold || maineff.p(3)<significanceThreshold)%indicate significant differences between epochs per group
-        ymax=max(yrange)+0.5*delta;
-        % find comparison of interest and check for significance
-        for c=1:size(posthocEpochByGroup,1)
-            if posthocEpochByGroup.pvalBonferroni(c)<significanceThreshold
-                ep1=find(not(cellfun('isempty',regexp(eps.Properties.ObsNames,['^',posthocEpochByGroup.ep1{c}]))));
-                ep2=find(not(cellfun('isempty',regexp(eps.Properties.ObsNames,['^',posthocEpochByGroup.ep2{c}]))));
-                g=find(not(cellfun('isempty',regexp(legendNames,['^',posthocEpochByGroup.group{c}]))));
-                plot(plotHandles(p),[xval(ep1,g),xval(ep2,g)],[ymax,ymax],'Color',colors(g,:))
-                ymax=ymax+0.5*delta;
-            end
-        end
-    elseif posthocGroupByEpochFlag==1 && (maineff.p(1)<significanceThreshold || maineff.p(3)<significanceThreshold)%indicate significant differences between groups by epoch
-        prevEpoch=0;ymax=max(yrange);
-        for c=1:size(posthocGroupByEpoch,1)
-            epoch=find(not(cellfun('isempty',regexp(eps.Properties.ObsNames,['^',posthocGroupByEpoch.epoch{c}]))));
-            if epoch>prevEpoch;
-                ymax=max(yrange);
-            end
-            if posthocGroupByEpoch.pvalBonferroni(c)<significanceThreshold
-                g1=find(not(cellfun('isempty',regexp(legendNames,['^',posthocGroupByEpoch.group_1{c}]))));
-                g2=find(not(cellfun('isempty',regexp(legendNames,['^',posthocGroupByEpoch.group_2{c}]))));
-                plot(plotHandles(p),[xval(epoch,g1), xval(epoch,g2)],[ymax,ymax],'Color',[0.5 0.5 0.5],'LineWidth',2)
-                ymax=ymax+delta;
-            end
-            prevEpoch=epoch;
+        if p == 1
+            ll = findobj(plotHandles(p),'Type','Bar');
+            h  = legend(ll(fliplr(1:length(ll))),legendNames);
         end
     end
-    if p==1
-        ll=findobj(plotHandles(p),'Type','Bar');
-        h=legend(ll(fliplr(1:length(ll))),legendNames);
-    end
-   end
 end
 set(plotHandles,'FontSize',20)
-figHandle=gcf;
+figHandle = gcf;
 
 %TO DO: add stats
 %

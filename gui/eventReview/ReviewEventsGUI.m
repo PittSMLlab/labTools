@@ -117,8 +117,10 @@ if handles.filename ~= 0
     handles = disableFields(handles, 'plot_button', 'next_button', ...
         'back_button', 'delete_button', 'deleteNbutton', 'save_button', ...
         'add_button', 'BPdataType', 'BPfield', 'TPdataType', 'TPfield', ...
-        'condMenu', 'trialMenu', 'timeSlider', 'maxCheck', 'defaultRadio', ...
-        'kinematicRadio', 'forceRadio', 'labelBadButton', 'labelGoodButton', ...
+        'condMenu', 'trialMenu', 'timeSlider', 'maxCheck', ...
+        'defaultRadio', ...
+        'kinematicRadio', 'forceRadio', 'labelBadButton', ...
+        'labelGoodButton', ...
         'showBadCheck');
     drawnow
 
@@ -132,8 +134,10 @@ if handles.filename ~= 0
     if isa(expData, 'experimentData') && expData.isProcessed
 
         handles = enableFields(handles, 'plot_button', 'next_button', ...
-            'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
-            'BPdataType', 'BPfield', 'TPdataType', 'TPfield', 'timeSlider', ...
+            'delete_button', 'deleteNbutton', 'save_button', ...
+            'add_button', ...
+            'BPdataType', 'BPfield', 'TPdataType', 'TPfield', ...
+            'timeSlider', ...
             'maxCheck', 'defaultRadio', 'showBadCheck', 'condMenu', ...
             'labelBadButton', 'labelGoodButton');
         if length(expData.data{end}.gaitEvents.labels) == 12
@@ -188,7 +192,8 @@ if isempty(trialStr)
         'back_button', 'delete_button', 'deleteNbutton', 'save_button', ...
         'add_button', 'BPdataType', 'BPfield', 'TPdataType', 'TPfield', ...
         'trialMenu', 'timeSlider', 'maxCheck', 'defaultRadio', ...
-        'kinematicRadio', 'forceRadio', 'labelBadButton', 'labelGoodButton', ...
+        'kinematicRadio', 'forceRadio', 'labelBadButton', ...
+        'labelGoodButton', ...
         'showBadCheck');
     drawnow
 else
@@ -258,10 +263,12 @@ clear curField fieldList
 
 set(handles.BPdataType, 'String', handles.TSlist);
 set(handles.TPdataType, 'String', handles.TSlist);
-if get(handles.BPdataType, 'Value') > length(get(handles.BPdataType, 'String'))
+if get(handles.BPdataType, 'Value') > length(get(handles.BPdataType, ...
+        'String'))
     set(handles.BPdataType, 'Value', 1);
 end
-if get(handles.TPdataType, 'Value') > length(get(handles.TPdataType, 'String'))
+if get(handles.TPdataType, 'Value') > length(get(handles.TPdataType, ...
+        'String'))
     set(handles.TPdataType, 'Value', 1);
 end
 
@@ -276,7 +283,8 @@ else
     handles.timeWindow = TW;
     handles.tstop      = TW;
 end
-set(handles.timeSlider,'SliderStep',[1/(maxTime-1) 1/(maxTime-1)]) %1 is the lower limit
+%1 is the lower limit
+set(handles.timeSlider,'SliderStep',[1/(maxTime-1) 1/(maxTime-1)])
 set(handles.maxText,        'String', num2str(maxTime));
 set(handles.timeSlider,     'Max',    maxTime);
 handles.tstart = 0;
@@ -292,7 +300,8 @@ TPfield_Callback(handles.TPfield, eventdata, handles)
 end
 
 function TPfield_Callback(hObject, eventdata, handles)
-handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
+handles.last=plotData(handles,handles.TPfield,handles.TPdataType, ...
+    handles.TPfieldlist,handles.axes1);
 BPdataType_Callback(handles.BPdataType,eventdata,handles);
 end
 
@@ -302,7 +311,8 @@ BPfield_Callback(handles.BPfield, eventdata, handles)
 end
 
 function BPfield_Callback(hObject, eventdata, handles)
-handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
+handles.last=plotData(handles,handles.BPfield,handles.BPdataType, ...
+    handles.BPfieldlist,handles.axes2);
 guidata(hObject, handles)
 end
 
@@ -310,7 +320,8 @@ function plotFields = makeFieldList(hObject, handles, fieldListHandle)
 
 global expData
 
-curTS        = expData.data{handles.idx}.(handles.TSlist{get(hObject, 'Value')});
+curTS        = ...
+    expData.data{handles.idx}.(handles.TSlist{get(hObject, 'Value')});
 fieldOptions = {};
 plotFields   = {};
 set(fieldListHandle, 'Enable', 'On')
@@ -319,17 +330,20 @@ set(fieldListHandle, 'Enable', 'On')
 % pairs into single drop-down options. Two parallel cells are built:
 % fieldOptions (display labels) and plotFields (data labels to plot).
 for ii = 1:length(curTS.labels)
-    if strcmp(curTS.labels{ii}(1), handles.fast)   % fast-leg prefix ('L' or 'R')
+    % fast-leg prefix ('L' or 'R')
+    if strcmp(curTS.labels{ii}(1), handles.fast)
         slowLabel = [handles.slow, curTS.labels{ii}(2:end)];
-        if any(strcmp(curTS.labels, slowLabel))     % matching slow label exists
+        if any(strcmp(curTS.labels, slowLabel)) % matching slow label exists
             if length(curTS.labels) == 2
                 % Only two labels: MATLAB disallows a single-item dropdown
                 set(fieldListHandle, 'Enable', 'Off')
                 set(fieldListHandle, 'Value', 1)
                 fieldOptions         = {'', ''};
                 plotFields{end + 1}  = {curTS.labels{ii}, slowLabel};
-            elseif length(curTS.labels{ii}) == 1   % bare 'R' or 'L' (belt speed)
-                fieldOptions         = handles.TSlist{get(hObject, 'Value')};
+            % bare 'R' or 'L' (belt speed)
+            elseif length(curTS.labels{ii}) == 1
+                fieldOptions         = ...
+                    handles.TSlist{get(hObject, 'Value')};
                 plotFields{end + 1}  = {handles.fast, handles.slow};
             else
                 fieldOptions{end + 1} = curTS.labels{ii}(2:end);
@@ -337,13 +351,16 @@ for ii = 1:length(curTS.labels)
             end
         else
             % Slow label is missing — flag with 'F' prefix
-            fieldOptions{end + 1} = strrep(curTS.labels{ii}, handles.fast, 'F');
+            fieldOptions{end + 1} = strrep(curTS.labels{ii}, ...
+                handles.fast, 'F');
             plotFields{end + 1}   = curTS.labels{ii};
         end
     elseif strcmp(curTS.labels{ii}(1), handles.slow)
-        if ~any(strcmp(curTS.labels, [handles.fast, curTS.labels{ii}(2:end)]))
+        if ~any(strcmp(curTS.labels, ...
+                [handles.fast, curTS.labels{ii}(2:end)]))
             % Fast label is missing — flag with 'S' prefix
-            fieldOptions{end + 1} = strrep(curTS.labels{ii}, handles.slow, 'S');
+            fieldOptions{end + 1} = strrep(curTS.labels{ii}, ...
+                handles.slow, 'S');
             plotFields{end + 1}   = curTS.labels{ii};
         end
         % else: fast counterpart already added — skip
@@ -410,16 +427,38 @@ end
 function plot_button_Callback(hObject, eventdata, handles)
 
 %Top plot:
-handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
+handles.last=plotData(handles,handles.TPfield,handles.TPdataType, ...
+    handles.TPfieldlist,handles.axes1);
 
 %Bottom plot:
-handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
+handles.last=plotData(handles,handles.BPfield,handles.BPdataType, ...
+    handles.BPfieldlist,handles.axes2);
 
 drawnow
 guidata(hObject, handles)
 end
 
-function last = plotData(handles, fieldHandle, dataTypeHandle, fieldList, axesHandle)
+function last = plotData(handles, fieldHandle, dataTypeHandle, ...
+    fieldList, axesHandle)
+%PLOTDATA Plot one time series and the gait events in its axes.
+%
+%   Plots the fast and slow leg traces of the selected field in the visible
+% time window and, for event-based fields, overlays fast/slow heel strikes
+% and toe-offs (FHS, FTO, SHS, STO) with a legend. Uses the global expData.
+%
+% Inputs:
+%   handles        - struct with handles and user data (see GUIDATA)
+%   fieldHandle    - handle to the field drop-down
+%   dataTypeHandle - handle to the data-type menu
+%   fieldList      - cell array from MAKEFIELDLIST
+%   axesHandle     - axes to plot into
+%
+% Outputs:
+%   last - 1 if the visible window reaches the end of the trial, else 0
+%
+% Toolbox Dependencies: None
+%
+% See also MAKEFIELDLIST.
 
 linkaxes([handles.axes1, handles.axes2], 'x')
 
@@ -437,7 +476,8 @@ end
 
 if times(end) < handles.tstop || get(handles.maxCheck, 'Value')
     endSamp   = length(times);
-    startSamp = max([1, endSamp - find(times <= handles.timeWindow, 1, 'last')]);
+    startSamp = ...
+        max([1, endSamp - find(times <= handles.timeWindow, 1, 'last')]);
     last      = 1;
 else
     startSamp = max([1, find(times >= handles.tstart, 1, 'first')]);
@@ -446,9 +486,12 @@ else
 end
 
 %get data to plot
-%plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
-%plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
-time = times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
+%plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.', ...
+%    'MarkerSize',20);
+%plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.', ...
+%    'MarkerSize',20);
+%should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
+time = times(startSamp:endSamp);
 set(axesHandle, 'NextPlot', 'Replace')
 
 if length(fieldList{fieldIdx}) == 2
@@ -560,11 +603,14 @@ function next_button_Callback(hObject, eventdata, handles)
 
 set(handles.back_button, 'Enable', 'On')
 if handles.last
-    if length(get(handles.trialMenu, 'String')) > get(handles.trialMenu, 'Value')
+    if length(get(handles.trialMenu, 'String')) > get(handles.trialMenu, ...
+            'Value')
         %Add one to current trial, does this update what the GUI shows?
-        set(handles.trialMenu, 'Value', get(handles.trialMenu, 'Value') + 1);
+        set(handles.trialMenu, 'Value', get(handles.trialMenu, 'Value') ...
+            + 1);
         trialMenu_Callback(handles.trialMenu, eventdata, handles)
-    elseif get(handles.condMenu, 'Value') < length(get(handles.condMenu, 'String'))
+    elseif get(handles.condMenu, 'Value') < length(get(handles.condMenu, ...
+            'String'))
         set(handles.condMenu,  'Value', get(handles.condMenu, 'Value') + 1);
         set(handles.trialMenu, 'Value', 1);
         condMenu_Callback(handles.condMenu, eventdata, handles)
@@ -634,7 +680,8 @@ axes(handles.axes1)
 
 allEventsIndexes = find(sum(handles.trialEvents.Data, 2) > 0);
 minDeltaTThresh  = 1;     % events within 1 s of click are candidates (s)
-paddingT         = 0.05;  % pad to also catch simultaneous alt-class event (s)
+% pad to also catch simultaneous alt-class event (s)
+paddingT         = 0.05;
 for ii = 1:length(x)
     deltaT    = handles.trialEvents.Time(allEventsIndexes) - x(ii);
     minDeltaT = min(abs(deltaT));
@@ -672,7 +719,8 @@ deltaTend = handles.trialEvents.Time(allEventsIndexes) - x(2);
 [~, selectedEventTimeIndexEnd] = min(deltaTend .^ 2);
 selectedEventIndexEnd = allEventsIndexes(selectedEventTimeIndexEnd);
 
-handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd, :) = false;
+handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd, ...
+    :) = false;
 
 expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
 expData.data{handles.idx}.adaptParams = calcParameters( ...
@@ -704,7 +752,8 @@ global expData
 [x, ~] = ginput(1);
 
 [~, closestTimeIdx] = min(abs(handles.trialEvents.Time - x));
-handles.trialEvents.Data(closestTimeIdx, get(handles.eventType, 'Value')) = true;
+handles.trialEvents.Data(closestTimeIdx, ...
+    get(handles.eventType, 'Value')) = true;
 
 expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
 expData.data{handles.idx}.adaptParams = calcParameters( ...
@@ -782,9 +831,12 @@ end
 function write_Callback(hObject, eventdata, handles)
 global expData
 
-handles = disableFields(handles, 'plot_button', 'next_button', 'back_button', ...
-    'delete_button', 'deleteNbutton', 'save_button', 'add_button', 'BPdataType', ...
-    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'trialMenu', 'timeSlider', ...
+handles = disableFields(handles, 'plot_button', 'next_button', ...
+    'back_button', ...
+    'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
+    'BPdataType', ...
+    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'trialMenu', ...
+    'timeSlider', ...
     'maxCheck', 'defaultRadio', 'kinematicRadio', 'forceRadio', 'write', ...
     'labelBadButton', 'labelGoodButton', 'showBadCheck');
 
@@ -803,11 +855,15 @@ handles.changed = false;
 handles.saved   = true;
 
 % Regenerate the *params.mat adaptationData file
-adaptData = expData.makeDataObj([handles.Dir handles.filename(1:end - 4)]); %#ok<NASGU>
+adaptData = expData.makeDataObj( ...
+    [handles.Dir handles.filename(1:end - 4)]); %#ok<NASGU>
 
-handles = enableFields(handles, 'plot_button', 'next_button', 'back_button', ...
-    'delete_button', 'deleteNbutton', 'save_button', 'add_button', 'BPdataType', ...
-    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'timeSlider', 'maxCheck', ...
+handles = enableFields(handles, 'plot_button', 'next_button', ...
+    'back_button', ...
+    'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
+    'BPdataType', ...
+    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'timeSlider', ...
+    'maxCheck', ...
     'trialMenu', 'defaultRadio', 'labelBadButton', 'labelGoodButton');
 if length(expData.data{end}.gaitEvents.labels) == 12
     set(handles.kinematicRadio, 'Enable', 'On');
@@ -864,56 +920,65 @@ end
 end
 
 function subject_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function condMenu_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function trialMenu_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function TPfield_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function TPdataType_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function BPdataType_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function BPfield_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function eventType_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','White');
 end
 end
 
 function timeSlider_CreateFcn(hObject, eventdata, handles)
 % Hint: slider controls usually have a light gray background.
-if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if isequal(get(hObject,'BackgroundColor'), ...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', [0.9 0.9 0.9]);
 end
 end

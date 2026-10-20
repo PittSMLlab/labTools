@@ -50,8 +50,10 @@ set(hObject, 'Position', [(scrsz(3) - width) / 2, 45, width, height]);
 %set color strings
 for ii = 1:17
     clr = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
-    set(handles.(['color' num2str(ii)]), 'ForegroundColor', contrastColor(clr));
-    set(handles.(['color' num2str(ii)]), 'String', ['[' num2str(clr .* 255) ']']);
+    set(handles.(['color' num2str(ii)]), 'ForegroundColor', ...
+        contrastColor(clr));
+    set(handles.(['color' num2str(ii)]), 'String', ...
+        ['[' num2str(clr .* 255) ']']);
 end
 
 %initialize drop down list with different color orders
@@ -89,9 +91,12 @@ function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
 
-handles = disableFields(handles, 'groupList', 'subjectList', 'parameterList', ...
-    'conditionList', 'plotButton', 'binEdit', 'conditionSubList', 'indivSubs', ...
-    'samePlotCheck', 'regExpBox', 'maxPerturbCheck', 'earlyNumPts', 'lateNumPts', ...
+handles = disableFields(handles, 'groupList', 'subjectList', ...
+    'parameterList', ...
+    'conditionList', 'plotButton', 'binEdit', 'conditionSubList', ...
+    'indivSubs', ...
+    'samePlotCheck', 'regExpBox', 'maxPerturbCheck', 'earlyNumPts', ...
+    'lateNumPts', ...
     'exptLastNumPts', 'removeBiasCheck', 'printCodeCheck', 'colorMenu', ...
     'saveColorsButton', 'biofeedback', 'AlignEnd2', 'InitiAlig');
 
@@ -104,9 +109,12 @@ switch get(eventdata.NewValue,'Tag')
     case 'timeCourseButton'
         handles.plotType = 1;
         handles = enableFields(handles, 'groupList', 'subjectList', ...
-            'parameterList', 'regExpBox', 'samePlotCheck', 'conditionList', ...
-            'conditionSubList', 'indivSubs', 'binEdit', 'printCodeCheck', ...
-            'colorMenu', 'saveColorsButton', 'biofeedback', 'removeBiasCheck', ...
+            'parameterList', 'regExpBox', 'samePlotCheck', ...
+            'conditionList', ...
+            'conditionSubList', 'indivSubs', 'binEdit', ...
+            'printCodeCheck', ...
+            'colorMenu', 'saveColorsButton', 'biofeedback', ...
+            'removeBiasCheck', ...
             'AlignEnd2', 'InitiAlig');
         for ii = 1:17
             set(handles.(['color' num2str(ii)]), 'Enable', 'On');
@@ -117,7 +125,8 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType = 2;
         handles = enableFields(handles, 'groupList', 'subjectList', ...
             'parameterList', 'regExpBox', 'conditionList', 'indivSubs', ...
-            'earlyNumPts', 'lateNumPts', 'exptLastNumPts', 'removeBiasCheck', ...
+            'earlyNumPts', 'lateNumPts', 'exptLastNumPts', ...
+            'removeBiasCheck', ...
             'printCodeCheck');
         set(handles.parameterList, 'Max',    10);
         set(handles.conditionText, 'String', 'Conditions');
@@ -127,10 +136,12 @@ switch get(eventdata.NewValue,'Tag')
             'parameterList', 'regExpBox', 'conditionList', 'binEdit');
         set(handles.parameterList, 'Max', 3);
     case 'epochBarButton'
-        results          = getResults(handles.Study, {'good'}, handles.groups(1));
+        results          = getResults(handles.Study, {'good'}, ...
+            handles.groups(1));
         handles.plotType = 4;
         handles = enableFields(handles, 'groupList', 'parameterList', ...
-            'regExpBox', 'conditionList', 'maxPerturbCheck', 'indivSubs', ...
+            'regExpBox', 'conditionList', 'maxPerturbCheck', ...
+            'indivSubs', ...
             'printCodeCheck', 'colorMenu', 'saveColorsButton');
         for ii = 1:17
             set(handles.(['color' num2str(ii)]), 'Enable', 'On');
@@ -139,7 +150,8 @@ switch get(eventdata.NewValue,'Tag')
         set(handles.conditionText, 'String', 'Epochs');
         set(handles.conditionList, 'String', fieldnames(results));
     case 'correlationButton'
-        results          = getResults(handles.Study, {'good'}, handles.groups(1));
+        results          = getResults(handles.Study, {'good'}, ...
+            handles.groups(1));
         handles.plotType = 5;
         handles = enableFields(handles, 'groupList', 'parameterList', ...
             'regExpBox', 'conditionList');
@@ -147,7 +159,8 @@ switch get(eventdata.NewValue,'Tag')
         set(handles.conditionText, 'String', 'Epochs');
         set(handles.conditionList, 'String', fieldnames(results), 'Max', 2);
     case 'CorrelationParams'
-        results          = getResults(handles.Study, {'good'}, handles.groups(1));
+        results          = getResults(handles.Study, {'good'}, ...
+            handles.groups(1));
         handles.plotType = 6;
         handles = enableFields(handles, 'groupList', 'parameterList', ...
             'regExpBox', 'conditionList');
@@ -188,9 +201,11 @@ if ~isempty(get(hObject, 'Value'))
 
     if strcmpi(get(handles.conditionText, 'String'), 'conditions')
         conditionContents    = get(handles.conditionList,    'String');
-        selectedConds        = conditionContents(get(handles.conditionList, 'Value'));
+        selectedConds        = ...
+            conditionContents(get(handles.conditionList, 'Value'));
         conditionSubContents = get(handles.conditionSubList, 'String');
-        selectedSubConds     = conditionSubContents(get(handles.conditionSubList, 'Value'));
+        selectedSubConds     = ...
+            conditionSubContents(get(handles.conditionSubList, 'Value'));
 
         conditions = allGroups.getCommonConditions();
         set(handles.conditionList, 'String', conditions');
@@ -204,7 +219,8 @@ if ~isempty(get(hObject, 'Value'))
     end
 
     parameterContents = get(handles.parameterList, 'String');
-    selectedParams    = parameterContents(get(handles.parameterList, 'Value'));
+    selectedParams    = ...
+        parameterContents(get(handles.parameterList, 'Value'));
 
     [parameters, handles.descriptions] = allGroups.getCommonParameters();
     set(handles.parameterList, 'String', parameters);
@@ -229,11 +245,14 @@ if isempty(get(handles.groupList, 'Value'))
     if ~isempty(get(hObject, 'Value'))
 
         conditionContents    = get(handles.conditionList,    'String');
-        selectedConds        = conditionContents(get(handles.conditionList, 'Value'));
+        selectedConds        = ...
+            conditionContents(get(handles.conditionList, 'Value'));
         conditionSubContents = get(handles.conditionSubList, 'String');
-        selectedSubConds     = conditionSubContents(get(handles.conditionSubList, 'Value'));
+        selectedSubConds     = ...
+            conditionSubContents(get(handles.conditionSubList, 'Value'));
         parameterContents    = get(handles.parameterList,    'String');
-        selectedParams       = parameterContents(get(handles.parameterList, 'Value'));
+        selectedParams       = ...
+            parameterContents(get(handles.parameterList, 'Value'));
 
         selectedSubs = handles.subjects(get(hObject, 'Value'));
         groups       = fieldnames(handles.Study);
@@ -252,8 +271,10 @@ if isempty(get(handles.groupList, 'Value'))
         for gg = 2:length(groups)
             allGroups = cat(allGroups, handles.Study.(groups{gg}));
         end
-        conditions                         = allGroups.getCommonConditions(selectedSubs);
-        [parameters, handles.descriptions] = allGroups.getCommonParameters(selectedSubs);
+        conditions                         = ...
+            allGroups.getCommonConditions(selectedSubs);
+        [parameters, handles.descriptions] = ...
+            allGroups.getCommonParameters(selectedSubs);
         set(handles.conditionList, 'String', conditions');
         set(handles.parameterList, 'String', parameters);
 
@@ -287,7 +308,8 @@ function parameterList_Callback(hObject, eventdata, handles)
 values=get(hObject,'Value');
 
 if strcmp(get(handles.figure1,'SelectionType'),'open')
-    description=handles.descriptions{values}; % display window with parameter description
+    % display window with parameter description
+    description=handles.descriptions{values};
     msgbox(description,'Description');
 end
 
@@ -325,11 +347,13 @@ set(hObject,'Value',handles.paramVals);
 %add selected conditions to list for plotting individual trials (only for time course)
 if handles.plotType==1
     conditionSubContents = get(handles.conditionSubList, 'String');
-    selectedSubConds     = conditionSubContents(get(handles.conditionSubList, 'Value'));
+    selectedSubConds     = ...
+        conditionSubContents(get(handles.conditionSubList, 'Value'));
 
     set(handles.conditionSubList, 'Value', []);
     contents = cellstr(get(hObject, 'String'));
-    set(handles.conditionSubList, 'String', contents(get(hObject, 'Value')));
+    set(handles.conditionSubList, 'String', ...
+        contents(get(hObject, 'Value')));
 
     %re-select conditions previously selected
     inds=find(ismember(contents(get(hObject,'Value')),selectedSubConds));
@@ -442,7 +466,8 @@ if handles.filename ~= 0
 
     msgHandle = msgbox('Opening...', '');
     child     = get(msgHandle, 'Children');
-    delete(child(1));   % remove the OK button so the dialog is non-interactive
+    % remove the OK button so the dialog is non-interactive
+    delete(child(1));
     drawnow
 
     %.mat file can only contain 1 variable: structure with groupAdaptationData objects
@@ -495,7 +520,8 @@ function plotButton_Callback(hObject, eventdata, handles)
 
 colorOrder = zeros(17, 3);
 for ii = 1:17
-    colorOrder(ii, :) = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
+    colorOrder(ii, :) = get(handles.(['color' num2str(ii)]), ...
+        'BackgroundColor');
 end
 
 groupContents = fieldnames(handles.Study);
@@ -521,18 +547,22 @@ else
         if ~isempty(get(handles.subjectList, 'Value'))
             indivSubList = cell(1, length(get(handles.groupList, 'Value')));
             indivSubStr  = adaptDataStr;
-            indivSubs    = handles.subjects(get(handles.subjectList, 'Value'));
+            indivSubs    = ...
+                handles.subjects(get(handles.subjectList, 'Value'));
             for gg = 1:length(groups)
-                [isAinB, locAinB] = ismember(indivSubs, handles.Study.(groups{gg}).ID);
+                [isAinB, locAinB] = ismember(indivSubs, ...
+                    handles.Study.(groups{gg}).ID);
                 for jj = 1:length(indivSubs)
                     if isAinB(jj)
                         indivSubList{gg}{end + 1} = ...
-                            handles.Study.(groups{gg}).adaptData{locAinB(jj)};
+                            handles.Study.(groups{gg}).adaptData{ ...
+                            locAinB(jj)};
                     end
                 end
                 indivSubStr = strrep(indivSubStr, ...
                     [groups{gg} '.adaptData'], ...
-                    [groups{gg} '.adaptData{' num2str(locAinB(isAinB)) '}']);
+                    [groups{gg} '.adaptData{' num2str(locAinB(isAinB)) ...
+                    '}']);
             end
         end
     else
@@ -574,13 +604,16 @@ removeBias      = get(handles.removeBiasCheck, 'Value');
 
 switch handles.plotType
     case 1  % time course
-        trialMarkerFlag = ismember(conds, conds(get(handles.conditionSubList, 'Value')));
+        trialMarkerFlag = ismember(conds, ...
+            conds(get(handles.conditionSubList, 'Value')));
         binwidth        = str2double(get(handles.binEdit,   'String'));
         alignEndFlag    = str2double(get(handles.AlignEnd2, 'String'));
         initiAligFlag   = str2double(get(handles.InitiAlig, 'String'));
         adaptationData.plotAvgTimeCourse(adaptDataList, params, conds, ...
-            binwidth, trialMarkerFlag', indivSubFlag, indivSubList, colorOrder, ...
-            biofeedbackFlag, removeBias, groups, [], [], alignEndFlag, initiAligFlag);
+            binwidth, trialMarkerFlag', indivSubFlag, indivSubList, ...
+            colorOrder, ...
+            biofeedbackFlag, removeBias, groups, [], [], alignEndFlag, ...
+            initiAligFlag);
         if get(handles.printCodeCheck, 'Value')
             disp(['load(''' handles.dir handles.filename ''')'])
             disp(['adaptDataList = ' adaptDataStr ';'])
@@ -592,20 +625,24 @@ switch handles.plotType
             disp(['IndivSubList = ' indivSubStr ';'])
             disp(['removeBias = ' num2str(removeBias) ';'])
             disp('% groups variable comes from the loaded studyData struct')
-            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,' ...
-                'conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' ...
-                num2str(biofeedbackFlag) ',removeBias,groups)'])
+            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,' ...
+                'params,conds,binWidth,trialMarkerFlag,indivSubFlag,' ...
+                'IndivSubList,' num2str(biofeedbackFlag) ...
+                ',removeBias,groups)'])
         end
     case 2  % early/late bars
         removeBiasFlag      = get(handles.removeBiasCheck, 'Value');
-        earlyNumber         = [str2double(get(handles.earlyNumPts, 'String')) ...
-                               str2double(get(handles.lateNumPts,  'String'))];
+        earlyNumber         = [ ...
+            str2double(get(handles.earlyNumPts, 'String')) ...
+            str2double(get(handles.lateNumPts,  'String'))];
         lateNumber          = [];
-        exemptLast          = str2double(get(handles.exptLastNumPts, 'String'));
+        exemptLast          = ...
+            str2double(get(handles.exptLastNumPts, 'String'));
         legendNames         = [];
         significanceThresh  = 0.01;  % default significance threshold
         adaptationData.plotGroupedSubjectsBarsv2(adaptDataList, params, ...
-            removeBiasFlag, indivSubFlag, conds, earlyNumber, lateNumber, ...
+            removeBiasFlag, indivSubFlag, conds, earlyNumber, ...
+            lateNumber, ...
             exemptLast, legendNames, significanceThresh)
     case 3  % scatter plot
         binSize = str2double(get(handles.binEdit, 'String'));
@@ -618,9 +655,11 @@ switch handles.plotType
             indivSubFlag, colorOrder);
         if get(handles.printCodeCheck, 'Value')
             disp(['load(''' handles.dir handles.filename ''')'])
-            disp(['groups = {' strjoin(strcat('''', groups, ''''), ',') '};'])
+            disp(['groups = {' strjoin(strcat('''', groups, ''''), ',') ...
+                '};'])
             disp(['params = ' paramStr ';'])
-            disp(['results = getResults(' handles.varName ',params,groups,' ...
+            disp(['results = getResults(' handles.varName ...
+                ',params,groups,' ...
                 num2str(get(handles.maxPerturbCheck, 'Value')) ');'])
             disp(['epochs = ' condStr ';'])
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])
@@ -651,8 +690,8 @@ colorPath  = strrep(colorPath, 'PlotParamsGUI.m', 'Plotting Colors');
 contents   = cellstr(get(hObject, 'String'));
 colorFile  = contents{get(hObject, 'Value')};
 
-if exist([colorPath filesep colorFile '.mat'], 'file') > 0
-    colorData  = load([colorPath filesep colorFile]);
+if exist(fullfile(colorPath, [colorFile '.mat']), 'file') > 0
+    colorData  = load(fullfile(colorPath, colorFile));
     fieldNames = fieldnames(colorData);
     colorOrder = colorData.(fieldNames{1});
 
@@ -678,12 +717,13 @@ function saveColorsButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 colorOrder = nan(17, 3);
 for ii = 1:17
-    colorOrder(ii, :) = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
+    colorOrder(ii, :) = get(handles.(['color' num2str(ii)]), ...
+        'BackgroundColor');
 end
 answer    = inputdlg('Enter name of new color order: ', 'File Name Input');
 colorPath = which('PlotParamsGUI');
 colorPath = strrep(colorPath, 'PlotParamsGUI.m', 'Plotting Colors');
-save([colorPath filesep char(answer)], 'colorOrder');
+save(fullfile(colorPath, char(answer)), 'colorOrder');
 
 W           = what(colorPath);
 colorOrders = cellstr(W.mat);
@@ -800,67 +840,78 @@ end
 %       See ISPC and COMPUTER.
 
 function conditionList_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function parameterList_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function groupList_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function binEdit_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function subjectList_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function conditionSubList_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function regExpBox_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function earlyNumPts_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function lateNumPts_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function exptLastNumPts_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function colorMenu_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
@@ -874,14 +925,16 @@ function regExpBox_ButtonDownFcn(hObject, eventdata, handles)
 end
 
 function AlignEnd2_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 end
 
 function InitiAlig_CreateFcn(hObject, eventdata, handles)
 
-if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'White');
 end
 
