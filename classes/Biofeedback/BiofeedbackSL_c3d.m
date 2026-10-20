@@ -1,48 +1,40 @@
 classdef BiofeedbackSL_c3d
-    %Class BiofeedbackMD houses metadata and methods to process step length
-    %biofeedback trials
+    %BIOFEEDBACKSL_C3D Step length biofeedback from C3D trials.
+    %   Holds the subject metadata and trial list of a step length
+    % biofeedback session and the methods that process its trials,
+    % which are read from C3D files.
     %
-    %Properties:
+    % Properties:
+    %   subjectcode  - subject code string, e.g. 'SLP001'
+    %   date         - experiment date (labDate)
+    %   day          - 'day1' or 'day2' testing session
+    %   sex          - subject sex, e.g. 'f'
+    %   dob          - date of birth (labDate)
+    %   dominantleg  - dominant leg, e.g. 'r'
+    %   dominanthand - dominant hand, e.g. 'r'
+    %   fastleg      - leg on the fast belt
+    %   height       - cm
+    %   weight       - kg
+    %   age          - years
+    %   triallist    - cell array: filename, trial #, type, category
+    %   Rtmtarget    - right step length target from treadmill baseline
+    %   Ltmtarget    - left step length target from treadmill baseline
+    %   OGsteplength - step length target from over-ground walking
+    %   OGspeed      - mean speed during the over-ground trial
+    %   datalocation - folder the instance was created in
+    %   data         - cached parsed trial data, one cell per trial
+    %   dataheader   - column names of the parsed trial data
     %
-    %   subjectcode = '' string containing subject code, e.g. 'SLP001'
-    %   date=''  Date of the experiment, lab date object
-    %   day='' string that indicates day1 or day2 testing
-    %   sex = '' string designates subject sex e.g. 'f'
-    %   dob='' lab date object with date of birth
-    %   dominantleg='' string designate dominant leg, e.g. 'r'
-    %   dominanthand = '' string designate dominant hand e.g. 'r'
-    %   height=[];  cm
-    %   weight=[];  kg
-    %   age=[];  years
+    % Methods:
+    %   AnalyzePerformance - step length error per trial, plots, auto-save
+    %   editTriallist      - pick files and edit the trial table
+    %   saveit             - save the instance as a MAT file
     %
-    %   triallist={};  cell array of trial #'s, filenames, and type of
-    %   trial. construct instance with blank cell, can input data using a
-    %   method instead of copying and pasting into inputs
+    % Toolbox Dependencies: Signal Processing Toolbox (findpeaks); also
+    % needs BTK
+    %   (btkReadAcquisition) to read the C3D files
     %
-    %   Rtmtarget=[]; right leg step length target as determined by
-    %   treadmill baseline
-    %
-    %   Ltmtarget=[]; left leg step length target as determined by treadmill
-    %   baseline
-    %
-    %   OGsteplength=[]; step length target as determined by over-ground
-    %   walking
-    %
-    %   OGspeed=[]; average speed of subject during the OG trial to
-    %   determine OG steplength
-    %
-    %Methods:
-    %
-    %   AnalyzePerformance(flag) -- computes step length errors for each
-    %                               biofeedback trial,
-    %
-    %   editTriallist() -- select filenames, edit trial #'s and type and
-    %                      category, input num is the # of trials, or rows
-    %                      in the list
-    %
-    %   saveit() -- saves the instance with filename equal to the ID
-    %
-    %   comparedays() -- makes bar plots comparing day1 and day2
+    % See also BIOFEEDBACKSL, BIOFEEDBACKSLBF_PERCP.
 
 
     properties
@@ -74,6 +66,39 @@ classdef BiofeedbackSL_c3d
         function this = BiofeedbackSL_c3d(ID,date,day,sex,dob,dleg, ...
             dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget, ...
             OGsteplength,OGspeed)
+            %BIOFEEDBACKSL_C3D Build a biofeedback session object from the
+            % subject metadata.
+            %
+            %  Checks the type of each input; an invalid input prints a red
+            %   warning
+            % and leaves that property empty instead of erroring. With the
+            % wrong
+            % number of inputs only an error message is printed.
+            %
+            % Inputs:
+            %   ID           - subject code string
+            %   date         - experiment date (labDate)
+            %   day          - 'day1' or 'day2' testing session
+            %   sex          - subject sex string
+            %   dob          - date of birth (labDate)
+            %   dleg         - dominant leg string
+            %   dhand        - dominant hand string
+            %   fastleg      - fast leg string
+            %   height       - cm
+            %   weight       - kg
+            %   age          - years
+            %   triallist    - cell array: filename, trial #, type, category
+            %   Rtarget      - right step length target (m)
+            %   Ltarget      - left step length target (m)
+            %   OGsteplength - over-ground step length target (m)
+            %   OGspeed      - over-ground walking speed (m/s)
+            %
+            % Outputs:
+            %   this - session object (value class)
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also BIOFEEDBACKSL_C3D.
 
             if nargin ~= 16
                 % disp('Error, incorrect # of input arguments provided');
@@ -223,10 +248,33 @@ classdef BiofeedbackSL_c3d
         end
 
         function [] = AnalyzePerformance(this)
-            %compute step length error for each trial, uses instance
-            %defined target values and the default tolerance of 0.0375 m
+            %ANALYZEPERFORMANCE Compute step results for each trial and
+            % plot them.
             %
-            %auto-saves the results
+            %   Reads each C3D trial in triallist with BTK (force plates and
+            % markers, cached in data), detects heel strikes from the force
+            % with
+            % findpeaks, and computes the step values RX and LX (m) and
+            % alpha
+            % per trial. Plots them per trial, then saves the object.
+            %
+            % Side effects: opens a waitbar and figures, sets the globals RX
+            % and LX,
+            %  and calls saveit() (writes a MAT file to the current folder).
+            %   Prints
+            %   a warning and does nothing when triallist is empty.
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: Signal Processing Toolbox (findpeaks);
+            % also needs BTK
+            %   (btkReadAcquisition) to read the C3D files
+            %
+            % See also EDITTRIALLIST, SAVEIT.
 
             global RX
             global LX
@@ -312,6 +360,7 @@ classdef BiofeedbackSL_c3d
                         LANK = data(:,13);
                         %detect HS
                         for zz = 1:length(Rfz)-1
+                            % TODO: source? HS force threshold
                             if Rfz(zz) > -20 && Rfz(zz+1) <= -20 && ...
                                     Rfz(zz-5) == 0
                                 RHS(zz) = 1;
@@ -319,6 +368,7 @@ classdef BiofeedbackSL_c3d
                                 RHS(zz) = 0;
                             end
                         end
+                        % TODO: source? min HS spacing (samples)
                         [~,trhs] = findpeaks(RHS,'MinPeakDistance',1000);
                         RHS = zeros(length(RHS),1);
                         RHS(trhs) = 1;
@@ -896,6 +946,36 @@ classdef BiofeedbackSL_c3d
         end
 
         function [] = editTriallist(this)
+            %EDITTRIALLIST Select trial files and edit the trial table.
+            %
+            %  Asks for the trial files, then shows a figure with an
+            %   editable table
+            % of filename, trial #, type (train/eval) and category. When
+            % triallist is
+            % already populated its rows are reused for the new file list.
+            % Edits are
+            % written to the base-workspace variable named by subjectcode,
+            % and
+            % closing the figure calls that variable's saveit().
+            %
+            %  NOTE: the callbacks use eval on the global ID, so a variable
+            %   named
+            % like subjectcode must already exist in the base workspace.
+            %
+            % Side effects: opens a file dialog and a figure; sets this.data
+            % to an
+            %   empty cell per file and the globals t and ID.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also SAVEIT.
+
             global t
             global ID
             ID = this.subjectcode;
@@ -1005,6 +1085,26 @@ classdef BiofeedbackSL_c3d
         end
 
         function [] = saveit(this)%save instance as the "subjectcode_SLBF"
+            %SAVEIT Save the session object as a MAT file in the current
+            % folder.
+            %
+            %  Stores the object in <subjectcode>_SLBF_day<day>.mat, in a
+            %   variable named by
+            % subjectcode. Prints a red warning and does nothing when
+            % subjectcode is
+            % empty.
+            %
+            % Side effects: writes the MAT file to the current folder.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             if isempty(this.subjectcode)
                 cprintf('err','WARNING: save failed, no valid ID present');

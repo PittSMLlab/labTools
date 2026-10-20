@@ -1,6 +1,32 @@
 classdef SombricTaiChi
-    %SombricTaiChi class is for processing
-    %   Detailed explanation goes here
+    %SOMBRICTAICHI Step target error analysis for a session.
+    %   Holds the subject metadata and trial list of a session and the
+    % methods that compute its step target errors.
+    %
+    % Properties:
+    %   subjectcode  - subject code string
+    %   sex          - subject sex, e.g. 'f'
+    %   dominantleg  - dominant leg, e.g. 'r'
+    %   dominanthand - dominant hand, e.g. 'r'
+    %   fastleg      - leg on the fast belt
+    %   height       - cm
+    %   weight       - kg
+    %   triallist    - cell array: filename, trial #, type, category
+    %   Rtarget      - right step length target
+    %   Ltarget      - left step length target
+    %   datalocation - folder the instance was created in
+    %   data         - cached parsed trial data, one cell per trial
+    %   dataheader   - column names of the parsed trial data
+    %
+    % Methods:
+    %   AnalyzePerformance - target errors and landing positions, plots
+    %   editTriallist      - pick files and edit the trial table
+    %   saveit             - save the instance as a MAT file
+    %   getHits            - landing positions at the sampled steps
+    %
+    % Toolbox Dependencies: None
+    %
+    % See also BIOFEEDBACKPERCEPTION.
 
     properties
         subjectcode  = '';
@@ -23,6 +49,33 @@ classdef SombricTaiChi
 
         function this = SombricTaiChi(ID,sex,dleg,dhand,fastleg,height, ...
             weight,triallist,Rtarget,Ltarget)
+            %SOMBRICTAICHI Build a session object from the subject
+            % metadata.
+            %
+            %  Checks the type of each input; an invalid input prints a red
+            %   warning
+            % and leaves that property empty instead of erroring. With the
+            % wrong
+            % number of inputs only an error message is printed.
+            %
+            % Inputs:
+            %   ID        - subject code string
+            %   sex       - subject sex string
+            %   dleg      - dominant leg string
+            %   dhand     - dominant hand string
+            %   fastleg   - fast leg string
+            %   height    - cm
+            %   weight    - kg
+            %   triallist - cell array: filename, trial #, type, category
+            %   Rtarget   - right step length target
+            %   Ltarget   - left step length target
+            %
+            % Outputs:
+            %   this - session object (value class)
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also SOMBRICTAICHI.ANALYZEPERFORMANCE.
 
             if nargin ~= 10
                 % disp('Error, incorrect # of input
@@ -120,6 +173,28 @@ classdef SombricTaiChi
 
 
         function [] = AnalyzePerformance(this)
+            %ANALYZEPERFORMANCE Plot target errors and landing positions
+            % per trial.
+            %
+            %  Gets the landing positions with getHits(), subtracts the leg
+            %   target
+            % (errors beyond 0.1 m are dropped) and plots the sagittal and
+            % lateral
+            % errors in figure 2 and the landing positions with the target
+            % and its
+            % +/-0.01 m band in figure 3, colored by trial category.
+            %
+            % Side effects: opens figures 2 and 3.
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETHITS.
 
             %             if this.fastleg == 'r'
             %                 colors =
@@ -178,6 +253,7 @@ classdef SombricTaiChi
                     temps = temps-this.Rtarget;
                     templ = templ-this.Rtarget;
 
+                    % TODO: source? error outlier cutoff (m)
                     temps(abs(temps) > 0.1) = [];
                     templ(abs(templ) > 0.1) = [];
 
@@ -311,6 +387,36 @@ classdef SombricTaiChi
         end
 
         function [] = editTriallist(this)
+            %EDITTRIALLIST Select trial files and edit the trial table.
+            %
+            %  Asks for the trial files, then shows a figure with an
+            %   editable table
+            % of filename, trial #, type (train/eval) and category. When
+            % triallist is
+            % already populated its rows are reused for the new file list.
+            % Edits are
+            % written to the base-workspace variable named by subjectcode,
+            % and
+            % closing the figure calls that variable's saveit().
+            %
+            %  NOTE: the callbacks use eval on the global ID, so a variable
+            %   named
+            % like subjectcode must already exist in the base workspace.
+            %
+            % Side effects: opens a file dialog and a figure; sets this.data
+            % to an
+            %   empty cell per file and the globals t and ID.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also SAVEIT.
+
             global t
             global ID
             ID = this.subjectcode;
@@ -427,6 +533,26 @@ classdef SombricTaiChi
         end
 
         function [] = saveit(this)%save instance as the "subjectcode_SLBF"
+            %SAVEIT Save the session object as a MAT file in the current
+            % folder.
+            %
+            %  Stores the object in <subjectcode>_PerceptionBF_day.mat, in a
+            %   variable named by
+            % subjectcode. Prints a red warning and does nothing when
+            % subjectcode is
+            % empty.
+            %
+            % Side effects: writes the MAT file to the current folder.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             if isempty(this.subjectcode)
                 cprintf('err','WARNING: save failed, no valid ID present');
@@ -439,6 +565,29 @@ classdef SombricTaiChi
 
         %X and Y do not inidicate which leg is being tested
         function [Xlat,Ysag] = getHits(this)
+            %GETHITS Get the sagittal and lateral landing position of each
+            % step.
+            %
+            %  Parses each trial file in triallist (text or JSON, cached in
+            %   data),
+            % removes duplicate and non-monotonic frames and samples the
+            % position
+            % columns at the steps (the frames where the phase column goes
+            % from 2 to
+            % 0). The X and Y labels do not indicate which leg is tested.
+            %
+            % Side effects: opens a waitbar and prints progress.
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   Xlat - lateral landing positions, one vector per trial
+            %   Ysag - sagittal landing positions, one vector per trial
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             filename = this.triallist(:,1);
             WB       = waitbar(0,'Processing Trials...');

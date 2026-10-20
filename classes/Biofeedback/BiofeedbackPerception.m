@@ -1,55 +1,43 @@
 classdef BiofeedbackPerception
-    %Class BiofeedbackMD houses metadata and methods to process step length
-    %biofeedback trials
+    %BIOFEEDBACKPERCEPTION Step length biofeedback perception tasks.
+    %   Holds the subject metadata and trial list of a step length
+    % perception session (familiarization, base map, base clamp, post
+    % clamp, post map) and the methods that process its trials.
     %
-    %Properties:
+    % Properties:
+    %   subjectcode  - subject code string, e.g. 'SLP001'
+    %   date         - experiment date (labDate)
+    %   sex          - subject sex, e.g. 'f'
+    %   dob          - date of birth (labDate)
+    %   dominantleg  - dominant leg, e.g. 'r'
+    %   dominanthand - dominant hand, e.g. 'r'
+    %   fastleg      - leg on the fast belt
+    %   height       - cm
+    %   weight       - kg
+    %   age          - years (labDate)
+    %   triallist    - cell array: filename, trial #, type, category
+    %   Rtmtarget    - right step length target from treadmill baseline
+    %   Ltmtarget    - left step length target from treadmill baseline
+    %   datalocation - folder the instance was created in
+    %   data         - cached parsed trial data, one cell per trial
+    %   dataheader   - column names of the parsed trial data
     %
-    %           subjectcode = '' string containing subject code, e.g.
-    %           'SLP001'
+    % Methods:
+    %   AnalyzePerformance - errors per trial, set means, base-subtracted
+    %                        results and plots
+    %   editTriallist      - pick files and edit the trial table
+    %   saveit             - save the instance as a MAT file
+    %   getDataCol         - columns of the parsed data by header name
+    %   getHits            - step length errors, targets and visibility
+    %   removeTransitions  - drop strides around target changes
+    %   PlotErrorTimecourse, PlotMap, PlotEC - result figures
     %
-    %           date='' Date of the experiment, lab date object
-    %           labDate(dd,mm,yyyy)
+    % Toolbox Dependencies: Signal Processing Toolbox (findpeaks);
+    % Statistics and Machine
+    %   Learning Toolbox (only reported by the MATLAB product query,
+    %   source call not located)
     %
-    %           sex = '' string designates subject sex e.g. 'f'
-    %
-    %           dob='' lab date object with date of birth
-    %           labDate(dd,mm,yyyy)
-    %
-    %           dominantleg='' string designate dominant leg, e.g. 'r'
-    %
-    %           dominanthand = '' string designate dominant hand e.g. 'r'
-    %
-    %           fastleg = '' string designates which leg was fast
-    %
-    %           height=[];  cm
-    %           weight=[];  kg
-    %           age=[];  years
-    %
-    %           triallist={};  cell array of trial #'s, filenames, and type
-    %           of
-    %               trial. Construct instance with blank cell, can input
-    %               data using a
-    %               method instead of copying and pasting into inputs
-    %
-    %           Rtmtarget=[]; right leg step length target as determined by
-    %           treadmill baseline
-    %
-    %           Ltmtarget=[]; left leg step length target as determined by
-    %           treadmill baseline
-    %
-    %
-    %     Methods:
-    %
-    %       AnalyzePerformance(flag) -- computes step length errors for each
-    %                                   biofeedback trial,
-    %
-    %       editTriallist() -- select filenames, edit trial #'s and type and
-    %                          category, input num is the # of trials, or
-    %                          rows in the list
-    %
-    %   saveit() -- saves the instance with filename equal to the ID
-    %
-    %   comparedays() -- makes bar plots comparing day1 and day2
+    % See also BIOFEEDBACKSL.
 
 
     properties
@@ -77,6 +65,36 @@ classdef BiofeedbackPerception
         %constuctor
         function this = BiofeedbackPerception(ID,date,sex,dob,dleg, ...
             dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget)
+            %BIOFEEDBACKPERCEPTION Build a biofeedback session object from
+            % the subject metadata.
+            %
+            %  Checks the type of each input; an invalid input prints a red
+            %   warning
+            % and leaves that property empty instead of erroring. With the
+            % wrong
+            % number of inputs only an error message is printed.
+            %
+            % Inputs:
+            %   ID        - subject code string
+            %   date      - experiment date (labDate)
+            %   sex       - subject sex string
+            %   dob       - date of birth (labDate)
+            %   dleg      - dominant leg string
+            %   dhand     - dominant hand string
+            %   fastleg   - fast leg string
+            %   height    - cm
+            %   weight    - kg
+            %   age       - age (labDate)
+            %   triallist - cell array: filename, trial #, type, category
+            %   Rtarget   - right step length target (m)
+            %   Ltarget   - left step length target (m)
+            %
+            % Outputs:
+            %   this - session object (value class)
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also BIOFEEDBACKPERCEPTION.
 
             if nargin ~= 13
                 % disp('Error, incorrect # of input
@@ -198,6 +216,34 @@ classdef BiofeedbackPerception
         end
 
         function [] = AnalyzePerformance(this)
+            %ANALYZEPERFORMANCE Compute step length errors and set means
+            % per trial.
+            %
+            %  Gets the errors with getHits(), removes the strides around
+            %   target
+            % changes, plots the error time courses, then averages the
+            % errors over
+            % each run of one target level and subtracts the base clamp
+            % means from
+            % the post clamp results (right and left leg).
+            %
+            % Side effects: opens figures through PlotErrorTimecourse and
+            % sets the
+            %  globals rhits and lhits. Prints a warning and does nothing
+            %   when
+            %   triallist is empty.
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: Signal Processing Toolbox (findpeaks,
+            % via getHits)
+            %
+            % See also GETHITS, REMOVETRANSITIONS, PLOTERRORTIMECOURSE,
+            % PLOTMAP.
 
             global rhits
             global lhits
@@ -264,6 +310,7 @@ classdef BiofeedbackPerception
                         RR{z} = [0, 0, 0];
 
                         %new, removing outliers
+                        % TODO: source? error outlier cutoff (m)
                         badR = [find(rhits{z} >= 0.255); ...
                             find(rhits{z} <= -0.255)];
                         rhits{z}(badR) = NaN;
@@ -282,7 +329,8 @@ classdef BiofeedbackPerception
                             % else
                             RR{z}(r, RDATA(t)) = ...
                                 mean(rhits{z}(t:(find(RDATA(t:end) ~= ...
-                                RDATA(t),1, 'first')+t-2)), 'omitnan'); %BLAH
+                                RDATA(t),1, 'first')+t-2)), ...
+                                'omitnan'); %BLAH
                             % end
                             if isnan(RR{z}(r, RDATA(t)))
                                 RR{z}(r, RDATA(t)) = ...
@@ -311,7 +359,8 @@ classdef BiofeedbackPerception
                             % else
                             LL{z}(r, LDATA(t)) = ...
                                 mean(lhits{z}(t:(find(LDATA(t:end) ~= ...
-                                LDATA(t),1, 'first')+t-2)), 'omitnan'); %BLAH
+                                LDATA(t),1, 'first')+t-2)), ...
+                                'omitnan'); %BLAH
                             % end
                             if isnan(LL{z}(r, LDATA(t)))
                                 LL{z}(r, LDATA(t)) = ...
@@ -366,6 +415,36 @@ classdef BiofeedbackPerception
         end
 
         function [] = editTriallist(this)
+            %EDITTRIALLIST Select trial files and edit the trial table.
+            %
+            %  Asks for the trial files, then shows a figure with an
+            %   editable table
+            % of filename, trial #, type (train/eval) and category. When
+            % triallist is
+            % already populated its rows are reused for the new file list.
+            % Edits are
+            % written to the base-workspace variable named by subjectcode,
+            % and
+            % closing the figure calls that variable's saveit().
+            %
+            %  NOTE: the callbacks use eval on the global ID, so a variable
+            %   named
+            % like subjectcode must already exist in the base workspace.
+            %
+            % Side effects: opens a file dialog and a figure; sets this.data
+            % to an
+            %   empty cell per file and the globals t and ID.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also SAVEIT.
+
             global t
             global ID
             ID = this.subjectcode;
@@ -474,6 +553,26 @@ classdef BiofeedbackPerception
         end
 
         function [] = saveit(this)%save instance as the "subjectcode_SLBF"
+            %SAVEIT Save the session object as a MAT file in the current
+            % folder.
+            %
+            %  Stores the object in <subjectcode>_PerceptionBF_day.mat, in a
+            %   variable named by
+            % subjectcode. Prints a red warning and does nothing when
+            % subjectcode is
+            % empty.
+            %
+            % Side effects: writes the MAT file to the current folder.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             if isempty(this.subjectcode)
                 cprintf('err','WARNING: save failed, no valid ID present');
@@ -485,6 +584,25 @@ classdef BiofeedbackPerception
         end
 
         function dataCol = getDataCol(this, dataname)
+            %GETDATACOL Get a named data column of every trial.
+            %
+            %  Looks the column up in dataheader and returns it from each
+            %   parsed
+            % trial in data. Prints a red warning and stops at the first
+            % trial when
+            % the name is not in the header.
+            %
+            % Inputs:
+            %   this     - session object with parsed data
+            %   dataname - column name in dataheader
+            %
+            % Outputs:
+            %   dataCol - cell array, one column vector per trial
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETHITS.
+
             for z = 1:length(this.triallist)
                 col = find(cellfun(@(x) strcmp(x, dataname), ...
                     this.dataheader));
@@ -498,6 +616,42 @@ classdef BiofeedbackPerception
         end
 
         function [rhits, lhits, rts, lts, color,rv,lv] = getHits(this)
+            %GETHITS Compute the step length error of every step of every
+            % trial.
+            %
+            %  Parses each trial file in triallist (text or JSON, cached in
+            %   data),
+            % removes duplicate frames, finds heel strikes from the force
+            % channels
+            % with getEventsFromForces and returns, per trial, the error
+            % between
+            % the measured step length and the target at each step. Saves
+            % the
+            % object when done.
+            %
+            %  NOTE: this is a value class, so the data cache set here is
+            %   only kept
+            % by the saveit() call at the end.
+            %
+            % Side effects: opens a waitbar, prints progress, calls saveit()
+            % (writes
+            %   a MAT file to the current folder).
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   rhits - right step length errors (m), one vector per trial
+            %   lhits - left step length errors (m), one vector per trial
+            %   rts   - right target at each step, one vector per trial
+            %   lts   - left target at each step, one vector per trial
+            %   color - plot color per trial from its category
+            %   rv    - right feedback visibility flag per step
+            %   lv    - left feedback visibility flag per step
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also REMOVETRANSITIONS, GETEVENTSFROMFORCES.
 
             filename = this.triallist(:,1);
 
@@ -681,6 +835,32 @@ classdef BiofeedbackPerception
 
         function [rhits, lhits, rts, lts, rv,lv] = ...
             removeTransitions(this, tamp, tamp2, tamp3, tamp4, tamp5, tamp6)
+            %REMOVETRANSITIONS Drop the strides after each target change.
+            %
+            %  Deletes five strides at every change of the target value so
+            %   the
+            % transient does not enter the means.
+            %
+            % Inputs:
+            %   this  - session object
+            %   tamp  - right errors, one vector per trial
+            %   tamp2 - left errors, one vector per trial
+            %   tamp3 - right targets, one vector per trial
+            %   tamp4 - left targets, one vector per trial
+            %   tamp5 - right visibility flags, one vector per trial
+            %   tamp6 - left visibility flags, one vector per trial
+            %
+            % Outputs:
+            %   rhits - right errors without the transitions
+            %   lhits - left errors without the transitions
+            %   rts   - right targets without the transitions
+            %   lts   - left targets without the transitions
+            %   rv    - right visibility flags without the transitions
+            %   lv    - left visibility flags without the transitions
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also GETHITS, ANALYZEPERFORMANCE.
 
             for z = 1:length(tamp)
                 %delete 5 strides at each transistion
@@ -716,6 +896,30 @@ classdef BiofeedbackPerception
 
         function [] = PlotErrorTimecourse(this, rhits, lhits, rts, lts, ...
             rv,lv)
+            %PLOTERRORTIMECOURSE Plot the step length errors of all trials.
+            %
+            %  Plots the fast and slow leg step length errors of all trials
+            %   in trial
+            % order.
+            %
+            % Side effects: opens a figure.
+            %
+            % Inputs:
+            %   this  - session object with a populated triallist
+            %   rhits - right step length errors, one vector per trial
+            %   lhits - left step length errors, one vector per trial
+            %   rts   - right targets, one vector per trial
+            %   lts   - left targets, one vector per trial
+            %   rv    - right visibility flags, one vector per trial
+            %   lv    - left visibility flags, one vector per trial
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE, PLOTMAP.
+
             tlist    = this.triallist;
             filename = this.triallist(:,1);
             %logicals of where training trials are
@@ -926,6 +1130,29 @@ classdef BiofeedbackPerception
         end
 
         function [] = PlotMap(this,rhits, lhits,  RR, LL, DDR, DDL)
+            %PLOTMAP Plot the base map and post map results.
+            %
+            %   Plots the mean errors per set of the base map and post map
+            % conditions for the fast and slow leg.
+            %
+            % Side effects: opens figures.
+            %
+            % Inputs:
+            %   this  - session object with a populated triallist
+            %   rhits - right step length errors, one vector per trial
+            %   lhits - left step length errors, one vector per trial
+            %   RR    - right mean error per target level, per trial
+            %   LL    - left mean error per target level, per trial
+            %   DDR   - right base-subtracted results
+            %   DDL   - left base-subtracted results
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also PLOTEC, PLOTERRORTIMECOURSE.
+
             tlist    = this.triallist;
             filename = this.triallist(:,1);
             %logicals of where training trials are
@@ -1094,6 +1321,31 @@ classdef BiofeedbackPerception
         end
 
         function [] = PlotEC(this,rhits, lhits,  RR, LL, DDR, DDL)
+            %PLOTEC Plot the base clamp and post clamp (error clamp)
+            % results.
+            %
+            %  Plots the mean errors per set of the base clamp and post
+            %   clamp
+            % conditions for the fast and slow leg.
+            %
+            % Side effects: opens figures.
+            %
+            % Inputs:
+            %   this  - session object with a populated triallist
+            %   rhits - right step length errors, one vector per trial
+            %   lhits - left step length errors, one vector per trial
+            %   RR    - right mean error per target level, per trial
+            %   LL    - left mean error per target level, per trial
+            %   DDR   - right base-subtracted results
+            %   DDL   - left base-subtracted results
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also PLOTMAP, PLOTERRORTIMECOURSE.
+
             tlist    = this.triallist;
             filename = this.triallist(:,1);
             %logicals of where training trials are

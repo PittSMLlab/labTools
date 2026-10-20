@@ -1,50 +1,40 @@
 classdef BiofeedbackVazE2B
-    %Class BiofeedbackVazE2B houses metadata and methods to process
-    %Vazquez's Experiment 2B
-    %biofeedback trials
+    %BIOFEEDBACKVAZE2B Biofeedback analysis for Vazquez Experiment 2B.
+    %   Holds the subject metadata and trial list of a session of
+    % Vazquez's Experiment 2B and the methods that process its trials.
     %
-    %Properties:
+    % Properties:
+    %   subjectcode  - subject code string, e.g. 'SLP001'
+    %   date         - experiment date (labDate)
+    %   day          - 'day1' or 'day2' testing session
+    %   sex          - subject sex, e.g. 'f'
+    %   dob          - date of birth (labDate)
+    %   dominantleg  - dominant leg, e.g. 'r'
+    %   dominanthand - dominant hand, e.g. 'r'
+    %   fastleg      - leg on the fast belt
+    %   height       - cm
+    %   weight       - kg
+    %   age          - years
+    %   triallist    - cell array: filename, trial #, type, category
+    %   Rtmtarget    - right step length target from treadmill baseline
+    %   Ltmtarget    - left step length target from treadmill baseline
+    %   OGsteplength - step length target from over-ground walking
+    %   OGspeed      - mean speed during the over-ground trial
+    %   datalocation - folder the instance was created in
+    %   data         - cached parsed trial data, one cell per trial
+    %   dataheader   - column names of the parsed trial data
     %
-    %   subjectcode = '' string containing subject code, e.g. 'SLP001'
-    %   date=''  Date of the experiment, lab date object
-    %   day='' string that indicates day1 or day2 testing
-    %   sex = '' string designates subject sex e.g. 'f'
-    %   dob='' lab date object with date of birth
-    %   dominantleg='' string designate dominant leg, e.g. 'r'
-    %   dominanthand = '' string designate dominant hand e.g. 'r'
-    %   height=[];  cm
-    %   weight=[];  kg
-    %   age=[];  years
+    % Methods:
+    %   AnalyzePerformance - step length error per trial, plots, auto-save
+    %   editTriallist      - pick files and edit the trial table
+    %   saveit             - save the instance as a MAT file
+    %   comparedays        - bar plots of day 1 vs day 2
     %
-    %   triallist={};  cell array of trial #'s, filenames, and type of
-    %                   trial. construct instance with blank cell, can input
-    %                   data using a
-    %                   method instead of copying and pasting into inputs
+    % Toolbox Dependencies: Signal Processing Toolbox (findpeaks),
+    % Statistics and Machine
+    %   Learning Toolbox (iqr)
     %
-    %   Rtmtarget=[]; right leg step length target as determined by
-    %   treadmill baseline
-    %
-    %   Ltmtarget=[]; left leg step length target as determined by treadmill
-    %   baseline
-    %
-    %   OGsteplength=[]; step length target as determined by over-ground
-    %   walking
-    %
-    %   OGspeed=[]; average speed of subject during the OG trial to
-    %   determine OG steplength
-    %
-    %Methods:
-    %
-    %   AnalyzePerformance(flag) -- computes step length errors for each
-    %                               biofeedback trial,
-    %
-    %   editTriallist() -- select filenames, edit trial #'s and type and
-    %                      category, input num is the # of trials, or rows
-    %                      in the list
-    %
-    %   saveit() -- saves the instance with filename equal to the ID
-    %
-    %   comparedays() -- makes bar plots comparing day1 and day2
+    % See also BIOFEEDBACKSL, BIOFEEDBACKSL_C3D.
 
 
     properties
@@ -70,6 +60,39 @@ classdef BiofeedbackVazE2B
         %constuctor
         function this = BiofeedbackVazE2B(ID,date,day,sex,dob,dleg, ...
             dhand,height,weight,age,triallist)
+            %BIOFEEDBACKVAZE2B Build a biofeedback session object from the
+            % subject metadata.
+            %
+            %  Checks the type of each input; an invalid input prints a red
+            %   warning
+            % and leaves that property empty instead of erroring. With the
+            % wrong
+            % number of inputs only an error message is printed.
+            %
+            % Inputs:
+            %   ID           - subject code string
+            %   date         - experiment date (labDate)
+            %   day          - 'day1' or 'day2' testing session
+            %   sex          - subject sex string
+            %   dob          - date of birth (labDate)
+            %   dleg         - dominant leg string
+            %   dhand        - dominant hand string
+            %   fastleg      - fast leg string
+            %   height       - cm
+            %   weight       - kg
+            %   age          - years
+            %   triallist    - cell array: filename, trial #, type, category
+            %   Rtarget      - right step length target (m)
+            %   Ltarget      - left step length target (m)
+            %   OGsteplength - over-ground step length target (m)
+            %   OGspeed      - over-ground walking speed (m/s)
+            %
+            % Outputs:
+            %   this - session object (value class)
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also BIOFEEDBACKVAZE2B.
 
             if nargin ~= 11
                 % disp('Error, incorrect # of input arguments provided');
@@ -175,10 +198,33 @@ classdef BiofeedbackVazE2B
         end
 
         function [] = AnalyzePerformance(this)
-            %compute step length error for each trial, uses instance
-            %defined target values and the default tolerance of 0.0375 m
+            %ANALYZEPERFORMANCE Compute step results for each trial and
+            % plot them.
             %
-            %auto-saves the results
+            %  Parses each trial file in triallist (cached in data), detects
+            % heel strikes and toe-offs with findpeaks, and computes the
+            % step
+            % position accuracy of both legs (hits, lhits) and the ankle
+            % separation before the step (anks). Plots accuracy, error and
+            % ankle separation per trial, then saves the object.
+            %
+            % Side effects: opens a waitbar and figures, sets the globals
+            % hits,
+            %  and calls saveit() (writes a MAT file to the current folder).
+            %   Prints
+            %   a warning and does nothing when triallist is empty.
+            %
+            % Inputs:
+            %   this - session object with a populated triallist
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: Signal Processing Toolbox (findpeaks),
+            % Statistics and Machine
+            %   Learning Toolbox (iqr)
+            %
+            % See also EDITTRIALLIST, SAVEIT.
 
             global hits
             %             global lhits
@@ -271,6 +317,7 @@ classdef BiofeedbackVazE2B
 
                         %detect HS
                         for zz = 1:length(Rz2)-1
+                            % TODO: source? HS force threshold
                             if Rz2(zz) > -30 && Rz2(zz+1) <= -30
                                 RHS(zz) = 1;
                             else
@@ -286,6 +333,7 @@ classdef BiofeedbackVazE2B
                             end
                         end
 
+                        % TODO: source? min HS spacing (samples)
                         [~,trhs] = findpeaks(RHS,'MinPeakDistance',100);
                         [~,trto] = findpeaks(RTO,'MinPeakDistance',100);
                         RHS = zeros(length(RHS),1);
@@ -310,6 +358,7 @@ classdef BiofeedbackVazE2B
                         end
 
 
+                        % TODO: source? min HS spacing (samples)
                         [~,tlhs] = findpeaks(LHS,'MinPeakDistance',100);
                         [~,tlto] = findpeaks(LTO,'MinPeakDistance',100);
                         LHS = zeros(length(LHS),1);
@@ -671,6 +720,7 @@ classdef BiofeedbackVazE2B
                     %                     keyboard
                     for z = 1:length(hits)
                         temp = hits{z};
+                        % TODO: source? error outlier cutoff (m)
                         temp(abs(temp) > 0.1) = [];
                         meanhits1(z) = mean(temp);
                         stdhits1(z) = std(temp);
@@ -1272,6 +1322,36 @@ classdef BiofeedbackVazE2B
         end
 
         function [] = editTriallist(this)
+            %EDITTRIALLIST Select trial files and edit the trial table.
+            %
+            %  Asks for the trial files, then shows a figure with an
+            %   editable table
+            % of filename, trial #, type (train/eval) and category. When
+            % triallist is
+            % already populated its rows are reused for the new file list.
+            % Edits are
+            % written to the base-workspace variable named by subjectcode,
+            % and
+            % closing the figure calls that variable's saveit().
+            %
+            %  NOTE: the callbacks use eval on the global ID, so a variable
+            %   named
+            % like subjectcode must already exist in the base workspace.
+            %
+            % Side effects: opens a file dialog and a figure; sets this.data
+            % to an
+            %   empty cell per file and the globals t and ID.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also SAVEIT.
+
             global t
             global ID
             ID = this.subjectcode;
@@ -1384,6 +1464,26 @@ classdef BiofeedbackVazE2B
         end
 
         function [] = saveit(this)%save instance as the "subjectcode_SLBF"
+            %SAVEIT Save the session object as a MAT file in the current
+            % folder.
+            %
+            %  Stores the object in <subjectcode>_VazE2B_day<day>.mat, in a
+            %   variable named by
+            % subjectcode. Prints a red warning and does nothing when
+            % subjectcode is
+            % empty.
+            %
+            % Side effects: writes the MAT file to the current folder.
+            %
+            % Inputs:
+            %   this - session object
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             if isempty(this.subjectcode)
                 cprintf('err','WARNING: save failed, no valid ID present');
@@ -1396,17 +1496,33 @@ classdef BiofeedbackVazE2B
         end
 
         function [] = comparedays(this,flag)
-            %make bar plots of day1 and day2 means to compare performances
-            %no inputs required, data is located from a uitable
+            %COMPAREDAYS Bar plots comparing day 1 and day 2 performance.
             %
-            %creates figures of bar plots for fast and slow legs, day 1 and
-            %day 2
+            %  Asks for the day 1 and day 2 files, loads Results.mat (rhits
+            %   and
+            % lhits) from each day's folder and the day 2 instance, and
+            % plots the
+            % fast and slow leg results of both days as bar plots.
             %
-            %flag indicates whether to normalize data by last training
-            %phase evaluation, 0 for no, 1 for yes
+            %  NOTE: this must be the day 1 instance. The day 2 variable
+            %   name is
+            % parsed from the file name by position, so renamed files crash.
             %
-            %use a uitable to assign the locations of each Results.mat
-            %file, should be 4 of them, 2 per day
+            % Side effects: opens two file dialogs and figures; loads
+            % Results.mat and
+            %   the day 2 MAT file into the method workspace.
+            %
+            % Inputs:
+            %   this - day 1 session object
+            %  flag - 1 to normalize by the last training phase evaluation,
+            %          0 not
+            %
+            % Outputs:
+            %   none
+            %
+            % Toolbox Dependencies: None
+            %
+            % See also ANALYZEPERFORMANCE.
 
             [file1,path1] = uigetfile('*.*','Select Day 1 File');
             [file2,path2] = uigetfile('*.*','Select Day 2 File');
@@ -1461,6 +1577,7 @@ classdef BiofeedbackVazE2B
                 for z = 1:length(fast1)
                     temp1 = fast1{z};
                     temp2 = fast2{z};
+                    % TODO: source? error outlier cutoff (m)
                     temp1(abs(temp1) > 0.1) = [];
                     temp2(abs(temp2) > 0.1) = [];
                     if flag%normalize
@@ -1478,6 +1595,7 @@ classdef BiofeedbackVazE2B
                 for z = 1:length(slow1)
                     temp1 = slow1{z};
                     temp2 = slow2{z};
+                    % TODO: source? error outlier cutoff (m)
                     temp1(abs(temp1) > 0.1) = [];
                     temp2(abs(temp2) > 0.1) = [];
                     if flag%normalize
