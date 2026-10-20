@@ -71,6 +71,20 @@ end
 
 % --- Outputs from this function are returned to the command line.
 function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
+%REVIEWEVENTSGUI_OUTPUTFCN Center the GUI and return its handle.
+%
+%   Moves the figure to the center of the screen (this must happen here, not
+% in the opening function) and returns the figure handle.
+%
+% Inputs:
+%   hObject   - handle to the figure
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Outputs:
+%   varargout - cell array; varargout{1} is the figure handle
+%
+% Toolbox Dependencies: None
 
 % Center GUI on screen (must run here, not in OpeningFcn)
 % left, bottom, width, height
@@ -89,6 +103,22 @@ end
 %% -------------------------Open subject file--------------------------
 
 function uiOpenFile_ClickedCallback(hObject, eventdata, handles)
+%UIOPENFILE_CLICKEDCALLBACK Choose and load a subject experimentData file.
+%
+%   Offers to save pending edits of the open subject, then asks for a
+% subject MAT file with a file dialog and loads its single variable into the
+% global expData. Shows an error dialog if the variable is not a processed
+% experimentData object. On success, fills the condition menu and plots the
+% first trial.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also WRITE_CALLBACK, CONDMENU_CALLBACK.
 
 % If a subject file is already open, ask to save before switching.
 if isfield(handles, 'filename') && ~handles.changed && ~handles.saved
@@ -146,7 +176,8 @@ if handles.filename ~= 0
         end
 
         condDes = expData.metaData.conditionName;
-        % Filter empty entries for sessions where a condition number was skipped
+        % Filter empty entries for sessions where a condition number was
+        % skipped
         set(handles.condMenu, 'String', ...
             condDes(~cellfun('isempty', condDes)));
         set(handles.condMenu,  'Value', 1);
@@ -167,6 +198,20 @@ end
 
 % --- Executes on selection change in condMenu.
 function condMenu_Callback(hObject, eventdata, handles)
+%CONDMENU_CALLBACK Select a condition and list its trials.
+%
+%   Fills the trial menu with the trials of the selected condition (the last
+% trial when stepping backwards), enables or disables the controls that need
+% a trial, and plots the selected trial.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also TRIALMENU_CALLBACK.
 
 if get(hObject, 'Value') > 1
     set(handles.back_button, 'Enable', 'On')
@@ -225,6 +270,20 @@ end
 %Select specific trial:
 
 function trialMenu_Callback(hObject, eventdata, handles)
+%TRIALMENU_CALLBACK Select a trial and prepare its time series lists.
+%
+%   Reads the events, slow/fast leg and descriptions of the selected trial
+% from the global expData, lists its labTimeSeries fields in the data-type
+% menus and resets the time window and slider before plotting.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also PLOTDATA, MAKEFIELDLIST.
 
 if get(handles.condMenu, 'Value') == 1 && get(hObject, 'Value') == 1
     set(handles.back_button, 'Enable', 'Off')
@@ -317,6 +376,23 @@ guidata(hObject, handles)
 end
 
 function plotFields = makeFieldList(hObject, handles, fieldListHandle)
+%MAKEFIELDLIST Build the drop-down labels for a time series.
+%
+%   Combines left/right (and Fast/Slow) pairs of labels of the selected time
+% series into single options so that both legs are plotted together. Labels
+% without a counterpart are listed with an 'F' or 'S' prefix. When only one
+% pair exists the drop-down is disabled.
+%
+% Inputs:
+%   hObject         - handle to the data-type menu
+%   handles         - struct with handles and user data (see GUIDATA)
+%   fieldListHandle - handle to the field drop-down to fill
+%
+% Outputs:
+%   plotFields - cell array with, per option, the label or the {fast, slow}
+%                label pair to plot
+%
+% Toolbox Dependencies: None
 
 global expData
 
@@ -391,13 +467,15 @@ end
 function timeSlider_Callback(hObject, eventdata, handles)
 handles.timeWindow = round(get(hObject, 'Value'));
 
-% % % %to make zoomed-in time window start in middle of previous time window: % % % %
+% % % %to make zoomed-in time window start in middle of previous
+% time window: % % % %
 % timeToAdd=handles.timeWindow-(handles.tstop-handles.tstart);
 % time1=max([handles.tstart-floor(timeToAdd/2) 0]);
 % handles.tstop=handles.tstop+ceil(timeToAdd-(handles.tstart-time1));
 % handles.tstart=time1;
 
-% % % to make zoomed-in time window start at the beginning of the trial: % % % % %
+% % % to make zoomed-in time window start at the beginning of the
+% trial: % % % % % %
 % handles.tstop=handles.timeWindow;
 % handles.tstart=0;
 % Time window starts at the beginning of the previous window
@@ -410,6 +488,18 @@ end
 
 % --- Executes on button press in maxCheck.
 function maxCheck_Callback(hObject, eventdata, handles)
+%MAXCHECK_CALLBACK Plot the whole trial or allow a time window.
+%
+%   When checked, sets the time window to the full trial and disables the
+% time slider; otherwise enables the slider. Replots in both cases.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+
 global expData
 maxTime = ceil(expData.data{handles.idx}.gaitEvents.Time(end));
 set(handles.timeSlider, 'Enable', 'On');
@@ -525,7 +615,8 @@ if length(fieldList{fieldIdx}) == 2
         legendEntries = {'Fast', 'Slow'};
 
         % Build a struct of event times for the visible window.
-        % ECF corrects for sampling frequency mismatch between events and data.
+        % ECF corrects for sampling frequency mismatch between events and
+        % data.
         % TODO: replace ECF with a resampling method on events.
         events     = handles.trialEvents;
         ECF        = events.sampFreq / TSdata.sampFreq;
@@ -600,6 +691,18 @@ end
 
 % --- Executes on button press in next_button.
 function next_button_Callback(hObject, eventdata, handles)
+%NEXT_BUTTON_CALLBACK Show the next time window, trial or condition.
+%
+%   Advances the time window; at the end of a trial moves to the next trial,
+% then to the next condition. Disables itself after the last trial of the
+% last condition.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
 
 set(handles.back_button, 'Enable', 'On')
 if handles.last
@@ -628,6 +731,18 @@ end
 
 % --- Executes on button press in back_button.
 function back_button_Callback(hObject, eventdata, handles)
+%BACK_BUTTON_CALLBACK Show the previous time window, trial or condition.
+%
+%   Moves back one time window; at the start of a trial moves to the
+% previous trial, then to the last trial of the previous condition. Disables
+% itself at the first trial of the first condition.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
 
 set(handles.next_button, 'Enable', 'On')
 if handles.tstart > 0
@@ -649,14 +764,16 @@ end
 
 end
 
-%% --------------------------Event Editing:----------------------------------
+%% ----------------------Event Editing:------------------------
 
-% --- Executes when selected object is changed in event selection button group.
+% --- Executes when selected object is changed in event selection button
+% group.
 function eventButton_SelectionChangeFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in eventButton
 % eventdata  structure with the following fields (see UIBUTTONGROUP)
 %	EventName: string 'SelectionChanged' (read only)
-%	OldValue: handle of the previously selected object or empty if none was selected
+%	OldValue: handle of the previously selected object or empty if
+%	          none was selected
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
 switch get(eventdata.NewValue, 'Tag')
@@ -672,6 +789,21 @@ end
 
 % --- Executes on button press in delete_button.
 function delete_button_Callback(hObject, eventdata, handles)
+%DELETE_BUTTON_CALLBACK Delete the events nearest to mouse clicks.
+%
+%   Reads clicks on the top axes with ginput (finish with return) and clears
+% the event(s) within 1 s of each click. Recomputes the parameters of the
+% trial with calcParameters, which discards manual stride label edits, and
+% replots.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also DELETENBUTTON_CALLBACK, CALCPARAMETERS.
 
 global expData
 
@@ -704,6 +836,20 @@ end
 
 % --- Executes on button press in deleteNbutton.
 function deleteNbutton_Callback(hObject, eventdata, handles)
+%DELETENBUTTON_CALLBACK Delete all events between two clicks.
+%
+%   Reads two clicks with ginput and clears every event from the one nearest
+% the first click to the one nearest the second. Recomputes the parameters
+% of the trial with calcParameters and replots.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also DELETE_BUTTON_CALLBACK, CALCPARAMETERS.
 
 global expData
 
@@ -747,6 +893,21 @@ end
 
 % --- Executes on selection change in eventType.
 function eventType_Callback(hObject, eventdata, handles)
+%EVENTTYPE_CALLBACK Add an event of the chosen type at a click.
+%
+%   Reads one click with ginput and sets the selected event type at the
+% nearest sample. Recomputes the parameters of the trial with
+% calcParameters, disables the drop-down and replots.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also ADD_BUTTON_CALLBACK.
+
 global expData
 
 [x, ~] = ginput(1);
@@ -769,6 +930,20 @@ end
 
 % --- Executes on button press in labelBadButton.
 function labelBadButton_Callback(hObject, eventdata, handles)
+%LABELBADBUTTON_CALLBACK Label the strides at mouse clicks as bad.
+%
+%   Reads clicks on the top axes with ginput and sets the aggregate 'bad'
+% and 'good' columns of the stride nearest each click to bad. Only these two
+% columns change; the per-reason columns are untouched.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also LABELGOODBUTTON_CALLBACK.
 
 global expData
 
@@ -788,6 +963,20 @@ end
 
 % --- Executes on button press in labelGoodButton.
 function labelGoodButton_Callback(hObject, eventdata, handles)
+%LABELGOODBUTTON_CALLBACK Label the strides at mouse clicks as good.
+%
+%   Reads clicks on the top axes with ginput and sets the aggregate 'bad'
+% and 'good' columns of the stride nearest each click to good. Only these
+% two columns change; the per-reason columns are untouched.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also LABELBADBUTTON_CALLBACK.
 
 global expData
 
@@ -829,6 +1018,21 @@ end
 
 % --- Executes on button press in write.
 function write_Callback(hObject, eventdata, handles)
+%WRITE_CALLBACK Save the edited experimentData and its params file.
+%
+%   Disables the controls, saves expData under its original variable name to
+% the subject MAT file (-v7.3, overwriting it) and regenerates the matching
+% params file with makeDataObj.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also EXPERIMENTDATA.MAKEDATAOBJ.
+
 global expData
 
 handles = disableFields(handles, 'plot_button', 'next_button', ...
@@ -845,8 +1049,11 @@ drawnow
 
 %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName
 %''');']); %PI: replaced this with the line below on 28/4/2015
-%expData=expData.recomputeParameters; %% HH: I don't think this is necessary, should have already been re-computed earlier.
-% eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj
+%expData=expData.recomputeParameters; %% HH: I don't think this is
+%necessary, should have already been re-computed earlier.
+% eval(['save(''' handles.Dir handles.filename(1:end-4) 'params'
+% ''',''adaptData'');']); %Saving with same var name --> No longer needed,
+% makeDataObj
 %Enable everything
 % Save expData under its original workspace variable name
 saveData.(handles.varName) = expData;
@@ -878,6 +1085,19 @@ end
 
 % --- Executes when user attempts to close GUI_window.
 function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
+%GUI_WINDOW_CLOSEREQUESTFCN Offer to save edits, then close the GUI.
+%
+%   Asks whether to save pending changes (Save, Don't Save or Cancel),
+% writes them when requested and deletes the figure.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also WRITE_CALLBACK.
 
 if ~handles.changed && isfield(handles, 'filename') && ~handles.saved
     choice = questdlg( ...

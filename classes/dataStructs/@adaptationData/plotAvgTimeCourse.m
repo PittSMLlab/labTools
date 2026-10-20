@@ -3,14 +3,65 @@ function varargout = plotAvgTimeCourse(adaptDataList,params,conditions, ...
     removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)
 %PLOTAVGTIMECOURSE Plot binned group time courses of parameters.
 %
-% figHandle = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)
-% [Avg, Indiv] = plotAvgTimeCourse(figHandle,adaptDataList,params,conditions,binwidth,trialMarkerFlag)
-
+%   Plots, for each condition and trial, the stride-by-stride time
+% course of each parameter averaged (or median-combined) across the
+% subjects of each group, binned over binwidth strides, with standard
+% error shading. Bad strides are removed first. Draws into new or
+% supplied axes; creates no files or dialogs.
+%
+%   figHandle = plotAvgTimeCourse(adaptDataList,params,conditions, ...
+%     binwidth,trialMarkerFlag,indivFlag,indivSubs)
+%   [avg,indiv] = plotAvgTimeCourse(adaptDataList,params,conditions, ...
+%     binwidth)
+%
+% Inputs:
+%   adaptDataList   - cell array of adaptationData objects (one group),
+%                     or of 'params.mat' file names (legacy), or a cell
+%                     array of such cells (several groups)
+%   params          - cell array of parameter names. A row of names
+%                     (commas) plots on separate axes; a column
+%                     (semicolons) plots on the same axes
+%   conditions      - cell array of condition names (default: the
+%                     conditions of the first subject)
+%   binwidth        - number of strides averaged per point (default 1)
+%   trialMarkerFlag - logical per condition, mark trial boundaries
+%   indivFlag       - true to plot individual subject time courses
+%   indivSubs       - cell array (per group) of the subjects of
+%                     adaptDataList to plot instead of all subjects
+%   colorOrder      - N x 3 colors (default: poster_colors palette)
+%   biofeedback     - 1 to weight by the target-hit parameters, [] none
+%   removeBiasFlag  - 0 none, 1 removeBias, 2 normalizeBias (or
+%                     removeBiasV4 for H-reflex parameters), 3 removeBias
+%                     over the last 140 strides, median
+%   labels          - legend labels, one per group
+%   filterFlag      - scalar: median across subjects and samples;
+%                     2 elements: [medianFilter medianFlag]; 4 elements:
+%                     [medianFlag monoNder monoNreg monoTrialBased] to
+%                     use the monoLS filter for samples
+%   plotHandles     - axes handles, one per parameter
+%   alignEnd        - number of strides at the end of each condition to
+%                     plot aligned separately; [] or 0 for none
+%   alignIni        - number of strides at the start of each condition
+%                     to plot aligned separately; [] or 0 for none
+%
+% Outputs:
+%   varargout - one output: figure handle; two: avg, indiv; three:
+%               figure handle, avg, indiv; four: adds the axes handles.
+%               avg and indiv are structs (per group) of binned means
+%               and per-subject binned data by parameter, condition and
+%               trial
+%
+% Toolbox Dependencies:
+%   Statistics and Machine Learning Toolbox (prctile, median-based
+%   standard error)
+%
+% See also ADAPTATIONDATA.REMOVEBIAS, OPTIMIZEDSUBPLOT, NANJACKKNIFE.
 
 %% Check inputs
 
 % See if adaptDataList is a single subject (char), a cell
-% array of subject names (one group of subjects), or a cell array of cell arrays of
+% array of subject names (one group of subjects), or a cell array of cell
+% arrays of
 % subjects names (several groups of subjects), and put all the
 % cases into the same format
 if isa(adaptDataList,'cell')
@@ -249,7 +300,7 @@ for group = 1:Ngroups
                         dataPts = adaptData.getParamInTrial(params, ...
                             trials{t});
                     end
-%                     dataPts=dataPts(2:end-5);
+                    % dataPts=dataPts(2:end-5);
                 end
                 nPoints = size(dataPts,1);
                 % this assumes that the max number of data points that could
@@ -279,7 +330,9 @@ for group = 1:Ngroups
                         values(group).(paramsTemp{p}).(cond{c}).( ...
                             ['trial' num2str(t)])(subject,:) = NaN(1,M);
                         % if strcmp(paramsTemp{p},'pertSizePercTask')
-                        %     values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        %     values(group).(paramsTemp{p}).(cond{c}).( ...
+                        %    ['trial' num2str(t)])(subject, ...
+                        %    1:nPoints)=dataPts(:,p);
                         % else
                         values(group).(paramsTemp{p}).(cond{c}).( ...
                             ['trial' num2str(t)])(subject, ...
@@ -435,7 +488,8 @@ for group = 1:Ngroups
 
                 % 2) average across subjuects within bins
 
-                %Find (running) averages and standard deviations for bin data
+                %Find (running) averages and standard deviations for bin
+                %data
                 binwidthNew = binwidth;
                 numVals     = size(allValues,2);
                 if binwidth > numVals
@@ -552,8 +606,8 @@ for group = 1:Ngroups
                     num2str(t)]), NaN(1,afterTrialPad)];
 
 
-               %                 condLength=length(y);
-%                 x=Xstart:Xstart+condLength-1;
+                % condLength=length(y);
+                % x=Xstart:Xstart+condLength-1;
 
                 if isempty(alignIni)
                     condLength = length(y);
@@ -587,7 +641,7 @@ for group = 1:Ngroups
                 else
                     biofeedback = [];
                 end
-          
+
                 if indivFlag %plotting all individual subjects
                     nSubs    = length(adaptDataList{group});
                     subjects = cell(1,nSubs);
@@ -617,7 +671,9 @@ for group = 1:Ngroups
                             ['trial' num2str(t)])(subInd,:), ...
                             NaN(1,afterTrialPad)];
                         %%to plot as dots:
-                        %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
+                        %plot(x,y_ind,'o','MarkerSize',3, ...
+                        %    'MarkerEdgeColor',colorOrder(subInd,:), ...
+                        %    'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
                         Li{group}(s) = ...
                             plot(x,y_indiv(1:length(x)),lineOrder{g}, ...
@@ -756,7 +812,8 @@ for group = 1:Ngroups
                         % elseif ~(size(params,1)>1) && ...
                         %    ~isempty(biofeedback)
                         %     color=colorOrder(colorIdxBounded(g),:)./Cdiv;
-                        %     [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
+                        %     [Pa, Li{g}]=nanJackKnife(x,y,E,color, ...
+                        %    color+0.5.*abs(color-1),Opacity,w);
                         %     %set(Li{g},'Clipping','off')
                         %     H=get(Li{g},'Parent');
                         %     load([adaptDataList{g}{1,1}])
@@ -785,12 +842,16 @@ for group = 1:Ngroups
                 axis tight
                 %if isempty(alignEnd)
                 %    line([lineX; lineX],ylim,'color','k')
-                %else %When plotting data aligned to end, only put a vertical line for actual condition end
+                %else %When plotting data aligned to end, ...
+                %    only put a vertical line for actual condition end
                 %    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
                 %end
                 xticks = lineX+diff([lineX Xstart])./2;
 
-                %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
+                %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart], ...
+                %    'Xtick', xticks, 'Xticklabel', ...
+                %    adaptData.metaData.conditionName( ...
+                %    adaptData.getConditionIdxsFromName(conditions)))
                 if ~isempty(alignEnd)
 
                     xticks = [[0 lineX(3:2:end)];xticks(1:2:end)];
@@ -809,7 +870,8 @@ for group = 1:Ngroups
                     xtl = adaptData.metaData.conditionName( ...
                         adaptData.getConditionIdxsFromName(conditions));
                 end
-                %                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
+                %                 set(gca,'fontsize',axesFontSize, ...
+                %    'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
                 %h=refline(0,0);
                 %set(h,'color','k')
             end

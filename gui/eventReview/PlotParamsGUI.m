@@ -36,6 +36,19 @@ end
 %% --- Executes just before PlotParamsGUI is made visible.
 
 function PlotParamsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
+%PLOTPARAMSGUI_OPENINGFCN Initialize GUI state before it is shown.
+%
+%   Positions the window at the bottom center of the screen, colors the 17
+% color-order swatches and fills the color-order menu from the MAT files in
+% the Plotting Colors folder.
+%
+% Inputs:
+%   hObject   - handle to the figure
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%   varargin  - command line arguments to PlotParamsGUI (see VARARGIN)
+%
+% Toolbox Dependencies: None
 
 handles.output = hObject;
 
@@ -80,14 +93,32 @@ function varargout = PlotParamsGUI_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 end
 
-%% --------------------------Selecting Plot Type:----------------------------------
+%% ----------------------Selecting Plot Type:------------------------
 
 % --- Executes when selected object is changed in plotTypePanel.
 function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)
+%PLOTTYPEPANEL_SELECTIONCHANGEFCN Enable the controls of a plot type.
+%
+%   Disables all option controls, then enables those used by the selected
+% plot type (time course, early/late bars, scatter, epoch bars or the two
+% correlation types), sets the maximum number of selectable parameters and
+% conditions, and enables the plot button. The epoch-based types call
+% getResults on the loaded study to list the available epochs.
+%
+% Inputs:
+%   hObject   - handle to the plot type panel
+%   eventdata - structure with the NewValue field, the selected radio button
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also GETRESULTS, PLOTBUTTON_CALLBACK.
+
 % hObject    handle to the selected object in plotTypePanel
 % eventdata  structure with the following fields (see UIBUTTONGROUP)
 %	EventName: string 'SelectionChanged' (read only)
-%	OldValue: handle of the previously selected object or empty if none was selected
+%	OldValue: handle of the previously selected object or empty if
+%	          none was selected
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -193,7 +224,8 @@ if ~isempty(get(hObject, 'Value'))
     % %populate condition listbox (All possible conditions)
     %     conditions={};
     %     for g=1:length(groups)
-    %     conditions=[conditions handles.Study.(groups{g}).getCommonConditions];
+    %     conditions=[conditions ...
+    %    handles.Study.(groups{g}).getCommonConditions];
     %     end
     %     conds=unique(conditions,'stable');
     %     set(handles.conditionList,'String',conds')
@@ -239,6 +271,21 @@ end
 
 % --- Executes on selection change in subjectList.
 function subjectList_Callback(hObject, eventdata, handles)
+%SUBJECTLIST_CALLBACK Update the lists from the selected subjects.
+%
+%   When subjects are selected and no group is, restricts the condition and
+% parameter lists to those common to the selected subjects and keeps the
+% previous selections that are still available. Clears the lists when no
+% subject is selected.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also GROUPLIST_CALLBACK.
 
 if isempty(get(handles.groupList, 'Value'))
     %only enter if no groups are selected but at least one subjects is
@@ -303,6 +350,18 @@ end
 
 % --- Executes on selection change in parameterList.
 function parameterList_Callback(hObject, eventdata, handles)
+%PARAMETERLIST_CALLBACK Limit the selected parameters to the maximum.
+%
+%   Shows the description of a parameter on double click, and keeps the
+% number of selected parameters within the Max property of the list by
+% dropping the oldest selections.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
 
 
 values=get(hObject,'Value');
@@ -332,6 +391,20 @@ end
 
 % --- Executes on selection change in conditionList.
 function conditionList_Callback(hObject, eventdata, handles)
+%CONDITIONLIST_CALLBACK Limit the selected conditions to the maximum.
+%
+%   Keeps the number of selected conditions within the Max property of the
+% list by dropping the oldest selections. For time-course plots, mirrors the
+% selected conditions into the list used to mark individual trials and keeps
+% that list's previous selections.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+
 values=get(hObject,'Value');
 newVals=values(~ismember(values,handles.paramVals));
 handles.paramVals=values(ismember(values,handles.paramVals));
@@ -344,7 +417,8 @@ else
 end
 set(hObject,'Value',handles.paramVals);
 
-%add selected conditions to list for plotting individual trials (only for time course)
+%add selected conditions to list for plotting individual trials (only for
+%time course)
 if handles.plotType==1
     conditionSubContents = get(handles.conditionSubList, 'String');
     selectedSubConds     = ...
@@ -363,7 +437,8 @@ end
 
 function binEdit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of binEdit as text
-%        str2double(get(hObject,'String')) returns contents of binEdit as a double
+%        str2double(get(hObject,'String')) returns contents of binEdit as a
+%        double
 end
 
 
@@ -380,8 +455,10 @@ end
 
 % --- Executes on selection change in conditionSubList.
 function conditionSubList_Callback(hObject, eventdata, handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns conditionSubList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from conditionSubList
+% Hints: contents = cellstr(get(hObject,'String')) returns
+%        conditionSubList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from
+%        conditionSubList
 end
 
 function regExpBox_Callback(hObject, eventdata, handles)
@@ -404,18 +481,21 @@ end
 
 function earlyNumPts_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of earlyNumPts as text
-%        str2double(get(hObject,'String')) returns contents of earlyNumPts as a double
+%        str2double(get(hObject,'String')) returns contents of earlyNumPts
+%        as a double
 end
 
 function lateNumPts_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of lateNumPts as text
-%        str2double(get(hObject,'String')) returns contents of lateNumPts as a double
+%        str2double(get(hObject,'String')) returns contents of lateNumPts as
+%        a double
 end
 
 
 function exptLastNumPts_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of exptLastNumPts as text
-%        str2double(get(hObject,'String')) returns contents of exptLastNumPts as a double
+%        str2double(get(hObject,'String')) returns contents of
+%        exptLastNumPts as a double
 end
 
 % --- Executes on button press in removeBiasCheck.
@@ -435,12 +515,14 @@ end
 
 function AlignEnd2_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of AlignEnd2 as text
-%        str2double(get(hObject,'String')) returns contents of AlignEnd2 as a double
+%        str2double(get(hObject,'String')) returns contents of AlignEnd2 as
+%        a double
 end
 
 function InitiAlig_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of InitiAlig as text
-%        str2double(get(hObject,'String')) returns contents of InitiAlig as a double
+%        str2double(get(hObject,'String')) returns contents of InitiAlig as
+%        a double
 
 end
 
@@ -450,7 +532,7 @@ function saveTool_ClickedCallback(hObject, eventdata, handles)
 end
 
 function openTool_ClickedCallback(hObject, eventdata, handles)
-%OPENTOOL_CLICKEDCALLBACK  Opens a study file and populates group/subject lists.
+%OPENTOOL_CLICKEDCALLBACK Open a study file and fill the group lists.
 %
 %   Inputs:
 %     hObject   - handle to openTool (see GCBO)
@@ -470,7 +552,8 @@ if handles.filename ~= 0
     delete(child(1));
     drawnow
 
-    %.mat file can only contain 1 variable: structure with groupAdaptationData objects
+    %.mat file can only contain 1 variable: structure with
+    %groupAdaptationData objects
     loaded = load([handles.dir handles.filename]);
     close(msgHandle)
 
@@ -684,6 +767,20 @@ end
 
 % --- Executes on selection change in colorMenu.
 function colorMenu_Callback(hObject, eventdata, handles)
+%COLORMENU_CALLBACK Load a saved color order into the swatches.
+%
+%   Loads the selected MAT file from the Plotting Colors folder and, when it
+% holds an N x 3 matrix of RGB values in [0 1], shows its first 17 colors in
+% the swatches.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also SAVECOLORSBUTTON_CALLBACK.
 
 colorPath  = which('PlotParamsGUI');
 colorPath  = strrep(colorPath, 'PlotParamsGUI.m', 'Plotting Colors');
@@ -712,6 +809,21 @@ end
 
 % --- Executes on button press in saveColorsButton.
 function saveColorsButton_Callback(hObject, eventdata, handles)
+%SAVECOLORSBUTTON_CALLBACK Save the swatch colors as a color order.
+%
+%   Asks for a name with a dialog, saves the 17 swatch colors as variable
+% colorOrder in that MAT file in the Plotting Colors folder, and refreshes
+% the color-order menu.
+%
+% Inputs:
+%   hObject   - handle to the control that triggered the callback
+%   eventdata - reserved for future MATLAB versions
+%   handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies: None
+%
+% See also COLORMENU_CALLBACK.
+
 % hObject    handle to saveColorsButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -917,7 +1029,8 @@ end
 end
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over regExpBox.
+% --- Otherwise, executes on mouse press in 5 pixel border or over
+% regExpBox.
 function regExpBox_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to regExpBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB

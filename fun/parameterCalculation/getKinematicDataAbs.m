@@ -83,12 +83,15 @@ rotatedMarkerData = markerData.translate(-squeeze(refMarker3D)) ...
 
 %% Compute Absolute Ankle Positions
 %rotate coordinates to be aligned with walking direction
-%sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
-%fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;
+%sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2), ...
+%    [sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
+%fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2), ...
+%    [fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;
 
 %avgRotation = (sRotation+fRotation)./2;
 
-%rotationMatrix = [cosd(avgRotation) -sind(avgRotation) 0; sind(avgRotation) cosd(avgRotation) 0; 0 0 1];
+%rotationMatrix = [cosd(avgRotation) -sind(avgRotation) 0; ...
+%    sind(avgRotation) cosd(avgRotation) 0; 0 0 1];
 %sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';
 %fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';
 %sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
