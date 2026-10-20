@@ -30,6 +30,10 @@ function dataPoints = getEarlyLateData_v2(this, labels, conds, ...
 %   dataPoints - cell array with one cell per entry of numberOfStrides,
 %                each conditions x strides x labels
 %
+% NOTE: no repo caller. The live implementation is GETEARLYLATEDATA_V2
+%       (getEarlyLateData_v2.m), superseded by it; this file is kept for
+%       reference.
+%
 % Toolbox Dependencies: None
 %
 % Example:

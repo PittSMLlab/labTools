@@ -16,6 +16,11 @@
 % Side effects: warns 'Loading OLD figuresColorMap' (deprecated copy); loads
 %   CoolWarmMap.mat (must be on the path).
 %
+% NOTE: with genpath this older copy is first on the path and shadows
+%       colors/figuresColorMap.m (checked with `which -all` in MATLAB
+%       R2024a). The copies differ in condColors, and this one warns on
+%       every run; the copy a caller gets depends on the path order.
+%
 % Toolbox Dependencies: None
 %
 % See also PRETTYBARPLOT, NICEMAP.

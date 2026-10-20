@@ -18,6 +18,9 @@ function plotHandles = plotCell(strides, field, ampNorm, ...
 % Outputs:
 %   plotHandles - updated plot handles
 %
+% NOTE: superseded by PLOTCELL (strideData.m calls that one). This file
+%       is a stub with no repo caller.
+%
 % Toolbox Dependencies: None
 %
 % See also PLOTCELLAVG, CELL2MAT.

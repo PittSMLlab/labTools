@@ -15,6 +15,10 @@
 %
 % Side effects: loads CoolWarmMap.mat (must be on the path).
 %
+% NOTE: shadowed by the older copy fun/plotting/figuresColorMap.m, which
+%       is first on a genpath (checked with `which -all` in MATLAB
+%       R2024a); the copies differ in condColors.
+%
 % Toolbox Dependencies: None
 %
 % See also PRETTYBARPLOT, NICEMAP.

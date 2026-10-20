@@ -22,6 +22,10 @@ function [h, plotHandles] = plot(this, h, labels, plotHandles, events, ...
 %
 %   Note: Alternative plot - all traces go in different axes
 %
+% NOTE: shadowed. labTimeSeries.m defines PLOT inline, and that
+%       definition takes precedence over this file. Keep both in sync
+%       until the lab decides which copy to keep.
+%
 % Toolbox Dependencies: None
 %
 % See also BILATERALPLOT, PLOTALIGNED.

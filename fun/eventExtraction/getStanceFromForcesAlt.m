@@ -15,6 +15,9 @@ function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 %
+% NOTE: no repo caller; GETEVENTSFROMFORCES uses GETSTANCEFROMFORCES (a
+%       threshold-based method; this one is derivative-based).
+%
 % Toolbox Dependencies:
 %   Signal Processing Toolbox (medfilt1; butter via lowpassfiltering2)
 %
