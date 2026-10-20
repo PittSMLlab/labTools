@@ -2,10 +2,33 @@ function [newThis,baseValues,typeList] = ...
     removeBiasV3(this,refConditions,normalizeFlag)
 %REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).
 %
-%TO DO: see what happens when 2+ conditions of the same type are entered
-%TO DO: see what happens when 0 conditions are given for a certain type
-%TODO: implement a check of conditions such that only one condition per
-%trialType is accepted
+%   [newThis,baseValues,typeList] = REMOVEBIASV3(this,refConditions,
+% normalizeFlag) subtracts from, or divides, every parameter of all trials
+% of a trial type by its mean over the last 40 strides of that type's
+% baseline condition, exempting the very last 5 and the first 10 strides and
+% ignoring bad strides. Without refConditions, the baseline is the condition
+% whose name contains 'base' and the trial type. Prints a warning (and the
+% candidates) if several baseline conditions are found and uses the first;
+% trial types without a baseline are left unchanged. Columns that must not
+% change (bad, good, trial, initTime, finalTime, direction, the
+% stride-quality reason columns, triageOutlier and HandrailHolding) are
+% copied unchanged.
+%
+% Inputs:
+%   this           - adaptationData object
+%   refConditions  - baseline condition name(s) or number(s), one per trial
+%                    type; [] searches by name (default [])
+%   normalizeFlag  - 0 subtracts the baseline, 1 divides by it (default 0)
+%
+% Outputs:
+%   newThis    - adaptationData object with the bias removed
+%   baseValues - types x parameters baseline values (NaN if none)
+%   typeList   - cell array of the trial types, in the order of baseValues
+%
+% Toolbox Dependencies: None
+%
+% See also REMOVEBIASV4, ADAPTATIONDATA.REMOVEBIAS, GETEARLYLATEDATA_V2,
+%   GETSTRIDEQUALITYCONFIG.
 
 conds = this.metaData.conditionName;
 if nargin < 2 || isempty(refConditions)

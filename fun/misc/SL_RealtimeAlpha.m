@@ -1,10 +1,12 @@
-%% SL Realtime Alpha — Step Length, Cadence, and Alpha Computation
-% author: WDA
-% date: 4/11/2016
-% purpose: Extended version of SL_Realtime that also computes alpha
-%   (hip-to-ankle distance) and X (cross-limb hip-to-ankle) parameters.
-%   Designed to be run by a Nexus 2 pipeline shortly after c3d file
-%   creation.
+%SL_REALTIMEALPHA Compute step length, cadence, alpha and X of a trial.
+%
+%   Extended version of SL_REALTIME that also computes alpha (hip-to-ankle
+% distance) and X (cross-limb hip-to-ankle). Script for a Nexus 2
+% pipeline, run shortly after c3d file creation; Nexus must be open,
+% offline, with the desired trial loaded. Shows figures and a message box
+% with the means and standard deviations, and saves an RTdata structure
+% to '<path><date>_<trial>_SL_Realtime.mat' next to the c3d file (the
+% same name SL_REALTIME uses).
 %
 % Parameters computed:
 %   1. Average Step Length (ANK-ANK distance)
@@ -12,6 +14,11 @@
 %   3. Step time
 %   4. Alpha (hip COM to leading ankle at heel strike)
 %   5. X (cross-limb alpha)
+%
+% Toolbox Dependencies:
+%   None (needs the Vicon Nexus SDK and BTK)
+%
+% See also SL_REALTIME.
 
 %% Load Data
 

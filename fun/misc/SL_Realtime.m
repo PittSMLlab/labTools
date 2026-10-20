@@ -1,14 +1,21 @@
-%% SL Realtime — Step Length & Cadence Computation
-% author: WDA
-% date: 4/11/2016
-% purpose: Designed to be run by a Nexus 2 pipeline shortly after c3d
-%   file creation. Opens the current trial and quickly computes step
-%   length, cadence, and step time without initializing labTools classes.
+%SL_REALTIME Compute step length, cadence and step time of a Nexus trial.
+%
+%   Script for a Nexus 2 pipeline, run shortly after c3d file creation.
+% Opens the current trial and quickly computes the parameters below
+% without initializing labTools classes. Nexus must be open, offline,
+% with the desired trial loaded. Shows two figures and a message box with
+% the means and standard deviations, and saves an RTdata structure to
+% '<path><date>_<trial>_SL_Realtime.mat' next to the c3d file.
 %
 % Parameters computed:
 %   1. Average Step Length (ANK-ANK distance)
 %   2. Cadence
 %   3. Step time
+%
+% Toolbox Dependencies:
+%   None (needs the Vicon Nexus SDK and BTK)
+%
+% See also SL_REALTIMEALPHA.
 
 %% Load Data
 

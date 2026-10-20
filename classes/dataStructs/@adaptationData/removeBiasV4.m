@@ -3,10 +3,37 @@ function [newThis,baseValues,typeList] = ...
     numStrides,medianFlag)
 %REMOVEBIASV4 Remove the baseline of every parameter (last N strides).
 %
-%TO DO: see what happens when 2+ conditions of the same type are entered
-%TO DO: see what happens when 0 conditions are given for a certain type
-%TODO: implement a check of conditions such that only one condition per
-%trialType is accepted
+%   [newThis,baseValues,typeList] = REMOVEBIASV4(this,refConditions,
+% normalizeFlag,padWithNaNFlag,numStrides,medianFlag) is REMOVEBIASV3 with a
+% selectable baseline window and statistic: the baseline is the mean (or
+% median) of every parameter over the last |numStrides| good strides of the
+% baseline condition. This is the implementation behind
+% ADAPTATIONDATA.REMOVEBIAS. Without refConditions, the baseline is the
+% condition whose name contains 'base' and the trial type (found with
+% GETCONDITIONSTHATMATCHV2). Columns that must not change (bad, good, trial,
+% initTime, finalTime, direction, the stride-quality reason columns,
+% triageOutlier and HandrailHolding) are copied unchanged.
+%
+% Inputs:
+%   this           - adaptationData object
+%   refConditions  - baseline condition name(s) or number(s), one per trial
+%                    type; [] searches by name (default [])
+%   normalizeFlag  - 0 subtracts the baseline, 1 divides by it (default 0)
+%   padWithNaNFlag - passed to GETEARLYLATEDATA_V2 (default false)
+%   numStrides     - negative: use the last |numStrides| strides, exempting
+%                    the very last 5 and the first 1; -100 (H-reflex) uses
+%                    them all (default -40)
+%   medianFlag     - 1 uses the median, otherwise the mean (default 0)
+%
+% Outputs:
+%   newThis    - adaptationData object with the bias removed
+%   baseValues - types x parameters baseline values (NaN if none)
+%   typeList   - cell array of the trial types, in the order of baseValues
+%
+% Toolbox Dependencies: None
+%
+% See also REMOVEBIASV3, ADAPTATIONDATA.REMOVEBIAS, GETEARLYLATEDATA_V2,
+%   GETSTRIDEQUALITYCONFIG.
 
 conds = this.metaData.conditionName;
 if nargin < 2 || isempty(refConditions)
@@ -70,7 +97,7 @@ for itype = 1:length(types)
         end
         baseCond = refConditions{itype};
     end
-    
+
     %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
         % OG and TM are treated the same: the baseline is the last

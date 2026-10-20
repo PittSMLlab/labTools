@@ -23,20 +23,6 @@ function [newThis,baseValues,typeList] = ...
 % See also REMOVEBIASV3, REMOVEBIASV4.
 
 error('This function has been deprecated, please use removeBiasV3 instead')
-% removeBias('condition') or removeBias({'Condition1','Condition2',...})
-% removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
-% from each trial that is the same type as the condition entered. If no
-% condition is specified, then the condition name that contains both the
-% type string and the string 'base' is used as the baseline condition.
-%INPUT:
-%this: adaptationData object
-%conditions: list of conditions to be used as reference for bias removal,
-%if none given, will search for conditions that contain the string 'base'
-%
-%TO DO: see what happens when 2+ conditions of the same type are entered
-%TO DO: see what happens when 0 conditions are given for a certain type
-%TODO: implement a check of conditions such that only one condition per
-%trialType is accepted
 
 % TODO: see what happens when 2+ conditions of the same type are entered
 % TODO: see what happens when 0 conditions are given for a certain type
@@ -66,7 +52,9 @@ if nargin < 3 || isempty(normalizeFlag)
 end
 
 %if length(conditions)>1
-%    error('RemoveBiasV2 cannot be called with multiple conditions because of known bug. To remove bias on multiple conditions, call on it on a loop, passing a single condition')
+%    error('RemoveBiasV2 cannot be called with multiple conditions because
+%    of known bug. To remove bias on multiple conditions, call on it on a
+%    loop, passing a single condition')
 %end
 
 trialsInCond = this.metaData.trialsInCondition;
@@ -108,7 +96,7 @@ for itype = 1:length(types)
     end
     %%% ------------------------------------------------------------------
 
-    %Remove baseline tendencies from all itype trials   
+    %Remove baseline tendencies from all itype trials
     if ~isempty(baseTrials)
         switch upper(types{itype})
             case 'OG'
@@ -125,7 +113,7 @@ for itype = 1:length(types)
                             'for this adaptationData object.'])
                     end
                 end %Nop for normalizeBias in OG trials
-            
+
             otherwise %'TM' and any other
                 baseInds = ...
                     cell2mat(this.removeBadStrides.data.indsInTrial( ...
@@ -143,8 +131,9 @@ for itype = 1:length(types)
 
                 if normalizeFlag == 0
                     %added lines to ensure that if certain parameters never
-                    %have a baseline to remove the bias, they are not assigned
-                    %as NaN from the bsxfun @minus. 
+                    %have a baseline to remove the bias, they are not
+                    %assigned
+                    %as NaN from the bsxfun @minus.
                     %data(isnan(data))=-100000;
                     %do not subtract a bias if there is no bias to remove
                     base(isnan(base)) = 0;
