@@ -270,10 +270,9 @@ without ramp cues stay whole.
 Standing intervals belong to no condition, and the spoken "stop" has
 no datlog row. Strides keep their whole-trial parameters and go to the
 segment containing their `initTime`: 2–3 ramp and 9–13 SS strides per
-bout (the extras are `bad` stopping strides). The flipped-leg check
-runs before the split, and its `'adapt'` fallback picks the tied
-`'Pre-Adapt Fast'` condition, which can come out `indeterminate`; for
-this study run `detectFlippedLegs(adaptData, [], 'Adapt 1')` by hand.
+bout (the extras are `bad` stopping strides). A flipped-leg check
+exists only as an unmerged stash; until it is merged, nothing checks
+the leg assignment before the split.
 
 **Never recompute the split `<ID>.mat`** (recomputing the short pieces
 loses the stride at each cut). Recompute the unsplit copy

@@ -1,5 +1,8 @@
 # Contributing to labTools
 
+<!-- Keep in sync with .claude/rules/matlab-style.md (the compressed
+checklist Claude Code loads for .m files). -->
+
 Thank you for contributing to labTools. This guide explains coding
 conventions, documentation standards, and architectural patterns that
 keep the codebase consistent and maintainable. Please read it before
