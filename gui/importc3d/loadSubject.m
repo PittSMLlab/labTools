@@ -18,6 +18,8 @@ function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)
 % FIXME in the code); writes <ID>RAW.mat, <ID>.mat, and <ID>params.mat to
 % info.save_folder, the datlog sync figures to its DatlogSyncRes folder,
 % and, for split sessions, the unsplit <ID>OriginalCondName copies.
+% Every file is overwritten silently on a re-run, <ID>RAW.mat included,
+% except <ID>loading.log, which is appended to (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   info       - struct, session information returned by GetInfoGUI
@@ -293,7 +295,9 @@ function adaptData = saveSplitBoutFiles(expData, saveFolder, subjectID)
 % uses), then saves the split expData as '<ID>.mat' and rebuilds
 % '<ID>params.mat' from it. To recompute parameters later, start from
 % the OriginalCondName copy and split again (see
-% SPLITSPINALADAPTBOUTCONDS).
+% SPLITSPINALADAPTBOUTCONDS). The copies and the saves silently overwrite
+% existing files, so a second call replaces the unsplit copies with split
+% data (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   expData    - experimentData split by SPLITSPINALADAPTBOUTCONDS

@@ -5,7 +5,9 @@ function fig = plotSnippets(times, snippets, yLabels, titles, ...
 %   Plot the H-reflex snippets for desired muscles or forces (if desired)
 % with the window bounds for M-wave and H-wave indicated by vertical lines.
 % A leg with no snippets (i.e., a leg that was not stimulated) is skipped
-% rather than plot as an empty tile.
+% rather than plot as an empty tile. When pathFig is nonempty, also writes
+% <id>_HreflexSnippets_Trial<n> as .fig and .png there, silently
+% overwriting existing files (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   times    - number of samples x 1 array of time in seconds with 0

@@ -10,6 +10,10 @@ function [allData, sync, lagInSamplesA, lagInSamples, ...
 % saves a diagnostic figure. Warns and prompts the user when mismatch
 % exceeds 5%.
 %
+%   Side effects: writes 'Trial N Synchronization' as .fig, .eps, and .png
+% (via saveFig) under saveFolder/EMGSyncFile/{fig,eps,png}, silently
+% overwriting same-named files (see DATA_OUTPUTS.md).
+%
 %   When no sync channels are present, allData is returned unchanged
 % and all lag/scale outputs default to their neutral values (0 or NaN).
 %

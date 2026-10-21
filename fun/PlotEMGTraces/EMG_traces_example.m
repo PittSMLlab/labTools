@@ -17,7 +17,8 @@
 % Side effects: loads <strSess>.mat when expData is not in the workspace;
 %   opens one figure per section and saves it as .fig and .png in the
 %   current folder (<strSess>_EMG_Normalized_Base, ..._BaseTMOGFast,
-%   ..._BaseAdapt).
+%   ..._BaseAdapt), silently overwriting existing files (see
+%   DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
 %   plotEMGtraces)

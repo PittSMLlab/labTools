@@ -3,7 +3,10 @@ function updateParams(subjects, eventClass, ignoreMatFlag)
 %
 %   For each subject ID, loads the saved .mat file, recomputes adaptation
 % parameters via recomputeParameters, and overwrites both the .mat and
-% the params.mat files. A progress bar is shown during batch runs.
+% the params.mat files. A progress bar is shown during batch runs. Files
+% are written to the current folder (or a subfolder named for the
+% subject, if one exists) and replaced silently; the .mat file is not
+% saved as -v7.3 (see DATA_OUTPUTS.md).
 %
 %   updateParams(subjects) recomputes parameters for all subjects and
 % overwrites both (subject).mat and (subject)params.mat.

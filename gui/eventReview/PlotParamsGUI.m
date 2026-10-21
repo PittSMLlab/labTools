@@ -812,8 +812,9 @@ function saveColorsButton_Callback(hObject, eventdata, handles)
 %SAVECOLORSBUTTON_CALLBACK Save the swatch colors as a color order.
 %
 %   Asks for a name with a dialog, saves the 17 swatch colors as variable
-% colorOrder in that MAT file in the Plotting Colors folder, and refreshes
-% the color-order menu.
+% colorOrder in that MAT file in the Plotting Colors folder (inside the
+% repo; an existing file of that name is silently overwritten), and
+% refreshes the color-order menu (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   hObject   - handle to the control that triggered the callback

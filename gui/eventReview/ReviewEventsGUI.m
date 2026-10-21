@@ -1022,7 +1022,8 @@ function write_Callback(hObject, eventdata, handles)
 %
 %   Disables the controls, saves expData under its original variable name to
 % the subject MAT file (-v7.3, overwriting it) and regenerates the matching
-% params file with makeDataObj.
+% params file with makeDataObj. Both overwrites are silent and no backup of
+% the previous files is made (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   hObject   - handle to the control that triggered the callback

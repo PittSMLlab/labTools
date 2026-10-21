@@ -7,6 +7,12 @@ classdef PlotHelper
     % regression diagnostic plots, and figure margin tightening.
     % Optional arguments may be passed as [] or NaN to skip them.
     %
+    %   Methods that take saveResAndFigure write <savePath>.fig and .png
+    % (plus Diagnostic or InfluentPointLoc variants where noted) when it is
+    % true. They create no folders and overwrite existing files silently;
+    % only the figures are saved, not the data behind them (see
+    % DATA_OUTPUTS.md).
+    %
     % PlotHelper properties:
     %   colorOrder - default MATLAB colors followed by nine extra colors
     %

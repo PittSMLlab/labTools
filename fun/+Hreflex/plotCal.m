@@ -3,7 +3,9 @@ function fig = plotCal(amplitudesStim, values, yLabel, leg, id, ...
 %PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.
 %
 %   Plot the calibration curve (H-wave and M-wave recruitment or H-to-M
-% ratio) for a single leg.
+% ratio) for a single leg. When pathFig is nonempty, also writes
+% <nameFile>.png and .fig there, silently overwriting existing files (see
+% DATA_OUTPUTS.md).
 %
 % Inputs:
 %   amplitudesStim - 1 x number of stimuli array of stimulation current

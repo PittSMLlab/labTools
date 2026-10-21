@@ -213,6 +213,8 @@ guidata(hObject, handles);
 
 function saveButton_Callback(hObject, eventdata, handles)
 % saveButton_Callback  Saves the assembled study to a MAT file.
+%   Writes studyData (-v7.3) to the file chosen in uiputfile, which asks
+%   before replacing an existing file (see DATA_OUTPUTS.md).
 %
 %   Inputs:
 %     hObject   - handle to saveButton (see GCBO)

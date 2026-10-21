@@ -3,7 +3,9 @@ function changeCondName(subID, oldNames, newNames)
 %
 %   For each subject in SUBID, loads the corresponding params file,
 % replaces every condition name in OLDNAMES with the corresponding
-% name in NEWNAMES, and saves the updated file back to disk.
+% name in NEWNAMES, and saves the updated file back to disk. The params
+% files are read from and silently overwritten in the current folder (see
+% DATA_OUTPUTS.md).
 %
 % Inputs:
 %   subID    - string or cell array of strings; subject ID prefix

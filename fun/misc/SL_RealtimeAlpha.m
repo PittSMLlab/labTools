@@ -6,7 +6,8 @@
 % offline, with the desired trial loaded. Shows figures and a message box
 % with the means and standard deviations, and saves an RTdata structure
 % to '<path><date>_<trial>_SL_Realtime.mat' next to the c3d file (the
-% same name SL_REALTIME uses).
+% same name SL_REALTIME uses, so either script overwrites the other's file
+% for the same trial and day; see DATA_OUTPUTS.md).
 %
 % Parameters computed:
 %   1. Average Step Length (ANK-ANK distance)

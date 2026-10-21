@@ -1431,7 +1431,9 @@ classdef BiofeedbackSLBF_Percp
             % subjectcode is
             % empty.
             %
-            % Side effects: writes the MAT file to the current folder.
+            % Side effects: writes the MAT file to the current folder,
+            % silently overwriting an existing one (see
+            % DATA_OUTPUTS.md).
             %
             % Inputs:
             %   this - session object

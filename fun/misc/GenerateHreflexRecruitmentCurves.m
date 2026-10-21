@@ -16,8 +16,10 @@
 %          amplitudes, fit, and ratios per leg
 %
 % Side effects: shows input, warning, and confirmation dialogs; saves
-%   the answers to <ID>Config<trial>.mat in HreflexCalFigs and reuses
-%   the most recent one as the default. Stops (without error) when the
+%   the answers to <ID>Config<trial>.mat in HreflexCalFigs (rewritten
+%   only when the answers changed) and reuses the most recent one as the
+%   default; figures there are overwritten silently (see DATA_OUTPUTS.md).
+%   Stops (without error) when the
 %   experimenter aborts at the missing-trigger or artifact-check dialog.
 %
 % Toolbox Dependencies: Signal Processing Toolbox (findpeaks, medfilt1)

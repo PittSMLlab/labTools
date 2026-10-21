@@ -8,7 +8,10 @@ function fig = plotStimArtifactPeaks(times, rawEMG, indsPeaks, id, ...
 % the experimenter can verify the indices used for H-reflex snippet
 % alignment before any amplitude is computed. Peaks flagged as weak by
 % HREFLEX.EXTRACTSTIMARTIFACTINDSFROMTRIGGER are drawn distinctly so a
-% disabled stimulator or a detached electrode is visible at a glance.
+% disabled stimulator or a detached electrode is visible at a glance. When
+% pathFig is nonempty, also writes <id>_StimArtifactPeakFinding_Trial<n>
+% as .png and .fig there, silently overwriting existing files (see
+% DATA_OUTPUTS.md).
 %
 % Inputs:
 %   times     - number of samples x 1 array of time in seconds from the

@@ -3,7 +3,8 @@ function batchReProcess(subjects, eventClass)
 %
 %   Loads each subject's RAW.mat file, runs process() with the given
 % event class, and saves both the expData struct and the derived data
-% object to the same location as the RAW file.
+% object to the same location as the RAW file, silently overwriting
+% existing <ID>.mat and <ID>params.mat files (see DATA_OUTPUTS.md).
 %
 %   Example:
 %     batchReProcess({'OG11','OG12','OG13'}, eventClass)

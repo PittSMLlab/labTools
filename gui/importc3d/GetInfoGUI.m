@@ -7,6 +7,11 @@ function varargout = GetInfoGUI(varargin)
 % locations, trial and condition assignments, and EMG channel labels. Refer
 % to in-GUI help text (hover over any field) for field-specific guidance.
 %
+%   Side effects: saves <ID>info.mat to the chosen save folder (asks
+% before reusing an existing ID) and, from the Save As button, a new
+% experiment description .mat in importc3d/ExpDetails (see
+% DATA_OUTPUTS.md).
+%
 %   Outputs:
 %     info - Struct containing all session information entered by the user,
 %            or empty ([]) if the GUI was closed without saving.
@@ -131,6 +136,10 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 %   Outputs:
 %     varargout{1} - info struct populated by the user, or [] if the
 %                    GUI was closed without saving
+%
+%   Writes <ID>info.mat to info.save_folder twice (before and after the
+% trial observations). An existing file triggers a prompt; answering No
+% renames the ID to <ID>_<date>, and Yes overwrites silently.
 
 if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     info = handles.info;
@@ -203,6 +212,7 @@ delete(handles.figure1);
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % figure1_CloseRequestFcn  Prompts to save or discard on window close.
+%   Save writes <ID>info.mat silently, replacing any existing file.
 %
 %   Inputs:
 %     hObject   - handle to figure1 (see GCBO)
@@ -1479,7 +1489,8 @@ end
 % --- Executes on button press in saveExpButton.
 function saveExpButton_Callback(hObject, eventdata, handles)
 % saveExpButton_Callback  Saves the current condition configuration as
-%   a new experiment description file in the ExpDetails directory.
+%   a new experiment description file in the ExpDetails directory
+%   (prompts before overwriting a file of the same name).
 %
 %   Inputs:
 %     hObject   - handle to saveExpButton (see GCBO)

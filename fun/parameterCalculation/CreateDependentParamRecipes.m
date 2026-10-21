@@ -5,7 +5,8 @@
 % table includes a hip contribution entry and phase-average (p),
 % time-integrated (t), and stride-normalized (e) versions of each
 % EMG muscle/side combination. The completed table is saved as
-% DependParamRecipes.mat in the same directory as this script.
+% DependParamRecipes.mat in the same directory as this script, silently
+% overwriting the existing file (see DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies:
 %   None

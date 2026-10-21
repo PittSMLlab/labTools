@@ -9,8 +9,8 @@ function  [expData,rawExpData,adaptData] = reviseExperimentInfo()
 % file is regenerated.
 %
 % Side effects: shows GetInfoGUI; loads <ID>RAW.mat and <ID>.mat from
-%   info.save_folder and overwrites both (-v7.3), then writes the params
-%   file through makeDataObj.
+%   info.save_folder and silently overwrites both (-v7.3), then rewrites
+%   <ID>params.mat through makeDataObj (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   none

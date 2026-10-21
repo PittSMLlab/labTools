@@ -19,7 +19,8 @@ function [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
 % copies <ID>.mat and <ID>params.mat, when present, to
 % <ID>OriginalCondName.mat and <ID>OriginalCondNameparams.mat; saves the
 % new <ID>.mat, <ID>params.mat, and <ID>SeparatedSpeeds (.fig and .png)
-% in resSavePath; opens GRF inspection figures; and displays some
+% in resSavePath, silently overwriting existing files of the same names
+% (see DATA_OUTPUTS.md); opens GRF inspection figures; and displays some
 % intermediate values in the command window.
 %
 % Inputs:

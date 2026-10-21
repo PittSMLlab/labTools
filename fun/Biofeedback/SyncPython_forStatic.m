@@ -12,7 +12,8 @@ function results = SyncPython_forStatic(subject)
 %
 % Side effects: loads <subject>params.mat, <subject>.mat, <subject>RAW.mat
 %   and PytonData#.mat from the current folder; opens many diagnostic
-%   figures; overwrites <subject>params.mat and writes <subject>Pyton2.mat.
+%   figures; silently overwrites <subject>params.mat and writes
+%   <subject>Pyton2.mat in the current folder (see DATA_OUTPUTS.md).
 %
 % Inputs:
 %   subject - subject code, e.g., 'OG103'

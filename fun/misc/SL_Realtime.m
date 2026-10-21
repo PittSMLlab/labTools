@@ -5,7 +5,9 @@
 % without initializing labTools classes. Nexus must be open, offline,
 % with the desired trial loaded. Shows two figures and a message box with
 % the means and standard deviations, and saves an RTdata structure to
-% '<path><date>_<trial>_SL_Realtime.mat' next to the c3d file.
+% '<path><date>_<trial>_SL_Realtime.mat' next to the c3d file; a second run
+% on the same trial on the same day overwrites it silently (see
+% DATA_OUTPUTS.md).
 %
 % Parameters computed:
 %   1. Average Step Length (ANK-ANK distance)

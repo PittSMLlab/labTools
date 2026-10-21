@@ -10,8 +10,9 @@ function addMarkerPair(correctLabel,altLabel)
 %   altLabel     - additional Vicon label to map to CORRECTLABEL
 %
 % Outputs:
-%   None. Overwrites markerLabelKey.mat (the first copy found on the
-%   MATLAB path) with the updated matchedLabels cell array.
+%   None. Silently overwrites markerLabelKey.mat (the first copy found on
+%   the MATLAB path; a tracked repo file shared by all users) with the
+%   updated matchedLabels cell array (see DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies: None
 %

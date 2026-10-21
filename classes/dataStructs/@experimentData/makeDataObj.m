@@ -19,8 +19,10 @@ function adaptData = makeDataObj(this, filename, experimentalFlag, ...
 %                       (optional)
 %
 % Outputs:
-%   adaptData - adaptationData object, saved to present working directory if
-%               filename specified
+%   adaptData - adaptationData object; when filename is specified it is
+%               saved as <filename>params.mat (-v7.3), silently
+%               overwriting an existing file. A bare filename resolves
+%               against the current folder (see DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies: None
 %

@@ -18,7 +18,9 @@ function adaptData = makeDataObjNew(this, filename, experimentalFlag, ...
 %                       (optional)
 %
 % Outputs:
-%   adaptData - adaptationData object
+%   adaptData - adaptationData object; when filename is nonempty it is
+%               also saved as <filename>params.mat (-v7.3), silently
+%               overwriting an existing file (see DATA_OUTPUTS.md)
 %
 % Toolbox Dependencies: None
 %

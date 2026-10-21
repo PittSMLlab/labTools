@@ -7,9 +7,10 @@ function autoRenameDatlog(datlogFolder, viconDataFolder)
 % Trial##.mat. A Vicon trial with no datlog within 1 minute (e.g., a
 % trial started in Vicon without a datlog) is skipped with a warning and
 % keeps no renamed datlog. Before renaming, copies all contents of
-% datlogFolder into a 'datlog-original' subfolder for recovery. The match
-% table (matchResults) is displayed in the command window so the matches
-% can be checked by eye.
+% datlogFolder into a 'datlog-original' subfolder for recovery; copies and
+% renames silently overwrite same-named files (see DATA_OUTPUTS.md). The
+% match table (matchResults) is displayed in the command window so the
+% matches can be checked by eye.
 %
 %   Can be called standalone or by GETTRIALMETADATA when a datlog folder
 % exists but a trial's datlog file cannot be found.

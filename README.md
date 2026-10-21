@@ -59,14 +59,10 @@ through stride-indexed adaptation metrics and group statistics.
    demographics, experiment metadata, C3D file locations,
    trial/condition assignments, and EMG channel labels.
 
-4. After the import completes you will find three `.mat` files in your
-   output directory:
-   - `*RAW.mat` — raw trial data (`experimentData` object,
-     pre-processing)
-   - `*.mat` — processed trial data (`experimentData` object,
-     with gait events and stride parameters)
-   - `*params.mat` — stride-indexed adaptation metrics
-     (`adaptationData` object)
+4. After the import completes, your output directory holds `*RAW.mat`,
+   `*.mat`, and `*params.mat`. Every file the pipeline, GUIs, and
+   scripts write, and whether a re-run overwrites it, is listed in
+   [DATA_OUTPUTS.md](DATA_OUTPUTS.md).
 
 To add a new experiment type to the GetInfoGUI dropdown, or to update
 the Vicon marker label mappings, see
@@ -372,7 +368,7 @@ ReviewEventsGUI
      `calcParameters`.
 7. Press **Mark Save** when finished reviewing a trial, then **Write
    to Disk** to save the corrected `*.mat` and regenerate
-   `*params.mat`.
+   `*params.mat` (see [DATA_OUTPUTS.md](DATA_OUTPUTS.md#4-guis)).
 
 ### `uiCreateStudy` — Study Assembly
 

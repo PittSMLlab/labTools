@@ -16,7 +16,9 @@
 %
 % Side effects: needs a running Vicon Nexus. Overwrites the Nexus
 %   pipeline file 'Reconstruct And Label Test.Pipeline' once per
-%   parameter set, runs it on every trial found, and writes the CSV.
+%   parameter set, runs it on every trial found, and writes the CSV; the
+%   pipeline file and an existing CSV are replaced silently (see
+%   DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies: None (Vicon Nexus SDK; uses allcomb from
 % fun/misc/allcomb)

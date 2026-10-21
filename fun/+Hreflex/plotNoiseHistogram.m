@@ -2,7 +2,10 @@ function fig = plotNoiseHistogram( ...
     amplitudesNoise, leg, id, trialNum, options)
 %PLOTNOISEHISTOGRAM Plot the noise amplitude distribution for the H-reflex.
 %
-%   Plot the H-reflex noise distribution histogram for a single leg.
+%   Plot the H-reflex noise distribution histogram for a single leg. When
+% pathFig is nonempty, also writes <id>_NoiseDistribution_Trial<n>_<leg>
+% as .png and .fig there, silently overwriting existing files (see
+% DATA_OUTPUTS.md).
 %
 % Inputs:
 %   amplitudesNoise - 1 x number of stimuli array of noise amplitudes (mV)

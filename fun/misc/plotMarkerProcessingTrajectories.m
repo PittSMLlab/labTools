@@ -3,7 +3,9 @@ function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)
 %
 %   Iterates over trial paths and runs the OLD or NEW marker processing
 % pipeline on each trial (selected by trial ID prefix), then saves all
-% trajectory results to a .mat file.
+% trajectory results to a .mat file (-v7.3). An existing savePath is
+% silently overwritten, and a failed save only warns (see
+% DATA_OUTPUTS.md).
 %
 % Inputs:
 %   trialPaths - cell array of full trial folder paths

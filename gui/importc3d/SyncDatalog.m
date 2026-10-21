@@ -13,9 +13,10 @@ function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)
 % to trust, or to abort with an error.
 %
 %   Side effects: creates syncImgSavePath if missing and saves one figure
-% per synchronized trial there ('Trial## Sync' as .fig and .png); closes
-% all figures, clears the command window, and clears all variables except
-% its own (a memory workaround, see the FIXME in the code).
+% per synchronized trial there ('Trial## Sync' as .fig and .png), silently
+% overwriting same-named files from an earlier run (see DATA_OUTPUTS.md);
+% closes all figures, clears the command window, and clears all variables
+% except its own (a memory workaround, see the FIXME in the code).
 %
 % Inputs:
 %   rawExpData      - rawExperimentData object with the datlog loaded in

@@ -15,8 +15,9 @@
 % Side effects: changes the current folder to the selected subject
 %   folder; loads <ID>RAW.mat, <ID>.mat, and <ID>params.mat; opens
 %   dialogs, tables, and diagnostic figures; leaves many variables in the
-%   base workspace; overwrites <ID>params.mat with the extended
-%   adaptData.
+%   base workspace; silently overwrites <ID>params.mat (not -v7.3) in the
+%   selected subject folder with the extended adaptData (see
+%   DATA_OUTPUTS.md).
 %
 % Toolbox Dependencies: Signal Processing Toolbox
 %

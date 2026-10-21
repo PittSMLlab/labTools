@@ -12,8 +12,9 @@ function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)
 % Side effects: needs a running Vicon Nexus (a connection is opened when
 %   no vicon object is passed); opens, edits, and saves each trial.
 %   Writes <fig|png>/<marker>_Trial##.fig/.png under a TrajectoryFigures
-%   folder next to the session folder. Errors if the session folder does
-%   not exist.
+%   folder next to the session folder. Each trial is saved in place over
+%   its Nexus file and the figures overwrite same-named ones silently (see
+%   DATA_OUTPUTS.md). Errors if the session folder does not exist.
 %
 % Inputs:
 %   pathSess   - path to the session folder holding the Trial*.x1d files
