@@ -15,7 +15,7 @@ through stride-indexed adaptation metrics and group statistics.
 
 1. [Requirements](#requirements)
 2. [Getting Started](#getting-started)
-3. [Third-Party Libraries](#third-party-libraries)
+3. [External Libraries](#external-libraries)
 4. [Repository Layout](#repository-layout)
 5. [Data Pipeline Overview](#data-pipeline-overview)
 6. [Key Classes](#key-classes)
@@ -116,17 +116,17 @@ labTools/
 │   ├── biomechAnalysis/       % COM, COP, joint torques
 │   ├── EMGanalysis/           % EMG filtering and envelope extraction
 │   ├── plotting/              % Visualization utilities
-│   ├── eventReview/           % Event validation helpers
 │   ├── +dataMotion/           % Namespace: marker/segment utilities
 │   ├── +Hreflex/              % Namespace: H-reflex analysis
 │   ├── +utils/                % Namespace: general utilities
 │   └── ext/                   % Vendored third-party libraries (BTK, pitools, etc.)
 ├── gui/
 │   ├── importc3d/             % c3d2mat and GetInfoGUI (primary entry point)
+│   │   └── ExpDetails/        % Experiment descriptions
 │   ├── createStudy/           % uiCreateStudy — experiment setup
 │   └── eventReview/           % ReviewEventsGUI — event validation; PlotParamsGUI — parameter plotting
-├── ExpDetails/                % Experiment description files (auto-populate GUI)
 ├── example/                   % Example and validation scripts
+├── testing/                   % Feature tests, server validation
 └── doc/                       % Generated HTML documentation (via m2html)
 ```
 
@@ -145,17 +145,8 @@ Raw files (C3D / datalog)
 ```
 
 The pipeline is orchestrated by `c3d2mat` → `loadSubject` →
-`experimentData.process()`. After the initial run, you can reload the
-saved `*.mat` and recompute without re-parsing C3D files:
-
-| Method | What it does |
-|---|---|
-| `recomputeEvents` | Re-detects gait events only |
-| `recomputeParameters` | Recomputes parameters from existing processed data |
-| `flushAndRecomputeParameters` | Full reprocessing from already-loaded data |
-
-`experimentData` is a value class — always capture the return:
-`expData = expData.recomputeParameters()`
+`experimentData.process()`; to rerun parts of it on saved data, see
+[Recompute Workflows](#recompute-workflows).
 
 ### Full Call Chain
 
@@ -171,7 +162,7 @@ c3d2mat
       │    ├── syncEMGData         % EMG inter-PC synchronization
       │    └── rawTrialData(...)
       ├── SyncDatalog
-      ├── experimentData(...)      % [save *RAW.mat]
+      ├── experimentData(...)      % [save <ID>RAW.mat]
       ├── experimentData.process
       │    └── labData.process     % per trial
       │         ├── processEMG
@@ -192,8 +183,8 @@ c3d2mat
       │              └── computePercParameters
       ├── appendEMGNormParameters
       ├── populateNewParamBackToExpData
-      ├── [save *expData.mat]
-      ├── experimentData.makeDataObj  % [save *params.mat]
+      ├── [save <ID>.mat]
+      ├── experimentData.makeDataObj  % [save <ID>params.mat]
       └── splitSpinalAdaptBoutConds   % 'SpinalAdapt' only
 
 % Post-processing:
@@ -255,28 +246,15 @@ detected events.
 and perceptual parameters for each stride. Force parameters
 (`computeForceParameters`) include ~45 labels covering AP braking and
 propulsion, bilateral symmetry, impulse, vertical and mediolateral
-peaks, treadmill incline angle, and handrail holding (`HandrailHolding`
-binary flag + `HandrailForceNorm`/`HandrailForceN` continuous values,
-computed from an instrumented handrail's vertical force channel when
-present — see
-[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#instrumented-handrail-optional)).
-`HandrailHolding` is informational by default; opt into censoring held
-strides with `adaptData.removeHandrailStrides()`.
-
-Every stride is also labeled with WHY it is bad, not just whether:
-`adjudicateStrideQuality` (thresholds centralized in
-`getStrideQualityConfig`) writes per-reason columns
-(`badMissingEvent`, `badDurationOutlier`, `badStartStop`, etc.)
-alongside the aggregate `bad`/`good` pair, plus a non-destructive
-`triageOutlier` review flag. See
-[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#stride-quality-labeling) for
-the full reason schema and how to censor a chosen subset with
-`adaptData.removeStridesByReason(...)`.
+peaks, and treadmill incline angle. Each stride also carries
+per-reason quality labels besides `bad`/`good`. Handrail holding,
+stride-quality labeling, and H-reflex parameters are described in
+[FEATURES.md](FEATURES.md).
 
 ### Bout-Based Trial Splitting (SpinalAdapt)
-For `'SpinalAdapt'` sessions, `loadSubject` also splits every bout
-trial into per-bout ramp/steady-state conditions (`'Adapt 1 SS03'`,
-...); see [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#bout-based-trial-splitting-spinaladapt).
+For `'SpinalAdapt'` sessions, `loadSubject` splits every bout trial
+into per-bout ramp/steady-state conditions; see
+[FEATURES.md](FEATURES.md#spinaladapt-bout-splitting).
 
 ### EMG Analysis
 Raw EMG is processed through amplitude extraction and optional spike
@@ -291,9 +269,19 @@ group-level statistics and plotting.
 
 ### Recompute Workflows
 
-After the initial import, reload the saved `*.mat` and recompute
-without re-parsing C3D files. The three recompute methods are
-summarized in [Data Pipeline Overview](#data-pipeline-overview).
+After the initial import, reload the saved `<ID>.mat` and recompute
+without re-parsing C3D files:
+
+| Method | What it does |
+|---|---|
+| `recomputeEvents` | Re-detects gait events only. Currently errors; use `flushAndRecomputeParameters` |
+| `recomputeParameters` | Recomputes parameters from existing processed data; `eventClass` must match the original run |
+| `flushAndRecomputeParameters` | Discards and recomputes all parameters; use it to change `eventClass` |
+
+`experimentData` is a value class — always capture the return:
+`expData = expData.recomputeParameters()`. These methods write
+nothing; save the result yourself (see
+[DATA_OUTPUTS.md](DATA_OUTPUTS.md)).
 
 `recomputeParameters` accepts optional arguments to narrow scope:
 
@@ -312,7 +300,7 @@ summarized in [Data Pipeline Overview](#data-pipeline-overview).
   L(5)−R(4).
 
 See `example/TestPipelineRecompute.m` for a regression-testing
-template and [TESTING.md](TESTING.md) for a full test matrix.
+template and [TESTING.md](TESTING.md#test-matrix) for the test matrix.
 
 ---
 
@@ -324,13 +312,10 @@ MATLAB GUIs and require no additional toolboxes.
 
 ### `GetInfoGUI` / `c3d2mat` — Session Import
 
-Covered in [Getting Started](#getting-started) step 3. Prompts for
-participant demographics, data file locations, trial/condition
-assignments, and EMG channel labels. The experiment-description
-dropdown is auto-populated from `.mat` files in
-`gui/importc3d/ExpDetails/`. To define a new experiment type, use the
-`Template.m` script in that directory — see
-[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md) for the full workflow.
+Covered in [Getting Started](#getting-started) step 3. The
+experiment-description dropdown lists the `.mat` files in
+`gui/importc3d/ExpDetails/`; to add one, see
+[EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md).
 
 ### `ReviewEventsGUI` — Gait Event Review and Stride Labeling
 
@@ -363,7 +348,7 @@ ReviewEventsGUI
    - Click on a stride in the plot to select it, then press **Label
      Bad** or **Label Good**. This writes only the aggregate `bad`/
      `good` columns (see
-     [EXPERIMENT_SETUP.md](EXPERIMENT_SETUP.md#stride-quality-labeling));
+     [FEATURES.md](FEATURES.md#stride-quality-labeling));
      it does not touch the per-reason columns computed by
      `calcParameters`.
 7. Press **Mark Save** when finished reviewing a trial, then **Write

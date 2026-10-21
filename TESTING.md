@@ -20,7 +20,7 @@ noise are flagged explicitly.
 ### 1. Reference data files
 Keep one short reference session (ideally < 5 trials, < 500 strides)
 on a shared drive or local path. You need two files:
-- `*expData.mat` — the processed `experimentData` object
+- `<ID>.mat` — the processed `experimentData` object
 - `*params.mat` — the reference `adaptationData` output
 
 To create the reference `params.mat` from scratch:
@@ -45,13 +45,12 @@ Choose the test based on what code was changed:
 
 | What changed | Command to run | Notes |
 |---|---|---|
-| Parameter calculation (`fun/parameterCalculation/`) | `expData.recomputeParameters()` | Fastest; recalculates from existing processed data. **eventClass must match the original run.** |
+| Parameter calculation (`fun/parameterCalculation/`) | `expData.recomputeParameters()` | Fastest; same `eventClass` as the original run (Step 2) |
 | One parameter class only (e.g., force) | `expData.recomputeParameters('force')` | Scope-limited recompute |
-| Gait event detection (`fun/eventExtraction/`) | `expData.recomputeEvents()` then `expData.recomputeParameters()` | Events change → parameters change downstream |
-| Raw processing, or changing eventClass | `expData.flushAndRecomputeParameters(eventClass)` | Full reprocessing; `eventClass`: `''` default, `'kin'`, or `'force'` |
+| Gait event detection (`fun/eventExtraction/`), raw processing, or a new `eventClass` | `expData.flushAndRecomputeParameters(eventClass)` | `eventClass`: `''` default, `'kin'`, or `'force'`. `recomputeEvents` currently errors. For event changes, also check one TM, OG, and NIM trial in `ReviewEventsGUI` |
 | Class definitions or full pipeline logic | Re-run `loadSubject` (or `c3d2mat` if `*info.mat` is absent) | Most complete test |
-| Multiple areas | Run the most comprehensive command for the deepest change | When in doubt, use `flushAndRecomputeParameters` |
-| Raw data loading / channel layout | `compareExperimentData` on saved `*expData.mat` or `*RAW.mat` | Checks field presence, sizes, and label ordering without re-running the pipeline |
+| Multiple areas | The command for the deepest change | When in doubt, use `flushAndRecomputeParameters` |
+| Raw data loading / channel layout | `compareExperimentData` on saved `<ID>.mat` or `<ID>RAW.mat` | Checks field presence, sizes, and label ordering without re-running the pipeline |
 
 ---
 
@@ -59,7 +58,7 @@ Choose the test based on what code was changed:
 
 ### Step 1: Load the reference `experimentData`
 ```matlab
-load('path/to/Sub01expData.mat', 'expData')
+load('path/to/Sub01.mat', 'expData')
 ```
 
 ### Step 2: Run the appropriate recompute command
@@ -71,21 +70,17 @@ load('path/to/Sub01expData.mat', 'expData')
 > `flushAndRecomputeParameters` whenever you want to change the gait
 > event detection method.
 
-```matlab
-% NOTE: experimentData is a value class — you must capture the return
-% value, or the recomputed parameters are silently discarded.
+Capture the return value (`experimentData` is a value class; see
+[README.md](README.md#recompute-workflows)):
 
+```matlab
 % Option A — parameter calculation only:
 expData = expData.recomputeParameters();
 
 % Option B — one parameter class only:
 expData = expData.recomputeParameters('force');
 
-% Option C — events + parameters:
-expData = expData.recomputeEvents();
-expData = expData.recomputeParameters();
-
-% Option D — full flush:
+% Option C — events, raw processing, or a new eventClass:
 expData = expData.flushAndRecomputeParameters(eventClass);
 ```
 
@@ -189,7 +184,7 @@ numerical values. It checks structural properties only:
 
 ### Reference file
 
-The reference is a saved `*expData.mat` or `*RAW.mat` produced from
+The reference is a saved `<ID>.mat` or `<ID>RAW.mat` produced from
 a known-good run. Load either directly from a file path or pass an
 object already in the workspace.
 
@@ -202,7 +197,7 @@ loadSubject('path/to/session/Sub01info.mat')
 
 % Step 2 — compare against the reference file:
 report = compareExperimentData( ...
-    'path/to/reference/Sub01expData.mat', ...
+    'path/to/reference/Sub01.mat', ...
     newExpData, ...
     RefName='reference', NewName='after change')
 ```
@@ -271,138 +266,10 @@ This saves substantial time during iterative testing.
 
 ---
 
-## Testing Handrail-Holding Parameters
+## Feature Tests
 
-`example/data/LI16_Trial9_expData.mat` is a `processedTrialData` object
-with real instrumented-handrail channels (`HFx`/`HFy`/`HFz`) already
-present in its `GRFData` — useful as a real-data fixture for testing
-changes to `HandrailHolding`/`HandrailForceNorm`/`HandrailForceN`
-(`computeForceParameters`) without needing your own handrail-collected
-session. Note its `metaData.type` is `'IN'` (incline); handrail
-computation runs regardless of trial type (see
-`EXPERIMENT_SETUP.md`), so no override is needed to exercise it. The
-other, belt-plate force parameters (`FyBS`/`FyPS`/etc.) will still
-read `NaN` on this trial, since those remain gated to `'TM'`-type
-trials — that is expected and unrelated to handrail testing.
-
-To positively confirm the holding threshold logic (rather than relying
-on whatever the reference trial's incidental handrail contact happens
-to be), inject a known force segment directly into the `HFz` channel
-of a copy of `GRFData` — e.g., set a 1–2 second window to a known
-fraction of body weight and the rest to zero — then recompute and
-verify `HandrailHolding` flips for the strides overlapping that
-window, `HandrailForceNorm` matches the injected fraction, and
-`HandrailForceN` matches the fraction times body weight in Newtons.
-Also verify the NaN-guard: on a trial/copy with the `H*` channels
-stripped, confirm `HandrailHolding`/`HandrailForceNorm`/
-`HandrailForceN` are `NaN` for every stride, not `0` (`NaN > threshold`
-evaluates to `false` in MATLAB, so an unguarded comparison would
-silently mislabel "no data" as "not holding").
-
-To test `removeHandrailStrides`, confirm it actually changes the
-stride count on a real `adaptationData` object (value-class objects
-can silently no-op if a returned copy isn't captured) and that the
-default no-`HandrailHolding`-column case returns the object unchanged
-with a warning rather than erroring.
-
----
-
-## Testing Stride-Quality Labeling
-
-`adjudicateStrideQuality` and `flagTriageOutliers`
-(`fun/parameterCalculation/`) are pure functions — numeric/struct in,
-numeric/struct out, no `parameterSeries` dependency — so they can be
-unit-tested directly with synthetic arrays, without any `.mat`
-fixture. This is the primary way to test them; construct an
-`extendedEventTimes`/`strideDuration` matrix by hand (or perturb a
-clean synthetic trial) to exercise each branch independently:
-missing event, disordered events, duration outlier/short/long, TM
-start/stop with and without `singleStanceSpeed` (the empty-input case
-matters — it is exactly what `calcParameters`'s first, provisional
-call passes), OG (no start/stop), and a triage residual injected at a
-known magnitude. Assert the aggregate `bad` equals a hand-computed OR
-of `cfg.defaultBadReasons`.
-
-For an end-to-end smoke test, `example/data/LI16_Trial9_expData.mat`
-(see above) also exercises the refactored `calcParameters` path:
-
-```matlab
-load('example/data/LI16_Trial9_expData.mat')
-load('example/data/C0000_Params.mat')  % same subject; reuse its subData
-out = calcParameters(LI16_Trial9_expData, adaptData.subData, ...
-    '', '', {'basic', 'temporal', 'force'});
-```
-
-**Fixture gaps to be aware of:**
-- This fixture is a single `'IN'`-type trial, so it does not exercise
-  the `badStartStop` (treadmill start/stop) branch — cover that with
-  a synthetic TM case instead.
-- Requesting `'spatial'` on this fixture currently throws inside
-  `computeSpatialParameters` → `getKinematicData` →
-  `extractKinematicDataAtEvents` (a pre-existing marker-data issue on
-  this specific trial, unrelated to and untouched by the stride-
-  quality-labeling change — confirm with `git log`/`git status` on
-  those files before assuming otherwise). Since `triageOutlier` needs
-  spatial parameters, test it with synthetic `paramValues` via
-  `flagTriageOutliers` directly instead of through this fixture.
-- `example/data/C0000_Params.mat` predates the reason-column schema
-  (it was generated by the pre-refactor `calcParameters`), so its
-  `adaptData.data` has only `bad`/`good`, not the per-reason columns.
-  It is still useful for testing `removeBadStrides`,
-  `removeHandrailStrides` (confirms the `noHandrailData` no-op path,
-  since this subject has no handrail column), and `removeBias*`'s
-  updated protected-label list. To test `removeStridesByReason`
-  against real per-reason data, first `recomputeParameters()` a
-  session, or build a minimal synthetic `parameterSeries` (see the
-  next paragraph).
-
-To validate `removeStridesByReason` mechanics precisely (which
-strides get removed/NaN'd for a given reason subset), build a small
-synthetic `parameterSeries` with hand-assigned reason columns —
-reuse any real `adaptationData`'s `metaData`/`subData` to construct
-the wrapping object (`adaptationData(metaData, subData, paramData)`),
-since only the `data` needs to be synthetic. Confirm: (1)
-`removeBadStrides()` matches `removeStridesByReason({'bad'})`
-exactly; (2) `removeHandrailStrides()` matches
-`removeStridesByReason({'bad', 'HandrailHolding'})` exactly; (3) a
-narrow reason subset removes strictly fewer strides than
-`removeBadStrides()` whenever some strides are `bad` for a
-*different*, non-selected reason; (4) an unknown reason label warns
-(`adaptationData:noStrideQualityReason`) and no-ops rather than
-erroring; (5) the `markAsNaNflag=true` path NaN's only the strides
-matching the requested subset, leaving strides that are `bad` for
-other reasons untouched.
-
-When changing anything in `getStrideQualityConfig` (thresholds or the
-reason list), also re-run the `removeBias`/`removeBiasV2`/
-`removeBiasV3`/`removeBiasV4` protected-label check: confirm the
-`bad`/`good`/reason/`triageOutlier`/`HandrailHolding` columns come out
-of `removeBias()` byte-identical to their pre-bias-removal values —
-a column left off the protected list would otherwise have a baseline
-mean silently subtracted from it.
-
-**Stage A regression check (behavior preservation):** since
-`adjudicateStrideQuality`'s aggregate `bad` is designed to reproduce
-the pre-refactor five-criteria formula exactly, confirm this with a
-real before/after comparison rather than code review alone: `git
-stash push -- fun/parameterCalculation/calcParameters.m` to
-temporarily restore the pre-refactor file (this does not affect the
-new, untracked `adjudicateStrideQuality.m`/`getStrideQualityConfig.m`/
-`flagTriageOutliers.m`, since the old `calcParameters.m` never calls
-them), run `calcParameters` and save the `bad` column, `git stash
-pop`, re-run, and diff the two `bad` vectors element-wise with
-`isequal`.
-
----
-
-## SpinalAdapt Bout-Split Tests
-
-`testing/TestSpinalAdaptBoutSegments.m` tests the cue parser on
-synthetic datlogs. `testing/ValidateSpinalAdaptBoutSplitOnServer.m`
-checks real data, read-only and headless: datlogs alone (Part A,
-before import), `params.mat` (Part B), and optionally the real
-splitter on `expData.mat` (Part C). Expect `0 flag(s)`, i.e., no
-zero/one-stride segment and no good stride outside every segment.
+Test recipes for handrail, stride-quality, H-reflex, and SpinalAdapt
+code live with each feature in [FEATURES.md](FEATURES.md).
 
 ---
 
@@ -411,12 +278,4 @@ zero/one-stride segment and no good stride outside every segment.
 - `fun/misc/compareAdaptationData.m` — parameter value comparison
 - `fun/misc/compareExperimentData.m` — structural comparison
 - `example/TestPipelineRecompute.m` — template script
-- `fun/parameterCalculation/getStrideQualityConfig.m` — stride-quality
-  thresholds and reason schema (single source of truth)
-- `fun/parameterCalculation/adjudicateStrideQuality.m` — per-reason and
-  aggregate stride-quality adjudication (pure function)
-- `fun/parameterCalculation/flagTriageOutliers.m` — non-destructive
-  outlier triage flag (pure function)
-- `classes/dataStructs/@adaptationData/removeStridesByReason.m` —
-  reason-subset stride censoring
-- `CLAUDE.md` — repository architecture overview
+- [README.md](README.md#full-call-chain) — pipeline call chain

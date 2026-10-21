@@ -39,7 +39,7 @@ calls.
 | `DatlogSyncRes/Trial##Sync.fig` and `.png` | `SyncDatalog` | `<folder>/DatlogSyncRes` | silent | Folder created if missing. Only when every trial has a datlog |
 | `EMGSyncFile/fig/`, `eps/`, `png/` `Trial N Synchronization.*` | `syncEMGData` through `saveFig` | `<folder>/EMGSyncFile` | silent | 600 dpi; one figure per trial with EMG |
 | `<ID>OriginalCondName.mat`, `<ID>OriginalCondNameparams.mat` | `loadSubject` (SpinalAdapt split step, `copyfile`) | `<folder>` | silent | Copies of the unsplit files. Rerunning the split step on already-split files replaces the unsplit copies with split data |
-| `<ID>.mat`, `<ID>params.mat` (split) | `loadSubject` (SpinalAdapt split step) | `<folder>` | silent | `-v7.3`; replace the unsplit versions. Recompute from `OriginalCondName`, never from these |
+| `<ID>.mat`, `<ID>params.mat` (split) | `loadSubject` (SpinalAdapt split step) | `<folder>` | silent | `-v7.3`; replace the unsplit versions. Never recompute these ([FEATURES.md](FEATURES.md#spinaladapt-bout-splitting)) |
 | `<ID>Separated.mat` (`newExpData`) | `SepCondsInExpByAudioCue` (legacy `SpinalAdaptation`) | `resSavePath` | silent | `-v7.3`; concatenated, so `resSavePath` needs a trailing separator |
 | `<ID>OriginalCondName.mat`, `<ID>OriginalCondNameparams.mat` | `SepCondsInExpByAudioCue` (`copyfile`) | `resSavePath` | silent | Only if the source file exists |
 | `<ID>.mat`, `<ID>params.mat` | `SepCondsInExpByAudioCue` | `resSavePath` | silent | `-v7.3` |

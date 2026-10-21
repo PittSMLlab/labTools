@@ -23,7 +23,7 @@ submitting changes.
 
 ## Where to Put New Code
 
-labTools separates concerns across three layers:
+labTools separates concerns across four layers:
 
 | Layer | Location | Purpose |
 |---|---|---|
@@ -37,18 +37,8 @@ belongs in `fun/`. If it stores or retrieves structured data, it
 belongs in a class. If it reads user input or renders plots driven by
 user interaction, it belongs in `gui/`.
 
-Relevant `fun/` subdirectories:
-
-| Directory | Purpose |
-|---|---|
-| `parameterCalculation/` | Stride-level biomechanical parameters |
-| `eventExtraction/` | Gait event detection (heel-strike, toe-off) |
-| `biomechAnalysis/` | COM/COP, joint torques |
-| `EMGanalysis/` | EMG filtering and envelope extraction |
-| `plotting/` | Visualization utilities |
-| `+dataMotion/` | Namespace: marker and segment utilities |
-| `+Hreflex/` | Namespace: H-reflex analysis |
-| `+utils/` | Namespace: general utilities |
+For the `fun/` subdirectories, see the
+[README repository layout](README.md#repository-layout).
 
 ---
 
@@ -304,8 +294,7 @@ them as clickable hyperlinks in the documentation browser.
 
 ```matlab
 function events = getEventsFromForces(vGRF, sampleRate, options)
-%GETEVENTSfromforces Detect heel-strike and toe-off events from
-% vertical GRF signals.
+%GETEVENTSFROMFORCES Detect heel-strike and toe-off from vertical GRF.
 %
 %   Applies a threshold to the vertical ground-reaction force to
 % identify the onset (heel-strike) and offset (toe-off) of each
@@ -450,28 +439,7 @@ They may diverge from the upstream repositories over time.
 
 ## Testing
 
-labTools has no automated test suite. For detailed guidance on testing
-any code modifications, see [TESTING.md](TESTING.md). The `example/`
-scripts serve as manual integration tests. When making a change:
-
-1. Run the relevant script(s) in `example/` to confirm the pipeline
-   still produces expected output.
-2. Save a copy of the output MAT data files before implementing code
-   changes, and use `compareAdaptationData` and
-   `compareExperimentData` to verify there are no detrimental effects
-   on the output data.
-3. If your change affects gait event detection, load a saved
-   `*.mat` file and call `recomputeEvents`, then open
-   `ReviewEventsGUI` to visually confirm that detected events and
-   bad-stride labels look correct across at least one trial per
-   condition type (TM, OG, NIM).
-4. If your change affects parameter calculation, call
-   `recomputeParameters` and compare the output `adaptationData`
-   object against a known-good baseline (see [TESTING.md](TESTING.md)
-   for the full comparison workflow).
-5. Note that `experimentData` is a **value class** — recompute
-   methods return a modified copy. Always capture the return value:
-
-   ```matlab
-   expData = expData.recomputeParameters();
-   ```
+labTools has no automated test suite. Before and after a change,
+compare pipeline outputs as described in [TESTING.md](TESTING.md);
+the recompute methods are summarized in
+[README.md](README.md#recompute-workflows).
