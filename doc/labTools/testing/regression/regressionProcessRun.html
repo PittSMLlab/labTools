@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionProcessRun</title>
+  <meta name="keywords" content="regressionProcessRun">
+  <meta name="description" content="REGRESSIONPROCESSRUN Process-stage regression: RAW -&gt; process -&gt; params.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionProcessRun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionProcessRun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONPROCESSRUN Process-stage regression: RAW -&gt; process -&gt; params.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionProcessRun(mode, rawFile, eventClass, baselineDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONPROCESSRUN Process-stage regression: RAW -&gt; process -&gt; params.
+
+   Loads the raw experimentData in rawFile (read-only), processes every
+ trial in memory exactly as experimentData.process does (labData.process:
+ processEMG, calcLimbAngles, getEvents, belt speeds, torques/COP,
+ calcParameters), then builds the adaptationData with makeDataObj() (no
+ filename, so nothing is saved). Each raw trial is cleared once
+ processed to bound peak memory. Per trial it records the printed
+ output (warnings without backtraces) and the gait-event matrix, so
+ event changes are caught even when the parameters happen to match.
+   'baseline' saves processParams.mat in baselineDir and repeats the run
+ once to prove it is deterministic; 'compare' checks parameters with
+ COMPAREADAPTATIONDATA (0 Changed) and events/warnings with ISEQUALN.
+ Errors (nonzero exit under matlab -batch) on any difference.
+
+ Inputs:
+   mode        - 'baseline' | 'compare'
+   rawFile     - char, path to the session *RAW.mat (experimentData)
+   eventClass  - char, '' | 'kin' | 'force' (same in every run)
+   baselineDir - char, folder for processParams.mat
+
+ Outputs:
+   none
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionBaselineRun.html" class="code" title="function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONBASELINERUN</a>, <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONCOMPARERUN</a>,
+   <a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">REGRESSIONEVENTSCHECK</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>	COMPAREADAPTATIONDATA Compare two adaptationData objects or files.</li><li><a href="regressionStrictCheck.html" class="code" title="function regressionStrictCheck(report, label)">regressionStrictCheck</a>	REGRESSIONSTRICTCHECK Phase-C gate: unmatched strides and NaN mismatches.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="regressionAll.html" class="code" title="function regressionAll(baseDir, sessionID, eventClass)">regressionAll</a>	REGRESSIONALL Run every regression compare in one go.</li><li><a href="regressionLineCoverage.html" class="code" title="function regressionLineCoverage(outFile, baseDir, sessionID, eventClass)">regressionLineCoverage</a>	REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [adaptData, trialWarnings, trialEvents] = runProcess(rawFile,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionProcessRun(mode, rawFile, eventClass, baselineDir)</a>
+0002 <span class="comment">%REGRESSIONPROCESSRUN Process-stage regression: RAW -&gt; process -&gt; params.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Loads the raw experimentData in rawFile (read-only), processes every</span>
+0005 <span class="comment">% trial in memory exactly as experimentData.process does (labData.process:</span>
+0006 <span class="comment">% processEMG, calcLimbAngles, getEvents, belt speeds, torques/COP,</span>
+0007 <span class="comment">% calcParameters), then builds the adaptationData with makeDataObj() (no</span>
+0008 <span class="comment">% filename, so nothing is saved). Each raw trial is cleared once</span>
+0009 <span class="comment">% processed to bound peak memory. Per trial it records the printed</span>
+0010 <span class="comment">% output (warnings without backtraces) and the gait-event matrix, so</span>
+0011 <span class="comment">% event changes are caught even when the parameters happen to match.</span>
+0012 <span class="comment">%   'baseline' saves processParams.mat in baselineDir and repeats the run</span>
+0013 <span class="comment">% once to prove it is deterministic; 'compare' checks parameters with</span>
+0014 <span class="comment">% COMPAREADAPTATIONDATA (0 Changed) and events/warnings with ISEQUALN.</span>
+0015 <span class="comment">% Errors (nonzero exit under matlab -batch) on any difference.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Inputs:</span>
+0018 <span class="comment">%   mode        - 'baseline' | 'compare'</span>
+0019 <span class="comment">%   rawFile     - char, path to the session *RAW.mat (experimentData)</span>
+0020 <span class="comment">%   eventClass  - char, '' | 'kin' | 'force' (same in every run)</span>
+0021 <span class="comment">%   baselineDir - char, folder for processParams.mat</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Outputs:</span>
+0024 <span class="comment">%   none</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies: None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also REGRESSIONBASELINERUN, REGRESSIONCOMPARERUN,</span>
+0029 <span class="comment">%   REGRESSIONEVENTSCHECK.</span>
+0030 
+0031 arguments
+0032     mode        (1,:) char {mustBeMember(mode, {<span class="string">'baseline'</span>, <span class="string">'compare'</span>})}
+0033     rawFile     (1,:) char
+0034     eventClass  (1,:) char
+0035     baselineDir (1,:) char
+0036 <span class="keyword">end</span>
+0037 
+0038 file = fullfile(baselineDir, <span class="string">'processParams.mat'</span>);
+0039 [adaptData, trialWarnings, trialEvents] = <a href="#_sub1" class="code" title="subfunction [adaptData, trialWarnings, trialEvents] = runProcess(rawFile, ">runProcess</a>(rawFile, <span class="keyword">...</span>
+0040     eventClass);
+0041 <span class="keyword">switch</span> mode
+0042     <span class="keyword">case</span> <span class="string">'baseline'</span>
+0043         meta = struct(<span class="string">'rawFile'</span>, rawFile, <span class="string">'eventClass'</span>, eventClass, <span class="keyword">...</span>
+0044             <span class="string">'created'</span>, char(datetime(<span class="string">'now'</span>)), <span class="string">'matlab'</span>, version);
+0045         save(file, <span class="string">'adaptData'</span>, <span class="string">'trialWarnings'</span>, <span class="string">'trialEvents'</span>, <span class="keyword">...</span>
+0046             <span class="string">'meta'</span>, <span class="string">'-v7.3'</span>);
+0047         fprintf(<span class="string">'PROCESS baseline saved: %s\n'</span>, file);
+0048         [againData, againWarnings, againEvents] = <a href="#_sub1" class="code" title="subfunction [adaptData, trialWarnings, trialEvents] = runProcess(rawFile, ">runProcess</a>( <span class="keyword">...</span>
+0049             rawFile, eventClass);
+0050         report = <a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>(adaptData, againData, <span class="keyword">...</span>
+0051             RefName=<span class="string">'baseline'</span>, NewName=<span class="string">'second process'</span>);
+0052         refWarnings = againWarnings;
+0053         refEvents   = againEvents;
+0054         label       = <span class="string">'determinism'</span>;
+0055     <span class="keyword">case</span> <span class="string">'compare'</span>
+0056         ref = load(file);
+0057         <span class="keyword">if</span> ~strcmp(ref.meta.eventClass, eventClass)
+0058             error(<span class="string">'regressionProcessRun:eventClass'</span>, <span class="keyword">...</span>
+0059                 <span class="string">'Baseline used eventClass ''%s''.'</span>, ref.meta.eventClass);
+0060         <span class="keyword">end</span>
+0061         report = <a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>(file, adaptData, <span class="keyword">...</span>
+0062             RefName=<span class="string">'baseline'</span>, NewName=<span class="string">'current'</span>);
+0063         refWarnings = ref.trialWarnings;
+0064         refEvents   = ref.trialEvents;
+0065         label = <span class="string">'compare'</span>;
+0066 <span class="keyword">end</span>
+0067 warnSame   = isequal(refWarnings, trialWarnings);
+0068 eventsSame = isequaln(refEvents, trialEvents);
+0069 fprintf([<span class="string">'PROCESS %s nChanged = %d | per-trial warnings identical '</span> <span class="keyword">...</span>
+0070     <span class="string">'= %d | per-trial events identical = %d\n'</span>], label, <span class="keyword">...</span>
+0071     report.nChanged, warnSame, eventsSame);
+0072 <span class="keyword">if</span> report.nChanged &gt; 0 || ~warnSame || ~eventsSame
+0073     error(<span class="string">'regressionProcessRun:changed'</span>, <span class="string">'Process-stage %s failed.'</span>, <span class="keyword">...</span>
+0074         label);
+0075 <span class="keyword">end</span>
+0076 <a href="regressionStrictCheck.html" class="code" title="function regressionStrictCheck(report, label)">regressionStrictCheck</a>(report, [<span class="string">'process '</span> label]);
+0077 <span class="keyword">end</span>
+0078 
+0079 <a name="_sub1" href="#_subfunctions" class="code">function [adaptData, trialWarnings, trialEvents] = runProcess(rawFile, </a><span class="keyword">...</span>
+0080     eventClass)
+0081 <span class="comment">%RUNPROCESS Process all trials of the raw session in memory.</span>
+0082 info    = whos(<span class="string">'-file'</span>, rawFile);
+0083 isExp   = strcmp({info.class}, <span class="string">'experimentData'</span>);
+0084 <span class="keyword">if</span> ~any(isExp)
+0085     error(<span class="string">'regressionProcessRun:noExpData'</span>, <span class="keyword">...</span>
+0086         <span class="string">'No experimentData variable in %s.'</span>, rawFile);
+0087 <span class="keyword">end</span>
+0088 varName = info(find(isExp, 1)).name;
+0089 loaded  = load(rawFile, varName);
+0090 rawExp  = loaded.(varName);
+0091 clear loaded
+0092 
+0093 <span class="comment">% NOTE: backtraces off - their stack lines carry repo line numbers</span>
+0094 <span class="comment">% (which style edits shift), so they would differ between runs.</span>
+0095 nTrials       = numel(rawExp.data);
+0096 procData      = cell(1, nTrials);
+0097 trialWarnings = cell(nTrials, 1);
+0098 trialEvents   = cell(nTrials, 1);
+0099 btState       = warning(<span class="string">'off'</span>, <span class="string">'backtrace'</span>);
+0100 restoreBt     = onCleanup(@() warning(btState));
+0101 <span class="keyword">for</span> tr = 1:nTrials
+0102     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawExp.data{tr})
+0103         <span class="keyword">continue</span>
+0104     <span class="keyword">end</span>
+0105     txt = evalc([<span class="string">'procData{tr} = rawExp.data{tr}.process('</span> <span class="keyword">...</span>
+0106         <span class="string">'rawExp.subData, eventClass);'</span>]);
+0107     rawExp.data{tr}    = [];
+0108     trialWarnings{tr}  = strtrim(txt);
+0109     events             = procData{tr}.gaitEvents;
+0110     trialEvents{tr}    = struct(<span class="string">'data'</span>, events.Data, <span class="keyword">...</span>
+0111         <span class="string">'labels'</span>, {events.labels}, <span class="string">'time'</span>, events.Time);
+0112 <span class="keyword">end</span>
+0113 expData   = <a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>(rawExp.metaData, rawExp.subData, procData);
+0114 adaptData = expData.makeDataObj();
+0115 fprintf(<span class="string">'PROCESS done: %d trials, %d strides, %d parameters\n'</span>, <span class="keyword">...</span>
+0116     nnz(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, procData)), size(adaptData.data.Data, 1), <span class="keyword">...</span>
+0117     size(adaptData.data.Data, 2));
+0118 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

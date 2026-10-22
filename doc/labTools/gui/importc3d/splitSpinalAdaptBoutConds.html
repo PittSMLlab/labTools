@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of splitSpinalAdaptBoutConds</title>
+  <meta name="keywords" content="splitSpinalAdaptBoutConds">
+  <meta name="description" content="SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; splitSpinalAdaptBoutConds.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>splitSpinalAdaptBoutConds
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [expData, splitReport] = splitSpinalAdaptBoutConds(expData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.
+
+   Replaces every bout-based trial of a processed SpinalAdapt session
+ with one trial and condition per bout segment -- '&lt;Parent&gt; Ramp01',
+ '&lt;Parent&gt; SS01', ..., e.g., 'Adapt 1 SS03' -- using the datlog cue
+ windows from GETSPINALADAPTBOUTSEGMENTS, shifted onto the Vicon clock
+ by each datlog's dataLogTimeOffsetBest (SYNCDATALOG). Trials without
+ bout cues (6MWT, H-reflex calibration, tied fastest) are kept as they
+ are. Standing intervals between segments are left out.
+
+   Strides are partitioned, not recomputed: each segment keeps the rows
+ of its parent trial's adaptParams whose initTime (slow heel strike)
+ falls inside the segment, so every stride keeps its original
+ parameters (EMG-norm and H-reflex ones included) and none is lost at
+ a boundary. Recomputing on the short pieces would instead drop the
+ stride straddling each cut and flag each piece's last stride
+ badMissingEvent, leaving ramps with about 0-1 good strides. For the
+ same reason, never pass a split experimentData to
+ RECOMPUTEPARAMETERS, FLUSHANDRECOMPUTEPARAMETERS, or
+ CORRECTLEGASSIGNMENT: recompute the unsplit session, then split again
+ (this function refuses an already split session).
+
+   Trials before the first bout trial keep their indices. Later trials
+ are renumbered contiguously in chronological order, and every trial
+ whose index changes has its 'trial' parameter rewritten and
+ '_SplitIdx###' appended to its rawDataFilename, whose trailing digits
+ CALCPARAMETERS reads as the trial number.
+
+ Inputs:
+   expData - processed experimentData whose datlogs were synchronized
+             by SYNCDATALOG (dataLogTimeOffsetBest)
+
+ Outputs:
+   expData     - experimentData with its bout trials split into
+                 per-segment conditions (unchanged if no trial has
+                 bout cues)
+   splitReport - struct with two tables:
+                   segments - one row per new segment: origTrial,
+                              newTrial, condition, bout, segment,
+                              startTime and endTime (s, Vicon trial
+                              time; NaN = trial end), nStrides,
+                              nGoodStrides, endSource
+                   trials   - one row per split trial: origTrial,
+                              condition, nStrides, nUnassigned,
+                              nUnassignedGood (strides that start in a
+                              standing interval, outside all segments)
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">GETSPINALADAPTBOUTSEGMENTS</a>, <a href="SyncDatalog.html" class="code" title="function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)">SYNCDATALOG</a>, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">LOADSUBJECT</a>,
+   <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData,resSavePath, subjectID, eventClass, studyName, muscleLabels,normalizationRefCond, biasRemovalCond)">SEPCONDSINEXPBYAUDIOCUE</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>	GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	LOADSUBJECT Load, process, and save an experimental session from C3D.</li><li><a href="../../../labTools/testing/TestSpinalAdaptBoutSegments.html" class="code" title="">TestSpinalAdaptBoutSegments</a>	TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</li><li><a href="../../../labTools/testing/ValidateSpinalAdaptBoutSplitOnServer.html" class="code" title="">ValidateSpinalAdaptBoutSplitOnServer</a>	ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function trialDatlog = getTrialDatlog(meta, trialData, tr)</a></li><li><a href="#_sub2" class="code">function trialData = reindexTrial(trialData, params, rows, newIdx,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)</a>
+0002 <span class="comment">%SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Replaces every bout-based trial of a processed SpinalAdapt session</span>
+0005 <span class="comment">% with one trial and condition per bout segment -- '&lt;Parent&gt; Ramp01',</span>
+0006 <span class="comment">% '&lt;Parent&gt; SS01', ..., e.g., 'Adapt 1 SS03' -- using the datlog cue</span>
+0007 <span class="comment">% windows from GETSPINALADAPTBOUTSEGMENTS, shifted onto the Vicon clock</span>
+0008 <span class="comment">% by each datlog's dataLogTimeOffsetBest (SYNCDATALOG). Trials without</span>
+0009 <span class="comment">% bout cues (6MWT, H-reflex calibration, tied fastest) are kept as they</span>
+0010 <span class="comment">% are. Standing intervals between segments are left out.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Strides are partitioned, not recomputed: each segment keeps the rows</span>
+0013 <span class="comment">% of its parent trial's adaptParams whose initTime (slow heel strike)</span>
+0014 <span class="comment">% falls inside the segment, so every stride keeps its original</span>
+0015 <span class="comment">% parameters (EMG-norm and H-reflex ones included) and none is lost at</span>
+0016 <span class="comment">% a boundary. Recomputing on the short pieces would instead drop the</span>
+0017 <span class="comment">% stride straddling each cut and flag each piece's last stride</span>
+0018 <span class="comment">% badMissingEvent, leaving ramps with about 0-1 good strides. For the</span>
+0019 <span class="comment">% same reason, never pass a split experimentData to</span>
+0020 <span class="comment">% RECOMPUTEPARAMETERS, FLUSHANDRECOMPUTEPARAMETERS, or</span>
+0021 <span class="comment">% CORRECTLEGASSIGNMENT: recompute the unsplit session, then split again</span>
+0022 <span class="comment">% (this function refuses an already split session).</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   Trials before the first bout trial keep their indices. Later trials</span>
+0025 <span class="comment">% are renumbered contiguously in chronological order, and every trial</span>
+0026 <span class="comment">% whose index changes has its 'trial' parameter rewritten and</span>
+0027 <span class="comment">% '_SplitIdx###' appended to its rawDataFilename, whose trailing digits</span>
+0028 <span class="comment">% CALCPARAMETERS reads as the trial number.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Inputs:</span>
+0031 <span class="comment">%   expData - processed experimentData whose datlogs were synchronized</span>
+0032 <span class="comment">%             by SYNCDATALOG (dataLogTimeOffsetBest)</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% Outputs:</span>
+0035 <span class="comment">%   expData     - experimentData with its bout trials split into</span>
+0036 <span class="comment">%                 per-segment conditions (unchanged if no trial has</span>
+0037 <span class="comment">%                 bout cues)</span>
+0038 <span class="comment">%   splitReport - struct with two tables:</span>
+0039 <span class="comment">%                   segments - one row per new segment: origTrial,</span>
+0040 <span class="comment">%                              newTrial, condition, bout, segment,</span>
+0041 <span class="comment">%                              startTime and endTime (s, Vicon trial</span>
+0042 <span class="comment">%                              time; NaN = trial end), nStrides,</span>
+0043 <span class="comment">%                              nGoodStrides, endSource</span>
+0044 <span class="comment">%                   trials   - one row per split trial: origTrial,</span>
+0045 <span class="comment">%                              condition, nStrides, nUnassigned,</span>
+0046 <span class="comment">%                              nUnassignedGood (strides that start in a</span>
+0047 <span class="comment">%                              standing interval, outside all segments)</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% Toolbox Dependencies:</span>
+0050 <span class="comment">%   None</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS, SYNCDATALOG, LOADSUBJECT,</span>
+0053 <span class="comment">%   SEPCONDSINEXPBYAUDIOCUE.</span>
+0054 
+0055 arguments
+0056     expData (1,1) <a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>
+0057 <span class="keyword">end</span>
+0058 
+0059 minStridesPerSegment = 2; <span class="comment">% strides; SAYA90 ramps held 2-3 and SS bouts</span>
+0060                           <span class="comment">% 9-13, so fewer flags a cue or sync fault</span>
+0061 splitIdxMarker = <span class="string">'_SplitIdx'</span>;              <span class="comment">% rawDataFilename suffix,</span>
+0062 splitIdxFormat = [splitIdxMarker <span class="string">'%03d'</span>];  <span class="comment">% followed by the new index</span>
+0063 
+0064 meta    = expData.metaData;
+0065 oldData = expData.data;
+0066 numOld  = numel(oldData);
+0067 trials  = find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, oldData(:)'));
+0068 
+0069 <span class="comment">%% Refuse an Already Split Session</span>
+0070 <span class="comment">% every piece keeps its parent trial's full datlog, so splitting again</span>
+0071 <span class="comment">% would re-split each piece by the whole trial's cues</span>
+0072 isSplitPiece = cellfun(@(trialData) contains( <span class="keyword">...</span>
+0073     string(trialData.metaData.rawDataFilename), splitIdxMarker), <span class="keyword">...</span>
+0074     oldData(trials));
+0075 <span class="keyword">if</span> any(isSplitPiece)
+0076     error(<span class="string">'splitSpinalAdaptBoutConds:alreadySplit'</span>, <span class="keyword">...</span>
+0077         [<span class="string">'Trial %d is already a split piece; split the unsplit '</span> <span class="keyword">...</span>
+0078         <span class="string">'&lt;ID&gt;OriginalCondName.mat instead.'</span>], <span class="keyword">...</span>
+0079         trials(find(isSplitPiece, 1)));
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">%% Find the Bout Segments of Every Trial</span>
+0083 boutSegments = cell(1, numOld);
+0084 <span class="keyword">for</span> tr = trials
+0085     trialDatlog = <a href="#_sub1" class="code" title="subfunction trialDatlog = getTrialDatlog(meta, trialData, tr)">getTrialDatlog</a>(meta, oldData{tr}, tr);
+0086     <span class="keyword">if</span> isstruct(trialDatlog)
+0087         boutSegments{tr} = <a href="getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(trialDatlog);
+0088     <span class="keyword">end</span>
+0089 <span class="keyword">end</span>
+0090 isBoutTrial = ~cellfun(@(seg) <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(seg) || height(seg) == 0, <span class="keyword">...</span>
+0091     boutSegments);
+0092 
+0093 splitReport = struct(<span class="string">'segments'</span>, table(), <span class="string">'trials'</span>, table());
+0094 <span class="keyword">if</span> ~any(isBoutTrial)
+0095     warning(<span class="string">'splitSpinalAdaptBoutConds:noBoutTrials'</span>, <span class="keyword">...</span>
+0096         <span class="string">'No trial has SpinalAdapt bout cues; nothing was split.'</span>);
+0097     <span class="keyword">return</span>
+0098 <span class="keyword">end</span>
+0099 
+0100 condOfTrial = zeros(1, numOld);
+0101 <span class="keyword">for</span> con = 1:numel(meta.trialsInCondition)
+0102     condOfTrial(meta.trialsInCondition{con}) = con;
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="comment">%% Keep the Trials Before the First Bout Trial Unchanged</span>
+0106 firstBoutTrial = find(isBoutTrial, 1);
+0107 newData        = oldData(1:firstBoutTrial - 1);
+0108 newDatlog      = cell(size(newData));
+0109 newIdxOfTrial  = cell(1, numOld);   <span class="comment">% new trial index(es) per old trial</span>
+0110 <span class="keyword">for</span> tr = trials(trials &lt; firstBoutTrial)
+0111     newIdxOfTrial{tr} = tr;
+0112     newDatlog{tr}     = <a href="#_sub1" class="code" title="subfunction trialDatlog = getTrialDatlog(meta, trialData, tr)">getTrialDatlog</a>(meta, oldData{tr}, tr);
+0113 <span class="keyword">end</span>
+0114 segCondName = {};                   <span class="comment">% condition name per new bout trial</span>
+0115 segCondDesc = {};
+0116 
+0117 <span class="comment">%% Split Each Bout Trial into Segment Trials</span>
+0118 segRows   = {};
+0119 trialRows = {};
+0120 <span class="keyword">for</span> tr = trials(trials &gt;= firstBoutTrial)
+0121     trialData   = oldData{tr};
+0122     trialDatlog = <a href="#_sub1" class="code" title="subfunction trialDatlog = getTrialDatlog(meta, trialData, tr)">getTrialDatlog</a>(meta, trialData, tr);
+0123     params      = trialData.adaptParams;
+0124     <span class="keyword">if</span> ~isBoutTrial(tr)
+0125         newIdx = numel(newData) + 1;
+0126         <span class="keyword">if</span> newIdx ~= tr
+0127             trialData = <a href="#_sub2" class="code" title="subfunction trialData = reindexTrial(trialData, params, rows, newIdx, ">reindexTrial</a>(trialData, params, <span class="keyword">...</span>
+0128                 true(size(params.Data, 1), 1), newIdx, splitIdxFormat);
+0129         <span class="keyword">end</span>
+0130         newData{newIdx}   = trialData;
+0131         newDatlog{newIdx} = trialDatlog;
+0132         newIdxOfTrial{tr} = newIdx;
+0133         <span class="keyword">continue</span>
+0134     <span class="keyword">end</span>
+0135 
+0136     <span class="keyword">if</span> ~isfield(trialDatlog, <span class="string">'dataLogTimeOffsetBest'</span>)
+0137         error(<span class="string">'splitSpinalAdaptBoutConds:notSynced'</span>, <span class="keyword">...</span>
+0138             [<span class="string">'Trial %d has bout cues but its datlog has no '</span> <span class="keyword">...</span>
+0139             <span class="string">'dataLogTimeOffsetBest; run SYNCDATALOG first.'</span>], tr);
+0140     <span class="keyword">end</span>
+0141     timeOffset = trialDatlog.dataLogTimeOffsetBest;  <span class="comment">% s, datlog -&gt; Vicon</span>
+0142     segs       = boutSegments{tr};
+0143     parentName = meta.conditionName{condOfTrial(tr)};
+0144     parentDesc = meta.conditionDescription{condOfTrial(tr)};
+0145     initTime   = params.getDataAsVector(<span class="string">'initTime'</span>);
+0146     isGood     = params.getDataAsVector(<span class="string">'bad'</span>) == 0;
+0147     trialStart = trialData.gaitEvents.Time(1);
+0148     trialEnd   = trialData.gaitEvents.Time(end);
+0149 
+0150     isAssigned = false(size(initTime));
+0151     <span class="keyword">for</span> sg = 1:height(segs)
+0152         t0 = segs.startTime(sg) + timeOffset;
+0153         t1 = segs.endTime(sg) + timeOffset; <span class="comment">% NaN = runs to trial end</span>
+0154         inSeg = initTime &gt;= t0 &amp; (isnan(t1) | initTime &lt; t1);
+0155         isAssigned = isAssigned | inSeg;
+0156 
+0157         <span class="comment">% clamp to the recorded range (NaN = trial start/end) so that</span>
+0158         <span class="comment">% LABTIMESERIES.SPLIT does not pad the piece with NaNs</span>
+0159         splitStart = t0;
+0160         <span class="keyword">if</span> t0 &lt;= trialStart
+0161             splitStart = NaN;
+0162         <span class="keyword">end</span>
+0163         splitEnd = t1;
+0164         <span class="keyword">if</span> t1 &gt;= trialEnd
+0165             splitEnd = NaN;
+0166         <span class="keyword">end</span>
+0167 
+0168         segName = char(segs.segment(sg));   <span class="comment">% 'Ramp' or 'SS'</span>
+0169         <span class="keyword">if</span> strcmp(segName, <span class="string">'Ramp'</span>)
+0170             segLabel = <span class="string">'ramp'</span>;
+0171         <span class="keyword">else</span>
+0172             segLabel = <span class="string">'steady state'</span>;
+0173         <span class="keyword">end</span>
+0174         newIdx   = numel(newData) + 1;
+0175         condName = sprintf(<span class="string">'%s %s%02d'</span>, parentName, segName, <span class="keyword">...</span>
+0176             segs.bout(sg));
+0177         piece = trialData.split(splitStart, splitEnd);
+0178         piece.metaData.name         = condName;
+0179         piece.metaData.description  = sprintf(<span class="string">'%s; bout %02d %s'</span>, <span class="keyword">...</span>
+0180             parentDesc, segs.bout(sg), segLabel);
+0181         piece.metaData.observations = trialData.metaData.observations;
+0182         piece = <a href="#_sub2" class="code" title="subfunction trialData = reindexTrial(trialData, params, rows, newIdx, ">reindexTrial</a>(piece, params, inSeg, newIdx, <span class="keyword">...</span>
+0183             splitIdxFormat);
+0184 
+0185         newData{newIdx}     = piece;
+0186         newDatlog{newIdx}   = trialDatlog;
+0187         newIdxOfTrial{tr}   = [newIdxOfTrial{tr} newIdx];
+0188         segCondName{newIdx} = condName;                       <span class="comment">%#ok&lt;AGROW&gt;</span>
+0189         segCondDesc{newIdx} = piece.metaData.description;     <span class="comment">%#ok&lt;AGROW&gt;</span>
+0190 
+0191         numStrides = nnz(inSeg);
+0192         <span class="keyword">if</span> numStrides &lt; minStridesPerSegment
+0193             warning(<span class="string">'splitSpinalAdaptBoutConds:fewStrides'</span>, <span class="keyword">...</span>
+0194                 [<span class="string">'%s (trial %d) holds %d stride(s); check its cues '</span> <span class="keyword">...</span>
+0195                 <span class="string">'and datlog sync.'</span>], condName, tr, numStrides);
+0196         <span class="keyword">end</span>
+0197         segRows(end + 1, :) = {tr, newIdx, string(condName), <span class="keyword">...</span>
+0198             segs.bout(sg), segs.segment(sg), t0, t1, numStrides, <span class="keyword">...</span>
+0199             nnz(inSeg &amp; isGood), segs.endSource(sg)}; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0200     <span class="keyword">end</span>
+0201     trialRows(end + 1, :) = {tr, string(parentName), numel(initTime), <span class="keyword">...</span>
+0202         nnz(~isAssigned), nnz(~isAssigned &amp; isGood)}; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0203 <span class="keyword">end</span>
+0204 
+0205 <span class="comment">%% Rebuild the Condition List in Chronological Order</span>
+0206 condNames  = {};
+0207 condDescs  = {};
+0208 condTrials = {};
+0209 <span class="keyword">for</span> con = 1:numel(meta.conditionName)
+0210     oldTrials   = meta.trialsInCondition{con};
+0211     isSplitCond = isBoutTrial(oldTrials);
+0212     <span class="keyword">if</span> ~any(isSplitCond)
+0213         condNames{end + 1}  = meta.conditionName{con};        <span class="comment">%#ok&lt;AGROW&gt;</span>
+0214         condDescs{end + 1}  = meta.conditionDescription{con}; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0215         condTrials{end + 1} = [newIdxOfTrial{oldTrials}];     <span class="comment">%#ok&lt;AGROW&gt;</span>
+0216     <span class="keyword">elseif</span> all(isSplitCond)
+0217         <span class="keyword">for</span> newIdx = [newIdxOfTrial{oldTrials}]
+0218             condNames{end + 1}  = segCondName{newIdx};        <span class="comment">%#ok&lt;AGROW&gt;</span>
+0219             condDescs{end + 1}  = segCondDesc{newIdx};        <span class="comment">%#ok&lt;AGROW&gt;</span>
+0220             condTrials{end + 1} = newIdx;                     <span class="comment">%#ok&lt;AGROW&gt;</span>
+0221         <span class="keyword">end</span>
+0222     <span class="keyword">else</span>
+0223         error(<span class="string">'splitSpinalAdaptBoutConds:mixedCondition'</span>, <span class="keyword">...</span>
+0224             [<span class="string">'Condition ''%s'' mixes bout and non-bout trials; '</span> <span class="keyword">...</span>
+0225             <span class="string">'split it manually.'</span>], meta.conditionName{con});
+0226     <span class="keyword">end</span>
+0227 <span class="keyword">end</span>
+0228 [~, firstOfName] = unique(condNames, <span class="string">'stable'</span>);
+0229 <span class="keyword">if</span> numel(firstOfName) &lt; numel(condNames)
+0230     dupName = condNames{setdiff(1:numel(condNames), firstOfName)};
+0231     error(<span class="string">'splitSpinalAdaptBoutConds:duplicateBout'</span>, <span class="keyword">...</span>
+0232         [<span class="string">'Bout condition ''%s'' occurs in more than one trial of the '</span> <span class="keyword">...</span>
+0233         <span class="string">'same condition; split it manually.'</span>], dupName);
+0234 <span class="keyword">end</span>
+0235 
+0236 <span class="comment">%% Assemble the Split experimentData</span>
+0237 <span class="comment">% the constructor revalidates unique names and non-interleaved trials</span>
+0238 newMeta = <a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(meta.ID, meta.date, meta.experimenter, <span class="keyword">...</span>
+0239     meta.observations, condNames, condDescs, condTrials, <span class="keyword">...</span>
+0240     numel(newData), meta.SchenleyPlace, meta.PerceptualTasks, newDatlog);
+0241 <span class="keyword">for</span> con = 1:numel(newMeta.trialsInCondition)
+0242     <span class="keyword">for</span> tr = newMeta.trialsInCondition{con}
+0243         newData{tr}.metaData.condition = con;
+0244     <span class="keyword">end</span>
+0245 <span class="keyword">end</span>
+0246 expData.metaData = newMeta;
+0247 expData.data     = newData;
+0248 
+0249 splitReport.segments = cell2table(segRows, <span class="string">'VariableNames'</span>, <span class="keyword">...</span>
+0250     {<span class="string">'origTrial'</span>, <span class="string">'newTrial'</span>, <span class="string">'condition'</span>, <span class="string">'bout'</span>, <span class="string">'segment'</span>, <span class="keyword">...</span>
+0251     <span class="string">'startTime'</span>, <span class="string">'endTime'</span>, <span class="string">'nStrides'</span>, <span class="string">'nGoodStrides'</span>, <span class="string">'endSource'</span>});
+0252 splitReport.trials = cell2table(trialRows, <span class="string">'VariableNames'</span>, <span class="keyword">...</span>
+0253     {<span class="string">'origTrial'</span>, <span class="string">'condition'</span>, <span class="string">'nStrides'</span>, <span class="string">'nUnassigned'</span>, <span class="keyword">...</span>
+0254     <span class="string">'nUnassignedGood'</span>});
+0255 
+0256 <span class="keyword">end</span>
+0257 
+0258 <span class="comment">% ============================================================</span>
+0259 <span class="comment">% ==================== Local Functions =======================</span>
+0260 <span class="comment">% ============================================================</span>
+0261 
+0262 <a name="_sub1" href="#_subfunctions" class="code">function trialDatlog = getTrialDatlog(meta, trialData, tr)</a>
+0263 <span class="comment">%GETTRIALDATLOG Return a trial's datlog, preferring the session copy.</span>
+0264 <span class="comment">%</span>
+0265 <span class="comment">%   SYNCDATALOG writes dataLogTimeOffsetBest into both</span>
+0266 <span class="comment">% expData.metaData.datlog{tr} and the trial's own metaData.datlog; the</span>
+0267 <span class="comment">% session copy is used when present.</span>
+0268 <span class="comment">%</span>
+0269 <span class="comment">% Inputs:</span>
+0270 <span class="comment">%   meta      - experimentMetaData of the session</span>
+0271 <span class="comment">%   trialData - labData object of trial tr</span>
+0272 <span class="comment">%   tr        - trial index</span>
+0273 <span class="comment">%</span>
+0274 <span class="comment">% Outputs:</span>
+0275 <span class="comment">%   trialDatlog - datlog struct, or [] if the trial has none</span>
+0276 <span class="comment">%</span>
+0277 <span class="comment">% Toolbox Dependencies:</span>
+0278 <span class="comment">%   None</span>
+0279 <span class="comment">%</span>
+0280 <span class="comment">% See also SPLITSPINALADAPTBOUTCONDS.</span>
+0281 
+0282 trialDatlog = [];
+0283 <span class="keyword">if</span> iscell(meta.datlog) &amp;&amp; numel(meta.datlog) &gt;= tr &amp;&amp; <span class="keyword">...</span>
+0284         isstruct(meta.datlog{tr})
+0285     trialDatlog = meta.datlog{tr};
+0286 <span class="keyword">elseif</span> isstruct(trialData.metaData.datlog)
+0287     trialDatlog = trialData.metaData.datlog;
+0288 <span class="keyword">end</span>
+0289 
+0290 <span class="keyword">end</span>
+0291 
+0292 <a name="_sub2" href="#_subfunctions" class="code">function trialData = reindexTrial(trialData, params, rows, newIdx, </a><span class="keyword">...</span>
+0293     splitIdxFormat)
+0294 <span class="comment">%REINDEXTRIAL Give a trial a subset of strides and a new trial index.</span>
+0295 <span class="comment">%</span>
+0296 <span class="comment">%   Keeps the selected rows of the parent trial's adaptParams (with its</span>
+0297 <span class="comment">% UserData, where EMG-norm state lives), writes newIdx into their</span>
+0298 <span class="comment">% 'trial' column, and appends the new index to rawDataFilename.</span>
+0299 <span class="comment">%</span>
+0300 <span class="comment">% Inputs:</span>
+0301 <span class="comment">%   trialData      - labData object to update (a split piece, or a whole</span>
+0302 <span class="comment">%                    trial whose index changed)</span>
+0303 <span class="comment">%   params         - parent trial's adaptParams (parameterSeries)</span>
+0304 <span class="comment">%   rows           - logical column; strides of params to keep</span>
+0305 <span class="comment">%   newIdx         - new trial index in expData.data</span>
+0306 <span class="comment">%   splitIdxFormat - sprintf format of the rawDataFilename suffix</span>
+0307 <span class="comment">%</span>
+0308 <span class="comment">% Outputs:</span>
+0309 <span class="comment">%   trialData - updated labData object</span>
+0310 <span class="comment">%</span>
+0311 <span class="comment">% Toolbox Dependencies:</span>
+0312 <span class="comment">%   None</span>
+0313 <span class="comment">%</span>
+0314 <span class="comment">% See also SPLITSPINALADAPTBOUTCONDS, CALCPARAMETERS.</span>
+0315 
+0316 subset = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(params.Data(rows, :), params.labels, <span class="keyword">...</span>
+0317     params.hiddenTime(rows), params.description, params.trialTypes);
+0318 subset.DataInfo.UserData = params.DataInfo.UserData;
+0319 subset.Data(:, strcmp(subset.labels, <span class="string">'trial'</span>)) = newIdx;
+0320 trialData.adaptParams = subset;
+0321 trialData.metaData.rawDataFilename = <span class="keyword">...</span>
+0322     [char(trialData.metaData.rawDataFilename) <span class="keyword">...</span>
+0323     sprintf(splitIdxFormat, newIdx)];
+0324 
+0325 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

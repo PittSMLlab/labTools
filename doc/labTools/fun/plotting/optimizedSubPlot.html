@@ -4,7 +4,7 @@
 <head>
   <title>Description of optimizedSubPlot</title>
   <meta name="keywords" content="optimizedSubPlot">
-  <meta name="description" content="OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that">
+  <meta name="description" content="OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,185 +21,207 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</strong></div>
+<div class="box"><strong>OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize) </strong></div>
+<div class="box"><strong>function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that
-minizes the amount of &quot;white space&quot; surrounding each plot, esenitally
-making the actual plots as big as possible.
-   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots) generates a figure with Nplots 
-   axes and returns a handle for the figure created and a vector of axis 
-   handles for each axis created.  
+<div class="fragment"><pre class="comment">OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.
 
-   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC) generates a figure with
-   Nplots axes that have a row:col ratio close to the relR:relC
-   ratio entered (ex. optimizedSubPlot(20,2,1) generates a figure with 7
-   rows and 3 cols of axes)
+   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots) opens a full-screen figure with
+ Nplots empty axes laid out so that the plots are as large as possible,
+ and returns the axes handles and the figure handle.
 
-   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC,order) returns the axis
-   handles in order from top to bottom (and then over a column) if order
-   is 'tb' or in order from left to right (and then down a row) if order
-   is 'lr'. Default behavior is 'tb'
+   OPTIMIZEDSUBPLOT(Nplots,relR,relC) uses the layout whose row:column
+ ratio is closest to relR:relC (e.g., optimizedSubPlot(20,2,1) gives 7
+ rows and 3 columns).
 
-   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC,order,axesFS,labelFS,titleFS)
-   generates a figure with padding around plots based on the font sizes of
-   the axis tick labels, axis labels, and title as specified. If font
-   sizes are not specified, the default MATLAB behaviour (font size 10 for
-   everyhting) is assumed
+   OPTIMIZEDSUBPLOT(Nplots,relR,relC,order) returns the handles from top
+ to bottom, then over a column, for order 'tb', or from left to right,
+ then down a row, for order 'lr' (default: 'lr').
 
-   Example: [ah,fh]=optimizedSubPlot(15,2,1,'ttb',15,0,0);
-            for i=1:length(ah)
-                plot(ah(i),rand(100,1),'b')
-                set(ah(i),'fontSize',15)
-            end
+   OPTIMIZEDSUBPLOT(Nplots,relR,relC,order,axesFS,labelFS,titleFS) pads
+ the plots according to the font sizes of tick labels, axis labels, and
+ title (default: 10 for all).
 
-   Compare to:
-            figureFullScreen;
-            for i=1:15
-                subplot(5,3,i)
-                plot(rand(100,1),'b')
-                set(gca,'fontSize',15)
-            end
+ Side effects: opens a full-screen figure through figureFullScreen and
+   sets its default axes color order (poster_colors); errors with
+   optimizedSubPlot:InvalidInput if order is not 'tb' or 'lr'.
 
-   See also subplot <a href="subplotSize.html" class="code" title="function [rows,cols]=subplotSize(n_plots,relRows,relCols)">subplotSize</a> <a href="figureFullScreen.html" class="code" title="function [h,scrsz]=figureFullScreen()">figureFullScreen</a></pre></div>
+ Inputs:
+   Nplots        - number of axes
+   rowAspect     - (optional) relative number of rows (default: 1)
+   colAspect     - (optional) relative number of columns (default: 1)
+   order         - (optional) 'tb' or 'lr' (default: 'lr')
+   axesFontSize  - (optional) tick label font size (default: 10)
+   labelFontSize - (optional) axis label font size (default: 10)
+   titleFontSize - (optional) title font size (default: 10)
+
+ Outputs:
+   axesHandles - 1 x Nplots axes handles
+   figHandle   - figure handle
+
+ Example:
+   [ah,fh] = optimizedSubPlot(15,2,1,'tb',15,0,0);
+   for ii = 1:length(ah)
+       plot(ah(ii),rand(100,1),'b')
+       set(ah(ii),'fontSize',15)
+   end
+
+ Toolbox Dependencies: None
+
+ Copyright 2014 HMRL.
+
+ See also SUBPLOT, <a href="subplotSize.html" class="code" title="function [rows,cols] = subplotSize(n_plots,relRows,relCols)">SUBPLOTSIZE</a>, <a href="figureFullScreen.html" class="code" title="function [h,scrsz] = figureFullScreen()">FIGUREFULLSCREEN</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li><li><a href="figureFullScreen.html" class="code" title="function [h,scrsz]=figureFullScreen()">figureFullScreen</a>	figureFullScreen</li><li><a href="subplotSize.html" class="code" title="function [rows,cols]=subplotSize(n_plots,relRows,relCols)">subplotSize</a>	SUBPLOTSIZE Find the optimal dimensions of a subplot figure</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	% Poster colors</li><li><a href="figureFullScreen.html" class="code" title="function [h,scrsz] = figureFullScreen()">figureFullScreen</a>	FIGUREFULLSCREEN Open a figure that fills the screen.</li><li><a href="subplotSize.html" class="code" title="function [rows,cols] = subplotSize(n_plots,relRows,relCols)">subplotSize</a>	SUBPLOTSIZE Rows and columns for a subplot figure.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditions.html" class="code" title="function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)">plotParamBarsByConditions</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	TODO: this file should be updated to call upon plotGroupedBars</li><li><a href="../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results, params, conds, groups,colorOrder, type)">Correlations</a>	CORRELATIONS Plot linear correlations between conditions or parameters.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	PLOTAVGTIMECOURSE Plot binned group time courses of parameters.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	PLOTGROUPEDSUBJECTSBARS Bar plot of early/late parameter means by group.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	PLOTGROUPEDSUBJECTSBARSV2 Bar plot of stride-group parameter means.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData] =plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditions.html" class="code" title="function figHandle = plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)">plotParamBarsByConditions</a>	PLOTPARAMBARSBYCONDITIONS Bar plot of very early/early/late strides.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles] = plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	PLOTPARAMBARSBYCONDITIONSV2 Bar plot of stride groups per condition.</li><li><a href="../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>	BARGROUPS Make a bar plot comparing groups across epochs and parameters.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)</a>
-0002 <span class="comment">%OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</span>
-0003 <span class="comment">%minizes the amount of &quot;white space&quot; surrounding each plot, esenitally</span>
-0004 <span class="comment">%making the actual plots as big as possible.</span>
-0005 <span class="comment">%   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots) generates a figure with Nplots</span>
-0006 <span class="comment">%   axes and returns a handle for the figure created and a vector of axis</span>
-0007 <span class="comment">%   handles for each axis created.</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect, </a><span class="keyword">...</span>
+0002     colAspect,order,axesFontSize,labelFontSize,titleFontSize)
+0003 <span class="comment">%OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots) opens a full-screen figure with</span>
+0006 <span class="comment">% Nplots empty axes laid out so that the plots are as large as possible,</span>
+0007 <span class="comment">% and returns the axes handles and the figure handle.</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC) generates a figure with</span>
-0010 <span class="comment">%   Nplots axes that have a row:col ratio close to the relR:relC</span>
-0011 <span class="comment">%   ratio entered (ex. optimizedSubPlot(20,2,1) generates a figure with 7</span>
-0012 <span class="comment">%   rows and 3 cols of axes)</span>
-0013 <span class="comment">%</span>
-0014 <span class="comment">%   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC,order) returns the axis</span>
-0015 <span class="comment">%   handles in order from top to bottom (and then over a column) if order</span>
-0016 <span class="comment">%   is 'tb' or in order from left to right (and then down a row) if order</span>
-0017 <span class="comment">%   is 'lr'. Default behavior is 'tb'</span>
-0018 <span class="comment">%</span>
-0019 <span class="comment">%   [ah,figh] = OPTIMIZEDSUBPLOT(Nplots,relR,relC,order,axesFS,labelFS,titleFS)</span>
-0020 <span class="comment">%   generates a figure with padding around plots based on the font sizes of</span>
-0021 <span class="comment">%   the axis tick labels, axis labels, and title as specified. If font</span>
-0022 <span class="comment">%   sizes are not specified, the default MATLAB behaviour (font size 10 for</span>
-0023 <span class="comment">%   everyhting) is assumed</span>
+0009 <span class="comment">%   OPTIMIZEDSUBPLOT(Nplots,relR,relC) uses the layout whose row:column</span>
+0010 <span class="comment">% ratio is closest to relR:relC (e.g., optimizedSubPlot(20,2,1) gives 7</span>
+0011 <span class="comment">% rows and 3 columns).</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   OPTIMIZEDSUBPLOT(Nplots,relR,relC,order) returns the handles from top</span>
+0014 <span class="comment">% to bottom, then over a column, for order 'tb', or from left to right,</span>
+0015 <span class="comment">% then down a row, for order 'lr' (default: 'lr').</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   OPTIMIZEDSUBPLOT(Nplots,relR,relC,order,axesFS,labelFS,titleFS) pads</span>
+0018 <span class="comment">% the plots according to the font sizes of tick labels, axis labels, and</span>
+0019 <span class="comment">% title (default: 10 for all).</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Side effects: opens a full-screen figure through figureFullScreen and</span>
+0022 <span class="comment">%   sets its default axes color order (poster_colors); errors with</span>
+0023 <span class="comment">%   optimizedSubPlot:InvalidInput if order is not 'tb' or 'lr'.</span>
 0024 <span class="comment">%</span>
-0025 <span class="comment">%   Example: [ah,fh]=optimizedSubPlot(15,2,1,'ttb',15,0,0);</span>
-0026 <span class="comment">%            for i=1:length(ah)</span>
-0027 <span class="comment">%                plot(ah(i),rand(100,1),'b')</span>
-0028 <span class="comment">%                set(ah(i),'fontSize',15)</span>
-0029 <span class="comment">%            end</span>
-0030 <span class="comment">%</span>
-0031 <span class="comment">%   Compare to:</span>
-0032 <span class="comment">%            figureFullScreen;</span>
-0033 <span class="comment">%            for i=1:15</span>
-0034 <span class="comment">%                subplot(5,3,i)</span>
-0035 <span class="comment">%                plot(rand(100,1),'b')</span>
-0036 <span class="comment">%                set(gca,'fontSize',15)</span>
-0037 <span class="comment">%            end</span>
-0038 <span class="comment">%</span>
-0039 <span class="comment">%   See also subplot subplotSize figureFullScreen</span>
-0040 
-0041 <span class="comment">%   Copyright 2014 HMRL.</span>
-0042 
-0043 <span class="comment">%% Check Inputs</span>
-0044 
-0045 <span class="keyword">if</span> nargin&lt;2 
-0046     rowAspect=1; 
-0047 <span class="keyword">end</span>
-0048 <span class="keyword">if</span> nargin&lt;3    
-0049     colAspect=1;
-0050 <span class="keyword">end</span>
-0051 
-0052 <span class="keyword">if</span> nargin&lt;4 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(order)
-0053      order=<span class="string">'lr'</span>;    
-0054 <span class="keyword">else</span>
-0055     <span class="keyword">if</span> ~strcmpi(order,<span class="string">'lr'</span>) &amp;&amp; ~strcmpi(order,<span class="string">'tb'</span>)
-0056         ME=MException(<span class="string">'optimizedSubPlot:InvalidInput'</span>,<span class="string">'order must be ''tb'' or ''lr'' if specified'</span>);
-0057         throw(ME);
-0058     <span class="keyword">end</span>   
-0059 <span class="keyword">end</span>
-0060 
-0061 <span class="comment">%if font sizes aren't specified, assume default</span>
-0062 <span class="keyword">if</span> nargin&lt;5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(axesFontSize)    
-0063     axesFontSize=10;
-0064 <span class="keyword">end</span>
-0065 <span class="keyword">if</span> nargin&lt;6 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labelFontSize)    
-0066     labelFontSize=10;
+0025 <span class="comment">% Inputs:</span>
+0026 <span class="comment">%   Nplots        - number of axes</span>
+0027 <span class="comment">%   rowAspect     - (optional) relative number of rows (default: 1)</span>
+0028 <span class="comment">%   colAspect     - (optional) relative number of columns (default: 1)</span>
+0029 <span class="comment">%   order         - (optional) 'tb' or 'lr' (default: 'lr')</span>
+0030 <span class="comment">%   axesFontSize  - (optional) tick label font size (default: 10)</span>
+0031 <span class="comment">%   labelFontSize - (optional) axis label font size (default: 10)</span>
+0032 <span class="comment">%   titleFontSize - (optional) title font size (default: 10)</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% Outputs:</span>
+0035 <span class="comment">%   axesHandles - 1 x Nplots axes handles</span>
+0036 <span class="comment">%   figHandle   - figure handle</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Example:</span>
+0039 <span class="comment">%   [ah,fh] = optimizedSubPlot(15,2,1,'tb',15,0,0);</span>
+0040 <span class="comment">%   for ii = 1:length(ah)</span>
+0041 <span class="comment">%       plot(ah(ii),rand(100,1),'b')</span>
+0042 <span class="comment">%       set(ah(ii),'fontSize',15)</span>
+0043 <span class="comment">%   end</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% Toolbox Dependencies: None</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">% Copyright 2014 HMRL.</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% See also SUBPLOT, SUBPLOTSIZE, FIGUREFULLSCREEN.</span>
+0050 
+0051 <span class="comment">%% Check Inputs</span>
+0052 <span class="keyword">if</span> nargin &lt; 2
+0053     rowAspect = 1;
+0054 <span class="keyword">end</span>
+0055 <span class="keyword">if</span> nargin &lt; 3
+0056     colAspect = 1;
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(order)
+0060     order = <span class="string">'lr'</span>;
+0061 <span class="keyword">else</span>
+0062     <span class="keyword">if</span> ~strcmpi(order,<span class="string">'lr'</span>) &amp;&amp; ~strcmpi(order,<span class="string">'tb'</span>)
+0063         ME = MException(<span class="string">'optimizedSubPlot:InvalidInput'</span>, <span class="keyword">...</span>
+0064             <span class="string">'order must be ''tb'' or ''lr'' if specified'</span>);
+0065         throw(ME);
+0066     <span class="keyword">end</span>
 0067 <span class="keyword">end</span>
-0068 <span class="keyword">if</span> nargin&lt;7 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(titleFontSize)
-0069     titleFontSize=10;
-0070 <span class="keyword">end</span>
-0071 
-0072 <span class="comment">%% Generate Subplot</span>
-0073 [figHandle,scrsz]=<a href="figureFullScreen.html" class="code" title="function [h,scrsz]=figureFullScreen()">figureFullScreen</a>; <span class="comment">% Maybe this could be an option?</span>
-0074 figsz=[0 0 1 1];
-0075 
-0076 <span class="comment">%in pixels:</span>
-0077 vertpad_top = (titleFontSize+20)/scrsz(4); <span class="comment">%padding on the top of figure</span>
-0078 vertpad_bottom= (axesFontSize+labelFontSize+20)/scrsz(4);<span class="comment">%padding on the bottom of figure</span>
-0079 horpad = (axesFontSize*3+labelFontSize+20)/scrsz(3);  <span class="comment">%padding on the left of figure</span>
-0080 
-0081 <span class="comment">%find subplot size with rowAspect:colAspect ratio</span>
-0082 [rows,cols]=<a href="subplotSize.html" class="code" title="function [rows,cols]=subplotSize(n_plots,relRows,relCols)">subplotSize</a>(Nplots,rowAspect,colAspect);
+0068 
+0069 <span class="comment">%if font sizes aren't specified, assume default</span>
+0070 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(axesFontSize)
+0071     axesFontSize = 10;
+0072 <span class="keyword">end</span>
+0073 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labelFontSize)
+0074     labelFontSize = 10;
+0075 <span class="keyword">end</span>
+0076 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(titleFontSize)
+0077     titleFontSize = 10;
+0078 <span class="keyword">end</span>
+0079 
+0080 <span class="comment">%% Generate Subplot</span>
+0081 [figHandle,scrsz] = <a href="figureFullScreen.html" class="code" title="function [h,scrsz] = figureFullScreen()">figureFullScreen</a>; <span class="comment">% Maybe this could be an option?</span>
+0082 figsz = [0 0 1 1];
 0083 
-0084 <span class="comment">% Set colors</span>
-0085 <a href="../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
-0086 <span class="comment">% Set colors order</span>
-0087 ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
-0088 set(gcf,<span class="string">'DefaultAxesColorOrder'</span>,ColorOrder);
-0089 
-0090 W=(figsz(3)/cols)-(horpad+axesFontSize/scrsz(3));
-0091 H=(figsz(4)/rows)-(vertpad_bottom+vertpad_top);
-0092 <span class="keyword">if</span> strcmpi(order,<span class="string">'lr'</span>) <span class="comment">%plots left to right then goes down a row</span>
-0093     rowind=1;
-0094     colind=0;
-0095     axesHandles=NaN(1,Nplots);
-0096     <span class="keyword">for</span> i=1:Nplots
-0097         bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad_bottom;
-0098         left=colind*(figsz(3))/cols+horpad;
-0099         colind=colind+1;
-0100         <span class="keyword">if</span> colind==cols
-0101             rowind=rowind+1;
-0102             colind=0;
-0103         <span class="keyword">end</span>
-0104         axesHandles(i)=subplot(<span class="string">'Position'</span>,[left bottom W H],<span class="string">'Parent'</span>,figHandle);
-0105     <span class="keyword">end</span>
-0106 <span class="keyword">else</span> <span class="comment">%default behavior (plots top to bottom then goes over a column)</span>
-0107     rowind=1;
-0108     colind=0;
-0109     axesHandles=NaN(1,Nplots);
-0110     <span class="keyword">for</span> i=1:Nplots
-0111         <span class="comment">%find graph location</span>
-0112         bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad_bottom;        
-0113         left=colind*(figsz(3))/cols+horpad;
-0114         rowind=rowind+1;
-0115         <span class="keyword">if</span> rowind&gt;rows
-0116             colind=colind+1;
-0117             rowind=1;
-0118         <span class="keyword">end</span>
-0119         axesHandles(i)=subplot(<span class="string">'Position'</span>,[left bottom W H],<span class="string">'Parent'</span>,figHandle);
-0120     <span class="keyword">end</span>
-0121 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0084 <span class="comment">%in pixels:</span>
+0085 vertpad_top    = (titleFontSize+20)/scrsz(4); <span class="comment">%padding on the top of figure</span>
+0086 <span class="comment">%padding on the bottom of figure</span>
+0087 vertpad_bottom = (axesFontSize+labelFontSize+20)/scrsz(4);
+0088 <span class="comment">%padding on the left of figure</span>
+0089 horpad         = (axesFontSize*3+labelFontSize+20)/scrsz(3);
+0090 
+0091 <span class="comment">%find subplot size with rowAspect:colAspect ratio</span>
+0092 [rows,cols] = <a href="subplotSize.html" class="code" title="function [rows,cols] = subplotSize(n_plots,relRows,relCols)">subplotSize</a>(Nplots,rowAspect,colAspect);
+0093 
+0094 <span class="comment">% Set colors</span>
+0095 <a href="../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
+0096 <span class="comment">% Set colors order</span>
+0097 ColorOrder = [p_red; p_orange; p_fade_green; p_fade_blue; p_plum; <span class="keyword">...</span>
+0098     p_green; p_blue; p_fade_red; p_lime; p_yellow];
+0099 set(gcf,<span class="string">'DefaultAxesColorOrder'</span>,ColorOrder);
+0100 
+0101 W = (figsz(3)/cols)-(horpad+axesFontSize/scrsz(3));
+0102 H = (figsz(4)/rows)-(vertpad_bottom+vertpad_top);
+0103 <span class="keyword">if</span> strcmpi(order,<span class="string">'lr'</span>) <span class="comment">%plots left to right then goes down a row</span>
+0104     rowind      = 1;
+0105     colind      = 0;
+0106     axesHandles = NaN(1,Nplots);
+0107     <span class="keyword">for</span> ii = 1:Nplots
+0108         bottom = figsz(4)-(rowind*figsz(4)/rows)+vertpad_bottom;
+0109         left   = colind*(figsz(3))/cols+horpad;
+0110         colind = colind+1;
+0111         <span class="keyword">if</span> colind == cols
+0112             rowind = rowind+1;
+0113             colind = 0;
+0114         <span class="keyword">end</span>
+0115         axesHandles(ii) = subplot(<span class="string">'Position'</span>,[left bottom W H],<span class="string">'Parent'</span>, <span class="keyword">...</span>
+0116             figHandle);
+0117     <span class="keyword">end</span>
+0118 <span class="keyword">else</span> <span class="comment">%default behavior (plots top to bottom then goes over a column)</span>
+0119     rowind      = 1;
+0120     colind      = 0;
+0121     axesHandles = NaN(1,Nplots);
+0122     <span class="keyword">for</span> ii = 1:Nplots
+0123         <span class="comment">%find graph location</span>
+0124         bottom = figsz(4)-(rowind*figsz(4)/rows)+vertpad_bottom;
+0125         left   = colind*(figsz(3))/cols+horpad;
+0126         rowind = rowind+1;
+0127         <span class="keyword">if</span> rowind &gt; rows
+0128             colind = colind+1;
+0129             rowind = 1;
+0130         <span class="keyword">end</span>
+0131         axesHandles(ii) = subplot(<span class="string">'Position'</span>,[left bottom W H],<span class="string">'Parent'</span>, <span class="keyword">...</span>
+0132             figHandle);
+0133     <span class="keyword">end</span>
+0134 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

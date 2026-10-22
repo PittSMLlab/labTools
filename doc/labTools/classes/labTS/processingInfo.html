@@ -36,7 +36,7 @@ This function calls:
 <li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li><li><a href="../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	PROCESSEMG Extract EMG amplitude envelopes from raw trial EMG.</li><li><a href="../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -45,85 +45,88 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="processingInfo.html" class="code" title="">processingInfo</a>
-0002     <span class="comment">%processingInfo  Stores information about signal processing applied</span>
-0003     <span class="comment">%to data</span>
-0004     <span class="comment">%</span>
-0005     <span class="comment">%   processingInfo maintains a record of filters and other processing</span>
-0006     <span class="comment">%   steps applied to time series data, enabling traceability of data</span>
-0007     <span class="comment">%   processing pipelines.</span>
-0008     <span class="comment">%</span>
-0009     <span class="comment">%processingInfo properties:</span>
-0010     <span class="comment">%   filterList - cell array of filter design objects or processing</span>
-0011     <span class="comment">%                step descriptors</span>
-0012     <span class="comment">%</span>
-0013     <span class="comment">%processingInfo methods:</span>
-0014     <span class="comment">%   processingInfo - constructor for processing info</span>
-0015     <span class="comment">%</span>
-0016     <span class="comment">%See also: labTimeSeries, fdesign</span>
-0017 
-0018     <span class="comment">%% Properties</span>
-0019     properties
-0020         <span class="comment">% Needs to be a 1x2 double, represents the pass-band filter used on</span>
-0021         <span class="comment">% the raw data</span>
-0022         <span class="comment">% bandwidth;</span>
-0023         <span class="comment">% Scalar, represents the cutoff frequency for the amplitude</span>
-0024         <span class="comment">% low-pass filter</span>
-0025         <span class="comment">% f_cut;</span>
-0026         <span class="comment">% 1xn double, represents the central frequencies of the notch</span>
-0027         <span class="comment">% filters applied to the raw data</span>
-0028         <span class="comment">% notchList;</span>
-0029         filterList
-0030     <span class="keyword">end</span>
-0031 
-0032     <span class="comment">%% Constructor</span>
-0033     methods
-0034         <a name="_sub0" href="#_subfunctions" class="code">function this = processingInfo(filterList)</a>
-0035             <span class="comment">%processingInfo  Constructor for processingInfo class</span>
-0036             <span class="comment">%</span>
-0037             <span class="comment">%   this = processingInfo(filterList) creates a processing</span>
-0038             <span class="comment">%   info object with specified filter list</span>
-0039             <span class="comment">%</span>
-0040             <span class="comment">%   Inputs:</span>
-0041             <span class="comment">%       filterList - cell array containing filter design</span>
-0042             <span class="comment">%                    objects or processing step descriptors</span>
-0043             <span class="comment">%</span>
-0044             <span class="comment">%   Outputs:</span>
-0045             <span class="comment">%       this - processingInfo object</span>
-0046             <span class="comment">%</span>
-0047             <span class="comment">%   See also: fdesign, labTimeSeries/lowPassFilter</span>
-0048 
-0049             <span class="comment">% if numel(bw) == 2</span>
-0050             <span class="comment">%     this.bandwidth = bw;</span>
-0051             <span class="comment">% else</span>
-0052             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
-0053             <span class="comment">%         'Bandwidth is not a 1x2 double');</span>
-0054             <span class="comment">%     throw(ME);</span>
-0055             <span class="comment">% end</span>
-0056             <span class="comment">% if numel(f_cut) == 1</span>
-0057             <span class="comment">%     this.f_cut = f_cut;</span>
-0058             <span class="comment">% else</span>
-0059             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
-0060             <span class="comment">%         'f_cut is not a scalar.');</span>
-0061             <span class="comment">%     throw(ME);</span>
-0062             <span class="comment">% end</span>
-0063             <span class="comment">% if length(notchLst) == numel(notchLst)</span>
-0064             <span class="comment">%     this.notchList = notchLst;</span>
-0065             <span class="comment">% else</span>
-0066             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
-0067             <span class="comment">%         'NotchList is not a 1xn double');</span>
-0068             <span class="comment">%     throw(ME);</span>
-0069             <span class="comment">% end</span>
-0070             <span class="keyword">if</span> ~isa(filterList, <span class="string">'cell'</span>)
-0071                 ME = MException(<span class="string">'processingInfo:Constructor'</span>, <span class="keyword">...</span>
-0072                     <span class="string">'Filter list is not a cell array'</span>);
-0073                 throw(ME);
-0074             <span class="keyword">end</span>
-0075             this.filterList = filterList;
-0076         <span class="keyword">end</span>
-0077     <span class="keyword">end</span>
-0078 
-0079 <span class="keyword">end</span>
-0080</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002     <span class="comment">%PROCESSINGINFO Record of the processing applied to a time series.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   processingInfo maintains a record of the filters and other</span>
+0005     <span class="comment">% processing steps applied to time series data, enabling traceability of</span>
+0006     <span class="comment">% data processing pipelines.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">% processingInfo properties:</span>
+0009     <span class="comment">%   filterList - cell array of filter design objects or processing step</span>
+0010     <span class="comment">%                descriptors</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">% processingInfo methods:</span>
+0013     <span class="comment">%   processingInfo - constructor for processing info</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">% Toolbox Dependencies: None</span>
+0016     <span class="comment">%</span>
+0017     <span class="comment">% See also LABTIMESERIES, FDESIGN.</span>
+0018 
+0019     <span class="comment">%% Properties</span>
+0020     properties
+0021         <span class="comment">% Needs to be a 1x2 double, represents the pass-band filter used on</span>
+0022         <span class="comment">% the raw data</span>
+0023         <span class="comment">% bandwidth;</span>
+0024         <span class="comment">% Scalar, represents the cutoff frequency for the amplitude</span>
+0025         <span class="comment">% low-pass filter</span>
+0026         <span class="comment">% f_cut;</span>
+0027         <span class="comment">% 1xn double, represents the central frequencies of the notch</span>
+0028         <span class="comment">% filters applied to the raw data</span>
+0029         <span class="comment">% notchList;</span>
+0030         filterList
+0031     <span class="keyword">end</span>
+0032 
+0033     <span class="comment">%% Constructor</span>
+0034     methods
+0035         <a name="_sub0" href="#_subfunctions" class="code">function this = processingInfo(filterList)</a>
+0036             <span class="comment">%PROCESSINGINFO Constructor for processingInfo class.</span>
+0037             <span class="comment">%</span>
+0038             <span class="comment">%   this = processingInfo(filterList) creates a processing info</span>
+0039             <span class="comment">% object with specified filter list</span>
+0040             <span class="comment">%</span>
+0041             <span class="comment">% Inputs:</span>
+0042             <span class="comment">%   filterList - cell array containing filter design objects or</span>
+0043             <span class="comment">%                processing step descriptors</span>
+0044             <span class="comment">%</span>
+0045             <span class="comment">% Outputs:</span>
+0046             <span class="comment">%   this - processingInfo object</span>
+0047             <span class="comment">%</span>
+0048             <span class="comment">% Toolbox Dependencies: None</span>
+0049             <span class="comment">%</span>
+0050             <span class="comment">% See also FDESIGN, LABTIMESERIES/LOWPASSFILTER.</span>
+0051 
+0052             <span class="comment">% if numel(bw) == 2</span>
+0053             <span class="comment">%     this.bandwidth = bw;</span>
+0054             <span class="comment">% else</span>
+0055             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
+0056             <span class="comment">%         'Bandwidth is not a 1x2 double');</span>
+0057             <span class="comment">%     throw(ME);</span>
+0058             <span class="comment">% end</span>
+0059             <span class="comment">% if numel(f_cut) == 1</span>
+0060             <span class="comment">%     this.f_cut = f_cut;</span>
+0061             <span class="comment">% else</span>
+0062             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
+0063             <span class="comment">%         'f_cut is not a scalar.');</span>
+0064             <span class="comment">%     throw(ME);</span>
+0065             <span class="comment">% end</span>
+0066             <span class="comment">% if length(notchLst) == numel(notchLst)</span>
+0067             <span class="comment">%     this.notchList = notchLst;</span>
+0068             <span class="comment">% else</span>
+0069             <span class="comment">%     ME = MException('processingInfo:Constructor', ...</span>
+0070             <span class="comment">%         'NotchList is not a 1xn double');</span>
+0071             <span class="comment">%     throw(ME);</span>
+0072             <span class="comment">% end</span>
+0073             <span class="keyword">if</span> ~isa(filterList, <span class="string">'cell'</span>)
+0074                 ME = MException(<span class="string">'processingInfo:Constructor'</span>, <span class="keyword">...</span>
+0075                     <span class="string">'Filter list is not a cell array'</span>);
+0076                 throw(ME);
+0077             <span class="keyword">end</span>
+0078             this.filterList = filterList;
+0079         <span class="keyword">end</span>
+0080     <span class="keyword">end</span>
+0081 
+0082 <span class="keyword">end</span>
+0083</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

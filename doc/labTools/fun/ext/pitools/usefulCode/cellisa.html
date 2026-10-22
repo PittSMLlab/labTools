@@ -4,7 +4,7 @@
 <head>
   <title>Description of cellisa</title>
   <meta name="keywords" content="cellisa">
-  <meta name="description" content="">
+  <meta name="description" content="CELLISA Check class membership for each element of a cell array.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>CELLISA Check class membership for each element of a cell array.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function b = cellisa(cell,type) </strong></div>
+<div class="box"><strong>function b = cellisa(cellArr, type) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">CELLISA Check class membership for each element of a cell array.
+
+   Applies isa() to every element of cellArr, returning a logical vector.
+
+ Inputs:
+   cellArr - cell array whose elements are to be type-checked
+   type    - class name string (e.g. 'double', 'char')
+
+ Outputs:
+   b - logical row vector; b(ii) is true when isa(cellArr{ii}, type)
+
+ Toolbox Dependencies: None
+
+ See also ISA, CELLFUN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -36,20 +49,34 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../../labTools/classes/dataStructs/@stridedExperimentData/stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li><li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li></ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../../../labTools/classes/dataStructs/@stridedExperimentData/stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li><li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function b = cellisa(cell,type)</a>
-0002 b=[];
-0003 <span class="keyword">for</span> i=1:length(cell)
-0004     b(i)=isa(cell{i},type);
-0005 <span class="keyword">end</span>
-0006 
-0007 <span class="keyword">end</span>
-0008</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function b = cellisa(cellArr, type)</a>
+0002 <span class="comment">%CELLISA Check class membership for each element of a cell array.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Applies isa() to every element of cellArr, returning a logical vector.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   cellArr - cell array whose elements are to be type-checked</span>
+0008 <span class="comment">%   type    - class name string (e.g. 'double', 'char')</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   b - logical row vector; b(ii) is true when isa(cellArr{ii}, type)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also ISA, CELLFUN.</span>
+0016 
+0017 b = [];
+0018 <span class="keyword">for</span> ii = 1:length(cellArr)
+0019     b(ii) = isa(cellArr{ii}, type);
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

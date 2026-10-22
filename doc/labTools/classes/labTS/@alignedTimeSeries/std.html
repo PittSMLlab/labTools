@@ -4,7 +4,7 @@
 <head>
   <title>Description of std</title>
   <meta name="keywords" content="std">
-  <meta name="description" content="std  Computes standard deviation">
+  <meta name="description" content="STD Computes standard deviation.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,76 +21,80 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>std  Computes standard deviation</strong></div>
+<div class="box"><strong>STD Computes standard deviation.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function stdTS = std(this, strideIdxs) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">std  Computes standard deviation
+<div class="fragment"><pre class="comment">STD Computes standard deviation.
 
    stdTS = std(this) computes standard deviation across all strides
 
    stdTS = std(this, strideIdxs) computes for specified strides
 
-   Inputs:
-       this - alignedTimeSeries object
-       strideIdxs - vector of stride indices (optional, default: all)
+ Inputs:
+   this       - alignedTimeSeries object
+   strideIdxs - vector of stride indices (optional, default: all)
 
-   Outputs:
-       stdTS - alignedTimeSeries with standard deviation (for numeric)
-               or vector (for logical)
+ Outputs:
+   stdTS - alignedTimeSeries with standard deviation (for numeric) or
+           vector (for logical)
 
-   See also: <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>, <a href="stdRobust.html" class="code" title="function stdTS = stdRobust(this, strideIdxs)">stdRobust</a>, <a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a></pre></div>
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also <a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">MEAN</a>, <a href="stdRobust.html" class="code" title="function stdTS = stdRobust(this, strideIdxs)">STDROBUST</a>, <a href="iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">IQR</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>	logicalHist  Generates histogram from logical event data</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>	LOGICALHIST Generates histogram from logical event data.</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">fitCal</a>	FITCAL Fit M- and H-wave recruitment curves.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function lag=circCorr(trace1,trace2)">circCorr</a>	Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/polyfit1PCA.html" class="code" title="function [pp] = polyfit1PCA(x,y,varNormalizeFlag)">polyfit1PCA</a>	Finding best-fit line through PCA</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/hmhFun/GroupDemographics.html" class="code" title="function [ Demographics ] = GroupDemographics(SMatrix)">GroupDemographics</a>	GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</li><li><a href="../../../../labTools/fun/misc/matchControlsFixedGUI.html" class="code" title="function matchControlsFixedGUI(demoFile)">matchControlsFixedGUI</a>	matchControlsFixedGUI  Fixed GUI to choose demographic matching factors</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li></ul>
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	PLOTAVGTIMECOURSE Plot binned group time courses of parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	PLOTGROUPEDSUBJECTSBARS Bar plot of early/late parameter means by group.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	PLOTGROUPEDSUBJECTSBARSV2 Bar plot of stride-group parameter means.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData] =plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditions.html" class="code" title="function figHandle = plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)">plotParamBarsByConditions</a>	PLOTPARAMBARSBYCONDITIONS Bar plot of very early/early/late strides.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles] = plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	PLOTPARAMBARSBYCONDITIONSV2 Bar plot of stride groups per condition.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/GroupDemographics.html" class="code" title="function Demographics = GroupDemographics(SMatrix)">GroupDemographics</a>	GROUPDEMOGRAPHICS Compute group and study demographics.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData] = plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	PLOTMULTIPLEEPOCHBARS Bar plot of epoch means for several groups.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	PLOTCELLAVG Plots average and std of stride cell array.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/getVirtualOTS.html" class="code" title="function virtualOTS = getVirtualOTS(this, ww, meanDiff, stdDiff)">getVirtualOTS</a>	GETVIRTUALOTS Computes virtual markers from model.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li><li><a href="../../../../labTools/fun/+Hreflex/fitCal.html" class="code" title="function fit = fitCal(intensitiesStim, amplitudesWaves)">fitCal</a>	FITCAL Fit M- and H-wave recruitment curves.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function phaseShift = circCorr(trace1, trace2)">circCorr</a>	CIRCCORR Estimate the phase shift between two sinusoidal traces.</li><li><a href="../../../../labTools/fun/ext/pitools/signalProcessing/polyfit1PCA.html" class="code" title="function pp = polyfit1PCA(x,y,varNormalizeFlag)">polyfit1PCA</a>	POLYFIT1PCA Best-fit line through two variables using PCA.</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	</li><li><a href="../../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL_REALTIME Compute step length, cadence and step time of a Nexus trial.</li><li><a href="../../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL_REALTIMEALPHA Compute step length, cadence, alpha and X of a trial.</li><li><a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>	BIN_DATAV1 Compute a running average along the rows of a matrix.</li><li><a href="../../../../labTools/fun/misc/hmhFun/GroupDemographics.html" class="code" title="function Demographics = GroupDemographics(SMatrix)">GroupDemographics</a>	GROUPDEMOGRAPHICS Compute group and study-level demographics.</li><li><a href="../../../../labTools/fun/misc/hmhFun/binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">binData</a>	BINDATA Compute a running average and standard deviation of columns.</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix, groups, plotFlag, indivFlag)">expResults</a>	EXPRESULTS Compute group-level steady-state and transfer results.</li><li><a href="../../../../labTools/fun/misc/hmhFun/getForceResults.html" class="code" title="function results = getForceResults(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag, removeBias)">getForceResults</a>	GETFORCERESULTS Compute force-parameter adaptation results per group.</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResults.html" class="code" title="function results = getResults(Study, params, groups,maxPerturb, plotFlag, indivFlag)">getResults</a>	GETRESULTS Compute standard adaptation outcome measures per group.</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix, groups, plotFlag, indivFlag)">getResultsBF</a>	GETRESULTSBF Compute body-frame perception results per group.</li><li><a href="../../../../labTools/fun/misc/hmhFun/getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">getResultsSMART</a>	GETRESULTSSMART Compute adaptation results with strides-to-SS and</li><li><a href="../../../../labTools/fun/misc/matchControlsFixedGUI.html" class="code" title="function matchControlsFixedGUI(demoFile)">matchControlsFixedGUI</a>	MATCHCONTROLSFIXEDGUI Match control participants to a target participant.</li><li><a href="../../../../labTools/fun/misc/runAvg.html" class="code" title="function [xnew, xnewstd] = runAvg(x, binwidth, dim)">runAvg</a>	RUNAVG Compute a running (sliding-window) average of a matrix.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP AP GRF parameters from overground plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents,GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Stride-aligned AP GRF parameters.</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph] = prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	PRETTYBARPLOT Grouped bar plot with spread and individual data points.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stdTS = std(this, strideIdxs)</a>
-0002 <span class="comment">%std  Computes standard deviation</span>
+0002 <span class="comment">%STD Computes standard deviation.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   stdTS = std(this) computes standard deviation across all strides</span>
 0005 <span class="comment">%</span>
 0006 <span class="comment">%   stdTS = std(this, strideIdxs) computes for specified strides</span>
 0007 <span class="comment">%</span>
-0008 <span class="comment">%   Inputs:</span>
-0009 <span class="comment">%       this - alignedTimeSeries object</span>
-0010 <span class="comment">%       strideIdxs - vector of stride indices (optional, default: all)</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   this       - alignedTimeSeries object</span>
+0010 <span class="comment">%   strideIdxs - vector of stride indices (optional, default: all)</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   Outputs:</span>
-0013 <span class="comment">%       stdTS - alignedTimeSeries with standard deviation (for numeric)</span>
-0014 <span class="comment">%               or vector (for logical)</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   stdTS - alignedTimeSeries with standard deviation (for numeric) or</span>
+0014 <span class="comment">%           vector (for logical)</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">%   See also: mean, stdRobust, iqr</span>
-0017 
-0018 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
-0019     this.Data = this.Data(:, :, strideIdxs);
-0020 <span class="keyword">end</span>
-0021 <span class="keyword">if</span> ~islogical(this.Data(1))
-0022     <span class="comment">% stdTS = labTimeSeries(nanstd(this.Data, [], 3), this.Time(1),</span>
-0023     <span class="comment">%     this.Time(2) - this.Time(1), this.labels);</span>
-0024     stdTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
-0025         this.Time(2) - this.Time(1), nanstd(this.Data, [], 3), <span class="keyword">...</span>
-0026         this.labels, this.alignmentVector, this.alignmentLabels);
-0027 <span class="keyword">else</span>
-0028     <span class="comment">% Logical timeseries. Will find events and average appropriately.</span>
-0029     <span class="comment">% Assuming the SAME number of events per stride, and in the same</span>
-0030     <span class="comment">% ORDER. % FIXME: check event order.</span>
-0031     histogram = <a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>(this);
-0032     stdTS = <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(histogram); <span class="comment">% Not really a tS</span>
-0033 <span class="keyword">end</span>
-0034 <span class="keyword">end</span>
-0035</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0016 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also MEAN, STDROBUST, IQR.</span>
+0019 
+0020 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strideIdxs)
+0021     this.Data = this.Data(:, :, strideIdxs);
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> ~islogical(this.Data(1))
+0024     <span class="comment">% stdTS = labTimeSeries(nanstd(this.Data, [], 3), this.Time(1),</span>
+0025     <span class="comment">%     this.Time(2) - this.Time(1), this.labels);</span>
+0026     stdTS = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1), <span class="keyword">...</span>
+0027         this.Time(2) - this.Time(1), <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(this.Data, [], 3, <span class="string">'omitnan'</span>), <span class="keyword">...</span>
+0028         this.labels, this.alignmentVector, this.alignmentLabels);
+0029 <span class="keyword">else</span>
+0030     <span class="comment">% Logical timeseries. Will find events and average appropriately.</span>
+0031     <span class="comment">% Assuming the SAME number of events per stride, and in the same</span>
+0032     <span class="comment">% ORDER. % FIXME: check event order.</span>
+0033     histogram = <a href="logicalHist.html" class="code" title="function [histogram, newLabels] = logicalHist(this)">logicalHist</a>(this);
+0034     stdTS     = <a href="std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(histogram); <span class="comment">% Not really a tS</span>
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

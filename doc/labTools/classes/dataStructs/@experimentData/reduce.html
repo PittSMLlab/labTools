@@ -4,7 +4,7 @@
 <head>
   <title>Description of reduce</title>
   <meta name="keywords" content="reduce">
-  <meta name="description" content="reduce  Creates reducedLabData for all trials">
+  <meta name="description" content="REDUCE Creates reducedLabData for all trials">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,36 +21,38 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>reduce  Creates reducedLabData for all trials</strong></div>
+<div class="box"><strong>REDUCE Creates reducedLabData for all trials</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function reducedThis = reduce(this, eventLabels, N) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">reduce  Creates reducedLabData for all trials
+<div class="fragment"><pre class="comment">REDUCE Creates reducedLabData for all trials
 
-   reducedThis = reduce(this) reduces all trials using default event
-   labels and resampling
+   reducedThis = reduce(this) reduces all trials using default event labels
+ and resampling
 
-   reducedThis = reduce(this, eventLabels, N) reduces all trials
-   using specified events and sample counts
+   reducedThis = reduce(this, eventLabels, N) reduces all trials using
+ specified events and sample counts
 
-   Inputs:
-       this - experimentData object
-       eventLabels - cell array of event labels for alignment
-                     (optional, default: based on ref/non-ref legs)
-       N - vector of sample counts between events (optional)
+ Inputs:
+   this        - experimentData object
+   eventLabels - cell array of event labels for alignment (optional,
+                 default: based on ref/non-ref legs)
+   N           - vector of sample counts between events (optional)
 
-   Outputs:
-       reducedThis - experimentData object with reduced data
+ Outputs:
+   reducedThis - experimentData object with reduced data
 
-   See also: labData/reduce, processedLabData/reduce</pre></div>
+ Toolbox Dependencies: None
+
+ See also LABDATA.<a href="reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">REDUCE</a>, PROCESSEDLABDATA.<a href="reduce.html" class="code" title="function reducedThis = reduce(this, eventLabels, N)">REDUCE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
@@ -60,40 +62,42 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function reducedThis = reduce(this, eventLabels, N)</a>
-0002 <span class="comment">%reduce  Creates reducedLabData for all trials</span>
+0002 <span class="comment">%REDUCE Creates reducedLabData for all trials</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   reducedThis = reduce(this) reduces all trials using default event</span>
-0005 <span class="comment">%   labels and resampling</span>
+0004 <span class="comment">%   reducedThis = reduce(this) reduces all trials using default event labels</span>
+0005 <span class="comment">% and resampling</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   reducedThis = reduce(this, eventLabels, N) reduces all trials</span>
-0008 <span class="comment">%   using specified events and sample counts</span>
+0007 <span class="comment">%   reducedThis = reduce(this, eventLabels, N) reduces all trials using</span>
+0008 <span class="comment">% specified events and sample counts</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Inputs:</span>
-0011 <span class="comment">%       this - experimentData object</span>
-0012 <span class="comment">%       eventLabels - cell array of event labels for alignment</span>
-0013 <span class="comment">%                     (optional, default: based on ref/non-ref legs)</span>
-0014 <span class="comment">%       N - vector of sample counts between events (optional)</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   this        - experimentData object</span>
+0012 <span class="comment">%   eventLabels - cell array of event labels for alignment (optional,</span>
+0013 <span class="comment">%                 default: based on ref/non-ref legs)</span>
+0014 <span class="comment">%   N           - vector of sample counts between events (optional)</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">%   Outputs:</span>
-0017 <span class="comment">%       reducedThis - experimentData object with reduced data</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   reducedThis - experimentData object with reduced data</span>
 0018 <span class="comment">%</span>
-0019 <span class="comment">%   See also: labData/reduce, processedLabData/reduce</span>
-0020 
-0021 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(eventLabels)
-0022     s = this.getRefLeg;
-0023     f = this.getNonRefLeg;
-0024     eventLabels = {[s, <span class="string">'HS'</span>], [f, <span class="string">'TO'</span>], [f, <span class="string">'HS'</span>], [s, <span class="string">'TO'</span>]};
-0025 <span class="keyword">end</span>
-0026 <span class="keyword">if</span> nargin &lt; 3
-0027     N = [];
-0028 <span class="keyword">end</span>
-0029 redData = cell(size(this.data));
-0030 <span class="keyword">for</span> i = 1:length(this.data)
-0031     redData{i} = this.data{i}.reduce(eventLabels, N);
-0032 <span class="keyword">end</span>
-0033 reducedThis = <a href="experimentData.html" class="code" title="">experimentData</a>(this.metaData, this.subData, redData);
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also LABDATA.REDUCE, PROCESSEDLABDATA.REDUCE.</span>
+0022 
+0023 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(eventLabels)
+0024     s           = this.getRefLeg();
+0025     f           = this.getNonRefLeg();
+0026     eventLabels = {[s, <span class="string">'HS'</span>], [f, <span class="string">'TO'</span>], [f, <span class="string">'HS'</span>], [s, <span class="string">'TO'</span>]};
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 3
+0029     N = [];
+0030 <span class="keyword">end</span>
+0031 redData = cell(size(this.data));
+0032 <span class="keyword">for</span> ii = 1:length(this.data)
+0033     redData{ii} = this.data{ii}.reduce(eventLabels, N);
 0034 <span class="keyword">end</span>
-0035</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0035 reducedThis = <a href="experimentData.html" class="code" title="">experimentData</a>(this.metaData, this.subData, redData);
+0036 <span class="keyword">end</span>
+0037</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

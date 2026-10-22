@@ -4,7 +4,7 @@
 <head>
   <title>Description of castAsSTS</title>
   <meta name="keywords" content="castAsSTS">
-  <meta name="description" content="castAsSTS  Converts to spectroTimeSeries">
+  <meta name="description" content="CASTASSTS Converts to spectroTimeSeries.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,27 +21,31 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>castAsSTS  Converts to spectroTimeSeries</strong></div>
+<div class="box"><strong>CASTASSTS Converts to spectroTimeSeries.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = castAsSTS(this, F, tWin, tOverlap) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">castAsSTS  Converts to spectroTimeSeries
+<div class="fragment"><pre class="comment">CASTASSTS Converts to spectroTimeSeries.
 
    newThis = castAsSTS(this, F, tWin, tOverlap) converts to
-   spectroTimeSeries with specified parameters
+ spectroTimeSeries with specified parameters
 
-   Inputs:
-       this - labTimeSeries object
-       F - frequency vector
-       tWin - time window duration
-       tOverlap - overlap duration
+ Inputs:
+   this     - labTimeSeries object
+   F        - frequency vector
+   tWin     - time window duration
+   tOverlap - overlap duration
 
-   Outputs:
-       newThis - spectroTimeSeries object
+ Outputs:
+   newThis - spectroTimeSeries object
 
-   See also: spectroTimeSeries, <a href="spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">spectrogram</a></pre></div>
+   NOTE: the spectroTimeSeries class is not part of this repository.
+
+ Toolbox Dependencies: None
+
+ See also SPECTROTIMESERIES, <a href="spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">SPECTROGRAM</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -57,32 +61,36 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = castAsSTS(this, F, tWin, tOverlap)</a>
-0002 <span class="comment">%castAsSTS  Converts to spectroTimeSeries</span>
+0002 <span class="comment">%CASTASSTS Converts to spectroTimeSeries.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newThis = castAsSTS(this, F, tWin, tOverlap) converts to</span>
-0005 <span class="comment">%   spectroTimeSeries with specified parameters</span>
+0005 <span class="comment">% spectroTimeSeries with specified parameters</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
-0009 <span class="comment">%       F - frequency vector</span>
-0010 <span class="comment">%       tWin - time window duration</span>
-0011 <span class="comment">%       tOverlap - overlap duration</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this     - labTimeSeries object</span>
+0009 <span class="comment">%   F        - frequency vector</span>
+0010 <span class="comment">%   tWin     - time window duration</span>
+0011 <span class="comment">%   tOverlap - overlap duration</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   Outputs:</span>
-0014 <span class="comment">%       newThis - spectroTimeSeries object</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   newThis - spectroTimeSeries object</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">%   See also: spectroTimeSeries, spectrogram</span>
-0017 
-0018 <span class="comment">% Check if it satisfies STS requirements</span>
-0019 dataF = this.Data;
-0020 labelsF = this.labels;
-0021 t0 = this.Time(1);
-0022 Ts = this.sampPeriod;
-0023 spectroTimeSeries.inputArgsCheck( <span class="keyword">...</span>
-0024     dataF, labelsF, t0, Ts, F, tWin, tOverlap);
-0025 newThis = spectroTimeSeries(dataF, labelsF, t0, Ts, F, tWin, tOverlap);
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0016 <span class="comment">%   NOTE: the spectroTimeSeries class is not part of this repository.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also SPECTROTIMESERIES, SPECTROGRAM.</span>
+0021 
+0022 <span class="comment">% Check if it satisfies STS requirements</span>
+0023 dataF   = this.Data;
+0024 labelsF = this.labels;
+0025 t0      = this.Time(1);
+0026 Ts      = this.sampPeriod;
+0027 spectroTimeSeries.inputArgsCheck( <span class="keyword">...</span>
+0028     dataF, labelsF, t0, Ts, F, tWin, tOverlap);
+0029 newThis = spectroTimeSeries(dataF, labelsF, t0, Ts, F, tWin, tOverlap);
+0030 <span class="keyword">end</span>
+0031</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

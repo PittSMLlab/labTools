@@ -4,7 +4,7 @@
 <head>
   <title>Description of compareLists</title>
   <meta name="keywords" content="compareLists">
-  <meta name="description" content="Searches for strings in list2 to match any string in list1.">
+  <meta name="description" content="COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,51 +21,67 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Searches for strings in list2 to match any string in list1.</strong></div>
+<div class="box"><strong>COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [bool,idxs] = compareLists(list1,list2) </strong></div>
+<div class="box"><strong>function [bool, idxs] = compareLists(list1, list2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Searches for strings in list2 to match any string in list1.
-List2 has to be a cell array of strings.
-List 1 has to be a cell array containing strings or cell arrays of
-strings, to allow for multiple alternative spellings.
-bool &amp; idxs are of the same size as list2
-bool(i) is true if list2{i} is found in list1
-idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that
-any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}
-may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may
-return a boolean vector</pre></div>
+<div class="fragment"><pre class="comment">COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.
+
+   Passes all arguments through to compareListsNested unchanged. See
+ COMPARELISTSNESTED for full documentation.
+
+ Inputs:
+   list1 - cell array of strings or nested cell arrays of strings
+   list2 - cell array of strings to search for
+
+ Outputs:
+   bool - logical vector, same size as list2; true where list2{ii} is found
+          in list1
+   idxs - index vector, same size as list2; idxs(ii) is the index into
+          list1 that matched list2{ii} (NaN where bool(ii) is false)
+
+ Toolbox Dependencies: None
+
+ See also <a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">COMPARELISTSNESTED</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>	COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/removeParameter.html" class="code" title="function newThis = removeParameter(labels)">removeParameter</a>	removeParameter  Removes parameter from timeseries</li><li><a href="../../../../../labTools/classes/labTS/@parameterSeries/addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	addStrides  Adds strides from another parameterSeries</li><li><a href="../../../../../labTools/classes/labTS/@parameterSeries/incorporateDependentParameters.html" class="code" title="function newThis = incorporateDependentParameters(this, labels)">incorporateDependentParameters</a>	incorporateDependentParameters  Adds computed dependent parameters</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/removeParameter.html" class="code" title="function newThis = removeParameter(labels)">removeParameter</a>	REMOVEPARAMETER Removes parameter from timeseries.</li><li><a href="../../../../../labTools/classes/labTS/@parameterSeries/addStrides.html" class="code" title="function newThis = addStrides(this, other)">addStrides</a>	ADDSTRIDES Adds strides from another parameterSeries.</li><li><a href="../../../../../labTools/classes/labTS/@parameterSeries/incorporateDependentParameters.html" class="code" title="function newThis = incorporateDependentParameters(this, labels)">incorporateDependentParameters</a>	INCORPORATEDEPENDENTPARAMETERS Adds computed dependent parameters.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bool,idxs] = compareLists(list1,list2)</a>
-0002 <span class="comment">%Searches for strings in list2 to match any string in list1.</span>
-0003 <span class="comment">%List2 has to be a cell array of strings.</span>
-0004 <span class="comment">%List 1 has to be a cell array containing strings or cell arrays of</span>
-0005 <span class="comment">%strings, to allow for multiple alternative spellings.</span>
-0006 <span class="comment">%bool &amp; idxs are of the same size as list2</span>
-0007 <span class="comment">%bool(i) is true if list2{i} is found in list1</span>
-0008 <span class="comment">%idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that</span>
-0009 <span class="comment">%any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}</span>
-0010 <span class="comment">%may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may</span>
-0011 <span class="comment">%return a boolean vector</span>
-0012 warning(<span class="string">'Deprecated: use compareListsNested'</span>)
-0013 [bool,idxs] = <a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(list1,list2);
-0014 <span class="keyword">end</span>
-0015</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bool, idxs] = compareLists(list1, list2)</a>
+0002 <span class="comment">%COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Passes all arguments through to compareListsNested unchanged. See</span>
+0005 <span class="comment">% COMPARELISTSNESTED for full documentation.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   list1 - cell array of strings or nested cell arrays of strings</span>
+0009 <span class="comment">%   list2 - cell array of strings to search for</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   bool - logical vector, same size as list2; true where list2{ii} is found</span>
+0013 <span class="comment">%          in list1</span>
+0014 <span class="comment">%   idxs - index vector, same size as list2; idxs(ii) is the index into</span>
+0015 <span class="comment">%          list1 that matched list2{ii} (NaN where bool(ii) is false)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also COMPARELISTSNESTED.</span>
+0020 
+0021 warning(<span class="string">'Deprecated: use compareListsNested'</span>)
+0022 [bool, idxs] = <a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>(list1, list2);
+0023 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

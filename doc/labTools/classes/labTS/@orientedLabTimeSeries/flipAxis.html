@@ -4,7 +4,7 @@
 <head>
   <title>Description of flipAxis</title>
   <meta name="keywords" content="flipAxis">
-  <meta name="description" content="flipAxis  Flips specified axis">
+  <meta name="description" content="FLIPAXIS Flips specified axis.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>flipAxis  Flips specified axis</strong></div>
+<div class="box"><strong>FLIPAXIS Flips specified axis.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = flipAxis(this, axis) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">flipAxis  Flips specified axis
+<div class="fragment"><pre class="comment">FLIPAXIS Flips specified axis.
 
    newThis = flipAxis(this, axis) flips sign of specified axis
 
-   Inputs:
-       this - orientedLabTimeSeries object
-       axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3
+ Inputs:
+   this - orientedLabTimeSeries object
+   axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3
 
-   Outputs:
-       newThis - flipped orientedLabTimeSeries
+ Outputs:
+   newThis - flipped orientedLabTimeSeries
 
-   See also: <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">rotate</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="rotate.html" class="code" title="function newThis = rotate(this, matrix)">ROTATE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -54,28 +56,30 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = flipAxis(this, axis)</a>
-0002 <span class="comment">%flipAxis  Flips specified axis</span>
+0002 <span class="comment">%FLIPAXIS Flips specified axis.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newThis = flipAxis(this, axis) flips sign of specified axis</span>
 0005 <span class="comment">%</span>
-0006 <span class="comment">%   Inputs:</span>
-0007 <span class="comment">%       this - orientedLabTimeSeries object</span>
-0008 <span class="comment">%       axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   this - orientedLabTimeSeries object</span>
+0008 <span class="comment">%   axis - axis to flip: 'x', 'y', 'z' or 1, 2, 3</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       newThis - flipped orientedLabTimeSeries</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   newThis - flipped orientedLabTimeSeries</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: rotate</span>
-0014 
-0015 matrix = eye(3);
-0016 <span class="keyword">if</span> isa(axis, <span class="string">'char'</span>)
-0017     <span class="comment">% This converts 'x', 'y', 'z' to 1, 2, 3</span>
-0018     axis = axis - <span class="string">'w'</span>;
-0019 <span class="keyword">end</span>
-0020 matrix(axis, axis) = -1;
-0021 newThis = this.rotate(matrix);
-0022 <span class="keyword">end</span>
-0023</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also ROTATE.</span>
+0016 
+0017 matrix = eye(3);
+0018 <span class="keyword">if</span> isa(axis, <span class="string">'char'</span>)
+0019     <span class="comment">% This converts 'x', 'y', 'z' to 1, 2, 3</span>
+0020     axis = axis - <span class="string">'w'</span>;
+0021 <span class="keyword">end</span>
+0022 matrix(axis, axis) = -1;
+0023 newThis = this.rotate(matrix);
+0024 <span class="keyword">end</span>
+0025</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

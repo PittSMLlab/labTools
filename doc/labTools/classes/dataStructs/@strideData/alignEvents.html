@@ -4,7 +4,7 @@
 <head>
   <title>Description of alignEvents</title>
   <meta name="keywords" content="alignEvents">
-  <meta name="description" content="alignEvents  Aligns data to gait events (unimplemented)">
+  <meta name="description" content="ALIGNEVENTS Aligns data to gait events (unimplemented).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,32 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>alignEvents  Aligns data to gait events (unimplemented)</strong></div>
+<div class="box"><strong>ALIGNEVENTS Aligns data to gait events (unimplemented).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = alignEvents(this, events, spacing) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">alignEvents  Aligns data to gait events (unimplemented)
+<div class="fragment"><pre class="comment">ALIGNEVENTS Aligns data to gait events (unimplemented).
 
-   newThis = alignEvents(this, events, spacing) would align all
-   time series data to the specified gait events with given
-   spacing
+   newThis = alignEvents(this, events, spacing) would align all time series
+ data to the specified gait events with given spacing
 
-   Inputs:
-       this - strideData object
-       events - cell array of event labels for alignment
-       spacing - vector specifying spacing between events
+ Inputs:
+   this    - strideData object
+   events  - cell array of event labels for alignment
+   spacing - vector specifying spacing between events
 
-   Outputs:
-       newThis - aligned strideData object
+ Outputs:
+   newThis - aligned strideData object
 
    Note: Current problem - sampling needs to be uniform, but when we
          alignEvents that can no longer be the case (because event times
          have natural variability, its alignment implies that we'll have
          non-uniform sampling)
 
-   See also: <a href="timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N, newClass)">timeNormalize</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="timeNormalize.html" class="code" title="function newThis = timeNormalize(this, N, newClass)">TIMENORMALIZE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -62,30 +63,31 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = alignEvents(this, events, spacing)</a>
-0002 <span class="comment">%alignEvents  Aligns data to gait events (unimplemented)</span>
+0002 <span class="comment">%ALIGNEVENTS Aligns data to gait events (unimplemented).</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = alignEvents(this, events, spacing) would align all</span>
-0005 <span class="comment">%   time series data to the specified gait events with given</span>
-0006 <span class="comment">%   spacing</span>
-0007 <span class="comment">%</span>
-0008 <span class="comment">%   Inputs:</span>
-0009 <span class="comment">%       this - strideData object</span>
-0010 <span class="comment">%       events - cell array of event labels for alignment</span>
-0011 <span class="comment">%       spacing - vector specifying spacing between events</span>
-0012 <span class="comment">%</span>
-0013 <span class="comment">%   Outputs:</span>
-0014 <span class="comment">%       newThis - aligned strideData object</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">%   Note: Current problem - sampling needs to be uniform, but when we</span>
-0017 <span class="comment">%         alignEvents that can no longer be the case (because event times</span>
-0018 <span class="comment">%         have natural variability, its alignment implies that we'll have</span>
-0019 <span class="comment">%         non-uniform sampling)</span>
-0020 <span class="comment">%</span>
-0021 <span class="comment">%   See also: timeNormalize</span>
-0022 
-0023 newThis = [];
-0024 <span class="keyword">end</span>
-0025</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0004 <span class="comment">%   newThis = alignEvents(this, events, spacing) would align all time series</span>
+0005 <span class="comment">% data to the specified gait events with given spacing</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this    - strideData object</span>
+0009 <span class="comment">%   events  - cell array of event labels for alignment</span>
+0010 <span class="comment">%   spacing - vector specifying spacing between events</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   newThis - aligned strideData object</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Note: Current problem - sampling needs to be uniform, but when we</span>
+0016 <span class="comment">%         alignEvents that can no longer be the case (because event times</span>
+0017 <span class="comment">%         have natural variability, its alignment implies that we'll have</span>
+0018 <span class="comment">%         non-uniform sampling)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also TIMENORMALIZE.</span>
+0023 
+0024 newThis = [];
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

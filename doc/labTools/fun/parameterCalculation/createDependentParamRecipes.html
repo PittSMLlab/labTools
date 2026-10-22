@@ -34,7 +34,8 @@
  table includes a hip contribution entry and phase-average (p),
  time-integrated (t), and stride-normalized (e) versions of each
  EMG muscle/side combination. The completed table is saved as
- DependParamRecipes.mat in the same directory as this script.
+ DependParamRecipes.mat in the same directory as this script, silently
+ overwriting the existing file (see DATA_OUTPUTS.md).
 
  Toolbox Dependencies:
    None
@@ -61,77 +62,78 @@ This function is called by:
 0005 <span class="comment">% table includes a hip contribution entry and phase-average (p),</span>
 0006 <span class="comment">% time-integrated (t), and stride-normalized (e) versions of each</span>
 0007 <span class="comment">% EMG muscle/side combination. The completed table is saved as</span>
-0008 <span class="comment">% DependParamRecipes.mat in the same directory as this script.</span>
-0009 <span class="comment">%</span>
-0010 <span class="comment">% Toolbox Dependencies:</span>
-0011 <span class="comment">%   None</span>
-0012 <span class="comment">%</span>
-0013 <span class="comment">% See also ADAPTATIONDATA, CALCPARAMETERS.</span>
-0014 
-0015 <span class="comment">%% Initialize Recipe List</span>
-0016 fieldList = {<span class="string">'hipContribution'</span>, <span class="string">'@(w,x,y,z) w-x-y-z'</span>, <span class="keyword">...</span>
-0017     {<span class="string">'netContributionNorm2'</span>, <span class="string">'spatialContributionNorm2'</span>, <span class="keyword">...</span>
-0018     <span class="string">'stepTimeContributionPNorm'</span>, <span class="string">'velocityContributionPNorm'</span>}, <span class="keyword">...</span>
-0019     <span class="string">'computes the proposed hip contrib'</span>};
-0020 
-0021 <span class="comment">%% Add Derived EMG Parameters</span>
-0022 muscleList = {<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'MG'</span>, <span class="string">'LG'</span>, <span class="string">'SOL'</span>, <span class="string">'RF'</span>, <span class="string">'VM'</span>, <span class="string">'VF'</span>, <span class="keyword">...</span>
-0023     <span class="string">'SEMT'</span>, <span class="string">'SEMB'</span>, <span class="string">'BF'</span>, <span class="string">'GLU'</span>, <span class="string">'TFL'</span>, <span class="string">'HIP'</span>, <span class="string">'ADM'</span>};
-0024 <span class="comment">% Going from 's' to 'p' parameters is equivalent to averaging each</span>
-0025 <span class="comment">% pair of 's' parameters into a single value. For each muscle, this</span>
-0026 <span class="comment">% is equivalent to multiplying by the matrix:</span>
-0027 <span class="comment">%   s2pMatrix = nan(12, 6);</span>
-0028 <span class="comment">%   s2pMatrix([1:2:12, 2:2:12], :) = 0.5*[eye(6) eye(6)]';</span>
-0029 sides = {<span class="string">'R'</span>, <span class="string">'L'</span>};
-0030 desc = {<span class="string">'SHS to FTO'</span>, <span class="string">'FTO to mid fast swing'</span>, <span class="keyword">...</span>
-0031     <span class="string">'mid fast swing to FHS'</span>, <span class="string">'FHS to STO'</span>, <span class="keyword">...</span>
-0032     <span class="string">'STO to mid slow swing'</span>, <span class="string">'mid slow swing to SHS'</span>};
-0033 timeScaleParam = {<span class="string">'doubleSupportTemp'</span>, <span class="string">'doubleSupportTemp'</span>, <span class="keyword">...</span>
-0034     <span class="string">'swingTimeFast'</span>,     <span class="string">'swingTimeFast'</span>, <span class="keyword">...</span>
+0008 <span class="comment">% DependParamRecipes.mat in the same directory as this script, silently</span>
+0009 <span class="comment">% overwriting the existing file (see DATA_OUTPUTS.md).</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Toolbox Dependencies:</span>
+0012 <span class="comment">%   None</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% See also ADAPTATIONDATA, CALCPARAMETERS.</span>
+0015 
+0016 <span class="comment">%% Initialize Recipe List</span>
+0017 fieldList = {<span class="string">'hipContribution'</span>, <span class="string">'@(w,x,y,z) w-x-y-z'</span>, <span class="keyword">...</span>
+0018     {<span class="string">'netContributionNorm2'</span>, <span class="string">'spatialContributionNorm2'</span>, <span class="keyword">...</span>
+0019     <span class="string">'stepTimeContributionPNorm'</span>, <span class="string">'velocityContributionPNorm'</span>}, <span class="keyword">...</span>
+0020     <span class="string">'computes the proposed hip contrib'</span>};
+0021 
+0022 <span class="comment">%% Add Derived EMG Parameters</span>
+0023 muscleList = {<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'MG'</span>, <span class="string">'LG'</span>, <span class="string">'SOL'</span>, <span class="string">'RF'</span>, <span class="string">'VM'</span>, <span class="string">'VF'</span>, <span class="keyword">...</span>
+0024     <span class="string">'SEMT'</span>, <span class="string">'SEMB'</span>, <span class="string">'BF'</span>, <span class="string">'GLU'</span>, <span class="string">'TFL'</span>, <span class="string">'HIP'</span>, <span class="string">'ADM'</span>};
+0025 <span class="comment">% Going from 's' to 'p' parameters is equivalent to averaging each</span>
+0026 <span class="comment">% pair of 's' parameters into a single value. For each muscle, this</span>
+0027 <span class="comment">% is equivalent to multiplying by the matrix:</span>
+0028 <span class="comment">%   s2pMatrix = nan(12, 6);</span>
+0029 <span class="comment">%   s2pMatrix([1:2:12, 2:2:12], :) = 0.5*[eye(6) eye(6)]';</span>
+0030 sides = {<span class="string">'R'</span>, <span class="string">'L'</span>};
+0031 desc = {<span class="string">'SHS to FTO'</span>, <span class="string">'FTO to mid fast swing'</span>, <span class="keyword">...</span>
+0032     <span class="string">'mid fast swing to FHS'</span>, <span class="string">'FHS to STO'</span>, <span class="keyword">...</span>
+0033     <span class="string">'STO to mid slow swing'</span>, <span class="string">'mid slow swing to SHS'</span>};
+0034 timeScaleParam = {<span class="string">'doubleSupportTemp'</span>, <span class="string">'doubleSupportTemp'</span>, <span class="keyword">...</span>
 0035     <span class="string">'swingTimeFast'</span>,     <span class="string">'swingTimeFast'</span>, <span class="keyword">...</span>
-0036     <span class="string">'doubleSupportSlow'</span>, <span class="string">'doubleSupportSlow'</span>, <span class="keyword">...</span>
-0037     <span class="string">'swingTimeSlow'</span>,     <span class="string">'swingTimeSlow'</span>, <span class="keyword">...</span>
-0038     <span class="string">'swingTimeSlow'</span>,     <span class="string">'swingTimeSlow'</span>};
-0039 timeScaleK = [2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1];
-0040 <span class="keyword">for</span> sd = 1:2
-0041     side = sides{sd};
-0042     <span class="keyword">for</span> mscl = 1:length(muscleList)
-0043         <span class="keyword">for</span> ii = 1:6  <span class="comment">% phase-average (p) parameters</span>
-0044             fieldList(end+1, :) = { <span class="keyword">...</span>
-0045                 [side muscleList{mscl} <span class="string">'p'</span> num2str(ii)], <span class="keyword">...</span>
-0046                 <span class="string">'@(x,y) 0.5*(x+y)'</span>, <span class="keyword">...</span>
-0047                 {[side muscleList{mscl} <span class="string">'s'</span> num2str(2*ii - 1)], <span class="keyword">...</span>
-0048                 [side muscleList{mscl} <span class="string">'s'</span> num2str(2*ii)]}, <span class="keyword">...</span>
-0049                 [<span class="string">'Average of proc EMG data in muscle '</span> <span class="keyword">...</span>
-0050                 side muscleList{mscl} <span class="string">' from '</span> desc{ii}]};
-0051         <span class="keyword">end</span>
-0052         <span class="keyword">for</span> ii = 1:12  <span class="comment">% time-integrated (t) parameters</span>
-0053             fieldList(end+1, :) = { <span class="keyword">...</span>
-0054                 [side muscleList{mscl} <span class="string">'t'</span> num2str(ii)], <span class="keyword">...</span>
-0055                 [<span class="string">'@(x,y) 0.25*x.*y*'</span> num2str(timeScaleK(ii))], <span class="keyword">...</span>
-0056                 {[side muscleList{mscl} <span class="string">'s'</span> num2str(ii)], <span class="keyword">...</span>
-0057                 timeScaleParam{ii}}, <span class="keyword">...</span>
-0058                 [<span class="string">'Integrated (instead of averaged) version of '</span> <span class="keyword">...</span>
-0059                 side muscleList{mscl} <span class="string">'s'</span> num2str(ii)]};
-0060         <span class="keyword">end</span>
-0061         <span class="keyword">for</span> ii = 1:12  <span class="comment">% stride-normalized (e) parameters</span>
-0062             fieldList(end+1, :) = { <span class="keyword">...</span>
-0063                 [side muscleList{mscl} <span class="string">'e'</span> num2str(ii)], <span class="keyword">...</span>
-0064                 <span class="string">'@(x,y) x./y'</span>, <span class="keyword">...</span>
-0065                 {[side muscleList{mscl} <span class="string">'t'</span> num2str(ii)], <span class="keyword">...</span>
-0066                 <span class="string">'strideTimeSlow'</span>}, <span class="keyword">...</span>
-0067                 [<span class="string">'Time normalize (by stride cycle duration) version of '</span> <span class="keyword">...</span>
-0068                 side muscleList{mscl} <span class="string">'t'</span> num2str(ii)]};
-0069         <span class="keyword">end</span>
-0070     <span class="keyword">end</span>
-0071 <span class="keyword">end</span>
-0072 
-0073 <span class="comment">%% Save Recipe File</span>
-0074 scriptFullPath = mfilename(<span class="string">'fullpath'</span>);
-0075 scriptName     = mfilename;
-0076 pathParts      = regexp(scriptFullPath, scriptName, <span class="string">'split'</span>);
-0077 save([pathParts{1} <span class="string">'DependParamRecipes.mat'</span>], <span class="string">'fieldList'</span>)
-0078</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0036     <span class="string">'swingTimeFast'</span>,     <span class="string">'swingTimeFast'</span>, <span class="keyword">...</span>
+0037     <span class="string">'doubleSupportSlow'</span>, <span class="string">'doubleSupportSlow'</span>, <span class="keyword">...</span>
+0038     <span class="string">'swingTimeSlow'</span>,     <span class="string">'swingTimeSlow'</span>, <span class="keyword">...</span>
+0039     <span class="string">'swingTimeSlow'</span>,     <span class="string">'swingTimeSlow'</span>};
+0040 timeScaleK = [2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1];
+0041 <span class="keyword">for</span> sd = 1:2
+0042     side = sides{sd};
+0043     <span class="keyword">for</span> mscl = 1:length(muscleList)
+0044         <span class="keyword">for</span> ii = 1:6  <span class="comment">% phase-average (p) parameters</span>
+0045             fieldList(end+1, :) = { <span class="keyword">...</span>
+0046                 [side muscleList{mscl} <span class="string">'p'</span> num2str(ii)], <span class="keyword">...</span>
+0047                 <span class="string">'@(x,y) 0.5*(x+y)'</span>, <span class="keyword">...</span>
+0048                 {[side muscleList{mscl} <span class="string">'s'</span> num2str(2*ii - 1)], <span class="keyword">...</span>
+0049                 [side muscleList{mscl} <span class="string">'s'</span> num2str(2*ii)]}, <span class="keyword">...</span>
+0050                 [<span class="string">'Average of proc EMG data in muscle '</span> <span class="keyword">...</span>
+0051                 side muscleList{mscl} <span class="string">' from '</span> desc{ii}]};
+0052         <span class="keyword">end</span>
+0053         <span class="keyword">for</span> ii = 1:12  <span class="comment">% time-integrated (t) parameters</span>
+0054             fieldList(end+1, :) = { <span class="keyword">...</span>
+0055                 [side muscleList{mscl} <span class="string">'t'</span> num2str(ii)], <span class="keyword">...</span>
+0056                 [<span class="string">'@(x,y) 0.25*x.*y*'</span> num2str(timeScaleK(ii))], <span class="keyword">...</span>
+0057                 {[side muscleList{mscl} <span class="string">'s'</span> num2str(ii)], <span class="keyword">...</span>
+0058                 timeScaleParam{ii}}, <span class="keyword">...</span>
+0059                 [<span class="string">'Integrated (instead of averaged) version of '</span> <span class="keyword">...</span>
+0060                 side muscleList{mscl} <span class="string">'s'</span> num2str(ii)]};
+0061         <span class="keyword">end</span>
+0062         <span class="keyword">for</span> ii = 1:12  <span class="comment">% stride-normalized (e) parameters</span>
+0063             fieldList(end+1, :) = { <span class="keyword">...</span>
+0064                 [side muscleList{mscl} <span class="string">'e'</span> num2str(ii)], <span class="keyword">...</span>
+0065                 <span class="string">'@(x,y) x./y'</span>, <span class="keyword">...</span>
+0066                 {[side muscleList{mscl} <span class="string">'t'</span> num2str(ii)], <span class="keyword">...</span>
+0067                 <span class="string">'strideTimeSlow'</span>}, <span class="keyword">...</span>
+0068                 [<span class="string">'Time normalize (by stride cycle duration) version of '</span> <span class="keyword">...</span>
+0069                 side muscleList{mscl} <span class="string">'t'</span> num2str(ii)]};
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">%% Save Recipe File</span>
+0075 scriptFullPath = mfilename(<span class="string">'fullpath'</span>);
+0076 scriptName     = mfilename;
+0077 pathParts      = regexp(scriptFullPath, scriptName, <span class="string">'split'</span>);
+0078 save([pathParts{1} <span class="string">'DependParamRecipes.mat'</span>], <span class="string">'fieldList'</span>)
+0079</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

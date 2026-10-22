@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEventsFromForces</title>
   <meta name="keywords" content="getEventsFromForces">
-  <meta name="description" content="GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.">
+  <meta name="description" content="GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</strong></div>
+<div class="box"><strong>GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.
+<div class="fragment"><pre class="comment">GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.
 
    Determines heel-strike (HS) and toe-off (TO) events for left and right
  legs by thresholding vertical GRF signals. Delegates stance detection to
@@ -52,17 +52,17 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>	GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.</li><li><a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.</li></ul>
+<li><a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>	GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.</li><li><a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li><li><a href="../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li><li><a href="../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL Realtime</li><li><a href="../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL Realtime</li></ul>
+<li><a href="../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial by trial type.</li><li><a href="../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	% Add Python biofeedback data to adaptData</li><li><a href="../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results = SyncPython_forStatic(subject)">SyncPython_forStatic</a>	SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.</li><li><a href="../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL_REALTIME Compute step length, cadence and step time of a Nexus trial.</li><li><a href="../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL_REALTIMEALPHA Compute step length, cadence, alpha and X of a trial.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)</a>
-0002 <span class="comment">%GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</span>
+0002 <span class="comment">%GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Determines heel-strike (HS) and toe-off (TO) events for left and right</span>
 0005 <span class="comment">% legs by thresholding vertical GRF signals. Delegates stance detection to</span>
@@ -84,21 +84,34 @@ This function is called by:
 0021 <span class="comment">% See also GETSTANCEFROMFORCES, GETEVENTSFROMSTANCE.</span>
 0022 
 0023 <span class="comment">%% Get stance phases</span>
-0024 forceThresh = 60; <span class="comment">% stance detection threshold (N); ~8% of typical BW</span>
+0024 forceThresh = 10; <span class="comment">% stance detection threshold (N); ~8% of typical BW</span>
 0025 
-0026 <span class="comment">% NOTE: getStanceFromForcesAlt is a derivative-based alternative to</span>
-0027 <span class="comment">% getStanceFromForces; see that function for details.</span>
-0028 stanceL = <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzL, forceThresh, fsample);
-0029 stanceR = <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzR, forceThresh, fsample);
-0030 
-0031 <span class="comment">%% Get events from stance</span>
-0032 [LHS, RHS, LTO, RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>(stanceL, stanceR);
-0033 
-0034 <span class="comment">% NOTE: energy-onset masking (removing events before first GRF activity)</span>
-0035 <span class="comment">% was removed because it suppressed the very first step of a trial, which</span>
-0036 <span class="comment">% is often the most important event for adaptation analysis (Pablo, 2015).</span>
-0037 
-0038 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0026 <span class="comment">% % Temporarily filter force data (4th order butterworth Low pass filter</span>
+0027 <span class="comment">% % with cutoff frequency of 10 Hz)</span>
+0028 <span class="comment">% Wn = 2*10 / fsample;</span>
+0029 <span class="comment">% Ast=10dB (/octave) results in 4th order Butterworth filter</span>
+0030 <span class="comment">% (-80dB/dec fall)</span>
+0031 <span class="comment">% filterList = fdesign.lowpass('Fp,Fst,Ap,Ast',Wn, ...</span>
+0032 <span class="comment">%     Wn+0.2*(1-Wn),1.5,20);</span>
+0033 <span class="comment">% NOTE: a 4th order filter has less ripple in its impulse response.</span>
+0034 <span class="comment">% lowPassFilter = design(filterList,'butter');</span>
+0035 <span class="comment">% FzL = filtfilthd(lowPassFilter, FzL); % ext function</span>
+0036 <span class="comment">% FzR = filtfilthd(lowPassFilter, FzR); % ext function</span>
+0037 <span class="comment">% NOTE: getStanceFromForcesAlt is a derivative-based alternative to</span>
+0038 <span class="comment">% getStanceFromForces; see that function for details.</span>
+0039 stanceL = <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzL, forceThresh, fsample);
+0040 stanceR = <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzR, forceThresh, fsample);
+0041 
+0042 <span class="comment">%% Get events from stance</span>
+0043 [LHS, RHS, LTO, RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)">getEventsFromStance</a>(stanceL, stanceR);
+0044 
+0045 <span class="comment">%% Check consistency</span>
+0046 <span class="comment">% consistent = checkEventConsistency(LHS, RHS, LTO, RTO);</span>
+0047 <span class="comment">% NOTE: events before the first GRF activity are not masked, because</span>
+0048 <span class="comment">% that suppressed the very first step of a trial, which is often the</span>
+0049 <span class="comment">% most important event for adaptation analysis.</span>
+0050 
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

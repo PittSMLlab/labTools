@@ -4,7 +4,7 @@
 <head>
   <title>Description of getFigStruct</title>
   <meta name="keywords" content="getFigStruct">
-  <meta name="description" content="UNTITLED Calculate best subfigure divide (a x b) for showing N graphs">
+  <meta name="description" content="GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</strong></div>
+<div class="box"><strong>GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [a,b] = getFigStruct(N) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">UNTITLED Calculate best subfigure divide (a x b) for showing N graphs
-When you want to plot N graphs in a single figure, you first have to
-decide how the plots will be arranged in rows &amp; columns. This function
-determines the optimal number of rows and columns for a 16:9 monitor
-resolution ratio.</pre></div>
+<div class="fragment"><pre class="comment">GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.
+
+   Finds the integer layout a x b with a*b &gt;= N whose ratio is closest to
+ 16:9, to place N graphs in one figure.
+
+ Inputs:
+   N - number of graphs
+
+ Outputs:
+   a - larger dimension of the layout (a*b &gt;= N)
+   b - smaller dimension of the layout
+
+ Toolbox Dependencies: None
+
+ See also <a href="subplotSize.html" class="code" title="function [rows,cols] = subplotSize(n_plots,relRows,relCols)">SUBPLOTSIZE</a>, <a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">OPTIMIZEDSUBPLOT</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -40,76 +50,86 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	bilateralPlot  Plots bilateral comparison</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	PLOTALLSTRIDES Plots all individual strides for a field.</li><li><a href="../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	PLOTAVGSTRIDE Plots average stride across conditions.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	BILATERALPLOT Plots bilateral comparison.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [a,b] = getFigStruct(N)</a>
-0002 <span class="comment">%UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</span>
-0003 <span class="comment">%When you want to plot N graphs in a single figure, you first have to</span>
-0004 <span class="comment">%decide how the plots will be arranged in rows &amp; columns. This function</span>
-0005 <span class="comment">%determines the optimal number of rows and columns for a 16:9 monitor</span>
-0006 <span class="comment">%resolution ratio.</span>
-0007 
-0008 <span class="comment">%2x1</span>
-0009 <span class="comment">%2x2</span>
-0010 <span class="comment">%3x2</span>
-0011 <span class="comment">%4x2</span>
-0012 <span class="comment">%4x3</span>
-0013 <span class="comment">%5x3</span>
-0014 <span class="comment">%</span>
-0015 
-0016 a=1;
-0017 b=1;
-0018 
-0019 <span class="comment">%while (a*b)&lt;N</span>
-0020 <span class="comment">%   if (((a+1)/b-16/9)^2 &gt; (a/(b+1)-16/9)^2 )</span>
-0021 <span class="comment">%       b=b+1;</span>
-0022 <span class="comment">%   else</span>
-0023 <span class="comment">%       a=a+1;</span>
-0024 <span class="comment">%   end</span>
-0025 <span class="comment">%end</span>
-0026 
-0027 r=16/9;
-0028 <span class="comment">%Get real numbers with exact ratio r, and exact product N</span>
-0029 a0=sqrt(N*r);
-0030 b0=sqrt(N/r);
-0031 
-0032 <span class="comment">%Now, find the closest integer approximation</span>
-0033 <span class="comment">%There are three candidates: round a0 up, and b0 down, the opposite, and</span>
-0034 <span class="comment">%round both of them up. (rounding both down gives less than N as product).</span>
-0035 <span class="keyword">if</span> ceil(a0)*floor(b0)&gt;=N
-0036     <span class="keyword">if</span> ceil(b0)*floor(a0)&gt;=N
-0037         <span class="comment">%Both are options, choose the one with best ratio</span>
-0038         <span class="keyword">if</span> (ceil(a0)/(r*floor(b0))-1)^2 &lt; (floor(a0)/(r*ceil(b0))-1)^2
-0039             a=ceil(a0);
-0040             b=floor(b0);
-0041         <span class="keyword">else</span>
-0042             a=floor(a0);
-0043             b=ceil(b0);
-0044         <span class="keyword">end</span>
-0045     <span class="keyword">else</span>
-0046         <span class="comment">%Only 1 is option, choose it</span>
-0047         a=ceil(a0);
-0048         b=floor(b0);
-0049     <span class="keyword">end</span>
-0050 <span class="keyword">else</span>
-0051     <span class="keyword">if</span> ceil(b0)*floor(a0)&gt;=N
-0052         <span class="comment">%Only 2 is option, choose it</span>
-0053         a=floor(a0);
-0054         b=ceil(b0);
+0002 <span class="comment">%GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Finds the integer layout a x b with a*b &gt;= N whose ratio is closest to</span>
+0005 <span class="comment">% 16:9, to place N graphs in one figure.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   N - number of graphs</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   a - larger dimension of the layout (a*b &gt;= N)</span>
+0012 <span class="comment">%   b - smaller dimension of the layout</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also SUBPLOTSIZE, OPTIMIZEDSUBPLOT.</span>
+0017 
+0018 <span class="comment">%2x1</span>
+0019 <span class="comment">%2x2</span>
+0020 <span class="comment">%3x2</span>
+0021 <span class="comment">%4x2</span>
+0022 <span class="comment">%4x3</span>
+0023 <span class="comment">%5x3</span>
+0024 <span class="comment">%</span>
+0025 
+0026 a = 1;
+0027 b = 1;
+0028 
+0029 <span class="comment">%while (a*b)&lt;N</span>
+0030 <span class="comment">%   if (((a+1)/b-16/9)^2 &gt; (a/(b+1)-16/9)^2 )</span>
+0031 <span class="comment">%       b=b+1;</span>
+0032 <span class="comment">%   else</span>
+0033 <span class="comment">%       a=a+1;</span>
+0034 <span class="comment">%   end</span>
+0035 <span class="comment">%end</span>
+0036 
+0037 r = 16/9;
+0038 <span class="comment">%Get real numbers with exact ratio r, and exact product N</span>
+0039 a0 = sqrt(N*r);
+0040 b0 = sqrt(N/r);
+0041 
+0042 <span class="comment">%Now, find the closest integer approximation</span>
+0043 <span class="comment">%There are three candidates: round a0 up, and b0 down, the opposite, and</span>
+0044 <span class="comment">%round both of them up. (rounding both down gives less than N as product).</span>
+0045 <span class="keyword">if</span> ceil(a0)*floor(b0) &gt;= N
+0046     <span class="keyword">if</span> ceil(b0)*floor(a0) &gt;= N
+0047         <span class="comment">%Both are options, choose the one with best ratio</span>
+0048         <span class="keyword">if</span> (ceil(a0)/(r*floor(b0))-1)^2 &lt; (floor(a0)/(r*ceil(b0))-1)^2
+0049             a = ceil(a0);
+0050             b = floor(b0);
+0051         <span class="keyword">else</span>
+0052             a = floor(a0);
+0053             b = ceil(b0);
+0054         <span class="keyword">end</span>
 0055     <span class="keyword">else</span>
-0056         <span class="comment">%Neither is option, go with ceil ceil</span>
-0057         a=ceil(a0);
-0058         b=ceil(b0);
+0056         <span class="comment">%Only 1 is option, choose it</span>
+0057         a = ceil(a0);
+0058         b = floor(b0);
 0059     <span class="keyword">end</span>
-0060 <span class="keyword">end</span>
-0061 
-0062 
-0063 <span class="keyword">end</span>
-0064</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0060 <span class="keyword">else</span>
+0061     <span class="keyword">if</span> ceil(b0)*floor(a0) &gt;= N
+0062         <span class="comment">%Only 2 is option, choose it</span>
+0063         a = floor(a0);
+0064         b = ceil(b0);
+0065     <span class="keyword">else</span>
+0066         <span class="comment">%Neither is option, go with ceil ceil</span>
+0067         a = ceil(a0);
+0068         b = ceil(b0);
+0069     <span class="keyword">end</span>
+0070 <span class="keyword">end</span>
+0071 
+0072 
+0073 <span class="keyword">end</span>
+0074</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

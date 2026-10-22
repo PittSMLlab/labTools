@@ -73,7 +73,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait event times.</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies by constant.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies data by constant.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	TIMES Multiplies by constant (override).</li><li><a href="extractKinematicDataAtEvents.html" class="code" title="function [sAnk, fAnk, sAngle, fAngle, direction, hipPos3D,hipPosSHS, sAnk_fromAvgHip, fAnk_fromAvgHip] =extractKinematicDataAtEvents(eventTimes, markerData,rotatedMarkerData, angleData, s)">extractKinematicDataAtEvents</a>	EXTRACTKINEMATICDATAATEVENTS Extract markers and angles at gait events.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">computeSpatialParameters</a>	COMPUTESPATIALPARAMETERS Compute spatial parameters per stride.</li></ul>
@@ -172,55 +172,59 @@ This function is called by:
 0088 <span class="comment">%% Compute Ankle Positions Relative to Hip</span>
 0089 hipPosFwd = hipPos3D(:, :, 2);      <span class="comment">% extract y-axis component</span>
 0090 
-0091 <span class="comment">%rotate coordinates to be aligned wiht walking dierection</span>
-0092 <span class="comment">%sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;</span>
-0093 <span class="comment">%fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;</span>
-0094 
-0095 <span class="comment">%avgRotation = (sRotation+fRotation)./2;</span>
+0091 <span class="comment">%rotate coordinates to be aligned with walking direction</span>
+0092 <span class="comment">%sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2), ...</span>
+0093 <span class="comment">%    [sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;</span>
+0094 <span class="comment">%fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2), ...</span>
+0095 <span class="comment">%    [fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;</span>
 0096 
-0097 <span class="comment">%rotationMatrix = [cosd(avgRotation) -sind(avgRotation) 0; sind(avgRotation) cosd(avgRotation) 0; 0 0 1];</span>
-0098 <span class="comment">%sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';</span>
-0099 <span class="comment">%fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';</span>
-0100 <span class="comment">%sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';</span>
-0101 <span class="comment">%fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';</span>
-0102 
-0103 <span class="comment">% NEED TO ROTATE</span>
-0104 <span class="comment">% compute ankle positions relative to average hip position</span>
-0105 sAnkFwd = sAnk(:, :, 2) - hipPosFwd;
-0106 fAnkFwd = fAnk(:, :, 2) - hipPosFwd;
-0107 sAnk2D  = sAnk(:, :, 1:2) - hipPos3D(:, :, 1:2);
-0108 fAnk2D  = fAnk(:, :, 1:2) - hipPos3D(:, :, 1:2);
-0109 
-0110 <span class="comment">% set all steps to have the same slope (a negative slope during</span>
-0111 <span class="comment">% stance phase is assumed)</span>
-0112 <span class="comment">%WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION</span>
-0113 <span class="comment">%DOESN'T?</span>
-0114 
-0115 <span class="comment">% adjust stride data to ensure consistent slope during stance phase</span>
-0116 <span class="comment">% checks for: sAnk(indSHS2,2) &lt; sAnk(indFHS,2)</span>
-0117 <span class="comment">% (doesn't use HIP to avoid HIP fluctuation issues)</span>
-0118 aux = sign(diff(sAnk(:, [3 5], 2), 1, 2));
-0119 sAnkFwd = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, sAnkFwd, aux);
-0120 fAnkFwd = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, fAnkFwd, aux);
-0121 sAnk2D  = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, sAnk2D, aux);
-0122 fAnk2D  = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, fAnk2D, aux);
-0123 
-0124 <span class="comment">%Alternative definition: should be equivalent, since we reference to midHip</span>
-0125 <span class="comment">%when doing the rotation. Only difference may be in sign of walking, since</span>
-0126 <span class="comment">%its computed slighltly different. Should not cause issues as differences</span>
-0127 <span class="comment">%may only ocurr when subject is turning around, which is a bad stride</span>
-0128 <span class="comment">%anyway</span>
-0129 <span class="comment">%WARNING: THIS WAS DISABLED BECAUSE IT LEADS TO CRAPPY RESULTS WHEN HIP</span>
-0130 <span class="comment">%MARKERS ARE NOT RELIABLE (NOISY). NEED TO FIX. THE PROBLEM IS</span>
-0131 <span class="comment">%sAnkFwd-fAnkFwd DEPENDS ON HIP POSITION WHEN IT SHOULDNT (COMPUTING</span>
-0132 <span class="comment">%DIFFERENCE OF TWO MARKER POSITIONS USING SAME REFERENCE). NOT SURE WHY.</span>
-0133 <span class="comment">%sAnkFwd=sAnkRel(:,:,2);</span>
-0134 <span class="comment">%fAnkFwd=fAnkRel(:,:,2);</span>
-0135 <span class="comment">%sAnk2D=sAnkRel(:,:,1:2);</span>
-0136 <span class="comment">%fAnk2D=fAnkRel(:,:,1:2);</span>
-0137 
-0138 <span class="keyword">end</span>
-0139</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0097 <span class="comment">%avgRotation = (sRotation+fRotation)./2;</span>
+0098 
+0099 <span class="comment">%rotationMatrix = [cosd(avgRotation) -sind(avgRotation) 0; ...</span>
+0100 <span class="comment">%    sind(avgRotation) cosd(avgRotation) 0; 0 0 1];</span>
+0101 <span class="comment">%sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';</span>
+0102 <span class="comment">%fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';</span>
+0103 <span class="comment">%sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';</span>
+0104 <span class="comment">%fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';</span>
+0105 
+0106 <span class="comment">% NEED TO ROTATE</span>
+0107 <span class="comment">% compute ankle positions relative to average hip position</span>
+0108 sAnkFwd = sAnk(:, :, 2) - hipPosFwd;
+0109 fAnkFwd = fAnk(:, :, 2) - hipPosFwd;
+0110 sAnk2D  = sAnk(:, :, 1:2) - hipPos3D(:, :, 1:2);
+0111 fAnk2D  = fAnk(:, :, 1:2) - hipPos3D(:, :, 1:2);
+0112 
+0113 <span class="comment">% set all steps to have the same slope (a negative slope during</span>
+0114 <span class="comment">% stance phase is assumed)</span>
+0115 <span class="comment">%WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION</span>
+0116 <span class="comment">%DOESN'T?</span>
+0117 
+0118 <span class="comment">% adjust stride data to ensure consistent slope during stance phase</span>
+0119 <span class="comment">% checks for: sAnk(indSHS2,2) &lt; sAnk(indFHS,2)</span>
+0120 <span class="comment">% (doesn't use HIP to avoid HIP fluctuation issues)</span>
+0121 <span class="comment">% [3 5] = FHS (3) to SHS2 (5): spans double stance and full swing</span>
+0122 walkDirSign = sign(diff(sAnk(:, [3 5], 2), 1, 2));
+0123 sAnkFwd = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, sAnkFwd, walkDirSign);
+0124 fAnkFwd = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, fAnkFwd, walkDirSign);
+0125 sAnk2D  = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, sAnk2D,  walkDirSign);
+0126 fAnk2D  = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, fAnk2D,  walkDirSign);
+0127 
+0128 <span class="comment">%Alternative definition: should be equivalent, since we reference to midHip</span>
+0129 <span class="comment">%when doing the rotation. Only difference may be in sign of walking, since</span>
+0130 <span class="comment">%its computed slighltly different. Should not cause issues as differences</span>
+0131 <span class="comment">%may only ocurr when subject is turning around, which is a bad stride</span>
+0132 <span class="comment">%anyway</span>
+0133 <span class="comment">%WARNING: THIS WAS DISABLED BECAUSE IT LEADS TO CRAPPY RESULTS WHEN HIP</span>
+0134 <span class="comment">%MARKERS ARE NOT RELIABLE (NOISY). NEED TO FIX. THE PROBLEM IS</span>
+0135 <span class="comment">%sAnkFwd-fAnkFwd DEPENDS ON HIP POSITION WHEN IT SHOULDNT (COMPUTING</span>
+0136 <span class="comment">%DIFFERENCE OF TWO MARKER POSITIONS USING SAME REFERENCE). NOT SURE WHY.</span>
+0137 <span class="comment">%sAnkFwd=sAnkRel(:,:,2);</span>
+0138 <span class="comment">%fAnkFwd=fAnkRel(:,:,2);</span>
+0139 <span class="comment">%sAnk2D=sAnkRel(:,:,1:2);</span>
+0140 <span class="comment">%fAnk2D=fAnkRel(:,:,1:2);</span>
+0141 
+0142 <span class="keyword">end</span>
+0143</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

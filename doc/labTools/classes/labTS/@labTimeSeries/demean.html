@@ -4,7 +4,7 @@
 <head>
   <title>Description of demean</title>
   <meta name="keywords" content="demean">
-  <meta name="description" content="demean  Removes mean from each channel">
+  <meta name="description" content="DEMEAN Removes mean from each channel.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,31 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>demean  Removes mean from each channel</strong></div>
+<div class="box"><strong>DEMEAN Removes mean from each channel.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newthis = demean(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">demean  Removes mean from each channel
+<div class="fragment"><pre class="comment">DEMEAN Removes mean from each channel.
 
    newthis = demean(this) subtracts the mean from each channel
 
-   Inputs:
-       this - labTimeSeries object
+ Inputs:
+   this - labTimeSeries object
 
-   Outputs:
-       newthis - demeaned labTimeSeries
+ Outputs:
+   newthis - demeaned labTimeSeries
 
-   See also: <a href="equalizeVarPerChannel.html" class="code" title="function newthis = equalizeVarPerChannel(this)">equalizeVarPerChannel</a>, <a href="equalizeEnergyPerChannel.html" class="code" title="function newthis = equalizeEnergyPerChannel(this)">equalizeEnergyPerChannel</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="equalizeVarPerChannel.html" class="code" title="function newthis = equalizeVarPerChannel(this)">EQUALIZEVARPERCHANNEL</a>, <a href="equalizeEnergyPerChannel.html" class="code" title="function newthis = equalizeEnergyPerChannel(this)">EQUALIZEENERGYPERCHANNEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li></ul>
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two alignedTimeSeries.</li><li><a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two labTimeSeries.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
@@ -53,22 +55,24 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newthis = demean(this)</a>
-0002 <span class="comment">%demean  Removes mean from each channel</span>
+0002 <span class="comment">%DEMEAN Removes mean from each channel.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newthis = demean(this) subtracts the mean from each channel</span>
 0005 <span class="comment">%</span>
-0006 <span class="comment">%   Inputs:</span>
-0007 <span class="comment">%       this - labTimeSeries object</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   this - labTimeSeries object</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Outputs:</span>
-0010 <span class="comment">%       newthis - demeaned labTimeSeries</span>
+0009 <span class="comment">% Outputs:</span>
+0010 <span class="comment">%   newthis - demeaned labTimeSeries</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   See also: equalizeVarPerChannel, equalizeEnergyPerChannel</span>
-0013 
-0014 newthis = this;
-0015 newthis.Data = bsxfun(@<a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>, this.Data, nanmean(this.Data));
-0016 <span class="keyword">end</span>
-0017</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0012 <span class="comment">% Toolbox Dependencies: None</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% See also EQUALIZEVARPERCHANNEL, EQUALIZEENERGYPERCHANNEL.</span>
+0015 
+0016 newthis = this;
+0017 newthis.Data = bsxfun(@<a href="minus.html" class="code" title="function newThis = minus(this, other)">minus</a>, this.Data, <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(this.Data, <span class="string">'omitnan'</span>));
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

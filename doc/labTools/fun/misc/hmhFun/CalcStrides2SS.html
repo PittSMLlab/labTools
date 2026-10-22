@@ -4,7 +4,7 @@
 <head>
   <title>Description of CalcStrides2SS</title>
   <meta name="keywords" content="CalcStrides2SS">
-  <meta name="description" content="this version was my first attempt to plot the readaptation stuff,">
+  <meta name="description" content="CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,124 +21,140 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>this version was my first attempt to plot the readaptation stuff,</strong></div>
+<div class="box"><strong>CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID) </strong></div>
+<div class="box"><strong>function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag,subID) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> this version was my first attempt to plot the readaptation stuff,
- AND DO SO WITHOUT CROPPING THE DATA
-adaptDataList must be cell array of 'param.mat' file names
-params is cell array of parameters to plot. List with commas to
-plot on separate graphs or with semicolons to plot on same graph.
-conditions is cell array of conditions to plot
-binwidth is the number of data points to average in time
-indivFlag - set to true to plot individual subject time courses
-indivSubs - must be a cell array of 'param.mat' file names that is
-a subset of those in the adaptDataList. Plots specific subjects
-instead of all subjects.</pre></div>
+<div class="fragment"><pre class="comment">CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.
+
+   Applies a 63.2% threshold criterion to the smoothed time course of
+ each parameter in ALLVALUES to identify the stride at which the
+ response first reaches steady state.
+
+ Inputs:
+   allValues - N×P matrix of raw parameter values (strides × params)
+   SSraw     - 1×P vector of raw steady-state values for each param
+   params    - cell array of parameter name strings (length P)
+   plotFlag  - scalar; if 1, plot time courses with threshold markers
+   subID     - subject ID string for plot titles (or empty)
+
+ Outputs:
+   Stride2SS - 1×P vector of stride indices to steady state
+
+ Toolbox Dependencies: None
+
+ See also BIN_DATAV1.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>	BIN_DATAV1 Compute a running average along the rows of a matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li></ul>
+<li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">getResultsSMART</a>	GETRESULTSSMART Compute adaptation results with strides-to-SS and</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)</a>
-0002 <span class="comment">% this version was my first attempt to plot the readaptation stuff,</span>
-0003 <span class="comment">% AND DO SO WITHOUT CROPPING THE DATA</span>
-0004 <span class="comment">%adaptDataList must be cell array of 'param.mat' file names</span>
-0005 <span class="comment">%params is cell array of parameters to plot. List with commas to</span>
-0006 <span class="comment">%plot on separate graphs or with semicolons to plot on same graph.</span>
-0007 <span class="comment">%conditions is cell array of conditions to plot</span>
-0008 <span class="comment">%binwidth is the number of data points to average in time</span>
-0009 <span class="comment">%indivFlag - set to true to plot individual subject time courses</span>
-0010 <span class="comment">%indivSubs - must be a cell array of 'param.mat' file names that is</span>
-0011 <span class="comment">%a subset of those in the adaptDataList. Plots specific subjects</span>
-0012 <span class="comment">%instead of all subjects.</span>
-0013 
-0014 
-0015 <span class="comment">% %%%How to calculate strides to ss</span>
-0016 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag)~=0 || plotFlag==1
-0017     figure
-0018 <span class="keyword">end</span>
-0019 
-0020 idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
-0021 idxNET = find(strcmp(params, <span class="string">'netContributionNorm2'</span>));
-0022 
-0023 <span class="comment">%Smooth the data:</span>
-0024 allValuesALL=<a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(allValues,20); SmoothType=<span class="string">'Whole, BW=20, first not before raw min'</span>;
-0025 ss=SSraw;
-0026 
-0027 <span class="keyword">for</span> var=1:length(params)
-0028     
-0029     <span class="comment">%Here I am using the final steady state that subjects reached to</span>
-0030     <span class="comment">%shift the net</span>
-0031 <span class="comment">%     if var==idxVELO</span>
-0032         whereIS=find(allValues(:,var)==nanmin(allValues(1:20,var)),1, <span class="string">'first'</span>);<span class="comment">%use the non-smoothed data to shift the curves</span>
-0033 <span class="comment">%     else</span>
-0034 <span class="comment">%         whereIS=find(allValues(:,var)==nanmin(allValues(1:end-10,var)),1, 'first');%use the non-smoothed data to shift the curves</span>
-0035 <span class="comment">%     end</span>
-0036     
-0037     minmin=allValues(whereIS,var);
-0038     
-0039     <span class="keyword">if</span> var==idxNET || var==idxVELO
-0040         shifter=SSraw(idxVELO)-SSraw(idxNET);
-0041         <span class="comment">%difference between the velocity and net SS</span>
-0042         allValuesALL(:,var)=allValuesALL(:,var)+abs(shifter);
-0043         ss(var)=SSraw(var)+abs(shifter);
-0044     <span class="keyword">end</span>
-0045     
-0046     t=find(allValuesALL(:,var)&gt;=ss(var)*.632);
-0047     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)==1
-0048         Stride2SS(1, var)=NaN;
-0049     <span class="keyword">else</span> <span class="comment">%this prevents a stride from being identified before the min value in the timecourse</span>
-0050         first_t=t(1);
-0051         knot=2;
-0052         <span class="keyword">while</span> first_t&lt;=whereIS <span class="comment">%5</span>
-0053             first_t=t(knot);
-0054             knot=knot+1;
-0055         <span class="keyword">end</span>
-0056         
-0057         Stride2SS(1, var)=first_t;
-0058     <span class="keyword">end</span>
-0059 
-0060     <span class="comment">%optional plotting to see where the Tau is being identified</span>
-0061     <span class="keyword">if</span> plotFlag
-0062         subplot(1, length(params), var)
-0063         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([allValuesALL(:, var)], <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
-0064         
-0065         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(whereIS:whereIS+9, allValuesALL(whereIS:whereIS+9, var), <span class="string">'c.'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
-0066         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(first_t, allValuesALL(first_t, var) , <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25); hold on
-0067         line([0 900], [ss(var) ss(var)],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1)
-0068         line([0 900], [ss(var)*.632 ss(var)*.632],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>,<span class="string">':'</span>)
-0069         line([0 900], [0 0])
-0070         
-0071         <span class="keyword">if</span> subID
-0072             title([subID <span class="string">': Stride to SS = '</span> num2str(first_t)]);
-0073         <span class="keyword">else</span>
-0074         title([<span class="string">'Stride to SS = '</span> num2str(first_t)]);
-0075         <span class="keyword">end</span>
-0076         
-0077         ylabel([params(var)])
-0078         xlabel([<span class="string">'Strides ('</span> SmoothType <span class="string">')'</span>])
-0079         axis tight
-0080         hold on
-0081     <span class="keyword">end</span>
-0082 <span class="keyword">end</span>
-0083 
-0084 <span class="comment">%display('everything is awesome')</span>
-0085 
-0086 <span class="keyword">end</span>
-0087</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag, </a><span class="keyword">...</span>
+0002     subID)
+0003 <span class="comment">%CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Applies a 63.2% threshold criterion to the smoothed time course of</span>
+0006 <span class="comment">% each parameter in ALLVALUES to identify the stride at which the</span>
+0007 <span class="comment">% response first reaches steady state.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   allValues - N×P matrix of raw parameter values (strides × params)</span>
+0011 <span class="comment">%   SSraw     - 1×P vector of raw steady-state values for each param</span>
+0012 <span class="comment">%   params    - cell array of parameter name strings (length P)</span>
+0013 <span class="comment">%   plotFlag  - scalar; if 1, plot time courses with threshold markers</span>
+0014 <span class="comment">%   subID     - subject ID string for plot titles (or empty)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   Stride2SS - 1×P vector of stride indices to steady state</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also BIN_DATAV1.</span>
+0022 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotFlag) ~= 0 || plotFlag == 1
+0023     figure
+0024 <span class="keyword">end</span>
+0025 
+0026 idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
+0027 idxNET  = find(strcmp(params, <span class="string">'netContributionNorm2'</span>));
+0028 
+0029 <span class="comment">%% Smooth data and initialize steady-state values</span>
+0030 binWidth     = 20;              <span class="comment">% running-average window (strides)</span>
+0031 minSearchLen = 20;              <span class="comment">% strides searched for the raw minimum</span>
+0032 ssFraction   = 0.632;           <span class="comment">% 1 - 1/e of steady state</span>
+0033 smoothLabel  = <span class="string">'Whole, BW=20, first not before raw min'</span>;
+0034 allValuesALL = <a href="../../../../labTools/fun/misc/bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>(allValues, binWidth);
+0035 ss           = SSraw;
+0036 
+0037 <span class="keyword">for</span> var = 1:length(params)
+0038 
+0039     <span class="comment">% locate minimum within first 20 strides of raw data</span>
+0040     whereIS = find( <span class="keyword">...</span>
+0041         allValues(:, var) == <span class="keyword">...</span>
+0042         min(allValues(1:minSearchLen, var), [], <span class="string">'omitnan'</span>), <span class="keyword">...</span>
+0043         1, <span class="string">'first'</span>);
+0044 
+0045     <span class="keyword">if</span> var == idxNET || var == idxVELO
+0046         <span class="comment">% shift NET and VELOCITY curves by their mutual offset</span>
+0047         shifter          = SSraw(idxVELO) - SSraw(idxNET);
+0048         allValuesALL(:, var) = allValuesALL(:, var) + abs(shifter);
+0049         ss(var)          = SSraw(var) + abs(shifter);
+0050     <span class="keyword">end</span>
+0051 
+0052     <span class="comment">% find first stride at or above 63.2% of steady state (1/e criterion)</span>
+0053     t = find(allValuesALL(:, var) &gt;= ss(var) * ssFraction);
+0054     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
+0055         Stride2SS(1, var) = NaN;                <span class="comment">%#ok&lt;AGROW&gt;</span>
+0056     <span class="keyword">else</span>
+0057         <span class="comment">% prevent identification before the minimum value</span>
+0058         first_t = t(1);
+0059         knot    = 2;
+0060         <span class="keyword">while</span> first_t &lt;= whereIS
+0061             first_t = t(knot);
+0062             knot    = knot + 1;
+0063         <span class="keyword">end</span>
+0064         Stride2SS(1, var) = first_t;            <span class="comment">%#ok&lt;AGROW&gt;</span>
+0065     <span class="keyword">end</span>
+0066 
+0067     <span class="comment">% optional diagnostic plot</span>
+0068     <span class="keyword">if</span> plotFlag
+0069         subplot(1, length(params), var)
+0070         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(allValuesALL(:, var), <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);
+0071         hold on
+0072         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(whereIS:whereIS+9, allValuesALL(whereIS:whereIS+9, var), <span class="keyword">...</span>
+0073             <span class="string">'c.'</span>, <span class="string">'MarkerSize'</span>, 25);
+0074         hold on
+0075         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(first_t, allValuesALL(first_t, var), <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25);
+0076         hold on
+0077         line([0 900], [ss(var) ss(var)], <span class="keyword">...</span>
+0078             <span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1)
+0079         line([0 900], [ss(var)*ssFraction ss(var)*ssFraction], <span class="keyword">...</span>
+0080             <span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>, <span class="string">':'</span>)
+0081         line([0 900], [0 0])
+0082 
+0083         <span class="keyword">if</span> subID
+0084             title([subID <span class="string">': Stride to SS = '</span> num2str(first_t)]);
+0085         <span class="keyword">else</span>
+0086             title([<span class="string">'Stride to SS = '</span> num2str(first_t)]);
+0087         <span class="keyword">end</span>
+0088 
+0089         ylabel(params(var))
+0090         xlabel([<span class="string">'Strides ('</span> smoothLabel <span class="string">')'</span>])
+0091         axis tight
+0092         hold on
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

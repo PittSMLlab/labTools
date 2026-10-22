@@ -4,7 +4,7 @@
 <head>
   <title>Description of plotStimArtifactPeaks</title>
   <meta name="keywords" content="plotStimArtifactPeaks">
-  <meta name="description" content="PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA">
+  <meta name="description" content="PLOTSTIMARTIFACTPEAKS Plot located stimulation artifact peaks in EMG.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,38 +21,61 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</strong></div>
+<div class="box"><strong>PLOTSTIMARTIFACTPEAKS Plot located stimulation artifact peaks in EMG.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin) </strong></div>
+<div class="box"><strong>function fig = plotStimArtifactPeaks(times, rawEMG, indsPeaks, id,trialNum, options) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA
-   Plot the H-reflex raw EMG traces for the proximal tibialis anterior
- muscle with the identified stimulation artifact peaks highlighted with a
- filled in triangle to verify that the indices found for the peaks are
- correct for later H-reflex alignment and analysis.
+<div class="fragment"><pre class="comment">PLOTSTIMARTIFACTPEAKS Plot located stimulation artifact peaks in EMG.
 
- input:
-   times: number of samples x 1 array with the time in seconds from the
-       start of the trial for each sample
-   rawEMG_TAP: 2 x 1 cell array of number of samples x 1 arrays for right
-       (cell 1) and left (cell 2) leg proximal TA muscle EMG signal (NOTE:
-       if one cell is input as empty array, that leg will not be plot)
-   indsPeaks: 2 x 1 cell array of number of peaks x 1 arrays of the
-       stimulation artifact peaks found by the algorithm
-   id: string or character array of participant / session ID for naming
-   trialNum: string or character array of the trial number for naming
-   thresh: OPTIONAL input for the threshold used to determine peaks
-   path: OPTIONAL input for saving figures (not saved if not provided)
- output:
-   fig: handle object to the figure generated for further customization</pre></div>
+   Plot the raw EMG trace of the artifact localization muscle (normally
+ the proximal tibialis anterior) for each leg with the identified
+ stimulation artifact peaks highlighted by a filled triangle, so that
+ the experimenter can verify the indices used for H-reflex snippet
+ alignment before any amplitude is computed. Peaks flagged as weak by
+ HREFLEX.EXTRACTSTIMARTIFACTINDSFROMTRIGGER are drawn distinctly so a
+ disabled stimulator or a detached electrode is visible at a glance. When
+ pathFig is nonempty, also writes &lt;id&gt;_StimArtifactPeakFinding_Trial&lt;n&gt;
+ as .png and .fig there, silently overwriting existing files (see
+ DATA_OUTPUTS.md).
+
+ Inputs:
+   times     - number of samples x 1 array of time in seconds from the
+               start of the trial for each sample
+   rawEMG    - 2-element cell of number of samples x 1 arrays for right
+               (cell 1) and left (cell 2) leg artifact localization
+               muscle EMG (if one cell is empty, that leg is not plot)
+   indsPeaks - 2-element cell of number of peaks x 1 arrays of the
+               stimulation artifact peak indices found by the algorithm
+   id        - string or character array of participant/session ID
+   trialNum  - string or character array of the trial number
+
+ Optional Name-Value Inputs:
+   thresh  - peak finding threshold (V) to draw as a horizontal line;
+             not drawn if NaN (default: NaN)
+   pathFig - path for saving figures; not saved if empty (default: '')
+   labels  - 2-element cell of tile title strings for the right (cell
+             1) and left (cell 2) leg
+             (default: {'Right TAP', 'Left TAP'})
+   isWeak  - 2-element cell of number of peaks x 1 logical arrays
+             marking peaks whose absolute deflection fell below the
+             quality control floor (default: {[], []}, none flagged)
+
+ Outputs:
+   fig - handle object to the figure generated for further customization
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.<a href="extractStimArtifactIndsFromTrigger.html" class="code" title="function [indsStimArtifact, isWeakArtifact] =extractStimArtifactIndsFromTrigger(times, rawEMGArtifact,pinHreflexStim, options)">EXTRACTSTIMARTIFACTINDSFROMTRIGGER</a>,
+   HREFLEX.<a href="plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">PLOTSNIPPETS</a>, GENERATEHREFLEXRECRUITMENTCURVES.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies by constant.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies data by constant.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	TIMES Multiplies by constant (override).</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -60,128 +83,192 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function plotSignalWithPeaks(x,y,inds,thresh)</a></li><li><a href="#_sub2" class="code">function saveFigure(fig,path,id,trialNum)</a></li></ul>
+<li><a href="#_sub1" class="code">function plotSignalWithPeaks(x, y, inds, thresh, isWeak)</a></li><li><a href="#_sub2" class="code">function saveFigure(fig, path, id, trialNum)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id, </a><span class="keyword">...</span>
-0002     trialNum,varargin)
-0003 <span class="comment">%PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</span>
-0004 <span class="comment">%   Plot the H-reflex raw EMG traces for the proximal tibialis anterior</span>
-0005 <span class="comment">% muscle with the identified stimulation artifact peaks highlighted with a</span>
-0006 <span class="comment">% filled in triangle to verify that the indices found for the peaks are</span>
-0007 <span class="comment">% correct for later H-reflex alignment and analysis.</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">% input:</span>
-0010 <span class="comment">%   times: number of samples x 1 array with the time in seconds from the</span>
-0011 <span class="comment">%       start of the trial for each sample</span>
-0012 <span class="comment">%   rawEMG_TAP: 2 x 1 cell array of number of samples x 1 arrays for right</span>
-0013 <span class="comment">%       (cell 1) and left (cell 2) leg proximal TA muscle EMG signal (NOTE:</span>
-0014 <span class="comment">%       if one cell is input as empty array, that leg will not be plot)</span>
-0015 <span class="comment">%   indsPeaks: 2 x 1 cell array of number of peaks x 1 arrays of the</span>
-0016 <span class="comment">%       stimulation artifact peaks found by the algorithm</span>
-0017 <span class="comment">%   id: string or character array of participant / session ID for naming</span>
-0018 <span class="comment">%   trialNum: string or character array of the trial number for naming</span>
-0019 <span class="comment">%   thresh: OPTIONAL input for the threshold used to determine peaks</span>
-0020 <span class="comment">%   path: OPTIONAL input for saving figures (not saved if not provided)</span>
-0021 <span class="comment">% output:</span>
-0022 <span class="comment">%   fig: handle object to the figure generated for further customization</span>
-0023 
-0024 narginchk(5,7); <span class="comment">% verify correct number of input arguments</span>
-0025 
-0026 <span class="keyword">if</span> string(version(<span class="string">'-release'</span>)) &lt; &quot;2019b&quot; <span class="comment">% if version older than 2019b, ...</span>
-0027     error([<span class="string">'MATLAB version must support ''tiledlayout'' (R2019b or '</span> <span class="keyword">...</span>
-0028         <span class="string">'later).'</span>]);
-0029 <span class="keyword">end</span>
-0030 
-0031 <span class="comment">% TODO: add check of correct dimensions for cell arrays</span>
-0032 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,rawEMG_TAP)) || <span class="keyword">...</span>
-0033         all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,indsPeaks))    <span class="comment">% validate input arguments</span>
-0034     error([<span class="string">'There is critical data missing for plotting the EMG '</span> <span class="keyword">...</span>
-0035         <span class="string">'signal with detected artifact peaks.'</span>]);
-0036 <span class="keyword">end</span>
-0037 
-0038 numOptArgs = length(varargin);
-0039 <span class="keyword">switch</span> numOptArgs
-0040     <span class="keyword">case</span> 0
-0041         thresh = nan;               <span class="comment">% default to Not-a-Number</span>
-0042         path = <span class="string">''</span>;                  <span class="comment">% default to empty</span>
-0043     <span class="keyword">case</span> 1                          <span class="comment">% one optional argument provided</span>
-0044         <span class="keyword">if</span> isnumeric(varargin{1})   <span class="comment">% if a number, ...</span>
-0045             thresh = varargin{1};   <span class="comment">% it is the threshold</span>
-0046             path = <span class="string">''</span>;
-0047         <span class="keyword">else</span>                        <span class="comment">% otherwise, ...</span>
-0048             thresh = NaN;
-0049             path = varargin{1};     <span class="comment">% it is the file saving path</span>
-0050         <span class="keyword">end</span>
-0051     <span class="keyword">case</span> 2                          <span class="comment">% both optional arguments provided</span>
-0052         thresh = varargin{1};       <span class="comment">% first always stim artifact threshold</span>
-0053         path = varargin{2};         <span class="comment">% second always file saving path</span>
-0054     <span class="keyword">otherwise</span>
-0055         error(<span class="string">'Too many optional arguments. Provide at most 2.'</span>);
-0056 <span class="keyword">end</span>
-0057 
-0058 numLegs = sum(cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x),rawEMG_TAP));<span class="comment">% number of legs</span>
-0059 <span class="keyword">if</span> numLegs &gt; 2                                      <span class="comment">% if more than 2, ...</span>
-0060     error(<span class="string">'Input EMG signals must be limited to 2 legs (right and left).'</span>);
-0061 <span class="keyword">end</span>
-0062 
-0063 <span class="comment">% set the figure to be full screen</span>
-0064 fig = figure(<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1]);
-0065 tl = tiledlayout(numLegs,1,<span class="string">'TileSpacing'</span>,<span class="string">'tight'</span>);
-0066 
-0067 labelsLegs = {<span class="string">'Right TAP'</span>,<span class="string">'Left TAP'</span>};
-0068 <span class="keyword">for</span> leg = 1:2                       <span class="comment">% for each leg, ...</span>
-0069     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG_TAP{leg})    <span class="comment">% if EMG data is available, ...</span>
-0070         nexttile;                   <span class="comment">% plot signal with detected peaks</span>
-0071         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG_TAP{leg}, indsPeaks{leg}, thresh);
-0072         title(labelsLegs(leg));
-0073     <span class="keyword">end</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fig = plotStimArtifactPeaks(times, rawEMG, indsPeaks, id, </a><span class="keyword">...</span>
+0002     trialNum, options)
+0003 <span class="comment">%PLOTSTIMARTIFACTPEAKS Plot located stimulation artifact peaks in EMG.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Plot the raw EMG trace of the artifact localization muscle (normally</span>
+0006 <span class="comment">% the proximal tibialis anterior) for each leg with the identified</span>
+0007 <span class="comment">% stimulation artifact peaks highlighted by a filled triangle, so that</span>
+0008 <span class="comment">% the experimenter can verify the indices used for H-reflex snippet</span>
+0009 <span class="comment">% alignment before any amplitude is computed. Peaks flagged as weak by</span>
+0010 <span class="comment">% HREFLEX.EXTRACTSTIMARTIFACTINDSFROMTRIGGER are drawn distinctly so a</span>
+0011 <span class="comment">% disabled stimulator or a detached electrode is visible at a glance. When</span>
+0012 <span class="comment">% pathFig is nonempty, also writes &lt;id&gt;_StimArtifactPeakFinding_Trial&lt;n&gt;</span>
+0013 <span class="comment">% as .png and .fig there, silently overwriting existing files (see</span>
+0014 <span class="comment">% DATA_OUTPUTS.md).</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   times     - number of samples x 1 array of time in seconds from the</span>
+0018 <span class="comment">%               start of the trial for each sample</span>
+0019 <span class="comment">%   rawEMG    - 2-element cell of number of samples x 1 arrays for right</span>
+0020 <span class="comment">%               (cell 1) and left (cell 2) leg artifact localization</span>
+0021 <span class="comment">%               muscle EMG (if one cell is empty, that leg is not plot)</span>
+0022 <span class="comment">%   indsPeaks - 2-element cell of number of peaks x 1 arrays of the</span>
+0023 <span class="comment">%               stimulation artifact peak indices found by the algorithm</span>
+0024 <span class="comment">%   id        - string or character array of participant/session ID</span>
+0025 <span class="comment">%   trialNum  - string or character array of the trial number</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Optional Name-Value Inputs:</span>
+0028 <span class="comment">%   thresh  - peak finding threshold (V) to draw as a horizontal line;</span>
+0029 <span class="comment">%             not drawn if NaN (default: NaN)</span>
+0030 <span class="comment">%   pathFig - path for saving figures; not saved if empty (default: '')</span>
+0031 <span class="comment">%   labels  - 2-element cell of tile title strings for the right (cell</span>
+0032 <span class="comment">%             1) and left (cell 2) leg</span>
+0033 <span class="comment">%             (default: {'Right TAP', 'Left TAP'})</span>
+0034 <span class="comment">%   isWeak  - 2-element cell of number of peaks x 1 logical arrays</span>
+0035 <span class="comment">%             marking peaks whose absolute deflection fell below the</span>
+0036 <span class="comment">%             quality control floor (default: {[], []}, none flagged)</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Outputs:</span>
+0039 <span class="comment">%   fig - handle object to the figure generated for further customization</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% Toolbox Dependencies:</span>
+0042 <span class="comment">%   None</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% See also HREFLEX.EXTRACTSTIMARTIFACTINDSFROMTRIGGER,</span>
+0045 <span class="comment">%   HREFLEX.PLOTSNIPPETS, GENERATEHREFLEXRECRUITMENTCURVES.</span>
+0046 
+0047 arguments
+0048     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>     (:,1) double
+0049     rawEMG    cell
+0050     indsPeaks cell
+0051     id        (1,:) {mustBeText}
+0052     trialNum  (1,:) {mustBeText}
+0053     options.thresh  (1,1) double = NaN
+0054     options.pathFig (1,:) char   = <span class="string">''</span>
+0055     options.labels  cell         = {<span class="string">'Right TAP'</span>, <span class="string">'Left TAP'</span>}
+0056     options.isWeak  cell         = {[], []}
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">if</span> string(version(<span class="string">'-release'</span>)) &lt; &quot;2019b&quot; <span class="comment">% if version older than 2019b, ...</span>
+0060     error([<span class="string">'MATLAB version must support ''tiledlayout'' (R2019b or '</span> <span class="keyword">...</span>
+0061         <span class="string">'later).'</span>]);
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">% TODO: add check of correct dimensions for cell arrays</span>
+0065 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, rawEMG)) || <span class="keyword">...</span>
+0066         all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, indsPeaks))   <span class="comment">% validate input arguments</span>
+0067     error([<span class="string">'There is critical data missing for plotting the EMG '</span> <span class="keyword">...</span>
+0068         <span class="string">'signal with detected artifact peaks.'</span>]);
+0069 <span class="keyword">end</span>
+0070 
+0071 numLegs = sum(cellfun(@(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), rawEMG));   <span class="comment">% number of legs</span>
+0072 <span class="keyword">if</span> numLegs &gt; 2                                      <span class="comment">% if more than 2, ...</span>
+0073     error(<span class="string">'Input EMG signals must be limited to 2 legs (right and left).'</span>);
 0074 <span class="keyword">end</span>
 0075 
-0076 <span class="comment">% TODO: should y-axis limits be the same in case of both legs present?</span>
-0077 <span class="comment">% TODO: consider accepting labels as optional input argument</span>
-0078 <span class="comment">% global labels and title</span>
-0079 xlabel(tl,<span class="string">'Time (s)'</span>);
-0080 ylabel(tl,<span class="string">'Raw EMG (V)'</span>);
-0081 title(tl,sprintf( <span class="keyword">...</span>
-0082     <span class="string">'%s - Trial %s - Stimulation Artifact Peak Finding'</span>,id,trialNum));
-0083 
-0084 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(path)   <span class="comment">% if figure saving path provided as input argument, ...</span>
-0085     <a href="#_sub2" class="code" title="subfunction saveFigure(fig,path,id,trialNum)">saveFigure</a>(fig,path,id,trialNum);
-0086 <span class="keyword">end</span>
-0087 
-0088 <span class="keyword">end</span>
-0089 
-0090 <a name="_sub1" href="#_subfunctions" class="code">function plotSignalWithPeaks(x,y,inds,thresh)</a>
-0091 <span class="comment">% plot EMG signals with detected peaks</span>
-0092 <span class="comment">% TODO: consider moving tile title into this helper function</span>
-0093 
-0094 hold on;
-0095 <span class="comment">% below code is copied from MATLAB 'findpeaks' function to replicate</span>
-0096 hLine = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(x,y,<span class="string">'Tag'</span>,<span class="string">'Signal'</span>);       <span class="comment">% plot signal line</span>
-0097 hAxes = ancestor(hLine,<span class="string">'Axes'</span>);
-0098 grid on;                                <span class="comment">% turn on grid</span>
-0099 <span class="keyword">if</span> numel(y) &gt; 1
-0100     hAxes.XLim = hLine.XData([1 end]);  <span class="comment">% restrict x-axis limits</span>
-0101 <span class="keyword">end</span>
-0102 color = get(hLine,<span class="string">'Color'</span>);             <span class="comment">% use the color of the line</span>
-0103 line(hLine.XData(inds),y(inds),<span class="string">'Parent'</span>,hAxes,<span class="string">'Marker'</span>,<span class="string">'v'</span>, <span class="keyword">...</span>
-0104     <span class="string">'MarkerFaceColor'</span>,color,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'Color'</span>,color,<span class="string">'tag'</span>,<span class="string">'Peak'</span>);
-0105 <span class="keyword">if</span> ~isnan(thresh)                       <span class="comment">% if threshold is not NaN, ...</span>
-0106     yline(thresh,<span class="string">'r'</span>,<span class="string">'Peak Finding Threshold'</span>);     <span class="comment">% plot it</span>
-0107 <span class="keyword">end</span>
-0108 hold off;
-0109 
-0110 <span class="keyword">end</span>
-0111 
-0112 <a name="_sub2" href="#_subfunctions" class="code">function saveFigure(fig,path,id,trialNum)</a>
-0113 <span class="comment">% save figure in PNG and FIG formats</span>
-0114 fileBase = fullfile(path, <span class="keyword">...</span>
-0115     sprintf(<span class="string">'%s_StimArtifactPeakFinding_Trial%s'</span>,id,trialNum));
-0116 saveas(fig,[fileBase <span class="string">'.png'</span>]);
-0117 saveas(fig,[fileBase <span class="string">'.fig'</span>]);
-0118 <span class="keyword">end</span>
-0119</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0076 <span class="comment">%% Create Figure</span>
+0077 <span class="comment">% set the figure to be full screen</span>
+0078 fig = figure(<span class="string">'Units'</span>, <span class="string">'normalized'</span>, <span class="string">'OuterPosition'</span>, [0 0 1 1]);
+0079 tl = tiledlayout(numLegs, 1, <span class="string">'TileSpacing'</span>, <span class="string">'tight'</span>);
+0080 
+0081 <span class="comment">%% Plot Each Leg With Data</span>
+0082 <span class="keyword">for</span> leg = 1:2                       <span class="comment">% for each leg, ...</span>
+0083     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG{leg})         <span class="comment">% if no EMG data available, ...</span>
+0084         <span class="keyword">continue</span>;                   <span class="comment">% advance to next leg</span>
+0085     <span class="keyword">end</span>
+0086     nexttile;                       <span class="comment">% plot signal with detected peaks</span>
+0087     <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x, y, inds, thresh, isWeak)">plotSignalWithPeaks</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG{leg}, indsPeaks{leg}, <span class="keyword">...</span>
+0088         options.thresh, options.isWeak{leg});
+0089     title(options.labels(leg));
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">% TODO: should y-axis limits be the same in case of both legs present?</span>
+0093 <span class="comment">% global labels and title</span>
+0094 xlabel(tl, <span class="string">'Time (s)'</span>);
+0095 ylabel(tl, <span class="string">'Raw EMG (V)'</span>);
+0096 title(tl, sprintf( <span class="keyword">...</span>
+0097     <span class="string">'%s - Trial %s - Stimulation Artifact Peak Finding'</span>, id, trialNum));
+0098 
+0099 <span class="comment">%% Save Figure</span>
+0100 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(options.pathFig)    <span class="comment">% if figure saving path provided, ...</span>
+0101     <a href="#_sub2" class="code" title="subfunction saveFigure(fig, path, id, trialNum)">saveFigure</a>(fig, options.pathFig, id, trialNum);
+0102 <span class="keyword">end</span>
+0103 
+0104 <span class="keyword">end</span>
+0105 
+0106 <span class="comment">%% Helper Functions</span>
+0107 
+0108 <a name="_sub1" href="#_subfunctions" class="code">function plotSignalWithPeaks(x, y, inds, thresh, isWeak)</a>
+0109 <span class="comment">%PLOTSIGNALWITHPEAKS Plot one leg's EMG signal with its detected peaks.</span>
+0110 <span class="comment">%</span>
+0111 <span class="comment">%   Plot the raw EMG trace with a filled triangle at each detected</span>
+0112 <span class="comment">% stimulation artifact peak, drawing any peak flagged as weak in red so</span>
+0113 <span class="comment">% that it stands out from the accepted peaks.</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">% Inputs:</span>
+0116 <span class="comment">%   x      - number of samples x 1 array of time in seconds</span>
+0117 <span class="comment">%   y      - number of samples x 1 array of raw EMG signal (V)</span>
+0118 <span class="comment">%   inds   - number of peaks x 1 array of artifact peak indices</span>
+0119 <span class="comment">%   thresh - peak finding threshold (V); not drawn if NaN</span>
+0120 <span class="comment">%   isWeak - number of peaks x 1 logical array marking weak peaks, or</span>
+0121 <span class="comment">%            empty if no peak was flagged</span>
+0122 <span class="comment">%</span>
+0123 <span class="comment">% Outputs:</span>
+0124 <span class="comment">%   None</span>
+0125 <span class="comment">%</span>
+0126 <span class="comment">% Toolbox Dependencies:</span>
+0127 <span class="comment">%   None</span>
+0128 
+0129 <span class="comment">% TODO: consider moving tile title into this helper function</span>
+0130 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(isWeak)                      <span class="comment">% if no peak flagged, ...</span>
+0131     isWeak = false(size(inds));         <span class="comment">% treat all peaks as accepted</span>
+0132 <span class="keyword">end</span>
+0133 
+0134 hold on;
+0135 <span class="comment">% below code is copied from MATLAB 'findpeaks' function to replicate</span>
+0136 hLine = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(x, y, <span class="string">'Tag'</span>, <span class="string">'Signal'</span>);    <span class="comment">% plot signal line</span>
+0137 hAxes = ancestor(hLine, <span class="string">'Axes'</span>);
+0138 grid on;                                <span class="comment">% turn on grid</span>
+0139 <span class="keyword">if</span> numel(y) &gt; 1
+0140     hAxes.XLim = hLine.XData([1 end]);  <span class="comment">% restrict x-axis limits</span>
+0141 <span class="keyword">end</span>
+0142 color = get(hLine, <span class="string">'Color'</span>);            <span class="comment">% use the color of the line</span>
+0143 indsOK = inds(~isWeak);
+0144 line(hLine.XData(indsOK), y(indsOK), <span class="string">'Parent'</span>, hAxes, <span class="string">'Marker'</span>, <span class="string">'v'</span>, <span class="keyword">...</span>
+0145     <span class="string">'MarkerFaceColor'</span>, color, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>, <span class="string">'Color'</span>, color, <span class="keyword">...</span>
+0146     <span class="string">'Tag'</span>, <span class="string">'Peak'</span>);
+0147 <span class="keyword">if</span> any(isWeak)                          <span class="comment">% if any peak flagged weak, ...</span>
+0148     indsWeak = inds(isWeak);            <span class="comment">% highlight it in red</span>
+0149     line(hLine.XData(indsWeak), y(indsWeak), <span class="string">'Parent'</span>, hAxes, <span class="keyword">...</span>
+0150         <span class="string">'Marker'</span>, <span class="string">'o'</span>, <span class="string">'MarkerSize'</span>, 10, <span class="string">'LineWidth'</span>, 1.5, <span class="keyword">...</span>
+0151         <span class="string">'LineStyle'</span>, <span class="string">'none'</span>, <span class="string">'Color'</span>, <span class="string">'r'</span>, <span class="string">'Tag'</span>, <span class="string">'WeakPeak'</span>);
+0152 <span class="keyword">end</span>
+0153 <span class="keyword">if</span> ~isnan(thresh)                       <span class="comment">% if threshold is not NaN, ...</span>
+0154     yline(thresh, <span class="string">'r'</span>, <span class="string">'Peak Finding Threshold'</span>);   <span class="comment">% plot it</span>
+0155 <span class="keyword">end</span>
+0156 hold off;
+0157 
+0158 <span class="keyword">end</span>
+0159 
+0160 <a name="_sub2" href="#_subfunctions" class="code">function saveFigure(fig, path, id, trialNum)</a>
+0161 <span class="comment">%SAVEFIGURE Save the artifact peak finding figure to disk.</span>
+0162 <span class="comment">%</span>
+0163 <span class="comment">%   Save the figure in both PNG and FIG formats using the standard</span>
+0164 <span class="comment">% participant and trial naming convention.</span>
+0165 <span class="comment">%</span>
+0166 <span class="comment">% Inputs:</span>
+0167 <span class="comment">%   fig      - handle to the figure to save</span>
+0168 <span class="comment">%   path     - path of the folder in which to save the figure</span>
+0169 <span class="comment">%   id       - string or character array of participant/session ID</span>
+0170 <span class="comment">%   trialNum - string or character array of the trial number</span>
+0171 <span class="comment">%</span>
+0172 <span class="comment">% Outputs:</span>
+0173 <span class="comment">%   None</span>
+0174 <span class="comment">%</span>
+0175 <span class="comment">% Toolbox Dependencies:</span>
+0176 <span class="comment">%   None</span>
+0177 
+0178 fileBase = fullfile(path, <span class="keyword">...</span>
+0179     sprintf(<span class="string">'%s_StimArtifactPeakFinding_Trial%s'</span>, id, trialNum));
+0180 saveas(fig, [fileBase <span class="string">'.png'</span>]);
+0181 saveas(fig, [fileBase <span class="string">'.fig'</span>]);
+0182 
+0183 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

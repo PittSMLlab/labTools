@@ -4,7 +4,7 @@
 <head>
   <title>Description of getNiceAxisLimits</title>
   <meta name="keywords" content="getNiceAxisLimits">
-  <meta name="description" content="Similar to axis tight, but with pre-determined padding so no datapoints">
+  <meta name="description" content="GETNICEAXISLIMITS Tight axis limits with a margin around the data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,26 +21,35 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Similar to axis tight, but with pre-determined padding so no datapoints</strong></div>
+<div class="box"><strong>GETNICEAXISLIMITS Tight axis limits with a margin around the data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [xl,yl] = getNiceAxisLimits(axHandle,pad) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Similar to axis tight, but with pre-determined padding so no datapoints
-are against the limits of the plotting box
-INPUT:
-axHandle: axes handle, optional, defaults to gca
-pad: margin size as % of axis limits with axis tight (e.g. pad=.1 gives a
-20% larger axis, with 10% on each side). Default pad=.1
-OUTPUT:
-xl,yl: axis limits for X and Y respectively</pre></div>
+<div class="fragment"><pre class="comment">GETNICEAXISLIMITS Tight axis limits with a margin around the data.
+
+   Like axis tight, but pads each side so that no data point touches the
+ limits of the plot box, and applies the limits to the axes.
+
+ Side effects: sets the axes to tight and then sets XLim and YLim.
+
+ Inputs:
+   axHandle - (optional) axes handle (default: gca)
+   pad      - (optional) margin on each side as a fraction of the tight
+              range (default: 0.1, i.e., 20% wider in total)
+
+ Outputs:
+   xl - X axis limits
+   yl - Y axis limits
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -50,29 +59,39 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xl,yl] = getNiceAxisLimits(axHandle,pad)</a>
-0002 <span class="comment">%Similar to axis tight, but with pre-determined padding so no datapoints</span>
-0003 <span class="comment">%are against the limits of the plotting box</span>
-0004 <span class="comment">%INPUT:</span>
-0005 <span class="comment">%axHandle: axes handle, optional, defaults to gca</span>
-0006 <span class="comment">%pad: margin size as % of axis limits with axis tight (e.g. pad=.1 gives a</span>
-0007 <span class="comment">%20% larger axis, with 10% on each side). Default pad=.1</span>
-0008 <span class="comment">%OUTPUT:</span>
-0009 <span class="comment">%xl,yl: axis limits for X and Y respectively</span>
-0010 <span class="keyword">if</span> nargin&lt;1 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(axHandle)
-0011     axHandle=gca;
-0012 <span class="keyword">end</span>
-0013 <span class="keyword">if</span> nargin&lt;2
-0014 pad=.1; <span class="comment">%10% whitespace margins</span>
-0015 <span class="keyword">end</span>
-0016 axis(axHandle,<span class="string">'tight'</span>);
-0017 xl=get(axHandle,<span class="string">'XLim'</span>);
-0018 yl=get(axHandle,<span class="string">'YLim'</span>);
-0019 xl=-pad*<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(xl) + (1+pad)*xl;
-0020 yl=-pad*<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yl) + (1+pad)*yl;
-0021 set(axHandle,<span class="string">'XLim'</span>,xl);
-0022 set(axHandle,<span class="string">'YLim'</span>,yl);
-0023 <span class="keyword">end</span>
-0024</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%GETNICEAXISLIMITS Tight axis limits with a margin around the data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Like axis tight, but pads each side so that no data point touches the</span>
+0005 <span class="comment">% limits of the plot box, and applies the limits to the axes.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Side effects: sets the axes to tight and then sets XLim and YLim.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   axHandle - (optional) axes handle (default: gca)</span>
+0011 <span class="comment">%   pad      - (optional) margin on each side as a fraction of the tight</span>
+0012 <span class="comment">%              range (default: 0.1, i.e., 20% wider in total)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   xl - X axis limits</span>
+0016 <span class="comment">%   yl - Y axis limits</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 
+0020 <span class="keyword">if</span> nargin &lt; 1 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(axHandle)
+0021     axHandle = gca;
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> nargin &lt; 2
+0024     pad = 0.1; <span class="comment">%10% whitespace margins</span>
+0025 <span class="keyword">end</span>
+0026 axis(axHandle,<span class="string">'tight'</span>);
+0027 xl = get(axHandle,<span class="string">'XLim'</span>);
+0028 yl = get(axHandle,<span class="string">'YLim'</span>);
+0029 xl = -pad*<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(xl) + (1+pad)*xl;
+0030 yl = -pad*<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(yl) + (1+pad)*yl;
+0031 set(axHandle,<span class="string">'XLim'</span>,xl);
+0032 set(axHandle,<span class="string">'YLim'</span>,yl);
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

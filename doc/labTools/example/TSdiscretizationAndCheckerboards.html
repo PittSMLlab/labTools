@@ -2,9 +2,9 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of TSdiscretizationAndCheckerboards</title>
-  <meta name="keywords" content="TSdiscretizationAndCheckerboards">
-  <meta name="description" content="TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.">
+  <title>Description of TSDiscretizationAndCheckerboards</title>
+  <meta name="keywords" content="TSDiscretizationAndCheckerboards">
+  <meta name="description" content="TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -12,26 +12,28 @@
 </head>
 <body>
 <a name="_top"></a>
-<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; TSdiscretizationAndCheckerboards.m</div>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; TSDiscretizationAndCheckerboards.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
 <td align="right"><a href="index.html">Index for labTools\example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
 
-<h1>TSdiscretizationAndCheckerboards
+<h1>TSDiscretizationAndCheckerboards
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.</strong></div>
+<div class="box"><strong>TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.
+<div class="fragment"><pre class="comment">TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.
 
    Demonstrates labTimeSeries discretization, stride alignment, and
  checkerboard plotting for EMG data. Assumes 'expData' exists in the
- workspace with procEMGData and gaitEvents on trials 4 and 6.</pre></div>
+ workspace with procEMGData and gaitEvents on trials 4 and 6.
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
@@ -46,51 +48,53 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.</span>
+<div class="fragment"><pre>0001 <span class="comment">%TSDISCRETIZATIONANDCHECKERBOARDS Example: EMG checkerboards.</span>
 0002 <span class="comment">%</span>
 0003 <span class="comment">%   Demonstrates labTimeSeries discretization, stride alignment, and</span>
 0004 <span class="comment">% checkerboard plotting for EMG data. Assumes 'expData' exists in the</span>
 0005 <span class="comment">% workspace with procEMGData and gaitEvents on trials 4 and 6.</span>
-0006 
-0007 <span class="comment">%% Load EMG data and events</span>
-0008 mList = {<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'SOL'</span>, <span class="string">'MG'</span>, <span class="string">'LG'</span>, <span class="string">'SEMT'</span>, <span class="string">'SEMB'</span>, <span class="string">'BF'</span>, <span class="keyword">...</span>
-0009     <span class="string">'VM'</span>, <span class="string">'VL'</span>, <span class="string">'RF'</span>, <span class="string">'HIP'</span>, <span class="string">'GLU'</span>, <span class="string">'TFL'</span>};
-0010 mList   = mList(end:-1:1);
-0011 labels  = [strcat(<span class="string">'R'</span>, mList) strcat(<span class="string">'L'</span>, mList)];
-0012 labels1 = [strcat(<span class="string">'F'</span>, mList) strcat(<span class="string">'S'</span>, mList)];
-0013 ts  = expData.data{6}.procEMGData <span class="keyword">...</span>
-0014     .renameLabels(labels1, labels).getDataAsTS(labels);
-0015 e   = expData.data{6}.gaitEvents;
-0016 ts2 = expData.data{4}.procEMGData <span class="keyword">...</span>
-0017     .renameLabels(labels1, labels).getDataAsTS(labels);
-0018 e2  = expData.data{4}.gaitEvents;
-0019 
-0020 <span class="comment">%% Discretize time series into strides</span>
-0021 eventLabel = {<span class="string">'LHS'</span>, <span class="string">'RTO'</span>, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>};
-0022 N = [2, 4, 2, 4];
-0023 [DTS, bad]  = ts.discretize(e, eventLabel, N);
-0024 [DTS2, bad] = ts2.discretize(e2, eventLabel, N);
-0025 
-0026 <span class="comment">%% Align time series instead</span>
-0027 N = [16, 48, 16, 48] * 2;
-0028 [DTS, bad]  = ts.align(e, eventLabel, N);
-0029 [DTS2, bad] = ts2.align(e2, eventLabel, N);
-0030 
-0031 <span class="comment">%% Plot checkerboard</span>
-0032 DTS.plotCheckerboard()
-0033 
-0034 <span class="comment">%% Normalize to DTS2 mean and replot</span>
-0035 b = max(DTS2.mean.Data);
-0036 
-0037 DTS.Data  = DTS.Data ./ b;
-0038 DTS2.Data = DTS2.Data ./ b;
-0039 
-0040 DTS.plotCheckerboard()
-0041 DTS2.plotCheckerboard()
-0042 
-0043 <span class="comment">%% Plot difference checkerboard</span>
-0044 DTS_ = DTS - DTS2.mean;
-0045 DTS_.plotCheckerboard()</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Toolbox Dependencies: None</span>
+0008 
+0009 <span class="comment">%% Load EMG data and events</span>
+0010 mList = {<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'SOL'</span>, <span class="string">'MG'</span>, <span class="string">'LG'</span>, <span class="string">'SEMT'</span>, <span class="string">'SEMB'</span>, <span class="string">'BF'</span>, <span class="keyword">...</span>
+0011     <span class="string">'VM'</span>, <span class="string">'VL'</span>, <span class="string">'RF'</span>, <span class="string">'HIP'</span>, <span class="string">'GLU'</span>, <span class="string">'TFL'</span>};
+0012 mList   = mList(end:-1:1);
+0013 labels  = [strcat(<span class="string">'R'</span>, mList) strcat(<span class="string">'L'</span>, mList)];
+0014 labels1 = [strcat(<span class="string">'F'</span>, mList) strcat(<span class="string">'S'</span>, mList)];
+0015 ts  = expData.data{6}.procEMGData <span class="keyword">...</span>
+0016     .renameLabels(labels1, labels).getDataAsTS(labels);
+0017 e   = expData.data{6}.gaitEvents;
+0018 ts2 = expData.data{4}.procEMGData <span class="keyword">...</span>
+0019     .renameLabels(labels1, labels).getDataAsTS(labels);
+0020 e2  = expData.data{4}.gaitEvents;
+0021 
+0022 <span class="comment">%% Discretize time series into strides</span>
+0023 eventLabel = {<span class="string">'LHS'</span>, <span class="string">'RTO'</span>, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>};
+0024 N = [2, 4, 2, 4];
+0025 [DTS, bad]  = ts.discretize(e, eventLabel, N);
+0026 [DTS2, bad] = ts2.discretize(e2, eventLabel, N);
+0027 
+0028 <span class="comment">%% Align time series instead</span>
+0029 N = [16, 48, 16, 48] * 2;
+0030 [DTS, bad]  = ts.align(e, eventLabel, N);
+0031 [DTS2, bad] = ts2.align(e2, eventLabel, N);
+0032 
+0033 <span class="comment">%% Plot checkerboard</span>
+0034 DTS.plotCheckerboard()
+0035 
+0036 <span class="comment">%% Normalize to DTS2 mean and replot</span>
+0037 b = max(DTS2.mean.Data);
+0038 
+0039 DTS.Data  = DTS.Data ./ b;
+0040 DTS2.Data = DTS2.Data ./ b;
+0041 
+0042 DTS.plotCheckerboard()
+0043 DTS2.plotCheckerboard()
+0044 
+0045 <span class="comment">%% Plot difference checkerboard</span>
+0046 DTS_ = DTS - DTS2.mean;
+0047 DTS_.plotCheckerboard()</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of TestHreflexStimTriggerGuard</title>
+  <meta name="keywords" content="TestHreflexStimTriggerGuard">
+  <meta name="description" content="TestHreflexStimTriggerGuard Unit tests for the H-reflex trigger guard.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">testing</a> &gt; TestHreflexStimTriggerGuard.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>TestHreflexStimTriggerGuard
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>TestHreflexStimTriggerGuard Unit tests for the H-reflex trigger guard.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">TestHreflexStimTriggerGuard Unit tests for the H-reflex trigger guard.
+
+   Exercises HREFLEX.HASSTIMTRIGGER in isolation (flat trigger, real
+ pulse train, single- vs double-underscore channel names, empty/
+ zero-column/all-NaN data) and COMPUTEHREFLEXPARAMETERS end-to-end
+ against small synthetic labTimeSeries fixtures built in-memory, to
+ confirm: (1) a session with the H-reflex Nexus configuration enabled
+ but no stimulation (flat trigger channels, no TAP EMG collected)
+ returns NaN parameters instead of erroring, and (2) a session with a
+ real trigger pulse train still reaches the artifact detector (the
+ guard does not silently swallow genuine H-reflex sessions).
+
+   Scope: this script validates the guard's decision logic and the two
+ computeHreflexParameters code paths against synthetic data. It is not
+ a substitute for running VALIDATEHREFLEXGUARDONSERVER.M against a real
+ accidental (non-stimulation) session and a known-good H-reflex
+ session -- that is the only check that confirms the feature works
+ end-to-end on real data.
+
+   Usage:
+     run('testing/TestHreflexStimTriggerGuard.m')
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.HASSTIMTRIGGER, COMPUTEHREFLEXPARAMETERS,
+   <a href="ValidateHreflexGuardOnServer.html" class="code" title="">VALIDATEHREFLEXGUARDONSERVER</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>	COMPUTEHREFLEXPARAMETERS Compute stride-by-stride H-reflex parameters.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%TestHreflexStimTriggerGuard Unit tests for the H-reflex trigger guard.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Exercises HREFLEX.HASSTIMTRIGGER in isolation (flat trigger, real</span>
+0004 <span class="comment">% pulse train, single- vs double-underscore channel names, empty/</span>
+0005 <span class="comment">% zero-column/all-NaN data) and COMPUTEHREFLEXPARAMETERS end-to-end</span>
+0006 <span class="comment">% against small synthetic labTimeSeries fixtures built in-memory, to</span>
+0007 <span class="comment">% confirm: (1) a session with the H-reflex Nexus configuration enabled</span>
+0008 <span class="comment">% but no stimulation (flat trigger channels, no TAP EMG collected)</span>
+0009 <span class="comment">% returns NaN parameters instead of erroring, and (2) a session with a</span>
+0010 <span class="comment">% real trigger pulse train still reaches the artifact detector (the</span>
+0011 <span class="comment">% guard does not silently swallow genuine H-reflex sessions).</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   Scope: this script validates the guard's decision logic and the two</span>
+0014 <span class="comment">% computeHreflexParameters code paths against synthetic data. It is not</span>
+0015 <span class="comment">% a substitute for running VALIDATEHREFLEXGUARDONSERVER.M against a real</span>
+0016 <span class="comment">% accidental (non-stimulation) session and a known-good H-reflex</span>
+0017 <span class="comment">% session -- that is the only check that confirms the feature works</span>
+0018 <span class="comment">% end-to-end on real data.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Usage:</span>
+0021 <span class="comment">%     run('testing/TestHreflexStimTriggerGuard.m')</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies:</span>
+0024 <span class="comment">%   None</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also HREFLEX.HASSTIMTRIGGER, COMPUTEHREFLEXPARAMETERS,</span>
+0027 <span class="comment">%   VALIDATEHREFLEXGUARDONSERVER.</span>
+0028 
+0029 <span class="comment">%% Shared Fixture Constants</span>
+0030 fs        = 100;                     <span class="comment">% Hz, synthetic sampling frequency</span>
+0031 dur       = 4;                       <span class="comment">% s, synthetic trial duration</span>
+0032 nSamples  = fs * dur;
+0033 t0        = 0;
+0034 Ts        = 1 / fs;
+0035 rLabel    = <span class="string">'Stimulator_Trigger_Sync_Right_Stimulator'</span>;
+0036 lLabelDbl = <span class="string">'Stimulator_Trigger_Sync_Left__Stimulator'</span>;  <span class="comment">% double underscore</span>
+0037 lLabelSgl = <span class="string">'Stimulator_Trigger_Sync_Left_Stimulator'</span>;   <span class="comment">% single underscore</span>
+0038 
+0039 <span class="comment">%% hasStimTrigger: Flat (Near-Zero) Trigger -&gt; False</span>
+0040 flatData = 0.01 * ones(nSamples, 2);   <span class="comment">% ~10 mV, far below 2.5 V threshold</span>
+0041 flatTrig = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(flatData, t0, Ts, {rLabel, lLabelDbl});
+0042 assert(~Hreflex.hasStimTrigger(flatTrig), <span class="keyword">...</span>
+0043     <span class="string">'A flat near-zero trigger channel should not be detected as active.'</span>);
+0044 
+0045 <span class="comment">%% hasStimTrigger: Real Pulse Train -&gt; True</span>
+0046 pulseData = zeros(nSamples, 2);
+0047 pulseData(10:15, :) = 5;               <span class="comment">% 5 V pulse on both channels</span>
+0048 realTrig = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(pulseData, t0, Ts, {rLabel, lLabelDbl});
+0049 assert(Hreflex.hasStimTrigger(realTrig), <span class="keyword">...</span>
+0050     <span class="string">'A real 5 V pulse train should be detected as active.'</span>);
+0051 
+0052 <span class="comment">%% hasStimTrigger: Single- and Double-Underscore Labels -&gt; Both True</span>
+0053 pulseDataOneCh = zeros(nSamples, 1);
+0054 pulseDataOneCh(10:15) = 5;
+0055 trigDbl = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(pulseDataOneCh, t0, Ts, {lLabelDbl});
+0056 trigSgl = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(pulseDataOneCh, t0, Ts, {lLabelSgl});
+0057 assert(Hreflex.hasStimTrigger(trigDbl), <span class="keyword">...</span>
+0058     <span class="string">'Double-underscore channel name should not affect detection.'</span>);
+0059 assert(Hreflex.hasStimTrigger(trigSgl), <span class="keyword">...</span>
+0060     <span class="string">'Single-underscore channel name should not affect detection.'</span>);
+0061 
+0062 <span class="comment">%% hasStimTrigger: Empty Input -&gt; False, No Error</span>
+0063 assert(~Hreflex.hasStimTrigger([]), <span class="keyword">...</span>
+0064     <span class="string">'Empty HreflexPin input should return false without erroring.'</span>);
+0065 
+0066 <span class="comment">%% hasStimTrigger: Zero-Column Data -&gt; False, No Error</span>
+0067 zeroColTrig = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(zeros(nSamples, 0), t0, Ts, {});
+0068 assert(~Hreflex.hasStimTrigger(zeroColTrig), <span class="keyword">...</span>
+0069     <span class="string">'Zero-column trigger data should return false without erroring.'</span>);
+0070 
+0071 <span class="comment">%% hasStimTrigger: All-NaN Data -&gt; False, No Error</span>
+0072 nanTrig = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(nan(nSamples, 2), t0, Ts, {rLabel, lLabelDbl});
+0073 assert(~Hreflex.hasStimTrigger(nanTrig), <span class="keyword">...</span>
+0074     <span class="string">'All-NaN trigger data should return false without erroring.'</span>);
+0075 
+0076 <span class="comment">%% Build Shared strideEvents Fixture</span>
+0077 timeSHS  = [0.5; 1.5; 2.5];
+0078 timeFTO  = [0.7; 1.7; 2.7];
+0079 timeFHS  = [1.0; 2.0; 3.0];
+0080 timeSTO  = [1.2; 2.2; 3.2];
+0081 timeSHS2 = [1.5; 2.5; 3.5];
+0082 timeFTO2 = [1.7; 2.7; 3.7];
+0083 timeFHS2 = [2.0; 3.0; 3.9];
+0084 timeSTO2 = [2.2; 3.2; 3.95];
+0085 strideEvents = struct(<span class="string">'tSHS'</span>, timeSHS, <span class="string">'tFTO'</span>, timeFTO, <span class="keyword">...</span>
+0086     <span class="string">'tFHS'</span>, timeFHS, <span class="string">'tSTO'</span>, timeSTO, <span class="string">'tSHS2'</span>, timeSHS2, <span class="keyword">...</span>
+0087     <span class="string">'tFTO2'</span>, timeFTO2, <span class="string">'tFHS2'</span>, timeFHS2, <span class="string">'tSTO2'</span>, timeSTO2);
+0088 nExpectedParams = 66;   <span class="comment">% rows of computeHreflexParameters aux block</span>
+0089 
+0090 <span class="comment">%% computeHreflexParameters: Flat Trigger, No TAP EMG -&gt; NaN Parameters</span>
+0091 <span class="comment">% The H-reflex Nexus configuration was left enabled (trigger channels</span>
+0092 <span class="comment">% recorded) for a session that never stimulated (flat trigger) and</span>
+0093 <span class="comment">% never collected the TAP muscles. The guard must short-circuit before</span>
+0094 <span class="comment">% the RTAP/LTAP read, so this must not error even with EMGData = [].</span>
+0095 out = <a href="../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>(strideEvents, flatTrig, [], <span class="string">'R'</span>);
+0096 assert(numel(out.labels) == nExpectedParams, <span class="keyword">...</span>
+0097     <span class="string">'Flat-trigger call should still return all H-reflex parameter labels.'</span>);
+0098 <span class="comment">% isSingleStanceSlow/Fast are initialized as logical false (not NaN);</span>
+0099 <span class="comment">% every other parameter should be NaN with no stimulation.</span>
+0100 isSingleStanceMask = contains(out.labels, <span class="string">'isSingleStance'</span>);
+0101 assert(all(isnan(out.Data(:, ~isSingleStanceMask)), <span class="string">'all'</span>), <span class="keyword">...</span>
+0102     <span class="string">'Flat-trigger call with no stimulation should return all-NaN data.'</span>);
+0103 assert(all(out.Data(:, isSingleStanceMask) == 0, <span class="string">'all'</span>), <span class="keyword">...</span>
+0104     <span class="string">'isSingleStance parameters should default to false, not NaN.'</span>);
+0105 
+0106 <span class="comment">%% computeHreflexParameters: Real Trigger, No TAP EMG -&gt; Still Errors</span>
+0107 <span class="comment">% A real pulse train must NOT be swallowed by the guard: with the TAP</span>
+0108 <span class="comment">% channels absent, this should still reach</span>
+0109 <span class="comment">% Hreflex.extractStimArtifactIndsFromTrigger and throw its &quot;data</span>
+0110 <span class="comment">% missing&quot; error, proving the guard passes real stimulation through.</span>
+0111 noTAPEMG = <a href="../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(zeros(nSamples, 1), t0, Ts, {<span class="string">'RSOL'</span>});
+0112 threwExpectedError = false;
+0113 <span class="keyword">try</span>
+0114     <a href="../../labTools/fun/parameterCalculation/computeHreflexParameters.html" class="code" title="function out = computeHreflexParameters(strideEvents, HreflexData,EMGData, slowLeg)">computeHreflexParameters</a>(strideEvents, realTrig, noTAPEMG, <span class="string">'R'</span>);
+0115 <span class="keyword">catch</span> ME
+0116     threwExpectedError = contains(ME.message, <span class="keyword">...</span>
+0117         <span class="string">'data missing that is crucial'</span>);
+0118 <span class="keyword">end</span>
+0119 assert(threwExpectedError, <span class="keyword">...</span>
+0120     [<span class="string">'A real trigger pulse train with missing TAP EMG should still '</span> <span class="keyword">...</span>
+0121     <span class="string">'reach the artifact detector and throw its data-missing error '</span> <span class="keyword">...</span>
+0122     <span class="string">'(i.e., the guard must not silently skip genuine stimulation).'</span>]);
+0123 
+0124 disp(<span class="string">'TestHreflexStimTriggerGuard: all assertions passed.'</span>);</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

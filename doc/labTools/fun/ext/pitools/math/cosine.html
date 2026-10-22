@@ -4,7 +4,7 @@
 <head>
   <title>Description of cosine</title>
   <meta name="keywords" content="cosine">
-  <meta name="description" content="Calculates the cosine of vectors X,Y, or if they are matrices, the">
+  <meta name="description" content="COSINE Cosine of the angle between vectors.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,14 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Calculates the cosine of vectors X,Y, or if they are matrices, the</strong></div>
+<div class="box"><strong>COSINE Cosine of the angle between vectors.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [C] = cosine(X,Y) </strong></div>
+<div class="box"><strong>function C = cosine(X,Y) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Calculates the cosine of vectors X,Y, or if they are matrices, the
-column-wise matrix of cosines</pre></div>
+<div class="fragment"><pre class="comment">COSINE Cosine of the angle between vectors.
+
+   C = COSINE(X,Y) returns the cosine of the angle between the columns of X
+ and the columns of Y: C(a,b) = X(:,a)'*Y(:,b)/(norm(X(:,a))*norm(Y(:,b))).
+ For vectors this is a scalar. COSINE(X) uses Y = X.
+
+ Inputs:
+   X - M x A matrix (or vector)
+   Y - (optional) M x B matrix (default: X)
+
+ Outputs:
+   C - A x B matrix of cosines
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -43,19 +55,29 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C] = cosine(X,Y)</a>
-0002 <span class="comment">%Calculates the cosine of vectors X,Y, or if they are matrices, the</span>
-0003 <span class="comment">%column-wise matrix of cosines</span>
-0004 
-0005 <span class="keyword">if</span> nargin==1
-0006     Y=X;
-0007 <span class="keyword">end</span>
-0008 
-0009 C=(X'*Y)./sqrt(sum(X.^2,1)'*sum(Y.^2,1));
-0010 
-0011 
-0012 <span class="keyword">end</span>
-0013</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = cosine(X,Y)</a>
+0002 <span class="comment">%COSINE Cosine of the angle between vectors.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   C = COSINE(X,Y) returns the cosine of the angle between the columns of X</span>
+0005 <span class="comment">% and the columns of Y: C(a,b) = X(:,a)'*Y(:,b)/(norm(X(:,a))*norm(Y(:,b))).</span>
+0006 <span class="comment">% For vectors this is a scalar. COSINE(X) uses Y = X.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   X - M x A matrix (or vector)</span>
+0010 <span class="comment">%   Y - (optional) M x B matrix (default: X)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   C - A x B matrix of cosines</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Toolbox Dependencies: None</span>
+0016 
+0017 <span class="keyword">if</span> nargin == 1
+0018     Y = X;
+0019 <span class="keyword">end</span>
+0020 
+0021 C = (X'*Y)./sqrt(sum(X.^2,1)'*sum(Y.^2,1));
+0022 
+0023 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

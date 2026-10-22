@@ -29,16 +29,16 @@
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.
 
-   Computes the DTFT of data, zeroes all frequency components with
- absolute normalized frequency below fcut, then inverts back to the
- time domain. Because filtering is done in the frequency domain without
- windowing, this is an ideal (brick-wall) filter with zero phase lag.
+   Computes the DTFT of data, zeroes all frequency components with absolute
+ normalized frequency below fcut, then inverts back to the time domain.
+ Because filtering is done in the frequency domain without windowing, this
+ is an ideal (brick-wall) filter with zero phase lag.
 
  Inputs:
-   data - (N x C) double array of time series; filtering is applied
-          along rows (dimension 1)
-   fcut - cutoff frequency in normalized units [0, 0.5]; components
-          with |f| &lt; fcut are zeroed
+   data - (N x C) double array of time series; filtering is applied along
+          rows (dimension 1)
+   fcut - cutoff frequency in normalized units [0, 0.5]; components with
+          |f| &lt; fcut are zeroed
 
  Outputs:
    filteredData - high-pass filtered signal, same size as data
@@ -63,16 +63,16 @@ This function is called by:
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function filteredData = idealHPF(data, fcut)</a>
 0002 <span class="comment">%IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Computes the DTFT of data, zeroes all frequency components with</span>
-0005 <span class="comment">% absolute normalized frequency below fcut, then inverts back to the</span>
-0006 <span class="comment">% time domain. Because filtering is done in the frequency domain without</span>
-0007 <span class="comment">% windowing, this is an ideal (brick-wall) filter with zero phase lag.</span>
+0004 <span class="comment">%   Computes the DTFT of data, zeroes all frequency components with absolute</span>
+0005 <span class="comment">% normalized frequency below fcut, then inverts back to the time domain.</span>
+0006 <span class="comment">% Because filtering is done in the frequency domain without windowing, this</span>
+0007 <span class="comment">% is an ideal (brick-wall) filter with zero phase lag.</span>
 0008 <span class="comment">%</span>
 0009 <span class="comment">% Inputs:</span>
-0010 <span class="comment">%   data - (N x C) double array of time series; filtering is applied</span>
-0011 <span class="comment">%          along rows (dimension 1)</span>
-0012 <span class="comment">%   fcut - cutoff frequency in normalized units [0, 0.5]; components</span>
-0013 <span class="comment">%          with |f| &lt; fcut are zeroed</span>
+0010 <span class="comment">%   data - (N x C) double array of time series; filtering is applied along</span>
+0011 <span class="comment">%          rows (dimension 1)</span>
+0012 <span class="comment">%   fcut - cutoff frequency in normalized units [0, 0.5]; components with</span>
+0013 <span class="comment">%          |f| &lt; fcut are zeroed</span>
 0014 <span class="comment">%</span>
 0015 <span class="comment">% Outputs:</span>
 0016 <span class="comment">%   filteredData - high-pass filtered signal, same size as data</span>
@@ -94,6 +94,6 @@ This function is called by:
 0032 filteredData = ifft(ifftshift(Fdata, 1));
 0033 
 0034 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

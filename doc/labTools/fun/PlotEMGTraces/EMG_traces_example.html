@@ -4,7 +4,7 @@
 <head>
   <title>Description of EMG_traces_example</title>
   <meta name="keywords" content="EMG_traces_example">
-  <meta name="description" content="%Traces from example subject to show how data is summarized">
+  <meta name="description" content="% EMG traces of an example subject">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,44 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>%Traces from example subject to show how data is summarized</strong></div>
+<div class="box"><strong>% EMG traces of an example subject</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">%Traces from example subject to show how data is summarized</pre></div>
+<div class="fragment"><pre class="comment">% EMG traces of an example subject
+ Script. Plots normalized EMG traces of an example session with
+ plotEMGtraces for the treadmill baseline, the three baseline speeds,
+ and early and late adaptation, and saves each figure. Edit the muscles,
+ conditions, number of strides, and the early/late flags for your data
+ set.
+
+ Inputs:
+   expData - (workspace) processed experimentData; if it is missing the
+             script loads &lt;strSess&gt;.mat
+   strSess - (workspace) session ID; set to 'C3S12_S1' when expData
+             already exists
+
+ Outputs:
+   none - figures only
+
+ Side effects: loads &lt;strSess&gt;.mat when expData is not in the workspace;
+   opens one figure per section and saves it as .fig and .png in the
+   current folder (&lt;strSess&gt;_EMG_Normalized_Base, ..._BaseTMOGFast,
+   ..._BaseAdapt), silently overwriting existing files (see
+   DATA_OUTPUTS.md).
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+   plotEMGtraces)
+
+ See also PLOTEMGTRACES, <a href="Nim_EMG_traces_per_Cond.html" class="code" title="">NIM_EMG_TRACES_PER_COND</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	% Plot the EMG ttraces for the Nimbus generalization project</li></ul>
+<li><a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	PLOTEMGTRACES Plot EMG traces of several conditions for each muscle.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -42,64 +67,90 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%%Traces from example subject to show how data is summarized</span>
-0002 
-0003 <span class="comment">%You can update this script to your data set</span>
-0004 <span class="comment">%Important is to load a ID.mat file</span>
-0005 <span class="comment">%Choose the conditions that you want to plot</span>
-0006 <span class="comment">%Hoe many strides you want to plot</span>
-0007 <span class="comment">%IF you want to plot the early or the late part of the conditions</span>
-0008 <span class="comment">% IF you want to ignore stides at the early part of the conditon</span>
-0009 
-0010 <span class="comment">%% 1: Load Data</span>
-0011 
-0012 <span class="keyword">if</span> ~exist(<span class="string">'expData'</span>,<span class="string">'var'</span>)    <span class="comment">% if data file has not been loaded, ...</span>
-0013     load([strSess <span class="string">'.mat'</span>]);   <span class="comment">% load the data file</span>
-0014 <span class="keyword">else</span>                    <span class="comment">% otherwise, ...</span>
-0015     <span class="comment">% currently do nothing because adaptData &amp; strSess exist</span>
-0016     strSess = <span class="string">'C3S12_S1'</span>;
-0017 <span class="keyword">end</span>
-0018 
-0019 <span class="comment">%% Set muscle to plot</span>
-0020 muscle={<span class="string">'TFL'</span>,<span class="string">'GLU'</span>,<span class="string">'HIP'</span>,<span class="string">'SEMB'</span>,<span class="string">'SEMT'</span>,<span class="string">'BF'</span>,<span class="string">'VM'</span>,<span class="string">'VL'</span>,<span class="string">'RF'</span>,<span class="string">'SOL'</span>,<span class="string">'LG'</span>,<span class="string">'MG'</span>,<span class="string">'TA'</span>,<span class="string">'PER'</span>}; <span class="comment">%muscles that you want to plot</span>
-0021 normalize = 1;  <span class="comment">% 1 to normalize data</span>
-0022 normCond = {<span class="string">'TM Base'</span>}; <span class="comment">% Condition that you want to use to normalize the data</span>
-0023 <span class="comment">%%</span>
-0024 <span class="comment">%% Baseline condtions</span>
-0025 <span class="comment">% Here we are plotting treadmill baseline for references</span>
-0026 conds={<span class="string">'TM Base'</span>};
-0027 late=[1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
-0028 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
-0029 IgnoreStridesEarly=[1 1 1] ;  <span class="comment">%number of strides that you are going to ignore at the beginning</span>
-0030 
-0031 <span class="comment">%plotting function</span>
-0032 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-0033 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>);
-0034 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_Base.fig'</span>]);
-0035 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_Base.png'</span>]);
+<div class="fragment"><pre>0001 <span class="comment">%% EMG traces of an example subject</span>
+0002 <span class="comment">% Script. Plots normalized EMG traces of an example session with</span>
+0003 <span class="comment">% plotEMGtraces for the treadmill baseline, the three baseline speeds,</span>
+0004 <span class="comment">% and early and late adaptation, and saves each figure. Edit the muscles,</span>
+0005 <span class="comment">% conditions, number of strides, and the early/late flags for your data</span>
+0006 <span class="comment">% set.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   expData - (workspace) processed experimentData; if it is missing the</span>
+0010 <span class="comment">%             script loads &lt;strSess&gt;.mat</span>
+0011 <span class="comment">%   strSess - (workspace) session ID; set to 'C3S12_S1' when expData</span>
+0012 <span class="comment">%             already exists</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   none - figures only</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Side effects: loads &lt;strSess&gt;.mat when expData is not in the workspace;</span>
+0018 <span class="comment">%   opens one figure per section and saves it as .fig and .png in the</span>
+0019 <span class="comment">%   current folder (&lt;strSess&gt;_EMG_Normalized_Base, ..._BaseTMOGFast,</span>
+0020 <span class="comment">%   ..._BaseAdapt), silently overwriting existing files (see</span>
+0021 <span class="comment">%   DATA_OUTPUTS.md).</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through</span>
+0024 <span class="comment">%   plotEMGtraces)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also PLOTEMGTRACES, NIM_EMG_TRACES_PER_COND.</span>
+0027 
+0028 <span class="comment">%% 1: Load Data</span>
+0029 
+0030 <span class="keyword">if</span> ~exist(<span class="string">'expData'</span>,<span class="string">'var'</span>)    <span class="comment">% if data file has not been loaded, ...</span>
+0031     load([strSess <span class="string">'.mat'</span>]);   <span class="comment">% load the data file</span>
+0032 <span class="keyword">else</span>                    <span class="comment">% otherwise, ...</span>
+0033     <span class="comment">% currently do nothing because adaptData &amp; strSess exist</span>
+0034     strSess = <span class="string">'C3S12_S1'</span>;
+0035 <span class="keyword">end</span>
 0036 
-0037 <span class="comment">%% Baseline condtions for the 3 usual speeds</span>
-0038 <span class="comment">% Here we are okitting the late part of the different baseline conditions</span>
-0039 conds={<span class="string">'TM Base'</span>,<span class="string">'TM Fast'</span>,<span class="string">'OG Base'</span>};
-0040 late=[1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
-0041 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
-0042 IgnoreStridesEarly=[1 1 1] ; <span class="comment">%number of strides that you are going to ignore at the beginning</span>
-0043 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-0044 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseTMOGFast.fig'</span>]);
-0045 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseTMOGFast.png'</span>]);
-0046 
-0047 <span class="comment">%%  Baseline plus early and late adaptation</span>
-0048 <span class="comment">% Here we are plotting treadmill baseline, early adaptation and late</span>
-0049 <span class="comment">% adaptation</span>
-0050 
-0051 conds={<span class="string">'TM Base'</span>,<span class="string">'Adaptation'</span>,<span class="string">'Adaptation'</span>};
-0052 late=[1 0 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
-0053 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
-0054 IgnoreStridesEarly=[1 1 0]; <span class="comment">%number of strides that you are going to ignore at the beginning</span>
-0055 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly); 
-0056 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseAdapt.fig'</span>]);
-0057 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseAdapt.png'</span>]);
-0058</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0037 <span class="comment">%% Set muscle to plot</span>
+0038 muscle    = {<span class="string">'TFL'</span>,<span class="string">'GLU'</span>,<span class="string">'HIP'</span>,<span class="string">'SEMB'</span>,<span class="string">'SEMT'</span>,<span class="string">'BF'</span>,<span class="string">'VM'</span>,<span class="string">'VL'</span>,<span class="string">'RF'</span>,<span class="string">'SOL'</span>, <span class="keyword">...</span>
+0039     <span class="string">'LG'</span>,<span class="string">'MG'</span>,<span class="string">'TA'</span>,<span class="string">'PER'</span>}; <span class="comment">%muscles that you want to plot</span>
+0040 normalize = 1;  <span class="comment">% 1 to normalize data</span>
+0041 <span class="comment">% Condition that you want to use to normalize the data</span>
+0042 normCond  = {<span class="string">'TM Base'</span>};
+0043 
+0044 <span class="comment">%% Baseline condtions</span>
+0045 <span class="comment">% Here we are plotting treadmill baseline for references</span>
+0046 conds = {<span class="string">'TM Base'</span>};
+0047 late = [1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0048 strides = [40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0049 <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0050 IgnoreStridesEarly = [1 1 1] ;
+0051 
+0052 <span class="comment">%plotting function</span>
+0053 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond, <span class="keyword">...</span>
+0054     IgnoreStridesEarly);
+0055 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>);
+0056 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_Base.fig'</span>]);
+0057 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_Base.png'</span>]);
+0058 
+0059 <span class="comment">%% Baseline condtions for the 3 usual speeds</span>
+0060 <span class="comment">% Here we are okitting the late part of the different baseline conditions</span>
+0061 conds = {<span class="string">'TM Base'</span>,<span class="string">'TM Fast'</span>,<span class="string">'OG Base'</span>};
+0062 late = [1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0063 strides = [40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0064 <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0065 IgnoreStridesEarly = [1 1 1] ;
+0066 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond, <span class="keyword">...</span>
+0067     IgnoreStridesEarly);
+0068 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseTMOGFast.fig'</span>]);
+0069 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseTMOGFast.png'</span>]);
+0070 
+0071 <span class="comment">%%  Baseline plus early and late adaptation</span>
+0072 <span class="comment">% Here we are plotting treadmill baseline, early adaptation and late</span>
+0073 <span class="comment">% adaptation</span>
+0074 
+0075 conds = {<span class="string">'TM Base'</span>,<span class="string">'Adaptation'</span>,<span class="string">'Adaptation'</span>};
+0076 late = [1 0 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0077 strides = [40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0078 <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0079 IgnoreStridesEarly = [1 1 0];
+0080 <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond, <span class="keyword">...</span>
+0081     IgnoreStridesEarly);
+0082 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseAdapt.fig'</span>]);
+0083 saveas(gcf,[strSess <span class="string">'_EMG_Normalized_BaseAdapt.png'</span>]);
+0084</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

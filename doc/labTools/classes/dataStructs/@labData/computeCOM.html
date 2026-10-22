@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeCOM</title>
   <meta name="keywords" content="computeCOM">
-  <meta name="description" content="computeCOM  Computes center of mass from marker data">
+  <meta name="description" content="COMPUTECOM Computes center of mass from marker data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>computeCOM  Computes center of mass from marker data</strong></div>
+<div class="box"><strong>COMPUTECOM Computes center of mass from marker data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function COMData = computeCOM(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">computeCOM  Computes center of mass from marker data
+<div class="fragment"><pre class="comment">COMPUTECOM Computes center of mass from marker data.
 
    COMData = computeCOM(this) calculates the center of mass trajectory
-   using the COMCalculator function
+ using the COMCalculator function
 
-   Inputs:
-       this - labData object
+ Inputs:
+   this - labData object
 
-   Outputs:
-       COMData - orientedLabTimeSeries containing center of mass data
+ Outputs:
+   COMData - orientedLabTimeSeries containing center of mass data
 
-   See also: COMCalculator</pre></div>
+ Toolbox Dependencies: None
+
+ See also COMCALCULATOR.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -47,29 +49,31 @@ This function calls:
 <li><a href="../../../../labTools/fun/biomechAnalysis/COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>	COMCALCULATOR Compute segment center-of-mass time series from marker data.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li></ul>
+<li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP AP GRF parameters from overground plates.</li><li><a href="../../../../labTools/fun/parameterCalculation/computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents,GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Stride-aligned AP GRF parameters.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function COMData = computeCOM(this)</a>
-0002 <span class="comment">%computeCOM  Computes center of mass from marker data</span>
+0002 <span class="comment">%COMPUTECOM Computes center of mass from marker data.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   COMData = computeCOM(this) calculates the center of mass trajectory</span>
-0005 <span class="comment">%   using the COMCalculator function</span>
+0005 <span class="comment">% using the COMCalculator function</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labData object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - labData object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       COMData - orientedLabTimeSeries containing center of mass data</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   COMData - orientedLabTimeSeries containing center of mass data</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: COMCalculator</span>
-0014 
-0015 COMData = <a href="../../../../labTools/fun/biomechAnalysis/COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>(this.markerData);
-0016 <span class="keyword">end</span>
-0017</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also COMCALCULATOR.</span>
+0016 
+0017 COMData = <a href="../../../../labTools/fun/biomechAnalysis/COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>(this.markerData);
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

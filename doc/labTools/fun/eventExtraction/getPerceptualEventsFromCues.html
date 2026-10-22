@@ -94,29 +94,30 @@ This function is called by:
 0026 <span class="comment">%</span>
 0027 <span class="comment">% See also GETEVENTS.</span>
 0028 
-0029 <span class="comment">% grab auditory cue times from the datalog, offset by synchronization</span>
-0030 startCue = datlog.audioCues.start + datlog.dataLogTimeOffsetBest;
-0031 stopCue  = datlog.audioCues.stop  + datlog.dataLogTimeOffsetBest;
-0032 
-0033 <span class="comment">%% Match cue times to nearest gait events</span>
-0034 LHSstartCue = zeros(length(infoLHSevent), 1);
-0035 RHSstartCue = zeros(length(infoRHSevent), 1);
-0036 LHSstopCue  = zeros(length(infoLHSevent), 1);
-0037 RHSstopCue  = zeros(length(infoRHSevent), 1);
-0038 
-0039 <span class="keyword">for</span> ii = 1:length(startCue)
-0040     [~, LidxI] = min(abs(infoLHSevent - startCue(ii)));
-0041     [~, LidxF] = min(abs(infoLHSevent - stopCue(ii)));
-0042     LHSstartCue(LidxI) = infoLHSevent(LidxI);
-0043     LHSstopCue(LidxF)  = infoLHSevent(LidxF);
-0044 
-0045     [~, RidxI] = min(abs(infoRHSevent - startCue(ii)));
-0046     [~, RidxF] = min(abs(infoRHSevent - stopCue(ii)));
-0047     RHSstartCue(RidxI) = infoRHSevent(RidxI);
-0048     RHSstopCue(RidxF)  = infoRHSevent(RidxF);
-0049 <span class="keyword">end</span>
-0050 
-0051 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0029 <span class="comment">%% Offset cue times</span>
+0030 <span class="comment">% grab auditory cue times from the datalog, offset by synchronization</span>
+0031 startCue = datlog.audioCues.start + datlog.dataLogTimeOffsetBest;
+0032 stopCue  = datlog.audioCues.stop  + datlog.dataLogTimeOffsetBest;
+0033 
+0034 <span class="comment">%% Match cue times to nearest gait events</span>
+0035 LHSstartCue = zeros(length(infoLHSevent), 1);
+0036 RHSstartCue = zeros(length(infoRHSevent), 1);
+0037 LHSstopCue  = zeros(length(infoLHSevent), 1);
+0038 RHSstopCue  = zeros(length(infoRHSevent), 1);
+0039 
+0040 <span class="keyword">for</span> ii = 1:length(startCue)
+0041     [~, LidxI] = min(abs(infoLHSevent - startCue(ii)));
+0042     [~, LidxF] = min(abs(infoLHSevent - stopCue(ii)));
+0043     LHSstartCue(LidxI) = infoLHSevent(LidxI);
+0044     LHSstopCue(LidxF)  = infoLHSevent(LidxF);
+0045 
+0046     [~, RidxI] = min(abs(infoRHSevent - startCue(ii)));
+0047     [~, RidxF] = min(abs(infoRHSevent - stopCue(ii)));
+0048     RHSstartCue(RidxI) = infoRHSevent(RidxI);
+0049     RHSstopCue(RidxF)  = infoRHSevent(RidxF);
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

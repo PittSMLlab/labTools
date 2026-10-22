@@ -4,7 +4,7 @@
 <head>
   <title>Description of compareListsNested</title>
   <meta name="keywords" content="compareListsNested">
-  <meta name="description" content="Searches for strings in list2 to match any string in list1.">
+  <meta name="description" content="COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,81 +21,101 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Searches for strings in list2 to match any string in list1.</strong></div>
+<div class="box"><strong>COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [bool,idxs] = compareListsNested(list1,list2) </strong></div>
+<div class="box"><strong>function [bool, idxs] = compareListsNested(list1, list2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Searches for strings in list2 to match any string in list1.
-List2 has to be a cell array of strings.
-List 1 has to be a cell array containing strings or cell arrays of
-strings, to allow for multiple alternative spellings.
-bool &amp; idxs are of the same size as list2
-bool(i) is true if list2{i} is found in list1
-idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that
-any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}
-may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may
-return a boolean vector
-If there are many matches, idxs will point to the LAST match found</pre></div>
+<div class="fragment"><pre class="comment">COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).
+
+   For each element of list2, checks whether it matches any string in
+ list1. list1 may contain plain strings or nested cell arrays of strings
+ (multiple alternative spellings for one entry). If there are multiple
+ matches, idxs points to the LAST match found.
+
+ Inputs:
+   list1 - cell array of strings or nested cell arrays of strings, allowing
+           multiple alternative spellings per entry
+   list2 - cell array of strings (or a single char) to search for
+
+ Outputs:
+   bool - logical array, same size as list2; true where list2{ii} was found
+          in list1
+   idxs - double array, same size as list2; idxs(ii) is the index into
+          list1 containing list2{ii} (NaN where bool(ii) is false)
+
+ Toolbox Dependencies: None
+
+ See also <a href="compareLists.html" class="code" title="function [bool, idxs] = compareLists(list1, list2)">COMPARELISTS</a>, STRCMP.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li><li><a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>	COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/SeparateConditions.html" class="code" title="function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask)">SeparateConditions</a>	Chagingparams, create new conditions in 1 trial, currently only need to</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="compareLists.html" class="code" title="function [bool,idxs] = compareLists(list1,list2)">compareLists</a>	Searches for strings in list2 to match any string in list1.</li><li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="../../../../../labTools/fun/SeparateConditions.html" class="code" title="function adaptDataToSep = SeparateConditions(adaptDataToSep,oldConditionName, newConditionName, Tied2Split, speedDiff,newDecription, plotSpeed, containsPercTask)">SeparateConditions</a>	SEPARATECONDITIONS Split one condition into two using belt speed.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="compareLists.html" class="code" title="function [bool, idxs] = compareLists(list1, list2)">compareLists</a>	COMPARELISTS Deprecated wrapper — use COMPARELISTSNESTED instead.</li><li><a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>	COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bool,idxs] = compareListsNested(list1,list2)</a>
-0002 <span class="comment">%Searches for strings in list2 to match any string in list1.</span>
-0003 <span class="comment">%List2 has to be a cell array of strings.</span>
-0004 <span class="comment">%List 1 has to be a cell array containing strings or cell arrays of</span>
-0005 <span class="comment">%strings, to allow for multiple alternative spellings.</span>
-0006 <span class="comment">%bool &amp; idxs are of the same size as list2</span>
-0007 <span class="comment">%bool(i) is true if list2{i} is found in list1</span>
-0008 <span class="comment">%idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that</span>
-0009 <span class="comment">%any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}</span>
-0010 <span class="comment">%may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may</span>
-0011 <span class="comment">%return a boolean vector</span>
-0012 <span class="comment">%If there are many matches, idxs will point to the LAST match found</span>
-0013 
-0014 <span class="keyword">if</span> isa(list2,<span class="string">'char'</span>)
-0015     list2={list2};
-0016 <span class="keyword">end</span>
-0017 <span class="keyword">if</span> ~isa(list2,<span class="string">'cell'</span>) || ~all(cellfun(@(x) isa(x,<span class="string">'char'</span>),list2))
-0018     error(<span class="string">'List2 has to be a cell array containing strings.'</span>);
-0019 <span class="keyword">end</span>
-0020 <span class="keyword">if</span> all(cellfun(@(x) isa(x,<span class="string">'char'</span>),list1)) <span class="comment">%Shortcut for when list1 and list2 are both cells of strings:</span>
-0021     [bool,idxs] = <a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(list1,list2);
-0022 <span class="keyword">else</span>
-0023 <span class="comment">%TO DO: make this more efficient by running as the first part (above this line) for all the</span>
-0024 <span class="comment">%chars in list1, and only doing the second part (from this line on) for the non-chars in list1</span>
-0025 <span class="comment">%[currently we do the first part only if they are ALL chars, and if not we</span>
-0026 <span class="comment">%go ahead element by element, which is inefficient]</span>
-0027 idxs=nan(size(list2));
-0028     bool=false(size(list2));
-0029     <span class="keyword">for</span> i=1:length(list1)
-0030         <span class="keyword">if</span> isa(list1{i},<span class="string">'cell'</span>)
-0031             [aux,~] = <a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(list1{i},list2);
-0032         <span class="keyword">elseif</span> isa(list1{i},<span class="string">'char'</span>)
-0033             aux=strcmp(list1{i},list2); <span class="comment">%Compares the full list2 to one element of list1</span>
-0034         <span class="keyword">else</span>
-0035             error(<span class="string">'List1 has to be a cell array containing strings or nested cell-arrays of strings'</span>);
-0036         <span class="keyword">end</span>
-0037         idxs(aux)=i;
-0038         bool=bool | aux;
-0039     <span class="keyword">end</span>
-0040 <span class="keyword">end</span>
-0041 
-0042 
-0043 <span class="keyword">end</span>
-0044</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bool, idxs] = compareListsNested(list1, list2)</a>
+0002 <span class="comment">%COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For each element of list2, checks whether it matches any string in</span>
+0005 <span class="comment">% list1. list1 may contain plain strings or nested cell arrays of strings</span>
+0006 <span class="comment">% (multiple alternative spellings for one entry). If there are multiple</span>
+0007 <span class="comment">% matches, idxs points to the LAST match found.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   list1 - cell array of strings or nested cell arrays of strings, allowing</span>
+0011 <span class="comment">%           multiple alternative spellings per entry</span>
+0012 <span class="comment">%   list2 - cell array of strings (or a single char) to search for</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   bool - logical array, same size as list2; true where list2{ii} was found</span>
+0016 <span class="comment">%          in list1</span>
+0017 <span class="comment">%   idxs - double array, same size as list2; idxs(ii) is the index into</span>
+0018 <span class="comment">%          list1 containing list2{ii} (NaN where bool(ii) is false)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also COMPARELISTS, STRCMP.</span>
+0023 
+0024 <span class="keyword">if</span> isa(list2, <span class="string">'char'</span>)
+0025     list2 = {list2};
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> ~isa(list2, <span class="string">'cell'</span>) || ~all(cellfun(@(x) isa(x, <span class="string">'char'</span>), list2))
+0028     error(<span class="string">'List2 has to be a cell array containing strings.'</span>);
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">% Shortcut for when list1 and list2 are both cells of strings:</span>
+0032 <span class="keyword">if</span> all(cellfun(@(x) isa(x, <span class="string">'char'</span>), list1))
+0033     [bool, idxs] = <a href="../../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(list1, list2);
+0034 <span class="keyword">else</span>
+0035     <span class="comment">% TODO: make this more efficient by running the fast path for all</span>
+0036     <span class="comment">% chars in list1 and only the element-by-element path for non-chars.</span>
+0037     <span class="comment">% Currently we use the fast path only when ALL entries are chars.</span>
+0038     idxs = nan(size(list2));
+0039     bool = false(size(list2));
+0040     <span class="keyword">for</span> ii = 1:length(list1)
+0041         <span class="keyword">if</span> isa(list1{ii}, <span class="string">'cell'</span>)
+0042             [aux, ~] = <a href="compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>(list1{ii}, list2);
+0043         <span class="keyword">elseif</span> isa(list1{ii}, <span class="string">'char'</span>)
+0044             aux = strcmp(list1{ii}, list2);
+0045         <span class="keyword">else</span>
+0046             error([<span class="string">'List1 has to be a cell array containing strings '</span> <span class="keyword">...</span>
+0047                 <span class="string">'or nested cell-arrays of strings'</span>]);
+0048         <span class="keyword">end</span>
+0049         idxs(aux) = ii;
+0050         bool = bool | aux;
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

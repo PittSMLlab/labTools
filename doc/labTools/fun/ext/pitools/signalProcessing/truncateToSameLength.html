@@ -29,9 +29,9 @@
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.
 
-   Compares the row counts of matrix1 and matrix2 and truncates the
- longer one so both have the same number of rows. Operates along
- dimension 1 only; columns are preserved.
+   Compares the row counts of matrix1 and matrix2 and truncates the longer
+ one so both have the same number of rows. Operates along dimension 1 only;
+ columns are preserved.
 
  Inputs:
    matrix1 - first input matrix
@@ -52,7 +52,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="../../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li><li><a href="../../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="../../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	SYNCDATALOG Synchronize the datlog with rawExpData using the force signal.</li><li><a href="../../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	LOADTRIALS Generate rawTrialData instances for each trial.</li><li><a href="../../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
@@ -61,9 +61,9 @@ This function is called by:
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)</a>
 0002 <span class="comment">%TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Compares the row counts of matrix1 and matrix2 and truncates the</span>
-0005 <span class="comment">% longer one so both have the same number of rows. Operates along</span>
-0006 <span class="comment">% dimension 1 only; columns are preserved.</span>
+0004 <span class="comment">%   Compares the row counts of matrix1 and matrix2 and truncates the longer</span>
+0005 <span class="comment">% one so both have the same number of rows. Operates along dimension 1 only;</span>
+0006 <span class="comment">% columns are preserved.</span>
 0007 <span class="comment">%</span>
 0008 <span class="comment">% Inputs:</span>
 0009 <span class="comment">%   matrix1 - first input matrix</span>
@@ -92,6 +92,6 @@ This function is called by:
 0032 <span class="keyword">end</span>
 0033 
 0034 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

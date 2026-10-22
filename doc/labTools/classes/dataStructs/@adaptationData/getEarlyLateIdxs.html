@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEarlyLateIdxs</title>
   <meta name="keywords" content="getEarlyLateIdxs">
-  <meta name="description" content="obtain the earliest and late data points for conditions">
+  <meta name="description" content="GETEARLYLATEIDXS Get stride indices of the earliest/latest strides.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,35 +21,46 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>obtain the earliest and late data points for conditions</strong></div>
+<div class="box"><strong>GETEARLYLATEIDXS Get stride indices of the earliest/latest strides.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst) </strong></div>
+<div class="box"><strong>function [inds, names] = getEarlyLateIdxs(this, conds, numberOfStrides,exemptLast, exemptFirst) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">obtain the earliest and late data points for conditions
-allow to eliminate very late data points 
-Predefine values:  
-earlyNumber=5
-veryEarlyPoints=3
-latePoints=20
-exemptLast=5
-exemptFirst=0
+<div class="fragment"><pre class="comment">GETEARLYLATEIDXS Get stride indices of the earliest/latest strides.
 
-INPUTS:
-this:experimentData object 
-conds: condition that information is needed 
-numberOfStrides: vector of any size, specifying how many stride
-cycles to group. Positive values are interpreted as 'first N'
-strides, while negative values are interpreted as 'last N'. Zero
-values create an empty group
-OUTPUTS:</pre></div>
+   Finds, for each condition, the indices of the first and/or last
+ strides, optionally skipping the very first/last ones. If a condition
+ has fewer strides than requested, the remaining entries are NaN.
+
+ NOTE: exemptLast and exemptFirst are used as given below; the defaults
+ computed in Ne/Nf (5 and 0) are never applied, so both must be passed.
+
+ Inputs:
+   this            - adaptationData object
+   conds           - condition name(s) (char or cell array)
+   numberOfStrides - vector of any size with the number of strides per
+                     group: positive values take the first N strides,
+                     negative values the last N, zero gives an empty
+                     group (default [-5, 20])
+   exemptLast      - strides skipped at the end of each condition
+   exemptFirst     - strides skipped at the start of each condition
+
+ Outputs:
+   inds  - cell array, one cell per entry of numberOfStrides, each a
+           strides x conditions matrix of indices
+   names - cell array of group names per entry of numberOfStrides and
+           condition
+
+ Toolbox Dependencies: None
+
+ See also <a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">GETEARLYLATEDATA_V2</a>, GETINDSINCONDITION.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -58,78 +69,99 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)</a>
-0002         <span class="comment">%obtain the earliest and late data points for conditions</span>
-0003         <span class="comment">%allow to eliminate very late data points</span>
-0004         <span class="comment">%Predefine values:</span>
-0005         <span class="comment">%earlyNumber=5</span>
-0006         <span class="comment">%veryEarlyPoints=3</span>
-0007         <span class="comment">%latePoints=20</span>
-0008         <span class="comment">%exemptLast=5</span>
-0009         <span class="comment">%exemptFirst=0</span>
-0010         <span class="comment">%</span>
-0011         <span class="comment">%INPUTS:</span>
-0012         <span class="comment">%this:experimentData object</span>
-0013         <span class="comment">%conds: condition that information is needed</span>
-0014         <span class="comment">%numberOfStrides: vector of any size, specifying how many stride</span>
-0015         <span class="comment">%cycles to group. Positive values are interpreted as 'first N'</span>
-0016         <span class="comment">%strides, while negative values are interpreted as 'last N'. Zero</span>
-0017         <span class="comment">%values create an empty group</span>
-0018         <span class="comment">%OUTPUTS:</span>
-0019 
-0020             <span class="keyword">if</span> isa(conds,<span class="string">'char'</span>)
-0021                 conds={conds};
-0022             <span class="keyword">elseif</span> ~isa(conds,<span class="string">'cell'</span>) || ~all(cellfun(@(x) (isa(x,<span class="string">'char'</span>) || isa(x,<span class="string">'cell'</span>)),conds))
-0023                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Conditions must be a string or a cell array containing strings.'</span>);
-0024             <span class="keyword">end</span>
-0025             nConds=length(conds);
-0026             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(numberOfStrides)
-0027                 numberOfStrides=[-5,20];
-0028             <span class="keyword">end</span>
-0029             dataPoints=cell(size(numberOfStrides));
-0030             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
-0031                 Ne=5;
-0032             <span class="keyword">else</span>
-0033                 Ne=exemptLast; <span class="comment">%TODO: Check that it is positive</span>
-0034             <span class="keyword">end</span>
-0035             <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptFirst)
-0036                 Nf=0;
-0037             <span class="keyword">else</span>
-0038                 Nf=exemptFirst; <span class="comment">%TODO: Check that it is positive</span>
-0039             <span class="keyword">end</span>
-0040 
-0041             conditionIdxs=this.getConditionIdxsFromName(conds);
-0042             inds=cell(length(numberOfStrides),1);
-0043             indsAux=this.getIndsInCondition(conditionIdxs);
-0044             <span class="keyword">for</span> j=1:length(numberOfStrides)
-0045                 inds{j}=nan(abs(numberOfStrides(j)),nConds);
-0046                 pr=[];
-0047                 <span class="keyword">switch</span> sign(numberOfStrides(j))
-0048                     <span class="keyword">case</span> -1
-0049                         pr=<span class="string">'Last '</span>;
-0050                     <span class="keyword">case</span> 2
-0051                         pr=<span class="string">'First '</span>;
-0052                 <span class="keyword">end</span>
-0053                 pr=[pr num2str(abs(numberOfStrides(j)))];
-0054                 <span class="keyword">for</span> i=1:nConds
-0055                     
-0056                     names{j}{i}=[pr <span class="string">' '</span> conds(i)];
-0057                     <span class="comment">%First: find if there is a condition with a</span>
-0058                     <span class="comment">%similar name to the one given</span>
-0059                     
-0060                     N=length(indsAux{i});
-0061                     <span class="keyword">if</span> numberOfStrides(j)&lt;0 <span class="comment">%Last N strides</span>
-0062                         relInds=indsAux{i}(max([N-exemptLast+numberOfStrides(j)+1,1]):N-exemptLast);
-0063                     <span class="keyword">else</span> <span class="comment">%First N</span>
-0064                         relInds=indsAux{i}(exemptFirst+1:min([exemptFirst+numberOfStrides(j),N]));
-0065                     <span class="keyword">end</span>
-0066                     inds{j}(1:length(relInds),i)=relInds; <span class="comment">%This allows for there to exist less strides than requested</span>
-0067                     <span class="keyword">if</span> length(relInds)&lt;abs(numberOfStrides)
-0068                         warning([<span class="string">'Requested '</span> num2str(abs(numberOfStrides)) <span class="string">' strides for '</span> this.subData.ID <span class="string">' but after removing the exempt ones, there are only '</span> num2str(length(relInds))])
-0069                     <span class="keyword">end</span>
-0070                 <span class="keyword">end</span>
-0071             <span class="keyword">end</span>
-0072         <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [inds, names] = getEarlyLateIdxs(this, conds, numberOfStrides, </a><span class="keyword">...</span>
+0002     exemptLast, exemptFirst)
+0003 <span class="comment">%GETEARLYLATEIDXS Get stride indices of the earliest/latest strides.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Finds, for each condition, the indices of the first and/or last</span>
+0006 <span class="comment">% strides, optionally skipping the very first/last ones. If a condition</span>
+0007 <span class="comment">% has fewer strides than requested, the remaining entries are NaN.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% NOTE: exemptLast and exemptFirst are used as given below; the defaults</span>
+0010 <span class="comment">% computed in Ne/Nf (5 and 0) are never applied, so both must be passed.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   this            - adaptationData object</span>
+0014 <span class="comment">%   conds           - condition name(s) (char or cell array)</span>
+0015 <span class="comment">%   numberOfStrides - vector of any size with the number of strides per</span>
+0016 <span class="comment">%                     group: positive values take the first N strides,</span>
+0017 <span class="comment">%                     negative values the last N, zero gives an empty</span>
+0018 <span class="comment">%                     group (default [-5, 20])</span>
+0019 <span class="comment">%   exemptLast      - strides skipped at the end of each condition</span>
+0020 <span class="comment">%   exemptFirst     - strides skipped at the start of each condition</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   inds  - cell array, one cell per entry of numberOfStrides, each a</span>
+0024 <span class="comment">%           strides x conditions matrix of indices</span>
+0025 <span class="comment">%   names - cell array of group names per entry of numberOfStrides and</span>
+0026 <span class="comment">%           condition</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Toolbox Dependencies: None</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% See also GETEARLYLATEDATA_V2, GETINDSINCONDITION.</span>
+0031 
+0032 <span class="keyword">if</span> isa(conds, <span class="string">'char'</span>)
+0033     conds = {conds};
+0034 <span class="keyword">elseif</span> ~isa(conds, <span class="string">'cell'</span>) || ~all(cellfun(@(x) (isa(x, <span class="string">'char'</span>) || <span class="keyword">...</span>
+0035         isa(x, <span class="string">'cell'</span>)), conds))
+0036     error(<span class="string">'adaptationData:getEarlyLateData'</span>, <span class="keyword">...</span>
+0037         <span class="string">'Conditions must be a string or a cell array containing strings.'</span>);
+0038 <span class="keyword">end</span>
+0039 nConds = length(conds);
+0040 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(numberOfStrides)
+0041     numberOfStrides = [-5, 20];
+0042 <span class="keyword">end</span>
+0043 dataPoints = cell(size(numberOfStrides));
+0044 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
+0045     Ne = 5;
+0046 <span class="keyword">else</span>
+0047     Ne = exemptLast; <span class="comment">% TODO: Check that it is positive</span>
+0048 <span class="keyword">end</span>
+0049 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptFirst)
+0050     Nf = 0;
+0051 <span class="keyword">else</span>
+0052     Nf = exemptFirst; <span class="comment">% TODO: Check that it is positive</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 conditionIdxs = this.getConditionIdxsFromName(conds);
+0056 inds = cell(length(numberOfStrides), 1);
+0057 indsAux = this.getIndsInCondition(conditionIdxs);
+0058 <span class="keyword">for</span> jj = 1:length(numberOfStrides)
+0059     inds{jj} = nan(abs(numberOfStrides(jj)), nConds);
+0060     pr = [];
+0061     <span class="keyword">switch</span> sign(numberOfStrides(jj))
+0062         <span class="keyword">case</span> -1
+0063             pr = <span class="string">'Last '</span>;
+0064         <span class="keyword">case</span> 2
+0065             pr = <span class="string">'First '</span>;
+0066     <span class="keyword">end</span>
+0067     pr = [pr num2str(abs(numberOfStrides(jj)))];
+0068     <span class="keyword">for</span> con = 1:nConds
+0069 
+0070         names{jj}{con} = [pr <span class="string">' '</span> conds(con)];
+0071         <span class="comment">% First: find if there is a condition with a similar name to</span>
+0072         <span class="comment">% the one given</span>
+0073 
+0074         N = length(indsAux{con});
+0075         <span class="keyword">if</span> numberOfStrides(jj) &lt; 0 <span class="comment">% last N strides</span>
+0076             relInds = indsAux{con}(max([N - exemptLast + <span class="keyword">...</span>
+0077                 numberOfStrides(jj) + 1, 1]):N - exemptLast);
+0078         <span class="keyword">else</span> <span class="comment">% first N</span>
+0079             relInds = indsAux{con}(exemptFirst + 1:min([exemptFirst + <span class="keyword">...</span>
+0080                 numberOfStrides(jj), N]));
+0081         <span class="keyword">end</span>
+0082         <span class="comment">% This allows for there to exist less strides than requested</span>
+0083         inds{jj}(1:length(relInds), con) = relInds;
+0084         <span class="keyword">if</span> length(relInds) &lt; abs(numberOfStrides)
+0085             warning([<span class="string">'Requested '</span> num2str(abs(numberOfStrides)) <span class="keyword">...</span>
+0086                 <span class="string">' strides for '</span> this.subData.ID <span class="string">' but after removing '</span> <span class="keyword">...</span>
+0087                 <span class="string">'the exempt ones, there are only '</span> <span class="keyword">...</span>
+0088                 num2str(length(relInds))])
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

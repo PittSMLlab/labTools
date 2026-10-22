@@ -4,7 +4,7 @@
 <head>
   <title>Description of recomputeEvents</title>
   <meta name="keywords" content="recomputeEvents">
-  <meta name="description" content="recomputeEvents  Re-computes gait events and adaptation parameters">
+  <meta name="description" content="RECOMPUTEEVENTS Re-computes gait events and adaptation parameters">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,60 +21,70 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>recomputeEvents  Re-computes gait events and adaptation parameters</strong></div>
+<div class="box"><strong>RECOMPUTEEVENTS Re-computes gait events and adaptation parameters</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = recomputeEvents(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">recomputeEvents  Re-computes gait events and adaptation parameters
+<div class="fragment"><pre class="comment">RECOMPUTEEVENTS Re-computes gait events and adaptation parameters
 
    newThis = recomputeEvents(this) re-computes gait events from angle data
-   and recalculates adaptation parameters
+ and recalculates adaptation parameters
 
-   Inputs:
-       this - processedLabData object
+ NOTE: currently errors: processedData, subData and eventClass are
+   undefined in the calcParameters call, and getEvents needs more inputs.
 
-   Outputs:
-       newThis - updated processedLabData object with recomputed events
-                 and parameters
+ Inputs:
+   this - processedLabData object
 
-   See also: getEvents, calcParameters</pre></div>
+ Outputs:
+   newThis - updated processedLabData object with recomputed events and
+             parameters
+
+ Toolbox Dependencies: None
+
+ See also GETEVENTS, CALCPARAMETERS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial, selecting the appropriate</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial by trial type.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	recomputeEvents  Recalculates gait events and parameters</li><li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">recomputeEvents</a>	RECOMPUTEEVENTS Recalculates gait events and parameters</li><li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = recomputeEvents(this)</a>
-0002 <span class="comment">%recomputeEvents  Re-computes gait events and adaptation parameters</span>
+0002 <span class="comment">%RECOMPUTEEVENTS Re-computes gait events and adaptation parameters</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newThis = recomputeEvents(this) re-computes gait events from angle data</span>
-0005 <span class="comment">%   and recalculates adaptation parameters</span>
+0005 <span class="comment">% and recalculates adaptation parameters</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - processedLabData object</span>
+0007 <span class="comment">% NOTE: currently errors: processedData, subData and eventClass are</span>
+0008 <span class="comment">%   undefined in the calcParameters call, and getEvents needs more inputs.</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       newThis - updated processedLabData object with recomputed events</span>
-0012 <span class="comment">%                 and parameters</span>
-0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: getEvents, calcParameters</span>
-0015 
-0016 events = <a href="../../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>(this, this.angleData);
-0017 this.gaitEvents = events;
-0018 this.adaptParams = <a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>(processedData, subData, eventClass);
-0019 newThis = this;
-0020 <span class="keyword">end</span>
-0021</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   this - processedLabData object</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   newThis - updated processedLabData object with recomputed events and</span>
+0015 <span class="comment">%             parameters</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also GETEVENTS, CALCPARAMETERS.</span>
+0020 
+0021 events = <a href="../../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>(this, this.angleData);
+0022 this.gaitEvents = events;
+0023 this.adaptParams = <a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>(processedData, subData, eventClass);
+0024 newThis = this;
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

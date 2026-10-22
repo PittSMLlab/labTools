@@ -4,7 +4,7 @@
 <head>
   <title>Description of getTrialsInCondition</title>
   <meta name="keywords" content="getTrialsInCondition">
-  <meta name="description" content="getTrialsInCondition  Returns trial numbers in each condition">
+  <meta name="description" content="GETTRIALSINCONDITION Returns trial numbers in each condition.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,37 +21,38 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>getTrialsInCondition  Returns trial numbers in each condition</strong></div>
+<div class="box"><strong>GETTRIALSINCONDITION Returns trial numbers in each condition.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function trialNums = getTrialsInCondition(this, conditionNames) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getTrialsInCondition  Returns trial numbers in each condition
+<div class="fragment"><pre class="comment">GETTRIALSINCONDITION Returns trial numbers in each condition.
 
    trialNums = getTrialsInCondition(this, conditionNames) returns the
-   trial numbers for specified conditions
+ trial numbers for specified conditions
 
-   Inputs:
-       this - experimentMetaData object
-       conditionNames - cell array containing string(s) specifying
-                        conditions (e.g., {'Base', 'Adap', {'Post',
-                        'wash'}})
+ Inputs:
+   this           - experimentMetaData object
+   conditionNames - cell array containing string(s) specifying conditions
+                    (e.g., {'Base', 'Adap', {'Post', 'wash'}})
 
-   Outputs:
-       trialNums - matrix of trial numbers in the specified conditions
+ Outputs:
+   trialNums - matrix of trial numbers in the specified conditions
 
-   Example:
-       trialNums = getTrialsInCondition({'Base'});
-       trialNums = [1 2 3];
+ Example:
+   trialNums = getTrialsInCondition({'Base'});
+   trialNums = [1 2 3];
 
-   See also: <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>, <a href="getCondLstPerTrial.html" class="code" title="function condLst = getCondLstPerTrial(this)">getCondLstPerTrial</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">GETCONDITIONIDXSFROMNAME</a>, <a href="getCondLstPerTrial.html" class="code" title="function condLst = getCondLstPerTrial(this)">GETCONDLSTPERTRIAL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
@@ -61,30 +62,31 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function trialNums = getTrialsInCondition(this, conditionNames)</a>
-0002 <span class="comment">%getTrialsInCondition  Returns trial numbers in each condition</span>
+0002 <span class="comment">%GETTRIALSINCONDITION Returns trial numbers in each condition.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   trialNums = getTrialsInCondition(this, conditionNames) returns the</span>
-0005 <span class="comment">%   trial numbers for specified conditions</span>
+0005 <span class="comment">% trial numbers for specified conditions</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - experimentMetaData object</span>
-0009 <span class="comment">%       conditionNames - cell array containing string(s) specifying</span>
-0010 <span class="comment">%                        conditions (e.g., {'Base', 'Adap', {'Post',</span>
-0011 <span class="comment">%                        'wash'}})</span>
-0012 <span class="comment">%</span>
-0013 <span class="comment">%   Outputs:</span>
-0014 <span class="comment">%       trialNums - matrix of trial numbers in the specified conditions</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">%   Example:</span>
-0017 <span class="comment">%       trialNums = getTrialsInCondition({'Base'});</span>
-0018 <span class="comment">%       trialNums = [1 2 3];</span>
-0019 <span class="comment">%</span>
-0020 <span class="comment">%   See also: getConditionIdxsFromName, getCondLstPerTrial</span>
-0021 
-0022 conditionIdx = this.getConditionIdxsFromName(conditionNames);
-0023 trialNums = <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.trialsInCondition(conditionIdx));
-0024 <span class="keyword">end</span>
-0025</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this           - experimentMetaData object</span>
+0009 <span class="comment">%   conditionNames - cell array containing string(s) specifying conditions</span>
+0010 <span class="comment">%                    (e.g., {'Base', 'Adap', {'Post', 'wash'}})</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   trialNums - matrix of trial numbers in the specified conditions</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Example:</span>
+0016 <span class="comment">%   trialNums = getTrialsInCondition({'Base'});</span>
+0017 <span class="comment">%   trialNums = [1 2 3];</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also GETCONDITIONIDXSFROMNAME, GETCONDLSTPERTRIAL.</span>
+0022 
+0023 conditionIdx = this.getConditionIdxsFromName(conditionNames);
+0024 trialNums    = <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.trialsInCondition(conditionIdx));
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of processAndFillMarkerGapsTrial</title>
   <meta name="keywords" content="processAndFillMarkerGapsTrial">
-  <meta name="description" content="PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps">
+  <meta name="description" content="PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,43 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps</strong></div>
+<div class="box"><strong>PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps
-   This function runs reconstruct and label pipelines, fills small marker
-   gaps using spline interpolation, and then attempts pattern-based filling.
+<div class="fragment"><pre class="comment">PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps.
 
- input(s):
-   pathTrial: full path to the trial folder
-   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-       object will be created and connected.</pre></div>
+   Runs the reconstruct and label pipeline, fills small marker gaps
+ via spline interpolation, then applies pattern-based filling for each
+ reference/target group. Returns marker trajectories at each stage.
+
+ Side effects: needs a running Vicon Nexus; edits the open trial and
+   overwrites the saved trial (a failed save only warns).
+
+ Inputs:
+   pathTrial - Full path to the trial folder
+   vicon     - (optional) Vicon Nexus SDK object; connects if not
+               supplied
+
+ Outputs:
+   mrkrTrajs - Struct with fields Step1RandL, Step2Spline, and
+               Step3Pattern; each contains marker trajectories at
+               that processing stage
+
+ Toolbox Dependencies: None
+
+ See also <a href="reconstructAndLabelTrial.html" class="code" title="function reconstructAndLabelTrial(pathTrial, vicon, shouldSave)">RECONSTRUCTANDLABELTRIAL</a>, <a href="runCustomPatternFill.html" class="code" title="function runCustomPatternFill(vicon, refMap)">RUNCUSTOMPATTERNFILL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	</li><li><a href="../../../../labTools/fun/misc/plotMarkerProcessingTrajectories.html" class="code" title="function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)">plotMarkerProcessingTrajectories</a>	PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.</li></ul>
+<li><a href="TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	% Trajectory Check — Other Pipeline</li><li><a href="../../../../labTools/fun/misc/plotMarkerProcessingTrajectories.html" class="code" title="function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)">plotMarkerProcessingTrajectories</a>	PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -52,131 +66,160 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)</a>
-0002 <span class="comment">%PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps</span>
-0003 <span class="comment">%   This function runs reconstruct and label pipelines, fills small marker</span>
-0004 <span class="comment">%   gaps using spline interpolation, and then attempts pattern-based filling.</span>
-0005 <span class="comment">%</span>
-0006 <span class="comment">% input(s):</span>
-0007 <span class="comment">%   pathTrial: full path to the trial folder</span>
-0008 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon</span>
-0009 <span class="comment">%       object will be created and connected.</span>
-0010 
-0011 <span class="comment">% verify input</span>
-0012 narginchk(1, 2);
-0013 
-0014 <span class="comment">% initialize Vicon Nexus object if not provided</span>
-0015 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
-0016     fprintf(<span class="string">'No Vicon SDK object provided. Connecting to Vicon Nexus...\n'</span>);
-0017     vicon = ViconNexus();
-0018 <span class="keyword">end</span>
-0019 
-0020 <span class="comment">% define reference and target markers</span>
-0021 markersRef = {<span class="string">'GT'</span>,<span class="string">'KNEE'</span>,<span class="string">'GT'</span>,<span class="string">'ANK'</span>};
-0022 markersTarg = {
-0023     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
-0024     {<span class="string">'GT'</span>,<span class="string">'ANK'</span>}, <span class="keyword">...</span>
-0025     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
-0026     {<span class="string">'SHANK'</span>,<span class="string">'HEEL'</span>,<span class="string">'TOE'</span>}
-0027 };
-0028 
-0029 mrkrTrajs = struct();
-0030 
-0031 <span class="comment">% run reconstruct and label pipeline</span>
-0032 fprintf(<span class="string">'Running reconstruct and label on: %s\n'</span>, pathTrial);
-0033 dataMotion.reconstructAndLabelTrial(pathTrial, vicon, false);
-0034 pause(3);
-0035 mrkrTrajs.Step1RandL = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
-0036 
-0037 <span class="comment">% extract marker gaps</span>
-0038 markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial, vicon);
+0002 <span class="comment">%PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Runs the reconstruct and label pipeline, fills small marker gaps</span>
+0005 <span class="comment">% via spline interpolation, then applies pattern-based filling for each</span>
+0006 <span class="comment">% reference/target group. Returns marker trajectories at each stage.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Side effects: needs a running Vicon Nexus; edits the open trial and</span>
+0009 <span class="comment">%   overwrites the saved trial (a failed save only warns).</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   pathTrial - Full path to the trial folder</span>
+0013 <span class="comment">%   vicon     - (optional) Vicon Nexus SDK object; connects if not</span>
+0014 <span class="comment">%               supplied</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   mrkrTrajs - Struct with fields Step1RandL, Step2Spline, and</span>
+0018 <span class="comment">%               Step3Pattern; each contains marker trajectories at</span>
+0019 <span class="comment">%               that processing stage</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also RECONSTRUCTANDLABELTRIAL, RUNCUSTOMPATTERNFILL.</span>
+0024 
+0025 narginchk(1, 2);
+0026 
+0027 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0028     fprintf(<span class="string">'No Vicon SDK object provided. Connecting to Vicon Nexus...\n'</span>);
+0029     vicon = ViconNexus();
+0030 <span class="keyword">end</span>
+0031 
+0032 markersRef  = {<span class="string">'GT'</span>, <span class="string">'KNEE'</span>, <span class="string">'GT'</span>, <span class="string">'ANK'</span>};
+0033 markersTarg = { <span class="keyword">...</span>
+0034     {<span class="string">'ASIS'</span>, <span class="string">'PSIS'</span>, <span class="string">'THI'</span>, <span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0035     {<span class="string">'GT'</span>, <span class="string">'ANK'</span>}, <span class="keyword">...</span>
+0036     {<span class="string">'ASIS'</span>, <span class="string">'PSIS'</span>, <span class="string">'THI'</span>, <span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0037     {<span class="string">'SHANK'</span>, <span class="string">'HEEL'</span>, <span class="string">'TOE'</span>} <span class="keyword">...</span>
+0038     };
 0039 
-0040 <span class="comment">% fill small gaps with spline interpolation</span>
-0041 markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false);
-0042 
-0043 mrkrTrajs.Step2Spline = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
-0044 
-0045 <span class="comment">% fill gaps using pattern fill for each reference marker</span>
-0046 <span class="keyword">for</span> ref = 1:numel(markersRef)
-0047     refMarker = markersRef{ref};
-0048     targetMarkers = markersTarg{ref};
-0049 
-0050     <span class="comment">% fill for both sides</span>
-0051     markerGaps = <a href="#_sub1" class="code" title="subfunction markerGaps = fillMarkerGapsPatternSpecifiedTargets( ">fillMarkerGapsPatternSpecifiedTargets</a>( <span class="keyword">...</span>
-0052         markerGaps, targetMarkers, refMarker, pathTrial, vicon);
-0053 <span class="keyword">end</span>
-0054 
-0055 mrkrTrajs.Step3Pattern = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
-0056 
-0057 <span class="comment">% save trial</span>
-0058 fprintf(<span class="string">'Saving trial: %s\n'</span>, pathTrial);
-0059 <span class="keyword">try</span>
-0060     vicon.SaveTrial(200);
-0061     fprintf(<span class="string">'Trial saved successfully.\n'</span>);
-0062 <span class="keyword">catch</span> ME
-0063     warning(ME.identifier, <span class="string">'%s'</span>, ME.message);
-0064 <span class="keyword">end</span>
-0065 
-0066 <span class="keyword">end</span>
-0067 
-0068 <a name="_sub1" href="#_subfunctions" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets( </a><span class="keyword">...</span>
-0069     markerGaps, targetMarkers, refMarker, pathTrial, vicon)
+0040 mrkrTrajs = struct();
+0041 
+0042 fprintf(<span class="string">'Running reconstruct and label on: %s\n'</span>, pathTrial);
+0043 dataMotion.reconstructAndLabelTrial(pathTrial, vicon, false);
+0044 pause(3);
+0045 mrkrTrajs.Step1RandL = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
+0046 
+0047 markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial, vicon);
+0048 
+0049 markerGaps = dataMotion.fillSmallMarkerGapsSpline( <span class="keyword">...</span>
+0050     markerGaps, pathTrial, vicon, false);
+0051 
+0052 mrkrTrajs.Step2Spline = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
+0053 
+0054 <span class="keyword">for</span> ref = 1:numel(markersRef)
+0055     refMarker     = markersRef{ref};
+0056     targetMarkers = markersTarg{ref};
+0057     markerGaps    = <a href="#_sub1" class="code" title="subfunction markerGaps = fillMarkerGapsPatternSpecifiedTargets( ">fillMarkerGapsPatternSpecifiedTargets</a>( <span class="keyword">...</span>
+0058         markerGaps, targetMarkers, refMarker, pathTrial, vicon);
+0059 <span class="keyword">end</span>
+0060 
+0061 mrkrTrajs.Step3Pattern = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(vicon)">getRelevantMrkrTrajs</a>(vicon);
+0062 
+0063 fprintf(<span class="string">'Saving trial: %s\n'</span>, pathTrial);
+0064 <span class="keyword">try</span>
+0065     vicon.SaveTrial(200);
+0066     fprintf(<span class="string">'Trial saved successfully.\n'</span>);
+0067 <span class="keyword">catch</span> ME
+0068     warning(ME.identifier, <span class="string">'%s'</span>, ME.message);
+0069 <span class="keyword">end</span>
 0070 
-0071 sides = {<span class="string">'R'</span>,<span class="string">'L'</span>};
-0072 <span class="keyword">for</span> side = sides
-0073     sidePrefix = side{1};
-0074     gaps = struct();
-0075 
-0076     <span class="comment">% collect gaps for the target markers</span>
-0077     <span class="keyword">for</span> targ = 1:numel(targetMarkers)
-0078         markerName = [sidePrefix targetMarkers{targ}];
-0079         <span class="keyword">if</span> isfield(markerGaps, markerName)
-0080             gaps.(markerName) = markerGaps.(markerName);
-0081         <span class="keyword">end</span>
-0082     <span class="keyword">end</span>
-0083 
-0084     <span class="comment">% skip if no gaps to process</span>
-0085     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(gaps))
-0086         <span class="keyword">continue</span>;
-0087     <span class="keyword">end</span>
-0088 
-0089     <span class="comment">% fill gaps using pattern-based method</span>
-0090     remainingGaps = dataMotion.fillMarkerGapsPattern( <span class="keyword">...</span>
-0091         gaps, pathTrial, [sidePrefix refMarker], vicon, false);
-0092 
-0093     <span class="comment">% update the marker gaps structure with the remaining gaps</span>
-0094     markerNames = fieldnames(remainingGaps);
-0095     <span class="keyword">for</span> mrkr = 1:numel(markerNames)
-0096         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
-0097     <span class="keyword">end</span>
-0098 <span class="keyword">end</span>
-0099 <span class="keyword">end</span>
-0100 
-0101 <a name="_sub2" href="#_subfunctions" class="code">function mrkrTrajs = getRelevantMrkrTrajs(vicon)</a>
+0071 <span class="keyword">end</span>
+0072 
+0073 <a name="_sub1" href="#_subfunctions" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets( </a><span class="keyword">...</span>
+0074     markerGaps, targetMarkers, refMarker, pathTrial, vicon)
+0075 <span class="comment">%FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for a marker group.</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">%   For each side (R/L), collects gaps for the specified target markers</span>
+0078 <span class="comment">% and fills them using the given reference marker via pattern-based gap</span>
+0079 <span class="comment">% filling. Updates markerGaps with any remaining unfilled gaps.</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">% Inputs:</span>
+0082 <span class="comment">%   markerGaps    - Struct mapping marker names to gap arrays</span>
+0083 <span class="comment">%   targetMarkers - Cell array of marker name suffixes to fill</span>
+0084 <span class="comment">%   refMarker     - Reference marker name suffix</span>
+0085 <span class="comment">%   pathTrial     - Full path to the trial folder</span>
+0086 <span class="comment">%   vicon         - Vicon Nexus SDK object</span>
+0087 <span class="comment">%</span>
+0088 <span class="comment">% Outputs:</span>
+0089 <span class="comment">%   markerGaps - Updated struct with remaining gaps after filling</span>
+0090 
+0091 sides = {<span class="string">'R'</span>, <span class="string">'L'</span>};
+0092 <span class="keyword">for</span> side = sides
+0093     sidePrefix = side{1};
+0094     gaps = struct();
+0095 
+0096     <span class="keyword">for</span> targ = 1:numel(targetMarkers)
+0097         markerName = [sidePrefix targetMarkers{targ}];
+0098         <span class="keyword">if</span> isfield(markerGaps, markerName)
+0099             gaps.(markerName) = markerGaps.(markerName);
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
 0102 
-0103 mrkrsRelevant = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
-0104 mrkrTrajs = struct();
-0105 
-0106 subjects = vicon.GetSubjectNames();
-0107 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subjects)
-0108     error(<span class="string">'No subject found in trial.'</span>);
-0109 <span class="keyword">end</span>
-0110 subject = subjects{1};
-0111 
-0112 <span class="keyword">for</span> i = 1:numel(mrkrsRelevant)
-0113     marker = mrkrsRelevant{i};
-0114     [trajX, trajY, trajZ, existsTraj] = vicon.GetTrajectory(subject, marker);
-0115     
-0116     trajX(~existsTraj) = NaN;
-0117     trajY(~existsTraj) = NaN;
-0118     trajZ(~existsTraj) = NaN;
-0119     
-0120     mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];<span class="comment">%, double(exists(:))];</span>
-0121 <span class="keyword">end</span>
-0122 <span class="comment">% for mrkr = mrkrsRelevant</span>
-0123 <span class="comment">%     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});</span>
-0124 <span class="comment">%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];</span>
-0125 <span class="comment">% end</span>
-0126 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0103     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(gaps))
+0104         <span class="keyword">continue</span>;
+0105     <span class="keyword">end</span>
+0106 
+0107     remainingGaps = dataMotion.fillMarkerGapsPattern( <span class="keyword">...</span>
+0108         gaps, pathTrial, [sidePrefix refMarker], vicon, false);
+0109 
+0110     markerNames = fieldnames(remainingGaps);
+0111     <span class="keyword">for</span> mrkr = 1:numel(markerNames)
+0112         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
+0113     <span class="keyword">end</span>
+0114 <span class="keyword">end</span>
+0115 
+0116 <span class="keyword">end</span>
+0117 
+0118 <a name="_sub2" href="#_subfunctions" class="code">function mrkrTrajs = getRelevantMrkrTrajs(vicon)</a>
+0119 <span class="comment">%GETRELEVANTMRKRTRAJS Retrieve key lower-limb marker trajectories.</span>
+0120 <span class="comment">%</span>
+0121 <span class="comment">%   Queries the Vicon Nexus SDK for RGT, LGT, RANK, and LANK marker</span>
+0122 <span class="comment">% trajectories and returns them as an N×3 matrix per marker with NaN</span>
+0123 <span class="comment">% for missing frames.</span>
+0124 <span class="comment">%</span>
+0125 <span class="comment">% Inputs:</span>
+0126 <span class="comment">%   vicon - Vicon Nexus SDK object</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">% Outputs:</span>
+0129 <span class="comment">%   mrkrTrajs - Struct with one N×3 field per relevant marker</span>
+0130 
+0131 mrkrsRelevant = {<span class="string">'RGT'</span>, <span class="string">'LGT'</span>, <span class="string">'RANK'</span>, <span class="string">'LANK'</span>};
+0132 mrkrTrajs     = struct();
+0133 
+0134 subjects = vicon.GetSubjectNames();
+0135 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subjects)
+0136     error(<span class="string">'No subject found in trial.'</span>);
+0137 <span class="keyword">end</span>
+0138 subject = subjects{1};
+0139 
+0140 <span class="keyword">for</span> mrkr = 1:numel(mrkrsRelevant)
+0141     marker = mrkrsRelevant{mrkr};
+0142     [trajX, trajY, trajZ, existsTraj] = <span class="keyword">...</span>
+0143         vicon.GetTrajectory(subject, marker);
+0144     trajX(~existsTraj) = NaN;
+0145     trajY(~existsTraj) = NaN;
+0146     trajZ(~existsTraj) = NaN;
+0147     mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];
+0148 <span class="keyword">end</span>
+0149 <span class="comment">% for mrkr = mrkrsRelevant</span>
+0150 <span class="comment">%     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});</span>
+0151 <span class="comment">%     mrkrTrajs.(mrkrsRelevant{mrkr}) = ...</span>
+0152 <span class="comment">%    [trajX; trajY; trajZ; double(exists)];</span>
+0153 <span class="comment">% end</span>
+0154 
+0155 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

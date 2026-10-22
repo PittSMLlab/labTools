@@ -4,7 +4,7 @@
 <head>
   <title>Description of join</title>
   <meta name="keywords" content="join">
-  <meta name="description" content="join  Joins cell array of labTimeSeries">
+  <meta name="description" content="JOIN Joins cell array of labTimeSeries.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,25 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>join  Joins cell array of labTimeSeries</strong></div>
+<div class="box"><strong>JOIN Joins cell array of labTimeSeries.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function this = join(labTSCellArray) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">join  Joins cell array of labTimeSeries
+<div class="fragment"><pre class="comment">JOIN Joins cell array of labTimeSeries.
 
-   this = join(labTSCellArray) concatenates multiple labTimeSeries
-   along time axis
+   this = join(labTSCellArray) concatenates multiple labTimeSeries along
+ time axis
 
-   Inputs:
-       labTSCellArray - cell array of labTimeSeries objects with
-                        consistent labels and sampling periods
+ Inputs:
+   labTSCellArray - cell array of labTimeSeries objects with consistent
+                    labels and sampling periods
 
-   Outputs:
-       this - joined labTimeSeries
+ Outputs:
+   this - joined labTimeSeries
 
-   See also: cat, <a href="concatenate.html" class="code" title="function newThis = concatenate(this, other)">concatenate</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also CAT, <a href="concatenate.html" class="code" title="function newThis = concatenate(this, other)">CONCATENATE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -55,39 +57,41 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function this = join(labTSCellArray)</a>
-0002 <span class="comment">%join  Joins cell array of labTimeSeries</span>
+0002 <span class="comment">%JOIN Joins cell array of labTimeSeries.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   this = join(labTSCellArray) concatenates multiple labTimeSeries</span>
-0005 <span class="comment">%   along time axis</span>
+0004 <span class="comment">%   this = join(labTSCellArray) concatenates multiple labTimeSeries along</span>
+0005 <span class="comment">% time axis</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       labTSCellArray - cell array of labTimeSeries objects with</span>
-0009 <span class="comment">%                        consistent labels and sampling periods</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   labTSCellArray - cell array of labTimeSeries objects with consistent</span>
+0009 <span class="comment">%                    labels and sampling periods</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       this - joined labTimeSeries</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   this - joined labTimeSeries</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: cat, concatenate</span>
-0015 
-0016 masterSampPeriod = labTSCellArray{1}.sampPeriod;
-0017 masterLabels = labTSCellArray{1}.labels;
-0018 newData = labTSCellArray{1}.Data;
-0019 <span class="keyword">for</span> i = 2:length(labTSCellArray(:))
-0020     <span class="comment">% Check sampling rate &amp; dimensions are consistent, and append at</span>
-0021     <span class="comment">% end of data</span>
-0022     <span class="keyword">if</span> all(cellfun(@strcmp, masterLabels, labTSCellArray{i}.labels)) &amp;&amp; <span class="keyword">...</span>
-0023             masterSampPeriod == labTSCellArray{i}.sampPeriod
-0024         newData = [newData; labTSCellArray{i}.Data];
-0025     <span class="keyword">else</span>
-0026         warning([<span class="string">'Element '</span> num2str(i) <span class="string">' of input cell array does not '</span> <span class="keyword">...</span>
-0027             <span class="string">'have labels or sampling period consistent with '</span> <span class="keyword">...</span>
-0028             <span class="string">'other elements.'</span>]);
-0029     <span class="keyword">end</span>
-0030     this = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, labTSCellArray{1}.Time(1), <span class="keyword">...</span>
-0031         masterSampPeriod, masterLabels);
-0032 <span class="keyword">end</span>
-0033 <span class="keyword">end</span>
-0034</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also CAT, CONCATENATE.</span>
+0017 
+0018 masterSampPeriod = labTSCellArray{1}.sampPeriod;
+0019 masterLabels     = labTSCellArray{1}.labels;
+0020 newData          = labTSCellArray{1}.Data;
+0021 <span class="keyword">for</span> ii = 2:length(labTSCellArray(:))
+0022     <span class="comment">% Check sampling rate &amp; dimensions are consistent, and append at</span>
+0023     <span class="comment">% end of data</span>
+0024     <span class="keyword">if</span> all(cellfun(@strcmp, masterLabels, labTSCellArray{ii}.labels)) &amp;&amp; <span class="keyword">...</span>
+0025             masterSampPeriod == labTSCellArray{ii}.sampPeriod
+0026         newData = [newData; labTSCellArray{ii}.Data];
+0027     <span class="keyword">else</span>
+0028         warning([<span class="string">'Element '</span> num2str(ii) <span class="string">' of input cell array does not '</span> <span class="keyword">...</span>
+0029             <span class="string">'have labels or sampling period consistent with '</span> <span class="keyword">...</span>
+0030             <span class="string">'other elements.'</span>]);
+0031     <span class="keyword">end</span>
+0032     this = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData, labTSCellArray{1}.Time(1), <span class="keyword">...</span>
+0033         masterSampPeriod, masterLabels);
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -41,276 +41,276 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this = JSON(JSONstring)</a></li><li><a href="#_sub2" class="code">function value = getValue(this)</a></li><li><a href="#_sub3" class="code">function array = getArray(this)</a></li><li><a href="#_sub4" class="code">function obj = getObject(this)</a></li><li><a href="#_sub5" class="code">function [token,tokenType] = getNextToken(this)</a></li><li><a href="#_sub6" class="code">function match(this,str)</a></li><li><a href="#_sub7" class="code">function tf = isWhitespace(aChar)</a></li><li><a href="#_sub8" class="code">function tf = isSpecial(aChar)</a></li><li><a href="#_sub9" class="code">function string = getString(this)</a></li><li><a href="#_sub10" class="code">function number = getNumber(this)</a></li><li><a href="#_sub11" class="code">function char = charAt(this,position)</a></li><li><a href="#_sub12" class="code">function tf = isDigit(aChar)</a></li><li><a href="#_sub13" class="code">function value = parse(JSONstring)</a></li></ul>
+<li><a href="#_sub1" class="code">function this = JSON(JSONstring)</a></li><li><a href="#_sub2" class="code">function value = getValue(this)</a></li><li><a href="#_sub3" class="code">function array = getArray(this)</a></li><li><a href="#_sub4" class="code">function obj = getObject(this)</a></li><li><a href="#_sub5" class="code">function [token, tokenType] = getNextToken(this)</a></li><li><a href="#_sub6" class="code">function match(this, str)</a></li><li><a href="#_sub7" class="code">function tf = isWhitespace(aChar)</a></li><li><a href="#_sub8" class="code">function tf = isSpecial(aChar)</a></li><li><a href="#_sub9" class="code">function string = getString(this)</a></li><li><a href="#_sub10" class="code">function number = getNumber(this)</a></li><li><a href="#_sub11" class="code">function char = charAt(this, position)</a></li><li><a href="#_sub12" class="code">function tf = isDigit(aChar)</a></li><li><a href="#_sub13" class="code">function value = parse(JSONstring)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="JSON.html" class="code" title="">JSON</a> &lt; handle
-0002     <span class="comment">% v = JSON.parse(jsonString) converts a JSON string to a MATLAB value.</span>
+0002     <span class="comment">%JSON Non-validating JSON string parser.</span>
 0003     <span class="comment">%</span>
-0004     <span class="comment">% This started out as a recursive descent parser, but JSON is so simple</span>
-0005     <span class="comment">% that most of the parser collapsed out.</span>
-0006     <span class="comment">%</span>
-0007     <span class="comment">% In the service of speed, simplicity, and laziness, this code is NOT a</span>
-0008     <span class="comment">% validator. Its purpose is to convert correct JSON strings to MATLAB</span>
-0009     <span class="comment">% values. It does not reject all malformed JSON.</span>
-0010     
+0004     <span class="comment">%   Converts a JSON string to a MATLAB value. This is not a validator:</span>
+0005     <span class="comment">% its purpose is to convert correct JSON to MATLAB values and it does</span>
+0006     <span class="comment">% not reject all malformed JSON. Originally a recursive descent parser;</span>
+0007     <span class="comment">% most of the parser collapsed out because JSON is so simple.</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">% See also JSONTXT2CELL.</span>
+0010     <span class="comment">%</span>
 0011     <span class="comment">% Copyright 2013 The MathWorks, Inc.</span>
-0012     
+0012 
 0013     properties (Access = private)
 0014         json <span class="comment">% the string</span>
 0015         index <span class="comment">% position in the string</span>
 0016     <span class="keyword">end</span>
-0017     
-0018     
+0017 
+0018 
 0019     methods (Access = public)
-0020         
+0020 
 0021         <a name="_sub0" href="#_subfunctions" class="code">function this = JSON(JSONstring)</a>
 0022             this.json = JSONstring;
 0023             this.index = 1;
 0024         <span class="keyword">end</span>
-0025         
+0025 
 0026         <a name="_sub1" href="#_subfunctions" class="code">function value = getValue(this)</a>
 0027             <span class="comment">% get the next value in the string</span>
-0028             [token,tokenType] = this.getNextToken;
+0028             [token, tokenType] = this.getNextToken();
 0029             value = token;
-0030             
-0031             <span class="keyword">if</span> strcmp(tokenType,<span class="string">'Special'</span>)
-0032                 <span class="keyword">if</span> strcmp(token,<span class="string">'{'</span>)
-0033                     value = this.getObject;
-0034                 <span class="keyword">elseif</span> strcmp(token,<span class="string">'['</span>)
-0035                     value = this.getArray;
+0030 
+0031             <span class="keyword">if</span> strcmp(tokenType, <span class="string">'Special'</span>)
+0032                 <span class="keyword">if</span> strcmp(token, <span class="string">'{'</span>)
+0033                     value = this.getObject();
+0034                 <span class="keyword">elseif</span> strcmp(token, <span class="string">'['</span>)
+0035                     value = this.getArray();
 0036                 <span class="keyword">end</span>
 0037             <span class="keyword">end</span>
 0038         <span class="keyword">end</span>
-0039         
+0039 
 0040         <a name="_sub2" href="#_subfunctions" class="code">function array = getArray(this)</a>
 0041             <span class="comment">% an array is [ value, ... ]</span>
 0042             array = {};
-0043             
-0044             value = this.getValue;
-0045             <span class="keyword">while</span> ~strcmp(value,<span class="string">']'</span>)
+0043 
+0044             value = this.getValue();
+0045             <span class="keyword">while</span> ~strcmp(value, <span class="string">']'</span>)
 0046                 <span class="comment">% got a value</span>
 0047                 array{end+1} = value; <span class="comment">%#ok&lt;AGROW&gt; final size is unknowable</span>
-0048                 
+0048 
 0049                 <span class="comment">% followed by a comma or a &quot;]&quot;</span>
-0050                 value = this.getValue;
-0051                 
-0052                 <span class="keyword">if</span> strcmp(value,<span class="string">','</span>)
-0053                     value = this.getValue;
-0054                 <span class="keyword">elseif</span> strcmp(value,<span class="string">']'</span>)
+0050                 value = this.getValue();
+0051 
+0052                 <span class="keyword">if</span> strcmp(value, <span class="string">','</span>)
+0053                     value = this.getValue();
+0054                 <span class="keyword">elseif</span> strcmp(value, <span class="string">']'</span>)
 0055                     <span class="keyword">continue</span>
 0056                 <span class="keyword">else</span>
-0057                     error(<span class="string">'JSON parser requires commas between array elements'</span>);
-0058                 <span class="keyword">end</span>
-0059             <span class="keyword">end</span>
-0060             
-0061             <span class="comment">% Arrays of all numbers are turned into numeric arrays</span>
-0062             fcn = @(x) isnumeric(x) &amp;&amp; ~isscalar(x);
-0063             <span class="keyword">if</span> all(cellfun(fcn,array))
-0064                 array = [array{:}];
-0065             <span class="keyword">end</span>
-0066         <span class="keyword">end</span>
-0067         
-0068         <a name="_sub3" href="#_subfunctions" class="code">function obj = getObject(this)</a>
-0069             <span class="comment">% an object is { string : value, ... }</span>
-0070             obj = struct;
-0071             value = this.getValue;
-0072             <span class="keyword">while</span> ~strcmp(value,<span class="string">'}'</span>)
-0073                 
-0074                 fieldname = value;
-0075                 <span class="comment">% make sure its a valid structure field name</span>
-0076                 fieldname = strrep(fieldname,<span class="string">':'</span>,<span class="string">'_'</span>);
-0077                 fieldname = strrep(fieldname,<span class="string">'-'</span>,<span class="string">'_'</span>);
-0078                 <span class="comment">% fix for field names that start with numbers</span>
-0079                 <span class="comment">% Thanks to Guy Ziv!</span>
-0080                 fieldname = regexprep(fieldname,<span class="string">'(^\d)'</span>,<span class="string">'s$1'</span>);
-0081                 
+0057                     error([<span class="string">'JSON parser requires commas between '</span> <span class="keyword">...</span>
+0058                         <span class="string">'array elements'</span>]);
+0059                 <span class="keyword">end</span>
+0060             <span class="keyword">end</span>
+0061 
+0062             <span class="comment">% arrays of all numbers are turned into numeric arrays</span>
+0063             fcn = @(x) isnumeric(x) &amp;&amp; ~isscalar(x);
+0064             <span class="keyword">if</span> all(cellfun(fcn, array))
+0065                 array = [array{:}];
+0066             <span class="keyword">end</span>
+0067         <span class="keyword">end</span>
+0068 
+0069         <a name="_sub3" href="#_subfunctions" class="code">function obj = getObject(this)</a>
+0070             <span class="comment">% an object is { string : value, ... }</span>
+0071             obj = struct;
+0072             value = this.getValue();
+0073             <span class="keyword">while</span> ~strcmp(value, <span class="string">'}'</span>)
+0074 
+0075                 fieldname = value;
+0076                 <span class="comment">% make sure it is a valid structure field name</span>
+0077                 fieldname = strrep(fieldname, <span class="string">':'</span>, <span class="string">'_'</span>);
+0078                 fieldname = strrep(fieldname, <span class="string">'-'</span>, <span class="string">'_'</span>);
+0079                 <span class="comment">% fix for field names that start with numbers (Guy Ziv)</span>
+0080                 fieldname = regexprep(fieldname, <span class="string">'(^\d)'</span>, <span class="string">'s$1'</span>);
+0081 
 0082                 <span class="comment">% check for colon</span>
-0083                 value = this.getValue;
-0084                 <span class="keyword">if</span> ~strcmp(value,<span class="string">':'</span>)
-0085                     error(<span class="string">'JSON parser requires colons between object names and values'</span>);
-0086                 <span class="keyword">end</span>
-0087                 
-0088                 <span class="comment">% get the value</span>
-0089                 value = this.getValue;
-0090                 obj.(fieldname) = value;
-0091                 
-0092                 value = this.getValue;
-0093                 <span class="keyword">if</span> strcmp(value,<span class="string">','</span>)
-0094                     value = this.getValue;
-0095                 <span class="keyword">elseif</span> strcmp(value,<span class="string">'}'</span>)
-0096                     <span class="keyword">continue</span>
-0097                 <span class="keyword">else</span>
-0098                     error(<span class="string">'JSON parser requires commas between object elements'</span>);
-0099                 <span class="keyword">end</span>
-0100             <span class="keyword">end</span>
-0101             
-0102         <span class="keyword">end</span>
-0103         
-0104         <a name="_sub4" href="#_subfunctions" class="code">function [token,tokenType] = getNextToken(this)</a>
-0105             <span class="comment">% get whatever is next in the string</span>
-0106             
-0107             <span class="comment">% skip whitespace</span>
-0108             ch = this.json(this.index);
-0109             <span class="keyword">while</span> <a href="#_sub7" class="code" title="subfunction tf = isWhitespace(aChar)">isWhitespace</a>(ch)
-0110                 this.index = this.index + 1;
-0111                 ch = this.json(this.index);
-0112             <span class="keyword">end</span>
-0113             
-0114             <span class="comment">% is it a special character?</span>
-0115             <span class="keyword">if</span> <a href="#_sub8" class="code" title="subfunction tf = isSpecial(aChar)">isSpecial</a>(ch)
-0116                 token = ch;
-0117                 tokenType = <span class="string">'Special'</span>;
-0118                 this.index = this.index + 1;
-0119                 <span class="keyword">return</span>
-0120             <span class="keyword">end</span>
-0121             
-0122             <span class="comment">% is it one of the three keywords?</span>
-0123             <span class="keyword">switch</span>(ch)
-0124                 <span class="keyword">case</span> <span class="string">'t'</span>
-0125                     <a href="#_sub6" class="code" title="subfunction match(this,str)">match</a>(this,<span class="string">'true'</span>);
-0126                     token = true;
-0127                     tokenType = <span class="string">'Logical'</span>;
-0128                     <span class="keyword">return</span>;
-0129                 <span class="keyword">case</span> <span class="string">'f'</span>
-0130                     <a href="#_sub6" class="code" title="subfunction match(this,str)">match</a>(this,<span class="string">'false'</span>);
-0131                     tokenType = <span class="string">'Logical'</span>;
-0132                     token = false;
-0133                     <span class="keyword">return</span>;
-0134                 <span class="keyword">case</span> <span class="string">'n'</span>
-0135                     <a href="#_sub6" class="code" title="subfunction match(this,str)">match</a>(this,<span class="string">'null'</span>);
-0136                     tokenType = <span class="string">'Null'</span>;
-0137                     token = [];
-0138                     <span class="keyword">return</span>;
-0139             <span class="keyword">end</span>
-0140             
-0141             <span class="comment">% is it a string?</span>
-0142             <span class="keyword">if</span>(ch == <span class="string">'&quot;'</span>)
-0143                 token = <a href="#_sub9" class="code" title="subfunction string = getString(this)">getString</a>(this);
-0144                 tokenType = <span class="string">'String'</span>;
-0145                 <span class="keyword">return</span>;
-0146             <span class="keyword">end</span>
-0147             
-0148             <span class="comment">% well, then it better be a number</span>
-0149             token = <a href="#_sub10" class="code" title="subfunction number = getNumber(this)">getNumber</a>(this);
-0150             tokenType = <span class="string">'Number'</span>;
-0151             
-0152             <a name="_sub5" href="#_subfunctions" class="code">function match(this,str)</a>
-0153                 <span class="comment">% find and consume exactly str at the current location of error</span>
-0154                 n = length(str);
-0155                 range = this.index:(this.index + n - 1);
-0156                 found = this.json(range);
-0157                 <span class="keyword">if</span> strcmp(str,found)
-0158                     this.index = this.index + n;
-0159                 <span class="keyword">else</span>
-0160                     error(<span class="string">'The JSON parser expected &quot;%s&quot; but found %s'</span>,str,found)
-0161                 <span class="keyword">end</span>
-0162             <span class="keyword">end</span>
-0163             
-0164             <a name="_sub6" href="#_subfunctions" class="code">function tf = isWhitespace(aChar)</a>
-0165                 <span class="comment">% space, carrage return, linefeed, horizontal tab</span>
-0166                 tf = aChar == 32 || aChar == 10 || aChar == 13 || aChar == 9;
-0167             <span class="keyword">end</span>
-0168             
-0169             <a name="_sub7" href="#_subfunctions" class="code">function tf = isSpecial(aChar)</a>
-0170                 <span class="comment">% the special characters in the JSON &quot;language&quot;</span>
-0171                 tf = aChar == <span class="string">'{'</span> || aChar == <span class="string">'}'</span> || aChar == <span class="string">'['</span>|| aChar == <span class="string">']'</span>|| aChar == <span class="string">':'</span> || aChar == <span class="string">','</span>;
-0172             <span class="keyword">end</span>
-0173                      
-0174             <a name="_sub8" href="#_subfunctions" class="code">function string = getString(this)</a>
-0175                 first = this.index + 1;
-0176                 last = first;
-0177                 str = this.json;
-0178                 
-0179                 ch = str(last);
-0180                 <span class="keyword">while</span> ch ~= <span class="string">'&quot;'</span>
-0181                     <span class="keyword">if</span>(ch == <span class="string">'\\'</span>) <span class="comment">%#ok&lt;STCMP&gt; We KNOW both are single chars</span>
-0182                         last = last + 2;
-0183                     <span class="keyword">else</span>
-0184                         last = last + 1;
-0185                     <span class="keyword">end</span>
-0186                     ch = str(last);
-0187                 <span class="keyword">end</span>
-0188                 
-0189                 <span class="comment">% get the string without it's quotes</span>
-0190                 string = str(first:(last-1));
-0191                 this.index = last + 1; <span class="comment">% skip the trailing &quot;</span>
-0192             <span class="keyword">end</span>
-0193             
-0194             <a name="_sub9" href="#_subfunctions" class="code">function number = getNumber(this)</a>
-0195                 first = this.index;
-0196                 last = first;
-0197                 ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,first);
-0198                 
-0199                 <span class="keyword">if</span>(ch == <span class="string">'-'</span>)
-0200                     last = last + 1;
-0201                     ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0202                 <span class="keyword">end</span>
-0203                 
-0204                 <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
-0205                     last = last + 1;
-0206                     ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0207                 <span class="keyword">end</span>
-0208                 
-0209                 <span class="keyword">if</span>(ch == <span class="string">'.'</span>)
-0210                     last = last + 1;
-0211                     ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0212                     <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
-0213                         last = last + 1;
-0214                         ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0215                     <span class="keyword">end</span>
-0216                 <span class="keyword">end</span>
-0217                 
-0218                 <span class="keyword">if</span> ch == <span class="string">'e'</span> || ch == <span class="string">'E'</span>
-0219                     last = last + 1;
-0220                     ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0221                     <span class="keyword">if</span> ismember(ch,<span class="string">'+-'</span>)
-0222                         last = last + 1;
-0223                         ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
-0224                     <span class="keyword">end</span>
-0225                     <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
+0083                 value = this.getValue();
+0084                 <span class="keyword">if</span> ~strcmp(value, <span class="string">':'</span>)
+0085                     error([<span class="string">'JSON parser requires colons between '</span> <span class="keyword">...</span>
+0086                         <span class="string">'object names and values'</span>]);
+0087                 <span class="keyword">end</span>
+0088 
+0089                 <span class="comment">% get the value</span>
+0090                 value = this.getValue();
+0091                 obj.(fieldname) = value;
+0092 
+0093                 value = this.getValue();
+0094                 <span class="keyword">if</span> strcmp(value, <span class="string">','</span>)
+0095                     value = this.getValue();
+0096                 <span class="keyword">elseif</span> strcmp(value, <span class="string">'}'</span>)
+0097                     <span class="keyword">continue</span>
+0098                 <span class="keyword">else</span>
+0099                     error([<span class="string">'JSON parser requires commas between '</span> <span class="keyword">...</span>
+0100                         <span class="string">'object elements'</span>]);
+0101                 <span class="keyword">end</span>
+0102             <span class="keyword">end</span>
+0103 
+0104         <span class="keyword">end</span>
+0105 
+0106         <a name="_sub4" href="#_subfunctions" class="code">function [token, tokenType] = getNextToken(this)</a>
+0107             <span class="comment">% get whatever is next in the string</span>
+0108 
+0109             <span class="comment">% skip whitespace</span>
+0110             ch = this.json(this.index);
+0111             <span class="keyword">while</span> <a href="#_sub7" class="code" title="subfunction tf = isWhitespace(aChar)">isWhitespace</a>(ch)
+0112                 this.index = this.index + 1;
+0113                 ch = this.json(this.index);
+0114             <span class="keyword">end</span>
+0115 
+0116             <span class="comment">% is it a special character?</span>
+0117             <span class="keyword">if</span> <a href="#_sub8" class="code" title="subfunction tf = isSpecial(aChar)">isSpecial</a>(ch)
+0118                 token     = ch;
+0119                 tokenType = <span class="string">'Special'</span>;
+0120                 this.index = this.index + 1;
+0121                 <span class="keyword">return</span>
+0122             <span class="keyword">end</span>
+0123 
+0124             <span class="comment">% is it one of the three keywords?</span>
+0125             <span class="keyword">switch</span> ch
+0126                 <span class="keyword">case</span> <span class="string">'t'</span>
+0127                     <a href="#_sub6" class="code" title="subfunction match(this, str)">match</a>(this, <span class="string">'true'</span>);
+0128                     token     = true;
+0129                     tokenType = <span class="string">'Logical'</span>;
+0130                     <span class="keyword">return</span>;
+0131                 <span class="keyword">case</span> <span class="string">'f'</span>
+0132                     <a href="#_sub6" class="code" title="subfunction match(this, str)">match</a>(this, <span class="string">'false'</span>);
+0133                     tokenType = <span class="string">'Logical'</span>;
+0134                     token     = false;
+0135                     <span class="keyword">return</span>;
+0136                 <span class="keyword">case</span> <span class="string">'n'</span>
+0137                     <a href="#_sub6" class="code" title="subfunction match(this, str)">match</a>(this, <span class="string">'null'</span>);
+0138                     tokenType = <span class="string">'Null'</span>;
+0139                     token     = [];
+0140                     <span class="keyword">return</span>;
+0141             <span class="keyword">end</span>
+0142 
+0143             <span class="comment">% is it a string?</span>
+0144             <span class="keyword">if</span> ch == <span class="string">'&quot;'</span>
+0145                 token     = <a href="#_sub9" class="code" title="subfunction string = getString(this)">getString</a>(this);
+0146                 tokenType = <span class="string">'String'</span>;
+0147                 <span class="keyword">return</span>;
+0148             <span class="keyword">end</span>
+0149 
+0150             <span class="comment">% otherwise it must be a number</span>
+0151             token     = <a href="#_sub10" class="code" title="subfunction number = getNumber(this)">getNumber</a>(this);
+0152             tokenType = <span class="string">'Number'</span>;
+0153 
+0154             <a name="_sub5" href="#_subfunctions" class="code">function match(this, str)</a>
+0155                 <span class="comment">% consume exactly str at current position or error</span>
+0156                 n     = length(str);
+0157                 range = this.index:(this.index + n - 1);
+0158                 found = this.json(range);
+0159                 <span class="keyword">if</span> strcmp(str, found)
+0160                     this.index = this.index + n;
+0161                 <span class="keyword">else</span>
+0162                     error(<span class="string">'The JSON parser expected &quot;%s&quot; but found %s'</span>, <span class="keyword">...</span>
+0163                         str, found)
+0164                 <span class="keyword">end</span>
+0165             <span class="keyword">end</span>
+0166 
+0167             <a name="_sub6" href="#_subfunctions" class="code">function tf = isWhitespace(aChar)</a>
+0168                 <span class="comment">% space (32), carriage return (13), linefeed (10), tab (9)</span>
+0169                 tf = aChar == 32 || aChar == 10 || <span class="keyword">...</span>
+0170                     aChar == 13 || aChar == 9;
+0171             <span class="keyword">end</span>
+0172 
+0173             <a name="_sub7" href="#_subfunctions" class="code">function tf = isSpecial(aChar)</a>
+0174                 <span class="comment">% the special characters in the JSON grammar</span>
+0175                 tf = aChar == <span class="string">'{'</span> || aChar == <span class="string">'}'</span> || aChar == <span class="string">'['</span> || <span class="keyword">...</span>
+0176                     aChar == <span class="string">']'</span> || aChar == <span class="string">':'</span> || aChar == <span class="string">','</span>;
+0177             <span class="keyword">end</span>
+0178 
+0179             <a name="_sub8" href="#_subfunctions" class="code">function string = getString(this)</a>
+0180                 first = this.index + 1;
+0181                 last  = first;
+0182                 str   = this.json;
+0183 
+0184                 ch = str(last);
+0185                 <span class="keyword">while</span> ch ~= <span class="string">'&quot;'</span>
+0186                     <span class="keyword">if</span> ch == <span class="string">'\\'</span> <span class="comment">% We KNOW both are single chars</span>
+0187                         last = last + 2;
+0188                     <span class="keyword">else</span>
+0189                         last = last + 1;
+0190                     <span class="keyword">end</span>
+0191                     ch = str(last);
+0192                 <span class="keyword">end</span>
+0193 
+0194                 string     = str(first:(last-1));   <span class="comment">% string without quotes</span>
+0195                 this.index = last + 1;              <span class="comment">% skip the trailing &quot;</span>
+0196             <span class="keyword">end</span>
+0197 
+0198             <a name="_sub9" href="#_subfunctions" class="code">function number = getNumber(this)</a>
+0199                 first = this.index;
+0200                 last  = first;
+0201                 ch    = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, first);
+0202 
+0203                 <span class="keyword">if</span> ch == <span class="string">'-'</span>
+0204                     last = last + 1;
+0205                     ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0206                 <span class="keyword">end</span>
+0207 
+0208                 <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
+0209                     last = last + 1;
+0210                     ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0211                 <span class="keyword">end</span>
+0212 
+0213                 <span class="keyword">if</span> ch == <span class="string">'.'</span>
+0214                     last = last + 1;
+0215                     ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0216                     <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
+0217                         last = last + 1;
+0218                         ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0219                     <span class="keyword">end</span>
+0220                 <span class="keyword">end</span>
+0221 
+0222                 <span class="keyword">if</span> ch == <span class="string">'e'</span> || ch == <span class="string">'E'</span>
+0223                     last = last + 1;
+0224                     ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0225                     <span class="keyword">if</span> ismember(ch, <span class="string">'+-'</span>)
 0226                         last = last + 1;
-0227                         ch = <a href="#_sub11" class="code" title="subfunction char = charAt(this,position)">charAt</a>(this,last);
+0227                         ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
 0228                     <span class="keyword">end</span>
-0229                 <span class="keyword">end</span>
-0230                 
-0231                 <span class="comment">% pull out the string</span>
-0232                 str = this.json(first:(last-1));
-0233                 number = str2double(str);
-0234                 
-0235                 <span class="comment">% move past it</span>
-0236                 this.index = last;
-0237                 
-0238                 <span class="comment">% helper functions</span>
-0239                 <a name="_sub10" href="#_subfunctions" class="code">function char = charAt(this,position)</a>
-0240                     <span class="keyword">if</span>(position &gt; length(this.json))
+0229                     <span class="keyword">while</span> <a href="#_sub12" class="code" title="subfunction tf = isDigit(aChar)">isDigit</a>(ch)
+0230                         last = last + 1;
+0231                         ch   = <a href="#_sub11" class="code" title="subfunction char = charAt(this, position)">charAt</a>(this, last);
+0232                     <span class="keyword">end</span>
+0233                 <span class="keyword">end</span>
+0234 
+0235                 str    = this.json(first:(last-1));
+0236                 number = str2double(str);
+0237                 this.index = last;
+0238 
+0239                 <a name="_sub10" href="#_subfunctions" class="code">function char = charAt(this, position)</a>
+0240                     <span class="keyword">if</span> position &gt; length(this.json)
 0241                         char = 0;
 0242                     <span class="keyword">else</span>
 0243                         char = this.json(position);
 0244                     <span class="keyword">end</span>
 0245                 <span class="keyword">end</span>
-0246                 
+0246 
 0247                 <a name="_sub11" href="#_subfunctions" class="code">function tf = isDigit(aChar)</a>
-0248                     tf = aChar &gt; 47 &amp;&amp; aChar &lt; 58;
+0248                     tf = aChar &gt; 47 &amp;&amp; aChar &lt; 58;  <span class="comment">% ASCII '0'-'9'</span>
 0249                 <span class="keyword">end</span>
-0250                 
+0250 
 0251             <span class="keyword">end</span>
-0252             
+0252 
 0253         <span class="keyword">end</span>
-0254         
+0254 
 0255     <span class="keyword">end</span>
-0256     
+0256 
 0257     methods(Static)
 0258         <span class="comment">% This is the one method you should call from outside the file.</span>
 0259         <span class="comment">% JSON.parse(string)... that should be familiar to Javascrpt</span>
 0260         <span class="comment">% programmers</span>
 0261         <a name="_sub12" href="#_subfunctions" class="code">function value = parse(JSONstring)</a>
 0262             jsonObject = <a href="JSON.html" class="code" title="">JSON</a>(JSONstring);
-0263             value = jsonObject.getValue;
+0263             value = jsonObject.getValue();
 0264         <span class="keyword">end</span>
 0265     <span class="keyword">end</span>
-0266     
+0266 
 0267 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

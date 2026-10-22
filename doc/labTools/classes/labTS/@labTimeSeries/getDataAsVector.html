@@ -4,7 +4,7 @@
 <head>
   <title>Description of getDataAsVector</title>
   <meta name="keywords" content="getDataAsVector">
-  <meta name="description" content="GETDATASVECTOR Extract data vectors for the specified label(s).">
+  <meta name="description" content="GETDATAASVECTOR Extract data vectors for the specified label(s).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,17 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>GETDATASVECTOR Extract data vectors for the specified label(s).</strong></div>
+<div class="box"><strong>GETDATAASVECTOR Extract data vectors for the specified label(s).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [data, time, auxLabel] = getDataAsVector(this, label) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETDATASVECTOR Extract data vectors for the specified label(s).
+<div class="fragment"><pre class="comment">GETDATAASVECTOR Extract data vectors for the specified label(s).
 
    Returns the data matrix and time vector for the requested channel
- labels. If a label is not found by exact match, the function falls back
- to treating the label as a regular expression and returning all matching
+ labels. If a label is not found by exact match, the function falls back to
+ treating the label as a regular expression and returning all matching
  channels.
 
  Inputs:
@@ -52,21 +52,21 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns new labTimeSeries with given label(s)</li><li><a href="getPartialDataAsVector.html" class="code" title="function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1)">getPartialDataAsVector</a>	getPartialDataAsVector  Returns data for labels and time range</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns processedEMGTimeSeries with specified label(s)</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li></ul>
+<li><a href="getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	GETDATAASTS Returns new labTimeSeries with given label(s).</li><li><a href="getPartialDataAsVector.html" class="code" title="function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1)">getPartialDataAsVector</a>	GETPARTIALDATAASVECTOR Returns data for labels and time range.</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	GETDATAASTS Returns processedEMGTimeSeries with specified label(s).</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	% Add Python biofeedback data to adaptData</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results = SyncPython_forStatic(subject)">SyncPython_forStatic</a>	SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, time, auxLabel] = getDataAsVector(this, label)</a>
-0002 <span class="comment">%GETDATASVECTOR Extract data vectors for the specified label(s).</span>
+0002 <span class="comment">%GETDATAASVECTOR Extract data vectors for the specified label(s).</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Returns the data matrix and time vector for the requested channel</span>
-0005 <span class="comment">% labels. If a label is not found by exact match, the function falls back</span>
-0006 <span class="comment">% to treating the label as a regular expression and returning all matching</span>
+0005 <span class="comment">% labels. If a label is not found by exact match, the function falls back to</span>
+0006 <span class="comment">% treating the label as a regular expression and returning all matching</span>
 0007 <span class="comment">% channels.</span>
 0008 <span class="comment">%</span>
 0009 <span class="comment">% Inputs:</span>
@@ -102,26 +102,27 @@ This function is called by:
 0039 <span class="keyword">if</span> ~any(boolFlag)
 0040     matchedLabels = [];
 0041     <span class="keyword">for</span> ii = 1:length(auxLabel)
-0042         matchedLabels = [matchedLabels this.getLabelsThatMatch(auxLabel{ii})]; <span class="comment">%#ok&lt;AGROW&gt;</span>
-0043     <span class="keyword">end</span>
-0044     [boolFlag, labelIdx] = this.isaLabel(matchedLabels);
-0045     warning(<span class="string">'labTimeSeries:labelNotFound'</span>, sprintf( <span class="keyword">...</span>
-0046         [<span class="string">'None of the provided labels are in this timeSeries. '</span> <span class="keyword">...</span>
-0047          <span class="string">'Trying regex match: found %d match(es).'</span>], numel(matchedLabels)));
-0048 <span class="keyword">else</span>
-0049     <span class="keyword">for</span> ii = 1:length(boolFlag)
-0050         <span class="keyword">if</span> ~boolFlag(ii)
-0051             warning(<span class="string">'labTimeSeries:labelNotFound'</span>, <span class="keyword">...</span>
-0052                 <span class="string">'Label ''%s'' is not in this timeSeries.'</span>, auxLabel{ii});
-0053         <span class="keyword">end</span>
-0054     <span class="keyword">end</span>
-0055 <span class="keyword">end</span>
-0056 
-0057 data = this.Data(:, labelIdx(boolFlag));
-0058 <span class="keyword">if</span> nargout &gt; 2
-0059     auxLabel = this.labels(labelIdx(boolFlag));
-0060 <span class="keyword">end</span>
-0061 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0042         matchedLabels = [matchedLabels <span class="keyword">...</span>
+0043             this.getLabelsThatMatch(auxLabel{ii})]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0044     <span class="keyword">end</span>
+0045     [boolFlag, labelIdx] = this.isaLabel(matchedLabels);
+0046     warning(<span class="string">'labTimeSeries:labelNotFound'</span>, sprintf( <span class="keyword">...</span>
+0047         [<span class="string">'None of the provided labels are in this timeSeries. '</span> <span class="keyword">...</span>
+0048         <span class="string">'Trying regex match: found %d match(es).'</span>], numel(matchedLabels)));
+0049 <span class="keyword">else</span>
+0050     <span class="keyword">for</span> ii = 1:length(boolFlag)
+0051         <span class="keyword">if</span> ~boolFlag(ii)
+0052             warning(<span class="string">'labTimeSeries:labelNotFound'</span>, <span class="keyword">...</span>
+0053                 <span class="string">'Label ''%s'' is not in this timeSeries.'</span>, auxLabel{ii});
+0054         <span class="keyword">end</span>
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 data = this.Data(:, labelIdx(boolFlag));
+0059 <span class="keyword">if</span> nargout &gt; 2
+0060     auxLabel = this.labels(labelIdx(boolFlag));
+0061 <span class="keyword">end</span>
+0062 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

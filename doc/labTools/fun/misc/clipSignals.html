@@ -4,7 +4,7 @@
 <head>
   <title>Description of clipSignals</title>
   <meta name="keywords" content="clipSignals">
-  <meta name="description" content="clipSignals  Clip the top and bottom of each signal column by percentile.">
+  <meta name="description" content="CLIPSIGNALS Clip each signal column to symmetric percentile bounds.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>clipSignals  Clip the top and bottom of each signal column by percentile.</strong></div>
+<div class="box"><strong>CLIPSIGNALS Clip each signal column to symmetric percentile bounds.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function signals = clipSignals(signals, percentile) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> clipSignals  Clip the top and bottom of each signal column by percentile.
+<div class="fragment"><pre class="comment">CLIPSIGNALS Clip each signal column to symmetric percentile bounds.
 
    Replaces all samples below the lower percentile threshold and above
  the upper percentile threshold with the respective threshold value,
@@ -53,23 +53,23 @@
    Toolbox Dependencies:
      Statistics and Machine Learning Toolbox  (prctile)
 
-   See also: loadTrials, prctile</pre></div>
+ See also LOADTRIALS, PRCTILE.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	PRCTILE Computes percentile.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="generateHreflexRecruitmentCurves.html" class="code" title="">generateHreflexRecruitmentCurves</a>	% Generate H-Reflex Calibration Recruitment Curves & Other Figures</li><li><a href="../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="GenerateHreflexRecruitmentCurves.html" class="code" title="">GenerateHreflexRecruitmentCurves</a>	% Generate H-Reflex Calibration Recruitment Curves & Other Figures</li><li><a href="../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function signals = clipSignals(signals, percentile)</a>
-0002 <span class="comment">% clipSignals  Clip the top and bottom of each signal column by percentile.</span>
+0002 <span class="comment">%CLIPSIGNALS Clip each signal column to symmetric percentile bounds.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Replaces all samples below the lower percentile threshold and above</span>
 0005 <span class="comment">% the upper percentile threshold with the respective threshold value,</span>
@@ -95,7 +95,7 @@ This function is called by:
 0025 <span class="comment">%   Toolbox Dependencies:</span>
 0026 <span class="comment">%     Statistics and Machine Learning Toolbox  (prctile)</span>
 0027 <span class="comment">%</span>
-0028 <span class="comment">%   See also: loadTrials, prctile</span>
+0028 <span class="comment">% See also LOADTRIALS, PRCTILE.</span>
 0029 
 0030 arguments
 0031     signals    (:, :) {mustBeNumeric}
@@ -117,6 +117,6 @@ This function is called by:
 0047 
 0048 <span class="keyword">end</span>
 0049</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

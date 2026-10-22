@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of adjudicateStrideQuality</title>
+  <meta name="keywords" content="adjudicateStrideQuality">
+  <meta name="description" content="ADJUDICATESTRIDEQUALITY Label per-reason and aggregate stride quality.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; adjudicateStrideQuality.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>adjudicateStrideQuality
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>ADJUDICATESTRIDEQUALITY Label per-reason and aggregate stride quality.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [bad, reasons] = adjudicateStrideQuality(extendedEventTimes, strideDuration, singleStanceSpeed,trialType, cfg) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ADJUDICATESTRIDEQUALITY Label per-reason and aggregate stride quality.
+
+   Central, pure (no parameterSeries dependency) stride-quality
+ adjudication used by CALCPARAMETERS. The aggregate 'bad' criteria are
+ split into named reason columns, so the aggregate flag exposes WHY a
+ stride failed. Marker-based and marker-less pipelines can therefore
+ apply an identical reason schema and threshold set (see
+ GETSTRIDEQUALITYCONFIG), and callers can censor a chosen subset of
+ reasons (see REMOVESTRIDESBYREASON).
+
+   CALCPARAMETERS calls this function twice: once early, with
+ 'singleStanceSpeed' empty (before force parameters exist), to
+ populate the event/duration reasons and a provisional 'bad'; and
+ once more at the end of the pipeline, with the actual single-stance
+ speed data, to refresh 'badStartStop' and the final aggregate. The
+ event/duration reasons are identical between the two calls given the
+ same inputs.
+
+ Inputs:
+   extendedEventTimes - (numStrides x 6) SHS, FTO, FHS, STO, SHS2,
+                        FTO2 event times (seconds) for each stride
+   strideDuration     - (numStrides x 1) SHS2 - SHS duration (s)
+   singleStanceSpeed  - (numStrides x 2) [fastAbs, slowAbs] single-
+                        stance speed (mm/s), or [] if force
+                        parameters have not yet been computed
+   trialType          - char, trialData.metaData.type (e.g., 'TM',
+                        'OG', 'IN', 'NIM'); badStartStop only applies
+                        to 'TM' trials
+   cfg                - config struct from GETSTRIDEQUALITYCONFIG (or
+                        an equivalent struct with the same fields)
+
+ Outputs:
+   bad     - (numStrides x 1) logical, OR of cfg.defaultBadReasons;
+             the aggregate stride-quality criterion
+   reasons - struct with one (numStrides x 1) logical field per name
+             in cfg.reasonLabels
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getStrideQualityConfig.html" class="code" title="function cfg = getStrideQualityConfig()">GETSTRIDEQUALITYCONFIG</a>, <a href="flagTriageOutliers.html" class="code" title="function triageOutlier = flagTriageOutliers(paramValues, cfg)">FLAGTRIAGEOUTLIERS</a>, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>,
+   REMOVESTRIDESBYREASON.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bad, reasons] = adjudicateStrideQuality( </a><span class="keyword">...</span>
+0002     extendedEventTimes, strideDuration, singleStanceSpeed, <span class="keyword">...</span>
+0003     trialType, cfg)
+0004 <span class="comment">%ADJUDICATESTRIDEQUALITY Label per-reason and aggregate stride quality.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Central, pure (no parameterSeries dependency) stride-quality</span>
+0007 <span class="comment">% adjudication used by CALCPARAMETERS. The aggregate 'bad' criteria are</span>
+0008 <span class="comment">% split into named reason columns, so the aggregate flag exposes WHY a</span>
+0009 <span class="comment">% stride failed. Marker-based and marker-less pipelines can therefore</span>
+0010 <span class="comment">% apply an identical reason schema and threshold set (see</span>
+0011 <span class="comment">% GETSTRIDEQUALITYCONFIG), and callers can censor a chosen subset of</span>
+0012 <span class="comment">% reasons (see REMOVESTRIDESBYREASON).</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   CALCPARAMETERS calls this function twice: once early, with</span>
+0015 <span class="comment">% 'singleStanceSpeed' empty (before force parameters exist), to</span>
+0016 <span class="comment">% populate the event/duration reasons and a provisional 'bad'; and</span>
+0017 <span class="comment">% once more at the end of the pipeline, with the actual single-stance</span>
+0018 <span class="comment">% speed data, to refresh 'badStartStop' and the final aggregate. The</span>
+0019 <span class="comment">% event/duration reasons are identical between the two calls given the</span>
+0020 <span class="comment">% same inputs.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Inputs:</span>
+0023 <span class="comment">%   extendedEventTimes - (numStrides x 6) SHS, FTO, FHS, STO, SHS2,</span>
+0024 <span class="comment">%                        FTO2 event times (seconds) for each stride</span>
+0025 <span class="comment">%   strideDuration     - (numStrides x 1) SHS2 - SHS duration (s)</span>
+0026 <span class="comment">%   singleStanceSpeed  - (numStrides x 2) [fastAbs, slowAbs] single-</span>
+0027 <span class="comment">%                        stance speed (mm/s), or [] if force</span>
+0028 <span class="comment">%                        parameters have not yet been computed</span>
+0029 <span class="comment">%   trialType          - char, trialData.metaData.type (e.g., 'TM',</span>
+0030 <span class="comment">%                        'OG', 'IN', 'NIM'); badStartStop only applies</span>
+0031 <span class="comment">%                        to 'TM' trials</span>
+0032 <span class="comment">%   cfg                - config struct from GETSTRIDEQUALITYCONFIG (or</span>
+0033 <span class="comment">%                        an equivalent struct with the same fields)</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% Outputs:</span>
+0036 <span class="comment">%   bad     - (numStrides x 1) logical, OR of cfg.defaultBadReasons;</span>
+0037 <span class="comment">%             the aggregate stride-quality criterion</span>
+0038 <span class="comment">%   reasons - struct with one (numStrides x 1) logical field per name</span>
+0039 <span class="comment">%             in cfg.reasonLabels</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% Toolbox Dependencies:</span>
+0042 <span class="comment">%   None</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% See also GETSTRIDEQUALITYCONFIG, FLAGTRIAGEOUTLIERS, CALCPARAMETERS,</span>
+0045 <span class="comment">%   REMOVESTRIDESBYREASON.</span>
+0046 
+0047 arguments
+0048     extendedEventTimes (:,6) double
+0049     strideDuration      (:,1) double
+0050     singleStanceSpeed          double
+0051     trialType     (1,:) char
+0052     cfg                  struct
+0053 <span class="keyword">end</span>
+0054 
+0055 numStrides = size(extendedEventTimes, 1);
+0056 
+0057 <span class="comment">%% Event- and Duration-Based Reasons</span>
+0058 <span class="comment">% Criterion 1: any event time missing (NaN)</span>
+0059 reasons.badMissingEvent = any(isnan(extendedEventTimes), 2);
+0060 <span class="comment">% Criterion 2: consecutive event times out of order (negative diff)</span>
+0061 reasons.badDisordered = any(diff(extendedEventTimes, 1, 2) &lt; 0, 2);
+0062 <span class="comment">% Criterion 3: stride duration much longer than the trial's median</span>
+0063 reasons.badDurationOutlier = strideDuration &gt; <span class="keyword">...</span>
+0064     cfg.durationMedianFactor * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(strideDuration, <span class="string">'omitnan'</span>);
+0065 <span class="comment">% Criterion 4: stride duration too short</span>
+0066 reasons.badDurationShort = strideDuration &lt; cfg.minStrideDur;
+0067 <span class="comment">% Criterion 5: stride duration too long</span>
+0068 reasons.badDurationLong = strideDuration &gt; cfg.maxStrideDur;
+0069 
+0070 <span class="comment">%% Start/Stop Reason (Treadmill Only)</span>
+0071 <span class="comment">% Criterion 6: both legs' single-stance speed below threshold marks</span>
+0072 <span class="comment">% treadmill starting/stopping strides. Requires force parameters, so</span>
+0073 <span class="comment">% this reason is all-false until the caller's second (end-of-pipeline)</span>
+0074 <span class="comment">% call, when 'singleStanceSpeed' is available.</span>
+0075 <span class="keyword">if</span> strcmpi(trialType, <span class="string">'TM'</span>) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(singleStanceSpeed)
+0076     reasons.badStartStop = <span class="keyword">...</span>
+0077         abs(singleStanceSpeed(:, 1)) &lt; cfg.startStopSpeedMmS &amp; <span class="keyword">...</span>
+0078         abs(singleStanceSpeed(:, 2)) &lt; cfg.startStopSpeedMmS;
+0079 <span class="keyword">else</span>
+0080     reasons.badStartStop = false(numStrides, 1);
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="comment">%% Stub Reasons (No Stride-Level Detector Yet)</span>
+0084 <span class="comment">% See GETSTRIDEQUALITYCONFIG.reasonDescriptions for TODO wiring notes.</span>
+0085 reasons.badTurning       = false(numStrides, 1);
+0086 reasons.badWalkwayBounds = false(numStrides, 1);
+0087 reasons.badMarkerDropout = false(numStrides, 1);
+0088 
+0089 <span class="comment">%% Aggregate 'bad' Flag</span>
+0090 bad = false(numStrides, 1);
+0091 <span class="keyword">for</span> ii = 1:length(cfg.defaultBadReasons)  <span class="comment">% for each folded reason, ...</span>
+0092     bad = bad | reasons.(cfg.defaultBadReasons{ii});
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

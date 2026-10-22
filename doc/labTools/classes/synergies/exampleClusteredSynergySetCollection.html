@@ -4,7 +4,7 @@
 <head>
   <title>Description of exampleClusteredSynergySetCollection</title>
   <meta name="keywords" content="exampleClusteredSynergySetCollection">
-  <meta name="description" content="">
+  <meta name="description" content="EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,20 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.
+
+   Creates a collection, assigns fake cluster indexes, builds the clustered
+ collection, and plots it.
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also CLUSTEREDSYNERGYSETCOLLECTION, SYNERGYSETCOLLECTION.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -42,28 +49,43 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%</span>
-0002 clear s s2
-0003 <span class="comment">%Create:</span>
-0004 muscleList={<span class="string">'TA'</span>,<span class="string">'PER'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'RF'</span>,<span class="string">'VM'</span>,<span class="string">'BF'</span>,<span class="string">'TFL'</span>,<span class="string">'GLU'</span>};
-0005 content={<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(4,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(6,9),muscleList);
-0006         <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(4,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
-0007         <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
-0008         <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
-0009         <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList)};
-0010     
-0011 indexCats={<span class="string">'Subject'</span>,<span class="string">'Condition'</span>};
-0012 indexLabels{1}={<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'4'</span>,<span class="string">'5'</span>};
-0013 indexLabels{2}={<span class="string">'B'</span>,<span class="string">'A'</span>,<span class="string">'P'</span>};
-0014 s=<a href="../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(content,indexCats,indexLabels);
-0015 
-0016 <span class="keyword">for</span> i=1:size(content,1)
-0017     <span class="keyword">for</span> j=1:size(content,2)
-0018         fakeClusteringIndex{i,j}=round(abs(sum(content{i,j}.content,2)));
-0019     <span class="keyword">end</span>
-0020 <span class="keyword">end</span>
-0021 s2=<a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>(fakeClusteringIndex,s.content,s.indexCategories,s.indexLabels,s.name)
-0022 [figHandle,subplotHandles] = s2.plot;</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Creates a collection, assigns fake cluster indexes, builds the clustered</span>
+0004 <span class="comment">% collection, and plots it.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% See also CLUSTEREDSYNERGYSETCOLLECTION, SYNERGYSETCOLLECTION.</span>
+0009 
+0010 clear s s2
+0011 <span class="comment">%Create:</span>
+0012 muscleList = {<span class="string">'TA'</span>,<span class="string">'PER'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'RF'</span>,<span class="string">'VM'</span>,<span class="string">'BF'</span>,<span class="string">'TFL'</span>,<span class="string">'GLU'</span>};
+0013 content = {<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList), <span class="keyword">...</span>
+0014     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(4,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(6,9),muscleList);
+0015     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(4,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList), <span class="keyword">...</span>
+0016     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
+0017     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList), <span class="keyword">...</span>
+0018     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
+0019     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList), <span class="keyword">...</span>
+0020     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList);
+0021     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList),<a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList), <span class="keyword">...</span>
+0022     <a href="../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(randn(3,9),muscleList)};
+0023 
+0024 indexCats = {<span class="string">'Subject'</span>,<span class="string">'Condition'</span>};
+0025 indexLabels{1} = {<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'4'</span>,<span class="string">'5'</span>};
+0026 indexLabels{2} = {<span class="string">'B'</span>,<span class="string">'A'</span>,<span class="string">'P'</span>};
+0027 s = <a href="../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(content,indexCats,indexLabels);
+0028 
+0029 <span class="keyword">for</span> ii = 1:size(content,1)
+0030     <span class="keyword">for</span> jj = 1:size(content,2)
+0031         fakeClusteringIndex{ii,jj} = <span class="keyword">...</span>
+0032             round(abs(sum(content{ii,jj}.content,2)));
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 s2 = <a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>(fakeClusteringIndex,s.content, <span class="keyword">...</span>
+0036     s.indexCategories,s.indexLabels,s.name)
+0037 [figHandle,subplotHandles] = s2.plot;</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of findLabel</title>
   <meta name="keywords" content="findLabel">
-  <meta name="description" content="function to deal with different marker labels from vicon. For the code to">
+  <meta name="description" content="FINDLABEL Map a Vicon marker label to the standard label.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,28 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function to deal with different marker labels from vicon. For the code to</strong></div>
+<div class="box"><strong>FINDLABEL Map a Vicon marker label to the standard label.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function markerLabel = findLabel(viconLabel) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">function to deal with different marker labels from vicon. For the code to
-run correctly, the label names must be as they are set in this code.
+<div class="fragment"><pre class="comment">FINDLABEL Map a Vicon marker label to the standard label.
 
-DO NOT edit the 'markerLabel' declarations, only edit the strings in the
-case statements</pre></div>
+   Looks VICONLABEL up in the matchedLabels table of markerLabelKey.mat
+ (column 1: cell of accepted Vicon names, column 2: standard label).
+ Labels with no match are returned unchanged. The MAT file is loaded on
+ every call. Add new aliases with ADDMARKERPAIR.
+
+ Inputs:
+   viconLabel - marker label as recorded in the C3D file
+
+ Outputs:
+   markerLabel - standard label, or VICONLABEL if no alias matches
+
+ Toolbox Dependencies: None
+
+ See also <a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">ADDMARKERPAIR</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -40,55 +51,68 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL Realtime</li><li><a href="../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL Realtime</li><li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
+<li><a href="../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL_REALTIME Compute step length, cadence and step time of a Nexus trial.</li><li><a href="../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL_REALTIMEALPHA Compute step length, cadence, alpha and X of a trial.</li><li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	LOADTRIALS Generate rawTrialData instances for each trial.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerLabel = findLabel(viconLabel)</a>
-0002 <span class="comment">%function to deal with different marker labels from vicon. For the code to</span>
-0003 <span class="comment">%run correctly, the label names must be as they are set in this code.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%DO NOT edit the 'markerLabel' declarations, only edit the strings in the</span>
-0006 <span class="comment">%case statements</span>
-0007 
-0008 markerLabel = viconLabel;               <span class="comment">% default labels input argument</span>
-0009 load(<span class="string">'markerLabelKey.mat'</span>);             <span class="comment">% contains 'matchedLabels' variable</span>
-0010 
-0011 <span class="keyword">for</span> lbl = 1:size(matchedLabels,1)       <span class="comment">% for each label, ...</span>
-0012     <span class="keyword">if</span> ismember(viconLabel,matchedLabels{lbl,1})
-0013         markerLabel = matchedLabels{lbl,2};
-0014     <span class="keyword">end</span>
-0015 <span class="keyword">end</span>
-0016 
-0017 <span class="keyword">end</span>
+0002 <span class="comment">%FINDLABEL Map a Vicon marker label to the standard label.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Looks VICONLABEL up in the matchedLabels table of markerLabelKey.mat</span>
+0005 <span class="comment">% (column 1: cell of accepted Vicon names, column 2: standard label).</span>
+0006 <span class="comment">% Labels with no match are returned unchanged. The MAT file is loaded on</span>
+0007 <span class="comment">% every call. Add new aliases with ADDMARKERPAIR.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   viconLabel - marker label as recorded in the C3D file</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   markerLabel - standard label, or VICONLABEL if no alias matches</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Toolbox Dependencies: None</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% See also ADDMARKERPAIR.</span>
 0018 
-0019 <span class="comment">% switch viconLabel</span>
-0020 <span class="comment">%     case {'LGT','OG80_LGT','OG88_LGT'}</span>
-0021 <span class="comment">%         markerLabel = 'LHIP';</span>
-0022 <span class="comment">%     case {'RGT','OG80_RGT','OG88_RGT'}</span>
-0023 <span class="comment">%         markerLabel = 'RHIP';</span>
-0024 <span class="comment">%     case {'LANKLE','OG80_LANK','OG88_LANK'}</span>
-0025 <span class="comment">%         markerLabel = 'LANK';</span>
-0026 <span class="comment">%     case {'RANKLE','OG80_RANK','OG88_RANK'}</span>
-0027 <span class="comment">%         markerLabel = 'RANK';</span>
-0028 <span class="comment">%     case {'RHEEL','OG80_RHEEL','OG88_LHEEL'}</span>
-0029 <span class="comment">%         markerLabel = 'RHEE';</span>
-0030 <span class="comment">%     case {'LHEEL','OG80_LHEEL','OG88_RHEEL'}</span>
-0031 <span class="comment">%         markerLabel = 'LHEE';</span>
-0032 <span class="comment">%     case {'OG80_LTOE','OG88_LTOE'}</span>
-0033 <span class="comment">%         markerLabel = 'LTOE';</span>
-0034 <span class="comment">%     case {'OG80_RTOE','OG88_RTOE'}</span>
-0035 <span class="comment">%         markerLabel = 'RTOE';</span>
-0036 <span class="comment">%     case {'RKNEE','OG80_RKNE'} %,'OG88_RKNE'}</span>
-0037 <span class="comment">%         markerLabel = 'RKNE';</span>
-0038 <span class="comment">%     case {'LKNEE','OG80_LKNE'} %,'OG88_LKNE'}</span>
-0039 <span class="comment">%         markerLabel = 'LKNE';</span>
-0040 <span class="comment">%     otherwise</span>
-0041 <span class="comment">%         markerLabel = viconLabel;</span>
-0042 <span class="comment">% end</span>
-0043</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0019 <span class="comment">%% Look up the label</span>
+0020 markerLabel = viconLabel;               <span class="comment">% default labels input argument</span>
+0021 load(<span class="string">'markerLabelKey.mat'</span>);             <span class="comment">% contains 'matchedLabels' variable</span>
+0022 
+0023 <span class="keyword">for</span> lbl = 1:size(matchedLabels,1)       <span class="comment">% for each label, ...</span>
+0024     <span class="keyword">if</span> ismember(viconLabel,matchedLabels{lbl,1})
+0025         markerLabel = matchedLabels{lbl,2};
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">% NOTE: the hard-coded alias list this table replaced, kept as a record.</span>
+0032 <span class="comment">% switch viconLabel</span>
+0033 <span class="comment">%     case {'LGT','OG80_LGT','OG88_LGT'}</span>
+0034 <span class="comment">%         markerLabel = 'LHIP';</span>
+0035 <span class="comment">%     case {'RGT','OG80_RGT','OG88_RGT'}</span>
+0036 <span class="comment">%         markerLabel = 'RHIP';</span>
+0037 <span class="comment">%     case {'LANKLE','OG80_LANK','OG88_LANK'}</span>
+0038 <span class="comment">%         markerLabel = 'LANK';</span>
+0039 <span class="comment">%     case {'RANKLE','OG80_RANK','OG88_RANK'}</span>
+0040 <span class="comment">%         markerLabel = 'RANK';</span>
+0041 <span class="comment">%     case {'RHEEL','OG80_RHEEL','OG88_LHEEL'}</span>
+0042 <span class="comment">%         markerLabel = 'RHEE';</span>
+0043 <span class="comment">%     case {'LHEEL','OG80_LHEEL','OG88_RHEEL'}</span>
+0044 <span class="comment">%         markerLabel = 'LHEE';</span>
+0045 <span class="comment">%     case {'OG80_LTOE','OG88_LTOE'}</span>
+0046 <span class="comment">%         markerLabel = 'LTOE';</span>
+0047 <span class="comment">%     case {'OG80_RTOE','OG88_RTOE'}</span>
+0048 <span class="comment">%         markerLabel = 'RTOE';</span>
+0049 <span class="comment">%     case {'RKNEE','OG80_RKNE'} %,'OG88_RKNE'}</span>
+0050 <span class="comment">%         markerLabel = 'RKNE';</span>
+0051 <span class="comment">%     case {'LKNEE','OG80_LKNE'} %,'OG88_LKNE'}</span>
+0052 <span class="comment">%         markerLabel = 'LKNE';</span>
+0053 <span class="comment">%     otherwise</span>
+0054 <span class="comment">%         markerLabel = viconLabel;</span>
+0055 <span class="comment">% end</span>
+0056</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

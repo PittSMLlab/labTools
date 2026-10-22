@@ -2,9 +2,9 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of testMarkerOutlierDetectAndCorrect</title>
-  <meta name="keywords" content="testMarkerOutlierDetectAndCorrect">
-  <meta name="description" content="TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.">
+  <title>Description of TestMarkerOutlierDetectAndCorrect</title>
+  <meta name="keywords" content="TestMarkerOutlierDetectAndCorrect">
+  <meta name="description" content="TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -12,27 +12,29 @@
 </head>
 <body>
 <a name="_top"></a>
-<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; testMarkerOutlierDetectAndCorrect.m</div>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; TestMarkerOutlierDetectAndCorrect.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
 <td align="right"><a href="index.html">Index for labTools\example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
 
-<h1>testMarkerOutlierDetectAndCorrect
+<h1>TestMarkerOutlierDetectAndCorrect
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</strong></div>
+<div class="box"><strong>TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.
+<div class="fragment"><pre class="comment">TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.
 
    Demonstrates skeleton model learning (sk3Dlearn, skDistlearn),
  outlier detection, and MLE-based reconstruction for a missing marker.
  Uses the sample data in example/data/; LANK is missing for the first
  ~30 seconds of the trial.
+
+ Toolbox Dependencies: None
 
  See also SK3DLEARN, SKDISTLEARN, SK3DDETECT, SK3DENFORCE.</pre></div>
 
@@ -40,7 +42,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>	</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function [xMLE] = sk3Denforce(x,P,s,R)">sk3Denforce</a>	Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>	Returns model such that W*pos(:,:,i) ~ N(m,R)</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function [xMLE] = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	Returns model such that W*d(pos(:,:,i)) ~ N(m,R)</li></ul>
+<li><a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	PLOT3 Plots 3D trajectories.</li><li><a href="../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>	SK3DDETECT Score markers against a 3-D static skeleton model.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function xMLE = sk3Denforce(x,P,s,R)">sk3Denforce</a>	SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>	SK3DLEARN Learn a naive-Bayes 3-D static skeleton model.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	SKDISTDETECT Score markers against a pairwise-distance skeleton model.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.</li><li><a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
 </ul>
@@ -49,114 +51,117 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</span>
+<div class="fragment"><pre>0001 <span class="comment">%TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</span>
 0002 <span class="comment">%</span>
 0003 <span class="comment">%   Demonstrates skeleton model learning (sk3Dlearn, skDistlearn),</span>
 0004 <span class="comment">% outlier detection, and MLE-based reconstruction for a missing marker.</span>
 0005 <span class="comment">% Uses the sample data in example/data/; LANK is missing for the first</span>
 0006 <span class="comment">% ~30 seconds of the trial.</span>
 0007 <span class="comment">%</span>
-0008 <span class="comment">% See also SK3DLEARN, SKDISTLEARN, SK3DDETECT, SK3DENFORCE.</span>
-0009 
-0010 <span class="comment">%% Load data</span>
-0011 <span class="comment">% NOTE: This marker set is missing 'LANK' for first ~30 seconds of trial</span>
-0012 load(<span class="string">'./data/LI16_Trial9_expData.mat'</span>)
-0013 labels = {<span class="string">'LHIP'</span> <span class="string">'RHIP'</span> <span class="string">'LKNE'</span> <span class="string">'RKNE'</span> <span class="string">'LANK'</span> <span class="string">'RANK'</span> <span class="string">'LTOE'</span> <span class="string">'RTOE'</span> <span class="keyword">...</span>
-0014     <span class="string">'LHEE'</span> <span class="string">'RHEE'</span> <span class="string">'RASIS'</span> <span class="string">'LASIS'</span> <span class="string">'RPSIS'</span> <span class="string">'LPSIS'</span> <span class="string">'RTHI'</span> <span class="string">'LTHI'</span> <span class="keyword">...</span>
-0015     <span class="string">'RSHK'</span> <span class="string">'LSHNK'</span>};
-0016 pos = LI16_Trial9_expData.markerData.getOrientedData(labels);
-0017 pos = permute(pos, [2, 3, 1]);
-0018 
-0019 <span class="comment">%% Generate dummy data (alternative to loading real data)</span>
-0020 <span class="comment">% pos = 10 * randn(54, 5) * randn(5, 1000) + randn(54, 1000);</span>
-0021 <span class="comment">% pos = reshape(pos, 18, 3, 1000);</span>
-0022 
-0023 <span class="comment">%% Learn skeleton from a reliable segment (200–220 s)</span>
-0024 <span class="comment">% NOTE: sk3Dlearn does not work well with OG (overground) data.</span>
-0025 [m, R]    = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>(pos(:, :, 20000:22000));
-0026 [md, Rd]  = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>(pos(:, :, 20000:22000));
-0027 
-0028 <span class="comment">%% Detect bad markers using skeleton</span>
-0029 scores  = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>(pos, m, R);
-0030 scoresD = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>(pos, md, Rd);
-0031 figure;
-0032 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scores(5, :)');
-0033 legend(labels);
-0034 hold on;
-0035 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scoresD(5, :)');
-0036 
-0037 <span class="comment">%% Set up MLE reconstruction for missing LANK marker</span>
-0038 [N, D, M] = size(pos);
-0039 P = 0.1 * eye(N * D);  <span class="comment">% isotropic marker position uncertainty</span>
-0040 
-0041 <span class="comment">% Simulate LANK completely missing.</span>
-0042 idx  = find(strcmp(labels, <span class="string">'LANK'</span>));
-0043 pos2 = pos;
-0044 pos2(idx, :, :) = NaN;
-0045 
-0046 <span class="comment">%% Reconstruct missing marker via MLE</span>
-0047 <span class="comment">% Large covariance inflation models a completely unknown marker.</span>
-0048 M1    = M;
-0049 xMLE  = nan(N * D, M1);
-0050 xMLEd = nan(N * D, M1);
-0051 <span class="keyword">for</span> ii = 1:M1
-0052     xMLE(:,ii) = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function [xMLE] = sk3Denforce(x,P,s,R)">sk3Denforce</a>(pos2(:,:,ii), P, m(:), <span class="keyword">...</span>
-0053         R + 1e3 * abs(max(R(:))) * [eye(N) eye(N) eye(N)]);
-0054     xMLEd(:,ii) = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function [xMLE] = skDistlearnenforce(x,P,s,R)">skDistenforce</a>(pos2(:,:,ii), P, md(:), <span class="keyword">...</span>
-0055         Rd + 1e3 * abs(max(Rd(:))) * eye(N));
-0056 <span class="keyword">end</span>
-0057 xMLE = reshape(xMLE, N, D, M1);
-0058 <span class="comment">% xMLEd = reshape(xMLEd, N, D, M1);</span>
-0059 
-0060 <span class="comment">%% Compare detection scores before and after correction</span>
-0061 correctedScores = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>(xMLE, m, R);
-0062 figure;
-0063 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scores(5, :));
-0064 hold on;
-0065 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(correctedScores(5, :), <span class="string">'LineWidth'</span>, 4);
-0066 
-0067 <span class="comment">%% Plot reconstructed vs. original positions</span>
-0068 pos(idx, :, 1:10000) = NaN;  <span class="comment">% known bad samples</span>
-0069 figure;
-0070 <span class="keyword">for</span> ii = 1:3
-0071     subplot(3, 3, 3 * (ii - 1) + (1:2))
-0072     <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(squeeze(xMLE(idx, ii, :)))
-0073     hold on
-0074     <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(squeeze(pos(idx, ii, :)))
-0075     <span class="keyword">if</span> ii == 1
-0076         title(<span class="string">'Reconstruction values'</span>)
-0077     <span class="keyword">elseif</span> ii == 3
-0078         xlabel(<span class="string">'Time (s)'</span>)
-0079     <span class="keyword">end</span>
-0080     ylabel([(<span class="string">'x'</span> + ii - 1) <span class="string">' (mm)'</span>]);
-0081 
-0082     subplot(3, 3, 3 * ii)
-0083     dd = squeeze(xMLE(idx, ii, :) - pos(idx, ii, :));
-0084     histogram(dd, -20:1:20)
-0085     <span class="keyword">if</span> ii == 1
-0086         title(<span class="string">'Histogram of errors'</span>)
-0087     <span class="keyword">elseif</span> ii == 3
-0088         xlabel(<span class="string">'Error (mm)'</span>)
-0089     <span class="keyword">end</span>
-0090     hold on
-0091     text(-19, 1500, [<span class="string">'\mu='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dd, <span class="string">'omitnan'</span>), 2)])
-0092     text(-19, 1000, [<span class="string">'\sigma='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dd, <span class="string">'omitnan'</span>), 2)])
-0093     text(-19, 500, [<span class="string">'m='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(dd, <span class="string">'omitnan'</span>), 2)])
-0094 <span class="keyword">end</span>
-0095 
-0096 <span class="comment">%% Compare mean positions (notice change in LANK position)</span>
-0097 auxPos    = <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(pos(:,:,1:M1), 3, <span class="string">'omitnan'</span>);
-0098 auxNewPos = <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(xMLE(:,:,1:M1), 3, <span class="string">'omitnan'</span>);
-0099 figure;
-0100 <a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(auxPos(:,1), auxPos(:,2), auxPos(:,3), <span class="string">'x'</span>);
-0101 hold on;
-0102 <a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(auxNewPos(:,1), auxNewPos(:,2), auxNewPos(:,3), <span class="string">'o'</span>);
-0103 axis equal
-0104 
-0105 <span class="comment">%% Compute reconstruction error</span>
-0106 xMLE = reshape(xMLE, N, D, M);
-0107 err  = xMLE - pos;
-0108 imagesc(<a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(err, 3))</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0008 <span class="comment">% Toolbox Dependencies: None</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% See also SK3DLEARN, SKDISTLEARN, SK3DDETECT, SK3DENFORCE.</span>
+0011 
+0012 <span class="comment">%% Load data</span>
+0013 <span class="comment">% NOTE: This marker set is missing 'LANK' for first ~30 seconds of trial</span>
+0014 load(<span class="string">'./data/LI16_Trial9_expData.mat'</span>)
+0015 labels = {<span class="string">'LHIP'</span> <span class="string">'RHIP'</span> <span class="string">'LKNE'</span> <span class="string">'RKNE'</span> <span class="string">'LANK'</span> <span class="string">'RANK'</span> <span class="string">'LTOE'</span> <span class="string">'RTOE'</span> <span class="keyword">...</span>
+0016     <span class="string">'LHEE'</span> <span class="string">'RHEE'</span> <span class="string">'RASIS'</span> <span class="string">'LASIS'</span> <span class="string">'RPSIS'</span> <span class="string">'LPSIS'</span> <span class="string">'RTHI'</span> <span class="string">'LTHI'</span> <span class="keyword">...</span>
+0017     <span class="string">'RSHK'</span> <span class="string">'LSHNK'</span>};
+0018 pos = LI16_Trial9_expData.markerData.getOrientedData(labels);
+0019 pos = permute(pos, [2, 3, 1]);
+0020 
+0021 <span class="comment">%% Generate dummy data (alternative to loading real data)</span>
+0022 <span class="comment">% pos = 10 * randn(54, 5) * randn(5, 1000) + randn(54, 1000);</span>
+0023 <span class="comment">% pos = reshape(pos, 18, 3, 1000);</span>
+0024 
+0025 <span class="comment">%% Learn skeleton from a reliable segment (200–220 s)</span>
+0026 <span class="comment">% NOTE: sk3Dlearn does not work well with OG (overground) data.</span>
+0027 [m, R]    = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>(pos(:, :, 20000:22000));
+0028 [md, Rd]  = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>(pos(:, :, 20000:22000));
+0029 
+0030 <span class="comment">%% Detect bad markers using skeleton</span>
+0031 scores  = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>(pos, m, R);
+0032 scoresD = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>(pos, md, Rd);
+0033 figure;
+0034 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scores(5, :)');
+0035 legend(labels);
+0036 hold on;
+0037 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scoresD(5, :)');
+0038 
+0039 <span class="comment">%% Set up MLE reconstruction for missing LANK marker</span>
+0040 [N, D, M] = size(pos);
+0041 P = 0.1 * eye(N * D);  <span class="comment">% isotropic marker position uncertainty</span>
+0042 
+0043 <span class="comment">% Simulate LANK completely missing.</span>
+0044 idx  = find(strcmp(labels, <span class="string">'LANK'</span>));
+0045 pos2 = pos;
+0046 pos2(idx, :, :) = NaN;
+0047 
+0048 <span class="comment">%% Reconstruct missing marker via MLE</span>
+0049 <span class="comment">% Large covariance inflation models a completely unknown marker.</span>
+0050 M1    = M;
+0051 xMLE  = nan(N * D, M1);
+0052 xMLEd = nan(N * D, M1);
+0053 <span class="keyword">for</span> ii = 1:M1
+0054     xMLE(:,ii) = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function xMLE = sk3Denforce(x,P,s,R)">sk3Denforce</a>(pos2(:,:,ii), P, m(:), <span class="keyword">...</span>
+0055         R + 1e3 * abs(max(R(:))) * [eye(N) eye(N) eye(N)]);
+0056     xMLEd(:,ii) = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">skDistenforce</a>(pos2(:,:,ii), P, md(:), <span class="keyword">...</span>
+0057         Rd + 1e3 * abs(max(Rd(:))) * eye(N));
+0058 <span class="keyword">end</span>
+0059 xMLE = reshape(xMLE, N, D, M1);
+0060 <span class="comment">% xMLEd = reshape(xMLEd, N, D, M1);</span>
+0061 
+0062 <span class="comment">%% Compare detection scores before and after correction</span>
+0063 correctedScores = <a href="../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>(xMLE, m, R);
+0064 figure;
+0065 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(scores(5, :));
+0066 hold on;
+0067 <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(correctedScores(5, :), <span class="string">'LineWidth'</span>, 4);
+0068 
+0069 <span class="comment">%% Plot reconstructed vs. original positions</span>
+0070 pos(idx, :, 1:10000) = NaN;  <span class="comment">% known bad samples</span>
+0071 figure;
+0072 <span class="keyword">for</span> ii = 1:3
+0073     subplot(3, 3, 3 * (ii - 1) + (1:2))
+0074     <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(squeeze(xMLE(idx, ii, :)))
+0075     hold on
+0076     <a href="../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(squeeze(pos(idx, ii, :)))
+0077     <span class="keyword">if</span> ii == 1
+0078         title(<span class="string">'Reconstruction values'</span>)
+0079     <span class="keyword">elseif</span> ii == 3
+0080         xlabel(<span class="string">'Time (s)'</span>)
+0081     <span class="keyword">end</span>
+0082     ylabel([(<span class="string">'x'</span> + ii - 1) <span class="string">' (mm)'</span>]);
+0083 
+0084     subplot(3, 3, 3 * ii)
+0085     dd = squeeze(xMLE(idx, ii, :) - pos(idx, ii, :));
+0086     histogram(dd, -20:1:20)
+0087     <span class="keyword">if</span> ii == 1
+0088         title(<span class="string">'Histogram of errors'</span>)
+0089     <span class="keyword">elseif</span> ii == 3
+0090         xlabel(<span class="string">'Error (mm)'</span>)
+0091     <span class="keyword">end</span>
+0092     hold on
+0093     text(-19, 1500, [<span class="string">'\mu='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dd, <span class="string">'omitnan'</span>), 2)])
+0094     text(-19, 1000, [<span class="string">'\sigma='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dd, <span class="string">'omitnan'</span>), 2)])
+0095     text(-19, 500, [<span class="string">'m='</span> num2str(<a href="../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(dd, <span class="string">'omitnan'</span>), 2)])
+0096 <span class="keyword">end</span>
+0097 
+0098 <span class="comment">%% Compare mean positions (notice change in LANK position)</span>
+0099 meanPos              = <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(pos(:,:,1:M1), 3, <span class="string">'omitnan'</span>);
+0100 reconstructedMeanPos = <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(xMLE(:,:,1:M1), 3, <span class="string">'omitnan'</span>);
+0101 figure;
+0102 <a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(meanPos(:,1), meanPos(:,2), meanPos(:,3), <span class="string">'x'</span>);
+0103 hold on;
+0104 <a href="../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(reconstructedMeanPos(:,1), reconstructedMeanPos(:,2), <span class="keyword">...</span>
+0105     reconstructedMeanPos(:,3), <span class="string">'o'</span>);
+0106 axis equal
+0107 
+0108 <span class="comment">%% Compute reconstruction error</span>
+0109 xMLE = reshape(xMLE, N, D, M);
+0110 err  = xMLE - pos;
+0111 imagesc(<a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(err, 3))</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

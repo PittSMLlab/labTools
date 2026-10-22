@@ -4,7 +4,7 @@
 <head>
   <title>Description of makeSMatrixV2</title>
   <meta name="keywords" content="makeSMatrixV2">
-  <meta name="description" content="">
+  <meta name="description" content="MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,35 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function Subs = makeSMatrixV2 </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.
+
+   Scans the current working directory for *params.mat files, loads
+ each adaptData variable, and groups subjects by the abbreviated group
+ string from adaptData.metaData.ID. Returns each group as a
+ groupAdaptationData object rather than a raw struct.
+
+ Inputs:
+   None
+
+ Outputs:
+   Subs - Struct with one field per group, each a groupAdaptationData
+          object constructed from all subjects' adaptData in that group
+
+ Toolbox Dependencies: None
+
+ See also <a href="makeSMatrix.html" class="code" title="function Subs = makeSMatrix">MAKESMATRIX</a>, GROUPADAPTATIONDATA, <a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">GETRESULTSSMART</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -43,47 +59,58 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Subs = makeSMatrixV2</a>
-0002 
-0003 sub=struct;
-0004 
-0005 <span class="comment">%find all files in pwd</span>
-0006 files=what; 
-0007 fileList=files.mat;
-0008 
-0009 <span class="keyword">for</span> i=1:length(fileList)
-0010     <span class="comment">%find files in pwd that are (Subject)param.mat files</span>
-0011     aux1=strfind(lower(fileList{i}),<span class="string">'params'</span>);
-0012     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux1)
-0013         subID=fileList{i}(1:(aux1-1));
-0014         <span class="comment">%subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo</span>
-0015         load(fileList{i});
-0016         
-0017         <span class="comment">%get group</span>
-0018         group=adaptData.metaData.ID;
-0019         abrevGroup=group(ismember(group,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>])); <span class="comment">%remove non-alphabetic characters</span>
-0020         <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(abrevGroup)
-0021             abrevGroup=<span class="string">'NoDescription'</span>;            
-0022         <span class="keyword">end</span>
-0023 <span class="comment">%         spaces=find(group==' ');</span>
-0024 <span class="comment">%         abrevGroup=group(spaces+1);%</span>
-0025 <span class="comment">%         abrevGroup=[group(1) abrevGroup];</span>
-0026                 
-0027         <span class="keyword">if</span> isfield(sub,abrevGroup)
-0028             sub.(abrevGroup).IDs{end+1}=subID;
-0029             sub.(abrevGroup).adaptData{end+1}=adaptData;            
-0030         <span class="keyword">else</span>
-0031             sub.(abrevGroup).IDs= {subID};
-0032             sub.(abrevGroup).adaptData={adaptData};           
-0033         <span class="keyword">end</span>       
-0034     <span class="keyword">end</span>
-0035 <span class="keyword">end</span>
+0002 <span class="comment">%MAKESMATRIXV2 Build a groupAdaptationData struct from params.mat files.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Scans the current working directory for *params.mat files, loads</span>
+0005 <span class="comment">% each adaptData variable, and groups subjects by the abbreviated group</span>
+0006 <span class="comment">% string from adaptData.metaData.ID. Returns each group as a</span>
+0007 <span class="comment">% groupAdaptationData object rather than a raw struct.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   None</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   Subs - Struct with one field per group, each a groupAdaptationData</span>
+0014 <span class="comment">%          object constructed from all subjects' adaptData in that group</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also MAKESMATRIX, GROUPADAPTATIONDATA, GETRESULTSSMART.</span>
+0019 
+0020 sub      = struct;
+0021 files    = what;
+0022 fileList = files.mat;
+0023 
+0024 <span class="keyword">for</span> ii = 1:length(fileList)
+0025     aux1 = strfind(lower(fileList{ii}), <span class="string">'params'</span>);
+0026     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux1)
+0027         subID      = fileList{ii}(1:(aux1 - 1));
+0028         <span class="comment">% subID = adaptData.subData.ID;  % probably more appropriate</span>
+0029         load(fileList{ii});
+0030 
+0031         group      = adaptData.metaData.ID;
+0032         abrevGroup = group(ismember(group, [<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>]));
+0033         <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(abrevGroup)
+0034             abrevGroup = <span class="string">'NoDescription'</span>;
+0035         <span class="keyword">end</span>
 0036 
-0037 groups=fields(sub);
-0038 <span class="keyword">for</span> i=1:length(groups)
-0039     Subs.(groups{i})=<a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>(sub.(groups{i}).IDs,sub.(groups{i}).adaptData);
-0040 <span class="keyword">end</span>
-0041 
-0042 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0037         <span class="keyword">if</span> isfield(sub, abrevGroup)
+0038             sub.(abrevGroup).IDs{end+1}       = subID;
+0039             sub.(abrevGroup).adaptData{end+1} = adaptData;
+0040         <span class="keyword">else</span>
+0041             sub.(abrevGroup).IDs      = {subID};
+0042             sub.(abrevGroup).adaptData = {adaptData};
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 groups = fields(sub);
+0048 <span class="keyword">for</span> ii = 1:length(groups)
+0049     Subs.(groups{ii}) = <a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>( <span class="keyword">...</span>
+0050         sub.(groups{ii}).IDs, sub.(groups{ii}).adaptData);
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

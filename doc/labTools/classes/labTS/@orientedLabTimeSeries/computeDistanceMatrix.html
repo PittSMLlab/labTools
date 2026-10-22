@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeDistanceMatrix</title>
   <meta name="keywords" content="computeDistanceMatrix">
-  <meta name="description" content="computeDistanceMatrix  Computes inter-marker distances">
+  <meta name="description" content="COMPUTEDISTANCEMATRIX Computes inter-marker distances.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,41 +21,42 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>computeDistanceMatrix  Computes inter-marker distances</strong></div>
+<div class="box"><strong>COMPUTEDISTANCEMATRIX Computes inter-marker distances.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">computeDistanceMatrix  Computes inter-marker distances
+<div class="fragment"><pre class="comment">COMPUTEDISTANCEMATRIX Computes inter-marker distances.
 
-   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this,
-   t0, t1, labels, labels2) computes Euclidean distances between
-   markers
+   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0,
+ t1, labels, labels2) computes Euclidean distances between markers
 
-   Inputs:
-       this - orientedLabTimeSeries object
-       t0 - start time (optional)
-       t1 - end time (optional)
-       labels - markers to compute from (optional)
-       labels2 - markers to compute to (optional)
+ Inputs:
+   this    - orientedLabTimeSeries object
+   t0      - start time (optional)
+   t1      - end time (optional)
+   labels  - markers to compute from (optional)
+   labels2 - markers to compute to (optional)
 
-   Outputs:
-       distMatrix - 3D matrix (time x markers1 x markers2) of distances
-       labels - cell array of marker1 labels used
-       labels2 - cell array of marker2 labels used
-       Time - time vector
+ Outputs:
+   distMatrix - 3D matrix (time x markers1 x markers2) of distances
+   labels     - cell array of marker1 labels used
+   labels2    - cell array of marker2 labels used
+   Time       - time vector
 
-   See also: <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">COMPUTEDIFFERENCEMATRIX</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	computeDifferenceMatrix  Computes inter-marker differences</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>	COMPUTEDIFFERENCEMATRIX Computes inter-marker differences.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	UNTITLED6 Summary of this function goes here</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function [xMLE] = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	Returns model such that W*d(pos(:,:,i)) ~ N(m,R)</li></ul>
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	CREATEZEROMODEL Build a naive-Bayes "zero model" of marker distances.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	DETERMINELIKELIHOODFROMZEROMODEL Marker log-likelihoods under a zero model.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	SKDISTDETECT Score markers against a pairwise-distance skeleton model.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.</li></ul>
 <!-- crossreference -->
 
 
@@ -63,44 +64,45 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(</a><span class="keyword">...</span>
 0002     this, t0, t1, labels, labels2)
-0003 <span class="comment">%computeDistanceMatrix  Computes inter-marker distances</span>
+0003 <span class="comment">%COMPUTEDISTANCEMATRIX Computes inter-marker distances.</span>
 0004 <span class="comment">%</span>
-0005 <span class="comment">%   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this,</span>
-0006 <span class="comment">%   t0, t1, labels, labels2) computes Euclidean distances between</span>
-0007 <span class="comment">%   markers</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - orientedLabTimeSeries object</span>
-0011 <span class="comment">%       t0 - start time (optional)</span>
-0012 <span class="comment">%       t1 - end time (optional)</span>
-0013 <span class="comment">%       labels - markers to compute from (optional)</span>
-0014 <span class="comment">%       labels2 - markers to compute to (optional)</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">%   Outputs:</span>
-0017 <span class="comment">%       distMatrix - 3D matrix (time x markers1 x markers2) of distances</span>
-0018 <span class="comment">%       labels - cell array of marker1 labels used</span>
-0019 <span class="comment">%       labels2 - cell array of marker2 labels used</span>
-0020 <span class="comment">%       Time - time vector</span>
-0021 <span class="comment">%</span>
-0022 <span class="comment">%   See also: computeDifferenceMatrix</span>
-0023 
-0024 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t0)
-0025     t0 = [];
-0026 <span class="keyword">end</span>
-0027 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t1)
-0028     t1 = [];
-0029 <span class="keyword">end</span>
-0030 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
-0031     labels = [];
-0032 <span class="keyword">end</span>
-0033 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels2)
-0034     labels2 = [];
-0035 <span class="keyword">end</span>
-0036 [diffMatrix, labels, labels2, Time] = <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>(this, <span class="keyword">...</span>
-0037     t0, t1, labels, labels2);
-0038 distMatrix = sqrt(sum(diffMatrix.^2, 4));
-0039 <span class="keyword">end</span>
-0040</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0005 <span class="comment">%   [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0,</span>
+0006 <span class="comment">% t1, labels, labels2) computes Euclidean distances between markers</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   this    - orientedLabTimeSeries object</span>
+0010 <span class="comment">%   t0      - start time (optional)</span>
+0011 <span class="comment">%   t1      - end time (optional)</span>
+0012 <span class="comment">%   labels  - markers to compute from (optional)</span>
+0013 <span class="comment">%   labels2 - markers to compute to (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   distMatrix - 3D matrix (time x markers1 x markers2) of distances</span>
+0017 <span class="comment">%   labels     - cell array of marker1 labels used</span>
+0018 <span class="comment">%   labels2    - cell array of marker2 labels used</span>
+0019 <span class="comment">%   Time       - time vector</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also COMPUTEDIFFERENCEMATRIX.</span>
+0024 
+0025 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t0)
+0026     t0 = [];
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t1)
+0029     t1 = [];
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels)
+0032     labels = [];
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(labels2)
+0035     labels2 = [];
+0036 <span class="keyword">end</span>
+0037 [diffMatrix, labels, labels2, Time] = <a href="computeDifferenceMatrix.html" class="code" title="function [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix(this, t0, t1, labels, labels2)">computeDifferenceMatrix</a>(this, <span class="keyword">...</span>
+0038     t0, t1, labels, labels2);
+0039 distMatrix = sqrt(sum(diffMatrix.^2, 4));
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

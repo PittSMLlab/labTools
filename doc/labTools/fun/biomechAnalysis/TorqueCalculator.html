@@ -4,7 +4,7 @@
 <head>
   <title>Description of TorqueCalculator</title>
   <meta name="keywords" content="TorqueCalculator">
-  <meta name="description" content="TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics">
+  <meta name="description" content="TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,58 +21,95 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</strong></div>
+<div class="box"><strong>TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</pre></div>
+<div class="fragment"><pre class="comment">TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.
+
+   Computes the center of pressure from the GRF data and the center of
+ mass of the leg segments from the marker data. The torque step itself is
+ not implemented: the call to TorqueCalculatorNew is commented out and
+ AllMomentsTS is always empty.
+
+ Inputs:
+   rawTrialData - rawTrialData with GRFData and markerData
+   weight       - body weight, not used while the torque step is off
+
+ Outputs:
+   AllMomentsTS - empty array (torque step not implemented)
+   COPTS        - center of pressure time series, [] without GRF data
+   COMTS        - center of mass time series, [] without marker labels
+
+ Toolbox Dependencies: Signal Processing Toolbox (through COPCalculator)
+
+ See also <a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCALCULATOR</a>, <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCALCULATOR</a>, <a href="TorqueCalculatorNew.html" class="code" title="function AllMomentsTS =TorqueCalculatorNew(COMTS,COPTS,markerData,GRFData,weight)">TORQUECALCULATORNEW</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>	COMCALCULATOR Compute segment center-of-mass time series from marker data.</li><li><a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>	COPCALCULATOR Calculate the center of pressure time series from GRF data</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>	COMCALCULATOR Compute segment center-of-mass time series from marker data.</li><li><a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>	COPCALCULATOR Calculate the center of pressure time series from GRF data.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/computeTorques.html" class="code" title="function [momentData, COP, COM] = computeTorques(this,subjectWeight)">computeTorques</a>	computeTorques  Computes joint torques from kinematics and kinetics</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/computeTorques.html" class="code" title="function [momentData, COP, COM] = computeTorques(this,subjectWeight)">computeTorques</a>	COMPUTETORQUES Computes joint torques from kinematics and kinetics.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)</a>
-0002 <span class="comment">%TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</span>
-0003 
-0004 in = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
-0005 clear <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
-0006 
-0007 <span class="comment">%% STEP 1: Compute Center of Pressure (COP)</span>
-0008 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.GRFData)                  <span class="comment">% if GRF data is empty, ...</span>
-0009     COPTS = [];                         <span class="comment">% output empty array</span>
-0010 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
-0011     COPTS = <a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>(in.GRFData);  <span class="comment">% calculate COP time series</span>
-0012 <span class="keyword">end</span>
-0013 
-0014 <span class="comment">%% STEP 2: Compute Center of Mass (COM)</span>
-0015 <span class="comment">% if no marker data or no marker labels, ...</span>
-0016 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.markerData) || numel(in.markerData.labels) == 0
-0017     COMTS = [];                             <span class="comment">% output empty array</span>
-0018 <span class="keyword">else</span>                                        <span class="comment">% otherwise, ...</span>
-0019     COMTS = <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>(in.markerData);   <span class="comment">% calculate COM time series</span>
-0020 <span class="keyword">end</span>
+0002 <span class="comment">%TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes the center of pressure from the GRF data and the center of</span>
+0005 <span class="comment">% mass of the leg segments from the marker data. The torque step itself is</span>
+0006 <span class="comment">% not implemented: the call to TorqueCalculatorNew is commented out and</span>
+0007 <span class="comment">% AllMomentsTS is always empty.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   rawTrialData - rawTrialData with GRFData and markerData</span>
+0011 <span class="comment">%   weight       - body weight, not used while the torque step is off</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   AllMomentsTS - empty array (torque step not implemented)</span>
+0015 <span class="comment">%   COPTS        - center of pressure time series, [] without GRF data</span>
+0016 <span class="comment">%   COMTS        - center of mass time series, [] without marker labels</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (through COPCalculator)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also COPCALCULATOR, COMCALCULATOR, TORQUECALCULATORNEW.</span>
 0021 
-0022 <span class="comment">%% STEP 3: Compute Torques</span>
-0023 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COMTS) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COPTS)     <span class="comment">% if no COM or COP time series, ...</span>
-0024     AllMomentsTS = [];                  <span class="comment">% output empty array</span>
-0025 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
-0026     <span class="comment">% NOT YET IMPLEMENTED</span>
-0027     AllMomentsTS = []; <span class="comment">% TorqueCalculatorNew(COMTS,COPTS,in.markerData,in.GRFData,weight);</span>
-0028 <span class="keyword">end</span>
-0029 
+0022 in = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
+0023 clear <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>;
+0024 
+0025 <span class="comment">%% STEP 1: Compute Center of Pressure (COP)</span>
+0026 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.GRFData)                  <span class="comment">% if GRF data is empty, ...</span>
+0027     COPTS = [];                         <span class="comment">% output empty array</span>
+0028 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
+0029     COPTS = <a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCalculator</a>(in.GRFData);  <span class="comment">% calculate COP time series</span>
 0030 <span class="keyword">end</span>
-0031</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0031 
+0032 <span class="comment">%% STEP 2: Compute Center of Mass (COM)</span>
+0033 <span class="comment">% if no marker data or no marker labels, ...</span>
+0034 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(in.markerData) || numel(in.markerData.labels) == 0
+0035     COMTS = [];                             <span class="comment">% output empty array</span>
+0036 <span class="keyword">else</span>                                        <span class="comment">% otherwise, ...</span>
+0037     COMTS = <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCalculator</a>(in.markerData);   <span class="comment">% calculate COM time series</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">%% STEP 3: Compute Torques</span>
+0041 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COMTS) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(COPTS)     <span class="comment">% if no COM or COP time series, ...</span>
+0042     AllMomentsTS = [];                  <span class="comment">% output empty array</span>
+0043 <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
+0044     <span class="comment">% NOT YET IMPLEMENTED</span>
+0045     <span class="comment">% TorqueCalculatorNew(COMTS,COPTS,in.markerData,in.GRFData,weight);</span>
+0046     AllMomentsTS = [];
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="keyword">end</span>
+0050</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

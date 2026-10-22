@@ -4,7 +4,7 @@
 <head>
   <title>Description of niceMap</title>
   <meta name="keywords" content="niceMap">
-  <meta name="description" content="Generates a colormap from white to any given extreme color">
+  <meta name="description" content="NICEMAP Colormap from white to a given color.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,15 +21,25 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Generates a colormap from white to any given extreme color</strong></div>
+<div class="box"><strong>NICEMAP Colormap from white to a given color.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function map=niceMap(extreme,gamma) </strong></div>
+<div class="box"><strong>function map = niceMap(extreme,gamma) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Generates a colormap from white to any given extreme color
-The interpolation is linear for gamma=1 (default) nonlinear for other
-gamma</pre></div>
+<div class="fragment"><pre class="comment">NICEMAP Colormap from white to a given color.
+
+   Builds a 101-row colormap that goes from white to extreme. The
+ interpolation is linear for gamma = 1 and non-linear otherwise.
+
+ Inputs:
+   extreme - RGB triplet of the end color
+   gamma   - (optional) gamma of the interpolation (default: 1)
+
+ Outputs:
+   map - 101 x 3 colormap
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -44,16 +54,27 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function map=niceMap(extreme,gamma)</a>
-0002 <span class="comment">%Generates a colormap from white to any given extreme color</span>
-0003 <span class="comment">%The interpolation is linear for gamma=1 (default) nonlinear for other</span>
-0004 <span class="comment">%gamma</span>
-0005 <span class="keyword">if</span> nargin&lt;2
-0006     gamma=1;
-0007 <span class="keyword">end</span>
-0008 newEx=extreme.^(1/gamma);
-0009 map=[newEx+(1-newEx).*[0:.01:1]'].^gamma;
-0010 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function map = niceMap(extreme,gamma)</a>
+0002 <span class="comment">%NICEMAP Colormap from white to a given color.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Builds a 101-row colormap that goes from white to extreme. The</span>
+0005 <span class="comment">% interpolation is linear for gamma = 1 and non-linear otherwise.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   extreme - RGB triplet of the end color</span>
+0009 <span class="comment">%   gamma   - (optional) gamma of the interpolation (default: 1)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   map - 101 x 3 colormap</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 
+0016 <span class="keyword">if</span> nargin &lt; 2
+0017     gamma = 1;
+0018 <span class="keyword">end</span>
+0019 newEx = extreme.^(1/gamma);
+0020 map   = [newEx+(1-newEx).*[0:0.01:1]'].^gamma;
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

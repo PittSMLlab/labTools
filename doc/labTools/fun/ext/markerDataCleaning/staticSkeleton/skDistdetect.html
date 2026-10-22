@@ -4,7 +4,7 @@
 <head>
   <title>Description of skDistdetect</title>
   <meta name="keywords" content="skDistdetect">
-  <meta name="description" content="">
+  <meta name="description" content="SKDISTDETECT Score markers against a pairwise-distance skeleton model.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,42 +21,81 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>SKDISTDETECT Score markers against a pairwise-distance skeleton model.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function [markerLogL,totalLogL] = skDistdetect(data,m,R) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">SKDISTDETECT Score markers against a pairwise-distance skeleton model.
+
+   [markerLogL,totalLogL] = SKDISTDETECT(data,m,R) scores each marker in
+ every frame by the squared deviation of its pairwise distances from the
+ model mean m, scaled by the (regularized) variance R. Markers that are
+ missing (NaN) in a frame get a score of -10.
+
+ Inputs:
+   data - N markers x d coordinates x M frames positions
+   m    - N x N mean pairwise distances (from SKDISTLEARN)
+   R    - N x N variances of those distances (from SKDISTLEARN)
+
+ Outputs:
+   markerLogL - N x M per-marker score (median over its pairs)
+   totalLogL  - per-frame score (mean over all pairs)
+
+ Toolbox Dependencies: None
+
+ See also <a href="skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">SKDISTLEARN</a>, <a href="skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">SKDISTENFORCE</a>, <a href="sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">SK3DDETECT</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Computes inter-marker distances.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li></ul>
+<li><a href="../../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [markerLogL,totalLogL] = skDistdetect(data,m,R)</a>
-0002 [N,d,M]=size(data);
-0003 [D] = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(data); <span class="comment">%Will be NxNxM</span>
-0004 missing=squeeze(any(isnan(data),2));
-0005 clear data
-0006 D=D-m; <span class="comment">%Subtracting mean</span>
-0007 C=R+1e3*max(abs(R(:)))*eye(N);
-0008 auxScores=D.^2 ./C;
-0009 totalLogL=squeeze(nanmean(nanmean(nanmean(auxScores))));
-0010 <span class="comment">%markerLogL=nan(N,M);</span>
-0011 markerLogL=squeeze(nanmedian(reshape(auxScores,N,N,M),2));
-0012 <span class="comment">%markerLogL=squeeze(mean(reshape(auxScores,N,N*d,M),2));</span>
-0013 markerLogL(missing)=-10;
-0014 
-0015 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%SKDISTDETECT Score markers against a pairwise-distance skeleton model.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [markerLogL,totalLogL] = SKDISTDETECT(data,m,R) scores each marker in</span>
+0005 <span class="comment">% every frame by the squared deviation of its pairwise distances from the</span>
+0006 <span class="comment">% model mean m, scaled by the (regularized) variance R. Markers that are</span>
+0007 <span class="comment">% missing (NaN) in a frame get a score of -10.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   data - N markers x d coordinates x M frames positions</span>
+0011 <span class="comment">%   m    - N x N mean pairwise distances (from SKDISTLEARN)</span>
+0012 <span class="comment">%   R    - N x N variances of those distances (from SKDISTLEARN)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   markerLogL - N x M per-marker score (median over its pairs)</span>
+0016 <span class="comment">%   totalLogL  - per-frame score (mean over all pairs)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also SKDISTLEARN, SKDISTENFORCE, SK3DDETECT.</span>
+0021 
+0022 [N,d,M] = size(data);
+0023 D       = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(data); <span class="comment">%Will be NxNxM</span>
+0024 missing = squeeze(any(isnan(data),2));
+0025 clear data
+0026 D         = D-m; <span class="comment">%Subtracting mean</span>
+0027 C         = R+1e3*max(abs(R(:)))*eye(N); <span class="comment">% TODO: source?</span>
+0028 auxScores = D.^2 ./C;
+0029 totalLogL = squeeze(<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(auxScores, <span class="string">'omitnan'</span>), <span class="string">'omitnan'</span>), <span class="keyword">...</span>
+0030     <span class="string">'omitnan'</span>));
+0031 <span class="comment">%markerLogL=nan(N,M);</span>
+0032 markerLogL = squeeze(<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(reshape(auxScores,N,N,M), 2, <span class="string">'omitnan'</span>));
+0033 <span class="comment">%markerLogL=squeeze(mean(reshape(auxScores,N,N*d,M),2));</span>
+0034 markerLogL(missing) = -10; <span class="comment">% TODO: source?</span>
+0035 
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -60,7 +60,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds new parameters to dataset</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	appendData  Adds more data as new labels</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	appendData  Appends new parameters</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	APPENDDATA Adds new parameters to dataset.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels)">appendData</a>	APPENDDATA Adds more data as new labels.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/appendData.html" class="code" title="function newThis = appendData(this, newData, newLabels, newDesc)">appendData</a>	APPENDDATA Appends new parameters.</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="computeCOM.html" class="code" title="function out = computeCOM(strideEvents, markerData, BW, slowleg,fastleg, impactS, expData, gaitEvents, flipIT)">computeCOM</a>	COMPUTECOM Compute stride-by-stride COM kinematics relative to each ankle.</li></ul>
@@ -209,7 +209,7 @@ This function is called by:
 0138     lThighCOM = abs(lHip  - lKnee) .* thighCOMFrac + lKnee;
 0139 
 0140     hipMidpoint = (rHip + lHip) ./ 2;
-0141     hipMeanPos  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip; lHip], <span class="string">'omitnan'</span>);  <span class="comment">% grand mean of all hip samples</span>
+0141     hipMeanPos  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>([rHip; lHip], <span class="string">'omitnan'</span>); <span class="comment">% grand mean of hip samples</span>
 0142     hatCOM = abs(hipMidpoint - hatPos) .* hatCOMFrac + hipMeanPos;
 0143 
 0144     <span class="comment">%% Compile Whole-Body Center of Mass</span>
@@ -232,7 +232,7 @@ This function is called by:
 0161         (rightLegCOM + leftLegCOM + hatCOM*hatWeight);
 0162     bCOM = bodyCOM;
 0163 
-0164     <span class="comment">% CJS note: change here to change what is stored in the COM dataset</span>
+0164     <span class="comment">% NOTE: change here to change what is stored in the COM dataset</span>
 0165     segCOMData = [rFootCOM lFootCOM rShankCOM lShankCOM <span class="keyword">...</span>
 0166         rThighCOM lThighCOM hatCOM bodyCOM];
 0167     segLabels = { <span class="keyword">...</span>
@@ -256,6 +256,6 @@ This function is called by:
 0185 
 0186 <span class="keyword">end</span>
 0187</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of checkBelongings</title>
   <meta name="keywords" content="checkBelongings">
-  <meta name="description" content="checkBelongings Gets two vectors of equal size and checks that no pair of">
+  <meta name="description" content="CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,32 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>checkBelongings Gets two vectors of equal size and checks that no pair of</strong></div>
+<div class="box"><strong>CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [flag] = checkBelongings(idx1,idx2) </strong></div>
+<div class="box"><strong>function flag = checkBelongings(idx1, idx2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">checkBelongings Gets two vectors of equal size and checks that no pair of
-indexes are repeated, i.e. that there is no i and j such that
-idx1(i)==idx1(j) &amp;&amp; idx2(i)==idx2(j)
-The idea is that the idx vectors represents belongings to groups/clusters
-of a list of elements, and we want to make sure that no two elements have equal
-belongings in the two groups (Pauli's exclusion principle)
-Returns true if the exclusion criteria is fulfilled, false otherwise</pre></div>
+<div class="fragment"><pre class="comment">CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.
+
+   Returns true if no two elements share the same (idx1, idx2) pair, i.e.
+ there is no i and j such that idx1(i)==idx1(j) &amp;&amp; idx2(i)==idx2(j). The
+ idx vectors represent group/cluster memberships, and this function
+ verifies a Pauli-exclusion-like constraint: no two elements may have
+ identical belongings in both groups simultaneously.
+
+ Inputs:
+   idx1 - integer vector of group memberships (first grouping)
+   idx2 - integer vector of group memberships (second grouping); must be
+          the same length as idx1
+
+ Outputs:
+   flag - true if the exclusion criterion is satisfied, false otherwise;
+          empty ([]) if the inputs fail validation
+
+ Toolbox Dependencies: None
+
+ See also CROSSTAB.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -42,50 +55,60 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>	CLUSTER Implementation of the cluster function for the class</li></ul>
+<li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>	CLUSTER Hierarchical clustering of all synergies in a collection.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [flag] = checkBelongings(idx1,idx2)</a>
-0002 <span class="comment">%checkBelongings Gets two vectors of equal size and checks that no pair of</span>
-0003 <span class="comment">%indexes are repeated, i.e. that there is no i and j such that</span>
-0004 <span class="comment">%idx1(i)==idx1(j) &amp;&amp; idx2(i)==idx2(j)</span>
-0005 <span class="comment">%The idea is that the idx vectors represents belongings to groups/clusters</span>
-0006 <span class="comment">%of a list of elements, and we want to make sure that no two elements have equal</span>
-0007 <span class="comment">%belongings in the two groups (Pauli's exclusion principle)</span>
-0008 <span class="comment">%Returns true if the exclusion criteria is fulfilled, false otherwise</span>
-0009 
-0010 <span class="comment">%Check inputs are vectors are of same size</span>
-0011 <span class="keyword">if</span> length(idx1)~=numel(idx1) || length(idx2)~=numel(idx2)
-0012     disp(<span class="string">'Error in checkBelongings: inputs are not vectors'</span>)
-0013     flag=[];
-0014     <span class="keyword">return</span>
-0015 <span class="keyword">end</span>
-0016 <span class="keyword">if</span> length(idx1)~=length(idx2)
-0017     disp(<span class="string">'Error in checkBelongings: vectors are not of the same size'</span>)
-0018     flag=[];
-0019     <span class="keyword">return</span>
-0020 <span class="keyword">end</span>
-0021 
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function flag = checkBelongings(idx1, idx2)</a>
+0002 <span class="comment">%CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Returns true if no two elements share the same (idx1, idx2) pair, i.e.</span>
+0005 <span class="comment">% there is no i and j such that idx1(i)==idx1(j) &amp;&amp; idx2(i)==idx2(j). The</span>
+0006 <span class="comment">% idx vectors represent group/cluster memberships, and this function</span>
+0007 <span class="comment">% verifies a Pauli-exclusion-like constraint: no two elements may have</span>
+0008 <span class="comment">% identical belongings in both groups simultaneously.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   idx1 - integer vector of group memberships (first grouping)</span>
+0012 <span class="comment">%   idx2 - integer vector of group memberships (second grouping); must be</span>
+0013 <span class="comment">%          the same length as idx1</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   flag - true if the exclusion criterion is satisfied, false otherwise;</span>
+0017 <span class="comment">%          empty ([]) if the inputs fail validation</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also CROSSTAB.</span>
 0022 
-0023 
-0024 <span class="comment">%Check belongings:</span>
-0025 Nelem=length(idx1);
-0026 <span class="comment">%M=sparse([],[],[],max(idx1),max(idx2),Nelem^2); %Create belonging matrix (sparse to avoid memory problems)</span>
-0027 <span class="comment">%for i=1:length(idx1)</span>
-0028 <span class="comment">%   M(idx1(i),idx2(i)) = M(idx1(i),idx2(i))+1;</span>
-0029 <span class="comment">%end</span>
-0030 M=crosstab(idx1,idx2);
-0031 
-0032 <span class="keyword">if</span> any(M(:)&gt;1)
-0033     flag=false;
-0034 <span class="keyword">else</span>
-0035     flag=true;
-0036 <span class="keyword">end</span>
-0037 <span class="keyword">end</span>
-0038</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0023 <span class="comment">%% Validate Inputs</span>
+0024 <span class="keyword">if</span> length(idx1) ~= numel(idx1) || length(idx2) ~= numel(idx2)
+0025     disp(<span class="string">'Error in checkBelongings: inputs are not vectors'</span>)
+0026     flag = [];
+0027     <span class="keyword">return</span>
+0028 <span class="keyword">end</span>
+0029 <span class="keyword">if</span> length(idx1) ~= length(idx2)
+0030     disp(<span class="string">'Error in checkBelongings: vectors are not of the same size'</span>)
+0031     flag = [];
+0032     <span class="keyword">return</span>
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%% Check Belongings</span>
+0036 Nelem = length(idx1);
+0037 <span class="comment">%M = sparse([], [], [], max(idx1), max(idx2), Nelem^2);</span>
+0038 <span class="comment">%for ii = 1:length(idx1)</span>
+0039 <span class="comment">%    M(idx1(ii), idx2(ii)) = M(idx1(ii), idx2(ii)) + 1;</span>
+0040 <span class="comment">%end</span>
+0041 M = crosstab(idx1, idx2);
+0042 
+0043 <span class="keyword">if</span> any(M(:) &gt; 1)
+0044     flag = false;
+0045 <span class="keyword">else</span>
+0046     flag = true;
+0047 <span class="keyword">end</span>
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

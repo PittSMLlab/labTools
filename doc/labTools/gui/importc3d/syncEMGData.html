@@ -36,6 +36,10 @@
  saves a diagnostic figure. Warns and prompts the user when mismatch
  exceeds 5%.
 
+   Side effects: writes 'Trial N Synchronization' as .fig, .eps, and .png
+ (via saveFig) under saveFolder/EMGSyncFile/{fig,eps,png}, silently
+ overwriting same-named files (see DATA_OUTPUTS.md).
+
    When no sync channels are present, allData is returned unchanged
  and all lag/scale outputs default to their neutral values (0 or NaN).
 
@@ -67,10 +71,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>	SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Find and apply the transformation that best aligns signal2</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>	RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>	TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.</li><li><a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>	clipSignals  Clip the top and bottom of each signal column by percentile.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	THRESHOLD Thresholds by vector magnitude.</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>	SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>	RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>	TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.</li><li><a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>	CLIPSIGNALS Clip each signal column to symmetric percentile bounds.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li></ul>
+<li><a href="loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	LOADTRIALS Generate rawTrialData instances for each trial.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -90,466 +94,470 @@ This function is called by:
 0010 <span class="comment">% saves a diagnostic figure. Warns and prompts the user when mismatch</span>
 0011 <span class="comment">% exceeds 5%.</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   When no sync channels are present, allData is returned unchanged</span>
-0014 <span class="comment">% and all lag/scale outputs default to their neutral values (0 or NaN).</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">% Inputs:</span>
-0017 <span class="comment">%   relData      - (N×K1) PC1 EMG data matrix</span>
-0018 <span class="comment">%   relData2     - (N×K2) PC2 EMG data matrix; pass [] when absent</span>
-0019 <span class="comment">%   refSync      - (N×1) reference sync signal from the force-plate PC</span>
-0020 <span class="comment">%   EMGList      - (1×M) cell of channel names for the combined data</span>
-0021 <span class="comment">%   EMGfrequency - sampling frequency in Hz</span>
-0022 <span class="comment">%   secondFile   - logical; true when a second PC file was loaded</span>
-0023 <span class="comment">%   trialNum     - trial number for warnings and figure title</span>
-0024 <span class="comment">%   saveFolder   - folder path for the sync diagnostic figure</span>
-0025 <span class="comment">%</span>
-0026 <span class="comment">% Outputs:</span>
-0027 <span class="comment">%   allData         - synchronized, truncated combined EMG matrix</span>
-0028 <span class="comment">%   sync            - sync channel columns after alignment ([] if none)</span>
-0029 <span class="comment">%   lagInSamplesA   - PC1 delay relative to GRF reference (samples)</span>
-0030 <span class="comment">%   lagInSamples    - PC2 delay relative to PC1 (samples;</span>
-0031 <span class="comment">%                     NaN if single PC)</span>
-0032 <span class="comment">%   timeScaleFactor - PC2 clock scale factor (NaN if single PC)</span>
-0033 <span class="comment">%</span>
-0034 <span class="comment">% Toolbox Dependencies:</span>
-0035 <span class="comment">%   Signal Processing Toolbox (medfilt1)</span>
-0036 <span class="comment">%</span>
-0037 <span class="comment">% See also LOADTRIALS, MATCHSIGNALS, RESAMPLESHIFTANDSCALE,</span>
-0038 <span class="comment">%   TRUNCATETOSAMELENGTH, CLIPSIGNALS.</span>
-0039 
-0040 arguments
-0041     relData      (:,:) double
-0042     relData2     (:,:) double
-0043     refSync      (:,1) double
-0044     EMGList      (1,:) cell
-0045     EMGfrequency (1,1) double {mustBePositive}
-0046     secondFile   (1,1) logical
-0047     trialNum     (1,1) double
-0048     saveFolder   (1,:) char
-0049 <span class="keyword">end</span>
-0050 
-0051 <span class="comment">% -----------------------------------------------------------------------</span>
-0052 <span class="comment">%  Named constants — sync tuning parameters</span>
-0053 <span class="comment">% -----------------------------------------------------------------------</span>
+0013 <span class="comment">%   Side effects: writes 'Trial N Synchronization' as .fig, .eps, and .png</span>
+0014 <span class="comment">% (via saveFig) under saveFolder/EMGSyncFile/{fig,eps,png}, silently</span>
+0015 <span class="comment">% overwriting same-named files (see DATA_OUTPUTS.md).</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   When no sync channels are present, allData is returned unchanged</span>
+0018 <span class="comment">% and all lag/scale outputs default to their neutral values (0 or NaN).</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Inputs:</span>
+0021 <span class="comment">%   relData      - (N×K1) PC1 EMG data matrix</span>
+0022 <span class="comment">%   relData2     - (N×K2) PC2 EMG data matrix; pass [] when absent</span>
+0023 <span class="comment">%   refSync      - (N×1) reference sync signal from the force-plate PC</span>
+0024 <span class="comment">%   EMGList      - (1×M) cell of channel names for the combined data</span>
+0025 <span class="comment">%   EMGfrequency - sampling frequency in Hz</span>
+0026 <span class="comment">%   secondFile   - logical; true when a second PC file was loaded</span>
+0027 <span class="comment">%   trialNum     - trial number for warnings and figure title</span>
+0028 <span class="comment">%   saveFolder   - folder path for the sync diagnostic figure</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Outputs:</span>
+0031 <span class="comment">%   allData         - synchronized, truncated combined EMG matrix</span>
+0032 <span class="comment">%   sync            - sync channel columns after alignment ([] if none)</span>
+0033 <span class="comment">%   lagInSamplesA   - PC1 delay relative to GRF reference (samples)</span>
+0034 <span class="comment">%   lagInSamples    - PC2 delay relative to PC1 (samples;</span>
+0035 <span class="comment">%                     NaN if single PC)</span>
+0036 <span class="comment">%   timeScaleFactor - PC2 clock scale factor (NaN if single PC)</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% Toolbox Dependencies:</span>
+0039 <span class="comment">%   Signal Processing Toolbox (medfilt1)</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% See also LOADTRIALS, MATCHSIGNALS, RESAMPLESHIFTANDSCALE,</span>
+0042 <span class="comment">%   TRUNCATETOSAMELENGTH, CLIPSIGNALS.</span>
+0043 
+0044 arguments
+0045     relData      (:,:) double
+0046     relData2     (:,:) double
+0047     refSync      (:,1) double
+0048     EMGList      (1,:) cell
+0049     EMGfrequency (1,1) double {mustBePositive}
+0050     secondFile   (1,1) logical
+0051     trialNum     (1,1) double
+0052     saveFolder   (1,:) char
+0053 <span class="keyword">end</span>
 0054 
-0055 <span class="comment">% Kernel length (samples) for the median filter applied to raw sync</span>
-0056 <span class="comment">% signals before differentiation</span>
-0057 medFiltKernel     = 20;
+0055 <span class="comment">% -----------------------------------------------------------------------</span>
+0056 <span class="comment">%  Named constants — sync tuning parameters</span>
+0057 <span class="comment">% -----------------------------------------------------------------------</span>
 0058 
-0059 <span class="comment">% Kernel length (samples) for the median filter applied to the</span>
-0060 <span class="comment">% differentiated sync signal used in matchSignals</span>
-0061 medFiltDiffKernel = 10;
+0059 <span class="comment">% Kernel length (samples) for the median filter applied to raw sync</span>
+0060 <span class="comment">% signals before differentiation</span>
+0061 medFiltKernel     = 20;
 0062 
-0063 <span class="comment">% Percentile (%) used to symmetrically clip the top and bottom of</span>
-0064 <span class="comment">% sync signals, removing isolated large-amplitude outliers</span>
-0065 clipPercentile    = 0.1;
+0063 <span class="comment">% Kernel length (samples) for the median filter applied to the</span>
+0064 <span class="comment">% differentiated sync signal used in matchSignals</span>
+0065 medFiltDiffKernel = 10;
 0066 
-0067 <span class="comment">% Fractional signal-energy threshold above which the sync mismatch</span>
-0068 <span class="comment">% warning and user confirmation prompt are triggered (5%). When</span>
-0069 <span class="comment">% mismatch exceeds this threshold the pipeline halts and prompts</span>
-0070 <span class="comment">% the user to confirm whether to proceed with the available alignment.</span>
-0071 syncMismatchThreshold = 0.05;
-0072 
-0073 <span class="comment">% Amplitude ratio below which a processed sync derivative is treated</span>
-0074 <span class="comment">% as flat/dead. Good pins are typically 100-1000x louder than dead ones.</span>
-0075 flatSyncThreshold = 1e-4;
+0067 <span class="comment">% Percentile (%) used to symmetrically clip the top and bottom of</span>
+0068 <span class="comment">% sync signals, removing isolated large-amplitude outliers</span>
+0069 clipPercentile    = 0.1;
+0070 
+0071 <span class="comment">% Fractional signal-energy threshold above which the sync mismatch</span>
+0072 <span class="comment">% warning and user confirmation prompt are triggered (5%). When</span>
+0073 <span class="comment">% mismatch exceeds this threshold the pipeline halts and prompts</span>
+0074 <span class="comment">% the user to confirm whether to proceed with the available alignment.</span>
+0075 syncMismatchThreshold = 0.05;
 0076 
-0077 <span class="comment">% Duration (seconds) of the start and end segments shown in the</span>
-0078 <span class="comment">% sync diagnostic figure subplots</span>
-0079 syncPlotDuration  = 3;
+0077 <span class="comment">% Amplitude ratio below which a processed sync derivative is treated</span>
+0078 <span class="comment">% as flat/dead. Good pins are typically 100-1000x louder than dead ones.</span>
+0079 flatSyncThreshold = 1e-4;
 0080 
-0081 <span class="comment">% -----------------------------------------------------------------------</span>
-0082 
-0083 <span class="comment">% Initialize outputs to neutral defaults; overwritten when sync signals</span>
-0084 <span class="comment">% are present and alignment succeeds</span>
-0085 lagInSamplesA   = 0;
-0086 lagInSamples    = NaN;
-0087 timeScaleFactor = NaN;
-0088 
-0089 <span class="comment">%% Assemble Combined Data Matrix</span>
-0090 <span class="comment">% Keep only matrices of the same size.</span>
-0091 <span class="comment">% When pc2Missing, only PC1 data is in allData during sync;</span>
-0092 <span class="comment">% PC2 NaN columns are appended after sync processing in loadTrials.</span>
-0093 <span class="keyword">if</span> secondFile
-0094     [auxData, auxData2] = <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(relData, relData2);
-0095     allData = [auxData, auxData2];
-0096     clear auxData*;
-0097 <span class="keyword">else</span>
-0098     allData = relData;
-0099 <span class="keyword">end</span>
-0100 
-0101 <span class="comment">%% Pre-Process Reference Sync Signal</span>
-0102 <span class="comment">% Clip outliers, then median-filter the signal and its derivative</span>
-0103 refSync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(refSync(:), clipPercentile);
-0104 refAux  = medfilt1(refSync, medFiltKernel);
-0105 <span class="comment">% refAux(refAux&lt;(median(refAux)-5*iqr(refAux)) | ...</span>
-0106 <span class="comment">%     refAux&gt;(median(refAux)+5*iqr(refAux)))=median(refAux);</span>
-0107 refAux = medfilt1(diff(refAux), medFiltDiffKernel);
-0108 
-0109 <span class="comment">%% Identify and Process Sync Channels</span>
-0110 syncIdx = strncmpi(EMGList, <span class="string">'Sync'</span>, 4); <span class="comment">% compare first 4 chars</span>
-0111 sync    = allData(:, syncIdx);
+0081 <span class="comment">% Duration (seconds) of the start and end segments shown in the</span>
+0082 <span class="comment">% sync diagnostic figure subplots</span>
+0083 syncPlotDuration  = 3;
+0084 
+0085 <span class="comment">% -----------------------------------------------------------------------</span>
+0086 
+0087 <span class="comment">% Initialize outputs to neutral defaults; overwritten when sync signals</span>
+0088 <span class="comment">% are present and alignment succeeds</span>
+0089 lagInSamplesA   = 0;
+0090 lagInSamples    = NaN;
+0091 timeScaleFactor = NaN;
+0092 
+0093 <span class="comment">%% Assemble Combined Data Matrix</span>
+0094 <span class="comment">% Keep only matrices of the same size.</span>
+0095 <span class="comment">% When pc2Missing, only PC1 data is in allData during sync;</span>
+0096 <span class="comment">% PC2 NaN columns are appended after sync processing in loadTrials.</span>
+0097 <span class="keyword">if</span> secondFile
+0098     [auxData, auxData2] = <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(relData, relData2);
+0099     allData = [auxData, auxData2];
+0100     clear auxData*;
+0101 <span class="keyword">else</span>
+0102     allData = relData;
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="comment">%% Pre-Process Reference Sync Signal</span>
+0106 <span class="comment">% Clip outliers, then median-filter the signal and its derivative</span>
+0107 refSync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(refSync(:), clipPercentile);
+0108 refAux  = medfilt1(refSync, medFiltKernel);
+0109 <span class="comment">% refAux(refAux&lt;(median(refAux)-5*iqr(refAux)) | ...</span>
+0110 <span class="comment">%     refAux&gt;(median(refAux)+5*iqr(refAux)))=median(refAux);</span>
+0111 refAux = medfilt1(diff(refAux), medFiltDiffKernel);
 0112 
-0113 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)           <span class="comment">% if sync signals present, proceed</span>
-0114     <span class="comment">% Clip outliers, then median-filter signal and derivative</span>
-0115     sync      = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(sync, clipPercentile);
-0116     syncDeriv = medfilt1(sync, medFiltKernel, [], 1);
-0117     <span class="comment">% syncDeriv(syncDeriv&gt;(median(syncDeriv)+5*iqr(syncDeriv)) | ...</span>
-0118     <span class="comment">%     syncDeriv&lt;(median(syncDeriv)-5*iqr(syncDeriv)))= ...</span>
-0119     <span class="comment">%     median(syncDeriv(:));</span>
-0120     syncDeriv = medfilt1(diff(syncDeriv), medFiltDiffKernel, [], 1);
-0121     <span class="keyword">if</span> secondFile
-0122         <span class="keyword">if</span> size(syncDeriv, 2) &lt; 2
-0123             warning(<span class="string">'syncEMGData:missingPC2SyncChannel'</span>, <span class="keyword">...</span>
-0124                 [<span class="string">'[Trial %d] PC2 has no Sync channel in '</span> <span class="keyword">...</span>
-0125                 <span class="string">'allData; using default PC1-to-PC2 '</span> <span class="keyword">...</span>
-0126                 <span class="string">'alignment.'</span>], trialNum);
-0127             timeScaleFactor = 1;
-0128             lagInSamples    = 0;
-0129             newRelData2     = relData2;
-0130         <span class="keyword">elseif</span> <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 1), refAux, flatSyncThreshold) <span class="keyword">...</span>
-0131                 || <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 2), refAux, flatSyncThreshold)
-0132             warning(<span class="string">'syncEMGData:flatSyncPin'</span>, <span class="keyword">...</span>
-0133                 [<span class="string">'[Trial %d] Sync pin appears dead or '</span> <span class="keyword">...</span>
-0134                 <span class="string">'disconnected; using default PC1-to-PC2 '</span> <span class="keyword">...</span>
-0135                 <span class="string">'alignment (timeScaleFactor=1, lagInSamples=0).'</span> <span class="keyword">...</span>
-0136                 <span class="string">' Check hardware sync connection.'</span>], trialNum);
-0137             timeScaleFactor = 1;
-0138             lagInSamples    = 0;
-0139             newRelData2     = relData2;
-0140         <span class="keyword">else</span>
-0141             <span class="keyword">try</span>
-0142                 [~, timeScaleFactor, lagInSamples, ~] = <span class="keyword">...</span>
-0143                     <a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>(syncDeriv(:, 1), syncDeriv(:, 2));
-0144                 <span class="comment">% [~,timeScaleFactor,lagInSamples,~] = ...</span>
-0145                 <span class="comment">%     matchSignals(refAux,syncDeriv(:,2));</span>
-0146                 <span class="comment">% Align relData2 to relData1; overall delay of</span>
-0147                 <span class="comment">% EMG system re. force plate data still to be</span>
-0148                 <span class="comment">% determined</span>
-0149                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0150                     relData2, timeScaleFactor, lagInSamples, 1);
-0151             <span class="keyword">catch</span> ME
-0152                 warning(<span class="string">'syncEMGData:syncMatchFailed'</span>, <span class="keyword">...</span>
-0153                     [<span class="string">'[Trial %d] matchSignals failed for '</span> <span class="keyword">...</span>
-0154                     <span class="string">'PC1-to-PC2 sync (%s). Using default '</span> <span class="keyword">...</span>
-0155                     <span class="string">'alignment.'</span>], trialNum, ME.message);
-0156                 timeScaleFactor = 1;
-0157                 lagInSamples    = 0;
-0158                 newRelData2     = relData2;
-0159             <span class="keyword">end</span>
-0160         <span class="keyword">end</span>
-0161     <span class="keyword">end</span>
-0162     <span class="keyword">if</span> max(abs(refAux)) &lt; eps || <span class="keyword">...</span>
-0163             <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 1), refAux, flatSyncThreshold)
-0164         warning(<span class="string">'syncEMGData:flatSyncPin'</span>, <span class="keyword">...</span>
-0165             [<span class="string">'[Trial %d] refAux or PC1 sync is flat; '</span> <span class="keyword">...</span>
-0166             <span class="string">'using lagInSamplesA=0.'</span>], trialNum);
-0167         lagInSamplesA = 0;
-0168         newRelData    = relData;
-0169         <span class="keyword">if</span> secondFile
-0170             newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0171                 newRelData2, 1, lagInSamplesA, 1);
-0172         <span class="keyword">end</span>
-0173     <span class="keyword">else</span>
-0174         <span class="keyword">try</span>
-0175             [~, ~, lagInSamplesA, ~] = <span class="keyword">...</span>
-0176                 <a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>(refAux, syncDeriv(:, 1));
-0177             newRelData = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0178                 relData, 1, lagInSamplesA, 1);
-0179             <span class="keyword">if</span> secondFile
-0180                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0181                     newRelData2, 1, lagInSamplesA, 1);
-0182                 <span class="comment">% [~,timeScaleFactor,lagInSamples,~] = ...</span>
-0183                 <span class="comment">%     matchSignals(refAux,syncDeriv(:,2)); % DMMO/ARL</span>
-0184                 <span class="comment">% newRelData2 = resampleShiftAndScale( ...</span>
-0185                 <span class="comment">%     newRelData2,1,lagInSamples,1); % DMMO/ARL</span>
-0186             <span class="keyword">end</span>
-0187         <span class="keyword">catch</span> ME
-0188             warning(<span class="string">'syncEMGData:syncMatchFailed'</span>, <span class="keyword">...</span>
-0189                 [<span class="string">'[Trial %d] matchSignals failed for '</span> <span class="keyword">...</span>
-0190                 <span class="string">'refAux-to-PC1 sync (%s). Using '</span> <span class="keyword">...</span>
-0191                 <span class="string">'lagInSamplesA=0.'</span>], trialNum, ME.message);
-0192             lagInSamplesA = 0;
-0193             newRelData    = relData;
-0194             <span class="keyword">if</span> secondFile
-0195                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0196                     newRelData2, 1, lagInSamplesA, 1);
-0197             <span class="keyword">end</span>
-0198         <span class="keyword">end</span>
-0199     <span class="keyword">end</span>
-0200 
-0201     <span class="comment">% Keep only matrices of the same size</span>
-0202     <span class="keyword">if</span> secondFile
-0203         [auxData, auxData2] = <span class="keyword">...</span>
-0204             <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(newRelData, newRelData2);
-0205         clear newRelData*;
-0206         allData = [auxData, auxData2];
-0207         clear auxData*;
-0208     <span class="keyword">else</span>
-0209         allData = newRelData;
-0210     <span class="keyword">end</span>
-0211 
-0212     <span class="comment">% Find gains via least-squares on high-pass filtered sync</span>
-0213     <span class="comment">% signals (why use HPF for gains and not for sync?)</span>
-0214     refSync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(refSync(:), clipPercentile);
-0215     refSync = refSync - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(refSync, <span class="string">'omitnan'</span>);  <span class="comment">% remove DC</span>
-0216     [allData, refSync] = <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(allData, refSync);
-0217     sync = allData(:, syncIdx);
-0218     sync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(sync, clipPercentile);
-0219     sync = sync - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(sync, <span class="string">'omitnan'</span>);
-0220     gain1    = refSync' / sync(:, 1)';
-0221     indStart = round(max([lagInSamplesA+1, 1]));
-0222     reducedRefSync = refSync(indStart:end);
-0223     indStart       = round(max([lagInSamplesA+1, 1]));
-0224     reducedSync1   = sync(indStart:<span class="keyword">end</span>, 1) * gain1;
-0225     <span class="comment">% Error energy as % of original signal energy; computed</span>
-0226     <span class="comment">% only over the interval of simultaneous recording</span>
-0227     E1 = sum((reducedRefSync - reducedSync1).^2) / <span class="keyword">...</span>
-0228         sum(refSync.^2);
-0229     <span class="keyword">if</span> secondFile
-0230         gain2    = refSync' / sync(:, 2)';
-0231         indStart = round(max([lagInSamplesA+1+lagInSamples, 1]));
-0232         reducedRefSync2 = refSync(indStart:end);
-0233         <span class="comment">% indStart = round(max( ...</span>
-0234         <span class="comment">%     [lagInSamplesA+1+lagInSamples,1]));</span>
-0235         reducedSync2 = sync(indStart:<span class="keyword">end</span>, 2) * gain2;
-0236         E2 = sum((reducedRefSync2 - reducedSync2).^2) / <span class="keyword">...</span>
-0237             sum(refSync.^2);
-0238         <span class="comment">% Comparing the two bases' synchrony mechanism</span>
-0239         <span class="comment">% (not to ref signal):</span>
-0240         <span class="comment">% reducedSync1a=sync(max([lagInSamplesA+1+ ...</span>
-0241         <span class="comment">%     lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;</span>
-0242         <span class="comment">% reducedSync2a=sync(max([lagInSamplesA+1+ ...</span>
-0243         <span class="comment">%     lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;</span>
-0244         <span class="comment">% E3=sum((reducedSync1a-reducedSync2a).^2)/ ...</span>
-0245         <span class="comment">%     sum(refSync.^2);</span>
-0246     <span class="keyword">else</span>
-0247         E2              = 0;
-0248         gain2           = NaN;
-0249         timeScaleFactor = NaN;
-0250         lagInSamples    = NaN;
-0251     <span class="keyword">end</span>
-0252 
-0253     <span class="comment">% Analytic measure of alignment quality</span>
-0254     disp([<span class="string">'Sync complete: mismatch signal energy (as %) was '</span> <span class="keyword">...</span>
-0255         num2str(100*E1, 3) <span class="string">' and '</span> num2str(100*E2, 3) <span class="string">'.'</span>]);
-0256     disp([<span class="string">'Sync parameters to ref. signal were: gains = '</span> <span class="keyword">...</span>
-0257         num2str(gain1, 4) <span class="string">', '</span> num2str(gain2, 4) <span class="string">'; delays = '</span> <span class="keyword">...</span>
-0258         num2str(lagInSamplesA/EMGfrequency, 3) <span class="string">'s, '</span> <span class="keyword">...</span>
-0259         num2str((lagInSamplesA+lagInSamples)/EMGfrequency, 3) <span class="keyword">...</span>
-0260         <span class="string">'s'</span>]);
-0261     disp([<span class="string">'Typical sync parameters are: '</span> <span class="keyword">...</span>
-0262         <span class="string">'gains = -933.3 +- 0.2 (both); '</span> <span class="keyword">...</span>
-0263         <span class="string">'delays = -0.025s +- 0.001, 0.014 +- 0.002'</span>]);
-0264     disp([<span class="string">'Sync parameters between PCs were: gain = '</span> <span class="keyword">...</span>
-0265         num2str(gain1/gain2, 4) <span class="string">'; delay = '</span> <span class="keyword">...</span>
-0266         num2str(lagInSamples/EMGfrequency, 3) <span class="keyword">...</span>
-0267         <span class="string">'s; sampling mismatch (ppm) = '</span> <span class="keyword">...</span>
-0268         num2str(1e6*(1-timeScaleFactor), 3)]);
-0269     disp([<span class="string">'Typical sync parameters are: gain = 1; '</span> <span class="keyword">...</span>
-0270         <span class="string">'delay = 0.040s; sampling = 35 ppm'</span>]);
-0271 
-0272     <span class="comment">% Plot to visually confirm alignment, then save the figure.</span>
-0273     h = <a href="#_sub1" class="code" title="subfunction h = plotSyncFigure(trialNum, refSync, sync, gain1, gain2, ">plotSyncFigure</a>(trialNum, refSync, sync, gain1, gain2, <span class="keyword">...</span>
-0274         lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, <span class="keyword">...</span>
-0275         secondFile, syncPlotDuration);
-0276     <a href="../../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>(h, <span class="keyword">...</span>
-0277         [fullfile(saveFolder, <span class="string">'EMGSyncFile'</span>) filesep], <span class="keyword">...</span>
-0278         [<span class="string">'Trial '</span> num2str(trialNum) <span class="string">' Synchronization'</span>]);
-0279 
-0280     <span class="comment">% Warn and prompt the user if mismatch energy exceeds the</span>
-0281     <span class="comment">% threshold. The pipeline halts here to allow inspection</span>
-0282     <span class="comment">% of the sync figure before deciding to proceed or abort.</span>
-0283     <span class="keyword">if</span> isnan(E1) || isnan(E2) || <span class="keyword">...</span>
-0284             E1 &gt; syncMismatchThreshold || <span class="keyword">...</span>
-0285             E2 &gt; syncMismatchThreshold
-0286         warning(<span class="string">'syncEMGData:syncMismatchHigh'</span>, <span class="keyword">...</span>
-0287             [<span class="string">'[Trial %d] EMG sync mismatch energy is high '</span> <span class="keyword">...</span>
-0288             <span class="string">'(PC1: %.2f%%, PC2: %.2f%%). At least one PC '</span> <span class="keyword">...</span>
-0289             <span class="string">'exceeds the threshold of %.0f%%. Synchronization '</span> <span class="keyword">...</span>
-0290             <span class="string">'quality may be poor. Inspect the sync figure for '</span> <span class="keyword">...</span>
-0291             <span class="string">'trial %d before deciding whether to proceed.'</span>], <span class="keyword">...</span>
-0292             trialNum, 100*E1, 100*E2, <span class="keyword">...</span>
-0293             100*syncMismatchThreshold, trialNum);
-0294         s = inputdlg( <span class="keyword">...</span>
-0295             [<span class="string">'If sync parameters between signals look fine and '</span><span class="keyword">...</span>
-0296             <span class="string">'mismatch is below 5%, we recommend yes.'</span>], <span class="keyword">...</span>
-0297             <span class="string">'Please confirm that you want to proceed (y/n).'</span>);
-0298         <span class="keyword">switch</span> s{1}
-0299             <span class="keyword">case</span> {<span class="string">'y'</span>, <span class="string">'Y'</span>, <span class="string">'yes'</span>}
-0300                 disp([<span class="string">'Using signals in a possibly '</span> <span class="keyword">...</span>
-0301                     <span class="string">'unsynchronized way!.'</span>]);
-0302             <span class="keyword">case</span> {<span class="string">'n'</span>, <span class="string">'N'</span>, <span class="string">'no'</span>}
-0303                 error( <span class="keyword">...</span>
-0304                     <span class="string">'syncEMGData:EMGCouldNotBeSynched'</span>, <span class="keyword">...</span>
-0305                     [<span class="string">'[Trial %d] Could not synchronize EMG '</span> <span class="keyword">...</span>
-0306                     <span class="string">'data. Processing stopped at user request '</span> <span class="keyword">...</span>
-0307                     <span class="string">'after sync mismatch of PC1: %.2f%%, PC2: '</span> <span class="keyword">...</span>
-0308                     <span class="string">'%.2f%%.'</span>], trialNum, 100*E1, 100*E2);
-0309         <span class="keyword">end</span>
-0310     <span class="keyword">end</span>
-0311 <span class="keyword">else</span>
-0312     warning(<span class="string">'syncEMGData:noSyncSignals'</span>, <span class="keyword">...</span>
-0313         [<span class="string">'[Trial %d] No sync signals were present. '</span> <span class="keyword">...</span>
-0314         <span class="string">'Using data as-is without time alignment.'</span>], trialNum);
-0315 <span class="keyword">end</span>
-0316 
-0317 <span class="keyword">end</span>
-0318 
-0319 <span class="comment">% ============================================================</span>
-0320 <span class="comment">% ==================== Local Functions =======================</span>
-0321 <span class="comment">% ============================================================</span>
+0113 <span class="comment">%% Identify and Process Sync Channels</span>
+0114 syncIdx = strncmpi(EMGList, <span class="string">'Sync'</span>, 4); <span class="comment">% compare first 4 chars</span>
+0115 sync    = allData(:, syncIdx);
+0116 
+0117 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)           <span class="comment">% if sync signals present, proceed</span>
+0118     <span class="comment">% Clip outliers, then median-filter signal and derivative</span>
+0119     sync      = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(sync, clipPercentile);
+0120     syncDeriv = medfilt1(sync, medFiltKernel, [], 1);
+0121     <span class="comment">% syncDeriv(syncDeriv&gt;(median(syncDeriv)+5*iqr(syncDeriv)) | ...</span>
+0122     <span class="comment">%     syncDeriv&lt;(median(syncDeriv)-5*iqr(syncDeriv)))= ...</span>
+0123     <span class="comment">%     median(syncDeriv(:));</span>
+0124     syncDeriv = medfilt1(diff(syncDeriv), medFiltDiffKernel, [], 1);
+0125     <span class="keyword">if</span> secondFile
+0126         <span class="keyword">if</span> size(syncDeriv, 2) &lt; 2
+0127             warning(<span class="string">'syncEMGData:missingPC2SyncChannel'</span>, <span class="keyword">...</span>
+0128                 [<span class="string">'[Trial %d] PC2 has no Sync channel in '</span> <span class="keyword">...</span>
+0129                 <span class="string">'allData; using default PC1-to-PC2 '</span> <span class="keyword">...</span>
+0130                 <span class="string">'alignment.'</span>], trialNum);
+0131             timeScaleFactor = 1;
+0132             lagInSamples    = 0;
+0133             newRelData2     = relData2;
+0134         <span class="keyword">elseif</span> <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 1), refAux, flatSyncThreshold) <span class="keyword">...</span>
+0135                 || <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 2), refAux, flatSyncThreshold)
+0136             warning(<span class="string">'syncEMGData:flatSyncPin'</span>, <span class="keyword">...</span>
+0137                 [<span class="string">'[Trial %d] Sync pin appears dead or '</span> <span class="keyword">...</span>
+0138                 <span class="string">'disconnected; using default PC1-to-PC2 '</span> <span class="keyword">...</span>
+0139                 <span class="string">'alignment (timeScaleFactor=1, lagInSamples=0).'</span> <span class="keyword">...</span>
+0140                 <span class="string">' Check hardware sync connection.'</span>], trialNum);
+0141             timeScaleFactor = 1;
+0142             lagInSamples    = 0;
+0143             newRelData2     = relData2;
+0144         <span class="keyword">else</span>
+0145             <span class="keyword">try</span>
+0146                 [~, timeScaleFactor, lagInSamples, ~] = <span class="keyword">...</span>
+0147                     <a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>(syncDeriv(:, 1), syncDeriv(:, 2));
+0148                 <span class="comment">% [~,timeScaleFactor,lagInSamples,~] = ...</span>
+0149                 <span class="comment">%     matchSignals(refAux,syncDeriv(:,2));</span>
+0150                 <span class="comment">% Align relData2 to relData1; overall delay of</span>
+0151                 <span class="comment">% EMG system re. force plate data still to be</span>
+0152                 <span class="comment">% determined</span>
+0153                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0154                     relData2, timeScaleFactor, lagInSamples, 1);
+0155             <span class="keyword">catch</span> ME
+0156                 warning(<span class="string">'syncEMGData:syncMatchFailed'</span>, <span class="keyword">...</span>
+0157                     [<span class="string">'[Trial %d] matchSignals failed for '</span> <span class="keyword">...</span>
+0158                     <span class="string">'PC1-to-PC2 sync (%s). Using default '</span> <span class="keyword">...</span>
+0159                     <span class="string">'alignment.'</span>], trialNum, ME.message);
+0160                 timeScaleFactor = 1;
+0161                 lagInSamples    = 0;
+0162                 newRelData2     = relData2;
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165     <span class="keyword">end</span>
+0166     <span class="keyword">if</span> max(abs(refAux)) &lt; eps || <span class="keyword">...</span>
+0167             <a href="#_sub2" class="code" title="subfunction flat = isFlatSync(sig, refSig, threshold)">isFlatSync</a>(syncDeriv(:, 1), refAux, flatSyncThreshold)
+0168         warning(<span class="string">'syncEMGData:flatSyncPin'</span>, <span class="keyword">...</span>
+0169             [<span class="string">'[Trial %d] refAux or PC1 sync is flat; '</span> <span class="keyword">...</span>
+0170             <span class="string">'using lagInSamplesA=0.'</span>], trialNum);
+0171         lagInSamplesA = 0;
+0172         newRelData    = relData;
+0173         <span class="keyword">if</span> secondFile
+0174             newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0175                 newRelData2, 1, lagInSamplesA, 1);
+0176         <span class="keyword">end</span>
+0177     <span class="keyword">else</span>
+0178         <span class="keyword">try</span>
+0179             [~, ~, lagInSamplesA, ~] = <span class="keyword">...</span>
+0180                 <a href="../../../labTools/fun/ext/pitools/signalProcessing/matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>(refAux, syncDeriv(:, 1));
+0181             newRelData = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0182                 relData, 1, lagInSamplesA, 1);
+0183             <span class="keyword">if</span> secondFile
+0184                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0185                     newRelData2, 1, lagInSamplesA, 1);
+0186                 <span class="comment">% [~,timeScaleFactor,lagInSamples,~] = ...</span>
+0187                 <span class="comment">%     matchSignals(refAux,syncDeriv(:,2)); % DMMO/ARL</span>
+0188                 <span class="comment">% newRelData2 = resampleShiftAndScale( ...</span>
+0189                 <span class="comment">%     newRelData2,1,lagInSamples,1); % DMMO/ARL</span>
+0190             <span class="keyword">end</span>
+0191         <span class="keyword">catch</span> ME
+0192             warning(<span class="string">'syncEMGData:syncMatchFailed'</span>, <span class="keyword">...</span>
+0193                 [<span class="string">'[Trial %d] matchSignals failed for '</span> <span class="keyword">...</span>
+0194                 <span class="string">'refAux-to-PC1 sync (%s). Using '</span> <span class="keyword">...</span>
+0195                 <span class="string">'lagInSamplesA=0.'</span>], trialNum, ME.message);
+0196             lagInSamplesA = 0;
+0197             newRelData    = relData;
+0198             <span class="keyword">if</span> secondFile
+0199                 newRelData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0200                     newRelData2, 1, lagInSamplesA, 1);
+0201             <span class="keyword">end</span>
+0202         <span class="keyword">end</span>
+0203     <span class="keyword">end</span>
+0204 
+0205     <span class="comment">% Keep only matrices of the same size</span>
+0206     <span class="keyword">if</span> secondFile
+0207         [auxData, auxData2] = <span class="keyword">...</span>
+0208             <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(newRelData, newRelData2);
+0209         clear newRelData*;
+0210         allData = [auxData, auxData2];
+0211         clear auxData*;
+0212     <span class="keyword">else</span>
+0213         allData = newRelData;
+0214     <span class="keyword">end</span>
+0215 
+0216     <span class="comment">% Find gains via least-squares on high-pass filtered sync</span>
+0217     <span class="comment">% signals (why use HPF for gains and not for sync?)</span>
+0218     refSync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(refSync(:), clipPercentile);
+0219     refSync = refSync - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(refSync, <span class="string">'omitnan'</span>);  <span class="comment">% remove DC</span>
+0220     [allData, refSync] = <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(allData, refSync);
+0221     sync = allData(:, syncIdx);
+0222     sync = <a href="../../../labTools/fun/misc/clipSignals.html" class="code" title="function signals = clipSignals(signals, percentile)">clipSignals</a>(sync, clipPercentile);
+0223     sync = sync - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(sync, <span class="string">'omitnan'</span>);
+0224     gain1    = refSync' / sync(:, 1)';
+0225     indStart = round(max([lagInSamplesA+1, 1]));
+0226     reducedRefSync = refSync(indStart:end);
+0227     indStart       = round(max([lagInSamplesA+1, 1]));
+0228     reducedSync1   = sync(indStart:<span class="keyword">end</span>, 1) * gain1;
+0229     <span class="comment">% Error energy as % of original signal energy; computed</span>
+0230     <span class="comment">% only over the interval of simultaneous recording</span>
+0231     E1 = sum((reducedRefSync - reducedSync1).^2) / <span class="keyword">...</span>
+0232         sum(refSync.^2);
+0233     <span class="keyword">if</span> secondFile
+0234         gain2    = refSync' / sync(:, 2)';
+0235         indStart = round(max([lagInSamplesA+1+lagInSamples, 1]));
+0236         reducedRefSync2 = refSync(indStart:end);
+0237         <span class="comment">% indStart = round(max( ...</span>
+0238         <span class="comment">%     [lagInSamplesA+1+lagInSamples,1]));</span>
+0239         reducedSync2 = sync(indStart:<span class="keyword">end</span>, 2) * gain2;
+0240         E2 = sum((reducedRefSync2 - reducedSync2).^2) / <span class="keyword">...</span>
+0241             sum(refSync.^2);
+0242         <span class="comment">% Comparing the two bases' synchrony mechanism</span>
+0243         <span class="comment">% (not to ref signal):</span>
+0244         <span class="comment">% reducedSync1a=sync(max([lagInSamplesA+1+ ...</span>
+0245         <span class="comment">%     lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;</span>
+0246         <span class="comment">% reducedSync2a=sync(max([lagInSamplesA+1+ ...</span>
+0247         <span class="comment">%     lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;</span>
+0248         <span class="comment">% E3=sum((reducedSync1a-reducedSync2a).^2)/ ...</span>
+0249         <span class="comment">%     sum(refSync.^2);</span>
+0250     <span class="keyword">else</span>
+0251         E2              = 0;
+0252         gain2           = NaN;
+0253         timeScaleFactor = NaN;
+0254         lagInSamples    = NaN;
+0255     <span class="keyword">end</span>
+0256 
+0257     <span class="comment">% Analytic measure of alignment quality</span>
+0258     disp([<span class="string">'Sync complete: mismatch signal energy (as %) was '</span> <span class="keyword">...</span>
+0259         num2str(100*E1, 3) <span class="string">' and '</span> num2str(100*E2, 3) <span class="string">'.'</span>]);
+0260     disp([<span class="string">'Sync parameters to ref. signal were: gains = '</span> <span class="keyword">...</span>
+0261         num2str(gain1, 4) <span class="string">', '</span> num2str(gain2, 4) <span class="string">'; delays = '</span> <span class="keyword">...</span>
+0262         num2str(lagInSamplesA/EMGfrequency, 3) <span class="string">'s, '</span> <span class="keyword">...</span>
+0263         num2str((lagInSamplesA+lagInSamples)/EMGfrequency, 3) <span class="keyword">...</span>
+0264         <span class="string">'s'</span>]);
+0265     disp([<span class="string">'Typical sync parameters are: '</span> <span class="keyword">...</span>
+0266         <span class="string">'gains = -933.3 +- 0.2 (both); '</span> <span class="keyword">...</span>
+0267         <span class="string">'delays = -0.025s +- 0.001, 0.014 +- 0.002'</span>]);
+0268     disp([<span class="string">'Sync parameters between PCs were: gain = '</span> <span class="keyword">...</span>
+0269         num2str(gain1/gain2, 4) <span class="string">'; delay = '</span> <span class="keyword">...</span>
+0270         num2str(lagInSamples/EMGfrequency, 3) <span class="keyword">...</span>
+0271         <span class="string">'s; sampling mismatch (ppm) = '</span> <span class="keyword">...</span>
+0272         num2str(1e6*(1-timeScaleFactor), 3)]);
+0273     disp([<span class="string">'Typical sync parameters are: gain = 1; '</span> <span class="keyword">...</span>
+0274         <span class="string">'delay = 0.040s; sampling = 35 ppm'</span>]);
+0275 
+0276     <span class="comment">% Plot to visually confirm alignment, then save the figure.</span>
+0277     h = <a href="#_sub1" class="code" title="subfunction h = plotSyncFigure(trialNum, refSync, sync, gain1, gain2, ">plotSyncFigure</a>(trialNum, refSync, sync, gain1, gain2, <span class="keyword">...</span>
+0278         lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, <span class="keyword">...</span>
+0279         secondFile, syncPlotDuration);
+0280     <a href="../../../labTools/fun/ext/pitools/plots/saveFig.html" class="code" title="function saveFig(h, dir, fileName, sizeFlag)">saveFig</a>(h, <span class="keyword">...</span>
+0281         fullfile(saveFolder, <span class="string">'EMGSyncFile'</span>), <span class="keyword">...</span>
+0282         [<span class="string">'Trial '</span> num2str(trialNum) <span class="string">' Synchronization'</span>]);
+0283 
+0284     <span class="comment">% Warn and prompt the user if mismatch energy exceeds the</span>
+0285     <span class="comment">% threshold. The pipeline halts here to allow inspection</span>
+0286     <span class="comment">% of the sync figure before deciding to proceed or abort.</span>
+0287     <span class="keyword">if</span> isnan(E1) || isnan(E2) || <span class="keyword">...</span>
+0288             E1 &gt; syncMismatchThreshold || <span class="keyword">...</span>
+0289             E2 &gt; syncMismatchThreshold
+0290         warning(<span class="string">'syncEMGData:syncMismatchHigh'</span>, <span class="keyword">...</span>
+0291             [<span class="string">'[Trial %d] EMG sync mismatch energy is high '</span> <span class="keyword">...</span>
+0292             <span class="string">'(PC1: %.2f%%, PC2: %.2f%%). At least one PC '</span> <span class="keyword">...</span>
+0293             <span class="string">'exceeds the threshold of %.0f%%. Synchronization '</span> <span class="keyword">...</span>
+0294             <span class="string">'quality may be poor. Inspect the sync figure for '</span> <span class="keyword">...</span>
+0295             <span class="string">'trial %d before deciding whether to proceed.'</span>], <span class="keyword">...</span>
+0296             trialNum, 100*E1, 100*E2, <span class="keyword">...</span>
+0297             100*syncMismatchThreshold, trialNum);
+0298         s = inputdlg( <span class="keyword">...</span>
+0299             [<span class="string">'If sync parameters between signals look fine and '</span><span class="keyword">...</span>
+0300             <span class="string">'mismatch is below 5%, we recommend yes.'</span>], <span class="keyword">...</span>
+0301             <span class="string">'Please confirm that you want to proceed (y/n).'</span>);
+0302         <span class="keyword">switch</span> s{1}
+0303             <span class="keyword">case</span> {<span class="string">'y'</span>, <span class="string">'Y'</span>, <span class="string">'yes'</span>}
+0304                 disp([<span class="string">'Using signals in a possibly '</span> <span class="keyword">...</span>
+0305                     <span class="string">'unsynchronized way!.'</span>]);
+0306             <span class="keyword">case</span> {<span class="string">'n'</span>, <span class="string">'N'</span>, <span class="string">'no'</span>}
+0307                 error( <span class="keyword">...</span>
+0308                     <span class="string">'syncEMGData:EMGCouldNotBeSynched'</span>, <span class="keyword">...</span>
+0309                     [<span class="string">'[Trial %d] Could not synchronize EMG '</span> <span class="keyword">...</span>
+0310                     <span class="string">'data. Processing stopped at user request '</span> <span class="keyword">...</span>
+0311                     <span class="string">'after sync mismatch of PC1: %.2f%%, PC2: '</span> <span class="keyword">...</span>
+0312                     <span class="string">'%.2f%%.'</span>], trialNum, 100*E1, 100*E2);
+0313         <span class="keyword">end</span>
+0314     <span class="keyword">end</span>
+0315 <span class="keyword">else</span>
+0316     warning(<span class="string">'syncEMGData:noSyncSignals'</span>, <span class="keyword">...</span>
+0317         [<span class="string">'[Trial %d] No sync signals were present. '</span> <span class="keyword">...</span>
+0318         <span class="string">'Using data as-is without time alignment.'</span>], trialNum);
+0319 <span class="keyword">end</span>
+0320 
+0321 <span class="keyword">end</span>
 0322 
-0323 <a name="_sub1" href="#_subfunctions" class="code">function h = plotSyncFigure(trialNum, refSync, sync, gain1, gain2, </a><span class="keyword">...</span>
-0324     lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, <span class="keyword">...</span>
-0325     secondFile, syncPlotDuration)
-0326 <span class="comment">%PLOTSYNCFIGURE Creates a 4-panel EMG synchronization diagnostic figure.</span>
-0327 <span class="comment">%</span>
-0328 <span class="comment">%   Produces a figure with three panels arranged in a 2×2 tiled layout</span>
-0329 <span class="comment">% for visually assessing EMG signal alignment quality: a full-length</span>
-0330 <span class="comment">% overlay of the reference and synchronised signals spanning the top</span>
-0331 <span class="comment">% row, and close-ups of the first and last syncPlotDuration seconds in</span>
-0332 <span class="comment">% the bottom-left and bottom-right tiles, respectively. Called for both</span>
-0333 <span class="comment">% the mismatch-warning prompt and the post-sync confirmation save to</span>
-0334 <span class="comment">% avoid code duplication.</span>
-0335 <span class="comment">%</span>
-0336 <span class="comment">%   Inputs:</span>
-0337 <span class="comment">%     trialNum         - Trial number (used in the figure title)</span>
-0338 <span class="comment">%     refSync          - Reference sync signal vector</span>
-0339 <span class="comment">%     sync             - Matrix of sync signals (columns = PCs)</span>
-0340 <span class="comment">%     gain1            - Least-squares gain for PC1 sync signal</span>
-0341 <span class="comment">%     gain2            - Least-squares gain for PC2 sync signal</span>
-0342 <span class="comment">%     lagInSamplesA    - Sample lag of PC1 relative to reference</span>
-0343 <span class="comment">%     lagInSamples     - Sample lag of PC2 relative to PC1</span>
-0344 <span class="comment">%     E1               - Fractional mismatch energy for PC1</span>
-0345 <span class="comment">%     E2               - Fractional mismatch energy for PC2</span>
-0346 <span class="comment">%     EMGfrequency     - Sampling frequency of the EMG system (Hz)</span>
-0347 <span class="comment">%     secondFile       - Logical; true when a second PC file was loaded</span>
-0348 <span class="comment">%     syncPlotDuration - Duration (s) shown in start/end close-up tiles</span>
-0349 <span class="comment">%</span>
-0350 <span class="comment">%   Outputs:</span>
-0351 <span class="comment">%     h - Handle to the created figure</span>
-0352 <span class="comment">%</span>
-0353 <span class="comment">%   See also: SYNCEMGDATA</span>
-0354 
-0355 <span class="comment">% ---- Plot appearance constants ----------------------------------------</span>
-0356 <span class="comment">% RGB triplets from MATLAB's default color order; orange-red and purple</span>
-0357 <span class="comment">% are more distinguishable than red and green for color vision deficiency</span>
-0358 colorRef  = [0.0000 0.4470 0.7410];    <span class="comment">% MATLAB default blue  (refSync)</span>
-0359 colorPC1  = [0.8500 0.3250 0.0980];    <span class="comment">% MATLAB default orange-red (PC1)</span>
-0360 colorPC2  = [0.4940 0.1840 0.5560];    <span class="comment">% MATLAB default purple     (PC2)</span>
-0361 lineWidth = 1.25;
-0362 <span class="comment">% -----------------------------------------------------------------------</span>
-0363 
-0364 <span class="comment">% Build legend label strings from sync parameters</span>
-0365 leg1 = [<span class="string">'sync1, delay='</span> num2str(lagInSamplesA/EMGfrequency, 3) <span class="keyword">...</span>
-0366     <span class="string">'s, gain='</span> num2str(gain1, 4) <span class="string">', mismatch(%)='</span> num2str(100*E1, 3)];
-0367 leg2 = [<span class="string">'sync2, delay='</span> <span class="keyword">...</span>
-0368     num2str((lagInSamplesA+lagInSamples)/EMGfrequency, 3) <span class="string">'s, gain='</span> <span class="keyword">...</span>
-0369     num2str(gain2, 4) <span class="string">', mismatch(%)='</span> num2str(100*E2, 3)];
-0370 
-0371 time = (0:length(refSync)-1) * 1 / EMGfrequency;
-0372 <span class="comment">% Build the sync quality summary line shown below the main title.</span>
-0373 <span class="comment">% The PC2 entry is omitted in single-PC sessions. subtitle() is not</span>
-0374 <span class="comment">% used here for R2021a compatibility; a two-element cell array passed</span>
-0375 <span class="comment">% to title(tl,...) produces the same two-line result on all supported</span>
-0376 <span class="comment">% MATLAB versions.</span>
-0377 <span class="keyword">if</span> secondFile
-0378     syncQualityStr = [<span class="string">'PC1 mismatch: '</span> num2str(100*E1, 3) <span class="keyword">...</span>
-0379         <span class="string">'% | PC2 mismatch: '</span> num2str(100*E2, 3) <span class="string">'%'</span>];
-0380 <span class="keyword">else</span>
-0381     syncQualityStr = [<span class="string">'PC1 mismatch: '</span> num2str(100*E1, 3) <span class="string">'%'</span>];
-0382 <span class="keyword">end</span>
-0383 
-0384 h  = figure();
-0385 tl = tiledlayout(2, 2, <span class="string">'TileSpacing'</span>, <span class="string">'compact'</span>, <span class="string">'Padding'</span>, <span class="string">'compact'</span>);
-0386 title(tl, {[<span class="string">'Trial '</span> num2str(trialNum) <span class="string">' Synchronization'</span>], <span class="keyword">...</span>
-0387     syncQualityStr});
-0388 
-0389 <span class="comment">% -- Full-length overlay spanning the entire top row</span>
-0390 nexttile(1, [1 2]);
-0391 hold on;
-0392 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, refSync, <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
-0393 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, sync(:, 1) * gain1, <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
-0394 <span class="keyword">if</span> secondFile
-0395     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, sync(:, 2) * gain2, <span class="keyword">...</span>
-0396         <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
-0397     legend(<span class="string">'refSync'</span>, leg1, leg2);
-0398 <span class="keyword">else</span>
-0399     legend(<span class="string">'refSync'</span>, leg1);
-0400 <span class="keyword">end</span>
-0401 xlabel(<span class="string">'Time (s)'</span>);
-0402 ylabel(<span class="string">'Amplitude'</span>);
-0403 hold off;
-0404 
-0405 <span class="comment">% -- Close-ups of the start and end of the trial (bottom tiles).</span>
-0406 <span class="comment">% Number of samples covering syncPlotDuration seconds.</span>
-0407 T = round(syncPlotDuration * EMGfrequency);
-0408 <span class="keyword">if</span> T &lt; length(refSync)
-0409     nexttile(3);
-0410     hold on;
-0411     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), refSync(1:T), <span class="keyword">...</span>
-0412         <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
-0413     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), sync(1:T, 1) * gain1, <span class="keyword">...</span>
-0414         <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
-0415     <span class="keyword">if</span> secondFile
-0416         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), sync(1:T, 2) * gain2, <span class="keyword">...</span>
-0417             <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
-0418     <span class="keyword">end</span>
-0419     xlabel(<span class="string">'Time (s)'</span>);
-0420     ylabel(<span class="string">'Amplitude'</span>);
-0421     hold off;
-0422 
-0423     nexttile(4);
-0424     hold on;
-0425     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), refSync(end-T:end), <span class="keyword">...</span>
-0426         <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
-0427     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), sync(end-T:<span class="keyword">end</span>, 1) * gain1, <span class="keyword">...</span>
-0428         <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
-0429     <span class="keyword">if</span> secondFile
-0430         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), sync(end-T:<span class="keyword">end</span>, 2) * gain2, <span class="keyword">...</span>
-0431             <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
-0432     <span class="keyword">end</span>
-0433     xlabel(<span class="string">'Time (s)'</span>);
-0434     ylabel(<span class="string">'Amplitude'</span>);
-0435     hold off;
-0436 <span class="keyword">end</span>
-0437 
-0438 <span class="keyword">end</span>
-0439 
-0440 <a name="_sub2" href="#_subfunctions" class="code">function flat = isFlatSync(sig, refSig, threshold)</a>
-0441 <span class="comment">%ISFLATSYNC True when sig appears to be a dead/disconnected sync pin.</span>
-0442 <span class="comment">%</span>
-0443 <span class="comment">%   A sync channel is considered flat when the maximum absolute</span>
-0444 <span class="comment">% amplitude of its processed derivative falls below threshold times</span>
-0445 <span class="comment">% the maximum amplitude of refSig. refSig should be a channel with</span>
-0446 <span class="comment">% known-good signal quality (e.g., refAux from the force-plate PC).</span>
-0447 <span class="comment">%</span>
-0448 <span class="comment">% Inputs:</span>
-0449 <span class="comment">%   sig       - processed sync column (column vector)</span>
-0450 <span class="comment">%   refSig    - reference sync column for amplitude normalisation</span>
-0451 <span class="comment">%   threshold - fractional amplitude threshold (scalar, &gt; 0)</span>
-0452 <span class="comment">%</span>
-0453 <span class="comment">% Outputs:</span>
-0454 <span class="comment">%   flat - logical scalar; true when sig appears dead or disconnected</span>
-0455 <span class="comment">%</span>
-0456 <span class="comment">% Toolbox Dependencies: None</span>
-0457 <span class="comment">%</span>
-0458 <span class="comment">% See also SYNCEMGDATA, MATCHSIGNALS.</span>
-0459 
-0460 arguments
-0461     sig       (:,1) double
-0462     refSig    (:,1) double
-0463     <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> (1,1) double {mustBePositive}
-0464 <span class="keyword">end</span>
-0465 
-0466 refAmp = max(abs(refSig));
-0467 <span class="keyword">if</span> refAmp == 0
-0468     flat = true;    <span class="comment">% reference is also flat; cannot normalise</span>
-0469 <span class="keyword">else</span>
-0470     flat = max(abs(sig)) &lt; <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> * refAmp;
-0471 <span class="keyword">end</span>
-0472 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0323 <span class="comment">% ============================================================</span>
+0324 <span class="comment">% ==================== Local Functions =======================</span>
+0325 <span class="comment">% ============================================================</span>
+0326 
+0327 <a name="_sub1" href="#_subfunctions" class="code">function h = plotSyncFigure(trialNum, refSync, sync, gain1, gain2, </a><span class="keyword">...</span>
+0328     lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, <span class="keyword">...</span>
+0329     secondFile, syncPlotDuration)
+0330 <span class="comment">%PLOTSYNCFIGURE Creates a 4-panel EMG synchronization diagnostic figure.</span>
+0331 <span class="comment">%</span>
+0332 <span class="comment">%   Produces a figure with three panels arranged in a 2×2 tiled layout</span>
+0333 <span class="comment">% for visually assessing EMG signal alignment quality: a full-length</span>
+0334 <span class="comment">% overlay of the reference and synchronised signals spanning the top</span>
+0335 <span class="comment">% row, and close-ups of the first and last syncPlotDuration seconds in</span>
+0336 <span class="comment">% the bottom-left and bottom-right tiles, respectively. Called for both</span>
+0337 <span class="comment">% the mismatch-warning prompt and the post-sync confirmation save to</span>
+0338 <span class="comment">% avoid code duplication.</span>
+0339 <span class="comment">%</span>
+0340 <span class="comment">%   Inputs:</span>
+0341 <span class="comment">%     trialNum         - Trial number (used in the figure title)</span>
+0342 <span class="comment">%     refSync          - Reference sync signal vector</span>
+0343 <span class="comment">%     sync             - Matrix of sync signals (columns = PCs)</span>
+0344 <span class="comment">%     gain1            - Least-squares gain for PC1 sync signal</span>
+0345 <span class="comment">%     gain2            - Least-squares gain for PC2 sync signal</span>
+0346 <span class="comment">%     lagInSamplesA    - Sample lag of PC1 relative to reference</span>
+0347 <span class="comment">%     lagInSamples     - Sample lag of PC2 relative to PC1</span>
+0348 <span class="comment">%     E1               - Fractional mismatch energy for PC1</span>
+0349 <span class="comment">%     E2               - Fractional mismatch energy for PC2</span>
+0350 <span class="comment">%     EMGfrequency     - Sampling frequency of the EMG system (Hz)</span>
+0351 <span class="comment">%     secondFile       - Logical; true when a second PC file was loaded</span>
+0352 <span class="comment">%     syncPlotDuration - Duration (s) shown in start/end close-up tiles</span>
+0353 <span class="comment">%</span>
+0354 <span class="comment">%   Outputs:</span>
+0355 <span class="comment">%     h - Handle to the created figure</span>
+0356 <span class="comment">%</span>
+0357 <span class="comment">%   See also: SYNCEMGDATA</span>
+0358 
+0359 <span class="comment">% ---- Plot appearance constants ----------------------------------------</span>
+0360 <span class="comment">% RGB triplets from MATLAB's default color order; orange-red and purple</span>
+0361 <span class="comment">% are more distinguishable than red and green for color vision deficiency</span>
+0362 colorRef  = [0.0000 0.4470 0.7410];    <span class="comment">% MATLAB default blue  (refSync)</span>
+0363 colorPC1  = [0.8500 0.3250 0.0980];    <span class="comment">% MATLAB default orange-red (PC1)</span>
+0364 colorPC2  = [0.4940 0.1840 0.5560];    <span class="comment">% MATLAB default purple     (PC2)</span>
+0365 lineWidth = 1.25;
+0366 <span class="comment">% -----------------------------------------------------------------------</span>
+0367 
+0368 <span class="comment">% Build legend label strings from sync parameters</span>
+0369 leg1 = [<span class="string">'sync1, delay='</span> num2str(lagInSamplesA/EMGfrequency, 3) <span class="keyword">...</span>
+0370     <span class="string">'s, gain='</span> num2str(gain1, 4) <span class="string">', mismatch(%)='</span> num2str(100*E1, 3)];
+0371 leg2 = [<span class="string">'sync2, delay='</span> <span class="keyword">...</span>
+0372     num2str((lagInSamplesA+lagInSamples)/EMGfrequency, 3) <span class="string">'s, gain='</span> <span class="keyword">...</span>
+0373     num2str(gain2, 4) <span class="string">', mismatch(%)='</span> num2str(100*E2, 3)];
+0374 
+0375 time = (0:length(refSync)-1) * 1 / EMGfrequency;
+0376 <span class="comment">% Build the sync quality summary line shown below the main title.</span>
+0377 <span class="comment">% The PC2 entry is omitted in single-PC sessions. subtitle() is not</span>
+0378 <span class="comment">% used here for R2021a compatibility; a two-element cell array passed</span>
+0379 <span class="comment">% to title(tl,...) produces the same two-line result on all supported</span>
+0380 <span class="comment">% MATLAB versions.</span>
+0381 <span class="keyword">if</span> secondFile
+0382     syncQualityStr = [<span class="string">'PC1 mismatch: '</span> num2str(100*E1, 3) <span class="keyword">...</span>
+0383         <span class="string">'% | PC2 mismatch: '</span> num2str(100*E2, 3) <span class="string">'%'</span>];
+0384 <span class="keyword">else</span>
+0385     syncQualityStr = [<span class="string">'PC1 mismatch: '</span> num2str(100*E1, 3) <span class="string">'%'</span>];
+0386 <span class="keyword">end</span>
+0387 
+0388 h  = figure();
+0389 tl = tiledlayout(2, 2, <span class="string">'TileSpacing'</span>, <span class="string">'compact'</span>, <span class="string">'Padding'</span>, <span class="string">'compact'</span>);
+0390 title(tl, {[<span class="string">'Trial '</span> num2str(trialNum) <span class="string">' Synchronization'</span>], <span class="keyword">...</span>
+0391     syncQualityStr});
+0392 
+0393 <span class="comment">% -- Full-length overlay spanning the entire top row</span>
+0394 nexttile(1, [1 2]);
+0395 hold on;
+0396 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, refSync, <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
+0397 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, sync(:, 1) * gain1, <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
+0398 <span class="keyword">if</span> secondFile
+0399     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time, sync(:, 2) * gain2, <span class="keyword">...</span>
+0400         <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
+0401     legend(<span class="string">'refSync'</span>, leg1, leg2);
+0402 <span class="keyword">else</span>
+0403     legend(<span class="string">'refSync'</span>, leg1);
+0404 <span class="keyword">end</span>
+0405 xlabel(<span class="string">'Time (s)'</span>);
+0406 ylabel(<span class="string">'Amplitude'</span>);
+0407 hold off;
+0408 
+0409 <span class="comment">% -- Close-ups of the start and end of the trial (bottom tiles).</span>
+0410 <span class="comment">% Number of samples covering syncPlotDuration seconds.</span>
+0411 T = round(syncPlotDuration * EMGfrequency);
+0412 <span class="keyword">if</span> T &lt; length(refSync)
+0413     nexttile(3);
+0414     hold on;
+0415     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), refSync(1:T), <span class="keyword">...</span>
+0416         <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
+0417     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), sync(1:T, 1) * gain1, <span class="keyword">...</span>
+0418         <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
+0419     <span class="keyword">if</span> secondFile
+0420         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(1:T), sync(1:T, 2) * gain2, <span class="keyword">...</span>
+0421             <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
+0422     <span class="keyword">end</span>
+0423     xlabel(<span class="string">'Time (s)'</span>);
+0424     ylabel(<span class="string">'Amplitude'</span>);
+0425     hold off;
+0426 
+0427     nexttile(4);
+0428     hold on;
+0429     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), refSync(end-T:end), <span class="keyword">...</span>
+0430         <span class="string">'Color'</span>, colorRef, <span class="string">'LineWidth'</span>, lineWidth);
+0431     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), sync(end-T:<span class="keyword">end</span>, 1) * gain1, <span class="keyword">...</span>
+0432         <span class="string">'Color'</span>, colorPC1, <span class="string">'LineWidth'</span>, lineWidth);
+0433     <span class="keyword">if</span> secondFile
+0434         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(time(end-T:end), sync(end-T:<span class="keyword">end</span>, 2) * gain2, <span class="keyword">...</span>
+0435             <span class="string">'Color'</span>, colorPC2, <span class="string">'LineWidth'</span>, lineWidth);
+0436     <span class="keyword">end</span>
+0437     xlabel(<span class="string">'Time (s)'</span>);
+0438     ylabel(<span class="string">'Amplitude'</span>);
+0439     hold off;
+0440 <span class="keyword">end</span>
+0441 
+0442 <span class="keyword">end</span>
+0443 
+0444 <a name="_sub2" href="#_subfunctions" class="code">function flat = isFlatSync(sig, refSig, threshold)</a>
+0445 <span class="comment">%ISFLATSYNC True when sig appears to be a dead/disconnected sync pin.</span>
+0446 <span class="comment">%</span>
+0447 <span class="comment">%   A sync channel is considered flat when the maximum absolute</span>
+0448 <span class="comment">% amplitude of its processed derivative falls below threshold times</span>
+0449 <span class="comment">% the maximum amplitude of refSig. refSig should be a channel with</span>
+0450 <span class="comment">% known-good signal quality (e.g., refAux from the force-plate PC).</span>
+0451 <span class="comment">%</span>
+0452 <span class="comment">% Inputs:</span>
+0453 <span class="comment">%   sig       - processed sync column (column vector)</span>
+0454 <span class="comment">%   refSig    - reference sync column for amplitude normalisation</span>
+0455 <span class="comment">%   threshold - fractional amplitude threshold (scalar, &gt; 0)</span>
+0456 <span class="comment">%</span>
+0457 <span class="comment">% Outputs:</span>
+0458 <span class="comment">%   flat - logical scalar; true when sig appears dead or disconnected</span>
+0459 <span class="comment">%</span>
+0460 <span class="comment">% Toolbox Dependencies: None</span>
+0461 <span class="comment">%</span>
+0462 <span class="comment">% See also SYNCEMGDATA, MATCHSIGNALS.</span>
+0463 
+0464 arguments
+0465     sig       (:,1) double
+0466     refSig    (:,1) double
+0467     <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> (1,1) double {mustBePositive}
+0468 <span class="keyword">end</span>
+0469 
+0470 refAmp = max(abs(refSig));
+0471 <span class="keyword">if</span> refAmp == 0
+0472     flat = true;    <span class="comment">% reference is also flat; cannot normalise</span>
+0473 <span class="keyword">else</span>
+0474     flat = max(abs(sig)) &lt; <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> * refAmp;
+0475 <span class="keyword">end</span>
+0476 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

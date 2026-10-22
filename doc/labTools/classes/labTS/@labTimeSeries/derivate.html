@@ -4,7 +4,7 @@
 <head>
   <title>Description of derivate</title>
   <meta name="keywords" content="derivate">
-  <meta name="description" content="derivate  Differentiates timeseries (legacy)">
+  <meta name="description" content="DERIVATE Differentiates timeseries (legacy).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,26 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>derivate  Differentiates timeseries (legacy)</strong></div>
+<div class="box"><strong>DERIVATE Differentiates timeseries (legacy).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = derivate(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">derivate  Differentiates timeseries (legacy)
+<div class="fragment"><pre class="comment">DERIVATE Differentiates timeseries (legacy).
 
-   newThis = derivate(this) computes numerical derivative and pads
-   with NaN
+   newThis = derivate(this) computes numerical derivative and pads with NaN
 
-   Inputs:
-       this - labTimeSeries object
+ Inputs:
+   this - labTimeSeries object
 
-   Outputs:
-       newThis - differentiated labTimeSeries with NaN padding
+ Outputs:
+   newThis - differentiated labTimeSeries with NaN padding
 
    Note: Kept for legacy compatibility purposes only
 
-   See also: <a href="derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">DERIVATIVE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -56,27 +57,28 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = derivate(this)</a>
-0002 <span class="comment">%derivate  Differentiates timeseries (legacy)</span>
+0002 <span class="comment">%DERIVATE Differentiates timeseries (legacy).</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = derivate(this) computes numerical derivative and pads</span>
-0005 <span class="comment">%   with NaN</span>
-0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
-0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       newThis - differentiated labTimeSeries with NaN padding</span>
-0012 <span class="comment">%</span>
-0013 <span class="comment">%   Note: Kept for legacy compatibility purposes only</span>
-0014 <span class="comment">%</span>
-0015 <span class="comment">%   See also: derivative</span>
-0016 
-0017 partialThis = this.derivative;
-0018 pad = nan(1, size(this.Data, 2));
-0019 newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>([pad; partialThis.Data; pad], this.Time(1), <span class="keyword">...</span>
-0020     this.sampPeriod, partialThis.labels);
-0021 <span class="keyword">end</span>
-0022</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0004 <span class="comment">%   newThis = derivate(this) computes numerical derivative and pads with NaN</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   this - labTimeSeries object</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Outputs:</span>
+0010 <span class="comment">%   newThis - differentiated labTimeSeries with NaN padding</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   Note: Kept for legacy compatibility purposes only</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also DERIVATIVE.</span>
+0017 
+0018 partialThis = this.derivative;
+0019 pad         = nan(1, size(this.Data, 2));
+0020 newThis = <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>([pad; partialThis.Data; pad], this.Time(1), <span class="keyword">...</span>
+0021     this.sampPeriod, partialThis.labels);
+0022 <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="../../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	PRCTILE Computes percentile.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	PLOT3 Plots 3D trajectories.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	THRESHOLD Thresholds by vector magnitude.</li><li><a href="../../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
@@ -41,464 +41,909 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function mm=markerModel(trainData,labels)</a></li><li><a href="#_sub2" class="code">function M = get.Nmarkers(this)</a></li><li><a href="#_sub3" class="code">function mu = get.statMedian(this)</a></li><li><a href="#_sub4" class="code">function [badFlag,outlierClass1,outlierClass2] = validateMarkerModel(this,verbose)</a></li><li><a href="#_sub5" class="code">function newThis = fixLabels(this)</a></li><li><a href="#_sub6" class="code">function s = getRobustStd(this,CI)</a></li><li><a href="#_sub7" class="code">function [fh]=seeModel(this)</a></li><li><a href="#_sub8" class="code">function [newThis,keptIdx,keptStats]=dropMarkers(this,markerList,keepMarkersFlag)</a></li><li><a href="#_sub9" class="code">function [outlierMarkers,markerScores,logL] = outlierDetect(this,data,threshold,fastFlag)</a></li><li><a href="#_sub10" class="code">function markerScores = scoreMarkers(this,data,fastFlag)</a></li><li><a href="#_sub11" class="code">function [labels1,labels2] = labelData(this,dataFrames)</a></li><li><a href="#_sub12" class="code">function sortedData=sortMarkerOrder(model,data,labels)</a></li><li><a href="#_sub13" class="code">function sharedMarkerList=getSharedMarkerList(model1,model2)</a></li><li><a href="#_sub14" class="code">function markerScores = scoreMarkersRanked(this,data,N)</a></li><li><a href="#_sub15" class="code">function [dataFrame,permutationList]=tryPermutations(model,dataFrame,listToPermute)</a></li><li><a href="#_sub16" class="code">function lL=normalLogL(values,means,stds)</a></li><li><a href="#_sub17" class="code">function frameScores=marker2frameScoresNaive(markerScores)</a></li><li><a href="#_sub18" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights)</a></li><li><a href="#_sub19" class="code">function [markerScores]=untangleLikelihoods(L,indicatrix)</a></li><li><a href="#_sub20" class="code">function [outMarkers]=untangleOutliers(outStats,in)</a></li><li><a href="#_sub21" class="code">function data=applyPermutationList(data,permutationList)</a></li></ul>
+<li><a href="#_sub1" class="code">function mm = markerModel(trainData,labels)</a></li><li><a href="#_sub2" class="code">function M = get.Nmarkers(this)</a></li><li><a href="#_sub3" class="code">function mu = get.statMedian(this)</a></li><li><a href="#_sub4" class="code">function [badFlag,outlierClass1,outlierClass2] =</a></li><li><a href="#_sub5" class="code">function newThis = fixLabels(this)</a></li><li><a href="#_sub6" class="code">function s = getRobustStd(this,CI)</a></li><li><a href="#_sub7" class="code">function fh = seeModel(this)</a></li><li><a href="#_sub8" class="code">function [newThis,keptIdx,keptStats] =</a></li><li><a href="#_sub9" class="code">function [outlierMarkers,markerScores,logL] =</a></li><li><a href="#_sub10" class="code">function markerScores = scoreMarkers(this,data,fastFlag)</a></li><li><a href="#_sub11" class="code">function [labels1,labels2] = labelData(this,dataFrames)</a></li><li><a href="#_sub12" class="code">function sortedData = sortMarkerOrder(model,data,labels)</a></li><li><a href="#_sub13" class="code">function sharedMarkerList = getSharedMarkerList(model1,model2)</a></li><li><a href="#_sub14" class="code">function markerScores = scoreMarkersRanked(this,data,N)</a></li><li><a href="#_sub15" class="code">function [dataFrame,permutationList] =</a></li><li><a href="#_sub16" class="code">function lL = normalLogL(values,means,stds)</a></li><li><a href="#_sub17" class="code">function frameScores = marker2frameScoresNaive(markerScores)</a></li><li><a href="#_sub18" class="code">function [newDataFrame,params] =</a></li><li><a href="#_sub19" class="code">function markerScores = untangleLikelihoods(L,indicatrix)</a></li><li><a href="#_sub20" class="code">function outMarkers = untangleOutliers(outStats,in)</a></li><li><a href="#_sub21" class="code">function data = applyPermutationList(data,permutationList)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="markerModel.html" class="code" title="">markerModel</a>
-0002     
-0003     properties
-0004         markerLabels <span class="comment">%Mx1 cell array</span>
-0005         trainingData <span class="comment">%Mx3xN</span>
-0006         statMean
-0007         statStd
-0008         trainingLogLPrctiles=[]; <span class="comment">%Stores prctiles for log-l distribution in training data</span>
-0009         statPrctiles
-0010         activeStats
-0011     <span class="keyword">end</span>
-0012     properties(Dependent)
-0013         Nmarkers
-0014         statMedian
-0015     <span class="keyword">end</span>
-0016     
-0017     methods
-0018         <a name="_sub0" href="#_subfunctions" class="code">function mm=markerModel(trainData,labels)</a>
-0019             mm.markerLabels=labels;
-0020             mm.trainingData=trainData;
-0021             trainStats=mm.summaryStats(trainData);
-0022             mm.statMean=nanmean(trainStats,2);
-0023             mm.statStd=nanstd(trainStats,[],2);
-0024             mm.statPrctiles=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(trainStats,0:100,2);
-0025             mm.trainingLogLPrctiles=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(mm.loglikelihood(trainData),0:100,2);
-0026             mm.activeStats=true(size(mm.statMean));
-0027         <span class="keyword">end</span>
-0028         <a name="_sub1" href="#_subfunctions" class="code">function M = get.Nmarkers(this)</a>
-0029             M=size(this.trainingData,1);
-0030         <span class="keyword">end</span>
-0031         <a name="_sub2" href="#_subfunctions" class="code">function mu = get.statMedian(this)</a>
-0032             mu=this.statPrctiles(:,51);
-0033         <span class="keyword">end</span>
-0034 
-0035         <span class="comment">%To be implemented in subclass:</span>
-0036         [logL,g] = loglikelihood(this,data) <span class="comment">%Returns PxN likelihood and gradient</span>
-0037         i = indicatrix(this)
-0038         mapData = reconstruct(this,dataPrior,priorConfidence)
-0039         <a name="_sub3" href="#_subfunctions" class="code">function [badFlag,outlierClass1,outlierClass2] = validateMarkerModel(this,verbose)</a>
-0040             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
-0041                 verbose=true;
-0042             <span class="keyword">end</span>
-0043             SS=this.stat2Matrix(this.statStd); <span class="comment">%Get stds as matrix indexed by markers</span>
-0044             <span class="comment">%First: get reference data</span>
-0045             [refModel,meanLB,meanUB,stdLB,stdUB,A,b]=getRefData();
-0046             <span class="comment">%Second: drop non-shared markers from both reference and</span>
-0047             <span class="comment">%current model (that is the only thing that can be compared)</span>
-0048             sharedMarkerList=this.getSharedMarkerList(refModel);
-0049             [this,keptIdx]=this.dropMarkers(sharedMarkerList,true);
-0050             [refModel,keptIdxRef,keptStats]=refModel.dropMarkers(sharedMarkerList,true);
-0051             <span class="comment">%Third: check mean upper and lower bounds are satisfied</span>
-0052             outlierClass2=this.statMean &gt; meanUB(keptStats) | this.statMean&lt; meanLB(keptStats);
-0053             <span class="comment">%Fourth: check std upper and lower bounds are satisfied</span>
-0054             outlierClassS=this.statStd &gt; stdUB(keptStats) | this.statStd&lt; stdLB(keptStats);
-0055             <span class="comment">%Fifth: check inequality constraints</span>
-0056             outlierClass1= A(:,keptStats)*this.statMean &gt; b;
-0057             <span class="comment">%Sixth: check, for the full given model, that each marker has</span>
-0058             <span class="comment">%some (2 or more) tight constraints, otherwise that marker is</span>
-0059             <span class="comment">%not being modeled properly</span>
-0060             badFlag=any(outlierClass1 | outlierClass2 | outlierClassS);
-0061             sortedSTD=sort(SS); <span class="comment">%Ascending order, along columns</span>
-0062             badFlag=badFlag | any(sortedSTD(2,:)&gt;15); <span class="comment">%Marking as bad if second tightest std of constraints of any marker are above 15mm</span>
-0063         <span class="keyword">end</span>
-0064         <a name="_sub4" href="#_subfunctions" class="code">function newThis = fixLabels(this)</a>
-0065         <span class="comment">%This function tries to permute labels in a model so the model</span>
-0066         <span class="comment">%would pass, or at least do better, at validate()</span>
-0067         <span class="keyword">end</span>
-0068 
-0069         <span class="comment">%Convenience functions:</span>
-0070         <a name="_sub5" href="#_subfunctions" class="code">function s = getRobustStd(this,CI)</a>
-0071            <span class="comment">%Uses the central confidence interval CI to estimate the std of the distribution</span>
-0072            <span class="comment">%assuming the central part is normally distributed</span>
-0073            <span class="comment">%CI has to be a number in [0.02,.98]</span>
-0074            <span class="keyword">if</span> nargin&lt;2
-0075                CI=.95;
-0076            <span class="keyword">elseif</span> CI&gt;.98 || CI&lt;0.02
-0077                error(<span class="string">'CI has to be a number in [0.02,.98]'</span>)
-0078            <span class="keyword">end</span>
-0079            lb=50-100*CI/2; <span class="comment">%Here I am assuming central CI</span>
-0080            ub=100*CI/2 +50;
-0081            <span class="comment">%Get the lb percentile:</span>
-0082            w=1-(lb-floor(lb));
-0083            pl=this.statPrctiles(:,floor(lb)+[0,1]+1)*[w;1-w];
-0084            <span class="comment">%Get the ub percentile:</span>
-0085            w=1-(ub-floor(ub));
-0086            pu=this.statPrctiles(:,floor(ub)+[0,1]+1)*[w;1-w];
-0087            
-0088            <span class="comment">%Get how many sigmas correspond to each of the chosen</span>
-0089            <span class="comment">%percentiles in a normal distribution:</span>
-0090            Nsigma=2*erfinv(CI)*sqrt(2); <span class="comment">%For the classical 0.95 value, this is 2*1.96 sigma, asumming central CI again</span>
-0091            s=(pu-pl)/Nsigma;
-0092         <span class="keyword">end</span>
-0093         <a name="_sub6" href="#_subfunctions" class="code">function [fh]=seeModel(this)</a>
-0094             data=this.trainingData;
-0095                 fh=figure; 
-0096                 c=colormap;
-0097                 c(1,:)=[1 1 1];
-0098                 colormap(c)
-0099                 subplot(3,2,1)
-0100                 <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.statPrctiles',0:100)
-0101                 title(<span class="string">'Training stat cdfs'</span>)
-0102                 subplot(3,2,[2,4,6])
-0103                 idx=all(all(~isnan(this.trainingData)));
-0104                 d=this.trainingData(:,:,idx);
-0105                 m=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(d,3); <span class="comment">%This needs to be rotated accordingly on a frame-by-frame basis for the plot to work well</span>
-0106                 <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(m(:,1),m(:,2),m(:,3),<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,4)
-0107                 view(3)
-0108                 axis equal
-0109                 hold on
-0110                 text(m(:,1),m(:,2),m(:,3),this.markerLabels)
-0111 
-0112                 
-0113                 subplot(3,4,5)
-0114                 s=this.stat2Matrix(this.statStd);
-0115                 [s,xl,yl]=this.stat2Matrix(this.getRobustStd(.95));
-0116                 <span class="keyword">if</span> strcmp(xl,<span class="string">'markerLabels'</span>)
-0117                     xl=this.markerLabels;
-0118                 <span class="keyword">end</span>
-0119                 <span class="keyword">if</span> strcmp(yl,<span class="string">'markerLabels'</span>)
-0120                     yl=this.markerLabels;
-0121                 <span class="keyword">end</span>
-0122                 s(s==0)=-5;
-0123                 imagesc(s)
-0124                 colorbar
-0125                 caxis([-5 100])
-0126                 title(<span class="string">'\sigma training (mm)'</span>)
-0127                 axis equal
-0128                 axis tight
-0129                 set(gca,<span class="string">'XTickLabels'</span>,xl,<span class="string">'XTickLabelRotation'</span>,90,<span class="string">'XTick'</span>,1:size(data,1),<span class="string">'YTickLabels'</span>,yl,<span class="string">'YTick'</span>,1:size(data,1))
-0130                 subplot(3,4,6)
-0131                 m=this.stat2Matrix(this.statMedian);
-0132                 m(m==0)=NaN;
-0133                 imagesc(m)
-0134                 colorbar
-0135                 caxis([nanmin(m(:))-100 nanmax(m(:))])
-0136                 title(<span class="string">'\mu training (mm)'</span>)
-0137                 axis equal
-0138                 axis tight
-0139                 set(gca,<span class="string">'XTickLabels'</span>,xl,<span class="string">'XTickLabelRotation'</span>,90,<span class="string">'XTick'</span>,1:size(data,1),<span class="string">'YTickLabels'</span>,yl,<span class="string">'YTick'</span>,1:size(data,1))
-0140                 
-0141 <span class="comment">%                 %Reference data</span>
-0142 <span class="comment">%                 [m,s,l]=naiveDistances.getRefData();</span>
-0143 <span class="comment">%                 subplot(3,4,9)</span>
-0144 <span class="comment">%                 s=triu(s);</span>
-0145 <span class="comment">%                 s(s==0)=-5;</span>
-0146 <span class="comment">%                 m=triu(m);</span>
-0147 <span class="comment">%                 m(m==0)=-25;</span>
-0148 <span class="comment">%                 imagesc(s)</span>
-0149 <span class="comment">%                 colorbar</span>
-0150 <span class="comment">%                 %colormap(c)</span>
-0151 <span class="comment">%                 caxis([-5 100])</span>
-0152 <span class="comment">%                 title('\sigma reference (mm)')</span>
-0153 <span class="comment">%                 axis equal</span>
-0154 <span class="comment">%                 axis tight</span>
-0155 <span class="comment">%                 set(gca,'XTickLabels',l,'XTickLabelRotation',90,'XTick',1:size(s,1),'YTickLabels',l,'YTick',1:size(s,1))</span>
-0156 <span class="comment">%                 subplot(3,4,10)</span>
-0157 <span class="comment">%                 imagesc(m)</span>
-0158 <span class="comment">%                 caxis([-25 1000])</span>
-0159 <span class="comment">%                 colorbar</span>
-0160 <span class="comment">%                 title('\mu reference (mm)')</span>
-0161 <span class="comment">%                 axis equal</span>
-0162 <span class="comment">%                 axis tight</span>
-0163 <span class="comment">%                 set(gca,'XTickLabels',l,'XTickLabelRotation',90,'XTick',1:size(s,1),'YTickLabels',l,'YTick',1:size(s,1))</span>
-0164         <span class="keyword">end</span>
-0165         <a name="_sub7" href="#_subfunctions" class="code">function [newThis,keptIdx,keptStats]=dropMarkers(this,markerList,keepMarkersFlag)</a>
-0166             <span class="comment">%Drops the markers in markerList from the model, if present.</span>
-0167             <span class="comment">%If keepMarkersFlag is set, then we only keep the markers in</span>
-0168             <span class="comment">%markerList and drop the rest. The markers are re-ordered to</span>
-0169             <span class="comment">%match the order in the given list.</span>
-0170             <span class="comment">%keptIdx is such that this.markerLabels(keptIdx)=newThis.markerLabels</span>
-0171             <span class="comment">%And will be equal to markerList if ALL markers in markerList are present</span>
-0172             <span class="comment">%keptStats is such that this.statMean(keptStats)=newThis.statMean</span>
-0173             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(keepMarkersFlag)
-0174                 keepMarkersFlag=false; 
-0175             <span class="keyword">end</span>
-0176             error(<span class="string">'Unimplemented'</span>)
-0177         <span class="keyword">end</span>
-0178         <a name="_sub8" href="#_subfunctions" class="code">function [outlierMarkers,markerScores,logL] = outlierDetect(this,data,threshold,fastFlag)</a>
-0179             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>)
-0180                 <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>=-5;
-0181             <span class="keyword">end</span>
-0182             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
-0183                 fastFlag=false;
-0184             <span class="keyword">end</span>
-0185             markerScores=[];
-0186             logL=[];
-0187             <span class="comment">%One option: find outlier stats and disentangle those</span>
-0188             <span class="comment">%logL=this.loglikelihood(data);</span>
-0189             <span class="comment">%outStats=logL&lt;(-threshold^2/2);</span>
-0190             <span class="comment">%[outlierMarkers]=markerModel.untangleOutliers(outStats,this.indicatrix);</span>
-0191             <span class="comment">%Another: disentangle likelihoods themselves &amp; then detect</span>
-0192             markerScores = <a href="#_sub10" class="code" title="subfunction markerScores = scoreMarkers(this,data,fastFlag)">scoreMarkers</a>(this,data,fastFlag);
-0193             outlierMarkers=markerScores&lt;(-threshold^2/2);
-0194         <span class="keyword">end</span>
-0195         <a name="_sub9" href="#_subfunctions" class="code">function markerScores = scoreMarkers(this,data,fastFlag)</a>
-0196            <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
-0197                 fastFlag=false;
-0198            <span class="keyword">end</span>
-0199            markerScores=this.scoreMarkersRanked(data,2); <span class="comment">%Fast scoring</span>
-0200            <span class="comment">%This fast scoring works well if only one outlier marker is</span>
-0201            <span class="comment">%present, or if two or more non-adjacent (ie. no strong distance</span>
-0202            <span class="comment">%constraints) markers are present. Otherwise problematic.</span>
-0203             <span class="keyword">if</span> ~fastFlag <span class="comment">%Improve scoring for complex situations</span>
-0204            i=indicatrix(this); <span class="comment">%MxP</span>
-0205            markerScores=this.scoreMarkersFast(data);
-0206            outMarkers=this.outlierDetectFast(data);
-0207            badFrames=sum(outMarkers)&gt;1; <span class="comment">%More than one bad marker per frame</span>
-0208            L=this.loglikelihood(data(:,:,badFrames));
-0209            badMarkers=any(outMarkers(:,badFrames),2); <span class="comment">%This may only be useful on not too long trials (otherwise every marker will possibly be a part of at least one bad frame, and all markers will get selected)</span>
-0210            badMarkers=true(size(badMarkers));
-0211            in=i(badMarkers,:); <span class="comment">%Indicatrix of bad markers only</span>
-0212            activeConstraints=any(in,1);
-0213            [markerScores(badMarkers,badFrames)]=markerModel.untangleLikelihoods(L(activeConstraints,:),in(:,activeConstraints));
-0214             <span class="keyword">else</span>
-0215 
-0216             <span class="keyword">end</span>
-0217         <span class="keyword">end</span>
-0218         <a name="_sub10" href="#_subfunctions" class="code">function [labels1,labels2] = labelData(this,dataFrames)</a>
-0219             error(<span class="string">'This function doesnt work yet.'</span>)
-0220             M2=size(dataFrames,1); <span class="comment">%Markers in data frame</span>
-0221             M1=this.Nmarkers; <span class="comment">%Markers in model (need not be equal)</span>
-0222             <span class="keyword">if</span> M1~=M2
-0223                 error(<span class="string">'Option to have different number of markers is not yet implemented.'</span>)
-0224             <span class="keyword">end</span>
-0225             Nframes=size(dataFrames,3);
-0226             <span class="keyword">if</span> Nframes~=1
-0227                 error(<span class="string">'Multiple frames not-yet supported'</span>)
-0228             <span class="keyword">end</span>
-0229             <span class="comment">%Heuristic 2: (to initialize labeling)</span>
-0230             i1=this.indicatrix;
-0231             i2=this.indicatrix(true,M2);
-0232             i2=i2(:,this.activeStats);
-0233             dataFrames(isnan(dataFrames))=0; <span class="comment">%TODO: what is the smart way to handle this?</span>
-0234             S=this.summaryStats(dataFrames);
-0235             S=S(this.activeStats,:);
-0236             mu=this.statMedian(this.activeStats);
-0237             sigma=this.getRobustStd(.94);
-0238             sigma=sigma(this.activeStats);
-0239             <span class="keyword">for</span> i=1:Nframes
-0240                 <span class="comment">%Heuristic: get most likely pair, one at a time:</span>
-0241                 counter=0;
-0242                 labels1=cell(M2,1);
-0243                 map=nan(M2,1);
-0244                 L=markerModel.normalLogL(S(:,i),mu',sigma'); <span class="comment">%This assumes normal distributions</span>
-0245                 mL=min(L(:));
-0246                 L((isnan(L)))=mL;
-0247                 P=i1*(1./sqrt(-L))/i2;
-0248                 P=L;
-0249                 <span class="keyword">while</span> counter&lt;M2
-0250                     counter=counter+1;
-0251                     [ii,jj]=find(P==max(P(:)),1,<span class="string">'first'</span>)
-0252                     map(jj)=ii;
-0253                     <span class="comment">%i1(ii,:)=0;</span>
-0254                     <span class="comment">%L(:,i2(jj,:)==1)=-1e6;</span>
-0255                     P(ii,:)=-Inf;
-0256                     P(:,jj)=-Inf;
-0257                 <span class="keyword">end</span>
-0258                 labels1=this.markerLabels(map);
-0259                     
-0260                 <span class="comment">%TODO:  I want to get the most likely map of M2 onto</span>
-0261                 <span class="comment">%M1, this is a permutation of M2, (idx: M1x1) such that</span>
-0262                 <span class="comment">%sum(diag(P(:,idx))) is maximized.</span>
-0263                 <span class="comment">%TODO: Need to think about what happens if M2&lt; M1 (if larger,</span>
-0264                 <span class="comment">%we just dont assign some)</span>
-0265             <span class="keyword">end</span>
-0266             <span class="comment">%Heuristic 1: assign random labels, then try pair-wise</span>
-0267             <span class="comment">%permutations and see if they improve likelihood of data.</span>
-0268             <span class="comment">%Keep permutations that do, and reset pairwise list to try</span>
-0269             <span class="comment">%End when all pairwise permutations have been tried and none</span>
-0270             <span class="comment">%improves reconstruction</span>
-0271             <span class="comment">%Perhaps repeat a couple times and select best of final results</span>
-0272             randInit=randperm(M1);
-0273             <span class="keyword">for</span> i=1:Nframes
-0274                 [newFrame,permList]=this.tryPermutations(dataFrames(randInit,:,i));
-0275             <span class="keyword">end</span>
-0276             labels2=this.markerLabels(randInit);
-0277             labels2=markerModel.applyPermutationList(labels2,permList);
-0278             
-0279         <span class="keyword">end</span>
-0280         <a name="_sub11" href="#_subfunctions" class="code">function sortedData=sortMarkerOrder(model,data,labels)</a>
-0281             <span class="comment">% Convenience function that re-sorts the rows of data, so that</span>
-0282             <span class="comment">% they match the order of the labels in this model.</span>
-0283             error(<span class="string">'Unimplemented'</span>)
-0284             <span class="comment">%To do: compare lists of labels and model.markerLabels, find</span>
-0285             <span class="comment">%sorting, and sort the data. Use compareLists()</span>
-0286         <span class="keyword">end</span>
-0287         <a name="_sub12" href="#_subfunctions" class="code">function sharedMarkerList=getSharedMarkerList(model1,model2)</a>
-0288             error(<span class="string">'Unimplemented'</span>)
-0289         <span class="keyword">end</span>
-0290     <span class="keyword">end</span>
-0291     methods(Hidden)
-0292         <a name="_sub13" href="#_subfunctions" class="code">function markerScores = scoreMarkersRanked(this,data,N)</a>
-0293             <span class="keyword">if</span> nargin&lt;3
-0294                 N=2; <span class="comment">%Using second-worse score</span>
-0295             <span class="keyword">end</span>
-0296            L=loglikelihood(this,data); <span class="comment">%PxN</span>
-0297            [P,Nn]=size(L);
-0298            i=indicatrix(this); <span class="comment">%MxP</span>
-0299            <span class="keyword">if</span> N&gt;1
-0300                markerScores=nan(size(i,1),size(L,2));
-0301                <span class="keyword">for</span> j=1:size(i,1) <span class="comment">%Each marker</span>
-0302                    aux=sort(L(i(j,:)==1,:),1);
-0303                    NN=min(N,size(aux,1));
-0304                    markerScores(j,:)=aux(NN,:);
-0305                <span class="keyword">end</span>
-0306             <span class="keyword">else</span>
-0307                 markerScores=squeeze(min(i.*reshape(L,1,P,Nn),[],2));
-0308            <span class="keyword">end</span>
+0002     <span class="comment">%MARKERMODEL Abstract statistical model of a marker set.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   Stores the training marker data (markers x 3 x frames) and the</span>
+0005     <span class="comment">% distribution of a set of summary statistics of it, computed with the</span>
+0006     <span class="comment">% subclass method summaryStats(). Subclasses implement loglikelihood,</span>
+0007     <span class="comment">% indicatrix, reconstruct, learn, summaryStats, stat2Matrix and</span>
+0008     <span class="comment">% getRefData. The model scores new data (per marker and per frame),</span>
+0009     <span class="comment">% detects outlier markers and tries label permutations that improve the</span>
+0010     <span class="comment">% fit.</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">% NOTE: work in progress. validateMarkerModel, labelData, dropMarkers,</span>
+0013     <span class="comment">% sortMarkerOrder and getSharedMarkerList are unimplemented stubs, and</span>
+0014     <span class="comment">% several methods call functions that are not in the repository</span>
+0015     <span class="comment">% (getTranslationAndRotation).</span>
+0016     <span class="comment">%</span>
+0017     <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0018     <span class="comment">%   (prctile), Optimization Toolbox (fmincon, linprog, intlinprog,</span>
+0019     <span class="comment">%   optimoptions). Low confidence: the dependency analyzer reported only</span>
+0020     <span class="comment">%   Optimization; prctile was added by hand.</span>
+0021     <span class="comment">%</span>
+0022     <span class="comment">% See also NAIVEDISTANCES.</span>
+0023 
+0024     properties
+0025         markerLabels <span class="comment">%Mx1 cell array</span>
+0026         trainingData <span class="comment">%Mx3xN</span>
+0027         statMean
+0028         statStd
+0029         <span class="comment">%Stores prctiles for log-l distribution in training data</span>
+0030         trainingLogLPrctiles = [];
+0031         statPrctiles
+0032         activeStats
+0033     <span class="keyword">end</span>
+0034     properties(Dependent)
+0035         Nmarkers
+0036         statMedian
+0037     <span class="keyword">end</span>
+0038 
+0039     methods
+0040         <a name="_sub0" href="#_subfunctions" class="code">function mm = markerModel(trainData,labels)</a>
+0041             <span class="comment">%MARKERMODEL Train a marker model from marker data.</span>
+0042             <span class="comment">%</span>
+0043             <span class="comment">%   mm = MARKERMODEL(trainData,labels) computes the summary</span>
+0044             <span class="comment">% statistics of the training data and stores their mean,</span>
+0045             <span class="comment">% standard deviation and 0 to 100th percentiles (and the</span>
+0046             <span class="comment">% percentiles of the log-likelihood of the training data). All</span>
+0047             <span class="comment">% statistics start out active.</span>
+0048             <span class="comment">%</span>
+0049             <span class="comment">% Inputs:</span>
+0050             <span class="comment">%   trainData - markers x 3 x frames training positions</span>
+0051             <span class="comment">%   labels    - markers x 1 cell array of marker labels</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">% Outputs:</span>
+0054             <span class="comment">%   mm - markerModel object</span>
+0055             <span class="comment">%</span>
+0056             <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0057             <span class="comment">%   (prctile)</span>
+0058 
+0059             mm.markerLabels = labels;
+0060             mm.trainingData = trainData;
+0061             trainStats = mm.summaryStats(trainData);
+0062             mm.statMean = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(trainStats, 2, <span class="string">'omitnan'</span>);
+0063             mm.statStd = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(trainStats, [], 2, <span class="string">'omitnan'</span>);
+0064             mm.statPrctiles = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(trainStats,0:100,2);
+0065             mm.trainingLogLPrctiles = <span class="keyword">...</span>
+0066                 <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>(mm.loglikelihood(trainData),0:100,2);
+0067             mm.activeStats = true(size(mm.statMean));
+0068         <span class="keyword">end</span>
+0069         <a name="_sub1" href="#_subfunctions" class="code">function M = get.Nmarkers(this)</a>
+0070             <span class="comment">%GETNMARKERS Number of markers in the model.</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">% Inputs:</span>
+0073             <span class="comment">%   this - markerModel object</span>
+0074             <span class="comment">%</span>
+0075             <span class="comment">% Outputs:</span>
+0076             <span class="comment">%   M - number of rows of the training data</span>
+0077             <span class="comment">%</span>
+0078             <span class="comment">% Toolbox Dependencies: None</span>
+0079 
+0080             M = size(this.trainingData,1);
+0081         <span class="keyword">end</span>
+0082         <a name="_sub2" href="#_subfunctions" class="code">function mu = get.statMedian(this)</a>
+0083             <span class="comment">%GETSTATMEDIAN Median of each statistic over training data.</span>
+0084             <span class="comment">%</span>
+0085             <span class="comment">% Inputs:</span>
+0086             <span class="comment">%   this - markerModel object</span>
+0087             <span class="comment">%</span>
+0088             <span class="comment">% Outputs:</span>
+0089             <span class="comment">%   mu - 51st column of the stored 0 to 100th percentiles</span>
+0090             <span class="comment">%</span>
+0091             <span class="comment">% Toolbox Dependencies: None</span>
+0092 
+0093             mu = this.statPrctiles(:,51);
+0094         <span class="keyword">end</span>
+0095 
+0096         <span class="comment">%To be implemented in subclass:</span>
+0097         <span class="comment">%Returns PxN likelihood and gradient</span>
+0098         [logL,g] = loglikelihood(this,data)
+0099         i       = indicatrix(this)
+0100         mapData = reconstruct(this,dataPrior,priorConfidence)
+0101         <a name="_sub3" href="#_subfunctions" class="code">function [badFlag,outlierClass1,outlierClass2] = </a><span class="keyword">...</span>
+0102             validateMarkerModel(this,verbose)
+0103             <span class="comment">%VALIDATEMARKERMODEL Compare model to a reference model.</span>
+0104             <span class="comment">%</span>
+0105             <span class="comment">%   [badFlag,outlierClass1,outlierClass2] =</span>
+0106             <span class="comment">% VALIDATEMARKERMODEL(this) checks, against the reference data</span>
+0107             <span class="comment">% of the class (getRefData), that the means and standard</span>
+0108             <span class="comment">% deviations of the statistics are inside their bounds and that</span>
+0109             <span class="comment">% the inequality constraints on the means hold. The model is bad</span>
+0110             <span class="comment">% if any check fails or if, for any marker, the second tightest</span>
+0111             <span class="comment">% standard deviation of its constraints is above 15 mm.</span>
+0112             <span class="comment">%</span>
+0113             <span class="comment">% NOTE: currently errors, because it relies on</span>
+0114             <span class="comment">% getSharedMarkerList and dropMarkers, which are unimplemented.</span>
+0115             <span class="comment">%</span>
+0116             <span class="comment">% Inputs:</span>
+0117             <span class="comment">%   this    - markerModel object</span>
+0118             <span class="comment">%   verbose - (optional) not used (default: true)</span>
+0119             <span class="comment">%</span>
+0120             <span class="comment">% Outputs:</span>
+0121             <span class="comment">%   badFlag       - true if the model fails any check</span>
+0122             <span class="comment">%   outlierClass1 - statistics that violate the inequality</span>
+0123             <span class="comment">%                   constraints</span>
+0124             <span class="comment">%   outlierClass2 - statistics whose mean is outside its bounds</span>
+0125             <span class="comment">%</span>
+0126             <span class="comment">% Toolbox Dependencies: None</span>
+0127 
+0128             <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
+0129                 verbose = true;
+0130             <span class="keyword">end</span>
+0131             <span class="comment">%Get stds as matrix indexed by markers</span>
+0132             SS = this.stat2Matrix(this.statStd);
+0133             <span class="comment">%First: get reference data</span>
+0134             [refModel,meanLB,meanUB,stdLB,stdUB,A,b] = getRefData();
+0135             <span class="comment">%Second: drop non-shared markers from both reference and</span>
+0136             <span class="comment">%current model (that is the only thing that can be compared)</span>
+0137             sharedMarkerList = this.getSharedMarkerList(refModel);
+0138             [this,keptIdx] = this.dropMarkers(sharedMarkerList,true);
+0139             [refModel,keptIdxRef,keptStats] = <span class="keyword">...</span>
+0140                 refModel.dropMarkers(sharedMarkerList,true);
+0141             <span class="comment">%Third: check mean upper and lower bounds are satisfied</span>
+0142             outlierClass2 = this.statMean &gt; meanUB(keptStats) | <span class="keyword">...</span>
+0143                 this.statMean &lt; meanLB(keptStats);
+0144             <span class="comment">%Fourth: check std upper and lower bounds are satisfied</span>
+0145             outlierClassS = this.statStd &gt; stdUB(keptStats) | <span class="keyword">...</span>
+0146                 this.statStd &lt; stdLB(keptStats);
+0147             <span class="comment">%Fifth: check inequality constraints</span>
+0148             outlierClass1 = A(:,keptStats)*this.statMean &gt; b;
+0149             maxSecondStd = 15; <span class="comment">% mm: limit on the second tightest std</span>
+0150             <span class="comment">%Sixth: check, for the full given model, that each marker has</span>
+0151             <span class="comment">%some (2 or more) tight constraints, otherwise that marker is</span>
+0152             <span class="comment">%not being modeled properly</span>
+0153             badFlag   = any(outlierClass1 | outlierClass2 | outlierClassS);
+0154             sortedSTD = sort(SS); <span class="comment">%Ascending order, along columns</span>
+0155             <span class="comment">%Marking as bad if second tightest std of constraints of any</span>
+0156             <span class="comment">%marker are above 15mm</span>
+0157             badFlag   = badFlag | any(sortedSTD(2,:) &gt; maxSecondStd);
+0158         <span class="keyword">end</span>
+0159         <a name="_sub4" href="#_subfunctions" class="code">function newThis = fixLabels(this)</a>
+0160             <span class="comment">%FIXLABELS Permute labels to pass validation (stub).</span>
+0161             <span class="comment">%</span>
+0162             <span class="comment">%   This function is meant to permute the labels so the model</span>
+0163             <span class="comment">% passes, or at least does better at, validateMarkerModel. It is</span>
+0164             <span class="comment">% not implemented and newThis is never assigned.</span>
+0165             <span class="comment">%</span>
+0166             <span class="comment">% Inputs:</span>
+0167             <span class="comment">%   this - markerModel object</span>
+0168             <span class="comment">%</span>
+0169             <span class="comment">% Outputs:</span>
+0170             <span class="comment">%   newThis - model with fixed labels (never assigned)</span>
+0171             <span class="comment">%</span>
+0172             <span class="comment">% Toolbox Dependencies: None</span>
+0173 
+0174         <span class="keyword">end</span>
+0175 
+0176         <span class="comment">%Convenience functions:</span>
+0177         <a name="_sub5" href="#_subfunctions" class="code">function s = getRobustStd(this,CI)</a>
+0178             <span class="comment">%GETROBUSTSTD Std estimated from a central percentile range.</span>
+0179             <span class="comment">%</span>
+0180             <span class="comment">%   s = GETROBUSTSTD(this,CI) estimates the standard deviation</span>
+0181             <span class="comment">% of each statistic from the central confidence interval CI of</span>
+0182             <span class="comment">% its training distribution, assuming the central part is</span>
+0183             <span class="comment">% normally distributed. For the classical 0.95 value the</span>
+0184             <span class="comment">% interval spans 2*1.96 sigma.</span>
+0185             <span class="comment">%</span>
+0186             <span class="comment">% Inputs:</span>
+0187             <span class="comment">%   this - markerModel object</span>
+0188             <span class="comment">%   CI   - (optional) central interval in [0.02, 0.98] (default:</span>
+0189             <span class="comment">%          0.95); errors otherwise</span>
+0190             <span class="comment">%</span>
+0191             <span class="comment">% Outputs:</span>
+0192             <span class="comment">%   s - standard deviation of each statistic</span>
+0193             <span class="comment">%</span>
+0194             <span class="comment">% Toolbox Dependencies: None</span>
+0195 
+0196             <span class="keyword">if</span> nargin &lt; 2
+0197                 CI = 0.95;
+0198             <span class="keyword">elseif</span> CI &gt; 0.98 || CI &lt; 0.02
+0199                 error(<span class="string">'CI has to be a number in [0.02,.98]'</span>)
+0200             <span class="keyword">end</span>
+0201             lb = 50-100*CI/2; <span class="comment">%Here I am assuming central CI</span>
+0202             ub = 100*CI/2 +50;
+0203             <span class="comment">%Get the lb percentile:</span>
+0204             w  = 1-(lb-floor(lb));
+0205             pl = this.statPrctiles(:,floor(lb)+[0,1]+1)*[w;1-w];
+0206             <span class="comment">%Get the ub percentile:</span>
+0207             w  = 1-(ub-floor(ub));
+0208             pu = this.statPrctiles(:,floor(ub)+[0,1]+1)*[w;1-w];
+0209 
+0210             <span class="comment">%Get how many sigmas correspond to each of the chosen</span>
+0211             <span class="comment">%percentiles in a normal distribution:</span>
+0212             <span class="comment">%For the classical 0.95 value, this is 2*1.96 sigma, asumming</span>
+0213             <span class="comment">%central CI again</span>
+0214             Nsigma = 2*erfinv(CI)*sqrt(2);
+0215             s      = (pu-pl)/Nsigma;
+0216         <span class="keyword">end</span>
+0217         <a name="_sub6" href="#_subfunctions" class="code">function fh = seeModel(this)</a>
+0218             <span class="comment">%SEEMODEL Plot the model.</span>
+0219             <span class="comment">%</span>
+0220             <span class="comment">%   fh = SEEMODEL(this) opens a figure with the cdf of the</span>
+0221             <span class="comment">% training statistics, the median marker positions in 3-D and</span>
+0222             <span class="comment">% the standard deviation and median of the statistics as</span>
+0223             <span class="comment">% matrices.</span>
+0224             <span class="comment">%</span>
+0225             <span class="comment">% Inputs:</span>
+0226             <span class="comment">%   this - markerModel object</span>
+0227             <span class="comment">%</span>
+0228             <span class="comment">% Outputs:</span>
+0229             <span class="comment">%   fh - figure handle</span>
+0230             <span class="comment">%</span>
+0231             <span class="comment">% Toolbox Dependencies: None</span>
+0232 
+0233             data = this.trainingData;
+0234             fh   = figure;
+0235             c    = colormap;
+0236             c(1,:) = [1 1 1];
+0237             colormap(c)
+0238             subplot(3,2,1)
+0239             <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(this.statPrctiles',0:100)
+0240             title(<span class="string">'Training stat cdfs'</span>)
+0241             subplot(3,2,[2,4,6])
+0242             idx = all(all(~isnan(this.trainingData)));
+0243             d   = this.trainingData(:,:,idx);
+0244             <span class="comment">%This needs to be rotated accordingly on a frame-by-frame basis</span>
+0245             <span class="comment">%for the plot to work well</span>
+0246             m   = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(d,3);
+0247             <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(m(:,1),m(:,2),m(:,3),<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,4)
+0248             view(3)
+0249             axis equal
+0250             hold on
+0251             text(m(:,1),m(:,2),m(:,3),this.markerLabels)
+0252 
+0253 
+0254             subplot(3,4,5)
+0255             s = this.stat2Matrix(this.statStd);
+0256             [s,xl,yl] = this.stat2Matrix(this.getRobustStd(0.95));
+0257             <span class="keyword">if</span> strcmp(xl,<span class="string">'markerLabels'</span>)
+0258                 xl = this.markerLabels;
+0259             <span class="keyword">end</span>
+0260             <span class="keyword">if</span> strcmp(yl,<span class="string">'markerLabels'</span>)
+0261                 yl = this.markerLabels;
+0262             <span class="keyword">end</span>
+0263             s(s == 0) = -5;
+0264             imagesc(s)
+0265             colorbar
+0266             caxis([-5 100])
+0267             title(<span class="string">'\sigma training (mm)'</span>)
+0268             axis equal
+0269             axis tight
+0270             set(gca,<span class="string">'XTickLabels'</span>,xl,<span class="string">'XTickLabelRotation'</span>,90,<span class="string">'XTick'</span>, <span class="keyword">...</span>
+0271                 1:size(data,1),<span class="string">'YTickLabels'</span>,yl,<span class="string">'YTick'</span>,1:size(data,1))
+0272             subplot(3,4,6)
+0273             m = this.stat2Matrix(this.statMedian);
+0274             m(m == 0) = NaN;
+0275             imagesc(m)
+0276             colorbar
+0277             caxis([min(m(:), [], <span class="string">'omitnan'</span>)-100 max(m(:), [], <span class="string">'omitnan'</span>)])
+0278             title(<span class="string">'\mu training (mm)'</span>)
+0279             axis equal
+0280             axis tight
+0281             set(gca,<span class="string">'XTickLabels'</span>,xl,<span class="string">'XTickLabelRotation'</span>,90,<span class="string">'XTick'</span>, <span class="keyword">...</span>
+0282                 1:size(data,1),<span class="string">'YTickLabels'</span>,yl,<span class="string">'YTick'</span>,1:size(data,1))
+0283 
+0284             <span class="comment">% %Reference data</span>
+0285             <span class="comment">% [m,s,l]=naiveDistances.getRefData();</span>
+0286             <span class="comment">% subplot(3,4,9)</span>
+0287             <span class="comment">% s=triu(s);</span>
+0288             <span class="comment">% s(s==0)=-5;</span>
+0289             <span class="comment">% m=triu(m);</span>
+0290             <span class="comment">% m(m==0)=-25;</span>
+0291             <span class="comment">% imagesc(s)</span>
+0292             <span class="comment">% colorbar</span>
+0293             <span class="comment">% %colormap(c)</span>
+0294             <span class="comment">% caxis([-5 100])</span>
+0295             <span class="comment">% title('\sigma reference (mm)')</span>
+0296             <span class="comment">% axis equal</span>
+0297             <span class="comment">% axis tight</span>
+0298             <span class="comment">% set(gca,'XTickLabels',l,'XTickLabelRotation',90,'XTick', ...</span>
+0299             <span class="comment">%    1:size(s,1),'YTickLabels',l,'YTick',1:size(s,1))</span>
+0300             <span class="comment">% subplot(3,4,10)</span>
+0301             <span class="comment">% imagesc(m)</span>
+0302             <span class="comment">% caxis([-25 1000])</span>
+0303             <span class="comment">% colorbar</span>
+0304             <span class="comment">% title('\mu reference (mm)')</span>
+0305             <span class="comment">% axis equal</span>
+0306             <span class="comment">% axis tight</span>
+0307             <span class="comment">% set(gca,'XTickLabels',l,'XTickLabelRotation',90,'XTick', ...</span>
+0308             <span class="comment">%    1:size(s,1),'YTickLabels',l,'YTick',1:size(s,1))</span>
 0309         <span class="keyword">end</span>
-0310         <a name="_sub14" href="#_subfunctions" class="code">function [dataFrame,permutationList]=tryPermutations(model,dataFrame,listToPermute)</a>
-0311             <span class="comment">%Tries to permute labels on single dataFrame to maximize</span>
-0312             <span class="comment">%likelihood of data.</span>
-0313             permutationList=zeros(0,2);
-0314             <span class="comment">%Benchmark to compare:</span>
-0315             L0=model.loglikelihood(dataFrame);
-0316             bad=L0&lt;-5^2/2;
-0317             nBad=sum(model.indicatrix* bad &gt;0);
-0318             <span class="comment">%TODO: start with markers associated to bad distances, and then move to a larger set</span>
-0319             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(listToPermute)
-0320                 <span class="comment">%Run for bad markers.</span>
-0321                 <span class="keyword">if</span> nBad&gt;0
-0322                     listToPermute=find(model.indicatrix* bad &gt;0);
-0323                     [dataFrame,permutationList]=<a href="#_sub15" class="code" title="subfunction [dataFrame,permutationList]=tryPermutations(model,dataFrame,listToPermute)">tryPermutations</a>(model,dataFrame,listToPermute);
-0324                 <span class="keyword">end</span>
-0325                 <span class="comment">%Run for all markers.</span>
-0326                 [dataFrame,permutationList2]=<a href="#_sub15" class="code" title="subfunction [dataFrame,permutationList]=tryPermutations(model,dataFrame,listToPermute)">tryPermutations</a>(model,dataFrame,1:size(dataFrame,1));
-0327                 permutationList=[permutationList;permutationList2];
-0328             <span class="keyword">else</span>
-0329                 <span class="keyword">while</span> nBad&gt;0 <span class="comment">%If no log-L is too bad, do nothing, save time.</span>
-0330                     <span class="comment">%Permutations to consider:</span>
-0331                     listOfPermutations=nchoosek(listToPermute,2); <span class="comment">%Pairwise permutations</span>
-0332                     N=size(listOfPermutations,1);
-0333                     count=0;
-0334                     <span class="keyword">while</span> count&lt;N
-0335                        count=count+1;
-0336                        newDataFrame=dataFrame;
-0337                        newDataFrame=markerModel.applyPermutationList(dataFrame,listOfPermutations(count,:));
-0338                        L=model.loglikelihood(newDataFrame);
-0339                        <span class="keyword">if</span> sum(L)&gt;sum(L0) <span class="comment">%Found permutation that improves things</span>
-0340                            <span class="keyword">break</span> <span class="comment">%Exiting inner while-loop</span>
-0341                        <span class="keyword">end</span>
-0342                     <span class="keyword">end</span>
-0343                     <span class="keyword">if</span> sum(L)&lt;=sum(L0) <span class="comment">%Checking if while exited without making any improvements</span>
-0344                         <span class="keyword">return</span> <span class="comment">%Inner loop finished without progress</span>
-0345                     <span class="keyword">else</span> <span class="comment">%Improvement was made!</span>
-0346                         <span class="comment">%Update benchmark:</span>
-0347                         dataFrame=newDataFrame;
-0348                         L0=L;
-0349                         nBad=sum(L0&lt;-5^2/2);
-0350                         permutationList(end+1,:)=listOfPermutations(count,:); <span class="comment">%Adding permutation to list</span>
-0351                     <span class="keyword">end</span>
-0352                 <span class="keyword">end</span>
-0353             <span class="keyword">end</span>
-0354         <span class="keyword">end</span>
-0355     <span class="keyword">end</span>
-0356     methods(Static)
-0357         <span class="comment">%To be implemented in subclass:</span>
-0358         model = learn(data,labels)
-0359         [ss,g] = summaryStats(data) <span class="comment">%Returns PxN summary stats, and P x 3M x N gradient</span>
-0360         <span class="comment">%gradient can be P x 3M if it is the same for all frames, as is the case in linear models</span>
-0361         [M,xl,yl]=stat2Matrix(stats)
-0362         [model,meanLB,meanUB,stdLB,stdUB,A,b]=getRefData(); <span class="comment">%Returns an example, well-calibrated model</span>
-0363         
-0364         <span class="comment">%Convenience functions:</span>
-0365         <a name="_sub15" href="#_subfunctions" class="code">function lL=normalLogL(values,means,stds)</a>
-0366             <span class="comment">%values is PxN, means and stds are Px1</span>
-0367             <span class="comment">%Returns PxN likelihood of value under each normal</span>
-0368             d=.5*((values-means)./stds).^2;
-0369             lL=-d;<span class="comment">% -log(stds) -.9189;</span>
-0370             <span class="comment">%lL=-sqrt(2*d); %Mahalanobis distance</span>
-0371             <span class="comment">%.9189 = log(2*pi)/2</span>
-0372         <span class="keyword">end</span>
-0373         <a name="_sub16" href="#_subfunctions" class="code">function frameScores=marker2frameScoresNaive(markerScores)</a>
-0374             frameScores=nanmean(markerScores,1);
-0375         <span class="keyword">end</span>
-0376         <a name="_sub17" href="#_subfunctions" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights)</a>
-0377            <span class="comment">%Convenience function that finds the 3D rotation/translation of dataFrame to best match the anchorFrame</span>
-0378            <span class="comment">%TODO: use weights to do a weighted optimization</span>
-0379            [R,t,newDataFrame]=getTranslationAndRotation(dataFrame,anchorFrame);
-0380            params.R=R;
-0381            params.t=t;
-0382         <span class="keyword">end</span>
-0383         <a name="_sub18" href="#_subfunctions" class="code">function [markerScores]=untangleLikelihoods(L,indicatrix)</a>
-0384             A=-indicatrix';
-0385             options = optimoptions(<span class="string">'fmincon'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>,<span class="string">'SpecifyObjectiveGradient'</span>,false,<span class="string">'OptimalityTolerance'</span>,1e-1,<span class="string">'StepTolerance'</span>,1e-1,<span class="string">'ConstraintTolerance'</span>,1e-1); <span class="comment">%Relax tolerances for fast compute</span>
-0386             options2 = optimoptions(<span class="string">'linprog'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>);
-0387             N=size(indicatrix,1);
-0388             LB=zeros(N,1);
-0389             f=ones(N,1);
-0390             M=size(L,2); <span class="comment">%number of frames</span>
-0391             markerScores=nan(N,M);
-0392             display([<span class="string">'Running for '</span> num2str(M) <span class="string">' frames. Expect '</span> num2str(M/75,2) <span class="string">' sec. processing time (75 fps).'</span>])
-0393             tic
-0394             <span class="keyword">for</span> j=1:M
-0395                b=-sqrt(-2*L(:,j)); <span class="comment">%transform likelihood to std away from expectation</span>
-0396                <span class="comment">%Get linear programming solution:</span>
-0397                [x0,~,~,~,lam]=linprog(f,A,b,[],[],LB,[],options2); <span class="comment">%Being used to identify active inequalities only</span>
-0398                <span class="comment">%f'*x0</span>
-0399                <span class="comment">%Sparsify solution: (for each active constraint, selecting the most</span>
-0400                <span class="comment">%unequal solution possible, notice this maintains the cost f'*x constant)</span>
-0401                activeConstraints=(lam.ineqlin==1);
-0402                A1=-A(activeConstraints,:); <span class="comment">%Active inequalities</span>
-0403                idx=any(A1~=0); <span class="comment">%For each marker there is at least 1 active inequality, or one of the bounds was reached</span>
-0404                A2=A1(:,idx);
-0405                aux=fmincon(@(x) [-sum(x.^2)],x0(idx),A(~activeConstraints,idx),b(~activeConstraints),A2,A2*x0(idx),LB(idx),[],[],options);  <span class="comment">%Notice this adds as constraint that active inequalities from linprog are maintained</span>
-0406                x0(idx)=aux;
-0407                markerScores(:,j)=-.5*x0.^2;
-0408                <span class="comment">%f'*x0 %Check that this was maintained</span>
-0409             <span class="keyword">end</span>
-0410             toc
-0411         <span class="keyword">end</span>        
-0412         <a name="_sub19" href="#_subfunctions" class="code">function [outMarkers]=untangleOutliers(outStats,in) </a><span class="comment">%Single frame: L is vector</span>
-0413             <span class="comment">%Solve: min 1'*y s.t. L&lt;=i'*y and y&gt;=(i*L -1'*y), where L = outlier stats for marker</span>
-0414             <span class="comment">%This means we find the minimum outlier set, such that each</span>
-0415             <span class="comment">%outlier stat has at least one causing outlier marker AND any</span>
-0416             <span class="comment">%marker that has strictly more outlier stats than there are outlier</span>
-0417             <span class="comment">%markers is an outlier itself [I think this is implied by the other but am not sure].</span>
-0418             [M,P]=size(in);
-0419             uno=ones(M,1);
-0420             cero=zeros(M,1);
-0421             f=[uno]; <span class="comment">%Vector to solve y</span>
-0422             lb=[cero];
-0423             ub=[uno];
-0424             opts=optimoptions(<span class="string">'intlinprog'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>);
-0425             outMarkers=(in*outStats)&gt;1; <span class="comment">%This marks markers only if they have more than one outlier stat</span>
-0426             <span class="keyword">for</span> j=1:size(outStats,2)
-0427                 b1=outStats(:,j);
-0428                 b2=in*outStats(:,j);
-0429                 c=outMarkers(:,j);
-0430                 <span class="keyword">if</span> any(b1&gt;in'*c) || any(c&lt;(b2-sum(c))) || sum(c)&gt;1 <span class="comment">%Only run if the inequalities are not already satisified or if two markers were outliers in the same frame</span>
-0431                     <span class="comment">%Ineq 1: L&lt;=i'*y -&gt; -L&gt;= -i'*y</span>
-0432                     A1=-in';
-0433                     b1=-b1;
-0434                     <span class="comment">%Ineq 2: y&gt;=(i*L -1'*y)/K -&gt; -y-(1'*y)/K&lt;=-i*L/K</span>
-0435                     K=max(sum(in,2));
-0436                     A2=[-eye(M)-ones(M)/K];
-0437                     b2=-b2/K;
-0438                     outMarkers(:,j)=intlinprog(f,[1:M],[A1;A2],[b1;b2],[],[],lb,ub,opts);
-0439                 <span class="keyword">end</span>
-0440             <span class="keyword">end</span>
-0441         <span class="keyword">end</span> 
-0442     <span class="keyword">end</span>
-0443     methods(Static,Hidden)
-0444         <a name="_sub20" href="#_subfunctions" class="code">function data=applyPermutationList(data,permutationList)</a>
-0445             <span class="keyword">if</span> size(data,1)==1 <span class="comment">%Row vector</span>
-0446                 data=data(:);
-0447             <span class="keyword">end</span>
-0448             <span class="comment">%Applies a list of pair-wise permutations along dim 1</span>
-0449             <span class="keyword">for</span> i=1:size(permutationList,1)
-0450                 data(permutationList(i,:),:)=data(fliplr(permutationList(i,:)),:);
-0451             <span class="keyword">end</span>
-0452         <span class="keyword">end</span>
-0453     <span class="keyword">end</span>
-0454 <span class="keyword">end</span>
-0455</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0310         <a name="_sub7" href="#_subfunctions" class="code">function [newThis,keptIdx,keptStats] = </a><span class="keyword">...</span>
+0311             dropMarkers(this,markerList,keepMarkersFlag)
+0312             <span class="comment">%DROPMARKERS Drop markers from the model (stub).</span>
+0313             <span class="comment">%</span>
+0314             <span class="comment">%   [newThis,keptIdx,keptStats] =</span>
+0315             <span class="comment">% DROPMARKERS(this,markerList,keepMarkersFlag) is meant to drop</span>
+0316             <span class="comment">% the markers in markerList, or to keep only them (in the order</span>
+0317             <span class="comment">% of the list) if keepMarkersFlag is set. keptIdx is such that</span>
+0318             <span class="comment">% this.markerLabels(keptIdx) = newThis.markerLabels and</span>
+0319             <span class="comment">% keptStats is such that this.statMean(keptStats) =</span>
+0320             <span class="comment">% newThis.statMean. It is not implemented and errors.</span>
+0321             <span class="comment">%</span>
+0322             <span class="comment">% Inputs:</span>
+0323             <span class="comment">%   this            - markerModel object</span>
+0324             <span class="comment">%   markerList      - markers to drop (or keep)</span>
+0325             <span class="comment">%   keepMarkersFlag - (optional) keep only the listed markers</span>
+0326             <span class="comment">%                     (default: false)</span>
+0327             <span class="comment">%</span>
+0328             <span class="comment">% Outputs:</span>
+0329             <span class="comment">%   newThis   - model without the dropped markers</span>
+0330             <span class="comment">%   keptIdx   - indices of the kept markers</span>
+0331             <span class="comment">%   keptStats - indices of the kept statistics</span>
+0332             <span class="comment">%</span>
+0333             <span class="comment">% Toolbox Dependencies: None</span>
+0334 
+0335             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(keepMarkersFlag)
+0336                 keepMarkersFlag = false;
+0337             <span class="keyword">end</span>
+0338             error(<span class="string">'Unimplemented'</span>)
+0339         <span class="keyword">end</span>
+0340         <a name="_sub8" href="#_subfunctions" class="code">function [outlierMarkers,markerScores,logL] = </a><span class="keyword">...</span>
+0341             outlierDetect(this,data,<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>,fastFlag)
+0342             <span class="comment">%OUTLIERDETECT Detect outlier markers.</span>
+0343             <span class="comment">%</span>
+0344             <span class="comment">%   [outlierMarkers,markerScores,logL] =</span>
+0345             <span class="comment">% OUTLIERDETECT(this,data) scores the markers with scoreMarkers</span>
+0346             <span class="comment">% and flags those with a score below -threshold^2/2.</span>
+0347             <span class="comment">%</span>
+0348             <span class="comment">% Inputs:</span>
+0349             <span class="comment">%   this      - markerModel object</span>
+0350             <span class="comment">%   data      - markers x 3 x frames positions</span>
+0351             <span class="comment">%   threshold - (optional) number of standard deviations</span>
+0352             <span class="comment">%               (default: -5)</span>
+0353             <span class="comment">%   fastFlag  - (optional) use only the fast scoring (default:</span>
+0354             <span class="comment">%               false)</span>
+0355             <span class="comment">%</span>
+0356             <span class="comment">% Outputs:</span>
+0357             <span class="comment">%   outlierMarkers - markers x frames logical, true for outliers</span>
+0358             <span class="comment">%   markerScores   - markers x frames scores</span>
+0359             <span class="comment">%   logL           - empty (not computed)</span>
+0360             <span class="comment">%</span>
+0361             <span class="comment">% Toolbox Dependencies: Optimization Toolbox (through</span>
+0362             <span class="comment">%   scoreMarkers)</span>
+0363 
+0364             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>)
+0365                 <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a> = -5;
+0366             <span class="keyword">end</span>
+0367             <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
+0368                 fastFlag = false;
+0369             <span class="keyword">end</span>
+0370             markerScores = [];
+0371             logL         = [];
+0372             <span class="comment">%One option: find outlier stats and disentangle those</span>
+0373             <span class="comment">%logL=this.loglikelihood(data);</span>
+0374             <span class="comment">%outStats=logL&lt;(-threshold^2/2);</span>
+0375             <span class="comment">%[outlierMarkers]=markerModel.untangleOutliers(outStats, ...</span>
+0376             <span class="comment">%    this.indicatrix);</span>
+0377             <span class="comment">%Another: disentangle likelihoods themselves &amp; then detect</span>
+0378             markerScores   = <a href="#_sub10" class="code" title="subfunction markerScores = scoreMarkers(this,data,fastFlag)">scoreMarkers</a>(this,data,fastFlag);
+0379             outlierMarkers = markerScores &lt; (-threshold^2/2);
+0380         <span class="keyword">end</span>
+0381         <a name="_sub9" href="#_subfunctions" class="code">function markerScores = scoreMarkers(this,data,fastFlag)</a>
+0382             <span class="comment">%SCOREMARKERS Score each marker in each frame.</span>
+0383             <span class="comment">%</span>
+0384             <span class="comment">%   markerScores = SCOREMARKERS(this,data) scores the markers</span>
+0385             <span class="comment">% with the second-worst log-likelihood of their statistics. This</span>
+0386             <span class="comment">% works well if only one outlier marker is present, or two or</span>
+0387             <span class="comment">% more non-adjacent markers (no strong distance constraints</span>
+0388             <span class="comment">% between them), and is problematic otherwise. Unless fastFlag</span>
+0389             <span class="comment">% is set, frames with more than one outlier marker are re-scored</span>
+0390             <span class="comment">% with untangleLikelihoods.</span>
+0391             <span class="comment">%</span>
+0392             <span class="comment">% Inputs:</span>
+0393             <span class="comment">%   this     - markerModel object</span>
+0394             <span class="comment">%   data     - markers x 3 x frames positions</span>
+0395             <span class="comment">%   fastFlag - (optional) skip the improved scoring (default:</span>
+0396             <span class="comment">%              false)</span>
+0397             <span class="comment">%</span>
+0398             <span class="comment">% Outputs:</span>
+0399             <span class="comment">%   markerScores - markers x frames scores</span>
+0400             <span class="comment">%</span>
+0401             <span class="comment">% Toolbox Dependencies: Optimization Toolbox (through</span>
+0402             <span class="comment">%   untangleLikelihoods)</span>
+0403 
+0404             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
+0405                 fastFlag = false;
+0406             <span class="keyword">end</span>
+0407             markerScores = this.scoreMarkersRanked(data,2); <span class="comment">%Fast scoring</span>
+0408             <span class="comment">%This fast scoring works well if only one outlier marker is</span>
+0409             <span class="comment">%present, or if two or more non-adjacent (ie. no strong distance</span>
+0410             <span class="comment">%constraints) markers are present. Otherwise problematic.</span>
+0411             <span class="keyword">if</span> ~fastFlag <span class="comment">%Improve scoring for complex situations</span>
+0412                 i = indicatrix(this); <span class="comment">%MxP</span>
+0413                 markerScores = this.scoreMarkersFast(data);
+0414                 outMarkers = this.outlierDetectFast(data);
+0415                 <span class="comment">%More than one bad marker per frame</span>
+0416                 badFrames = sum(outMarkers) &gt; 1;
+0417                 L = this.loglikelihood(data(:,:,badFrames));
+0418                 <span class="comment">%This may only be useful on not too long trials (otherwise</span>
+0419                 <span class="comment">%every marker will possibly be a part of at least one bad</span>
+0420                 <span class="comment">%frame, and all markers will get selected)</span>
+0421                 badMarkers = any(outMarkers(:,badFrames),2);
+0422                 badMarkers = true(size(badMarkers));
+0423                 in = i(badMarkers,:); <span class="comment">%Indicatrix of bad markers only</span>
+0424                 activeConstraints = any(in,1);
+0425                 markerScores(badMarkers,badFrames) = <span class="keyword">...</span>
+0426                     markerModel.untangleLikelihoods(L(activeConstraints, <span class="keyword">...</span>
+0427                     :),in(:,activeConstraints));
+0428             <span class="keyword">else</span>
+0429 
+0430             <span class="keyword">end</span>
+0431         <span class="keyword">end</span>
+0432         <a name="_sub10" href="#_subfunctions" class="code">function [labels1,labels2] = labelData(this,dataFrames)</a>
+0433             <span class="comment">%LABELDATA Assign labels to unlabeled marker data (stub).</span>
+0434             <span class="comment">%</span>
+0435             <span class="comment">%   [labels1,labels2] = LABELDATA(this,dataFrames) errors</span>
+0436             <span class="comment">% immediately ('This function doesnt work yet'); the body below</span>
+0437             <span class="comment">% the error call sketches two heuristics: assigning the most</span>
+0438             <span class="comment">% likely pair one at a time, and random labels followed by</span>
+0439             <span class="comment">% pairwise permutations.</span>
+0440             <span class="comment">%</span>
+0441             <span class="comment">% Inputs:</span>
+0442             <span class="comment">%   this       - markerModel object</span>
+0443             <span class="comment">%   dataFrames - markers x 3 x 1 positions (one frame)</span>
+0444             <span class="comment">%</span>
+0445             <span class="comment">% Outputs:</span>
+0446             <span class="comment">%   labels1 - labels from the first heuristic</span>
+0447             <span class="comment">%   labels2 - labels from the second heuristic</span>
+0448             <span class="comment">%</span>
+0449             <span class="comment">% Toolbox Dependencies: None</span>
+0450 
+0451             error(<span class="string">'This function doesnt work yet.'</span>)
+0452             M2 = size(dataFrames,1); <span class="comment">%Markers in data frame</span>
+0453             M1 = this.Nmarkers; <span class="comment">%Markers in model (need not be equal)</span>
+0454             <span class="keyword">if</span> M1 ~= M2
+0455                 error([<span class="string">'Option to have different number of markers is '</span> <span class="keyword">...</span>
+0456                     <span class="string">'not yet implemented.'</span>])
+0457             <span class="keyword">end</span>
+0458             Nframes = size(dataFrames,3);
+0459             <span class="keyword">if</span> Nframes ~= 1
+0460                 error(<span class="string">'Multiple frames not-yet supported'</span>)
+0461             <span class="keyword">end</span>
+0462             <span class="comment">%Heuristic 2: (to initialize labeling)</span>
+0463             i1 = this.indicatrix;
+0464             i2 = this.indicatrix(true,M2);
+0465             i2 = i2(:,this.activeStats);
+0466             <span class="comment">%TODO: what is the smart way to handle this?</span>
+0467             dataFrames(isnan(dataFrames)) = 0;
+0468             S     = this.summaryStats(dataFrames);
+0469             S     = S(this.activeStats,:);
+0470             mu    = this.statMedian(this.activeStats);
+0471             sigma = this.getRobustStd(0.94);
+0472             sigma = sigma(this.activeStats);
+0473             <span class="keyword">for</span> fr = 1:Nframes
+0474                 <span class="comment">%Heuristic: get most likely pair, one at a time:</span>
+0475                 counter = 0;
+0476                 labels1 = cell(M2,1);
+0477                 map     = nan(M2,1);
+0478                 <span class="comment">%This assumes normal distributions</span>
+0479                 L       = markerModel.normalLogL(S(:,fr),mu',sigma');
+0480                 mL      = min(L(:));
+0481                 L((isnan(L))) = mL;
+0482                 P = i1*(1./sqrt(-L))/i2;
+0483                 P = L;
+0484                 <span class="keyword">while</span> counter &lt; M2
+0485                     counter = counter+1;
+0486                     [ii,jj] = find(P == max(P(:)),1,<span class="string">'first'</span>)
+0487                     map(jj) = ii;
+0488                     <span class="comment">%i1(ii,:)=0;</span>
+0489                     <span class="comment">%L(:,i2(jj,:)==1)=-1e6;</span>
+0490                     P(ii,:) = -Inf;
+0491                     P(:,jj) = -Inf;
+0492                 <span class="keyword">end</span>
+0493                 labels1 = this.markerLabels(map);
+0494 
+0495                 <span class="comment">%TODO:  I want to get the most likely map of M2 onto</span>
+0496                 <span class="comment">%M1, this is a permutation of M2, (idx: M1x1) such that</span>
+0497                 <span class="comment">%sum(diag(P(:,idx))) is maximized.</span>
+0498                 <span class="comment">%TODO: Need to think about what happens if M2&lt; M1 (if</span>
+0499                 <span class="comment">%larger,</span>
+0500                 <span class="comment">%we just dont assign some)</span>
+0501             <span class="keyword">end</span>
+0502             <span class="comment">%Heuristic 1: assign random labels, then try pair-wise</span>
+0503             <span class="comment">%permutations and see if they improve likelihood of data.</span>
+0504             <span class="comment">%Keep permutations that do, and reset pairwise list to try</span>
+0505             <span class="comment">%End when all pairwise permutations have been tried and none</span>
+0506             <span class="comment">%improves reconstruction</span>
+0507             <span class="comment">%Perhaps repeat a couple times and select best of final results</span>
+0508             randInit = randperm(M1);
+0509             <span class="keyword">for</span> fr = 1:Nframes
+0510                 [newFrame,permList] = <span class="keyword">...</span>
+0511                     this.tryPermutations(dataFrames(randInit,:,fr));
+0512             <span class="keyword">end</span>
+0513             labels2 = this.markerLabels(randInit);
+0514             labels2 = markerModel.applyPermutationList(labels2,permList);
+0515 
+0516         <span class="keyword">end</span>
+0517         <a name="_sub11" href="#_subfunctions" class="code">function sortedData = sortMarkerOrder(model,data,labels)</a>
+0518             <span class="comment">%SORTMARKERORDER Sort data rows to model labels (stub).</span>
+0519             <span class="comment">%</span>
+0520             <span class="comment">%   sortedData = SORTMARKERORDER(model,data,labels) is meant to</span>
+0521             <span class="comment">% re-sort the rows of data so they match the order of the labels</span>
+0522             <span class="comment">% in the model. It is not implemented and errors.</span>
+0523             <span class="comment">%</span>
+0524             <span class="comment">% Inputs:</span>
+0525             <span class="comment">%   model  - markerModel object</span>
+0526             <span class="comment">%   data   - markers x ... data</span>
+0527             <span class="comment">%   labels - labels of the rows of data</span>
+0528             <span class="comment">%</span>
+0529             <span class="comment">% Outputs:</span>
+0530             <span class="comment">%   sortedData - data re-sorted to the model order</span>
+0531             <span class="comment">%</span>
+0532             <span class="comment">% Toolbox Dependencies: None</span>
+0533 
+0534             error(<span class="string">'Unimplemented'</span>)
+0535             <span class="comment">%To do: compare lists of labels and model.markerLabels, find</span>
+0536             <span class="comment">%sorting, and sort the data. Use compareLists()</span>
+0537         <span class="keyword">end</span>
+0538         <a name="_sub12" href="#_subfunctions" class="code">function sharedMarkerList = getSharedMarkerList(model1,model2)</a>
+0539             <span class="comment">%GETSHAREDMARKERLIST Markers shared by two models (stub).</span>
+0540             <span class="comment">%</span>
+0541             <span class="comment">%   sharedMarkerList = GETSHAREDMARKERLIST(model1,model2) is not</span>
+0542             <span class="comment">% implemented and errors.</span>
+0543             <span class="comment">%</span>
+0544             <span class="comment">% Inputs:</span>
+0545             <span class="comment">%   model1 - markerModel object</span>
+0546             <span class="comment">%   model2 - markerModel object</span>
+0547             <span class="comment">%</span>
+0548             <span class="comment">% Outputs:</span>
+0549             <span class="comment">%   sharedMarkerList - labels present in both models</span>
+0550             <span class="comment">%</span>
+0551             <span class="comment">% Toolbox Dependencies: None</span>
+0552 
+0553             error(<span class="string">'Unimplemented'</span>)
+0554         <span class="keyword">end</span>
+0555     <span class="keyword">end</span>
+0556     methods(Hidden)
+0557         <a name="_sub13" href="#_subfunctions" class="code">function markerScores = scoreMarkersRanked(this,data,N)</a>
+0558             <span class="comment">%SCOREMARKERSRANKED Score markers by the N-th worst statistic.</span>
+0559             <span class="comment">%</span>
+0560             <span class="comment">%   markerScores = SCOREMARKERSRANKED(this,data,N) scores each</span>
+0561             <span class="comment">% marker with the N-th lowest log-likelihood among the</span>
+0562             <span class="comment">% statistics that involve it (the minimum if N is 1).</span>
+0563             <span class="comment">%</span>
+0564             <span class="comment">% Inputs:</span>
+0565             <span class="comment">%   this - markerModel object</span>
+0566             <span class="comment">%   data - markers x 3 x frames positions</span>
+0567             <span class="comment">%   N    - (optional) rank of the score to use (default: 2)</span>
+0568             <span class="comment">%</span>
+0569             <span class="comment">% Outputs:</span>
+0570             <span class="comment">%   markerScores - markers x frames scores</span>
+0571             <span class="comment">%</span>
+0572             <span class="comment">% Toolbox Dependencies: None</span>
+0573 
+0574             <span class="keyword">if</span> nargin &lt; 3
+0575                 N = 2; <span class="comment">%Using second-worse score</span>
+0576             <span class="keyword">end</span>
+0577             L = loglikelihood(this,data); <span class="comment">%PxN</span>
+0578             [P,Nn] = size(L);
+0579             i = indicatrix(this); <span class="comment">%MxP</span>
+0580             <span class="keyword">if</span> N &gt; 1
+0581                 markerScores = nan(size(i,1),size(L,2));
+0582                 <span class="keyword">for</span> mrkr = 1:size(i,1) <span class="comment">%Each marker</span>
+0583                     aux = sort(L(i(mrkr,:) == 1,:),1);
+0584                     NN  = min(N,size(aux,1));
+0585                     markerScores(mrkr,:) = aux(NN,:);
+0586                 <span class="keyword">end</span>
+0587             <span class="keyword">else</span>
+0588                 markerScores = squeeze(min(i.*reshape(L,1,P,Nn),[],2));
+0589             <span class="keyword">end</span>
+0590         <span class="keyword">end</span>
+0591         <a name="_sub14" href="#_subfunctions" class="code">function [dataFrame,permutationList] = </a><span class="keyword">...</span>
+0592             tryPermutations(model,dataFrame,listToPermute)
+0593             <span class="comment">%TRYPERMUTATIONS Permute labels in one frame to improve fit.</span>
+0594             <span class="comment">%</span>
+0595             <span class="comment">%   [dataFrame,permutationList] =</span>
+0596             <span class="comment">% TRYPERMUTATIONS(model,dataFrame) tries pairwise permutations</span>
+0597             <span class="comment">% of the markers associated with bad statistics (log-likelihood</span>
+0598             <span class="comment">% below -5^2/2) and then of all markers, keeping each</span>
+0599             <span class="comment">% permutation that increases the total log-likelihood, until no</span>
+0600             <span class="comment">% statistic is bad or no permutation helps.</span>
+0601             <span class="comment">%</span>
+0602             <span class="comment">% Inputs:</span>
+0603             <span class="comment">%   model         - markerModel object</span>
+0604             <span class="comment">%   dataFrame     - markers x 3 positions of a single frame</span>
+0605             <span class="comment">%   listToPermute - (optional) markers to permute (default: bad</span>
+0606             <span class="comment">%                   markers, then all)</span>
+0607             <span class="comment">%</span>
+0608             <span class="comment">% Outputs:</span>
+0609             <span class="comment">%   dataFrame       - frame with the accepted permutations</span>
+0610             <span class="comment">%                     applied</span>
+0611             <span class="comment">%   permutationList - accepted pairwise permutations, one pair</span>
+0612             <span class="comment">%                     per row</span>
+0613             <span class="comment">%</span>
+0614             <span class="comment">% Toolbox Dependencies: None</span>
+0615 
+0616             permutationList = zeros(0,2);
+0617             <span class="comment">%Benchmark to compare:</span>
+0618             L0   = model.loglikelihood(dataFrame);
+0619             bad  = L0 &lt; -5^2/2; <span class="comment">% TODO: source? (5 std)</span>
+0620             nBad = sum(model.indicatrix* bad &gt; 0);
+0621             <span class="comment">%TODO: start with markers associated to bad distances, and then</span>
+0622             <span class="comment">%move to a larger set</span>
+0623             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(listToPermute)
+0624                 <span class="comment">%Run for bad markers.</span>
+0625                 <span class="keyword">if</span> nBad &gt; 0
+0626                     listToPermute = find(model.indicatrix* bad &gt; 0);
+0627                     [dataFrame,permutationList] = <span class="keyword">...</span>
+0628                         tryPermutations(model,dataFrame,listToPermute);
+0629                 <span class="keyword">end</span>
+0630                 <span class="comment">%Run for all markers.</span>
+0631                 [dataFrame,permutationList2] = <span class="keyword">...</span>
+0632                     tryPermutations(model,dataFrame,1:size(dataFrame,1));
+0633                 permutationList = [permutationList;permutationList2];
+0634             <span class="keyword">else</span>
+0635                 <span class="comment">%If no log-L is too bad, do nothing, save time.</span>
+0636                 <span class="keyword">while</span> nBad &gt; 0
+0637                     <span class="comment">%Permutations to consider:</span>
+0638                     <span class="comment">%Pairwise permutations</span>
+0639                     listOfPermutations = nchoosek(listToPermute,2);
+0640                     N = size(listOfPermutations,1);
+0641                     count = 0;
+0642                     <span class="keyword">while</span> count &lt; N
+0643                         count = count+1;
+0644                         newDataFrame = dataFrame;
+0645                         newDataFrame = <span class="keyword">...</span>
+0646                             markerModel.applyPermutationList(dataFrame, <span class="keyword">...</span>
+0647                             listOfPermutations(count,:));
+0648                         L = model.loglikelihood(newDataFrame);
+0649                         <span class="comment">%Found permutation that improves things</span>
+0650                         <span class="keyword">if</span> sum(L) &gt; sum(L0)
+0651                             <span class="keyword">break</span> <span class="comment">%Exiting inner while-loop</span>
+0652                         <span class="keyword">end</span>
+0653                     <span class="keyword">end</span>
+0654                     <span class="comment">%Checking if while exited without making any</span>
+0655                     <span class="comment">%improvements</span>
+0656                     <span class="keyword">if</span> sum(L) &lt;= sum(L0)
+0657                         <span class="keyword">return</span> <span class="comment">%Inner loop finished without progress</span>
+0658                     <span class="keyword">else</span> <span class="comment">%Improvement was made!</span>
+0659                         <span class="comment">%Update benchmark:</span>
+0660                         dataFrame = newDataFrame;
+0661                         L0        = L;
+0662                         nBad      = sum(L0 &lt; -5^2/2);
+0663                         <span class="comment">%Adding permutation to list</span>
+0664                         permutationList(end+1,:) = <span class="keyword">...</span>
+0665                             listOfPermutations(count,:);
+0666                     <span class="keyword">end</span>
+0667                 <span class="keyword">end</span>
+0668             <span class="keyword">end</span>
+0669         <span class="keyword">end</span>
+0670     <span class="keyword">end</span>
+0671     methods(Static)
+0672         <span class="comment">%To be implemented in subclass:</span>
+0673         model = learn(data,labels)
+0674         <span class="comment">%Returns PxN summary stats, and P x 3M x N gradient</span>
+0675         [ss,g] = summaryStats(data)
+0676         <span class="comment">%gradient can be P x 3M if it is the same for all frames, as is the</span>
+0677         <span class="comment">%case in linear models</span>
+0678         [M,xl,yl] = stat2Matrix(stats)
+0679         <span class="comment">%Returns an example, well-calibrated model</span>
+0680         [model,meanLB,meanUB,stdLB,stdUB,A,b] = getRefData();
+0681 
+0682         <span class="comment">%Convenience functions:</span>
+0683         <a name="_sub15" href="#_subfunctions" class="code">function lL = normalLogL(values,means,stds)</a>
+0684             <span class="comment">%NORMALLOGL Log-likelihood under normal distributions.</span>
+0685             <span class="comment">%</span>
+0686             <span class="comment">%   lL = NORMALLOGL(values,means,stds) returns</span>
+0687             <span class="comment">% -0.5*((values-means)./stds).^2, the log-density up to additive</span>
+0688             <span class="comment">% terms that do not depend on the value.</span>
+0689             <span class="comment">%</span>
+0690             <span class="comment">% Inputs:</span>
+0691             <span class="comment">%   values - P x N values</span>
+0692             <span class="comment">%   means  - P x 1 means</span>
+0693             <span class="comment">%   stds   - P x 1 standard deviations</span>
+0694             <span class="comment">%</span>
+0695             <span class="comment">% Outputs:</span>
+0696             <span class="comment">%   lL - P x N log-likelihoods</span>
+0697             <span class="comment">%</span>
+0698             <span class="comment">% Toolbox Dependencies: None</span>
+0699 
+0700             d  = 0.5*((values-means)./stds).^2;
+0701             lL = -d;<span class="comment">% -log(stds) -.9189;</span>
+0702             <span class="comment">%lL=-sqrt(2*d); %Mahalanobis distance</span>
+0703             <span class="comment">%.9189 = log(2*pi)/2</span>
+0704         <span class="keyword">end</span>
+0705         <a name="_sub16" href="#_subfunctions" class="code">function frameScores = marker2frameScoresNaive(markerScores)</a>
+0706             <span class="comment">%MARKER2FRAMESCORESNAIVE Mean marker score per frame.</span>
+0707             <span class="comment">%</span>
+0708             <span class="comment">% Inputs:</span>
+0709             <span class="comment">%   markerScores - markers x frames scores</span>
+0710             <span class="comment">%</span>
+0711             <span class="comment">% Outputs:</span>
+0712             <span class="comment">%   frameScores - 1 x frames mean score</span>
+0713             <span class="comment">%</span>
+0714             <span class="comment">% Toolbox Dependencies: None</span>
+0715 
+0716             frameScores = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(markerScores, 1, <span class="string">'omitnan'</span>);
+0717         <span class="keyword">end</span>
+0718         <a name="_sub17" href="#_subfunctions" class="code">function [newDataFrame,params] = </a><span class="keyword">...</span>
+0719             anchor(dataFrame,anchorFrame,anchorWeights)
+0720             <span class="comment">%ANCHOR Rotate and translate a frame to match an anchor frame.</span>
+0721             <span class="comment">%</span>
+0722             <span class="comment">%   [newDataFrame,params] =</span>
+0723             <span class="comment">% ANCHOR(dataFrame,anchorFrame,anchorWeights) finds the 3-D</span>
+0724             <span class="comment">% rotation and translation of dataFrame that best match</span>
+0725             <span class="comment">% anchorFrame, using getTranslationAndRotation (not in the</span>
+0726             <span class="comment">% repository).</span>
+0727             <span class="comment">%</span>
+0728             <span class="comment">% TODO: use the weights to do a weighted optimization</span>
+0729             <span class="comment">% (anchorWeights is currently not used).</span>
+0730             <span class="comment">%</span>
+0731             <span class="comment">% Inputs:</span>
+0732             <span class="comment">%   dataFrame     - markers x 3 positions to move</span>
+0733             <span class="comment">%   anchorFrame   - markers x 3 reference positions</span>
+0734             <span class="comment">%   anchorWeights - weights of the anchor markers (not used)</span>
+0735             <span class="comment">%</span>
+0736             <span class="comment">% Outputs:</span>
+0737             <span class="comment">%   newDataFrame - moved positions</span>
+0738             <span class="comment">%   params       - struct with the rotation R and translation t</span>
+0739             <span class="comment">%</span>
+0740             <span class="comment">% Toolbox Dependencies: None</span>
+0741 
+0742             [R,t,newDataFrame] = getTranslationAndRotation(dataFrame, <span class="keyword">...</span>
+0743                 anchorFrame);
+0744             params.R = R;
+0745             params.t = t;
+0746         <span class="keyword">end</span>
+0747         <a name="_sub18" href="#_subfunctions" class="code">function markerScores = untangleLikelihoods(L,indicatrix)</a>
+0748             <span class="comment">%UNTANGLELIKELIHOODS Assign statistic likelihoods to markers.</span>
+0749             <span class="comment">%</span>
+0750             <span class="comment">%   markerScores = UNTANGLELIKELIHOODS(L,indicatrix) finds, for</span>
+0751             <span class="comment">% each frame, marker deviations x &gt;= 0 (in standard deviations)</span>
+0752             <span class="comment">% that explain the statistic likelihoods: a linear program</span>
+0753             <span class="comment">% minimizes sum(x) subject to indicatrix'*x &gt;= sqrt(-2*L); among</span>
+0754             <span class="comment">% solutions with the same active constraints, fmincon then picks</span>
+0755             <span class="comment">% the one with the largest sum(x.^2), that is, the most unequal</span>
+0756             <span class="comment">% one. The score is -0.5*x.^2. The tolerances are relaxed for</span>
+0757             <span class="comment">% speed. Prints the number of frames and the elapsed time.</span>
+0758             <span class="comment">%</span>
+0759             <span class="comment">% Inputs:</span>
+0760             <span class="comment">%   L          - statistics x frames log-likelihoods</span>
+0761             <span class="comment">%   indicatrix - markers x statistics matrix, 1 where the</span>
+0762             <span class="comment">%                statistic involves the marker</span>
+0763             <span class="comment">%</span>
+0764             <span class="comment">% Outputs:</span>
+0765             <span class="comment">%   markerScores - markers x frames scores</span>
+0766             <span class="comment">%</span>
+0767             <span class="comment">% Toolbox Dependencies: Optimization Toolbox (fmincon, linprog,</span>
+0768             <span class="comment">%   optimoptions)</span>
+0769 
+0770             A = -indicatrix';
+0771             <span class="comment">%Relax tolerances for fast compute</span>
+0772             relaxedTol = 1e-1;
+0773             options = optimoptions(<span class="string">'fmincon'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0774                 <span class="string">'SpecifyObjectiveGradient'</span>,false,<span class="string">'OptimalityTolerance'</span>, <span class="keyword">...</span>
+0775                 relaxedTol,<span class="string">'StepTolerance'</span>,relaxedTol, <span class="keyword">...</span>
+0776                 <span class="string">'ConstraintTolerance'</span>,relaxedTol);
+0777             options2 = optimoptions(<span class="string">'linprog'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>);
+0778             N = size(indicatrix,1);
+0779             LB = zeros(N,1);
+0780             f = ones(N,1);
+0781             M = size(L,2); <span class="comment">%number of frames</span>
+0782             markerScores = nan(N,M);
+0783             display([<span class="string">'Running for '</span> num2str(M) <span class="string">' frames. Expect '</span> <span class="keyword">...</span>
+0784                 num2str(M/75,2) <span class="string">' sec. processing time (75 fps).'</span>])
+0785             tic
+0786             <span class="keyword">for</span> fr = 1:M
+0787                 <span class="comment">%transform likelihood to std away from expectation</span>
+0788                 b = -sqrt(-2*L(:,fr));
+0789                 <span class="comment">%Get linear programming solution:</span>
+0790                 <span class="comment">%Being used to identify active inequalities only</span>
+0791                 [x0,~,~,~,lam] = linprog(f,A,b,[],[],LB,[],options2);
+0792                 <span class="comment">%f'*x0</span>
+0793                 <span class="comment">%Sparsify solution: (for each active constraint, selecting</span>
+0794                 <span class="comment">%the most</span>
+0795                 <span class="comment">%unequal solution possible, notice this maintains the cost</span>
+0796                 <span class="comment">%f'*x constant)</span>
+0797                 activeConstraints = (lam.ineqlin == 1);
+0798                 A1 = -A(activeConstraints,:); <span class="comment">%Active inequalities</span>
+0799                 <span class="comment">%For each marker there is at least 1 active inequality, or</span>
+0800                 <span class="comment">%one of the bounds was reached</span>
+0801                 idx = any(A1 ~= 0);
+0802                 A2 = A1(:,idx);
+0803                 <span class="comment">%Notice this adds as constraint that active inequalities</span>
+0804                 <span class="comment">%from linprog are maintained</span>
+0805                 aux = fmincon(@(x) [-sum(x.^2)],x0(idx), <span class="keyword">...</span>
+0806                     A(~activeConstraints,idx),b(~activeConstraints),A2, <span class="keyword">...</span>
+0807                     A2*x0(idx),LB(idx),[],[],options);
+0808                 x0(idx) = aux;
+0809                 markerScores(:,fr) = -0.5*x0.^2;
+0810                 <span class="comment">%f'*x0 %Check that this was maintained</span>
+0811             <span class="keyword">end</span>
+0812             toc
+0813         <span class="keyword">end</span>
+0814         <span class="comment">%Single frame: L is vector</span>
+0815         <a name="_sub19" href="#_subfunctions" class="code">function outMarkers = untangleOutliers(outStats,in)</a>
+0816             <span class="comment">%UNTANGLEOUTLIERS Smallest marker set explaining outliers.</span>
+0817             <span class="comment">%</span>
+0818             <span class="comment">%   outMarkers = UNTANGLEOUTLIERS(outStats,in) solves, for each</span>
+0819             <span class="comment">% frame, min 1'*y s.t. outStats &lt;= in'*y and y &gt;= (in*outStats -</span>
+0820             <span class="comment">% 1'*y)/K with intlinprog, where K is the largest number of</span>
+0821             <span class="comment">% statistics per marker. This finds the minimum outlier set such</span>
+0822             <span class="comment">% that each outlier statistic has at least one outlier marker</span>
+0823             <span class="comment">% causing it, and any marker with more outlier statistics than</span>
+0824             <span class="comment">% there are outlier markers is itself an outlier. The program is</span>
+0825             <span class="comment">% only solved for a frame when the initial set (markers with</span>
+0826             <span class="comment">% more than one outlier statistic) violates these constraints or</span>
+0827             <span class="comment">% has more than one marker.</span>
+0828             <span class="comment">%</span>
+0829             <span class="comment">% Inputs:</span>
+0830             <span class="comment">%   outStats - statistics x frames logical, true for outlier</span>
+0831             <span class="comment">%              statistics</span>
+0832             <span class="comment">%   in       - markers x statistics indicatrix</span>
+0833             <span class="comment">%</span>
+0834             <span class="comment">% Outputs:</span>
+0835             <span class="comment">%   outMarkers - markers x frames logical, true for outlier</span>
+0836             <span class="comment">%                markers</span>
+0837             <span class="comment">%</span>
+0838             <span class="comment">% Toolbox Dependencies: Optimization Toolbox (intlinprog,</span>
+0839             <span class="comment">%   optimoptions)</span>
+0840 
+0841             [M,P] = size(in);
+0842             uno        = ones(M,1);
+0843             cero       = zeros(M,1);
+0844             f          = [uno]; <span class="comment">%Vector to solve y</span>
+0845             lb         = [cero];
+0846             ub         = [uno];
+0847             opts       = optimoptions(<span class="string">'intlinprog'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>);
+0848             <span class="comment">%This marks markers only if they have more than one outlier stat</span>
+0849             outMarkers = (in*outStats) &gt; 1;
+0850             <span class="keyword">for</span> fr = 1:size(outStats,2)
+0851                 b1 = outStats(:,fr);
+0852                 b2 = in*outStats(:,fr);
+0853                 c  = outMarkers(:,fr);
+0854                 <span class="comment">%Only run if the inequalities are not already satisified or</span>
+0855                 <span class="comment">%if two markers were outliers in the same frame</span>
+0856                 <span class="keyword">if</span> any(b1 &gt; in'*c) || any(c &lt; (b2-sum(c))) || sum(c) &gt; 1
+0857                     <span class="comment">%Ineq 1: L&lt;=i'*y -&gt; -L&gt;= -i'*y</span>
+0858                     A1 = -in';
+0859                     b1 = -b1;
+0860                     <span class="comment">%Ineq 2: y&gt;=(i*L -1'*y)/K -&gt; -y-(1'*y)/K&lt;=-i*L/K</span>
+0861                     K  = max(sum(in,2));
+0862                     A2 = [-eye(M)-ones(M)/K];
+0863                     b2 = -b2/K;
+0864                     outMarkers(:,fr) = <span class="keyword">...</span>
+0865                         intlinprog(f,[1:M],[A1;A2],[b1;b2],[],[],lb,ub, <span class="keyword">...</span>
+0866                         opts);
+0867                 <span class="keyword">end</span>
+0868             <span class="keyword">end</span>
+0869         <span class="keyword">end</span>
+0870     <span class="keyword">end</span>
+0871     methods(Static,Hidden)
+0872         <a name="_sub20" href="#_subfunctions" class="code">function data = applyPermutationList(data,permutationList)</a>
+0873             <span class="comment">%APPLYPERMUTATIONLIST Apply pairwise row permutations in order.</span>
+0874             <span class="comment">%</span>
+0875             <span class="comment">%   data = APPLYPERMUTATIONLIST(data,permutationList) swaps, for</span>
+0876             <span class="comment">% each row of permutationList, the two listed rows of data</span>
+0877             <span class="comment">% (along dimension 1). A row vector is converted to a column</span>
+0878             <span class="comment">% first.</span>
+0879             <span class="comment">%</span>
+0880             <span class="comment">% Inputs:</span>
+0881             <span class="comment">%   data            - array permuted along dimension 1</span>
+0882             <span class="comment">%   permutationList - n x 2 pairs of row indices to swap</span>
+0883             <span class="comment">%</span>
+0884             <span class="comment">% Outputs:</span>
+0885             <span class="comment">%   data - permuted array</span>
+0886             <span class="comment">%</span>
+0887             <span class="comment">% Toolbox Dependencies: None</span>
+0888 
+0889             <span class="keyword">if</span> size(data,1) == 1 <span class="comment">%Row vector</span>
+0890                 data = data(:);
+0891             <span class="keyword">end</span>
+0892             <span class="comment">%Applies a list of pair-wise permutations along dim 1</span>
+0893             <span class="keyword">for</span> ii = 1:size(permutationList,1)
+0894                 data(permutationList(ii,:),:) = <span class="keyword">...</span>
+0895                     data(fliplr(permutationList(ii,:)),:);
+0896             <span class="keyword">end</span>
+0897         <span class="keyword">end</span>
+0898     <span class="keyword">end</span>
+0899 <span class="keyword">end</span>
+0900</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

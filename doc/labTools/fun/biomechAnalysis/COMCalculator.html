@@ -59,10 +59,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/computeCOM.html" class="code" title="function COMData = computeCOM(this)">computeCOM</a>	computeCOM  Computes center of mass from marker data</li><li><a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TorqueCalculator</a>	TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/computeCOM.html" class="code" title="function COMData = computeCOM(this)">computeCOM</a>	COMPUTECOM Computes center of mass from marker data.</li><li><a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TorqueCalculator</a>	TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.</li></ul>
 <!-- crossreference -->
 
 
@@ -111,105 +111,127 @@ This function is called by:
 0041 <span class="keyword">end</span>
 0042 
 0043 <span class="comment">%% Retrieve Segment Marker Positions</span>
-0044 u = [orientation.sideSign orientation.foreaftSign orientation.updownSign];
-0045 markerList = {<span class="string">'RHip'</span>,<span class="string">'LHip'</span>,<span class="string">'RAnk'</span>,<span class="string">'LAnk'</span>,<span class="string">'RKne'</span>,<span class="string">'LKne'</span>,<span class="string">'RToe'</span>,<span class="string">'LToe'</span>};
-0046 <span class="keyword">for</span> mrkr = markerList                           <span class="comment">% for each marker, ...</span>
-0047     <span class="comment">% get marker name allowing for variants like RKNEx and RKNEEx</span>
-0048     name = markerData.getLabelsThatMatch( <span class="keyword">...</span>
-0049         [<span class="string">'^'</span> upper(mrkr{1}) <span class="string">'*x$'</span>]);
-0050     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)                           <span class="comment">% if a match was found, ...</span>
-0051         name = name{1}(1:end-1);                <span class="comment">% retrieve marker name</span>
-0052         aux = markerData.getDataAsVector({ <span class="keyword">...</span>
-0053             [name orientation.sideAxis], <span class="keyword">...</span>
-0054             [name orientation.foreaftAxis], <span class="keyword">...</span>
-0055             [name orientation.updownAxis]});
-0056         aux = aux .* u;                         <span class="comment">% reorienting marker data</span>
-0057     <span class="keyword">else</span>                                        <span class="comment">% otherwise, ...</span>
-0058         aux = nan(length(markerData.Time), 3);  <span class="comment">% marker missing from trial</span>
-0059         warning([<span class="string">'Marker '</span> mrkr{1} <span class="keyword">...</span><span class="comment">             (it happens)</span>
-0060             <span class="string">' was missing from markerData.'</span>]);
-0061     <span class="keyword">end</span>
-0062     eval([mrkr{1} <span class="string">' = aux;'</span>]);
-0063     <span class="comment">% below is more elegant (and recommended) than 'eval' but does not work</span>
-0064     <span class="comment">% assignin('base',markerList{i},aux);</span>
-0065 <span class="keyword">end</span>
-0066 
-0067 <span class="comment">% RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis],['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});</span>
-0068 <span class="comment">% RHip=RHip.*u;</span>
-0069 <span class="comment">% RHip=[orientation.sideSign*RHip(:,1),orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];</span>
-0070 <span class="comment">% LHip=markerData.getDataAsVector({['LHIP' orientation.sideAxis],['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});</span>
-0071 <span class="comment">% LHip=[orientation.sideSign*LHip(:,1),orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];</span>
-0072 <span class="comment">% %get ankle position</span>
-0073 <span class="comment">% RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis],['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});</span>
-0074 <span class="comment">% RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];</span>
-0075 <span class="comment">% LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis],['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});</span>
-0076 <span class="comment">% LAnk=[orientation.sideSign*LAnk(:,1),orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];</span>
-0077 <span class="comment">% %get knee position</span>
-0078 <span class="comment">% RkneeName=markerData.getLabelsThatMatch('^RKNE');</span>
-0079 <span class="comment">% RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix</span>
-0080 <span class="comment">% RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis],[RkneeName orientation.foreaftAxis],[RkneeName orientation.updownAxis]});</span>
-0081 <span class="comment">% RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];</span>
-0082 <span class="comment">%</span>
-0083 <span class="comment">% LkneeName=markerData.getLabelsThatMatch('^LKNE');</span>
-0084 <span class="comment">% LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix</span>
-0085 <span class="comment">% LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis],[LkneeName orientation.foreaftAxis],[LkneeName orientation.updownAxis]});</span>
-0086 <span class="comment">% LKnee=[orientation.sideSign*LKnee(:,1),orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];</span>
-0087 <span class="comment">% %get toe position</span>
-0088 <span class="comment">% RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis],['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});</span>
-0089 <span class="comment">% RToe=[orientation.sideSign*RToe(:,1),orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];</span>
-0090 <span class="comment">% LToe=markerData.getDataAsVector({['LTOE' orientation.sideAxis],['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});</span>
-0091 <span class="comment">% LToe=[orientation.sideSign*LToe(:,1),orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];</span>
-0092 
-0093 <span class="comment">%% Compute Segment Centers of Mass</span>
-0094 <span class="comment">% foot:</span>
-0095 fcomR = (RAnk + RToe) / 2;
-0096 fcomL = (LAnk + LToe) / 2;
-0097 <span class="comment">% fcomxR=(RAnk(:,1)-RToe(:,1)).*.5+RToe(:,1); %m</span>
-0098 <span class="comment">% fcomxL=(LAnk(:,1)-LToe(:,1)).*.5+LToe(:,1); %m</span>
-0099 <span class="comment">% fcomyR=(RAnk(:,2)-RToe(:,2)).*.5+RToe(:,2); %m</span>
-0100 <span class="comment">% fcomzR=(RAnk(:,3)-RToe(:,3)).*.5+RToe(:,3); %m</span>
-0101 <span class="comment">% fcomyL=(LAnk(:,2)-LToe(:,2)).*.5+LToe(:,2); %m</span>
-0102 <span class="comment">% fcomzL=(LAnk(:,3)-LToe(:,3)).*.5+LToe(:,3); %m</span>
-0103 <span class="comment">% fcomR=[fcomxR,fcomyR,fcomzR]; %foot</span>
-0104 <span class="comment">% fcomL=[fcomxL,fcomyL,fcomzL];</span>
-0105 
-0106 <span class="comment">% shank:</span>
-0107 scomR = (RKne - RAnk) + 0.394 * RAnk;
-0108 scomL = (LKne - LAnk) + 0.394 * LAnk;
-0109 <span class="comment">% scomxR=(RKnee(:,1)-RAnk(:,1)).*.394+RAnk(:,1);</span>
-0110 <span class="comment">% scomxL=(LKnee(:,1)-LAnk(:,1)).*.394+LAnk(:,1);</span>
-0111 <span class="comment">% scomyR=(RKnee(:,2)-RAnk(:,2)).*.394+RAnk(:,2);</span>
-0112 <span class="comment">% scomzR=(RKnee(:,3)-RAnk(:,3)).*.394+RAnk(:,3);</span>
-0113 <span class="comment">% scomyL=(LKnee(:,2)-LAnk(:,2)).*.394+LAnk(:,2);</span>
-0114 <span class="comment">% scomzL=(LKnee(:,3)-LAnk(:,3)).*.394+LAnk(:,3);</span>
-0115 <span class="comment">% scomR=[scomxR,scomyR,scomzR]; %Shank</span>
-0116 <span class="comment">% scomL=[scomxL,scomyL,scomzL];</span>
-0117 
-0118 <span class="comment">% thigh:</span>
-0119 tcomR = (RHip - RKne) + 0.567 * RKne;
-0120 tcomL = (LHip - LKne) + 0.567 * LKne;
-0121 <span class="comment">% tcomxR=(RHip(:,1)-RKnee(:,1)).*.567+RKnee(:,1);</span>
-0122 <span class="comment">% tcomxL=(LHip(:,1)-LKnee(:,1)).*.567+LKnee(:,1);</span>
-0123 <span class="comment">% tcomyR=(RHip(:,2)-RKnee(:,2)).*.567+RKnee(:,2);</span>
-0124 <span class="comment">% tcomzR=(RHip(:,3)-RKnee(:,3)).*.567+RKnee(:,3);</span>
-0125 <span class="comment">% tcomyL=(LHip(:,2)-LKnee(:,2)).*.567+LKnee(:,2);</span>
-0126 <span class="comment">% tcomzL=(LHip(:,3)-LKnee(:,3)).*.567+LKnee(:,3);</span>
-0127 <span class="comment">% tcomR=[tcomxR,tcomyR,tcomzR]; %Thigh</span>
-0128 <span class="comment">% tcomL=[tcomxL,tcomyL,tcomzL];</span>
-0129 
-0130 <span class="comment">%% Assemble Output as orientedLabTimeSeries</span>
-0131 COMData = [fcomR fcomL scomR scomL tcomR tcomL];
-0132 <span class="comment">% COM accelerations for each leg segment in each directions</span>
-0133 
-0134 labels = {<span class="string">'RfCOM'</span>,<span class="string">'LfCOM'</span>,<span class="string">'RsCOM'</span>,<span class="string">'LsCOM'</span>,<span class="string">'RtCOM'</span>,<span class="string">'LtCOM'</span>};
-0135 labels = [strcat(labels,<span class="string">'x'</span>); strcat(labels,<span class="string">'y'</span>); strcat(labels,<span class="string">'z'</span>)];
-0136 
-0137 <span class="comment">% create 'orientedLabTS' object to output</span>
-0138 COMTS = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(COMData, markerData.Time(1), <span class="keyword">...</span>
-0139     markerData.sampPeriod, labels(:), markerData.orientation);
-0140 
-0141 <span class="keyword">end</span>
-0142</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0044 u          = [orientation.sideSign orientation.foreaftSign <span class="keyword">...</span>
+0045     orientation.updownSign];
+0046 markerList = {<span class="string">'RHip'</span>,<span class="string">'LHip'</span>,<span class="string">'RAnk'</span>,<span class="string">'LAnk'</span>,<span class="string">'RKne'</span>,<span class="string">'LKne'</span>,<span class="string">'RToe'</span>,<span class="string">'LToe'</span>};
+0047 <span class="keyword">for</span> mrkr = markerList                           <span class="comment">% for each marker, ...</span>
+0048     <span class="comment">% get marker name allowing for variants like RKNEx and RKNEEx</span>
+0049     name = markerData.getLabelsThatMatch( <span class="keyword">...</span>
+0050         [<span class="string">'^'</span> upper(mrkr{1}) <span class="string">'*x$'</span>]);
+0051     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)                           <span class="comment">% if a match was found, ...</span>
+0052         name = name{1}(1:end-1);                <span class="comment">% retrieve marker name</span>
+0053         aux = markerData.getDataAsVector({ <span class="keyword">...</span>
+0054             [name orientation.sideAxis], <span class="keyword">...</span>
+0055             [name orientation.foreaftAxis], <span class="keyword">...</span>
+0056             [name orientation.updownAxis]});
+0057         aux = aux .* u;                         <span class="comment">% reorienting marker data</span>
+0058     <span class="keyword">else</span>                                        <span class="comment">% otherwise, ...</span>
+0059         aux = nan(length(markerData.Time), 3);  <span class="comment">% marker missing from trial</span>
+0060         warning([<span class="string">'Marker '</span> mrkr{1} <span class="keyword">...</span><span class="comment">             (it happens)</span>
+0061             <span class="string">' was missing from markerData.'</span>]);
+0062     <span class="keyword">end</span>
+0063     eval([mrkr{1} <span class="string">' = aux;'</span>]);
+0064     <span class="comment">% below is more elegant (and recommended) than 'eval' but does not work</span>
+0065     <span class="comment">% assignin('base',markerList{i},aux);</span>
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">% RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis], ...</span>
+0069 <span class="comment">%    ['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});</span>
+0070 <span class="comment">% RHip=RHip.*u;</span>
+0071 <span class="comment">% RHip=[orientation.sideSign*RHip(:,1), ...</span>
+0072 <span class="comment">%    orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];</span>
+0073 <span class="comment">% LHip=markerData.getDataAsVector({['LHIP' orientation.sideAxis], ...</span>
+0074 <span class="comment">%    ['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});</span>
+0075 <span class="comment">% LHip=[orientation.sideSign*LHip(:,1), ...</span>
+0076 <span class="comment">%    orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];</span>
+0077 <span class="comment">% %get ankle position</span>
+0078 <span class="comment">% RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis], ...</span>
+0079 <span class="comment">%    ['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});</span>
+0080 <span class="comment">% RAnk=[orientation.sideSign*RAnk(:,1), ...</span>
+0081 <span class="comment">%    orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];</span>
+0082 <span class="comment">% LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis], ...</span>
+0083 <span class="comment">%    ['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});</span>
+0084 <span class="comment">% LAnk=[orientation.sideSign*LAnk(:,1), ...</span>
+0085 <span class="comment">%    orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];</span>
+0086 <span class="comment">% %get knee position</span>
+0087 <span class="comment">% RkneeName=markerData.getLabelsThatMatch('^RKNE');</span>
+0088 <span class="comment">% RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix</span>
+0089 <span class="comment">% RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis], ...</span>
+0090 <span class="comment">%    [RkneeName orientation.foreaftAxis], ...</span>
+0091 <span class="comment">%    [RkneeName orientation.updownAxis]});</span>
+0092 <span class="comment">% RKnee=[orientation.sideSign*RKnee(:,1), ...</span>
+0093 <span class="comment">%    orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];</span>
+0094 <span class="comment">%</span>
+0095 <span class="comment">% LkneeName=markerData.getLabelsThatMatch('^LKNE');</span>
+0096 <span class="comment">% LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix</span>
+0097 <span class="comment">% LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis], ...</span>
+0098 <span class="comment">%    [LkneeName orientation.foreaftAxis], ...</span>
+0099 <span class="comment">%    [LkneeName orientation.updownAxis]});</span>
+0100 <span class="comment">% LKnee=[orientation.sideSign*LKnee(:,1), ...</span>
+0101 <span class="comment">%    orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];</span>
+0102 <span class="comment">% %get toe position</span>
+0103 <span class="comment">% RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis], ...</span>
+0104 <span class="comment">%    ['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});</span>
+0105 <span class="comment">% RToe=[orientation.sideSign*RToe(:,1), ...</span>
+0106 <span class="comment">%    orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];</span>
+0107 <span class="comment">% LToe=markerData.getDataAsVector({['LTOE' orientation.sideAxis], ...</span>
+0108 <span class="comment">%    ['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});</span>
+0109 <span class="comment">% LToe=[orientation.sideSign*LToe(:,1), ...</span>
+0110 <span class="comment">%    orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];</span>
+0111 
+0112 shankComFraction = 0.394;  <span class="comment">% TODO: source? (COM position along the shank)</span>
+0113 thighComFraction = 0.567;  <span class="comment">% TODO: source? (COM position along the thigh)</span>
+0114 
+0115 <span class="comment">%% Compute Segment Centers of Mass</span>
+0116 <span class="comment">% foot:</span>
+0117 fcomR = (RAnk + RToe) / 2;
+0118 fcomL = (LAnk + LToe) / 2;
+0119 <span class="comment">% fcomxR=(RAnk(:,1)-RToe(:,1)).*.5+RToe(:,1); %m</span>
+0120 <span class="comment">% fcomxL=(LAnk(:,1)-LToe(:,1)).*.5+LToe(:,1); %m</span>
+0121 <span class="comment">% fcomyR=(RAnk(:,2)-RToe(:,2)).*.5+RToe(:,2); %m</span>
+0122 <span class="comment">% fcomzR=(RAnk(:,3)-RToe(:,3)).*.5+RToe(:,3); %m</span>
+0123 <span class="comment">% fcomyL=(LAnk(:,2)-LToe(:,2)).*.5+LToe(:,2); %m</span>
+0124 <span class="comment">% fcomzL=(LAnk(:,3)-LToe(:,3)).*.5+LToe(:,3); %m</span>
+0125 <span class="comment">% fcomR=[fcomxR,fcomyR,fcomzR]; %foot</span>
+0126 <span class="comment">% fcomL=[fcomxL,fcomyL,fcomzL];</span>
+0127 
+0128 <span class="comment">% shank:</span>
+0129 scomR = (RKne - RAnk) + shankComFraction * RAnk;
+0130 scomL = (LKne - LAnk) + shankComFraction * LAnk;
+0131 <span class="comment">% scomxR=(RKnee(:,1)-RAnk(:,1)).*.394+RAnk(:,1);</span>
+0132 <span class="comment">% scomxL=(LKnee(:,1)-LAnk(:,1)).*.394+LAnk(:,1);</span>
+0133 <span class="comment">% scomyR=(RKnee(:,2)-RAnk(:,2)).*.394+RAnk(:,2);</span>
+0134 <span class="comment">% scomzR=(RKnee(:,3)-RAnk(:,3)).*.394+RAnk(:,3);</span>
+0135 <span class="comment">% scomyL=(LKnee(:,2)-LAnk(:,2)).*.394+LAnk(:,2);</span>
+0136 <span class="comment">% scomzL=(LKnee(:,3)-LAnk(:,3)).*.394+LAnk(:,3);</span>
+0137 <span class="comment">% scomR=[scomxR,scomyR,scomzR]; %Shank</span>
+0138 <span class="comment">% scomL=[scomxL,scomyL,scomzL];</span>
+0139 
+0140 <span class="comment">% thigh:</span>
+0141 tcomR = (RHip - RKne) + thighComFraction * RKne;
+0142 tcomL = (LHip - LKne) + thighComFraction * LKne;
+0143 <span class="comment">% tcomxR=(RHip(:,1)-RKnee(:,1)).*.567+RKnee(:,1);</span>
+0144 <span class="comment">% tcomxL=(LHip(:,1)-LKnee(:,1)).*.567+LKnee(:,1);</span>
+0145 <span class="comment">% tcomyR=(RHip(:,2)-RKnee(:,2)).*.567+RKnee(:,2);</span>
+0146 <span class="comment">% tcomzR=(RHip(:,3)-RKnee(:,3)).*.567+RKnee(:,3);</span>
+0147 <span class="comment">% tcomyL=(LHip(:,2)-LKnee(:,2)).*.567+LKnee(:,2);</span>
+0148 <span class="comment">% tcomzL=(LHip(:,3)-LKnee(:,3)).*.567+LKnee(:,3);</span>
+0149 <span class="comment">% tcomR=[tcomxR,tcomyR,tcomzR]; %Thigh</span>
+0150 <span class="comment">% tcomL=[tcomxL,tcomyL,tcomzL];</span>
+0151 
+0152 <span class="comment">%% Assemble Output as orientedLabTimeSeries</span>
+0153 COMData = [fcomR fcomL scomR scomL tcomR tcomL];
+0154 <span class="comment">% COM accelerations for each leg segment in each directions</span>
+0155 
+0156 labels = {<span class="string">'RfCOM'</span>,<span class="string">'LfCOM'</span>,<span class="string">'RsCOM'</span>,<span class="string">'LsCOM'</span>,<span class="string">'RtCOM'</span>,<span class="string">'LtCOM'</span>};
+0157 labels = [strcat(labels,<span class="string">'x'</span>); strcat(labels,<span class="string">'y'</span>); strcat(labels,<span class="string">'z'</span>)];
+0158 
+0159 <span class="comment">% create 'orientedLabTS' object to output</span>
+0160 COMTS = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(COMData, markerData.Time(1), <span class="keyword">...</span>
+0161     markerData.sampPeriod, labels(:), markerData.orientation);
+0162 
+0163 <span class="keyword">end</span>
+0164</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

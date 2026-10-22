@@ -4,7 +4,7 @@
 <head>
   <title>Description of getSwingR</title>
   <meta name="keywords" content="getSwingR">
-  <meta name="description" content="getSwingR  Extracts right swing phase">
+  <meta name="description" content="GETSWINGR Extracts right swing phase.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,31 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getSwingR  Extracts right swing phase</strong></div>
+<div class="box"><strong>GETSWINGR Extracts right swing phase.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [int, dur] = getSwingR(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getSwingR  Extracts right swing phase
+<div class="fragment"><pre class="comment">GETSWINGR Extracts right swing phase.
 
-   [int, dur] = getSwingR(this) extracts the right swing phase,
-   which corresponds to left single stance
+   [int, dur] = getSwingR(this) extracts the right swing phase, which
+ corresponds to left single stance
 
-   Inputs:
-       this - strideData object
+ Inputs:
+   this - strideData object
 
-   Outputs:
-       int - strideData object containing swing phase
-       dur - duration of phase in seconds
+ Outputs:
+   int - strideData object containing swing phase
+   dur - duration of phase in seconds
 
-   See also: <a href="getSwingL.html" class="code" title="function [int, dur] = getSwingL(this)">getSwingL</a>, <a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getSwingL.html" class="code" title="function [int, dur] = getSwingL(this)">GETSWINGL</a>, <a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">GETSINGLESTANCEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a>	getSingleStanceL  Extracts left single stance phase</li></ul>
+<li><a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a>	GETSINGLESTANCEL Extracts left single stance phase.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
@@ -55,23 +57,25 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [int, dur] = getSwingR(this)</a>
-0002 <span class="comment">%getSwingR  Extracts right swing phase</span>
+0002 <span class="comment">%GETSWINGR Extracts right swing phase.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   [int, dur] = getSwingR(this) extracts the right swing phase,</span>
-0005 <span class="comment">%   which corresponds to left single stance</span>
+0004 <span class="comment">%   [int, dur] = getSwingR(this) extracts the right swing phase, which</span>
+0005 <span class="comment">% corresponds to left single stance</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - strideData object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - strideData object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       int - strideData object containing swing phase</span>
-0012 <span class="comment">%       dur - duration of phase in seconds</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   int - strideData object containing swing phase</span>
+0012 <span class="comment">%   dur - duration of phase in seconds</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: getSwingL, getSingleStanceL</span>
-0015 
-0016 [int, dur] = <a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a>(this);
-0017 <span class="keyword">end</span>
-0018</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also GETSWINGL, GETSINGLESTANCEL.</span>
+0017 
+0018 [int, dur] = <a href="getSingleStanceL.html" class="code" title="function [int, dur] = getSingleStanceL(this)">getSingleStanceL</a>(this);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of getSynergies</title>
   <meta name="keywords" content="getSynergies">
-  <meta name="description" content="Returns the non-negative matrix factorization with normalized synergies">
+  <meta name="description" content="GETSYNERGIES Non-negative matrix factorization with normalized synergies.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,44 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>Returns the non-negative matrix factorization with normalized synergies</strong></div>
+<div class="box"><strong>GETSYNERGIES Non-negative matrix factorization with normalized synergies.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [syns,coefs,res,fullSyns] = getSynergies(data,dim,replicates,usePar) </strong></div>
+<div class="box"><strong>function [syns,coefs,res,fullSyns] =getSynergies(data,dim,replicates,usePar) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Returns the non-negative matrix factorization with normalized synergies</pre></div>
+<div class="fragment"><pre class="comment">GETSYNERGIES Non-negative matrix factorization with normalized synergies.
+
+   Factorizes the data with myNNMF into synergies and activation
+ coefficients. The data are transposed (with a warning) if the second
+ dimension is not the shorter one.
+
+ Side effects: displays a warning in the command window when the data
+   have to be transposed.
+
+ Inputs:
+   data       - samples x channels matrix
+   dim        - number of synergies
+   replicates - (optional) number of NNMF replicates (default: 5)
+   usePar     - (optional) parallel option passed to myNNMF (default:
+                'never')
+
+ Outputs:
+   syns     - normalized synergies
+   coefs    - activation coefficients
+   res      - residual
+   fullSyns - declared output, never assigned
+
+ Toolbox Dependencies: None (myNNMF may use the Statistics and Machine
+   Learning Toolbox)
+
+ See also MYNNMF, <a href="coefExtrFromSyn.html" class="code" title="function coefs = coefExtrFromSyn(data,syn)">COEFEXTRFROMSYN</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W,C,d] = myNNMF(data,rank,reps,useParallel)">myNNMF</a>	myNNMF Customized call to NNMF to get more consistent results</li></ul>
+<li><a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W, C, d] = myNNMF(data, rank, reps, useParallel)">myNNMF</a>	MYNNMF Non-negative matrix factorisation with robust defaults.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -42,31 +67,57 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [syns,coefs,res,fullSyns] = getSynergies(data,dim,replicates,usePar)</a>
-0002 <span class="comment">%Returns the non-negative matrix factorization with normalized synergies</span>
-0003 
-0004 <span class="comment">%% Check if replicates is given, if not, default</span>
-0005 <span class="keyword">if</span> nargin&lt;4
-0006     usePar=<span class="string">'never'</span>;
-0007 <span class="keyword">end</span>
-0008 <span class="keyword">if</span> nargin&lt;3
-0009     replicates=5; <span class="comment">%default value</span>
-0010 <span class="keyword">end</span>
-0011 
-0012 <span class="comment">%% Check if data is given so that the short dimension is the second one</span>
-0013 <span class="keyword">if</span> size(data,2)&gt;=size(data,1)
-0014     data=data';
-0015     disp(<span class="string">'Warning: data was given in the transposed form'</span>)
-0016 <span class="keyword">end</span>
-0017 
-0018     <span class="comment">%% Get synergies</span>
-0019     <span class="comment">%Auto-replicating:</span>
-0020     [coefs,syns,res]=<a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W,C,d] = myNNMF(data,rank,reps,useParallel)">myNNMF</a>(data,dim,replicates,usePar); <span class="comment">%Normalized coefs</span>
-0021     coefs=coefs';
-0022     syns=syns';
-0023     res=(res*numel(data))^2;
-0024 <span class="keyword">end</span>
-0025</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [syns,coefs,res,fullSyns] = </a><span class="keyword">...</span>
+0002     getSynergies(data,dim,replicates,usePar)
+0003 <span class="comment">%GETSYNERGIES Non-negative matrix factorization with normalized synergies.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Factorizes the data with myNNMF into synergies and activation</span>
+0006 <span class="comment">% coefficients. The data are transposed (with a warning) if the second</span>
+0007 <span class="comment">% dimension is not the shorter one.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Side effects: displays a warning in the command window when the data</span>
+0010 <span class="comment">%   have to be transposed.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   data       - samples x channels matrix</span>
+0014 <span class="comment">%   dim        - number of synergies</span>
+0015 <span class="comment">%   replicates - (optional) number of NNMF replicates (default: 5)</span>
+0016 <span class="comment">%   usePar     - (optional) parallel option passed to myNNMF (default:</span>
+0017 <span class="comment">%                'never')</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   syns     - normalized synergies</span>
+0021 <span class="comment">%   coefs    - activation coefficients</span>
+0022 <span class="comment">%   res      - residual</span>
+0023 <span class="comment">%   fullSyns - declared output, never assigned</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies: None (myNNMF may use the Statistics and Machine</span>
+0026 <span class="comment">%   Learning Toolbox)</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also MYNNMF, COEFEXTRFROMSYN.</span>
+0029 
+0030 <span class="comment">%% Check if replicates is given, if not, default</span>
+0031 <span class="keyword">if</span> nargin &lt; 4
+0032     usePar = <span class="string">'never'</span>;
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> nargin &lt; 3
+0035     replicates = 5; <span class="comment">%default value</span>
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">%% Check if data is given so that the short dimension is the second one</span>
+0039 <span class="keyword">if</span> size(data,2) &gt;= size(data,1)
+0040     data = data';
+0041     disp(<span class="string">'Warning: data was given in the transposed form'</span>)
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">%% Get synergies</span>
+0045 <span class="comment">%Auto-replicating:</span>
+0046 [coefs,syns,res] = <a href="../../../../labTools/fun/ext/pitools/dimReduction/myNNMF.html" class="code" title="function [W, C, d] = myNNMF(data, rank, reps, useParallel)">myNNMF</a>(data,dim,replicates,usePar); <span class="comment">%Normalized coefs</span>
+0047 coefs = coefs';
+0048 syns  = syns';
+0049 res   = (res*numel(data))^2;
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

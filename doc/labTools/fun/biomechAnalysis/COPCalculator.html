@@ -4,7 +4,7 @@
 <head>
   <title>Description of COPCalculator</title>
   <meta name="keywords" content="COPCalculator">
-  <meta name="description" content="COPCALCULATOR Calculate the center of pressure time series from GRF data">
+  <meta name="description" content="COPCALCULATOR Calculate the center of pressure time series from GRF data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,36 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>COPCALCULATOR Calculate the center of pressure time series from GRF data</strong></div>
+<div class="box"><strong>COPCALCULATOR Calculate the center of pressure time series from GRF data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function COPTS = COPCalculator(GRFData) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">COPCALCULATOR Calculate the center of pressure time series from GRF data</pre></div>
+<div class="fragment"><pre class="comment">COPCALCULATOR Calculate the center of pressure time series from GRF data.
+
+   Median-filters (3 samples) and low-pass filters (25 Hz) the force
+ plate data, computes the center of pressure under each foot from the
+ forces and moments, transforms it from the treadmill to the Vicon
+ coordinate system with the matrices in coordinateTransformation_06022017
+ .mat, and interpolates over NaN gaps in the COP while keeping the NaNs
+ in the output.
+
+ Side effects: loads coordinateTransformation_06022017.mat (must be on
+   the path).
+
+ Inputs:
+   GRFData - orientedLabTimeSeries of force plate data with the channels
+             LFx..LMz and RFx..RMz
+
+ Outputs:
+   COPTS - orientedLabTimeSeries with LCOP/RCOP x,y,z (mm), the ground
+           reaction forces LGRF/RGRF x,y,z, and moments LGRM/RGRM x,y,z
+
+ Toolbox Dependencies: Signal Processing Toolbox (through medianFilter
+   and lowPassFilter)
+
+ See also <a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TORQUECALCULATOR</a>, <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCALCULATOR</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -36,112 +59,173 @@ This function calls:
 <li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/computeCOP.html" class="code" title="function COPData = computeCOP(this)">computeCOP</a>	computeCOP  Computes center of pressure from GRF data</li><li><a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TorqueCalculator</a>	TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/computeCOP.html" class="code" title="function COPData = computeCOP(this)">computeCOP</a>	COMPUTECOP Computes center of pressure from GRF data.</li><li><a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TorqueCalculator</a>	TORQUECALCULATOR Calculate torque at each leg joint using inverse dynamics.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function COPTS = COPCalculator(GRFData)</a>
-0002 <span class="comment">%COPCALCULATOR Calculate the center of pressure time series from GRF data</span>
-0003 
-0004 <span class="comment">%% Filter the GRF Time Series Data</span>
-0005 or = GRFData.orientation;               <span class="comment">% retrieve GRF orientation data</span>
-0006 GRFData = GRFData.medianFilter(3);      <span class="comment">% eliminate outliers</span>
-0007 GRFData = GRFData.lowPassFilter(25);    <span class="comment">% 25 Hz cutoff frequency</span>
-0008 
-0009 <span class="comment">%% Define the Force Data</span>
-0010 labs ={<span class="string">'LFx'</span>,<span class="string">'LFy'</span>,<span class="string">'LFz'</span>,<span class="string">'LMx'</span>,<span class="string">'LMy'</span>,<span class="string">'LMz'</span>, <span class="keyword">...</span>
-0011     <span class="string">'RFx'</span>,<span class="string">'RFy'</span>,<span class="string">'RFz'</span>,<span class="string">'RMx'</span>,<span class="string">'RMy'</span>,<span class="string">'RMz'</span>};
-0012 aux = GRFData.getDataAsVector(labs);    <span class="comment">% retrieve left and right FP data</span>
-0013 <span class="keyword">for</span> ii = 1:length(labs)                 <span class="comment">% for each FP sensor, ...</span>
-0014     eval([labs{ii} <span class="string">' = aux(:,ii);'</span>]);   <span class="comment">% assign data</span>
-0015 <span class="keyword">end</span>
-0016 clear aux;
-0017 
-0018 <span class="comment">% Define the Calibration Matrices that were experimentally calculated based</span>
-0019 <span class="comment">%on Dr. Collins' method</span>
-0020 <span class="comment">%These are now loaded from .mat file:</span>
-0021 <span class="comment">%LeftCalibrationMatrix=[0.977443018179296,0.0265878123782286,0.00727178625926090,-4.01453477495388e-06,6.40955506816272e-06,-6.37851553161149e-06;-0.0268315126953482,1.00295568287710,-0.000701042994051120,-1.14416377324098e-06,-1.32448870901600e-05,1.30878158412852e-05;0.212020149923397,-0.0599681540847165,0.936220974404682,-3.35889204404071e-07,-4.22088717230903e-05,0.000198374222897077;87.9775199583949,-82.7205462087585,-31.2294587953683,0.968979166120067,-0.0310407162599708,0.103337032656768;56.2959837326107,-18.7996561497853,4.75495955638203,-0.000983104515514435,0.955214717752167,0.0582797232696294;23.3601483862054,-18.3109163366889,-1.34627847663656,-0.00190791038185259,-0.00108948397982946,0.999613747815472];</span>
-0022 <span class="comment">%RightCalibrationMatrix=[1.03281907786820,0.0256265922835897,-0.00660442602474871,-3.01056674606954e-06,-2.31116205395644e-05,4.91854505069932e-06;-0.0195416552881650,0.998677907839746,-0.0127518171776215,3.81267049815018e-06,-2.69134385473006e-05,1.66884053275253e-05;0.0314488158391576,-0.185105961633033,0.888218372383029,-1.37726138481357e-05,-8.76750841846458e-05,6.89770726674376e-05;160.545873625969,-151.874973474082,-71.5811766262873,0.941945649494691,-0.0793439412178859,0.150522165903692;37.0330639923679,43.4298820739839,34.9546221913499,-0.00251366842359346,0.967371637874083,0.00298515313557242;-44.0833555096415,-21.8181696241636,8.11732968729231,0.00423294702847277,0.0369328291807189,0.995967448976484];</span>
-0023 load(<span class="string">'coordinateTransformation_06022017.mat'</span>); <span class="comment">% contains LeftCalibrationMatrix, RightCalibrationMatrix LTransformationMatrix, RTransformationMatrix</span>
-0024 <span class="comment">% apply the calibration matrices to the force and moment data</span>
-0025 OldLeftForces = [LFx'; LFy'; LFz'; LMx'; LMy'; LMz'];
-0026 OldRightForces = [RFx'; RFy'; RFz'; RMx'; RMy'; RMz'];
-0027 NewLeftForces = LeftCalibrationMatrix * OldLeftForces;
-0028 NewRightForces = RightCalibrationMatrix * OldRightForces;
-0029 GRFxL = -NewLeftForces(1,:);
-0030 GRFyL = -NewLeftForces(2,:);
-0031 GRFzL = -NewLeftForces(3,:);
-0032 GRMxL = -NewLeftForces(4,:);
-0033 GRMyL = -NewLeftForces(5,:);
-0034 GRFxR = -NewRightForces(1,:);
-0035 GRFyR = -NewRightForces(2,:);
-0036 GRFzR = -NewRightForces(3,:);
-0037 GRMxR = -NewRightForces(4,:);
-0038 GRMyR = -NewRightForces(5,:);
-0039 
-0040 <span class="comment">% Calculate the center of pressure for the data.</span>
-0041 COPxL = [(((-.005.*GRFxL-GRMyL./1000)./GRFzL))]*1000;<span class="comment">%milimeters</span>
-0042 COPyL = [(((-.005.*GRFyL+GRMxL./1000)./GRFzL))]*1000;
-0043 COPxR = [(((-.005.*-1.*GRFxR+GRMyR./1000)./GRFzR))]*1000;
-0044 COPyR = [(((-.005.*GRFyR+GRMxR./1000)./GRFzR))]*1000;
-0045 
-0046 <span class="comment">% Transform the center of pressure data from the local treadmill</span>
-0047 <span class="comment">% coordinate system to the global vicon coordinate system.</span>
-0048 <span class="comment">%These are now loaded from .mat file:</span>
-0049 <span class="comment">%LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];</span>
-0050 <span class="comment">%RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];</span>
-0051 NewLeftCOP=LTransformationMatrix*[ones(size(COPxL));COPxL; COPyL; zeros(size(COPxL))];
-0052 NewCOPxL=NewLeftCOP(2,:);
-0053 NewCOPyL=NewLeftCOP(3,:);
-0054 NewRightCOP=RTransformationMatrix*[ones(size(COPxR));COPxR; COPyR; zeros(size(COPxR))];
-0055 NewCOPxR=NewRightCOP(2,:);
-0056 NewCOPyR=NewRightCOP(3,:);
-0057 <span class="comment">% for i=1:length(COPxR)</span>
-0058 <span class="comment">%     LeftCOP=[1;COPxL(i);COPyL(i);0];</span>
-0059 <span class="comment">%     RightCOP=[1;COPxR(i);COPyR(i);0];</span>
-0060 <span class="comment">%     NewLeftCOP=LTransformationMatrix*LeftCOP;</span>
-0061 <span class="comment">%     NewRightCOP=RTransformationMatrix*RightCOP;</span>
-0062 <span class="comment">%     NewCOPxL(i)=NewLeftCOP(2);</span>
-0063 <span class="comment">%     NewCOPyL(i)=NewLeftCOP(3);</span>
-0064 <span class="comment">%     NewCOPxR(i)=NewRightCOP(2);</span>
-0065 <span class="comment">%     NewCOPyR(i)=NewRightCOP(3);</span>
-0066 <span class="comment">% end</span>
-0067 
-0068 <span class="comment">% substitute NaNs, by doing a linear interpolation:</span>
-0069 ll={<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
-0070 <span class="keyword">for</span> i=1:length(ll)
-0071     eval([<span class="string">'aux='</span> ll{i} <span class="string">';'</span>]);
-0072     badInds(i,:)=isnan(aux);
-0073     goodInds=~badInds(i,:);
-0074     <span class="keyword">if</span> any(goodInds) <span class="comment">%% HH temproary fix.</span>
-0075         aux=interp1(find(~badInds(i,:)),aux(~badInds(i,:)),1:length(aux),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
-0076         eval([ll{i} <span class="string">'=aux;'</span>]);
-0077     <span class="keyword">end</span>
-0078 <span class="keyword">end</span>
-0079 
-0080 <span class="comment">%I don't think this smoothing is needed:</span>
-0081 <span class="comment">% [Bcop,Acop]=butter(1,3/100/2);</span>
-0082 <span class="comment">% [Bcopy,Acopy]=butter(1,3/100/2);</span>
-0083 <span class="comment">% NewCOPxL=filtfilt(Bcop,Acop,NewCOPxL);</span>
-0084 <span class="comment">% NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);</span>
-0085 <span class="comment">% NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);</span>
-0086 <span class="comment">% NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);</span>
-0087 
-0088 <span class="comment">% replace NaNs, by doing a linear interpolation:</span>
-0089 ll = {<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
-0090 <span class="keyword">for</span> ii = 1:length(ll)
-0091     eval([<span class="string">'aux = '</span> ll{ii} <span class="string">';'</span>]);
-0092     aux(badInds(ii,:)) = NaN;
-0093     eval([ll{ii} <span class="string">' = aux;'</span>]);
-0094 <span class="keyword">end</span>
-0095 
-0096 COPData=[NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' NewCOPyR' zeros(size(NewCOPxR))' GRFxL' GRFyL' GRFzL' GRFxR' GRFyR' GRFzR' GRMxL' GRMyL' zeros(size(GRMyL))' GRMxR' GRMyR' zeros(size(GRMyL))'];
-0097 COPTS=<a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(COPData,GRFData.Time(1),GRFData.sampPeriod,{<span class="string">'LCOPx'</span>,<span class="string">'LCOPy'</span>,<span class="string">'LCOPz'</span>,<span class="string">'RCOPx'</span>,<span class="string">'RCOPy'</span>,<span class="string">'RCOPz'</span>, <span class="string">'LGRFx'</span>,<span class="string">'LGRFy'</span>,<span class="string">'LGRFz'</span>,<span class="string">'RGRFx'</span>,<span class="string">'RGRFy'</span>,<span class="string">'RGRFz'</span>,<span class="string">'LGRMx'</span>,<span class="string">'LGRMy'</span>,<span class="string">'LGRMz'</span>,<span class="string">'RGRMx'</span>,<span class="string">'RGRMy'</span>,<span class="string">'RGRMz'</span>},or);
-0098 
-0099 <span class="keyword">end</span>
-0100</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%COPCALCULATOR Calculate the center of pressure time series from GRF data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Median-filters (3 samples) and low-pass filters (25 Hz) the force</span>
+0005 <span class="comment">% plate data, computes the center of pressure under each foot from the</span>
+0006 <span class="comment">% forces and moments, transforms it from the treadmill to the Vicon</span>
+0007 <span class="comment">% coordinate system with the matrices in coordinateTransformation_06022017</span>
+0008 <span class="comment">% .mat, and interpolates over NaN gaps in the COP while keeping the NaNs</span>
+0009 <span class="comment">% in the output.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Side effects: loads coordinateTransformation_06022017.mat (must be on</span>
+0012 <span class="comment">%   the path).</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   GRFData - orientedLabTimeSeries of force plate data with the channels</span>
+0016 <span class="comment">%             LFx..LMz and RFx..RMz</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   COPTS - orientedLabTimeSeries with LCOP/RCOP x,y,z (mm), the ground</span>
+0020 <span class="comment">%           reaction forces LGRF/RGRF x,y,z, and moments LGRM/RGRM x,y,z</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (through medianFilter</span>
+0023 <span class="comment">%   and lowPassFilter)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also TORQUECALCULATOR, COMCALCULATOR.</span>
+0026 
+0027 <span class="comment">%% Filter the GRF Time Series Data</span>
+0028 or      = GRFData.orientation;               <span class="comment">% retrieve GRF orientation data</span>
+0029 GRFData = GRFData.medianFilter(3);      <span class="comment">% eliminate outliers</span>
+0030 GRFData = GRFData.lowPassFilter(25);    <span class="comment">% 25 Hz cutoff frequency</span>
+0031 
+0032 <span class="comment">%% Define the Force Data</span>
+0033 labs = {<span class="string">'LFx'</span>,<span class="string">'LFy'</span>,<span class="string">'LFz'</span>,<span class="string">'LMx'</span>,<span class="string">'LMy'</span>,<span class="string">'LMz'</span>, <span class="keyword">...</span>
+0034     <span class="string">'RFx'</span>,<span class="string">'RFy'</span>,<span class="string">'RFz'</span>,<span class="string">'RMx'</span>,<span class="string">'RMy'</span>,<span class="string">'RMz'</span>};
+0035 aux = GRFData.getDataAsVector(labs);    <span class="comment">% retrieve left and right FP data</span>
+0036 <span class="keyword">for</span> ii = 1:length(labs)                 <span class="comment">% for each FP sensor, ...</span>
+0037     eval([labs{ii} <span class="string">' = aux(:,ii);'</span>]);   <span class="comment">% assign data</span>
+0038 <span class="keyword">end</span>
+0039 clear aux;
+0040 
+0041 <span class="comment">% Define the Calibration Matrices that were experimentally calculated based</span>
+0042 <span class="comment">%on Dr. Collins' method</span>
+0043 <span class="comment">%These are now loaded from .mat file:</span>
+0044 <span class="comment">%LeftCalibrationMatrix=[0.977443018179296,0.0265878123782286, ...</span>
+0045 <span class="comment">%    0.00727178625926090,-4.01453477495388e-06,6.40955506816272e-06, ...</span>
+0046 <span class="comment">%    -6.37851553161149e-06;-0.0268315126953482,1.00295568287710, ...</span>
+0047 <span class="comment">%    -0.000701042994051120,-1.14416377324098e-06,-1.32448870901600e-05, ...</span>
+0048 <span class="comment">%    1.30878158412852e-05;0.212020149923397,-0.0599681540847165, ...</span>
+0049 <span class="comment">%    0.936220974404682,-3.35889204404071e-07,-4.22088717230903e-05, ...</span>
+0050 <span class="comment">%    0.000198374222897077;87.9775199583949,-82.7205462087585, ...</span>
+0051 <span class="comment">%    -31.2294587953683,0.968979166120067,-0.0310407162599708, ...</span>
+0052 <span class="comment">%    0.103337032656768;56.2959837326107,-18.7996561497853, ...</span>
+0053 <span class="comment">%    4.75495955638203,-0.000983104515514435,0.955214717752167, ...</span>
+0054 <span class="comment">%    0.0582797232696294;23.3601483862054,-18.3109163366889, ...</span>
+0055 <span class="comment">%    -1.34627847663656,-0.00190791038185259,-0.00108948397982946, ...</span>
+0056 <span class="comment">%    0.999613747815472];</span>
+0057 <span class="comment">%RightCalibrationMatrix=[1.03281907786820,0.0256265922835897, ...</span>
+0058 <span class="comment">%    -0.00660442602474871,-3.01056674606954e-06,-2.31116205395644e-05, ...</span>
+0059 <span class="comment">%    4.91854505069932e-06;-0.0195416552881650,0.998677907839746, ...</span>
+0060 <span class="comment">%    -0.0127518171776215,3.81267049815018e-06,-2.69134385473006e-05, ...</span>
+0061 <span class="comment">%    1.66884053275253e-05;0.0314488158391576,-0.185105961633033, ...</span>
+0062 <span class="comment">%    0.888218372383029,-1.37726138481357e-05,-8.76750841846458e-05, ...</span>
+0063 <span class="comment">%    6.89770726674376e-05;160.545873625969,-151.874973474082, ...</span>
+0064 <span class="comment">%    -71.5811766262873,0.941945649494691,-0.0793439412178859, ...</span>
+0065 <span class="comment">%    0.150522165903692;37.0330639923679,43.4298820739839, ...</span>
+0066 <span class="comment">%    34.9546221913499,-0.00251366842359346,0.967371637874083, ...</span>
+0067 <span class="comment">%    0.00298515313557242;-44.0833555096415,-21.8181696241636, ...</span>
+0068 <span class="comment">%    8.11732968729231,0.00423294702847277,0.0369328291807189, ...</span>
+0069 <span class="comment">%    0.995967448976484];</span>
+0070 <span class="comment">% contains LeftCalibrationMatrix, RightCalibrationMatrix</span>
+0071 <span class="comment">% LTransformationMatrix, RTransformationMatrix</span>
+0072 load(<span class="string">'coordinateTransformation_06022017.mat'</span>);
+0073 <span class="comment">% apply the calibration matrices to the force and moment data</span>
+0074 OldLeftForces  = [LFx'; LFy'; LFz'; LMx'; LMy'; LMz'];
+0075 OldRightForces = [RFx'; RFy'; RFz'; RMx'; RMy'; RMz'];
+0076 NewLeftForces  = LeftCalibrationMatrix * OldLeftForces;
+0077 NewRightForces = RightCalibrationMatrix * OldRightForces;
+0078 GRFxL          = -NewLeftForces(1,:);
+0079 GRFyL          = -NewLeftForces(2,:);
+0080 GRFzL          = -NewLeftForces(3,:);
+0081 GRMxL          = -NewLeftForces(4,:);
+0082 GRMyL          = -NewLeftForces(5,:);
+0083 GRFxR          = -NewRightForces(1,:);
+0084 GRFyR          = -NewRightForces(2,:);
+0085 GRFzR          = -NewRightForces(3,:);
+0086 GRMxR          = -NewRightForces(4,:);
+0087 GRMyR          = -NewRightForces(5,:);
+0088 
+0089 plateOffsetM = 0.005;   <span class="comment">% TODO: source? (m, plate-surface offset)</span>
+0090 mmPerM       = 1000;    <span class="comment">% moments are in N*mm, COP is returned in mm</span>
+0091 
+0092 <span class="comment">% Calculate the center of pressure for the data.</span>
+0093 COPxL = [(((-plateOffsetM.*GRFxL-GRMyL./mmPerM)./GRFzL))]*mmPerM;<span class="comment">%milimeters</span>
+0094 COPyL = [(((-plateOffsetM.*GRFyL+GRMxL./mmPerM)./GRFzL))]*mmPerM;
+0095 COPxR = [(((-plateOffsetM.*-1.*GRFxR+GRMyR./mmPerM)./GRFzR))]*mmPerM;
+0096 COPyR = [(((-plateOffsetM.*GRFyR+GRMxR./mmPerM)./GRFzR))]*mmPerM;
+0097 
+0098 <span class="comment">% Transform the center of pressure data from the local treadmill</span>
+0099 <span class="comment">% coordinate system to the global vicon coordinate system.</span>
+0100 <span class="comment">%These are now loaded from .mat file:</span>
+0101 <span class="comment">%LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];</span>
+0102 <span class="comment">%RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];</span>
+0103 NewLeftCOP  = LTransformationMatrix*[ones(size(COPxL));COPxL; COPyL; <span class="keyword">...</span>
+0104     zeros(size(COPxL))];
+0105 NewCOPxL    = NewLeftCOP(2,:);
+0106 NewCOPyL    = NewLeftCOP(3,:);
+0107 NewRightCOP = RTransformationMatrix*[ones(size(COPxR));COPxR; COPyR; <span class="keyword">...</span>
+0108     zeros(size(COPxR))];
+0109 NewCOPxR    = NewRightCOP(2,:);
+0110 NewCOPyR    = NewRightCOP(3,:);
+0111 <span class="comment">% for i=1:length(COPxR)</span>
+0112 <span class="comment">%     LeftCOP=[1;COPxL(i);COPyL(i);0];</span>
+0113 <span class="comment">%     RightCOP=[1;COPxR(i);COPyR(i);0];</span>
+0114 <span class="comment">%     NewLeftCOP=LTransformationMatrix*LeftCOP;</span>
+0115 <span class="comment">%     NewRightCOP=RTransformationMatrix*RightCOP;</span>
+0116 <span class="comment">%     NewCOPxL(i)=NewLeftCOP(2);</span>
+0117 <span class="comment">%     NewCOPyL(i)=NewLeftCOP(3);</span>
+0118 <span class="comment">%     NewCOPxR(i)=NewRightCOP(2);</span>
+0119 <span class="comment">%     NewCOPyR(i)=NewRightCOP(3);</span>
+0120 <span class="comment">% end</span>
+0121 
+0122 <span class="comment">% substitute NaNs, by doing a linear interpolation:</span>
+0123 ll = {<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
+0124 <span class="keyword">for</span> jj = 1:length(ll)
+0125     eval([<span class="string">'aux='</span> ll{jj} <span class="string">';'</span>]);
+0126     badInds(jj,:) = isnan(aux);
+0127     goodInds = ~badInds(jj,:);
+0128     <span class="keyword">if</span> any(goodInds) <span class="comment">% temporary fix: skip channels without valid samples</span>
+0129         aux = interp1(find(~badInds(jj,:)),aux(~badInds(jj,:)), <span class="keyword">...</span>
+0130             1:length(aux),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0131         eval([ll{jj} <span class="string">'=aux;'</span>]);
+0132     <span class="keyword">end</span>
+0133 <span class="keyword">end</span>
+0134 
+0135 <span class="comment">%I don't think this smoothing is needed:</span>
+0136 <span class="comment">% [Bcop,Acop]=butter(1,3/100/2);</span>
+0137 <span class="comment">% [Bcopy,Acopy]=butter(1,3/100/2);</span>
+0138 <span class="comment">% NewCOPxL=filtfilt(Bcop,Acop,NewCOPxL);</span>
+0139 <span class="comment">% NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);</span>
+0140 <span class="comment">% NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);</span>
+0141 <span class="comment">% NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);</span>
+0142 
+0143 <span class="comment">% replace NaNs, by doing a linear interpolation:</span>
+0144 ll = {<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
+0145 <span class="keyword">for</span> ii = 1:length(ll)
+0146     eval([<span class="string">'aux = '</span> ll{ii} <span class="string">';'</span>]);
+0147     aux(badInds(ii,:)) = NaN;
+0148     eval([ll{ii} <span class="string">' = aux;'</span>]);
+0149 <span class="keyword">end</span>
+0150 
+0151 COPData = [NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' <span class="keyword">...</span>
+0152     NewCOPyR' zeros( <span class="keyword">...</span>
+0153     size(NewCOPxR))' GRFxL' GRFyL' GRFzL' GRFxR' GRFyR' GRFzR' GRMxL' <span class="keyword">...</span>
+0154     GRMyL' zeros(size(GRMyL))' GRMxR' GRMyR' zeros(size(GRMyL))'];
+0155 COPTS   = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(COPData,GRFData.Time(1), <span class="keyword">...</span>
+0156     GRFData.sampPeriod,{<span class="string">'LCOPx'</span>,<span class="string">'LCOPy'</span>,<span class="string">'LCOPz'</span>,<span class="string">'RCOPx'</span>,<span class="string">'RCOPy'</span>,<span class="string">'RCOPz'</span>, <span class="keyword">...</span>
+0157     <span class="string">'LGRFx'</span>,<span class="string">'LGRFy'</span>,<span class="string">'LGRFz'</span>,<span class="string">'RGRFx'</span>,<span class="string">'RGRFy'</span>,<span class="string">'RGRFz'</span>,<span class="string">'LGRMx'</span>,<span class="string">'LGRMy'</span>, <span class="keyword">...</span>
+0158     <span class="string">'LGRMz'</span>,<span class="string">'RGRMx'</span>,<span class="string">'RGRMy'</span>,<span class="string">'RGRMz'</span>},or);
+0159 
+0160 <span class="keyword">end</span>
+0161</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

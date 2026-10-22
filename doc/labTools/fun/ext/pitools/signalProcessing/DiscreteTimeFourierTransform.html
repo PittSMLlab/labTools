@@ -29,10 +29,10 @@
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.
 
-   Computes the discrete-time Fourier transform of data using MATLAB's
- fft, then constructs the corresponding centered frequency vector in
- units of fs. The output spectrum is shifted so that zero frequency
- is at the center (fftshift convention).
+   Computes the discrete-time Fourier transform of data using MATLAB's fft,
+ then constructs the corresponding centered frequency vector in units of
+ fs. The output spectrum is shifted so that zero frequency is at the center
+ (fftshift convention).
 
  Inputs:
    data - (N x C) double array; transform is applied along rows (dim 1)
@@ -40,8 +40,8 @@
 
  Outputs:
    Fdata   - centered complex spectrum, same size as data
-   fvector - (N x 1) frequency vector in the same units as fs,
-             ranging from -fs/2 to just below fs/2
+   fvector - (N x 1) frequency vector in the same units as fs, ranging from
+             -fs/2 to just below fs/2
 
  Toolbox Dependencies: None
 
@@ -51,10 +51,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	fftshift  Shifts alignment by half cycle</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/fftshift.html" class="code" title="function newThis = fftshift(this, labels)">fftshift</a>	FFTSHIFT Shifts alignment by half cycle.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/fourierTransform.html" class="code" title="function Fthis = fourierTransform(this, M)">fourierTransform</a>	fourierTransform  Computes Fourier transform</li><li><a href="idealHPF.html" class="code" title="function filteredData = idealHPF(data, fcut)">idealHPF</a>	IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.</li><li><a href="idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>	IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/fourierTransform.html" class="code" title="function Fthis = fourierTransform(this, M)">fourierTransform</a>	FOURIERTRANSFORM Computes Fourier transform.</li><li><a href="idealHPF.html" class="code" title="function filteredData = idealHPF(data, fcut)">idealHPF</a>	IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.</li><li><a href="idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>	IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.</li></ul>
 <!-- crossreference -->
 
 
@@ -63,10 +63,10 @@ This function is called by:
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)</a>
 0002 <span class="comment">%DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Computes the discrete-time Fourier transform of data using MATLAB's</span>
-0005 <span class="comment">% fft, then constructs the corresponding centered frequency vector in</span>
-0006 <span class="comment">% units of fs. The output spectrum is shifted so that zero frequency</span>
-0007 <span class="comment">% is at the center (fftshift convention).</span>
+0004 <span class="comment">%   Computes the discrete-time Fourier transform of data using MATLAB's fft,</span>
+0005 <span class="comment">% then constructs the corresponding centered frequency vector in units of</span>
+0006 <span class="comment">% fs. The output spectrum is shifted so that zero frequency is at the center</span>
+0007 <span class="comment">% (fftshift convention).</span>
 0008 <span class="comment">%</span>
 0009 <span class="comment">% Inputs:</span>
 0010 <span class="comment">%   data - (N x C) double array; transform is applied along rows (dim 1)</span>
@@ -74,8 +74,8 @@ This function is called by:
 0012 <span class="comment">%</span>
 0013 <span class="comment">% Outputs:</span>
 0014 <span class="comment">%   Fdata   - centered complex spectrum, same size as data</span>
-0015 <span class="comment">%   fvector - (N x 1) frequency vector in the same units as fs,</span>
-0016 <span class="comment">%             ranging from -fs/2 to just below fs/2</span>
+0015 <span class="comment">%   fvector - (N x 1) frequency vector in the same units as fs, ranging from</span>
+0016 <span class="comment">%             -fs/2 to just below fs/2</span>
 0017 <span class="comment">%</span>
 0018 <span class="comment">% Toolbox Dependencies: None</span>
 0019 <span class="comment">%</span>
@@ -102,6 +102,6 @@ This function is called by:
 0040 <span class="comment">% fvector = ifftshift(fvector);</span>
 0041 
 0042 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

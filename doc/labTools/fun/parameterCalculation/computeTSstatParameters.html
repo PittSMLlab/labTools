@@ -56,7 +56,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	iqr  Computes interquartile range</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/strideData.html" class="code" title="">strideData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>	IQR Computes interquartile range.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="computeEMGParameters.html" class="code" title="function out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)">computeEMGParameters</a>	COMPUTEEMGPARAMETERS Compute EMG parameters per stride.</li></ul>
@@ -143,53 +143,68 @@ This function is called by:
 0076         <span class="keyword">for</span> stat = 1:numStats
 0077             <span class="keyword">switch</span> statSuffixes{stat}
 0078                 <span class="keyword">case</span> <span class="string">'max'</span>
-0079                     <span class="comment">%description{ch,stat}=['Peak proc EMG in muscle ' channelLabels{ch}];</span>
-0080                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = max(channelData);
-0081                 <span class="keyword">case</span> <span class="string">'min'</span>
-0082                     <span class="comment">%description{ch,stat}=['Min proc EMG in muscle ' channelLabels{ch}];</span>
-0083                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = min(channelData);
-0084                 <span class="keyword">case</span> <span class="string">'iqr'</span>
-0085                     <span class="comment">%description{ch,stat}=['Inter-quartile range of proc EMG in muscle ' channelLabels{ch}];</span>
-0086                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>(channelData);
-0087                 <span class="keyword">case</span> <span class="string">'avg'</span>
-0088                     <span class="comment">%description{ch,stat}=['Avg. (mean) of proc EMG in muscle ' channelLabels{ch}];</span>
-0089                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData);
-0090                 <span class="keyword">case</span> <span class="string">'var'</span>
-0091                     <span class="comment">%description{ch,stat}=['Variance of proc EMG in muscle ' channelLabels{ch}];</span>
-0092                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
-0093                         var(channelData, 0);  <span class="comment">% unbiased</span>
-0094                 <span class="keyword">case</span> <span class="string">'skw'</span>
-0095                     <span class="comment">%description{ch,stat}=['Skewness of proc EMG in muscle ' channelLabels{ch}];</span>
-0096                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
-0097                         skewness(channelData, 0);  <span class="comment">% unbiased</span>
-0098                 <span class="keyword">case</span> <span class="string">'kur'</span>
-0099                     <span class="comment">%description{ch,stat}=['Kurtosis of proc EMG in muscle ' channelLabels{ch}];</span>
+0079                     <span class="comment">%description{ch,stat}=['Peak proc EMG in muscle ' ...</span>
+0080                     <span class="comment">%    channelLabels{ch}];</span>
+0081                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = max(channelData);
+0082                 <span class="keyword">case</span> <span class="string">'min'</span>
+0083                     <span class="comment">%description{ch,stat}=['Min proc EMG in muscle ' ...</span>
+0084                     <span class="comment">%    channelLabels{ch}];</span>
+0085                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = min(channelData);
+0086                 <span class="keyword">case</span> <span class="string">'iqr'</span>
+0087                     <span class="comment">%description{ch,stat}=[ ...</span>
+0088                     <span class="comment">%    'Inter-quartile range of proc EMG in muscle ' ...</span>
+0089                     <span class="comment">%    channelLabels{ch}];</span>
+0090                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/iqr.html" class="code" title="function iqrTS = iqr(this, strideIdxs)">iqr</a>(channelData);
+0091                 <span class="keyword">case</span> <span class="string">'avg'</span>
+0092                     <span class="comment">%description{ch,stat}=[ ...</span>
+0093                     <span class="comment">%    'Avg. (mean) of proc EMG in muscle ' ...</span>
+0094                     <span class="comment">%    channelLabels{ch}];</span>
+0095                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData);
+0096                 <span class="keyword">case</span> <span class="string">'var'</span>
+0097                     <span class="comment">%description{ch,stat}=[ ...</span>
+0098                     <span class="comment">%    'Variance of proc EMG in muscle ' ...</span>
+0099                     <span class="comment">%    channelLabels{ch}];</span>
 0100                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
-0101                         kurtosis(channelData, 0);  <span class="comment">% unbiased</span>
-0102                 <span class="keyword">case</span> <span class="string">'med'</span>
-0103                     <span class="comment">%description{ch,stat}=['Median of proc EMG in muscle ' channelLabels{ch}];</span>
-0104                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(channelData);
-0105                 <span class="keyword">case</span> <span class="string">'snr'</span>
-0106                     <span class="comment">%description{ch,stat}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' channelLabels{ch}];</span>
-0107                     <span class="comment">% TODO: min() may be near zero after low-pass</span>
-0108                     <span class="comment">%   filtering; verify this is a valid SNR estimate</span>
-0109                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = 20 * log10( <span class="keyword">...</span>
-0110                         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData.^2) / min(channelData)^2);
-0111                 <span class="keyword">case</span> <span class="string">'bad'</span>
-0112                     <span class="comment">% quality codes are powers of 2 (up to 8 per int8);</span>
-0113                     <span class="comment">% summing unique values tracks all issues at once</span>
-0114                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
-0115                         sum(unique(qualColumn));
-0116             <span class="keyword">end</span>
-0117         <span class="keyword">end</span>
-0118     <span class="keyword">end</span>
-0119 <span class="keyword">end</span>
-0120 
-0121 <span class="comment">%% Output Computed Parameters</span>
-0122 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(<a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(:, :), paramLabels(:), [], description(:));
-0123 
-0124 <span class="keyword">end</span>
-0125</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0101                         var(channelData, 0);  <span class="comment">% unbiased</span>
+0102                 <span class="keyword">case</span> <span class="string">'skw'</span>
+0103                     <span class="comment">%description{ch,stat}=[ ...</span>
+0104                     <span class="comment">%    'Skewness of proc EMG in muscle ' ...</span>
+0105                     <span class="comment">%    channelLabels{ch}];</span>
+0106                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0107                         skewness(channelData, 0);  <span class="comment">% unbiased</span>
+0108                 <span class="keyword">case</span> <span class="string">'kur'</span>
+0109                     <span class="comment">%description{ch,stat}=[ ...</span>
+0110                     <span class="comment">%    'Kurtosis of proc EMG in muscle ' ...</span>
+0111                     <span class="comment">%    channelLabels{ch}];</span>
+0112                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0113                         kurtosis(channelData, 0);  <span class="comment">% unbiased</span>
+0114                 <span class="keyword">case</span> <span class="string">'med'</span>
+0115                     <span class="comment">%description{ch,stat}=[ ...</span>
+0116                     <span class="comment">%    'Median of proc EMG in muscle ' channelLabels{ch}];</span>
+0117                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(channelData);
+0118                 <span class="keyword">case</span> <span class="string">'snr'</span>
+0119                     <span class="comment">%description{ch,stat}=[ ...</span>
+0120                     <span class="comment">%    'Energy of proc EMG divided by base noise ' ...</span>
+0121                     <span class="comment">%    'energy (in dB) for muscle ' channelLabels{ch}];</span>
+0122                     <span class="comment">% TODO: min() may be near zero after low-pass</span>
+0123                     <span class="comment">%   filtering; verify this is a valid SNR estimate</span>
+0124                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = 20 * log10( <span class="keyword">...</span>
+0125                         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(channelData.^2) / min(channelData)^2);
+0126                 <span class="keyword">case</span> <span class="string">'bad'</span>
+0127                     <span class="comment">% quality codes are powers of 2 (up to 8 per int8);</span>
+0128                     <span class="comment">% summing unique values tracks all issues at once</span>
+0129                     <a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(st, ch, stat) = <span class="keyword">...</span>
+0130                         sum(unique(qualColumn));
+0131             <span class="keyword">end</span>
+0132         <span class="keyword">end</span>
+0133     <span class="keyword">end</span>
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="comment">%% Output Computed Parameters</span>
+0137 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(<a href="../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(:, :), paramLabels(:), [], description(:));
+0138 
+0139 <span class="keyword">end</span>
+0140</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

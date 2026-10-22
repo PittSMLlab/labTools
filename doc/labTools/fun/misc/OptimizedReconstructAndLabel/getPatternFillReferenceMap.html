@@ -4,7 +4,7 @@
 <head>
   <title>Description of getPatternFillReferenceMap</title>
   <meta name="keywords" content="getPatternFillReferenceMap">
-  <meta name="description" content="">
+  <meta name="description" content="GETPATTERNFILLREFERENCEMAP Build marker map for pattern fill.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETPATTERNFILLREFERENCEMAP Build marker map for pattern fill.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function refMap = getPatternFillReferenceMap() </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETPATTERNFILLREFERENCEMAP Build marker map for pattern fill.
+
+   Returns a containers.Map mapping each target marker name to its
+ designated reference marker for pattern-based gap filling. The map
+ encodes the anatomical hierarchy: pelvis/hip markers reference the
+ greater trochanter, which references the knee, and so on distally.
+
+ Inputs:
+   None
+
+ Outputs:
+   refMap - containers.Map of target marker names to reference marker
+            names (strings)
+
+ Toolbox Dependencies: None
+
+ See also <a href="runCustomPatternFill.html" class="code" title="function runCustomPatternFill(vicon, refMap)">RUNCUSTOMPATTERNFILL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -36,35 +52,53 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="OptimizedReconstructAndLabel.html" class="code" title="">OptimizedReconstructAndLabel</a>	% Take 1 at Optimizing Reconstruct & Label Pipeline</li></ul>
+<li><a href="OptimizedReconstructAndLabel.html" class="code" title="">OptimizedReconstructAndLabel</a>	% Optimizing Reconstruct & Label Pipeline</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function refMap = getPatternFillReferenceMap()</a>
-0002 
-0003     refMap = containers.Map;
-0004 
-0005     refMap(<span class="string">'RPSIS'</span>) = <span class="string">'RGT'</span>;
-0006     refMap(<span class="string">'RASIS'</span>) = <span class="string">'RGT'</span>;
-0007     refMap(<span class="string">'LPSIS'</span>) = <span class="string">'LGT'</span>;
-0008     refMap(<span class="string">'LASIS'</span>) = <span class="string">'LGT'</span>;
-0009     refMap(<span class="string">'RGT'</span>) = <span class="string">'RKNEE'</span>;
-0010     refMap(<span class="string">'RTHI'</span>) = <span class="string">'RGT'</span>;
-0011     refMap(<span class="string">'RKNEE'</span>) = <span class="string">'RGT'</span>;
-0012     refMap(<span class="string">'RSHANK'</span>) = <span class="string">'RKNEE'</span>;
-0013     refMap(<span class="string">'RANK'</span>) = <span class="string">'RKNEE'</span>;
-0014     refMap(<span class="string">'RHEEL'</span>) = <span class="string">'RANK'</span>;
-0015     refMap(<span class="string">'RTOE'</span>) = <span class="string">'RANK'</span>;
-0016     refMap(<span class="string">'LGT'</span>) = <span class="string">'LKNEE'</span>;
-0017     refMap(<span class="string">'LTHI'</span>) = <span class="string">'LGT'</span>;
-0018     refMap(<span class="string">'LKNEE'</span>) = <span class="string">'LGT'</span>;
-0019     refMap(<span class="string">'LSHANK'</span>) = <span class="string">'LKNEE'</span>;
-0020     refMap(<span class="string">'LANK'</span>) = <span class="string">'LKNEE'</span>;
-0021     refMap(<span class="string">'LHEEL'</span>) = <span class="string">'LANK'</span>;
-0022     refMap(<span class="string">'LTOE'</span>) = <span class="string">'LANK'</span>;
-0023 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%GETPATTERNFILLREFERENCEMAP Build marker map for pattern fill.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Returns a containers.Map mapping each target marker name to its</span>
+0005 <span class="comment">% designated reference marker for pattern-based gap filling. The map</span>
+0006 <span class="comment">% encodes the anatomical hierarchy: pelvis/hip markers reference the</span>
+0007 <span class="comment">% greater trochanter, which references the knee, and so on distally.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   None</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   refMap - containers.Map of target marker names to reference marker</span>
+0014 <span class="comment">%            names (strings)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also RUNCUSTOMPATTERNFILL.</span>
+0019 
+0020 refMap = containers.Map;
+0021 
+0022 refMap(<span class="string">'RPSIS'</span>)  = <span class="string">'RGT'</span>;
+0023 refMap(<span class="string">'RASIS'</span>)  = <span class="string">'RGT'</span>;
+0024 refMap(<span class="string">'LPSIS'</span>)  = <span class="string">'LGT'</span>;
+0025 refMap(<span class="string">'LASIS'</span>)  = <span class="string">'LGT'</span>;
+0026 refMap(<span class="string">'RGT'</span>)    = <span class="string">'RKNEE'</span>;
+0027 refMap(<span class="string">'RTHI'</span>)   = <span class="string">'RGT'</span>;
+0028 refMap(<span class="string">'RKNEE'</span>)  = <span class="string">'RGT'</span>;
+0029 refMap(<span class="string">'RSHANK'</span>) = <span class="string">'RKNEE'</span>;
+0030 refMap(<span class="string">'RANK'</span>)   = <span class="string">'RKNEE'</span>;
+0031 refMap(<span class="string">'RHEEL'</span>)  = <span class="string">'RANK'</span>;
+0032 refMap(<span class="string">'RTOE'</span>)   = <span class="string">'RANK'</span>;
+0033 refMap(<span class="string">'LGT'</span>)    = <span class="string">'LKNEE'</span>;
+0034 refMap(<span class="string">'LTHI'</span>)   = <span class="string">'LGT'</span>;
+0035 refMap(<span class="string">'LKNEE'</span>)  = <span class="string">'LGT'</span>;
+0036 refMap(<span class="string">'LSHANK'</span>) = <span class="string">'LKNEE'</span>;
+0037 refMap(<span class="string">'LANK'</span>)   = <span class="string">'LKNEE'</span>;
+0038 refMap(<span class="string">'LHEEL'</span>)  = <span class="string">'LANK'</span>;
+0039 refMap(<span class="string">'LTOE'</span>)   = <span class="string">'LANK'</span>;
+0040 
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

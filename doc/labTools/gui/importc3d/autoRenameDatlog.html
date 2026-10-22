@@ -4,7 +4,7 @@
 <head>
   <title>Description of autoRenameDatlog</title>
   <meta name="keywords" content="autoRenameDatlog">
-  <meta name="description" content="autoRenameDatlog using timestamps and trial names from .x1d files in the viconDataFolder">
+  <meta name="description" content="AUTORENAMEDATLOG Rename datlog files to match the Vicon Trial##.x1d names.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,40 +21,49 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>autoRenameDatlog using timestamps and trial names from .x1d files in the viconDataFolder</strong></div>
+<div class="box"><strong>AUTORENAMEDATLOG Rename datlog files to match the Vicon Trial##.x1d names.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function autoRenameDatlog(datlogFolder, viconDataFolder) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> autoRenameDatlog using timestamps and trial names from .x1d files in the viconDataFolder
- 1. Will first create a back up folder within the datlogFolder with the
- folder name 'datlog-original'
- 2. Then Will rename the datlog file that's the best match within a +-1min window
- of each .x1d file under viconDataFolder. If found, will rename the corresponding datlog file as
- Trial##.mat
- If no match found will skip (.e.,g if no match for Trial10.x1d 
- in the datlog file that has time stamp within +-1mins, will not have a
- datlog file renamed as Trial10.mat)
- 
+<div class="fragment"><pre class="comment">AUTORENAMEDATLOG Rename datlog files to match the Vicon Trial##.x1d names.
 
- OUTPUTARGS = none
+   Matches each Trial##.x1d file in viconDataFolder to the datlog file in
+ datlogFolder with the closest timestamp within 1 minute (searching
+ forward from the previous match), and renames that datlog file to
+ Trial##.mat. A Vicon trial with no datlog within 1 minute (e.g., a
+ trial started in Vicon without a datlog) is skipped with a warning and
+ keeps no renamed datlog. Before renaming, copies all contents of
+ datlogFolder into a 'datlog-original' subfolder for recovery; copies and
+ renames silently overwrite same-named files (see DATA_OUTPUTS.md). The
+ match table (matchResults) is displayed in the command window so the
+ matches can be checked by eye.
 
- [INPUTARGS]:
-   - datlogFolder: string of the full path to the datlog files copied
-       from an experiment session
-   - viconDataFolder: string of the full path to the vicon files copied
-       from an experiment session, should include .x1d files for each
-       trial that you collected.
+   Can be called standalone or by GETTRIALMETADATA when a datlog folder
+ exists but a trial's datlog file cannot be found.
 
+ Inputs:
+   datlogFolder    - char, full path to the datlog files copied from an
+                     experiment session
+   viconDataFolder - char, full path to the Vicon files copied from an
+                     experiment session; should include a .x1d file for
+                     each trial that was collected
 
- Examples: autoRenameDatlog('/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data/AUF01/V02/datlog', '/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data/AUF01/V02/Vicon')
-   This will rename AUF01V02's datlog to be Trial## matching the .x1d file
-   in Vicon folder
- This function can be called standalone or as part of the c3d2mat call
- after finding the datlog folder is present in getTrialMetaData(info)
- 
- See also: labTools/gui/importc3d/getTrialMetaData.m
+ Outputs:
+   None
+
+ Examples:
+   dataDir = '/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data';
+   autoRenameDatlog(fullfile(dataDir, 'AUF01', 'V02', 'datlog'), ...
+       fullfile(dataDir, 'AUF01', 'V02', 'Vicon'))
+   renames AUF01V02's datlog files to Trial## to match the .x1d files in
+   the Vicon folder.
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">GETTRIALMETADATA</a>.
 
  $Author: Shuqi Liu $    $Date: 2025/11/03 12:32:31 $    $Revision: 0.1 $
  Copyright: Sensorimotor Learning Laboratory 2025</pre></div>
@@ -63,147 +72,181 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	getTrialMetaData creates trialMetaData object for each trial of experiment</li></ul>
+<li><a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	GETTRIALMETADATA Create trialMetaData objects and file lists for a session.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function autoRenameDatlog(datlogFolder, viconDataFolder)</a>
-0002     <span class="comment">% autoRenameDatlog using timestamps and trial names from .x1d files in the viconDataFolder</span>
-0003     <span class="comment">% 1. Will first create a back up folder within the datlogFolder with the</span>
-0004     <span class="comment">% folder name 'datlog-original'</span>
-0005     <span class="comment">% 2. Then Will rename the datlog file that's the best match within a +-1min window</span>
-0006     <span class="comment">% of each .x1d file under viconDataFolder. If found, will rename the corresponding datlog file as</span>
-0007     <span class="comment">% Trial##.mat</span>
-0008     <span class="comment">% If no match found will skip (.e.,g if no match for Trial10.x1d</span>
-0009     <span class="comment">% in the datlog file that has time stamp within +-1mins, will not have a</span>
-0010     <span class="comment">% datlog file renamed as Trial10.mat)</span>
-0011     <span class="comment">%</span>
-0012     <span class="comment">%</span>
-0013     <span class="comment">% OUTPUTARGS = none</span>
-0014     <span class="comment">%</span>
-0015     <span class="comment">% [INPUTARGS]:</span>
-0016     <span class="comment">%   - datlogFolder: string of the full path to the datlog files copied</span>
-0017     <span class="comment">%       from an experiment session</span>
-0018     <span class="comment">%   - viconDataFolder: string of the full path to the vicon files copied</span>
-0019     <span class="comment">%       from an experiment session, should include .x1d files for each</span>
-0020     <span class="comment">%       trial that you collected.</span>
-0021     <span class="comment">%</span>
-0022     <span class="comment">%</span>
-0023     <span class="comment">% Examples: autoRenameDatlog('/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data/AUF01/V02/datlog', '/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data/AUF01/V02/Vicon')</span>
-0024     <span class="comment">%   This will rename AUF01V02's datlog to be Trial## matching the .x1d file</span>
-0025     <span class="comment">%   in Vicon folder</span>
-0026     <span class="comment">% This function can be called standalone or as part of the c3d2mat call</span>
-0027     <span class="comment">% after finding the datlog folder is present in getTrialMetaData(info)</span>
-0028     <span class="comment">%</span>
-0029     <span class="comment">% See also: labTools/gui/importc3d/getTrialMetaData.m</span>
-0030     <span class="comment">%</span>
-0031     <span class="comment">% $Author: Shuqi Liu $    $Date: 2025/11/03 12:32:31 $    $Revision: 0.1 $</span>
-0032     <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2025</span>
-0033     
-0034     <span class="comment">%% Filter out valid vicon trials (Trial##.x1d, ignore calibration and other trials that may have been created during setup)</span>
-0035     viconFiles = dir(viconDataFolder);<span class="comment">%nx1 struct where n = number of files</span>
-0036     x1dFileLoc = false(size(viconFiles));
-0037     <span class="keyword">for</span> i = 1:length(viconFiles)
-0038         <span class="comment">%only get Trial##.x1d</span>
-0039         <span class="keyword">if</span> endsWith(viconFiles(i).name,<span class="string">'.x1d'</span>) &amp;&amp; startsWith(viconFiles(i).name,<span class="string">'Trial'</span>)
-0040             x1dFileLoc(i) = true; <span class="comment">%set this location as true for indexing</span>
-0041         <span class="keyword">end</span>
-0042     <span class="keyword">end</span>
-0043 
-0044     x1dFiles = viconFiles(x1dFileLoc);
-0045     clear viconFiles x1dFileLoc i <span class="comment">%clear temp variables</span>
-0046     
-0047     <span class="comment">%% Now also get the datlog files, filter out the directory files</span>
-0048     datlogFiles = dir(datlogFolder);
-0049     <span class="comment">%filter out the directory entries</span>
-0050     datlogFileLoc = true(size(datlogFiles));
-0051     <span class="keyword">for</span> i = 1:length(datlogFiles)
-0052         <span class="keyword">if</span> datlogFiles(i).isdir <span class="comment">%filter out the directories</span>
-0053             datlogFileLoc(i) = false;
-0054         <span class="keyword">end</span>
-0055     <span class="keyword">end</span>
-0056     datlogFiles = datlogFiles(datlogFileLoc);
-0057     clear datlogFileLoc i
+0002 <span class="comment">%AUTORENAMEDATLOG Rename datlog files to match the Vicon Trial##.x1d names.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Matches each Trial##.x1d file in viconDataFolder to the datlog file in</span>
+0005 <span class="comment">% datlogFolder with the closest timestamp within 1 minute (searching</span>
+0006 <span class="comment">% forward from the previous match), and renames that datlog file to</span>
+0007 <span class="comment">% Trial##.mat. A Vicon trial with no datlog within 1 minute (e.g., a</span>
+0008 <span class="comment">% trial started in Vicon without a datlog) is skipped with a warning and</span>
+0009 <span class="comment">% keeps no renamed datlog. Before renaming, copies all contents of</span>
+0010 <span class="comment">% datlogFolder into a 'datlog-original' subfolder for recovery; copies and</span>
+0011 <span class="comment">% renames silently overwrite same-named files (see DATA_OUTPUTS.md). The</span>
+0012 <span class="comment">% match table (matchResults) is displayed in the command window so the</span>
+0013 <span class="comment">% matches can be checked by eye.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Can be called standalone or by GETTRIALMETADATA when a datlog folder</span>
+0016 <span class="comment">% exists but a trial's datlog file cannot be found.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   datlogFolder    - char, full path to the datlog files copied from an</span>
+0020 <span class="comment">%                     experiment session</span>
+0021 <span class="comment">%   viconDataFolder - char, full path to the Vicon files copied from an</span>
+0022 <span class="comment">%                     experiment session; should include a .x1d file for</span>
+0023 <span class="comment">%                     each trial that was collected</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Outputs:</span>
+0026 <span class="comment">%   None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Examples:</span>
+0029 <span class="comment">%   dataDir = '/Volumes/Research/Shuqi/NirsAutomaticityStudy/Data';</span>
+0030 <span class="comment">%   autoRenameDatlog(fullfile(dataDir, 'AUF01', 'V02', 'datlog'), ...</span>
+0031 <span class="comment">%       fullfile(dataDir, 'AUF01', 'V02', 'Vicon'))</span>
+0032 <span class="comment">%   renames AUF01V02's datlog files to Trial## to match the .x1d files in</span>
+0033 <span class="comment">%   the Vicon folder.</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% Toolbox Dependencies:</span>
+0036 <span class="comment">%   None</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% See also GETTRIALMETADATA.</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% $Author: Shuqi Liu $    $Date: 2025/11/03 12:32:31 $    $Revision: 0.1 $</span>
+0041 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2025</span>
+0042 
+0043 <span class="comment">%% Filter out valid vicon trials</span>
+0044 <span class="comment">% Trial##.x1d only; ignore calibration and other trials that may have</span>
+0045 <span class="comment">% been created during setup</span>
+0046 viconFiles = dir(viconDataFolder);<span class="comment">%nx1 struct where n = number of files</span>
+0047 x1dFileLoc = false(size(viconFiles));
+0048 <span class="keyword">for</span> ii = 1:length(viconFiles)
+0049     <span class="comment">%only get Trial##.x1d</span>
+0050     <span class="keyword">if</span> endsWith(viconFiles(ii).name, <span class="string">'.x1d'</span>) <span class="keyword">...</span>
+0051             &amp;&amp; startsWith(viconFiles(ii).name, <span class="string">'Trial'</span>)
+0052         x1dFileLoc(ii) = true; <span class="comment">%set this location as true for indexing</span>
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 x1dFiles = viconFiles(x1dFileLoc);
+0057 clear viconFiles x1dFileLoc ii <span class="comment">%clear temp variables</span>
 0058 
-0059     <span class="comment">%% Sort both by time in ascending order to speed up the search</span>
-0060     [~,index] = sortrows([datlogFiles.datenum].'); datlogFiles = datlogFiles(index); clear index
-0061     [~,index] = sortrows([x1dFiles.datenum].'); x1dFiles = x1dFiles(index); clear index
-0062     <span class="comment">%extract the datenum in an array for easier calculation later</span>
-0063     datlogDateNums = nan(length(datlogFiles),1);
-0064     <span class="keyword">for</span> i = 1:length(datlogFiles)
-0065         datlogDateNums(i) = datlogFiles(i).datenum;
+0059 <span class="comment">%% Now also get the datlog files, filter out the directory files</span>
+0060 datlogFiles = dir(datlogFolder);
+0061 <span class="comment">%filter out the directory entries</span>
+0062 datlogFileLoc = true(size(datlogFiles));
+0063 <span class="keyword">for</span> ii = 1:length(datlogFiles)
+0064     <span class="keyword">if</span> datlogFiles(ii).isdir <span class="comment">%filter out the directories</span>
+0065         datlogFileLoc(ii) = false;
 0066     <span class="keyword">end</span>
-0067 
-0068     <span class="comment">%% Look for a match that's closet and also within 1mins</span>
-0069     searchStartIdx = 1; <span class="comment">%first time start at row 1, next time start from the last found location</span>
-0070     srcFileName = cell(length(x1dFiles),1);
-0071     destFileName = cell(length(x1dFiles),1);
-0072     bestMatch = nan(length(x1dFiles),1); <span class="comment">%print out the best match time in seconds to visually check if you agree with the findings</span>
-0073     <span class="keyword">for</span> i = 1:numel(x1dFiles)
-0074         differences = abs(datlogDateNums(searchStartIdx:end) - x1dFiles(i).datenum);
-0075         validLoc = differences*86400 &lt;= 60; <span class="comment">%find dates within 60s, serialdate * 86400 = seconds</span>
-0076         <span class="keyword">if</span> ~any(validLoc)
-0077             <span class="comment">%nothing within 1mins found, skip, this happens if a faulty trial</span>
-0078             <span class="comment">%was started in Vicon but matlab didn't get time to start yet to</span>
-0079             <span class="comment">%creat a datlog. Or if we manually clicked start/stop in Vicon</span>
-0080             warning(<span class="string">'Skipping %s, because no datlog within 1mins of x1d file date time found.'</span>,x1dFiles(i).name)
-0081             <span class="keyword">continue</span>
-0082         <span class="keyword">end</span>
-0083         <span class="comment">% Find the minimum difference and its index</span>
-0084         [bestMatch(i), min_idx] = min(differences(validLoc));
-0085         idxInOriginalFiles = searchStartIdx:length(datlogDateNums);
-0086         idxInOriginalFiles = idxInOriginalFiles(validLoc); <span class="comment">%number indexing</span>
-0087         idxInOriginalFiles = idxInOriginalFiles(min_idx); <span class="comment">%find the idx within the valid index</span>
-0088         srcFileName{i} = datlogFiles(idxInOriginalFiles).name;
-0089         destFileName{i} = x1dFiles(i).name;
-0090         searchStartIdx = idxInOriginalFiles + 1;
-0091     <span class="keyword">end</span>
-0092     
-0093     <span class="comment">%display match results for visual inspection</span>
-0094     matchResults = table();
-0095     matchResults.src = srcFileName;
-0096     matchResults.dest = destFileName;
-0097     matchResults.timeDiffInSec = bestMatch * 86400;
-0098     matchResults
-0099     
-0100     <span class="comment">% %% Method2. Look for cloest match. Invalid.</span>
-0101     <span class="comment">% %Finding closet match is not enough bc some trials simply don't have a</span>
-0102     <span class="comment">% %datlog and closet match at this point may be 5-10mins away, and we are matching a trial that could be valid later on an invalid .x1d file</span>
-0103     <span class="comment">% unusedFiles = true(size(datlogDateNums)); %all are availble to use, once a match is found mark it false to avoid repeat</span>
-0104     <span class="comment">% srcFileName = cell(length(x1dFiles),1);</span>
-0105     <span class="comment">% destFileName = cell(length(x1dFiles),1);</span>
-0106     <span class="comment">% bestMatch = nan(length(x1dFiles),1);</span>
-0107     <span class="comment">% for i = 1:numel(x1dFiles)</span>
-0108     <span class="comment">%     % Calculate absolute differences between A(i) and all elements in B</span>
-0109     <span class="comment">%     differences = abs(datlogDateNums(unusedFiles) - x1dFiles(i).datenum);</span>
-0110     <span class="comment">%</span>
-0111     <span class="comment">%     % Find the minimum difference and its index</span>
-0112     <span class="comment">%     [bestMatch(i), min_idx] = min(differences);</span>
-0113     <span class="comment">%     idxInOriginalFiles = find(unusedFiles);</span>
-0114     <span class="comment">%     idxInOriginalFiles = idxInOriginalFiles(min_idx); %find the idx within the valid index</span>
-0115     <span class="comment">%     unusedFiles(idxInOriginalFiles) = false;</span>
-0116     <span class="comment">%     srcFileName{i} = datlogFiles(idxInOriginalFiles).name;</span>
-0117     <span class="comment">%     destFileName{i} = x1dFiles(i).name;</span>
-0118     <span class="comment">% end</span>
-0119 
-0120     <span class="comment">%% Now first make a copy of the original datlogs for recovery, and rename to be trial## format.</span>
-0121     datlogBackupFolder = [datlogFolder filesep <span class="string">'datlog-original'</span> filesep];
-0122     <span class="keyword">if</span> ~isfolder(datlogBackupFolder)
-0123         mkdir(datlogBackupFolder)
-0124     <span class="keyword">end</span>
-0125     copyfile(fullfile(datlogFolder, <span class="string">'*'</span>), datlogBackupFolder) <span class="comment">%copy all content into a subfolder</span>
-0126 
-0127     <span class="keyword">for</span> i = 1:numel(srcFileName)
-0128         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(srcFileName{i}) <span class="comment">%no empty means a valid file exist to be renamed</span>
-0129             movefile([datlogFolder filesep srcFileName{i}],[datlogFolder filesep strrep(destFileName{i},<span class="string">'.x1d'</span>,<span class="string">'.mat'</span>)])
-0130         <span class="keyword">end</span>
-0131     <span class="keyword">end</span>
-0132 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0067 <span class="keyword">end</span>
+0068 datlogFiles = datlogFiles(datlogFileLoc);
+0069 clear datlogFileLoc ii
+0070 
+0071 <span class="comment">%% Sort both by time in ascending order to speed up the search</span>
+0072 [~, index] = sortrows([datlogFiles.datenum].');
+0073 datlogFiles = datlogFiles(index);
+0074 clear index
+0075 [~, index] = sortrows([x1dFiles.datenum].');
+0076 x1dFiles = x1dFiles(index);
+0077 clear index
+0078 <span class="comment">%extract the datenum in an array for easier calculation later</span>
+0079 datlogDateNums = nan(length(datlogFiles), 1);
+0080 <span class="keyword">for</span> ii = 1:length(datlogFiles)
+0081     datlogDateNums(ii) = datlogFiles(ii).datenum;
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="comment">%% Look for a match that's closet and also within 1mins</span>
+0085 secPerDay   = 86400; <span class="comment">% seconds per day (datenum is in days)</span>
+0086 maxMatchSec = 60;    <span class="comment">% max datlog/x1d time difference for a match (s)</span>
+0087 <span class="comment">% first time start at row 1, next time start from the last found location</span>
+0088 searchStartIdx = 1;
+0089 srcFileName    = cell(length(x1dFiles), 1);
+0090 destFileName   = cell(length(x1dFiles), 1);
+0091 <span class="comment">% print out the best match time in seconds to visually check if you</span>
+0092 <span class="comment">% agree with the findings</span>
+0093 bestMatch      = nan(length(x1dFiles), 1);
+0094 <span class="keyword">for</span> ii = 1:numel(x1dFiles)
+0095     differences = abs( <span class="keyword">...</span>
+0096         datlogDateNums(searchStartIdx:end) - x1dFiles(ii).datenum);
+0097     <span class="comment">%find dates within 60s, serialdate * 86400 = seconds</span>
+0098     validLoc = differences * secPerDay &lt;= maxMatchSec;
+0099     <span class="keyword">if</span> ~any(validLoc)
+0100         <span class="comment">%nothing within 1mins found, skip, this happens if a faulty trial</span>
+0101         <span class="comment">%was started in Vicon but matlab didn't get time to start yet to</span>
+0102         <span class="comment">%creat a datlog. Or if we manually clicked start/stop in Vicon</span>
+0103         warning([<span class="string">'Skipping %s, because no datlog within 1mins of x1d '</span> <span class="keyword">...</span>
+0104             <span class="string">'file date time found.'</span>], x1dFiles(ii).name)
+0105         <span class="keyword">continue</span>
+0106     <span class="keyword">end</span>
+0107     <span class="comment">% Find the minimum difference and its index</span>
+0108     [bestMatch(ii), min_idx] = min(differences(validLoc));
+0109     idxInOriginalFiles = searchStartIdx:length(datlogDateNums);
+0110     idxInOriginalFiles = idxInOriginalFiles(validLoc); <span class="comment">%number indexing</span>
+0111     <span class="comment">%find the idx within the valid index</span>
+0112     idxInOriginalFiles = idxInOriginalFiles(min_idx);
+0113     srcFileName{ii}  = datlogFiles(idxInOriginalFiles).name;
+0114     destFileName{ii} = x1dFiles(ii).name;
+0115     searchStartIdx   = idxInOriginalFiles + 1;
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">%display match results for visual inspection</span>
+0119 matchResults = table();
+0120 matchResults.src = srcFileName;
+0121 matchResults.dest = destFileName;
+0122 matchResults.timeDiffInSec = bestMatch * secPerDay;
+0123 matchResults
+0124 
+0125 <span class="comment">% %% Method2. Look for cloest match. Invalid.</span>
+0126 <span class="comment">% %Finding closet match is not enough bc some trials simply don't have a</span>
+0127 <span class="comment">% %datlog and closet match at this point may be 5-10mins away, and we are</span>
+0128 <span class="comment">% %matching a trial that could be valid later on an invalid .x1d file</span>
+0129 <span class="comment">% %all are availble to use, once a match is found mark it false to avoid</span>
+0130 <span class="comment">% %repeat</span>
+0131 <span class="comment">% unusedFiles = true(size(datlogDateNums));</span>
+0132 <span class="comment">% srcFileName = cell(length(x1dFiles),1);</span>
+0133 <span class="comment">% destFileName = cell(length(x1dFiles),1);</span>
+0134 <span class="comment">% bestMatch = nan(length(x1dFiles),1);</span>
+0135 <span class="comment">% for i = 1:numel(x1dFiles)</span>
+0136 <span class="comment">%     % Calculate absolute differences between A(i) and all elements in B</span>
+0137 <span class="comment">%     differences = abs(datlogDateNums(unusedFiles) - x1dFiles(i).datenum);</span>
+0138 <span class="comment">%</span>
+0139 <span class="comment">%     % Find the minimum difference and its index</span>
+0140 <span class="comment">%     [bestMatch(i), min_idx] = min(differences);</span>
+0141 <span class="comment">%     idxInOriginalFiles = find(unusedFiles);</span>
+0142 <span class="comment">%     %find the idx within the valid index</span>
+0143 <span class="comment">%     idxInOriginalFiles = idxInOriginalFiles(min_idx);</span>
+0144 <span class="comment">%     unusedFiles(idxInOriginalFiles) = false;</span>
+0145 <span class="comment">%     srcFileName{i} = datlogFiles(idxInOriginalFiles).name;</span>
+0146 <span class="comment">%     destFileName{i} = x1dFiles(i).name;</span>
+0147 <span class="comment">% end</span>
+0148 
+0149 <span class="comment">%% Now first make a copy of the original datlogs for recovery, and</span>
+0150 <span class="comment">% rename to be trial## format.</span>
+0151 datlogBackupFolder = fullfile(datlogFolder, <span class="string">'datlog-original'</span>);
+0152 <span class="keyword">if</span> ~isfolder(datlogBackupFolder)
+0153     mkdir(datlogBackupFolder)
+0154 <span class="keyword">end</span>
+0155 <span class="comment">%copy all content into a subfolder</span>
+0156 copyfile(fullfile(datlogFolder, <span class="string">'*'</span>), datlogBackupFolder)
+0157 
+0158 <span class="keyword">for</span> ii = 1:numel(srcFileName)
+0159     <span class="comment">%no empty means a valid file exist to be renamed</span>
+0160     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(srcFileName{ii})
+0161         movefile(fullfile(datlogFolder, srcFileName{ii}), <span class="keyword">...</span>
+0162             fullfile(datlogFolder, <span class="keyword">...</span>
+0163             strrep(destFileName{ii}, <span class="string">'.x1d'</span>, <span class="string">'.mat'</span>)))
+0164     <span class="keyword">end</span>
+0165 <span class="keyword">end</span>
+0166 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

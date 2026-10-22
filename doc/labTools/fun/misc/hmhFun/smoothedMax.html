@@ -4,7 +4,7 @@
 <head>
   <title>Description of smoothedMax</title>
   <meta name="keywords" content="smoothedMax">
-  <meta name="description" content="SMOOTHEDMAX finds the maximum value of an N-pt running average">
+  <meta name="description" content="SMOOTHEDMAX Find the maximum of an N-point running average.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,75 +21,104 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>SMOOTHEDMAX finds the maximum value of an N-pt running average</strong></div>
+<div class="box"><strong>SMOOTHEDMAX Find the maximum of an N-point running average.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function Y = smoothedMax(X,N,vector) </strong></div>
+<div class="box"><strong>function Y = smoothedMax(X, N, vector) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">SMOOTHEDMAX finds the maximum value of an N-pt running average 
-   For vectors, smoothedMax(X,N) returns the largest value of the N-pt 
-   running  average of X. For matrixes, smoothedMax(X,N) takes an N-pt running
-   average of each column and returens the largest value within each column.
+<div class="fragment"><pre class="comment">SMOOTHEDMAX Find the maximum of an N-point running average.
 
-   xMax=smoothedMax(X,N,dataVector) returns the values of the N-pt
-   running average of X in the same location as the largest value of the
-   N-pt running average of dataVector if dataVector is a column vector that has
-   the same length as the columns of X.</pre></div>
+   For vectors, smoothedMax(X, N) returns the largest value of the
+ N-point running average of X. For matrices, takes an N-point running
+ average of each column and returns the largest value within each
+ column.
+
+   smoothedMax(X, N, vector) returns the values of the N-point running
+ average of X at the location of the largest absolute value in the
+ N-point running average of vector. vector must be a column vector with
+ the same number of rows as X.
+
+ Inputs:
+   X      - Numeric matrix or vector to evaluate
+   N      - Integer window width for the running average
+   vector - (Optional) Column vector with size(X,1) rows; when provided,
+            the peak location is taken from this vector rather than X
+
+ Outputs:
+   Y - Row vector of smoothed-max values, one per column of X
+
+ Toolbox Dependencies: None
+
+ See also <a href="binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">BINDATA</a>, BIN_DATAV1.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="binData.html" class="code" title="function [xnew, xnewstd]=binData(x,binwidth)">binData</a>	BINDATA computes a running average</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">binData</a>	BINDATA Compute a running average and standard deviation of columns.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getResults.html" class="code" title="function results = getResults(Study,params,groups,maxPerturb,plotFlag,indivFlag)">getResults</a>	define number of points to use for calculating values</li><li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li></ul>
+<li><a href="getResults.html" class="code" title="function results = getResults(Study, params, groups,maxPerturb, plotFlag, indivFlag)">getResults</a>	GETRESULTS Compute standard adaptation outcome measures per group.</li><li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">getResultsSMART</a>	GETRESULTSSMART Compute adaptation results with strides-to-SS and</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Y = smoothedMax(X,N,vector)</a>
-0002 <span class="comment">%SMOOTHEDMAX finds the maximum value of an N-pt running average</span>
-0003 <span class="comment">%   For vectors, smoothedMax(X,N) returns the largest value of the N-pt</span>
-0004 <span class="comment">%   running  average of X. For matrixes, smoothedMax(X,N) takes an N-pt running</span>
-0005 <span class="comment">%   average of each column and returens the largest value within each column.</span>
-0006 <span class="comment">%</span>
-0007 <span class="comment">%   xMax=smoothedMax(X,N,dataVector) returns the values of the N-pt</span>
-0008 <span class="comment">%   running average of X in the same location as the largest value of the</span>
-0009 <span class="comment">%   N-pt running average of dataVector if dataVector is a column vector that has</span>
-0010 <span class="comment">%   the same length as the columns of X.</span>
-0011 
-0012 <span class="keyword">if</span> nargin&gt;2
-0013     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(X)
-0014         newX=NaN(1,size(X,2));
-0015         newVector=NaN;
-0016     <span class="keyword">elseif</span> size(X,1)&lt;N
-0017         newX=nanmean(X);
-0018         newVector=nanmean(vector);
-0019     <span class="keyword">else</span>
-0020         [newX,~]=<a href="binData.html" class="code" title="function [xnew, xnewstd]=binData(x,binwidth)">binData</a>(X,N);
-0021         [newVector,~]=<a href="binData.html" class="code" title="function [xnew, xnewstd]=binData(x,binwidth)">binData</a>(vector,N);
-0022     <span class="keyword">end</span>
-0023     [~,maxLoc]=max(abs(newVector),[],1);
-0024     Y=newX(maxLoc,:);
-0025 <span class="keyword">else</span>
-0026     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(X)
-0027         newX=NaN(1,size(X,2));        
-0028     <span class="keyword">elseif</span> size(X,1)&lt;N
-0029         newX=nanmean(X,1);        
-0030     <span class="keyword">else</span>
-0031         [newX,~]=<a href="binData.html" class="code" title="function [xnew, xnewstd]=binData(x,binwidth)">binData</a>(X,N);        
-0032     <span class="keyword">end</span>
-0033     [~,maxLoc]=max(abs(newX),[],1);
-0034     ind=sub2ind(size(newX),maxLoc*ones(1,size(X,2)),1:size(X,2));
-0035     Y=newX(ind,:);
-0036 <span class="keyword">end</span>
-0037 
-0038 
-0039 <span class="keyword">end</span>
-0040</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Y = smoothedMax(X, N, vector)</a>
+0002 <span class="comment">%SMOOTHEDMAX Find the maximum of an N-point running average.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For vectors, smoothedMax(X, N) returns the largest value of the</span>
+0005 <span class="comment">% N-point running average of X. For matrices, takes an N-point running</span>
+0006 <span class="comment">% average of each column and returns the largest value within each</span>
+0007 <span class="comment">% column.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   smoothedMax(X, N, vector) returns the values of the N-point running</span>
+0010 <span class="comment">% average of X at the location of the largest absolute value in the</span>
+0011 <span class="comment">% N-point running average of vector. vector must be a column vector with</span>
+0012 <span class="comment">% the same number of rows as X.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   X      - Numeric matrix or vector to evaluate</span>
+0016 <span class="comment">%   N      - Integer window width for the running average</span>
+0017 <span class="comment">%   vector - (Optional) Column vector with size(X,1) rows; when provided,</span>
+0018 <span class="comment">%            the peak location is taken from this vector rather than X</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   Y - Row vector of smoothed-max values, one per column of X</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also BINDATA, BIN_DATAV1.</span>
+0026 
+0027 <span class="keyword">if</span> nargin &gt; 2
+0028     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(X)
+0029         newX      = NaN(1, size(X, 2));
+0030         newVector = NaN;
+0031     <span class="keyword">elseif</span> size(X, 1) &lt; N
+0032         newX      = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(X, <span class="string">'omitnan'</span>);
+0033         newVector = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(vector, <span class="string">'omitnan'</span>);
+0034     <span class="keyword">else</span>
+0035         [newX, ~]      = <a href="binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">binData</a>(X, N);
+0036         [newVector, ~] = <a href="binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">binData</a>(vector, N);
+0037     <span class="keyword">end</span>
+0038     [~, maxLoc] = max(abs(newVector), [], 1);
+0039     Y = newX(maxLoc, :);
+0040 <span class="keyword">else</span>
+0041     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(X)
+0042         newX = NaN(1, size(X, 2));
+0043     <span class="keyword">elseif</span> size(X, 1) &lt; N
+0044         newX = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(X, 1, <span class="string">'omitnan'</span>);
+0045     <span class="keyword">else</span>
+0046         [newX, ~] = <a href="binData.html" class="code" title="function [xnew, xnewstd] = binData(x, binwidth)">binData</a>(X, N);
+0047     <span class="keyword">end</span>
+0048     [~, maxLoc] = max(abs(newX), [], 1);
+0049     ind = sub2ind(size(newX), maxLoc * ones(1, size(X, 2)), <span class="keyword">...</span>
+0050         1:size(X, 2));
+0051     Y = newX(ind, :);
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

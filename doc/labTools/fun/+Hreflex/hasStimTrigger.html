@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hasStimTrigger</title>
+  <meta name="keywords" content="hasStimTrigger">
+  <meta name="description" content="HASSTIMTRIGGER Check whether recorded stim trigger pins carry pulses.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; hasStimTrigger.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>hasStimTrigger
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>HASSTIMTRIGGER Check whether recorded stim trigger pins carry pulses.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function tf = hasStimTrigger(HreflexPin, threshStim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">HASSTIMTRIGGER Check whether recorded stim trigger pins carry pulses.
+
+   Some H-reflex Vicon Nexus configurations record the stimulator
+ trigger channels (Stimulator_Trigger_Sync_*) even for sessions that
+ never stimulate, leaving the channels present but flat (near 0 V).
+ This checks all columns of HreflexPin against threshStim and returns
+ true if any sample anywhere in the object exceeds it, without
+ assuming any particular channel name or leg count.
+   A single sample above threshStim implies at least one rising edge
+ by construction, so this check is a strict superset of the rising-
+ edge detector in EXTRACTSTIMARTIFACTINDSFROMTRIGGER: it can never
+ return false for a trial in which that detector would have found a
+ pulse. Empty, zero-column, and all-NaN data all return false, since
+ NaN comparisons are false in MATLAB.
+
+ Inputs:
+   HreflexPin - labTimeSeries with H-reflex stimulator trigger
+                channels, or [] if none were recorded
+   threshStim - stim trigger pulse detection threshold, V (optional;
+                default: 2.5, matching
+                EXTRACTSTIMARTIFACTINDSFROMTRIGGER's threshStim
+                default)
+
+ Outputs:
+   tf - true if any sample in HreflexPin exceeds threshStim
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="extractStimArtifactIndsFromTrigger.html" class="code" title="function [indsStimArtifact, isWeakArtifact] =extractStimArtifactIndsFromTrigger(times, rawEMGArtifact,pinHreflexStim, options)">EXTRACTSTIMARTIFACTINDSFROMTRIGGER</a>, COMPUTEHREFLEXPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function tf = hasStimTrigger(HreflexPin, threshStim)</a>
+0002 <span class="comment">%HASSTIMTRIGGER Check whether recorded stim trigger pins carry pulses.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Some H-reflex Vicon Nexus configurations record the stimulator</span>
+0005 <span class="comment">% trigger channels (Stimulator_Trigger_Sync_*) even for sessions that</span>
+0006 <span class="comment">% never stimulate, leaving the channels present but flat (near 0 V).</span>
+0007 <span class="comment">% This checks all columns of HreflexPin against threshStim and returns</span>
+0008 <span class="comment">% true if any sample anywhere in the object exceeds it, without</span>
+0009 <span class="comment">% assuming any particular channel name or leg count.</span>
+0010 <span class="comment">%   A single sample above threshStim implies at least one rising edge</span>
+0011 <span class="comment">% by construction, so this check is a strict superset of the rising-</span>
+0012 <span class="comment">% edge detector in EXTRACTSTIMARTIFACTINDSFROMTRIGGER: it can never</span>
+0013 <span class="comment">% return false for a trial in which that detector would have found a</span>
+0014 <span class="comment">% pulse. Empty, zero-column, and all-NaN data all return false, since</span>
+0015 <span class="comment">% NaN comparisons are false in MATLAB.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Inputs:</span>
+0018 <span class="comment">%   HreflexPin - labTimeSeries with H-reflex stimulator trigger</span>
+0019 <span class="comment">%                channels, or [] if none were recorded</span>
+0020 <span class="comment">%   threshStim - stim trigger pulse detection threshold, V (optional;</span>
+0021 <span class="comment">%                default: 2.5, matching</span>
+0022 <span class="comment">%                EXTRACTSTIMARTIFACTINDSFROMTRIGGER's threshStim</span>
+0023 <span class="comment">%                default)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Outputs:</span>
+0026 <span class="comment">%   tf - true if any sample in HreflexPin exceeds threshStim</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Toolbox Dependencies:</span>
+0029 <span class="comment">%   None</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% See also EXTRACTSTIMARTIFACTINDSFROMTRIGGER, COMPUTEHREFLEXPARAMETERS.</span>
+0032 
+0033 arguments
+0034     HreflexPin
+0035     threshStim (1,1) double {mustBePositive} = 2.5   <span class="comment">% V</span>
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(HreflexPin) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(HreflexPin.Data)
+0039     tf = false;
+0040     <span class="keyword">return</span>;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">%% Detect trigger pulses</span>
+0044 tf = any(HreflexPin.Data(:) &gt; threshStim);
+0045 
+0046 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

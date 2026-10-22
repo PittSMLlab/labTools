@@ -33,195 +33,350 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>	CLUSTER Implementation of the cluster function for the class</li><li><a href="plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cell,type)">cellisa</a>	</li></ul>
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>	CLUSTER Hierarchical clustering of all synergies in a collection.</li><li><a href="plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cellArr, type)">cellisa</a>	CELLISA Check class membership for each element of a cell array.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleClusteredSynergySetCollection.html" class="code" title="">exampleClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleSynergySetCollection.html" class="code" title="">exampleSynergySetCollection</a>	Test example of SynergySetCollection</li></ul>
+<li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleClusteredSynergySetCollection.html" class="code" title="">exampleClusteredSynergySetCollection</a>	EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.</li><li><a href="../../../../labTools/classes/synergies/exampleSynergySetCollection.html" class="code" title="">exampleSynergySetCollection</a>	EXAMPLESYNERGYSETCOLLECTION Collection example.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function s=SynergySetCollection(content,indexCats,indexLabels,varargin)</a></li><li><a href="#_sub2" class="code">function dim=getCollectionDim(this)</a></li><li><a href="#_sub3" class="code">function colSize=getCollectionSize(this)</a></li><li><a href="#_sub4" class="code">function dim=getSynergyDim(this)</a></li><li><a href="#_sub5" class="code">function [set,originalCollectionIndexes]=getContentAsSet(this)</a></li><li><a href="#_sub6" class="code">function isSorted=isSorted(this)</a></li><li><a href="#_sub7" class="code">function labels=getSetLabels(this,idx)</a></li><li><a href="#_sub8" class="code">function display(this)</a></li></ul>
+<li><a href="#_sub1" class="code">function s = SynergySetCollection(content,indexCats,indexLabels,</a></li><li><a href="#_sub2" class="code">function dim = getCollectionDim(this)</a></li><li><a href="#_sub3" class="code">function colSize = getCollectionSize(this)</a></li><li><a href="#_sub4" class="code">function dim = getSynergyDim(this)</a></li><li><a href="#_sub5" class="code">function [set,originalCollectionIndexes] = getContentAsSet(this)</a></li><li><a href="#_sub6" class="code">function isSorted = isSorted(this)</a></li><li><a href="#_sub7" class="code">function labels = getSetLabels(this,idx)</a></li><li><a href="#_sub8" class="code">function display(this)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>
-0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
-0003     <span class="comment">%   Detailed explanation goes here</span>
-0004     
-0005     properties(SetAccess = private, GetAccess = public)
-0006         content={<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([],{})}; <span class="comment">%Cell array of synergySet objects</span>
-0007         indexCategories={}; <span class="comment">%Cell array of strings. its length should be equal to the dimension of content. Each string represents what that dimension indexes.</span>
-0008         indexLabels={}; <span class="comment">%Cell array of cell array of strings. First level length needs to be equal to size(content,1), second level to size(content,2). Just labels for every synergy set.</span>
-0009         muscleList={};
-0010         
-0011         <span class="comment">%These can be get methods, no need to actually have them as</span>
-0012         <span class="comment">%properties</span>
-0013         <span class="comment">%collectionDim</span>
-0014         <span class="comment">%synergyDim</span>
-0015         <span class="comment">%collectionSize</span>
-0016         
-0017         <span class="comment">%These might not be necessary.</span>
-0018         sortingMethod=[<span class="string">'None'</span>];
-0019         <span class="comment">%isClustered</span>
-0020         <span class="comment">%clusteringMethod</span>
-0021     <span class="keyword">end</span>
-0022     properties <span class="comment">%Public</span>
-0023         name=[<span class="string">'Unnamed'</span>];
-0024     <span class="keyword">end</span>
-0025     properties(Constant)
-0026         colors={[0,.4,1]; [0,1,1]; [0,1,0]; [1,1,0]; [1,.2,0]; [1,0,1]; [.5,.5,.5]; [1,.5,0]; [0,.6,0]; [0,.5,1]};
-0027     <span class="keyword">end</span>
-0028     
-0029     methods
-0030         <span class="comment">%Constructor:</span>
-0031         <a name="_sub0" href="#_subfunctions" class="code">function s=SynergySetCollection(content,indexCats,indexLabels,varargin)</a>
-0032             <span class="comment">%Check that content is a cell array</span>
-0033             <span class="keyword">if</span> ~isa(content,<span class="string">'cell'</span>) 
-0034                 disp(<span class="string">'ERROR: Contents for SynergySetCollection are not a cell array of SynergySets'</span>)
-0035                 <span class="keyword">return</span>
-0036             <span class="keyword">end</span>
-0037             <span class="comment">%Check that each cell contains a SynergySet</span>
-0038             <span class="keyword">if</span> ~all(<a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cell,type)">cellisa</a>(content,<span class="string">'SynergySet'</span>));
-0039                 disp(<span class="string">'ERROR: Contents for SynergySetCollection are not a cell array of SynergySets'</span>)
-0040                 <span class="keyword">return</span>
-0041             <span class="keyword">end</span>
-0042             <span class="comment">%Check all synergySets are of same dim, with same muscleList</span>
-0043             synergyDims=content{1}.getDim;
-0044             partialMuscleList=content{1}.muscleList;
-0045             flag=true;
-0046             flag2=true;
-0047             <span class="keyword">for</span> i=2:numel(content)
-0048                 flag=flag &amp;&amp; (content{i}.getDim==synergyDims);
-0049                 flag2=flag2 &amp;&amp; all(strcmp(content{i}.muscleList,partialMuscleList));
-0050             <span class="keyword">end</span>
-0051             <span class="keyword">if</span> ~flag || ~flag2
-0052                 disp(<span class="string">'ERROR: SynergySets provided are not consistent (different muscles)'</span>)
-0053             <span class="keyword">end</span>
-0054             <span class="comment">%Check that dim of content coincides with length of indexCats</span>
-0055             Ndims=ndims(content);
-0056             <span class="keyword">if</span> Ndims==2 <span class="comment">%Ndims returns numbers 2 or higher</span>
-0057                 <span class="keyword">if</span> length(content)==numel(content) <span class="comment">%content is vector</span>
-0058                     Ndims=1;
-0059                 <span class="keyword">end</span>
-0060             <span class="keyword">end</span>
-0061             <span class="keyword">if</span> length(indexCats)~=Ndims
-0062                 <span class="comment">%Error</span>
-0063                 disp(<span class="string">'ERROR: number of categories is inconsistent with the size of the content'</span>)
-0064                 <span class="keyword">return</span>
-0065             <span class="keyword">end</span>
-0066             <span class="comment">%Check size of content coincides with size of indexLabels</span>
-0067             sizeContent=size(content);
-0068             flag=true;
-0069             <span class="keyword">for</span> i=1:length(indexCats)
-0070                 flag=flag &amp;&amp; (sizeContent(i)==length(indexLabels{i}));
-0071             <span class="keyword">end</span>
-0072             <span class="keyword">if</span> ~flag
-0073                 disp(<span class="string">'ERROR: number of labels and SynergySets is different'</span>)
-0074                 <span class="keyword">return</span>
-0075             <span class="keyword">end</span>
-0076             
-0077             <span class="comment">%Case that everything works:</span>
-0078             s.content=content;
-0079             s.indexCategories=indexCats;
-0080             s.indexLabels=indexLabels;   
-0081             s.muscleList=content{1}.muscleList;
-0082             <span class="keyword">if</span> nargin&gt;3
-0083                 <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
-0084                     s.name=varargin{1};
-0085                 <span class="keyword">end</span>
-0086             <span class="keyword">end</span>
-0087         <span class="keyword">end</span>
-0088         <span class="comment">%Get and sets:</span>
-0089         <a name="_sub1" href="#_subfunctions" class="code">function dim=getCollectionDim(this)</a>
-0090            <span class="keyword">if</span> length(this.content)==numel(this.content)
-0091                dim=1;
-0092            <span class="keyword">else</span>
-0093                dim=ndims(this.content);
-0094            <span class="keyword">end</span>
-0095         <span class="keyword">end</span>
-0096         
-0097         <a name="_sub2" href="#_subfunctions" class="code">function colSize=getCollectionSize(this)</a>
-0098             colSize=size(this.content);
-0099         <span class="keyword">end</span>
-0100         
-0101         <a name="_sub3" href="#_subfunctions" class="code">function dim=getSynergyDim(this)</a>
-0102             dim=this.content{1}.getDim;
-0103         <span class="keyword">end</span>
-0104         
-0105         <a name="_sub4" href="#_subfunctions" class="code">function [set,originalCollectionIndexes]=getContentAsSet(this)</a>
-0106             setContent=[];
-0107             originalCollectionIndexes=[];
-0108             <span class="keyword">for</span> i=1:numel(this.content)
-0109                 relevantElements=this.content{i}.content;
-0110                 Nelements=size(relevantElements,1);
-0111                 setContent=[setContent;relevantElements];
-0112                 originalCollectionIndexes=[originalCollectionIndexes;[i*ones(Nelements,1),[1:Nelements]']];
-0113             <span class="keyword">end</span>
-0114             set=<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(setContent,this.muscleList,[<span class="string">'SetFrom'</span> this.name <span class="string">'Collection'</span>]);
-0115         <span class="keyword">end</span>
-0116         
-0117         getSubCollection(this,indexLabels) <span class="comment">%TO DO</span>
-0118         
-0119         <a name="_sub5" href="#_subfunctions" class="code">function isSorted=isSorted(this)</a>
-0120            <span class="keyword">if</span> strcmpi(this.sortingMethod,<span class="string">'None'</span>)
-0121                <a href="#_sub6" class="code" title="subfunction isSorted=isSorted(this)">isSorted</a>=false;
-0122            <span class="keyword">else</span>
-0123                <a href="#_sub6" class="code" title="subfunction isSorted=isSorted(this)">isSorted</a>=true;
-0124            <span class="keyword">end</span>
-0125         <span class="keyword">end</span>
-0126         
-0127         <a name="_sub6" href="#_subfunctions" class="code">function labels=getSetLabels(this,idx)</a>
-0128             <span class="keyword">if</span> isscalar(idx) <span class="comment">%Linear indexing, this will take some work</span>
-0129                idx2=zeros(this.getCollectionDim,1);
-0130                aux=[<span class="string">'[idx2(1)'</span>];
-0131                <span class="keyword">for</span> j=2:this.getCollectionDim
-0132                    aux=[aux <span class="string">',idx2('</span> num2str(j) <span class="string">')'</span>];
-0133                <span class="keyword">end</span>
-0134                aux=[aux <span class="string">']'</span>];
-0135                eval([aux  <span class="string">'=ind2sub(this.getCollectionSize,idx);'</span>]);
-0136             <span class="keyword">elseif</span> length(idx)~=this.getCollectionDim
-0137                 disp(<span class="string">'ERROR: index vector provided does not have size equal to the collection''s dimension'</span>)
-0138                 labels={};
-0139                 <span class="keyword">return</span>
-0140             <span class="keyword">else</span> <span class="comment">%Easy version</span>
-0141                 idx2=idx;
-0142             <span class="keyword">end</span>   
-0143             <span class="keyword">for</span> i=1:this.getCollectionDim
-0144                 labels{i}=this.indexLabels{i}{idx2(i)};
-0145             <span class="keyword">end</span>
-0146         <span class="keyword">end</span>
-0147         
-0148         <span class="comment">%Other manipulation that implies modification:</span>
-0149         addColumnCollection(this,colCollection,indexLabel) <span class="comment">%TO DO</span>
-0150         addRowCollection(this,rowCollection,indexLabel) <span class="comment">%TO DO</span>
-0151         addSynergySet(this,set,indexLabel) <span class="comment">%TO DO</span>
-0152         sort(this) <span class="comment">%TO DO</span>
-0153         
-0154         <span class="comment">%Output:</span>
-0155         <a name="_sub7" href="#_subfunctions" class="code">function display(this)</a>
-0156            disp(<span class="string">'---'</span>)
-0157            disp([this.name <span class="string">' Collection'</span>])
-0158            <span class="keyword">for</span> i=1:numel(this.content)
-0159                aux=this.getSetLabels(i);
-0160                str=[this.indexCategories{1} <span class="string">' '</span> aux{1}];
-0161                <span class="keyword">for</span> j=2:this.getCollectionDim
-0162                    str=[str <span class="string">', '</span> this.indexCategories{j} <span class="string">' '</span> aux{j}];
-0163                <span class="keyword">end</span>
-0164                disp(str)
-0165                content=this.content{i}.content
-0166            <span class="keyword">end</span>
-0167            muscleList=this.muscleList
-0168            disp(<span class="string">'---'</span>)
-0169         <span class="keyword">end</span>
-0170         
-0171         [figHandle,subplotHandles]=<a href="plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>(this); <span class="comment">%External file</span>
-0172         
-0173         <span class="comment">%Other:</span>
-0174         [clusteredSet,clusteringIndexes]=<a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>(this,method)
-0175     <span class="keyword">end</span>
-0176     
-0177 <span class="keyword">end</span>
-0178</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002     <span class="comment">%SYNERGYSETCOLLECTION Array of SynergySets over the same muscles.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   A collection holds a 1-D or N-D cell array of SynergySet objects</span>
+0005     <span class="comment">% with category names and labels for each dimension of the array.</span>
+0006     <span class="comment">%</span>
+0007     <span class="comment">% SynergySetCollection properties:</span>
+0008     <span class="comment">%   content         - cell array of SynergySet objects</span>
+0009     <span class="comment">%   indexCategories - cell array of strings, one per dimension of</span>
+0010     <span class="comment">%                     content, naming what that dimension indexes</span>
+0011     <span class="comment">%   indexLabels     - cell array (one per dimension) of cell arrays of</span>
+0012     <span class="comment">%                     strings labeling every set</span>
+0013     <span class="comment">%   muscleList      - cell array of muscle names shared by all sets</span>
+0014     <span class="comment">%   sortingMethod   - sorting applied to the collection ('None' if</span>
+0015     <span class="comment">%                     unsorted)</span>
+0016     <span class="comment">%   name            - display name (default 'Unnamed')</span>
+0017     <span class="comment">%   colors          - constant cell array of default plot colors</span>
+0018     <span class="comment">%</span>
+0019     <span class="comment">% SynergySetCollection methods:</span>
+0020     <span class="comment">%   SynergySetCollection - constructor</span>
+0021     <span class="comment">%   getCollectionDim     - number of dimensions of the collection</span>
+0022     <span class="comment">%   getCollectionSize    - size of content</span>
+0023     <span class="comment">%   getSynergyDim        - number of muscles per synergy</span>
+0024     <span class="comment">%   getContentAsSet      - all synergies stacked in one SynergySet</span>
+0025     <span class="comment">%   isSorted             - true if a sorting method was applied</span>
+0026     <span class="comment">%   getSetLabels         - labels of the set at a given index</span>
+0027     <span class="comment">%   display              - prints names, labels, and contents</span>
+0028     <span class="comment">%   plot                 - plots a 1-D collection</span>
+0029     <span class="comment">%   cluster              - hierarchical clustering of all synergies</span>
+0030     <span class="comment">%</span>
+0031     <span class="comment">% Toolbox Dependencies: None</span>
+0032     <span class="comment">%</span>
+0033     <span class="comment">% See also SYNERGYSET, CLUSTEREDSYNERGYSETCOLLECTION.</span>
+0034 
+0035     properties(SetAccess = private, GetAccess = public)
+0036         <span class="comment">%Cell array of synergySet objects</span>
+0037         content = {<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([],{})};
+0038         <span class="comment">%Cell array of strings. its length should be equal to the dimension</span>
+0039         <span class="comment">%of content. Each string represents what that dimension indexes.</span>
+0040         indexCategories = {};
+0041         <span class="comment">%Cell array of cell array of strings. First level length needs to be</span>
+0042         <span class="comment">%equal to size(content,1), second level to size(content,2). Just</span>
+0043         <span class="comment">%labels for every synergy set.</span>
+0044         indexLabels = {};
+0045         muscleList  = {};
+0046 
+0047         <span class="comment">%These can be get methods, no need to actually have them as</span>
+0048         <span class="comment">%properties</span>
+0049         <span class="comment">%collectionDim</span>
+0050         <span class="comment">%synergyDim</span>
+0051         <span class="comment">%collectionSize</span>
+0052 
+0053         <span class="comment">%These might not be necessary.</span>
+0054         sortingMethod = [<span class="string">'None'</span>];
+0055         <span class="comment">%isClustered</span>
+0056         <span class="comment">%clusteringMethod</span>
+0057     <span class="keyword">end</span>
+0058     properties <span class="comment">%Public</span>
+0059         name = [<span class="string">'Unnamed'</span>];
+0060     <span class="keyword">end</span>
+0061     properties(Constant)
+0062         colors = {[0,0.4,1]; [0,1,1]; [0,1,0]; [1,1,0]; [1,0.2,0]; <span class="keyword">...</span>
+0063             [1,0,1]; [0.5,0.5,0.5]; [1,0.5,0]; [0,0.6,0]; [0,0.5,1]};
+0064     <span class="keyword">end</span>
+0065 
+0066     methods
+0067         <span class="comment">%Constructor:</span>
+0068         <a name="_sub0" href="#_subfunctions" class="code">function s = SynergySetCollection(content,indexCats,indexLabels, </a><span class="keyword">...</span>
+0069             varargin)
+0070             <span class="comment">%SYNERGYSETCOLLECTION Constructor for the class.</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">%   s = SynergySetCollection(content, indexCats, indexLabels)</span>
+0073             <span class="comment">% validates that content is a cell array of SynergySets over the</span>
+0074             <span class="comment">% same muscles, that the number of categories equals the</span>
+0075             <span class="comment">% dimension of content, and that the label sizes match the size</span>
+0076             <span class="comment">% of content. s = SynergySetCollection(..., name) also sets the</span>
+0077             <span class="comment">% display name.</span>
+0078             <span class="comment">%</span>
+0079             <span class="comment">%   NOTE: on invalid input an error message is printed and an</span>
+0080             <span class="comment">% empty collection is returned; no exception is thrown.</span>
+0081             <span class="comment">%</span>
+0082             <span class="comment">% Inputs:</span>
+0083             <span class="comment">%   content     - cell array of SynergySet objects</span>
+0084             <span class="comment">%   indexCats   - cell array of strings, one per dimension of</span>
+0085             <span class="comment">%                 content (a vector counts as one dimension)</span>
+0086             <span class="comment">%   indexLabels - cell array (one per dimension) of cell arrays</span>
+0087             <span class="comment">%                 of label strings</span>
+0088             <span class="comment">%   varargin    - optional display name (char) as first element</span>
+0089             <span class="comment">%</span>
+0090             <span class="comment">% Outputs:</span>
+0091             <span class="comment">%   s - SynergySetCollection object</span>
+0092             <span class="comment">%</span>
+0093             <span class="comment">% Toolbox Dependencies: None</span>
+0094 
+0095             <span class="comment">%Check that content is a cell array</span>
+0096             <span class="keyword">if</span> ~isa(content,<span class="string">'cell'</span>)
+0097                 disp([<span class="string">'ERROR: Contents for SynergySetCollection are '</span> <span class="keyword">...</span>
+0098                     <span class="string">'not a cell array of SynergySets'</span>])
+0099                 <span class="keyword">return</span>
+0100             <span class="keyword">end</span>
+0101             <span class="comment">%Check that each cell contains a SynergySet</span>
+0102             <span class="keyword">if</span> ~all(<a href="../../../../labTools/fun/ext/pitools/usefulCode/cellisa.html" class="code" title="function b = cellisa(cellArr, type)">cellisa</a>(content,<span class="string">'SynergySet'</span>));
+0103                 disp([<span class="string">'ERROR: Contents for SynergySetCollection are '</span> <span class="keyword">...</span>
+0104                     <span class="string">'not a cell array of SynergySets'</span>])
+0105                 <span class="keyword">return</span>
+0106             <span class="keyword">end</span>
+0107             <span class="comment">%Check all synergySets are of same dim, with same muscleList</span>
+0108             synergyDims = content{1}.getDim;
+0109             partialMuscleList = content{1}.muscleList;
+0110             flag = true;
+0111             flag2 = true;
+0112             <span class="keyword">for</span> ii = 2:numel(content)
+0113                 flag = flag &amp;&amp; (content{ii}.getDim == synergyDims);
+0114                 flag2 = flag2 &amp;&amp; <span class="keyword">...</span>
+0115                     all(strcmp(content{ii}.muscleList,partialMuscleList));
+0116             <span class="keyword">end</span>
+0117             <span class="keyword">if</span> ~flag || ~flag2
+0118                 disp([<span class="string">'ERROR: SynergySets provided are not consistent '</span> <span class="keyword">...</span>
+0119                     <span class="string">'(different muscles)'</span>])
+0120             <span class="keyword">end</span>
+0121             <span class="comment">%Check that dim of content coincides with length of indexCats</span>
+0122             Ndims = ndims(content);
+0123             <span class="keyword">if</span> Ndims == 2 <span class="comment">%Ndims returns numbers 2 or higher</span>
+0124                 <span class="keyword">if</span> length(content) == numel(content) <span class="comment">%content is vector</span>
+0125                     Ndims = 1;
+0126                 <span class="keyword">end</span>
+0127             <span class="keyword">end</span>
+0128             <span class="keyword">if</span> length(indexCats) ~= Ndims
+0129                 <span class="comment">%Error</span>
+0130                 disp([<span class="string">'ERROR: number of categories is inconsistent '</span> <span class="keyword">...</span>
+0131                     <span class="string">'with the size of the content'</span>])
+0132                 <span class="keyword">return</span>
+0133             <span class="keyword">end</span>
+0134             <span class="comment">%Check size of content coincides with size of indexLabels</span>
+0135             sizeContent = size(content);
+0136             flag        = true;
+0137             <span class="keyword">for</span> ii = 1:length(indexCats)
+0138                 flag = flag &amp;&amp; (sizeContent(ii) == length(indexLabels{ii}));
+0139             <span class="keyword">end</span>
+0140             <span class="keyword">if</span> ~flag
+0141                 disp(<span class="string">'ERROR: number of labels and SynergySets is different'</span>)
+0142                 <span class="keyword">return</span>
+0143             <span class="keyword">end</span>
+0144 
+0145             <span class="comment">%Case that everything works:</span>
+0146             s.content = content;
+0147             s.indexCategories = indexCats;
+0148             s.indexLabels = indexLabels;
+0149             s.muscleList = content{1}.muscleList;
+0150             <span class="keyword">if</span> nargin &gt; 3
+0151                 <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
+0152                     s.name = varargin{1};
+0153                 <span class="keyword">end</span>
+0154             <span class="keyword">end</span>
+0155         <span class="keyword">end</span>
+0156         <span class="comment">%Get and sets:</span>
+0157         <a name="_sub1" href="#_subfunctions" class="code">function dim = getCollectionDim(this)</a>
+0158             <span class="comment">%GETCOLLECTIONDIM Number of dimensions of the collection.</span>
+0159             <span class="comment">%</span>
+0160             <span class="comment">% Inputs:</span>
+0161             <span class="comment">%   this - SynergySetCollection object</span>
+0162             <span class="comment">%</span>
+0163             <span class="comment">% Outputs:</span>
+0164             <span class="comment">%   dim - 1 if content is a vector, else ndims(content)</span>
+0165             <span class="comment">%</span>
+0166             <span class="comment">% Toolbox Dependencies: None</span>
+0167 
+0168             <span class="keyword">if</span> length(this.content) == numel(this.content)
+0169                 dim = 1;
+0170             <span class="keyword">else</span>
+0171                 dim = ndims(this.content);
+0172             <span class="keyword">end</span>
+0173         <span class="keyword">end</span>
+0174 
+0175         <a name="_sub2" href="#_subfunctions" class="code">function colSize = getCollectionSize(this)</a>
+0176             <span class="comment">%GETCOLLECTIONSIZE Size of the cell array of SynergySets.</span>
+0177             <span class="comment">%</span>
+0178             <span class="comment">% Inputs:</span>
+0179             <span class="comment">%   this - SynergySetCollection object</span>
+0180             <span class="comment">%</span>
+0181             <span class="comment">% Outputs:</span>
+0182             <span class="comment">%   colSize - size(content)</span>
+0183             <span class="comment">%</span>
+0184             <span class="comment">% Toolbox Dependencies: None</span>
+0185 
+0186             colSize = size(this.content);
+0187         <span class="keyword">end</span>
+0188 
+0189         <a name="_sub3" href="#_subfunctions" class="code">function dim = getSynergyDim(this)</a>
+0190             <span class="comment">%GETSYNERGYDIM Number of muscles per synergy.</span>
+0191             <span class="comment">%</span>
+0192             <span class="comment">% Inputs:</span>
+0193             <span class="comment">%   this - SynergySetCollection object</span>
+0194             <span class="comment">%</span>
+0195             <span class="comment">% Outputs:</span>
+0196             <span class="comment">%   dim - dimension of the first SynergySet</span>
+0197             <span class="comment">%</span>
+0198             <span class="comment">% Toolbox Dependencies: None</span>
+0199 
+0200             dim = this.content{1}.getDim;
+0201         <span class="keyword">end</span>
+0202 
+0203         <a name="_sub4" href="#_subfunctions" class="code">function [set,originalCollectionIndexes] = getContentAsSet(this)</a>
+0204             <span class="comment">%GETCONTENTASSET All synergies stacked in one SynergySet.</span>
+0205             <span class="comment">%</span>
+0206             <span class="comment">% Inputs:</span>
+0207             <span class="comment">%   this - SynergySetCollection object</span>
+0208             <span class="comment">%</span>
+0209             <span class="comment">% Outputs:</span>
+0210             <span class="comment">%   set - SynergySet named 'SetFrom&lt;name&gt;Collection'</span>
+0211             <span class="comment">%   originalCollectionIndexes - Kx2 matrix; row k holds the</span>
+0212             <span class="comment">%                               linear index of the source</span>
+0213             <span class="comment">%                               SynergySet in content and the</span>
+0214             <span class="comment">%                               row of synergy k within that set</span>
+0215             <span class="comment">%</span>
+0216             <span class="comment">% Toolbox Dependencies: None</span>
+0217 
+0218             setContent = [];
+0219             originalCollectionIndexes = [];
+0220             <span class="keyword">for</span> ii = 1:numel(this.content)
+0221                 relevantElements = this.content{ii}.content;
+0222                 Nelements        = size(relevantElements,1);
+0223                 setContent       = [setContent;relevantElements];
+0224                 originalCollectionIndexes = <span class="keyword">...</span>
+0225                     [originalCollectionIndexes; <span class="keyword">...</span>
+0226                     [ii*ones(Nelements,1),[1:Nelements]']];
+0227             <span class="keyword">end</span>
+0228             set = <a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(setContent,this.muscleList, <span class="keyword">...</span>
+0229                 [<span class="string">'SetFrom'</span> this.name <span class="string">'Collection'</span>]);
+0230         <span class="keyword">end</span>
+0231 
+0232         <span class="comment">% TODO: not implemented</span>
+0233         getSubCollection(this,indexLabels)
+0234 
+0235         <a name="_sub5" href="#_subfunctions" class="code">function isSorted = isSorted(this)</a>
+0236             <span class="comment">%ISSORTED True if a sorting method was applied.</span>
+0237             <span class="comment">%</span>
+0238             <span class="comment">% Inputs:</span>
+0239             <span class="comment">%   this - SynergySetCollection object</span>
+0240             <span class="comment">%</span>
+0241             <span class="comment">% Outputs:</span>
+0242             <span class="comment">%   isSorted - logical flag</span>
+0243             <span class="comment">%</span>
+0244             <span class="comment">% Toolbox Dependencies: None</span>
+0245 
+0246             <span class="keyword">if</span> strcmpi(this.sortingMethod,<span class="string">'None'</span>)
+0247                 <a href="#_sub6" class="code" title="subfunction isSorted = isSorted(this)">isSorted</a> = false;
+0248             <span class="keyword">else</span>
+0249                 <a href="#_sub6" class="code" title="subfunction isSorted = isSorted(this)">isSorted</a> = true;
+0250             <span class="keyword">end</span>
+0251         <span class="keyword">end</span>
+0252 
+0253         <a name="_sub6" href="#_subfunctions" class="code">function labels = getSetLabels(this,idx)</a>
+0254             <span class="comment">%GETSETLABELS Labels of the SynergySet at a given index.</span>
+0255             <span class="comment">%</span>
+0256             <span class="comment">%   NOTE: a vector index whose length differs from the</span>
+0257             <span class="comment">% collection dimension prints an error and returns an empty cell</span>
+0258             <span class="comment">% array.</span>
+0259             <span class="comment">%</span>
+0260             <span class="comment">% Inputs:</span>
+0261             <span class="comment">%   this - SynergySetCollection object</span>
+0262             <span class="comment">%   idx  - linear index (scalar) or vector of subscripts, one</span>
+0263             <span class="comment">%          per dimension</span>
+0264             <span class="comment">%</span>
+0265             <span class="comment">% Outputs:</span>
+0266             <span class="comment">%   labels - cell array with one label per dimension of the</span>
+0267             <span class="comment">%            collection</span>
+0268             <span class="comment">%</span>
+0269             <span class="comment">% Toolbox Dependencies: None</span>
+0270 
+0271             <span class="keyword">if</span> isscalar(idx) <span class="comment">%Linear indexing, this will take some work</span>
+0272                 idx2 = zeros(this.getCollectionDim,1);
+0273                 aux  = [<span class="string">'[idx2(1)'</span>];
+0274                 <span class="keyword">for</span> jj = 2:this.getCollectionDim
+0275                     aux = [aux <span class="string">',idx2('</span> num2str(jj) <span class="string">')'</span>];
+0276                 <span class="keyword">end</span>
+0277                 aux = [aux <span class="string">']'</span>];
+0278                 eval([aux  <span class="string">'=ind2sub(this.getCollectionSize,idx);'</span>]);
+0279             <span class="keyword">elseif</span> length(idx) ~= this.getCollectionDim
+0280                 disp([<span class="string">'ERROR: index vector provided does not have size '</span> <span class="keyword">...</span>
+0281                     <span class="string">'equal to the collection''s dimension'</span>])
+0282                 labels = {};
+0283                 <span class="keyword">return</span>
+0284             <span class="keyword">else</span> <span class="comment">%Easy version</span>
+0285                 idx2 = idx;
+0286             <span class="keyword">end</span>
+0287             <span class="keyword">for</span> ii = 1:this.getCollectionDim
+0288                 labels{ii} = this.indexLabels{ii}{idx2(ii)};
+0289             <span class="keyword">end</span>
+0290         <span class="keyword">end</span>
+0291 
+0292         <span class="comment">%Other manipulation that implies modification:</span>
+0293         <span class="comment">% TODO: not implemented</span>
+0294         addColumnCollection(this,colCollection,indexLabel)
+0295         <span class="comment">% TODO: not implemented</span>
+0296         addRowCollection(this,rowCollection,indexLabel)
+0297         <span class="comment">% TODO: not implemented</span>
+0298         addSynergySet(this,set,indexLabel)
+0299         <span class="comment">% TODO: not implemented</span>
+0300         sort(this)
+0301 
+0302         <span class="comment">%Output:</span>
+0303         <a name="_sub7" href="#_subfunctions" class="code">function display(this)</a>
+0304             <span class="comment">%DISPLAY Prints the name, set labels, contents, and muscles.</span>
+0305             <span class="comment">%</span>
+0306             <span class="comment">% Inputs:</span>
+0307             <span class="comment">%   this - SynergySetCollection object</span>
+0308             <span class="comment">%</span>
+0309             <span class="comment">% Toolbox Dependencies: None</span>
+0310 
+0311             disp(<span class="string">'---'</span>)
+0312             disp([this.name <span class="string">' Collection'</span>])
+0313             <span class="keyword">for</span> ii = 1:numel(this.content)
+0314                 aux = this.getSetLabels(ii);
+0315                 str = [this.indexCategories{1} <span class="string">' '</span> aux{1}];
+0316                 <span class="keyword">for</span> jj = 2:this.getCollectionDim
+0317                     str = [str <span class="string">', '</span> this.indexCategories{jj} <span class="string">' '</span> aux{jj}];
+0318                 <span class="keyword">end</span>
+0319                 disp(str)
+0320                 content = this.content{ii}.content
+0321             <span class="keyword">end</span>
+0322             muscleList = this.muscleList
+0323             disp(<span class="string">'---'</span>)
+0324         <span class="keyword">end</span>
+0325 
+0326         [figHandle,subplotHandles] = <a href="plot.html" class="code" title="function figHandle = plot(this)">plot</a>(this); <span class="comment">%External file</span>
+0327 
+0328         <span class="comment">%Other:</span>
+0329         [clusteredSet,clusteringIndexes] = <a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>(this,method)
+0330     <span class="keyword">end</span>
+0331 
+0332 <span class="keyword">end</span>
+0333</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of createZeroModel</title>
   <meta name="keywords" content="createZeroModel">
-  <meta name="description" content="UNTITLED6 Summary of this function goes here">
+  <meta name="description" content="CREATEZEROMODEL Build a naive-Bayes &quot;zero model&quot; of marker distances.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,67 +21,118 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>UNTITLED6 Summary of this function goes here</strong></div>
+<div class="box"><strong>CREATEZEROMODEL Build a naive-Bayes &quot;zero model&quot; of marker distances.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function [D,sD,meanPos,biasPos] = createZeroModel(inputData) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">UNTITLED6 Summary of this function goes here
-   Detailed explanation goes here</pre></div>
+<div class="fragment"><pre class="comment">CREATEZEROMODEL Build a naive-Bayes &quot;zero model&quot; of marker distances.
+
+   [D,sD,meanPos,biasPos] = CREATEZEROMODEL(inputData) models each
+ pairwise marker distance as an independent Gaussian: D holds the median
+ distance over frames and sD a robust standard deviation (1.4826 times
+ the median absolute deviation). meanPos is the median marker position.
+ When biasPos is requested, every frame is reconstructed with
+ GETBESTRECONSFROMZEROMODEL and biasPos is the mean difference between
+ the reconstructed and the measured positions; otherwise it is zeros.
+
+ Inputs:
+   inputData - N x 3 x M positions, or an orientedLabTimeSeries (its
+               oriented data is used). A char (c3d file name) is not
+               implemented.
+
+ Outputs:
+   D       - N x N median pairwise distances
+   sD      - N x N robust standard deviations of the distances
+   meanPos - N x 3 median marker positions
+   biasPos - N x 3 mean reconstruction bias (zeros when not requested)
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox (mad)
+
+ See also <a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">DETERMINELIKELIHOODFROMZEROMODEL</a>, <a href="getBestReconsFromZeroModel.html" class="code" title="function altPos = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">GETBESTRECONSFROMZEROMODEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li><li><a href="getBestReconsFromZeroModel.html" class="code" title="function [altPos] = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">getBestReconsFromZeroModel</a>	UNTITLED Summary of this function goes here</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Computes inter-marker distances.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li><li><a href="getBestReconsFromZeroModel.html" class="code" title="function altPos = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">getBestReconsFromZeroModel</a>	GETBESTRECONSFROMZEROMODEL Reconstruct marker positions with a zero model.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	checkMarkerDataHealth  Diagnoses issues with marker data</li></ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	CHECKMARKERDATAHEALTH Diagnoses issues with marker data.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [D,sD,meanPos,biasPos] = createZeroModel(inputData)</a>
-0002 <span class="comment">%UNTITLED6 Summary of this function goes here</span>
-0003 <span class="comment">%   Detailed explanation goes here</span>
-0004 
-0005 <span class="keyword">if</span> isa(inputData,<span class="string">'char'</span>) <span class="comment">%Assume it is the name of a .c3d file</span>
-0006     <span class="comment">%Load c3d using btk, to be done</span>
-0007 <span class="keyword">elseif</span> isa(inputData,<span class="string">'orientedLabTimeSeries'</span>) <span class="comment">%Assume it is a timeseries containing 3D data</span>
-0008     X=inputData.getOrientedData;
-0009 <span class="keyword">else</span> <span class="comment">%Assume it is a Nx3xM matrix</span>
-0010    X=inputData; 
-0011 <span class="keyword">end</span>
-0012 
-0013 [N,dim,M]=size(X);
-0014 dist=nan(N,N,M);
-0015 <span class="keyword">for</span> i=1:M
-0016     dist(:,:,i)=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(X(:,:,i));
-0017 <span class="keyword">end</span>
-0018 
-0019 
-0020 
-0021 <span class="comment">%D=trimmean(dist,10,'round',3); %Mean across 3rd dim, trimming 10% of extreme values</span>
-0022 D=nanmedian(dist,3);
-0023 sD=1.4826*mad(dist,1,3); <span class="comment">%Computes the median absolute deviation, as a more robust estimation of std() when outliers are present. 1.48 is the factor between sigma and mad in a normal dist</span>
-0024 
-0025 
-0026 meanPos=nanmedian(inputData,3);
-0027 
-0028 <span class="keyword">if</span> nargout&gt;3
-0029     altPos=nan(size(inputData));
-0030     <span class="keyword">for</span> i=1:size(inputData,3)
-0031         [altPos(:,:,i)] = <a href="getBestReconsFromZeroModel.html" class="code" title="function [altPos] = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">getBestReconsFromZeroModel</a>(inputData(:,:,i),D,sD,meanPos);
-0032     <span class="keyword">end</span>
-0033     biasPos=nanmean(altPos-inputData,3);
-0034 <span class="keyword">else</span>
-0035     biasPos=zeros(N,dim);
-0036 <span class="keyword">end</span>
-0037 
-0038 <span class="keyword">end</span>
-0039</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%CREATEZEROMODEL Build a naive-Bayes &quot;zero model&quot; of marker distances.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [D,sD,meanPos,biasPos] = CREATEZEROMODEL(inputData) models each</span>
+0005 <span class="comment">% pairwise marker distance as an independent Gaussian: D holds the median</span>
+0006 <span class="comment">% distance over frames and sD a robust standard deviation (1.4826 times</span>
+0007 <span class="comment">% the median absolute deviation). meanPos is the median marker position.</span>
+0008 <span class="comment">% When biasPos is requested, every frame is reconstructed with</span>
+0009 <span class="comment">% GETBESTRECONSFROMZEROMODEL and biasPos is the mean difference between</span>
+0010 <span class="comment">% the reconstructed and the measured positions; otherwise it is zeros.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   inputData - N x 3 x M positions, or an orientedLabTimeSeries (its</span>
+0014 <span class="comment">%               oriented data is used). A char (c3d file name) is not</span>
+0015 <span class="comment">%               implemented.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   D       - N x N median pairwise distances</span>
+0019 <span class="comment">%   sD      - N x N robust standard deviations of the distances</span>
+0020 <span class="comment">%   meanPos - N x 3 median marker positions</span>
+0021 <span class="comment">%   biasPos - N x 3 mean reconstruction bias (zeros when not requested)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox (mad)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also DETERMINELIKELIHOODFROMZEROMODEL, GETBESTRECONSFROMZEROMODEL.</span>
+0026 
+0027 <span class="keyword">if</span> isa(inputData,<span class="string">'char'</span>) <span class="comment">%Assume it is the name of a .c3d file</span>
+0028     <span class="comment">%Load c3d using btk, to be done</span>
+0029     <span class="comment">%Assume it is a timeseries containing 3D data</span>
+0030 <span class="keyword">elseif</span> isa(inputData,<span class="string">'orientedLabTimeSeries'</span>)
+0031     X = inputData.getOrientedData;
+0032 <span class="keyword">else</span> <span class="comment">%Assume it is a Nx3xM matrix</span>
+0033     X = inputData;
+0034 <span class="keyword">end</span>
+0035 
+0036 madToSigma = 1.4826; <span class="comment">% sigma/MAD ratio of a normal distribution</span>
+0037 [N,dim,M] = size(X);
+0038 dist = nan(N,N,M);
+0039 <span class="keyword">for</span> fr = 1:M
+0040     dist(:,:,fr) = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(X(:,:,fr));
+0041 <span class="keyword">end</span>
+0042 
+0043 
+0044 
+0045 <span class="comment">%D=trimmean(dist,10,'round',3); %Mean across 3rd dim, ...</span>
+0046 <span class="comment">%    trimming 10% of extreme values</span>
+0047 D  = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(dist, 3, <span class="string">'omitnan'</span>);
+0048 <span class="comment">%Computes the median absolute deviation, as a more robust estimation of</span>
+0049 <span class="comment">%std() when outliers are present. madToSigma is the factor between sigma</span>
+0050 <span class="comment">%and mad in a normal dist</span>
+0051 sD = madToSigma*mad(dist,1,3);
+0052 
+0053 
+0054 meanPos = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(inputData, 3, <span class="string">'omitnan'</span>);
+0055 
+0056 <span class="keyword">if</span> nargout &gt; 3
+0057     altPos = nan(size(inputData));
+0058     <span class="keyword">for</span> fr = 1:size(inputData,3)
+0059         altPos(:,:,fr) = <a href="getBestReconsFromZeroModel.html" class="code" title="function altPos = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">getBestReconsFromZeroModel</a>(inputData(:,:,fr),D, <span class="keyword">...</span>
+0060             sD,meanPos);
+0061     <span class="keyword">end</span>
+0062     biasPos = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(altPos-inputData, 3, <span class="string">'omitnan'</span>);
+0063 <span class="keyword">else</span>
+0064     biasPos = zeros(N,dim);
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="keyword">end</span>
+0068</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

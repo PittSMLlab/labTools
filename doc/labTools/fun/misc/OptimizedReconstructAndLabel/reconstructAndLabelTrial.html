@@ -4,7 +4,7 @@
 <head>
   <title>Description of reconstructAndLabelTrial</title>
   <meta name="keywords" content="reconstructAndLabelTrial">
-  <meta name="description" content="RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data">
+  <meta name="description" content="RECONSTRUCTANDLABELTRIAL Run reconstruct and label pipeline on a trial.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,39 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data</strong></div>
+<div class="box"><strong>RECONSTRUCTANDLABELTRIAL Run reconstruct and label pipeline on a trial.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function reconstructAndLabelTrial(pathTrial,vicon,shouldSave) </strong></div>
+<div class="box"><strong>function reconstructAndLabelTrial(pathTrial, vicon, shouldSave) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data
-   This function accepts as input the full path to the trial to process by
- running the reconstruct and label pipelines and saving the processed
- trial. Make sure the Vicon Nexus SDK is installed and added to the MATLAB
- path.
+<div class="fragment"><pre class="comment">RECONSTRUCTANDLABELTRIAL Run reconstruct and label pipeline on a trial.
 
- input(s):
-   pathTrial: string or character array of the full path of the trial on
-       which to run the reconstruct and label processing pipeline
-   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.
-   shouldSave: (optional) logical, whether to save changes (default: true)</pre></div>
+   Accepts the full path to a Vicon Nexus trial folder, opens the
+ trial if needed, runs the reconstruct and label pipeline, and
+ optionally saves the result. Requires the Vicon Nexus SDK on the
+ MATLAB path.
+
+ Inputs:
+   pathTrial  - String or character array; full path to the trial
+                folder on which to run the pipeline
+   vicon      - (optional) Vicon Nexus SDK object; connects if not
+                supplied
+   shouldSave - (optional) Logical; whether to save changes after
+                processing (default: true)
+
+ Outputs:
+   None
+
+ Toolbox Dependencies: None
+
+ See also <a href="reconstructAndLabelSession.html" class="code" title="function reconstructAndLabelSession(pathSess, indsTrials, vicon)">RECONSTRUCTANDLABELSESSION</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -52,64 +62,69 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function reconstructAndLabelTrial(pathTrial,vicon,shouldSave)</a>
-0002 <span class="comment">%RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data</span>
-0003 <span class="comment">%   This function accepts as input the full path to the trial to process by</span>
-0004 <span class="comment">% running the reconstruct and label pipelines and saving the processed</span>
-0005 <span class="comment">% trial. Make sure the Vicon Nexus SDK is installed and added to the MATLAB</span>
-0006 <span class="comment">% path.</span>
-0007 <span class="comment">%</span>
-0008 <span class="comment">% input(s):</span>
-0009 <span class="comment">%   pathTrial: string or character array of the full path of the trial on</span>
-0010 <span class="comment">%       which to run the reconstruct and label processing pipeline</span>
-0011 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.</span>
-0012 <span class="comment">%   shouldSave: (optional) logical, whether to save changes (default: true)</span>
-0013 
-0014 <span class="comment">% TODO: add a GUI input option if helpful</span>
-0015 narginchk(1,3);         <span class="comment">% verify correct number of input arguments</span>
-0016 
-0017 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(shouldSave)       <span class="comment">% if no 'shouldSave' input</span>
-0018     shouldSave = true;                     <span class="comment">% default to saving changes</span>
-0019 <span class="keyword">end</span>
-0020 
-0021 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
-0022 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
-0023     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
-0024         <span class="string">'Nexus...\n'</span>]);
-0025     vicon = ViconNexus();
-0026 <span class="keyword">end</span>
-0027 
-0028 <span class="comment">% open the trial if needed</span>
-0029 <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-0030     <span class="keyword">return</span>;     <span class="comment">% exit if the trial could not be opened</span>
-0031 <span class="keyword">end</span>
-0032 
-0033 <span class="comment">% The reconstruct and label step will process the raw camera data and</span>
-0034 <span class="comment">% reconstruct 3D marker positions. The labeling step assigns names to the</span>
-0035 <span class="comment">% reconstructed markers based on the Vicon Nexus labeling scheme.</span>
-0036 fprintf(<span class="string">'Running reconstruction and labeling pipeline...\n'</span>);
-0037 <span class="keyword">try</span>                     <span class="comment">% try running reconstruct and label pipeline</span>
-0038     vicon.RunPipeline(<span class="string">'Reconstruct And Label'</span>,<span class="string">''</span>,200);
-0039     fprintf(<span class="string">'Reconstruction and labeling complete.\n'</span>);
-0040 <span class="keyword">catch</span> ME
-0041     warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
-0042 <span class="keyword">end</span>
-0043 
-0044 <span class="comment">% saves the trial changes made if 'shouldSave' is true back to trial file</span>
-0045 <span class="keyword">if</span> shouldSave
-0046     fprintf(<span class="string">'Saving the trial...\n'</span>);
-0047     <span class="keyword">try</span>                     <span class="comment">% try saving the processed trial</span>
-0048         vicon.SaveTrial(200);
-0049         fprintf(<span class="string">'Trial saved successfully.\n'</span>);
-0050     <span class="keyword">catch</span> ME
-0051         warning(ME.identifier,<span class="string">'%s'</span>,ME.message);
-0052     <span class="keyword">end</span>
-0053 <span class="keyword">else</span>
-0054     fprintf(<span class="string">'Save option is disabled; trial not saved.\n'</span>);
-0055 <span class="keyword">end</span>
-0056 
-0057 <span class="keyword">end</span>
-0058</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function reconstructAndLabelTrial(pathTrial, vicon, shouldSave)</a>
+0002 <span class="comment">%RECONSTRUCTANDLABELTRIAL Run reconstruct and label pipeline on a trial.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Accepts the full path to a Vicon Nexus trial folder, opens the</span>
+0005 <span class="comment">% trial if needed, runs the reconstruct and label pipeline, and</span>
+0006 <span class="comment">% optionally saves the result. Requires the Vicon Nexus SDK on the</span>
+0007 <span class="comment">% MATLAB path.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   pathTrial  - String or character array; full path to the trial</span>
+0011 <span class="comment">%                folder on which to run the pipeline</span>
+0012 <span class="comment">%   vicon      - (optional) Vicon Nexus SDK object; connects if not</span>
+0013 <span class="comment">%                supplied</span>
+0014 <span class="comment">%   shouldSave - (optional) Logical; whether to save changes after</span>
+0015 <span class="comment">%                processing (default: true)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also RECONSTRUCTANDLABELSESSION.</span>
+0023 
+0024 <span class="comment">% TODO: add a GUI input option if helpful</span>
+0025 narginchk(1, 3);
+0026 
+0027 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(shouldSave)
+0028     shouldSave = true;
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0032     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0033         <span class="string">'Nexus...\n'</span>]);
+0034     vicon = ViconNexus();
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial, vicon)
+0038     <span class="keyword">return</span>;
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% The reconstruct and label step processes raw camera data, reconstructs</span>
+0042 <span class="comment">% 3D marker positions, and assigns names per the Vicon labeling scheme.</span>
+0043 fprintf(<span class="string">'Running reconstruction and labeling pipeline...\n'</span>);
+0044 <span class="keyword">try</span>
+0045     vicon.RunPipeline(<span class="string">'Reconstruct And Label'</span>, <span class="string">''</span>, 200);
+0046     fprintf(<span class="string">'Reconstruction and labeling complete.\n'</span>);
+0047 <span class="keyword">catch</span> ME
+0048     warning(ME.identifier, <span class="string">'%s'</span>, ME.message);
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="keyword">if</span> shouldSave
+0052     fprintf(<span class="string">'Saving the trial...\n'</span>);
+0053     <span class="keyword">try</span>
+0054         vicon.SaveTrial(200);
+0055         fprintf(<span class="string">'Trial saved successfully.\n'</span>);
+0056     <span class="keyword">catch</span> ME
+0057         warning(ME.identifier, <span class="string">'%s'</span>, ME.message);
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">else</span>
+0060     fprintf(<span class="string">'Save option is disabled; trial not saved.\n'</span>);
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

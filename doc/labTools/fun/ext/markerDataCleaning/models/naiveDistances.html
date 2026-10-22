@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Computes inter-marker distances.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	PLOT3 Plots 3D trajectories.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li><li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>	COMPARELISTSNESTED Search list2 strings against list1 (supports nesting).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="naiveDistances.html" class="code" title="">naiveDistances</a>	</li></ul>
@@ -41,374 +41,756 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this = naiveDistances(trainData,labs)</a></li><li><a href="#_sub2" class="code">function [logL,g] = loglikelihood(this,data)</a></li><li><a href="#_sub3" class="code">function i = indicatrix(this,fullFlag,M)</a></li><li><a href="#_sub4" class="code">function fh=seeModel(this)</a></li><li><a href="#_sub5" class="code">function [badFlag,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(this,verbose)</a></li><li><a href="#_sub6" class="code">function [permutationList,newModel] = permuteModelLabels(model)</a></li><li><a href="#_sub7" class="code">function newModel=applyPermutation(model,permutation)</a></li><li><a href="#_sub8" class="code">function mleData=reconstruct(this,data,dataPriors,fastFlag)</a></li><li><a href="#_sub9" class="code">function dataFrame=invertAndAnchor(ss,anchorFrame,anchorWeights,distanceWeights,initGuess,fastFlag)</a></li><li><a href="#_sub10" class="code">function [ss,g] = summaryStats(data)</a></li><li><a href="#_sub11" class="code">function this = learn(data,labels,noDisp)</a></li><li><a href="#_sub12" class="code">function [D,xl,yl]=stat2Matrix(ss)</a></li><li><a href="#_sub13" class="code">function [model,meanLB,meanUB,stdLB,stdUB,A,b]=getRefData()</a></li><li><a href="#_sub14" class="code">function D=stat2DistMatrix(ss)</a></li><li><a href="#_sub15" class="code">function ss=distMatrix2stat(D)</a></li></ul>
+<li><a href="#_sub1" class="code">function this = naiveDistances(trainData,labs)</a></li><li><a href="#_sub2" class="code">function [logL,g] = loglikelihood(this,data)</a></li><li><a href="#_sub3" class="code">function i = indicatrix(this,fullFlag,M)</a></li><li><a href="#_sub4" class="code">function fh = seeModel(this)</a></li><li><a href="#_sub5" class="code">function [badFlag,mirrorOutliers,outOfBoundsOutlier] =</a></li><li><a href="#_sub6" class="code">function [permutationList,newModel] = permuteModelLabels(model)</a></li><li><a href="#_sub7" class="code">function newModel = applyPermutation(model,permutation)</a></li><li><a href="#_sub8" class="code">function mleData = reconstruct(this,data,dataPriors,fastFlag)</a></li><li><a href="#_sub9" class="code">function dataFrame = invertAndAnchor(ss,anchorFrame,</a></li><li><a href="#_sub10" class="code">function [ss,g] = summaryStats(data)</a></li><li><a href="#_sub11" class="code">function this = learn(data,labels,noDisp)</a></li><li><a href="#_sub12" class="code">function [D,xl,yl] = stat2Matrix(ss)</a></li><li><a href="#_sub13" class="code">function [model,meanLB,meanUB,stdLB,stdUB,A,b] = getRefData()</a></li><li><a href="#_sub14" class="code">function D = stat2DistMatrix(ss)</a></li><li><a href="#_sub15" class="code">function ss = distMatrix2stat(D)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="naiveDistances.html" class="code" title="">naiveDistances</a> &lt; <a href="markerModel.html" class="code" title="">markerModel</a>
-0002     <span class="comment">%summary stats: pair-wise component differences</span>
-0003     <span class="comment">%model: independent normals</span>
-0004 
-0005     methods
-0006         <a name="_sub0" href="#_subfunctions" class="code">function this = naiveDistances(trainData,labs)</a>
-0007             this=this@<a href="markerModel.html" class="code" title="">markerModel</a>(trainData,labs);
-0008             ss=this.getRobustStd(.94);
-0009             this.activeStats=ss&lt;15 &amp; ss&lt;(this.statMean/2); <span class="comment">%Why is the second cosntraint here?</span>
-0010         <span class="keyword">end</span>
-0011         <a name="_sub1" href="#_subfunctions" class="code">function [logL,g] = loglikelihood(this,data)</a>
-0012             ss=this.summaryStats(data);
-0013             <span class="comment">%sigma=this.statStd;</span>
-0014             sigma=this.getRobustStd(.94);
-0015             <span class="comment">%mu=this.statMean;</span>
-0016             mu=this.statMedian;
-0017             logL=markerModel.normalLogL(ss,mu,sigma);
-0018             logL(~this.activeStats,:)=0;
-0019             logL=logL(this.activeStats,:);
-0020             logL(isnan(logL))=0;
-0021             g=[];
-0022         <span class="keyword">end</span>
-0023         <a name="_sub2" href="#_subfunctions" class="code">function i = indicatrix(this,fullFlag,M) </a><span class="comment">%MxP</span>
-0024             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(M)
-0025                 M=this.Nmarkers;
-0026             <span class="keyword">end</span>
-0027             ind=triu(true(M),1);
-0028             i=nan(M,M*(M-1)/2);
-0029             <span class="keyword">for</span> j=1:M
-0030                 aux=zeros(M);
-0031                 aux(:,j)=1;
-0032                 aux(j,:)=1;
-0033                 i(j,:)=aux(ind(:));
-0034             <span class="keyword">end</span>
-0035             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fullFlag) || fullFlag==false
-0036                 i=i(:,this.activeStats); <span class="comment">%Default</span>
-0037             <span class="keyword">end</span>
-0038         <span class="keyword">end</span>
-0039         <a name="_sub3" href="#_subfunctions" class="code">function fh=seeModel(this)</a>
-0040            fh=this.seeModel@<a href="markerModel.html" class="code" title="">markerModel</a>;
-0041            subplot(3,2,[2,4,6])
-0042            hold on
-0043            m=nanmedian(this.trainingData,3);
-0044            i=this.indicatrix;
-0045            sigma=this.getRobustStd(.94);
-0046            sigma=sigma(this.activeStats);
-0047            mu=this.statMedian(this.activeStats);
-0048                 <span class="keyword">for</span> j=1:size(i,2)
-0049                     <span class="comment">%if this.activeStats(j)</span>
-0050                     aux=find(i(:,j));
-0051                     n=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(m(aux,:));
-0052                     <span class="keyword">for</span> k=1:length(aux)
-0053                        <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>([n(1) m(aux(k),1)],[n(2) m(aux(k),2)],[n(3) m(aux(k),3)],<span class="string">'k'</span>)
-0054                     <span class="keyword">end</span>
-0055                     text(n(1),n(2),n(3),[<span class="string">'mu='</span> num2str(mu(j),3) <span class="string">', sigma='</span> num2str(sigma(j),2)])
-0056                     <span class="comment">%end</span>
-0057                 <span class="keyword">end</span>
-0058         <span class="keyword">end</span>
-0059         <a name="_sub4" href="#_subfunctions" class="code">function [badFlag,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(this,verbose)</a>
-0060             <span class="comment">%TODO: change this to load getRefData() and use the bounds from</span>
-0061             <span class="comment">%there as the ONLY source of testing. If that works well, move</span>
-0062             <span class="comment">%this function to markerModel(), since it won't have any class</span>
-0063             <span class="comment">%specific information, other than what getRefData() provides</span>
-0064             <span class="comment">%This function compares a trained model vs. a reference model</span>
-0065             <span class="comment">%of the class, and returns a potential list of markers with</span>
-0066             <span class="comment">%issues. It is meant to be used as a diagnostics tool to detect</span>
-0067             <span class="comment">%bad models (possibly caused by bad training data).</span>
-0068             outOfBoundsOutlier=false(size(this.trainingData,1),1);
-0069             <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
-0070                 verbose=true;
-0071             <span class="keyword">end</span>
-0072             badFlag=false;
-0073             <span class="comment">%Check three things:</span>
-0074             <span class="comment">%1) No marker is closer to a contralateral marker</span>
-0075             <span class="comment">%than its ipsilateral counterpart</span>
-0076             <span class="comment">%This requires L/R markers to be sorted properly</span>
-0077             mu=naiveDistances.stat2Matrix(this.statMedian);
-0078             M=size(mu,1);
-0079             firstHalf=1:ceil(M/2);
-0080             secondHalf=ceil(M/2)+1:M;
-0081             mu1=triu(mu(firstHalf,firstHalf));
-0082             mu2=triu(fliplr(mu(firstHalf,secondHalf)));
-0083             mu3=triu(mu(secondHalf,secondHalf));
-0084             mu4=triu(flipud(mu(firstHalf,secondHalf)));
-0085             D=[mu2&lt;mu1,zeros(size(mu1));zeros(size(mu1)),mu4&lt;mu3] &amp; mu([firstHalf secondHalf],[firstHalf secondHalf])&lt;700; <span class="comment">%Using 700mm as a threshold for distances to look at</span>
-0086             <span class="comment">%otherwise we compare something like RPSIS to RTOE and LTOE, which by geometry are almost equally far from RPSIS, and any movement or placement asymmetry will raise an alarm.</span>
-0087             <span class="comment">%Excluding SHANK and THIGH from this, since markers are not meant to be placed symmetrically</span>
-0088             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(this.markerLabels,{<span class="string">'RTHI'</span>,<span class="string">'LTHI'</span>,<span class="string">'LTHIGH'</span>,<span class="string">'RTHIGH'</span>,<span class="string">'RSHANK'</span>,<span class="string">'LSHANK'</span>,<span class="string">'LSHA'</span>,<span class="string">'RSHA'</span>,<span class="string">'LSHNK'</span>,<span class="string">'RSHNK'</span>});
-0089             D(idxs(bool),:)=false;
-0090             D(:,idxs(bool))=false;
-0091             [outMarkers1]=markerModel.untangleOutliers( naiveDistances.distMatrix2stat(D),this.indicatrix(true));
-0092             <span class="keyword">if</span> any(outMarkers1)
-0093                 <span class="keyword">if</span> verbose
-0094                 fprintf([<span class="string">'Mislabeled markers. Contralat. distances &gt; ipsilat. for: '</span>])
-0095                 fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(this.markerLabels(outMarkers1),<span class="string">', '</span>)) <span class="string">'\n'</span>])
-0096                 <span class="keyword">end</span>
-0097                 badFlag=true;
-0098             <span class="keyword">end</span>
-0099             mirrorOutliers=outMarkers1;
-0100 
-0101             <span class="comment">%2) The two (three?) closest markers (ipsilaterally along z-axis: as sorted before) to any given marker have std&lt;10</span>
-0102             sigma=naiveDistances.stat2Matrix(this.getRobustStd(.94));
-0103             <span class="keyword">if</span> any(any(triu(sigma)-triu(sigma,3)))&gt;10
-0104                 <span class="keyword">if</span> verbose
-0105                 fprintf([<span class="string">'Too much variability for adjacent markers.\n'</span>])
-0106                 <span class="keyword">end</span>
-0107                 badFlag=true;
-0108             <span class="keyword">end</span>
-0109 
-0110             <span class="comment">%3) No marker pair has a distance outside the admissible bounds</span>
-0111             load distanceModelReferenceData.mat
-0112             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(this.markerLabels,markerLabels);
-0113             list1=this.markerLabels(idxs(bool));
-0114             list2=markerLabels(bool);
-0115             <span class="keyword">if</span> ~all(strcmp(list1,list2))
-0116                 error(<span class="string">'Incompatible lists'</span>)
-0117             <span class="keyword">end</span>
-0118             upperBound=upperBound(bool,bool);
-0119             lowerBound=lowerBound(bool,bool);
-0120             reducedMu=mu(idxs(bool),idxs(bool));
-0121             <span class="keyword">if</span> any(any(reducedMu&lt;lowerBound | reducedMu&gt;upperBound))
-0122                 D= zeros(size(mu));
-0123                 D(idxs(bool),idxs(bool))= reducedMu&lt;lowerBound | reducedMu&gt;upperBound;
-0124                 in=this.indicatrix(true);
-0125                 [outMarkers2]=markerModel.untangleOutliers(naiveDistances.distMatrix2stat(D),in);
-0126                 <span class="keyword">if</span> verbose
-0127                 fprintf([<span class="string">'Marker distances above or below the allowed limits for markers: '</span>])
-0128                 fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(this.markerLabels(outMarkers2),<span class="string">', '</span>)) <span class="string">'\n'</span>])
-0129                 <span class="keyword">end</span>
-0130             <span class="comment">%                             [ii,jj]=find(reducedMu&lt;lowerBound | reducedMu&gt;upperBound);</span>
-0131             <span class="comment">%                             for i1=1:length(ii)</span>
-0132             <span class="comment">%                                disp(['Mean distance from ' distanceModel.markerLabels{ii(i1)} ' to ' distanceModel.markerLabels{jj(i1)} ' (' num2str(reducedMu(ii(i1),jj(i1)),3) 'mm) exceeds limits [' num2str(lowerBound(ii(i1),jj(i1)),3) ', ' num2str(upperBound(ii(i1),jj(i1)),3) 'mm].'])</span>
-0133             <span class="comment">%                             end</span>
-0134                 badFlag=true;
-0135                 outOfBoundsOutlier=outMarkers2;
-0136              <span class="keyword">end</span>
-0137 
-0138         <span class="keyword">end</span>
-0139         <a name="_sub5" href="#_subfunctions" class="code">function [permutationList,newModel] = permuteModelLabels(model)</a>
-0140             <span class="comment">%Checks if a model is invalid, and if it is, tries to find label</span>
-0141             <span class="comment">%permutations that would make it valid.</span>
-0142             <span class="comment">%TO DO: can this be achieved by just finding permutations of</span>
-0143             <span class="comment">%the training data of the model against the reference model? If</span>
-0144             <span class="comment">%so we can avoid duplicating code.</span>
-0145             <span class="comment">%Iny any case, this can be moved to markerModel()</span>
-0146             <span class="comment">%See also: naiveDistances.validateMarkerModel markerModel.validateMarkerModel</span>
-0147 
-0148             [~,mirrorOutliers,outOfBoundsOutlier] = model.validateMarkerModel(false);
-0149             nBad=sum(mirrorOutliers | outOfBoundsOutlier);
-0150             nBinit=nBad;
-0151             newModel=model;
-0152             <span class="comment">%if nBad&gt;10 %Too many permutations, search is not feasible</span>
-0153             <span class="comment">%    error('Too many possible permutations, search is not feasible')</span>
-0154             <span class="comment">%end</span>
-0155 
-0156             <span class="comment">%First try with permutations of markers marked as bad:</span>
-0157             permutationList=nan(0,2);
-0158             <span class="keyword">if</span> nBad&gt;1 &amp;&amp; any(mirrorOutliers)
-0159                 [newModel,permutationList,nBad]=tryPermutations(newModel,find(mirrorOutliers));
-0160             <span class="keyword">end</span>
-0161 
-0162             <span class="comment">%Second: if there are still bad things, try with permutations of mirror outliers OR outOfBounds</span>
-0163             <span class="keyword">if</span> nBad&gt;1
-0164                 [~,mirrorOutliers,outOfBoundsOutlier] = <a href="#_sub5" class="code" title="subfunction [badFlag,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(this,verbose)">validateMarkerModel</a>(newModel,false);
-0165                 [newModel,permutationList2,nBad]=tryPermutations(model,find(mirrorOutliers | outOfBoundsOutlier));
-0166                 permutationList=[permutationList;permutationList2];
-0167             <span class="keyword">end</span>
-0168 
-0169             <span class="comment">%Third: try with permutations of everything (possibly unfeasible because of number of permutations to try)</span>
-0170             <span class="comment">%if nBad&gt;0</span>
-0171             <span class="comment">%    [~,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(model,false);</span>
-0172             <span class="comment">%    [newModel,permutationList2,nBad]=tryPermutations(model,find(mirrorOutliers | outOfBoundsOutlier));</span>
-0173             <span class="comment">%    permutationList=[permutationList;permutationList2];</span>
-0174             <span class="comment">%end</span>
-0175 
-0176             <span class="keyword">if</span> nBad==0 <span class="comment">%No issues remain</span>
-0177                 <span class="comment">%disp('Success! Found permutation that fixes issues.')</span>
-0178             <span class="keyword">elseif</span> nBad&lt;nBinit
-0179                 <span class="comment">%warning('Improved results through permutation, but some issues remain.')</span>
-0180             <span class="keyword">else</span>
-0181                 <span class="comment">%warning('No improvement was found')</span>
-0182                 permutationList=[];
-0183                 newModel=model;
-0184             <span class="keyword">end</span>
-0185         <span class="keyword">end</span>
-0186         <a name="_sub6" href="#_subfunctions" class="code">function newModel=applyPermutation(model,permutation)</a>
-0187             <span class="comment">%TODO: applying a permutation should require to only permute labels.</span>
-0188             <span class="comment">% Also, if this function is needed, should be in markerModel superclass</span>
-0189             newModel=model;
-0190             <span class="comment">%First, permute the training data:</span>
-0191             <span class="keyword">for</span> i=1:size(permutation,1)
-0192                 newModel.trainingData(permutation(i,:),:,:)=newModel.trainingData(fliplr(permutation(i,:)),:,:);
-0193             <span class="keyword">end</span>
-0194             <span class="comment">%Inefficient: re-train</span>
-0195             newModel = <a href="naiveDistances.html" class="code" title="">naiveDistances</a>(newModel.trainingData,newModel.markerLabels);
-0196             <span class="comment">%Efficient:...</span>
-0197         <span class="keyword">end</span>
-0198         <a name="_sub7" href="#_subfunctions" class="code">function mleData=reconstruct(this,data,dataPriors,fastFlag)</a>
-0199             <span class="comment">%INPUTs:</span>
-0200             <span class="comment">%this: a model</span>
-0201             <span class="comment">%data: M (markers) x3(dim) xN (frames)</span>
-0202             <span class="comment">%priors: MxN or Mx1 matrix containing the uncertainty (std) in positions we think we have: assumes spherical uncertainty</span>
-0203             [M,D,N]=size(data);
-0204             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dataPriors)
-0205                <span class="comment">%Assume that priors are each marker's score according to this same model</span>
-0206                <span class="comment">%priors=...</span>
-0207                dataPriors=ones(M,N);
-0208             <span class="keyword">end</span>
-0209             <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
-0210                 fastFlag=false;
-0211             <span class="keyword">end</span>
-0212             mleData=nan(size(data));
-0213             wD=1./this.getRobustStd(.94).^2;
-0214             wD(wD&gt;1)=1; <span class="comment">%Don't trust any distance TOO much</span>
-0215             lastSol=[];
-0216             <span class="keyword">for</span> k=1:N
-0217                 <span class="comment">%TODO: for speed, only run if at least one dataPrior is</span>
-0218                 <span class="comment">%larger than X mm (ie. if we are certain about ALL markers,</span>
-0219                 <span class="comment">%there is nothing to optimize for).</span>
-0220                 <span class="comment">%TODO: based on training data, estimate a decent threshold</span>
-0221                 <span class="comment">%for the cost function of the reconstruction</span>
-0222                 wP=1./dataPriors(:,k).^2;
-0223                 wP(wP&gt;1)=1; <span class="comment">%Don't trust any position TOO much, leads to bad numerical properties</span>
-0224                 lastSol=naiveDistances.invertAndAnchor(this.statMean,data(:,:,k),wP,wD,lastSol,fastFlag);
-0225                 mleData(:,:,k)=lastSol;
-0226             <span class="keyword">end</span>
-0227 <span class="comment">%Validate result:</span>
-0228 <span class="comment">%             logLBefore=this.loglikelihood(data);</span>
-0229 <span class="comment">%             outlierBefore=this.outlierDetectFast(data);</span>
-0230 <span class="comment">%             logLAfter=this.loglikelihood(mleData);</span>
-0231 <span class="comment">%             outlierAfter=this.outlierDetectFast(mleData);</span>
-0232 <span class="comment">%             if any(outlierAfter &amp; ~outlierBefore) || any((logLAfter&lt;logLBefore) &amp; (logLAfter&lt;-5))</span>
-0233 <span class="comment">%                 warning('Reconstruction made some things worse: this is not working.')</span>
-0234 <span class="comment">%             end</span>
-0235 <span class="comment">%             if any(outlierAfter)</span>
-0236 <span class="comment">%                 warning('Reconstruction did not remove all outliers: try reducing confidence in original measurements')</span>
-0237 <span class="comment">%             end</span>
-0238         <span class="keyword">end</span>
-0239     <span class="keyword">end</span>
-0240     methods(Hidden)
-0241 <span class="comment">%         function [model,permutationList,nBad]=tryPermutations(model,listToPermute)</span>
-0242 <span class="comment">%             %TODO: test this agains markerModel.tryPermutations() and see</span>
-0243 <span class="comment">%             %which one performs best &amp; fastest. If not this one, deprecate.</span>
-0244 <span class="comment">%</span>
-0245 <span class="comment">%             %Overload!</span>
-0246 <span class="comment">%             permutationList=zeros(0,2);</span>
-0247 <span class="comment">%             %Benchmark to compare:</span>
-0248 <span class="comment">%             [~,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(model,false);</span>
-0249 <span class="comment">%             nBad=sum(mirrorOutliers | outOfBoundsOutlier);</span>
-0250 <span class="comment">%</span>
-0251 <span class="comment">%             while nBad&gt;0</span>
-0252 <span class="comment">%                 %Permutations to consider:</span>
-0253 <span class="comment">%                 listOfPermutations=nchoosek(listToPermute,2);</span>
-0254 <span class="comment">%                 N=size(listOfPermutations,1);</span>
-0255 <span class="comment">%                 count=0;</span>
-0256 <span class="comment">%                 while count&lt;N</span>
-0257 <span class="comment">%                    count=count+1;</span>
-0258 <span class="comment">%                    modelAux=applyPermutation(model,listOfPermutations(count,:)); %Permute</span>
-0259 <span class="comment">%                    [~,newMO,newOBO] = validateMarkerModel(modelAux,false);</span>
-0260 <span class="comment">%                    newNB=sum(newMO | newOBO);</span>
-0261 <span class="comment">%                    if newNB&lt;nBad %Found permutation that improves things</span>
-0262 <span class="comment">%                        break</span>
-0263 <span class="comment">%                    end</span>
-0264 <span class="comment">%                 end</span>
-0265 <span class="comment">%                 if newNB&gt;=nBad %Checking if while exited without making any improvements</span>
-0266 <span class="comment">%                     return</span>
-0267 <span class="comment">%                 else %Improvement was made!</span>
-0268 <span class="comment">%                     %New benchmark:</span>
-0269 <span class="comment">%                     model=modelAux;</span>
-0270 <span class="comment">%                     [~,mirrorOutliers,outOfBoundsOutlier] = validateMarkerModel(model,false);</span>
-0271 <span class="comment">%                     nBad=sum(mirrorOutliers | outOfBoundsOutlier);</span>
-0272 <span class="comment">%                     permutationList=[permutationList;listOfPermutations(count,:)]; %Adding permutation to list</span>
-0273 <span class="comment">%                 end</span>
-0274 <span class="comment">%             end</span>
-0275 <span class="comment">%         end</span>
-0276         <a name="_sub8" href="#_subfunctions" class="code">function dataFrame=invertAndAnchor(ss,anchorFrame,anchorWeights,distanceWeights,initGuess,fastFlag)</a>
-0277             knownDistances=naiveDistances.stat2DistMatrix(ss);
-0278             distanceWeights=naiveDistances.stat2DistMatrix(distanceWeights);
-0279             <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
-0280                 fastFlag=false;
-0281             <span class="keyword">end</span>
-0282             <span class="keyword">if</span> ~fastFlag
-0283                 [dataFrame] = getPositionFromDistances_v3(anchorFrame,knownDistances,anchorWeights,distanceWeights,initGuess);
-0284             <span class="keyword">else</span>
-0285                 <span class="comment">%Option 1:</span>
-0286                 <span class="comment">%knownDistances=stat2DistMatrix(ss);</span>
-0287                 <span class="comment">%[dataFrame] = getPositionFromDistances_v2(anchorFrame,knownDistances,anchorWeights,anchorFrame);</span>
-0288                 <span class="comment">%Option 2:</span>
-0289                 <span class="comment">%Divide markers in certain and uncertain. Certain markers are</span>
-0290                 <span class="comment">%offered as knownPositions and NOT optimized for.</span>
-0291                 <span class="comment">%Uncertain markers are optimized for, and have no known positions</span>
-0292                 dataFrame=anchorFrame; 
-0293                 fixedMarkers=anchorWeights&gt;=.5 | isnan(anchorWeights) | anchorWeights==Inf; <span class="comment">%Arbitrary threshold</span>
-0294                 <span class="keyword">if</span> any(~fixedMarkers)
-0295                     anchorFrame=anchorFrame(fixedMarkers,:);
-0296                     knownDistances=knownDistances(fixedMarkers,~fixedMarkers);
-0297                     distanceWeights=distanceWeights(fixedMarkers,~fixedMarkers);
-0298                     anchorWeights=anchorWeights(~fixedMarkers);
-0299                     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(initGuess)
-0300                         initGuess=initGuess(~fixedMarkers,:);
-0301                     <span class="keyword">end</span>
-0302                     <span class="comment">%TODO:</span>
-0303                     <span class="comment">%Do the optimization one marker at a time. May be slower, but better conditioned.</span>
-0304                     <span class="comment">%After optimizing: check that the result is decent (no outlier markers remain)</span>
-0305                     [aux] = getPositionFromDistances_v3(anchorFrame,knownDistances,zeros(size(anchorWeights)),distanceWeights,initGuess);
-0306                     dataFrame(~fixedMarkers,:)=aux;
-0307                 <span class="keyword">end</span>
-0308             <span class="keyword">end</span>
-0309         <span class="keyword">end</span>
-0310     <span class="keyword">end</span>
-0311     methods(Static)
-0312         <span class="comment">%Implementing superclass required methods:</span>
-0313         <a name="_sub9" href="#_subfunctions" class="code">function [ss,g] = summaryStats(data)</a>
-0314            D=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(data);
-0315            ss=naiveDistances.distMatrix2stat(D);
-0316            <span class="keyword">if</span> nargout&gt;2
-0317               g=[]; <span class="comment">%TODO</span>
-0318            <span class="keyword">end</span>
-0319         <span class="keyword">end</span>
-0320         <a name="_sub10" href="#_subfunctions" class="code">function this = learn(data,labels,noDisp)</a>
-0321             <span class="keyword">if</span> nargin&lt;2
-0322                 labels={};
-0323             <span class="keyword">end</span>
-0324             this=<a href="naiveDistances.html" class="code" title="">naiveDistances</a>(data,labels);
-0325             <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(noDisp) || ~noDisp
-0326                 this.seeModel()
-0327             <span class="keyword">end</span>
-0328 
-0329         <span class="keyword">end</span>
-0330         <a name="_sub11" href="#_subfunctions" class="code">function [D,xl,yl]=stat2Matrix(ss)</a>
-0331             D=triu(naiveDistances.stat2DistMatrix(ss));
-0332             xl=<span class="string">'markerLabels'</span>;
-0333             yl=<span class="string">'markerLabels'</span>;
-0334         <span class="keyword">end</span>
-0335         <a name="_sub12" href="#_subfunctions" class="code">function [model,meanLB,meanUB,stdLB,stdUB,A,b]=getRefData()</a>
-0336             [model,lowerBound,upperBound]=load(<span class="string">'../data/distanceModelReferenceData.mat'</span>);
-0337             meanLB=naiveDistances.distMatrix2stat(lowerBound);
-0338             meanUB=naiveDistances.distMatrix2stat(upperBound);
-0339             stdLB=zeros(size(meanLB));
-0340             stdUB=Inf*ones(size(meanLB));
-0341             A=zeros(0,size(meanLB,2));
-0342             b=zeros(0,1);
-0343         <span class="keyword">end</span>
-0344 
-0345         <span class="comment">%Subclass-specific functions:</span>
-0346         <a name="_sub13" href="#_subfunctions" class="code">function D=stat2DistMatrix(ss)</a>
-0347             <span class="comment">%ss is M(M-1)/2 x N</span>
-0348             M=ceil(sqrt(2*size(ss,1)));
-0349             N=size(ss,2);
-0350             ind=triu(true(M),1);
-0351             D=zeros(M^2,N);
-0352             D(ind,:)=ss;
-0353             D=reshape(D,M,M,N);
-0354             D=D+permute(D,[2,1,3]);
-0355         <span class="keyword">end</span>
-0356         <a name="_sub14" href="#_subfunctions" class="code">function ss=distMatrix2stat(D)</a>
-0357            <span class="comment">%D can be MxM or MxMxN</span>
-0358            M=size(D,1);
-0359            N=size(D,3);
-0360            ss=reshape(D,M^2,N);
-0361            ind=triu(true(M),1);
-0362            ss=ss(ind(:),:); <span class="comment">%Keeping only upper half: PxN, with P=M*(M-1)/2</span>
+0002     <span class="comment">%NAIVEDISTANCES Marker model of the pairwise distances between markers.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   The summary statistics are the distances between each pair of</span>
+0005     <span class="comment">% markers (upper triangle of the distance matrix). The model treats them</span>
+0006     <span class="comment">% as independent normal variables (naive Bayes) with robust standard</span>
+0007     <span class="comment">% deviations. Statistics are active only if their robust standard</span>
+0008     <span class="comment">% deviation is below 15 mm and below half their mean.</span>
+0009     <span class="comment">%</span>
+0010     <span class="comment">% NOTE: work in progress. validateMarkerModel loads</span>
+0011     <span class="comment">% distanceModelReferenceData.mat, and reconstruct and getRefData depend</span>
+0012     <span class="comment">% on files that are not in the repository.</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0015     <span class="comment">%   (inherited from markerModel: prctile), Optimization Toolbox</span>
+0016     <span class="comment">%   (inherited). Low confidence: the dependency analyzer reported None</span>
+0017     <span class="comment">%   for this file.</span>
+0018     <span class="comment">%</span>
+0019     <span class="comment">% See also MARKERMODEL.</span>
+0020 
+0021     methods
+0022         <a name="_sub0" href="#_subfunctions" class="code">function this = naiveDistances(trainData,labs)</a>
+0023             <span class="comment">%NAIVEDISTANCES Train a pairwise-distance model.</span>
+0024             <span class="comment">%</span>
+0025             <span class="comment">%   this = NAIVEDISTANCES(trainData,labs) trains the superclass</span>
+0026             <span class="comment">% model and activates the statistics with a robust standard</span>
+0027             <span class="comment">% deviation (94% central interval) below 15 mm and below half of</span>
+0028             <span class="comment">% their mean.</span>
+0029             <span class="comment">%</span>
+0030             <span class="comment">% Inputs:</span>
+0031             <span class="comment">%   trainData - markers x 3 x frames training positions</span>
+0032             <span class="comment">%   labs      - markers x 1 cell array of marker labels</span>
+0033             <span class="comment">%</span>
+0034             <span class="comment">% Outputs:</span>
+0035             <span class="comment">%   this - naiveDistances object</span>
+0036             <span class="comment">%</span>
+0037             <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0038             <span class="comment">%   (prctile)</span>
+0039 
+0040             this = this@<a href="markerModel.html" class="code" title="">markerModel</a>(trainData,labs);
+0041             ss   = this.getRobustStd(0.94); <span class="comment">% TODO: source? (94% interval)</span>
+0042             <span class="comment">%Why is the second cosntraint here?</span>
+0043             this.activeStats = ss &lt; 15 &amp; ss &lt; (this.statMean/2);
+0044         <span class="keyword">end</span>
+0045         <a name="_sub1" href="#_subfunctions" class="code">function [logL,g] = loglikelihood(this,data)</a>
+0046             <span class="comment">%LOGLIKELIHOOD Log-likelihood of the active statistics.</span>
+0047             <span class="comment">%</span>
+0048             <span class="comment">%   [logL,g] = LOGLIKELIHOOD(this,data) evaluates the pairwise</span>
+0049             <span class="comment">% distances of the data under independent normal distributions</span>
+0050             <span class="comment">% with the training median and robust standard deviation. NaN</span>
+0051             <span class="comment">% values count as 0.</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">% Inputs:</span>
+0054             <span class="comment">%   this - naiveDistances object</span>
+0055             <span class="comment">%   data - markers x 3 x frames positions</span>
+0056             <span class="comment">%</span>
+0057             <span class="comment">% Outputs:</span>
+0058             <span class="comment">%   logL - active statistics x frames log-likelihoods</span>
+0059             <span class="comment">%   g    - not assigned (gradient not implemented)</span>
+0060             <span class="comment">%</span>
+0061             <span class="comment">% Toolbox Dependencies: None</span>
+0062 
+0063             ss = this.summaryStats(data);
+0064             <span class="comment">%sigma=this.statStd;</span>
+0065             sigma = this.getRobustStd(0.94);
+0066             <span class="comment">%mu=this.statMean;</span>
+0067             mu   = this.statMedian;
+0068             logL = markerModel.normalLogL(ss,mu,sigma);
+0069             logL(~this.activeStats,:) = 0;
+0070             logL = logL(this.activeStats,:);
+0071             logL(isnan(logL)) = 0;
+0072             g = [];
+0073         <span class="keyword">end</span>
+0074         <a name="_sub2" href="#_subfunctions" class="code">function i = indicatrix(this,fullFlag,M) </a><span class="comment">%MxP</span>
+0075             <span class="comment">%INDICATRIX Which pairwise distances involve each marker.</span>
+0076             <span class="comment">%</span>
+0077             <span class="comment">%   i = INDICATRIX(this,fullFlag,M) returns a matrix with a 1 in</span>
+0078             <span class="comment">% (m,p) when statistic p (a marker pair) involves marker m.</span>
+0079             <span class="comment">%</span>
+0080             <span class="comment">% Inputs:</span>
+0081             <span class="comment">%   this     - naiveDistances object</span>
+0082             <span class="comment">%   fullFlag - (optional) true to keep all M*(M-1)/2 statistics</span>
+0083             <span class="comment">%              instead of only the active ones (default: false)</span>
+0084             <span class="comment">%   M        - (optional) number of markers (default:</span>
+0085             <span class="comment">%              this.Nmarkers)</span>
+0086             <span class="comment">%</span>
+0087             <span class="comment">% Outputs:</span>
+0088             <span class="comment">%   i - markers x statistics indicator matrix (MxP)</span>
+0089             <span class="comment">%</span>
+0090             <span class="comment">% Toolbox Dependencies: None</span>
+0091 
+0092             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(M)
+0093                 M = this.Nmarkers;
+0094             <span class="keyword">end</span>
+0095             ind = triu(true(M),1);
+0096             i   = nan(M,M*(M-1)/2);
+0097             <span class="keyword">for</span> mrkr = 1:M
+0098                 aux = zeros(M);
+0099                 aux(:,mrkr) = 1;
+0100                 aux(mrkr,:) = 1;
+0101                 i(mrkr,:) = aux(ind(:));
+0102             <span class="keyword">end</span>
+0103             <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fullFlag) || fullFlag == false
+0104                 i = i(:,this.activeStats); <span class="comment">%Default</span>
+0105             <span class="keyword">end</span>
+0106         <span class="keyword">end</span>
+0107         <a name="_sub3" href="#_subfunctions" class="code">function fh = seeModel(this)</a>
+0108             <span class="comment">%SEEMODEL Plot the model, marking each active statistic in 3-D.</span>
+0109             <span class="comment">%</span>
+0110             <span class="comment">%   fh = SEEMODEL(this) calls the superclass plot and, in its</span>
+0111             <span class="comment">% 3-D axes, draws a segment from the middle of every active</span>
+0112             <span class="comment">% marker pair to its two markers and writes the mean and</span>
+0113             <span class="comment">% standard deviation of the pair.</span>
+0114             <span class="comment">%</span>
+0115             <span class="comment">% Inputs:</span>
+0116             <span class="comment">%   this - naiveDistances object</span>
+0117             <span class="comment">%</span>
+0118             <span class="comment">% Outputs:</span>
+0119             <span class="comment">%   fh - figure handle</span>
+0120             <span class="comment">%</span>
+0121             <span class="comment">% Toolbox Dependencies: None</span>
+0122             <span class="comment">%</span>
+0123             <span class="comment">% See also MARKERMODEL.SEEMODEL.</span>
+0124 
+0125             fh = this.seeModel@<a href="markerModel.html" class="code" title="">markerModel</a>;
+0126             subplot(3,2,[2,4,6])
+0127             hold on
+0128             m     = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(this.trainingData, 3, <span class="string">'omitnan'</span>);
+0129             i     = this.indicatrix;
+0130             sigma = this.getRobustStd(0.94);
+0131             sigma = sigma(this.activeStats);
+0132             mu    = this.statMedian(this.activeStats);
+0133             <span class="keyword">for</span> stt = 1:size(i,2)
+0134                 <span class="comment">%if this.activeStats(stt)</span>
+0135                 aux = find(i(:,stt));
+0136                 n   = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(m(aux,:));
+0137                 <span class="keyword">for</span> k = 1:length(aux)
+0138                     <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>([n(1) m(aux(k),1)],[n(2) m(aux(k),2)], <span class="keyword">...</span>
+0139                         [n(3) m(aux(k),3)],<span class="string">'k'</span>)
+0140                 <span class="keyword">end</span>
+0141                 text(n(1),n(2),n(3), <span class="keyword">...</span>
+0142                     [<span class="string">'mu='</span> num2str(mu(stt),3) <span class="string">', sigma='</span> <span class="keyword">...</span>
+0143                     num2str(sigma(stt),2)])
+0144                 <span class="comment">%end</span>
+0145             <span class="keyword">end</span>
+0146         <span class="keyword">end</span>
+0147         <a name="_sub4" href="#_subfunctions" class="code">function [badFlag,mirrorOutliers,outOfBoundsOutlier] = </a><span class="keyword">...</span>
+0148             validateMarkerModel(this,verbose)
+0149             <span class="comment">%VALIDATEMARKERMODEL Compare a model with reference data.</span>
+0150             <span class="comment">%</span>
+0151             <span class="comment">%   [badFlag,mirrorOutliers,outOfBoundsOutlier] =</span>
+0152             <span class="comment">% VALIDATEMARKERMODEL(this, verbose) returns markers with</span>
+0153             <span class="comment">% potential issues; it is a diagnostic to detect bad models</span>
+0154             <span class="comment">% (possibly caused by bad training data). It checks that (1) no</span>
+0155             <span class="comment">% marker is closer to a contralateral marker than to its</span>
+0156             <span class="comment">% ipsilateral counterpart (this requires left and right markers</span>
+0157             <span class="comment">% to be sorted properly; only distances below 700 mm are</span>
+0158             <span class="comment">% compared, and the thigh and shank markers are excluded because</span>
+0159             <span class="comment">% they are not placed symmetrically), (2) the closest markers to</span>
+0160             <span class="comment">% any marker have a standard deviation below 10 mm, and (3) no</span>
+0161             <span class="comment">% distance is outside the bounds of the reference data. Prints</span>
+0162             <span class="comment">% the findings if verbose.</span>
+0163             <span class="comment">%</span>
+0164             <span class="comment">% Side effects: loads distanceModelReferenceData.mat (not in the</span>
+0165             <span class="comment">% repository) from the path and errors with 'Incompatible lists'</span>
+0166             <span class="comment">% if the marker labels do not match; prints to the command</span>
+0167             <span class="comment">% window.</span>
+0168             <span class="comment">%</span>
+0169             <span class="comment">% TODO: load getRefData() and use its bounds as the only source</span>
+0170             <span class="comment">% of testing; then move this function to markerModel.</span>
+0171             <span class="comment">%</span>
+0172             <span class="comment">% Inputs:</span>
+0173             <span class="comment">%   this    - naiveDistances object</span>
+0174             <span class="comment">%   verbose - (optional) print the findings (default: true)</span>
+0175             <span class="comment">%</span>
+0176             <span class="comment">% Outputs:</span>
+0177             <span class="comment">%   badFlag            - true if any check fails</span>
+0178             <span class="comment">%   mirrorOutliers     - markers failing check 1</span>
+0179             <span class="comment">%   outOfBoundsOutlier - markers failing check 3</span>
+0180             <span class="comment">%</span>
+0181             <span class="comment">% Toolbox Dependencies: None</span>
+0182             <span class="comment">%</span>
+0183             <span class="comment">% See also MARKERMODEL.VALIDATEMARKERMODEL.</span>
+0184 
+0185             outOfBoundsOutlier = false(size(this.trainingData,1),1);
+0186             <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(verbose)
+0187                 verbose = true;
+0188             <span class="keyword">end</span>
+0189             badFlag = false;
+0190             <span class="comment">%Check three things:</span>
+0191             <span class="comment">%1) No marker is closer to a contralateral marker</span>
+0192             <span class="comment">%than its ipsilateral counterpart</span>
+0193             <span class="comment">%This requires L/R markers to be sorted properly</span>
+0194             mu         = naiveDistances.stat2Matrix(this.statMedian);
+0195             M          = size(mu,1);
+0196             firstHalf  = 1:ceil(M/2);
+0197             secondHalf = ceil(M/2)+1:M;
+0198             mu1        = triu(mu(firstHalf,firstHalf));
+0199             mu2        = triu(fliplr(mu(firstHalf,secondHalf)));
+0200             mu3        = triu(mu(secondHalf,secondHalf));
+0201             mu4        = triu(flipud(mu(firstHalf,secondHalf)));
+0202             maxCompareDist = 700; <span class="comment">% mm: threshold for distances to look at</span>
+0203             <span class="comment">%Using 700mm as a threshold for distances to look at</span>
+0204             D          = [mu2 &lt; mu1,zeros(size(mu1));zeros(size(mu1)), <span class="keyword">...</span>
+0205                 mu4 &lt; mu3] &amp; mu([firstHalf secondHalf], <span class="keyword">...</span>
+0206                 [firstHalf secondHalf]) &lt; maxCompareDist;
+0207             <span class="comment">%otherwise we compare something like RPSIS to RTOE and LTOE,</span>
+0208             <span class="comment">%which by geometry are almost equally far from RPSIS, and any</span>
+0209             <span class="comment">%movement or placement asymmetry will raise an alarm.</span>
+0210             <span class="comment">%Excluding SHANK and THIGH from this, since markers are not</span>
+0211             <span class="comment">%meant to be placed symmetrically</span>
+0212             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>(this.markerLabels, <span class="keyword">...</span>
+0213                 {<span class="string">'RTHI'</span>,<span class="string">'LTHI'</span>,<span class="string">'LTHIGH'</span>,<span class="string">'RTHIGH'</span>,<span class="string">'RSHANK'</span>,<span class="string">'LSHANK'</span>, <span class="keyword">...</span>
+0214                 <span class="string">'LSHA'</span>,<span class="string">'RSHA'</span>,<span class="string">'LSHNK'</span>,<span class="string">'RSHNK'</span>});
+0215             D(idxs(bool),:) = false;
+0216             D(:,idxs(bool)) = false;
+0217             outMarkers1 = <span class="keyword">...</span>
+0218                 markerModel.untangleOutliers( <span class="keyword">...</span>
+0219                 naiveDistances.distMatrix2stat(D),this.indicatrix(true));
+0220             <span class="keyword">if</span> any(outMarkers1)
+0221                 <span class="keyword">if</span> verbose
+0222                     fprintf([ <span class="keyword">...</span>
+0223                         <span class="string">'Mislabeled markers. Contralat. distances &gt; '</span> <span class="keyword">...</span>
+0224                         <span class="string">'ipsilat. for: '</span>])
+0225                     fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>( <span class="keyword">...</span>
+0226                         strcat(this.markerLabels(outMarkers1),<span class="string">', '</span>)) <span class="string">'\n'</span>])
+0227                 <span class="keyword">end</span>
+0228                 badFlag = true;
+0229             <span class="keyword">end</span>
+0230             mirrorOutliers = outMarkers1;
+0231 
+0232             <span class="comment">%2) The two (three?) closest markers (ipsilaterally along</span>
+0233             <span class="comment">%z-axis: as sorted before) to any given marker have std&lt;10</span>
+0234             sigma = naiveDistances.stat2Matrix(this.getRobustStd(0.94));
+0235             maxAdjacentStd = 10; <span class="comment">% mm</span>
+0236             <span class="keyword">if</span> any(any(triu(sigma)-triu(sigma,3))) &gt; maxAdjacentStd
+0237                 <span class="keyword">if</span> verbose
+0238                     fprintf([ <span class="keyword">...</span>
+0239                         <span class="string">'Too much variability for adjacent markers.\n'</span>])
+0240                 <span class="keyword">end</span>
+0241                 badFlag = true;
+0242             <span class="keyword">end</span>
+0243 
+0244             <span class="comment">%3) No marker pair has a distance outside the admissible bounds</span>
+0245             load distanceModelReferenceData.mat
+0246             [bool,idxs] = <a href="../../../../../labTools/fun/ext/pitools/usefulCode/compareListsNested.html" class="code" title="function [bool, idxs] = compareListsNested(list1, list2)">compareListsNested</a>(this.markerLabels, <span class="keyword">...</span>
+0247                 markerLabels);
+0248             list1 = this.markerLabels(idxs(bool));
+0249             list2 = markerLabels(bool);
+0250             <span class="keyword">if</span> ~all(strcmp(list1,list2))
+0251                 error(<span class="string">'Incompatible lists'</span>)
+0252             <span class="keyword">end</span>
+0253             upperBound = upperBound(bool,bool);
+0254             lowerBound = lowerBound(bool,bool);
+0255             reducedMu  = mu(idxs(bool),idxs(bool));
+0256             <span class="keyword">if</span> any(any(reducedMu &lt; lowerBound | reducedMu &gt; upperBound))
+0257                 D = zeros(size(mu));
+0258                 D(idxs(bool),idxs(bool)) = reducedMu &lt; lowerBound | <span class="keyword">...</span>
+0259                     reducedMu &gt; upperBound;
+0260                 in          = this.indicatrix(true);
+0261                 outMarkers2 = <span class="keyword">...</span>
+0262                     markerModel.untangleOutliers( <span class="keyword">...</span>
+0263                     naiveDistances.distMatrix2stat(D),in);
+0264                 <span class="keyword">if</span> verbose
+0265                     fprintf([ <span class="keyword">...</span>
+0266                         <span class="string">'Marker distances above or below the allowed '</span> <span class="keyword">...</span>
+0267                         <span class="string">'limits for markers: '</span>])
+0268                     fprintf([<a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>( <span class="keyword">...</span>
+0269                         strcat(this.markerLabels(outMarkers2),<span class="string">', '</span>)) <span class="string">'\n'</span>])
+0270                 <span class="keyword">end</span>
+0271                 <span class="comment">% [ii,jj]=find(reducedMu&lt;lowerBound | reducedMu&gt;upperBound);</span>
+0272                 <span class="comment">% for i1=1:length(ii)</span>
+0273                 <span class="comment">%    disp(['Mean distance from ' ...</span>
+0274                 <span class="comment">%    distanceModel.markerLabels{ ...</span>
+0275                 <span class="comment">%    ii(i1)} ' to ' distanceModel.markerLabels{ ...</span>
+0276                 <span class="comment">%    jj(i1)} ' (' num2str(reducedMu(ii(i1),jj(i1)), ...</span>
+0277                 <span class="comment">%    3) 'mm) exceeds limits [' num2str( ...</span>
+0278                 <span class="comment">%    lowerBound(ii(i1),jj(i1)), ...</span>
+0279                 <span class="comment">%    3) ', ' num2str(upperBound(ii(i1),jj(i1)),3) 'mm].'])</span>
+0280                 <span class="comment">% end</span>
+0281                 badFlag = true;
+0282                 outOfBoundsOutlier = outMarkers2;
+0283             <span class="keyword">end</span>
+0284 
+0285         <span class="keyword">end</span>
+0286         <a name="_sub5" href="#_subfunctions" class="code">function [permutationList,newModel] = permuteModelLabels(model)</a>
+0287             <span class="comment">%PERMUTEMODELLABELS Find permutations that fix a model.</span>
+0288             <span class="comment">%</span>
+0289             <span class="comment">%   [permutationList,newModel] = PERMUTEMODELLABELS(model)</span>
+0290             <span class="comment">% checks if the model is invalid and, if so, tries permutations</span>
+0291             <span class="comment">% of the markers marked as bad (first the mirror outliers, then</span>
+0292             <span class="comment">% those or the out-of-bounds ones) until the validation passes.</span>
+0293             <span class="comment">% If the permutations do not reduce the number of bad markers,</span>
+0294             <span class="comment">% the model is returned unchanged with an empty list.</span>
+0295             <span class="comment">%</span>
+0296             <span class="comment">% NOTE: calls tryPermutations with the signature of the</span>
+0297             <span class="comment">% commented-out version at the end of this file, which is not</span>
+0298             <span class="comment">% the one in markerModel.</span>
+0299             <span class="comment">%</span>
+0300             <span class="comment">% TODO: can this be achieved by just finding permutations of the</span>
+0301             <span class="comment">% training data against the reference model? If so, duplicated</span>
+0302             <span class="comment">% code is avoided. It could also be moved to markerModel.</span>
+0303             <span class="comment">%</span>
+0304             <span class="comment">% Inputs:</span>
+0305             <span class="comment">%   model - naiveDistances object</span>
+0306             <span class="comment">%</span>
+0307             <span class="comment">% Outputs:</span>
+0308             <span class="comment">%   permutationList - permutations applied, one pair per row</span>
+0309             <span class="comment">%   newModel        - model after the permutations</span>
+0310             <span class="comment">%</span>
+0311             <span class="comment">% Toolbox Dependencies: None</span>
+0312             <span class="comment">%</span>
+0313             <span class="comment">% See also VALIDATEMARKERMODEL, MARKERMODEL.VALIDATEMARKERMODEL.</span>
+0314 
+0315             [~,mirrorOutliers,outOfBoundsOutlier] = <span class="keyword">...</span>
+0316                 model.validateMarkerModel(false);
+0317             nBad     = sum(mirrorOutliers | outOfBoundsOutlier);
+0318             nBinit   = nBad;
+0319             newModel = model;
+0320             <span class="comment">%if nBad&gt;10 %Too many permutations, search is not feasible</span>
+0321             <span class="comment">%    error('Too many possible permutations, search is not</span>
+0322             <span class="comment">%    feasible')</span>
+0323             <span class="comment">%end</span>
+0324 
+0325             <span class="comment">%First try with permutations of markers marked as bad:</span>
+0326             permutationList = nan(0,2);
+0327             <span class="keyword">if</span> nBad &gt; 1 &amp;&amp; any(mirrorOutliers)
+0328                 [newModel,permutationList,nBad] = <span class="keyword">...</span>
+0329                     tryPermutations(newModel,find(mirrorOutliers));
+0330             <span class="keyword">end</span>
+0331 
+0332             <span class="comment">%Second: if there are still bad things, try with permutations of</span>
+0333             <span class="comment">%mirror outliers OR outOfBounds</span>
+0334             <span class="keyword">if</span> nBad &gt; 1
+0335                 [~,mirrorOutliers,outOfBoundsOutlier] = <span class="keyword">...</span>
+0336                     validateMarkerModel(newModel,false);
+0337                 [newModel,permutationList2,nBad] = <span class="keyword">...</span>
+0338                     tryPermutations(model, <span class="keyword">...</span>
+0339                     find(mirrorOutliers | outOfBoundsOutlier));
+0340                 permutationList = [permutationList;permutationList2];
+0341             <span class="keyword">end</span>
+0342 
+0343             <span class="comment">%Third: try with permutations of everything (possibly unfeasible</span>
+0344             <span class="comment">%because of number of permutations to try)</span>
+0345             <span class="comment">%if nBad&gt;0</span>
+0346             <span class="comment">%    [~,mirrorOutliers,outOfBoundsOutlier] = ...</span>
+0347             <span class="comment">%    validateMarkerModel(model,false);</span>
+0348             <span class="comment">%    [newModel,permutationList2,nBad]=tryPermutations(model, ...</span>
+0349             <span class="comment">%    find(mirrorOutliers | outOfBoundsOutlier));</span>
+0350             <span class="comment">%    permutationList=[permutationList;permutationList2];</span>
+0351             <span class="comment">%end</span>
+0352 
+0353             <span class="keyword">if</span> nBad == 0 <span class="comment">%No issues remain</span>
+0354                 <span class="comment">%disp('Success! Found permutation that fixes issues.')</span>
+0355             <span class="keyword">elseif</span> nBad &lt; nBinit
+0356                 <span class="comment">%warning('Improved results through permutation, but some</span>
+0357                 <span class="comment">%issues remain.')</span>
+0358             <span class="keyword">else</span>
+0359                 <span class="comment">%warning('No improvement was found')</span>
+0360                 permutationList = [];
+0361                 newModel        = model;
+0362             <span class="keyword">end</span>
 0363         <span class="keyword">end</span>
-0364     <span class="keyword">end</span>
-0365 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0364         <a name="_sub6" href="#_subfunctions" class="code">function newModel = applyPermutation(model,permutation)</a>
+0365             <span class="comment">%APPLYPERMUTATION Swap marker pairs and retrain.</span>
+0366             <span class="comment">%</span>
+0367             <span class="comment">%   newModel = APPLYPERMUTATION(model,permutation) swaps the</span>
+0368             <span class="comment">% rows of the training data listed in each row of permutation</span>
+0369             <span class="comment">% and trains a new model from the permuted data (inefficient).</span>
+0370             <span class="comment">%</span>
+0371             <span class="comment">% TODO: applying a permutation should only require permuting the</span>
+0372             <span class="comment">% labels. If this function is needed, it should be in the</span>
+0373             <span class="comment">% markerModel superclass.</span>
+0374             <span class="comment">%</span>
+0375             <span class="comment">% Inputs:</span>
+0376             <span class="comment">%   model       - naiveDistances object</span>
+0377             <span class="comment">%   permutation - n x 2 pairs of marker indices to swap</span>
+0378             <span class="comment">%</span>
+0379             <span class="comment">% Outputs:</span>
+0380             <span class="comment">%   newModel - retrained model</span>
+0381             <span class="comment">%</span>
+0382             <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0383             <span class="comment">%   (prctile)</span>
+0384 
+0385             newModel = model;
+0386             <span class="comment">%First, permute the training data:</span>
+0387             <span class="keyword">for</span> ii = 1:size(permutation,1)
+0388                 newModel.trainingData(permutation(ii,:),:,:) = <span class="keyword">...</span>
+0389                     newModel.trainingData(fliplr(permutation(ii,:)),:,:);
+0390             <span class="keyword">end</span>
+0391             <span class="comment">%Inefficient: re-train</span>
+0392             newModel = <a href="naiveDistances.html" class="code" title="">naiveDistances</a>(newModel.trainingData, <span class="keyword">...</span>
+0393                 newModel.markerLabels);
+0394             <span class="comment">%Efficient:...</span>
+0395         <span class="keyword">end</span>
+0396         <a name="_sub7" href="#_subfunctions" class="code">function mleData = reconstruct(this,data,dataPriors,fastFlag)</a>
+0397             <span class="comment">%RECONSTRUCT Reconstruct positions from model distances.</span>
+0398             <span class="comment">%</span>
+0399             <span class="comment">%   mleData = RECONSTRUCT(this,data,dataPriors,fastFlag) finds,</span>
+0400             <span class="comment">% frame by frame, the positions that best satisfy the model mean</span>
+0401             <span class="comment">% distances while staying close to the measured positions.</span>
+0402             <span class="comment">% Weights are the inverse variance of the positions (from</span>
+0403             <span class="comment">% dataPriors) and of the distances (from the robust standard</span>
+0404             <span class="comment">% deviation), capped at 1 so no position or distance is trusted</span>
+0405             <span class="comment">% too much (numerical conditioning). Uses</span>
+0406             <span class="comment">% getPositionFromDistances_v3, which is not in the repository.</span>
+0407             <span class="comment">%</span>
+0408             <span class="comment">% TODO: only run if at least one prior is larger than some</span>
+0409             <span class="comment">% threshold in mm (nothing to optimize if all markers are</span>
+0410             <span class="comment">% certain).</span>
+0411             <span class="comment">% TODO: estimate a decent threshold for the cost function from</span>
+0412             <span class="comment">% the training data.</span>
+0413             <span class="comment">%</span>
+0414             <span class="comment">% Inputs:</span>
+0415             <span class="comment">%   this       - naiveDistances object</span>
+0416             <span class="comment">%   data       - markers x 3 x frames positions</span>
+0417             <span class="comment">%   dataPriors - (optional) markers x frames or markers x 1</span>
+0418             <span class="comment">%                uncertainty (std) of the positions, assuming</span>
+0419             <span class="comment">%                spherical uncertainty (default: ones)</span>
+0420             <span class="comment">%   fastFlag   - (optional) optimize only the uncertain markers</span>
+0421             <span class="comment">%                (default: false)</span>
+0422             <span class="comment">%</span>
+0423             <span class="comment">% Outputs:</span>
+0424             <span class="comment">%   mleData - markers x 3 x frames reconstructed positions</span>
+0425             <span class="comment">%</span>
+0426             <span class="comment">% Toolbox Dependencies: None</span>
+0427 
+0428             [M,D,N] = size(data);
+0429             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dataPriors)
+0430                 <span class="comment">%Assume that priors are each marker's score according to</span>
+0431                 <span class="comment">%this same model</span>
+0432                 <span class="comment">%priors=...</span>
+0433                 dataPriors = ones(M,N);
+0434             <span class="keyword">end</span>
+0435             <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
+0436                 fastFlag = false;
+0437             <span class="keyword">end</span>
+0438             mleData = nan(size(data));
+0439             wD      = 1./this.getRobustStd(0.94).^2;
+0440             wD(wD &gt; 1) = 1; <span class="comment">%Don't trust any distance TOO much</span>
+0441             lastSol = [];
+0442             <span class="keyword">for</span> k = 1:N
+0443                 <span class="comment">%TODO: for speed, only run if at least one dataPrior is</span>
+0444                 <span class="comment">%larger than X mm (ie. if we are certain about ALL markers,</span>
+0445                 <span class="comment">%there is nothing to optimize for).</span>
+0446                 <span class="comment">%TODO: based on training data, estimate a decent threshold</span>
+0447                 <span class="comment">%for the cost function of the reconstruction</span>
+0448                 wP = 1./dataPriors(:,k).^2;
+0449                 <span class="comment">%Don't trust any position TOO much, leads to bad numerical</span>
+0450                 <span class="comment">%properties</span>
+0451                 wP(wP &gt; 1) = 1;
+0452                 lastSol = naiveDistances.invertAndAnchor(this.statMean, <span class="keyword">...</span>
+0453                     data(:,:,k),wP,wD,lastSol,fastFlag);
+0454                 mleData(:,:,k) = lastSol;
+0455             <span class="keyword">end</span>
+0456             <span class="comment">%Validate result:</span>
+0457             <span class="comment">%             logLBefore=this.loglikelihood(data);</span>
+0458             <span class="comment">%             outlierBefore=this.outlierDetectFast(data);</span>
+0459             <span class="comment">%             logLAfter=this.loglikelihood(mleData);</span>
+0460             <span class="comment">%             outlierAfter=this.outlierDetectFast(mleData);</span>
+0461             <span class="comment">%             if any(outlierAfter &amp; ~outlierBefore) || ...</span>
+0462             <span class="comment">%    any((logLAfter&lt;logLBefore) &amp; (logLAfter&lt;-5))</span>
+0463             <span class="comment">%                 warning('Reconstruction made some things</span>
+0464             <span class="comment">%                 worse: this is not working.')</span>
+0465             <span class="comment">%             end</span>
+0466             <span class="comment">%             if any(outlierAfter)</span>
+0467             <span class="comment">%                 warning('Reconstruction did not remove all</span>
+0468             <span class="comment">%                 outliers: try reducing confidence in original</span>
+0469             <span class="comment">%                 measurements')</span>
+0470             <span class="comment">%             end</span>
+0471         <span class="keyword">end</span>
+0472     <span class="keyword">end</span>
+0473     methods(Hidden)
+0474         <span class="comment">% function [model,permutationList,nBad]=tryPermutations(model, ...</span>
+0475         <span class="comment">%    listToPermute)</span>
+0476         <span class="comment">%     %TODO: test this agains markerModel.tryPermutations() and see</span>
+0477         <span class="comment">%     %which one performs best &amp; fastest. If not this one,</span>
+0478         <span class="comment">%     deprecate.</span>
+0479         <span class="comment">%</span>
+0480         <span class="comment">%     %Overload!</span>
+0481         <span class="comment">%     permutationList=zeros(0,2);</span>
+0482         <span class="comment">%     %Benchmark to compare:</span>
+0483         <span class="comment">%     [~,mirrorOutliers,outOfBoundsOutlier] = ...</span>
+0484         <span class="comment">%    validateMarkerModel(model,false);</span>
+0485         <span class="comment">%     nBad=sum(mirrorOutliers | outOfBoundsOutlier);</span>
+0486         <span class="comment">%</span>
+0487         <span class="comment">%     while nBad&gt;0</span>
+0488         <span class="comment">%         %Permutations to consider:</span>
+0489         <span class="comment">%         listOfPermutations=nchoosek(listToPermute,2);</span>
+0490         <span class="comment">%         N=size(listOfPermutations,1);</span>
+0491         <span class="comment">%         count=0;</span>
+0492         <span class="comment">%         while count&lt;N</span>
+0493         <span class="comment">%            count=count+1;</span>
+0494         <span class="comment">%            modelAux=applyPermutation(model, ...</span>
+0495         <span class="comment">%    listOfPermutations(count,:)); %Permute</span>
+0496         <span class="comment">%            [~,newMO,newOBO] = validateMarkerModel(modelAux,false);</span>
+0497         <span class="comment">%            newNB=sum(newMO | newOBO);</span>
+0498         <span class="comment">%            if newNB&lt;nBad %Found permutation that improves things</span>
+0499         <span class="comment">%                break</span>
+0500         <span class="comment">%            end</span>
+0501         <span class="comment">%         end</span>
+0502         <span class="comment">%         if newNB&gt;=nBad %Checking if while exited without making</span>
+0503         <span class="comment">%         any improvements</span>
+0504         <span class="comment">%             return</span>
+0505         <span class="comment">%         else %Improvement was made!</span>
+0506         <span class="comment">%             %New benchmark:</span>
+0507         <span class="comment">%             model=modelAux;</span>
+0508         <span class="comment">%             [~,mirrorOutliers,outOfBoundsOutlier] = ...</span>
+0509         <span class="comment">%    validateMarkerModel(model,false);</span>
+0510         <span class="comment">%             nBad=sum(mirrorOutliers | outOfBoundsOutlier);</span>
+0511         <span class="comment">%             permutationList=[permutationList; ...</span>
+0512         <span class="comment">%    listOfPermutations(count,:)]; %Adding permutation to list</span>
+0513         <span class="comment">%         end</span>
+0514         <span class="comment">%     end</span>
+0515         <span class="comment">% end</span>
+0516         <a name="_sub8" href="#_subfunctions" class="code">function dataFrame = invertAndAnchor(ss,anchorFrame, </a><span class="keyword">...</span>
+0517             anchorWeights,distanceWeights,initGuess,fastFlag)
+0518             <span class="comment">%INVERTANDANCHOR Positions from distances and anchors.</span>
+0519             <span class="comment">%</span>
+0520             <span class="comment">%   dataFrame = INVERTANDANCHOR(ss,anchorFrame,anchorWeights,</span>
+0521             <span class="comment">% distanceWeights,initGuess,fastFlag) finds positions whose</span>
+0522             <span class="comment">% pairwise distances match the statistics ss, weighted by</span>
+0523             <span class="comment">% anchorWeights toward anchorFrame, using</span>
+0524             <span class="comment">% getPositionFromDistances_v3 (not in the repository). With</span>
+0525             <span class="comment">% fastFlag, markers that are certain (weight at least 0.5, NaN</span>
+0526             <span class="comment">% or Inf) are kept as known positions and only the others are</span>
+0527             <span class="comment">% optimized.</span>
+0528             <span class="comment">%</span>
+0529             <span class="comment">% TODO: optimize one marker at a time (slower but better</span>
+0530             <span class="comment">% conditioned) and check that no outlier marker remains in the</span>
+0531             <span class="comment">% result.</span>
+0532             <span class="comment">%</span>
+0533             <span class="comment">% Inputs:</span>
+0534             <span class="comment">%   ss              - pairwise distance statistics (P x 1)</span>
+0535             <span class="comment">%   anchorFrame     - markers x 3 measured positions</span>
+0536             <span class="comment">%   anchorWeights   - markers x 1 weights of the measured</span>
+0537             <span class="comment">%                     positions</span>
+0538             <span class="comment">%   distanceWeights - weights of the distances (P x 1)</span>
+0539             <span class="comment">%   initGuess       - initial positions, or empty</span>
+0540             <span class="comment">%   fastFlag        - (optional) optimize only uncertain markers</span>
+0541             <span class="comment">%                     (default: false)</span>
+0542             <span class="comment">%</span>
+0543             <span class="comment">% Outputs:</span>
+0544             <span class="comment">%   dataFrame - markers x 3 positions</span>
+0545             <span class="comment">%</span>
+0546             <span class="comment">% Toolbox Dependencies: None</span>
+0547 
+0548             knownDistances  = naiveDistances.stat2DistMatrix(ss);
+0549             distanceWeights = <span class="keyword">...</span>
+0550                 naiveDistances.stat2DistMatrix(distanceWeights);
+0551             <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fastFlag)
+0552                 fastFlag = false;
+0553             <span class="keyword">end</span>
+0554             <span class="keyword">if</span> ~fastFlag
+0555                 dataFrame = getPositionFromDistances_v3(anchorFrame, <span class="keyword">...</span>
+0556                     knownDistances,anchorWeights,distanceWeights,initGuess);
+0557             <span class="keyword">else</span>
+0558                 <span class="comment">%Option 1:</span>
+0559                 <span class="comment">%knownDistances=stat2DistMatrix(ss);</span>
+0560                 <span class="comment">%[dataFrame] = getPositionFromDistances_v2(anchorFrame, ...</span>
+0561                 <span class="comment">%    knownDistances,anchorWeights,anchorFrame);</span>
+0562                 <span class="comment">%Option 2:</span>
+0563                 <span class="comment">%Divide markers in certain and uncertain. Certain markers</span>
+0564                 <span class="comment">%are</span>
+0565                 <span class="comment">%offered as knownPositions and NOT optimized for.</span>
+0566                 <span class="comment">%Uncertain markers are optimized for, and have no known</span>
+0567                 <span class="comment">%positions</span>
+0568                 dataFrame    = anchorFrame;
+0569                 <span class="comment">%Arbitrary threshold</span>
+0570                 fixedMarkers = anchorWeights &gt;= 0.5 | <span class="keyword">...</span>
+0571                     isnan(anchorWeights) | anchorWeights == Inf;
+0572                 <span class="keyword">if</span> any(~fixedMarkers)
+0573                     anchorFrame     = anchorFrame(fixedMarkers,:);
+0574                     knownDistances  = <span class="keyword">...</span>
+0575                         knownDistances(fixedMarkers,~fixedMarkers);
+0576                     distanceWeights = <span class="keyword">...</span>
+0577                         distanceWeights(fixedMarkers,~fixedMarkers);
+0578                     anchorWeights   = anchorWeights(~fixedMarkers);
+0579                     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(initGuess)
+0580                         initGuess = initGuess(~fixedMarkers,:);
+0581                     <span class="keyword">end</span>
+0582                     <span class="comment">%TODO:</span>
+0583                     <span class="comment">%Do the optimization one marker at a time. May be</span>
+0584                     <span class="comment">%slower, but better conditioned.</span>
+0585                     <span class="comment">%After optimizing: check that the result is decent (no</span>
+0586                     <span class="comment">%outlier markers remain)</span>
+0587                     aux = getPositionFromDistances_v3(anchorFrame, <span class="keyword">...</span>
+0588                         knownDistances,zeros(size(anchorWeights)), <span class="keyword">...</span>
+0589                         distanceWeights,initGuess);
+0590                     dataFrame(~fixedMarkers,:) = aux;
+0591                 <span class="keyword">end</span>
+0592             <span class="keyword">end</span>
+0593         <span class="keyword">end</span>
+0594     <span class="keyword">end</span>
+0595     methods(Static)
+0596         <span class="comment">%Implementing superclass required methods:</span>
+0597         <a name="_sub9" href="#_subfunctions" class="code">function [ss,g] = summaryStats(data)</a>
+0598             <span class="comment">%SUMMARYSTATS Pairwise distances between markers as statistics.</span>
+0599             <span class="comment">%</span>
+0600             <span class="comment">%   [ss,g] = SUMMARYSTATS(data) returns the upper triangle of</span>
+0601             <span class="comment">% the distance matrix of every frame.</span>
+0602             <span class="comment">%</span>
+0603             <span class="comment">% Inputs:</span>
+0604             <span class="comment">%   data - markers x 3 x frames positions</span>
+0605             <span class="comment">%</span>
+0606             <span class="comment">% Outputs:</span>
+0607             <span class="comment">%   ss - P x frames distances, P = M*(M-1)/2</span>
+0608             <span class="comment">%   g  - not assigned (gradient not implemented)</span>
+0609             <span class="comment">%</span>
+0610             <span class="comment">% Toolbox Dependencies: None</span>
+0611             <span class="comment">%</span>
+0612             <span class="comment">% See also DISTMATRIX2STAT.</span>
+0613 
+0614             D  = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(data);
+0615             ss = naiveDistances.distMatrix2stat(D);
+0616             <span class="keyword">if</span> nargout &gt; 2
+0617                 g = []; <span class="comment">%TODO</span>
+0618             <span class="keyword">end</span>
+0619         <span class="keyword">end</span>
+0620         <a name="_sub10" href="#_subfunctions" class="code">function this = learn(data,labels,noDisp)</a>
+0621             <span class="comment">%LEARN Train a model and show it.</span>
+0622             <span class="comment">%</span>
+0623             <span class="comment">%   this = LEARN(data,labels,noDisp) trains a naiveDistances</span>
+0624             <span class="comment">% model and, unless noDisp is true, plots it with seeModel.</span>
+0625             <span class="comment">%</span>
+0626             <span class="comment">% Inputs:</span>
+0627             <span class="comment">%   data   - markers x 3 x frames training positions</span>
+0628             <span class="comment">%   labels - (optional) marker labels (default: {})</span>
+0629             <span class="comment">%   noDisp - (optional) true to skip the plot (default: false)</span>
+0630             <span class="comment">%</span>
+0631             <span class="comment">% Outputs:</span>
+0632             <span class="comment">%   this - trained naiveDistances object</span>
+0633             <span class="comment">%</span>
+0634             <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0635             <span class="comment">%   (prctile)</span>
+0636 
+0637             <span class="keyword">if</span> nargin &lt; 2
+0638                 labels = {};
+0639             <span class="keyword">end</span>
+0640             this = <a href="naiveDistances.html" class="code" title="">naiveDistances</a>(data,labels);
+0641             <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(noDisp) || ~noDisp
+0642                 this.seeModel()
+0643             <span class="keyword">end</span>
+0644 
+0645         <span class="keyword">end</span>
+0646         <a name="_sub11" href="#_subfunctions" class="code">function [D,xl,yl] = stat2Matrix(ss)</a>
+0647             <span class="comment">%STAT2MATRIX Statistics as an upper-triangular matrix.</span>
+0648             <span class="comment">%</span>
+0649             <span class="comment">%   [D,xl,yl] = STAT2MATRIX(ss) returns the statistics as a</span>
+0650             <span class="comment">% matrix indexed by markers; the axis labels are the string</span>
+0651             <span class="comment">% 'markerLabels', meaning the model marker labels.</span>
+0652             <span class="comment">%</span>
+0653             <span class="comment">% Inputs:</span>
+0654             <span class="comment">%   ss - P x 1 statistics</span>
+0655             <span class="comment">%</span>
+0656             <span class="comment">% Outputs:</span>
+0657             <span class="comment">%   D  - M x M upper-triangular matrix</span>
+0658             <span class="comment">%   xl - 'markerLabels'</span>
+0659             <span class="comment">%   yl - 'markerLabels'</span>
+0660             <span class="comment">%</span>
+0661             <span class="comment">% Toolbox Dependencies: None</span>
+0662 
+0663             D  = triu(naiveDistances.stat2DistMatrix(ss));
+0664             xl = <span class="string">'markerLabels'</span>;
+0665             yl = <span class="string">'markerLabels'</span>;
+0666         <span class="keyword">end</span>
+0667         <a name="_sub12" href="#_subfunctions" class="code">function [model,meanLB,meanUB,stdLB,stdUB,A,b] = getRefData()</a>
+0668             <span class="comment">%GETREFDATA Reference model and distance bounds.</span>
+0669             <span class="comment">%</span>
+0670             <span class="comment">%   [model,meanLB,meanUB,stdLB,stdUB,A,b] = GETREFDATA() loads</span>
+0671             <span class="comment">% the reference bounds from</span>
+0672             <span class="comment">% ../data/distanceModelReferenceData.mat (not in the repository;</span>
+0673             <span class="comment">% relative to the current folder). The standard deviation bounds</span>
+0674             <span class="comment">% are 0 and Inf and there are no inequality constraints.</span>
+0675             <span class="comment">%</span>
+0676             <span class="comment">% Outputs:</span>
+0677             <span class="comment">%   model  - reference model</span>
+0678             <span class="comment">%   meanLB - lower bounds of the mean distances</span>
+0679             <span class="comment">%   meanUB - upper bounds of the mean distances</span>
+0680             <span class="comment">%   stdLB  - lower bounds of the standard deviations (zeros)</span>
+0681             <span class="comment">%   stdUB  - upper bounds of the standard deviations (Inf)</span>
+0682             <span class="comment">%   A      - inequality constraint matrix (empty)</span>
+0683             <span class="comment">%   b      - inequality constraint vector (empty)</span>
+0684             <span class="comment">%</span>
+0685             <span class="comment">% Toolbox Dependencies: None</span>
+0686 
+0687             [model,lowerBound,upperBound] = <span class="keyword">...</span>
+0688                 load(<span class="string">'../data/distanceModelReferenceData.mat'</span>);
+0689             meanLB = naiveDistances.distMatrix2stat(lowerBound);
+0690             meanUB = naiveDistances.distMatrix2stat(upperBound);
+0691             stdLB  = zeros(size(meanLB));
+0692             stdUB  = Inf*ones(size(meanLB));
+0693             A      = zeros(0,size(meanLB,2));
+0694             b      = zeros(0,1);
+0695         <span class="keyword">end</span>
+0696 
+0697         <span class="comment">%Subclass-specific functions:</span>
+0698         <a name="_sub13" href="#_subfunctions" class="code">function D = stat2DistMatrix(ss)</a>
+0699             <span class="comment">%STAT2DISTMATRIX Statistics to symmetric distance matrices.</span>
+0700             <span class="comment">%</span>
+0701             <span class="comment">%   D = STAT2DISTMATRIX(ss) places the statistics in the upper</span>
+0702             <span class="comment">% triangle and mirrors them to the lower triangle; the diagonal</span>
+0703             <span class="comment">% is 0.</span>
+0704             <span class="comment">%</span>
+0705             <span class="comment">% Inputs:</span>
+0706             <span class="comment">%   ss - M*(M-1)/2 x N statistics</span>
+0707             <span class="comment">%</span>
+0708             <span class="comment">% Outputs:</span>
+0709             <span class="comment">%   D - M x M x N symmetric distance matrices</span>
+0710             <span class="comment">%</span>
+0711             <span class="comment">% Toolbox Dependencies: None</span>
+0712             <span class="comment">%</span>
+0713             <span class="comment">% See also DISTMATRIX2STAT.</span>
+0714 
+0715             M   = ceil(sqrt(2*size(ss,1)));
+0716             N   = size(ss,2);
+0717             ind = triu(true(M),1);
+0718             D   = zeros(M^2,N);
+0719             D(ind,:) = ss;
+0720             D = reshape(D,M,M,N);
+0721             D = D+permute(D,[2,1,3]);
+0722         <span class="keyword">end</span>
+0723         <a name="_sub14" href="#_subfunctions" class="code">function ss = distMatrix2stat(D)</a>
+0724             <span class="comment">%DISTMATRIX2STAT Distance matrices to statistics.</span>
+0725             <span class="comment">%</span>
+0726             <span class="comment">%   ss = DISTMATRIX2STAT(D) keeps the upper triangle (without</span>
+0727             <span class="comment">% the diagonal) of each distance matrix.</span>
+0728             <span class="comment">%</span>
+0729             <span class="comment">% Inputs:</span>
+0730             <span class="comment">%   D - M x M or M x M x N distance matrices</span>
+0731             <span class="comment">%</span>
+0732             <span class="comment">% Outputs:</span>
+0733             <span class="comment">%   ss - M*(M-1)/2 x N statistics</span>
+0734             <span class="comment">%</span>
+0735             <span class="comment">% Toolbox Dependencies: None</span>
+0736             <span class="comment">%</span>
+0737             <span class="comment">% See also STAT2DISTMATRIX.</span>
+0738 
+0739             M   = size(D,1);
+0740             N   = size(D,3);
+0741             ss  = reshape(D,M^2,N);
+0742             ind = triu(true(M),1);
+0743             <span class="comment">%Keeping only upper half: PxN, with P=M*(M-1)/2</span>
+0744             ss  = ss(ind(:),:);
+0745         <span class="keyword">end</span>
+0746     <span class="keyword">end</span>
+0747 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

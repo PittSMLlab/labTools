@@ -4,7 +4,7 @@
 <head>
   <title>Description of exampleFactorizedMatrix</title>
   <meta name="keywords" content="exampleFactorizedMatrix">
-  <meta name="description" content="Test of FactorizedMatrix class">
+  <meta name="description" content="EXAMPLEFACTORIZEDMATRIX Example usage of the FactorizedMatrix class.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,20 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Test of FactorizedMatrix class</strong></div>
+<div class="box"><strong>EXAMPLEFACTORIZEDMATRIX Example usage of the FactorizedMatrix class.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Test of FactorizedMatrix class</pre></div>
+<div class="fragment"><pre class="comment">EXAMPLEFACTORIZEDMATRIX Example usage of the FactorizedMatrix class.
+
+   Builds FactorizedMatrix objects from 2-D and N-D matrices (nnmf factors
+ and FactorizedMatrix.factorize).
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also FACTORIZEDMATRIX.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -42,69 +49,81 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%Test of FactorizedMatrix class</span>
-0002 clearvars
-0003 
-0004 <span class="comment">%% Example 1: normal 2D matrix</span>
-0005 original=abs(randn(100,5));
-0006 [dim1vectors,dim2vectors]=nnmf(original,3);
-0007 factMethod=<span class="string">'NNMF'</span>;
-0008 name=<span class="string">'TestFactMatrix1'</span>;
-0009 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors,dim2vectors,factMethod,name) <span class="comment">%Last two are optional</span>
-0010 origDim=this.originalDimension
-0011 matSize=this.matrixSize
-0012 redDim=this.reducedDimension
-0013 factMat=this.factorizedMatrix;
-0014 errorMat=this.errorMatrix;
-0015 errNorm=this.errorNorm(<span class="string">'fro'</span>)
-0016 percErr=this.percentError(<span class="string">'fro'</span>)
-0017 errPerCol=this.errorNormPerColumn(2);
-0018 errPerRow=this.errorNormPerRow(2);
-0019 percErrC=this.percentErrorPerColumn(2);
-0020 percErrR=this.percentErrorPerRow(2);
-0021 newThis=this.transpose
-0022 
-0023 
-0024 <span class="comment">%% Example 2: 3D matrix</span>
-0025 original=abs(randn(9,256,2));
-0026 k=5;
-0027 [dim1vectors,dim2vectors]=nnmf(original(:,:),k);
-0028 factMethod=<span class="string">'NNMF'</span>;
-0029 name=<span class="string">'TestFactMatrix2'</span>;
-0030 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors,reshape(dim2vectors,[k,size(original,2),size(original,3)]),factMethod,name) <span class="comment">%Last two are optional</span>
-0031 origDim=this.originalDimension
-0032 matSize=this.matrixSize
-0033 redDim=this.reducedDimension
-0034 factMat=this.factorizedMatrix;
-0035 errorMat=this.errorMatrix;
-0036 errNorm=this.errorNorm(<span class="string">'fro'</span>)
-0037 percErr=this.percentError(<span class="string">'fro'</span>)
-0038 errPerCol=this.errorNormPerColumn(2);
-0039 errPerRow=this.errorNormPerRow(2);
-0040 percErrC=this.percentErrorPerColumn(2);
-0041 percErrR=this.percentErrorPerRow(2);
-0042 newThis=this.transpose <span class="comment">%Should throw warning</span>
-0043 
-0044 <span class="comment">%% Example 3: 5D matrix</span>
-0045 
-0046 original=abs(randn(10,8,9,256,2));
-0047 factMethod=<span class="string">'Fake'</span>;
-0048 name=<span class="string">'TestFactMatrix3'</span>;
-0049 this=<a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,abs(randn(5,10,8,9)),abs(randn(5,256,2)),factMethod,name) <span class="comment">%Last two are optional</span>
-0050 <span class="comment">%Alt:</span>
-0051 this=FactorizedMatrix.factorize(original,3,<span class="string">'nnmf'</span>,5)
-0052 origDim=this.originalDimension
-0053 matSize=this.matrixSize
-0054 redDim=this.reducedDimension
-0055 factMat=this.factorizedMatrix;
-0056 errorMat=this.errorMatrix;
-0057 errNorm=this.errorNorm(<span class="string">'fro'</span>)
-0058 percErr=this.percentError(<span class="string">'fro'</span>)
-0059 errPerCol=this.errorNormPerColumn(2);
-0060 errPerRow=this.errorNormPerRow(2);
-0061 percErrC=this.percentErrorPerColumn(2);
-0062 percErrR=this.percentErrorPerRow(2);
-0063 newThis=this.transpose <span class="comment">%Should throw waringn</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%EXAMPLEFACTORIZEDMATRIX Example usage of the FactorizedMatrix class.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Builds FactorizedMatrix objects from 2-D and N-D matrices (nnmf factors</span>
+0004 <span class="comment">% and FactorizedMatrix.factorize).</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% See also FACTORIZEDMATRIX.</span>
+0009 
+0010 clearvars
+0011 
+0012 <span class="comment">%% Example 1: normal 2D matrix</span>
+0013 original = abs(randn(100,5));
+0014 [dim1vectors,dim2vectors] = nnmf(original,3);
+0015 factMethod = <span class="string">'NNMF'</span>;
+0016 name       = <span class="string">'TestFactMatrix1'</span>;
+0017 this = <a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors,dim2vectors, <span class="keyword">...</span>
+0018     factMethod,name) <span class="comment">%Last two are optional</span>
+0019 origDim   = this.originalDimension
+0020 matSize   = this.matrixSize
+0021 redDim    = this.reducedDimension
+0022 factMat   = this.factorizedMatrix;
+0023 errorMat  = this.errorMatrix;
+0024 errNorm   = this.errorNorm(<span class="string">'fro'</span>)
+0025 percErr   = this.percentError(<span class="string">'fro'</span>)
+0026 errPerCol = this.errorNormPerColumn(2);
+0027 errPerRow = this.errorNormPerRow(2);
+0028 percErrC  = this.percentErrorPerColumn(2);
+0029 percErrR  = this.percentErrorPerRow(2);
+0030 newThis   = this.transpose
+0031 
+0032 
+0033 <span class="comment">%% Example 2: 3D matrix</span>
+0034 original = abs(randn(9,256,2));
+0035 k        = 5;
+0036 [dim1vectors,dim2vectors] = nnmf(original(:,:),k);
+0037 factMethod = <span class="string">'NNMF'</span>;
+0038 name       = <span class="string">'TestFactMatrix2'</span>;
+0039 this = <a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,dim1vectors, <span class="keyword">...</span>
+0040     reshape(dim2vectors,[k,size(original,2),size(original,3)]), <span class="keyword">...</span>
+0041     factMethod,name) <span class="comment">%Last two are optional</span>
+0042 origDim   = this.originalDimension
+0043 matSize   = this.matrixSize
+0044 redDim    = this.reducedDimension
+0045 factMat   = this.factorizedMatrix;
+0046 errorMat  = this.errorMatrix;
+0047 errNorm   = this.errorNorm(<span class="string">'fro'</span>)
+0048 percErr   = this.percentError(<span class="string">'fro'</span>)
+0049 errPerCol = this.errorNormPerColumn(2);
+0050 errPerRow = this.errorNormPerRow(2);
+0051 percErrC  = this.percentErrorPerColumn(2);
+0052 percErrR  = this.percentErrorPerRow(2);
+0053 newThis   = this.transpose <span class="comment">%Should throw warning</span>
+0054 
+0055 <span class="comment">%% Example 3: 5D matrix</span>
+0056 
+0057 original   = abs(randn(10,8,9,256,2));
+0058 factMethod = <span class="string">'Fake'</span>;
+0059 name       = <span class="string">'TestFactMatrix3'</span>;
+0060 this = <a href="../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(original,abs(randn(5,10,8,9)), <span class="keyword">...</span>
+0061     abs(randn(5,256,2)),factMethod,name) <span class="comment">%Last two are optional</span>
+0062 <span class="comment">%Alt:</span>
+0063 this      = FactorizedMatrix.factorize(original,3,<span class="string">'nnmf'</span>,5)
+0064 origDim   = this.originalDimension
+0065 matSize   = this.matrixSize
+0066 redDim    = this.reducedDimension
+0067 factMat   = this.factorizedMatrix;
+0068 errorMat  = this.errorMatrix;
+0069 errNorm   = this.errorNorm(<span class="string">'fro'</span>)
+0070 percErr   = this.percentError(<span class="string">'fro'</span>)
+0071 errPerCol = this.errorNormPerColumn(2);
+0072 errPerRow = this.errorNormPerRow(2);
+0073 percErrC  = this.percentErrorPerColumn(2);
+0074 percErrR  = this.percentErrorPerRow(2);
+0075 newThis   = this.transpose <span class="comment">%Should throw waringn</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

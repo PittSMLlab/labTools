@@ -4,7 +4,7 @@
 <head>
   <title>Description of getRefLeg</title>
   <meta name="keywords" content="getRefLeg">
-  <meta name="description" content="getRefLeg  Returns reference leg for parameter computations">
+  <meta name="description" content="GETREFLEG Returns reference leg for parameter computations">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,30 +21,32 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getRefLeg  Returns reference leg for parameter computations</strong></div>
+<div class="box"><strong>GETREFLEG Returns reference leg for parameter computations</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function refLeg = getRefLeg(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getRefLeg  Returns reference leg for parameter computations
+<div class="fragment"><pre class="comment">GETREFLEG Returns reference leg for parameter computations
 
    refLeg = getRefLeg(this) determines the reference leg by majority vote
-   over all trials in the experiment
+ over all trials in the experiment
 
-   Inputs:
-       this - experimentData object
+ Inputs:
+   this - experimentData object
 
-   Outputs:
-       refLeg - 'R' or 'L'
+ Outputs:
+   refLeg - 'R' or 'L'
 
-   See also: <a href="getNonRefLeg.html" class="code" title="function fL = getNonRefLeg(this)">getNonRefLeg</a>, <a href="getSlowLeg.html" class="code" title="function slowLeg = getSlowLeg(this)">getSlowLeg</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getNonRefLeg.html" class="code" title="function fL = getNonRefLeg(this)">GETNONREFLEG</a>, <a href="getSlowLeg.html" class="code" title="function slowLeg = getSlowLeg(this)">GETSLOWLEG</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
@@ -54,37 +56,39 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function refLeg = getRefLeg(this)</a>
-0002 <span class="comment">%getRefLeg  Returns reference leg for parameter computations</span>
+0002 <span class="comment">%GETREFLEG Returns reference leg for parameter computations</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   refLeg = getRefLeg(this) determines the reference leg by majority vote</span>
-0005 <span class="comment">%   over all trials in the experiment</span>
+0005 <span class="comment">% over all trials in the experiment</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - experimentData object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - experimentData object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       refLeg - 'R' or 'L'</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   refLeg - 'R' or 'L'</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: getNonRefLeg, getSlowLeg</span>
-0014 
-0015 refLeg = {};
-0016 <span class="keyword">for</span> i = 1:length(this.data) <span class="comment">% Going over trials</span>
-0017     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{i})
-0018         refLeg{i} = this.data{i}.metaData.refLeg;
-0019     <span class="keyword">end</span>
-0020 <span class="keyword">end</span>
-0021 Rvotes = sum(strcmp(refLeg, <span class="string">'R'</span>));
-0022 Lvotes = sum(strcmp(refLeg, <span class="string">'L'</span>));
-0023 <span class="keyword">if</span> Rvotes &gt; Lvotes
-0024     refLeg = <span class="string">'R'</span>;
-0025 <span class="keyword">elseif</span> Rvotes &lt; Lvotes
-0026     refLeg = <span class="string">'L'</span>;
-0027 <span class="keyword">else</span>
-0028     error(<span class="string">'experimentData:getRefLeg'</span>, <span class="keyword">...</span>
-0029         <span class="string">'Could not determine unique reference leg'</span>);
-0030 <span class="keyword">end</span>
-0031 <span class="keyword">end</span>
-0032</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also GETNONREFLEG, GETSLOWLEG.</span>
+0016 
+0017 refLeg = {};
+0018 <span class="keyword">for</span> ii = 1:length(this.data) <span class="comment">% Going over trials</span>
+0019     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.data{ii})
+0020         refLeg{ii} = this.data{ii}.metaData.refLeg;
+0021     <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 Rvotes = sum(strcmp(refLeg, <span class="string">'R'</span>));
+0024 Lvotes = sum(strcmp(refLeg, <span class="string">'L'</span>));
+0025 <span class="keyword">if</span> Rvotes &gt; Lvotes
+0026     refLeg = <span class="string">'R'</span>;
+0027 <span class="keyword">elseif</span> Rvotes &lt; Lvotes
+0028     refLeg = <span class="string">'L'</span>;
+0029 <span class="keyword">else</span>
+0030     error(<span class="string">'experimentData:getRefLeg'</span>, <span class="keyword">...</span>
+0031         <span class="string">'Could not determine unique reference leg'</span>);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

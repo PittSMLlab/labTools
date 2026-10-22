@@ -4,7 +4,7 @@
 <head>
   <title>Description of getLabelList</title>
   <meta name="keywords" content="getLabelList">
-  <meta name="description" content="getLabelList  Returns list of labels from specified field">
+  <meta name="description" content="GETLABELLIST Returns list of labels from specified field.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,26 +21,28 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getLabelList  Returns list of labels from specified field</strong></div>
+<div class="box"><strong>GETLABELLIST Returns list of labels from specified field.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function list = getLabelList(this, fieldName) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getLabelList  Returns list of labels from specified field
+<div class="fragment"><pre class="comment">GETLABELLIST Returns list of labels from specified field.
 
    list = getLabelList(this, fieldName) returns the labels property from
-   the specified field
+ the specified field
 
-   Inputs:
-       this - labData object
-       fieldName - name of property to access (e.g., 'markerData', ...
-                   'EMGData')
+ Inputs:
+   this      - labData object
+   fieldName - name of property to access (e.g., 'markerData', ...
+               'EMGData')
 
-   Outputs:
-       list - cell array of label strings
+ Outputs:
+   list - cell array of label strings
 
-   See also: <a href="getPartialData.html" class="code" title="function partialData = getPartialData(this, fieldName, labels)">getPartialData</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getPartialData.html" class="code" title="function partialData = getPartialData(this, fieldName, labels)">GETPARTIALDATA</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -56,24 +58,26 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function list = getLabelList(this, fieldName)</a>
-0002 <span class="comment">%getLabelList  Returns list of labels from specified field</span>
+0002 <span class="comment">%GETLABELLIST Returns list of labels from specified field.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   list = getLabelList(this, fieldName) returns the labels property from</span>
-0005 <span class="comment">%   the specified field</span>
+0005 <span class="comment">% the specified field</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labData object</span>
-0009 <span class="comment">%       fieldName - name of property to access (e.g., 'markerData', ...</span>
-0010 <span class="comment">%                   'EMGData')</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this      - labData object</span>
+0009 <span class="comment">%   fieldName - name of property to access (e.g., 'markerData', ...</span>
+0010 <span class="comment">%               'EMGData')</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   Outputs:</span>
-0013 <span class="comment">%       list - cell array of label strings</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   list - cell array of label strings</span>
 0014 <span class="comment">%</span>
-0015 <span class="comment">%   See also: getPartialData</span>
-0016 
-0017 list = this.(fieldName).labels;
-0018 <span class="keyword">end</span>
-0019</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0015 <span class="comment">% Toolbox Dependencies: None</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% See also GETPARTIALDATA.</span>
+0018 
+0019 list = this.(fieldName).labels;
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

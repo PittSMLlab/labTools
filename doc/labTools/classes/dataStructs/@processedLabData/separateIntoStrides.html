@@ -4,7 +4,7 @@
 <head>
   <title>Description of separateIntoStrides</title>
   <meta name="keywords" content="separateIntoStrides">
-  <meta name="description" content="separateIntoStrides  Splits data into individual stride segments">
+  <meta name="description" content="SEPARATEINTOSTRIDES Splits data into individual stride segments">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,35 +21,37 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>separateIntoStrides  Splits data into individual stride segments</strong></div>
+<div class="box"><strong>SEPARATEINTOSTRIDES Splits data into individual stride segments</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [steppedDataArray, initTime, endTime] =separateIntoStrides(this, triggerEvent) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">separateIntoStrides  Splits data into individual stride segments
+<div class="fragment"><pre class="comment">SEPARATEINTOSTRIDES Splits data into individual stride segments
 
    [steppedDataArray, initTime, endTime] = separateIntoStrides(this,
-   triggerEvent) splits the data into single stride segments based on the
-   specified trigger event
+ triggerEvent) splits the data into single stride segments based on the
+ specified trigger event
 
-   Inputs:
-       this - processedLabData object
-       triggerEvent - event label to use for stride boundaries
-                      (e.g., 'RHS', 'LHS')
+ Inputs:
+   this         - processedLabData object
+   triggerEvent - event label to use for stride boundaries (e.g., 'RHS',
+                  'LHS')
 
-   Outputs:
-       steppedDataArray - cell array of strideData objects
-       initTime - vector of stride start times
-       endTime - vector of stride end times
+ Outputs:
+   steppedDataArray - cell array of strideData objects
+   initTime         - vector of stride start times
+   endTime          - vector of stride end times
 
-   See also: <a href="separateIntoSuperStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoSuperStrides(this, triggerEvent)">separateIntoSuperStrides</a>, <a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="separateIntoSuperStrides.html" class="code" title="function [steppedDataArray, initTime, endTime] =separateIntoSuperStrides(this, triggerEvent)">SEPARATEINTOSUPERSTRIDES</a>, <a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">GETSTRIDEINFO</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@experimentData/getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	getStrideInfo  Returns stride timing information</li><li><a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	getStrideInfo  Returns stride count and timing information</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@experimentData/getStrideInfo.html" class="code" title="function [numStrides, trials, initTimes, endTimes] =getStrideInfo(this, eventClass)">getStrideInfo</a>	GETSTRIDEINFO Returns stride timing information</li><li><a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>	GETSTRIDEINFO Returns stride count and timing information</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
@@ -60,33 +62,35 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [steppedDataArray, initTime, endTime] = </a><span class="keyword">...</span>
 0002     separateIntoStrides(this, triggerEvent)
-0003 <span class="comment">%separateIntoStrides  Splits data into individual stride segments</span>
+0003 <span class="comment">%SEPARATEINTOSTRIDES Splits data into individual stride segments</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   [steppedDataArray, initTime, endTime] = separateIntoStrides(this,</span>
-0006 <span class="comment">%   triggerEvent) splits the data into single stride segments based on the</span>
-0007 <span class="comment">%   specified trigger event</span>
+0006 <span class="comment">% triggerEvent) splits the data into single stride segments based on the</span>
+0007 <span class="comment">% specified trigger event</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - processedLabData object</span>
-0011 <span class="comment">%       triggerEvent - event label to use for stride boundaries</span>
-0012 <span class="comment">%                      (e.g., 'RHS', 'LHS')</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this         - processedLabData object</span>
+0011 <span class="comment">%   triggerEvent - event label to use for stride boundaries (e.g., 'RHS',</span>
+0012 <span class="comment">%                  'LHS')</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   Outputs:</span>
-0015 <span class="comment">%       steppedDataArray - cell array of strideData objects</span>
-0016 <span class="comment">%       initTime - vector of stride start times</span>
-0017 <span class="comment">%       endTime - vector of stride end times</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   steppedDataArray - cell array of strideData objects</span>
+0016 <span class="comment">%   initTime         - vector of stride start times</span>
+0017 <span class="comment">%   endTime          - vector of stride end times</span>
 0018 <span class="comment">%</span>
-0019 <span class="comment">%   See also: separateIntoSuperStrides, getStrideInfo</span>
-0020 
-0021 <span class="comment">% triggerEvent needs to be one of the valid gaitEvent labels</span>
-0022 [numStrides, initTime, endTime] = <a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>(this, triggerEvent);
-0023 steppedDataArray = {};
-0024 <span class="keyword">for</span> i = 1:numStrides
-0025     steppedDataArray{i} = <span class="keyword">...</span>
-0026         this.split(initTime(i), endTime(i), <span class="string">'strideData'</span>);
-0027 <span class="keyword">end</span>
-0028 <span class="keyword">end</span>
-0029</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also SEPARATEINTOSUPERSTRIDES, GETSTRIDEINFO.</span>
+0022 
+0023 <span class="comment">% triggerEvent needs to be one of the valid gaitEvent labels</span>
+0024 [numStrides, initTime, endTime] = <a href="getStrideInfo.html" class="code" title="function [numStrides, initTime, endTime] = getStrideInfo(this,triggerEvent, endEvent)">getStrideInfo</a>(this, triggerEvent);
+0025 steppedDataArray = {};
+0026 <span class="keyword">for</span> ii = 1:numStrides
+0027     steppedDataArray{ii} = <span class="keyword">...</span>
+0028         this.split(initTime(ii), endTime(ii), <span class="string">'strideData'</span>);
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

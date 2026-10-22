@@ -4,7 +4,7 @@
 <head>
   <title>Description of makeSMatrix</title>
   <meta name="keywords" content="makeSMatrix">
-  <meta name="description" content="">
+  <meta name="description" content="MAKESMATRIX Build a subject matrix struct from params.mat files in the">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,40 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>MAKESMATRIX Build a subject matrix struct from params.mat files in the</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function Subs = makeSMatrix </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">MAKESMATRIX Build a subject matrix struct from params.mat files in the
+ current folder.
+
+   Scans the current working directory for *params.mat files, loads
+ each adaptData variable, and organises subjects by group into a
+ hierarchical Subs struct. Warns when a subject's condition list
+ differs from the rest of the group.
+
+ Inputs:
+   None
+
+ Outputs:
+   Subs - Struct with one field per group (named by abbreviated group
+          string from adaptData.metaData.ID). Each group field has:
+            IDs        - N×9 cell array: subID, sex, age, height,
+                         weight, date, experimenter, obs, filename
+            conditions - cell array of condition names
+            (subID)    - adaptData struct for each subject
+
+ Toolbox Dependencies: None
+
+ See also <a href="makeSMatrixV2.html" class="code" title="function Subs = makeSMatrixV2">MAKESMATRIXV2</a>, <a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">GETRESULTSSMART</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -43,71 +64,98 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Subs = makeSMatrix</a>
-0002 
-0003 Subs=struct;
-0004 <span class="comment">%find all files in pwd</span>
-0005 files=what(<span class="string">'./'</span>); 
-0006 fileList=files.mat;
-0007 
-0008 
-0009 <span class="keyword">for</span> i=1:length(fileList)
-0010     <span class="comment">%find files in pwd that are (Subject)param.mat files</span>
-0011     aux1=strfind(lower(fileList{i}),<span class="string">'params'</span>);
-0012     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux1)
-0013         subID=fileList{i}(1:(aux1-1));
-0014         <span class="comment">%subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo</span>
-0015         load(fileList{i});        
-0016         subAge=adaptData.subData.age;
-0017         expDate=adaptData.metaData.date;
-0018         experimenter=adaptData.metaData.experimenter;
-0019         obs=adaptData.metaData.observations;
-0020         gender=adaptData.subData.sex;
-0021         ht=adaptData.subData.height;
-0022         wt=adaptData.subData.weight;
-0023         fileName=fileList{i};
-0024         <span class="comment">%get group</span>
-0025         group=adaptData.metaData.ID;
-0026         abrevGroup=group(ismember(group,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>])); <span class="comment">%remove non-alphabetic characters</span>
-0027         <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(abrevGroup)
-0028             abrevGroup=<span class="string">'NoDescription'</span>;
-0029             group = <span class="string">'(empty)'</span>;
-0030         <span class="keyword">end</span>
-0031 <span class="comment">%         spaces=find(group==' ');</span>
-0032 <span class="comment">%         abrevGroup=group(spaces+1);%</span>
-0033 <span class="comment">%         abrevGroup=[group(1) abrevGroup];</span>
-0034         <span class="comment">%get conditions</span>
-0035         conditions=adaptData.metaData.conditionName;
-0036         conditions=conditions(~cellfun(<span class="string">'isempty'</span>,conditions));
-0037         
-0038         <span class="keyword">if</span> isfield(Subs,abrevGroup)
-0039             Subs.(abrevGroup).IDs(end+1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};
-0040             Subs.(abrevGroup).(subID)=adaptData;
-0041             <span class="keyword">if</span> isfield(Subs.(abrevGroup),<span class="string">'conditions'</span>)
-0042                 <span class="comment">%check if current subject had conditions other than the rest</span>
-0043                 <span class="keyword">for</span> c=1:length(conditions)
-0044                     <span class="keyword">if</span> ~ismember(conditions(c),Subs.(abrevGroup).conditions)
-0045                         <span class="comment">%Subs.(abrevGroup).conditions{end+1}=conditions{c};</span>
-0046                         disp([<span class="string">'Warning: '</span> subID <span class="string">' performed '</span> conditions{c} <span class="string">', but it was not perfomred by all subjects in '</span> group <span class="string">'.'</span>])
-0047                     <span class="keyword">end</span>                    
-0048                 <span class="keyword">end</span>
-0049                 <span class="comment">%check if current subject didn't have a condition that the rest had</span>
-0050                 <span class="keyword">for</span> c=1:length(Subs.(abrevGroup).conditions)
-0051                     <span class="keyword">if</span> ~ismember(Subs.(abrevGroup).conditions(c),conditions) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Subs.(abrevGroup).conditions{c})                                          
-0052                         disp([<span class="string">'Warning: '</span> subID <span class="string">' did not perform '</span> Subs.(abrevGroup).conditions{c}, <span class="string">'.'</span>])
-0053                         Subs.(abrevGroup).conditions{c}=<span class="string">''</span>;
-0054                     <span class="keyword">end</span>                    
-0055                 <span class="keyword">end</span>
-0056                 <span class="comment">%refresh conditions by removing empty cells</span>
-0057                 Subs.(abrevGroup).conditions=Subs.(abrevGroup).conditions(~cellfun(<span class="string">'isempty'</span>,Subs.(abrevGroup).conditions));
-0058             <span class="keyword">end</span>
-0059         <span class="keyword">else</span>
-0060             Subs.(abrevGroup).IDs(1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};            
-0061             Subs.(abrevGroup).conditions=conditions;
-0062             Subs.(abrevGroup).(subID)=adaptData;            
-0063             
-0064         <span class="keyword">end</span>       
-0065     <span class="keyword">end</span>
-0066 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%MAKESMATRIX Build a subject matrix struct from params.mat files in the</span>
+0003 <span class="comment">% current folder.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Scans the current working directory for *params.mat files, loads</span>
+0006 <span class="comment">% each adaptData variable, and organises subjects by group into a</span>
+0007 <span class="comment">% hierarchical Subs struct. Warns when a subject's condition list</span>
+0008 <span class="comment">% differs from the rest of the group.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   None</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   Subs - Struct with one field per group (named by abbreviated group</span>
+0015 <span class="comment">%          string from adaptData.metaData.ID). Each group field has:</span>
+0016 <span class="comment">%            IDs        - N×9 cell array: subID, sex, age, height,</span>
+0017 <span class="comment">%                         weight, date, experimenter, obs, filename</span>
+0018 <span class="comment">%            conditions - cell array of condition names</span>
+0019 <span class="comment">%            (subID)    - adaptData struct for each subject</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also MAKESMATRIXV2, GETRESULTSSMART.</span>
+0024 
+0025 Subs  = struct;
+0026 files = what(<span class="string">'./'</span>);
+0027 fileList = files.mat;
+0028 
+0029 <span class="keyword">for</span> ii = 1:length(fileList)
+0030     aux1 = strfind(lower(fileList{ii}), <span class="string">'params'</span>);
+0031     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(aux1)
+0032         subID        = fileList{ii}(1:(aux1 - 1));
+0033         <span class="comment">% subID = adaptData.subData.ID;  % probably more appropriate</span>
+0034         load(fileList{ii});
+0035         subAge       = adaptData.subData.age;
+0036         expDate      = adaptData.metaData.date;
+0037         experimenter = adaptData.metaData.experimenter;
+0038         obs          = adaptData.metaData.observations;
+0039         gender       = adaptData.subData.sex;
+0040         ht           = adaptData.subData.height;
+0041         wt           = adaptData.subData.weight;
+0042         fileName     = fileList{ii};
+0043 
+0044         group      = adaptData.metaData.ID;
+0045         abrevGroup = group(ismember(group, [<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>]));
+0046         <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(abrevGroup)
+0047             abrevGroup = <span class="string">'NoDescription'</span>;
+0048             group      = <span class="string">'(empty)'</span>;
+0049         <span class="keyword">end</span>
+0050 
+0051         conditions = adaptData.metaData.conditionName;
+0052         conditions = conditions(~cellfun(<span class="string">'isempty'</span>, conditions));
+0053 
+0054         <span class="keyword">if</span> isfield(Subs, abrevGroup)
+0055             Subs.(abrevGroup).IDs(end+1, :) = <span class="keyword">...</span>
+0056                 {subID, gender, subAge, ht, wt, <span class="keyword">...</span>
+0057                 expDate, experimenter, obs, fileName};
+0058             Subs.(abrevGroup).(subID) = adaptData;
+0059             <span class="keyword">if</span> isfield(Subs.(abrevGroup), <span class="string">'conditions'</span>)
+0060                 <span class="keyword">for</span> cc = 1:length(conditions)
+0061                     <span class="keyword">if</span> ~ismember(conditions(cc), <span class="keyword">...</span>
+0062                             Subs.(abrevGroup).conditions)
+0063                         disp([<span class="string">'Warning: '</span> subID <span class="string">' performed '</span> <span class="keyword">...</span>
+0064                             conditions{cc} <span class="string">', but it was not '</span> <span class="keyword">...</span>
+0065                             <span class="string">'performed by all subjects in '</span> group <span class="string">'.'</span>])
+0066                     <span class="keyword">end</span>
+0067                 <span class="keyword">end</span>
+0068                 <span class="keyword">for</span> cc = 1:length(Subs.(abrevGroup).conditions)
+0069                     <span class="keyword">if</span> ~ismember( <span class="keyword">...</span>
+0070                             Subs.(abrevGroup).conditions(cc), <span class="keyword">...</span>
+0071                             conditions) &amp;&amp; <span class="keyword">...</span>
+0072                             ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Subs.(abrevGroup).conditions{cc})
+0073                         disp([<span class="string">'Warning: '</span> subID <span class="string">' did not perform '</span> <span class="keyword">...</span>
+0074                             Subs.(abrevGroup).conditions{cc} <span class="string">'.'</span>])
+0075                         Subs.(abrevGroup).conditions{cc} = <span class="string">''</span>;
+0076                     <span class="keyword">end</span>
+0077                 <span class="keyword">end</span>
+0078                 Subs.(abrevGroup).conditions = <span class="keyword">...</span>
+0079                     Subs.(abrevGroup).conditions( <span class="keyword">...</span>
+0080                     ~cellfun(<span class="string">'isempty'</span>, <span class="keyword">...</span>
+0081                     Subs.(abrevGroup).conditions));
+0082             <span class="keyword">end</span>
+0083         <span class="keyword">else</span>
+0084             Subs.(abrevGroup).IDs(1, :) = <span class="keyword">...</span>
+0085                 {subID, gender, subAge, ht, wt, <span class="keyword">...</span>
+0086                 expDate, experimenter, obs, fileName};
+0087             Subs.(abrevGroup).conditions   = conditions;
+0088             Subs.(abrevGroup).(subID)      = adaptData;
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

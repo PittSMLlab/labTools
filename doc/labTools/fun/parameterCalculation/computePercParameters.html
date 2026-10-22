@@ -61,7 +61,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
@@ -181,39 +181,39 @@ This function is called by:
 0109     percTaskEndStride(indsEndStride)   = 1;
 0110 
 0111     <span class="keyword">for</span> ii = 1:length(indsInitStride)
-0112         <span class="comment">% Here I am not currently considering the changes in the belt</span>
-0113         <span class="comment">% speed when going back to tied; sometimes it takes a couple of</span>
-0114         <span class="comment">% strides to reach this fully.</span>
-0115         <span class="comment">% Previously used indsEndStride(ii)+3 to account for the</span>
-0116         <span class="comment">% delay before belt speed reaches the tied condition.</span>
-0117         percTask(indsInitStride(ii):indsEndStride(ii)) = 1;
-0118 
-0119         <span class="comment">% No +3 buffer here: use the true perceptual task end for SLA.</span>
-0120         SLAinPercTask(indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
-0121             slaParam(indsInitStride(ii):indsEndStride(ii));
+0112         <span class="comment">% NOTE: the window ends at the true perceptual task end; the</span>
+0113         <span class="comment">% belt speed change back to tied (a couple of strides to settle</span>
+0114         <span class="comment">% fully) is not accounted for.</span>
+0115         percTask(indsInitStride(ii):indsEndStride(ii)) = 1;
+0116 
+0117         <span class="comment">% SLA also uses the true perceptual task end (no buffer).</span>
+0118         SLAinPercTask(indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
+0119             slaParam(indsInitStride(ii):indsEndStride(ii));
+0120 
+0121         SLAnotPercTask(indsInitStride(ii):indsEndStride(ii)) = nan;
 0122 
-0123         <span class="comment">% Previously used indsEndStride(ii)+3 here as well.</span>
-0124         SLAnotPercTask(indsInitStride(ii):indsEndStride(ii)) = nan;
-0125 
-0126         <span class="keyword">if</span> length(speedDiffPercTask) &gt;= ii
-0127             pertSizePercTask( <span class="keyword">...</span>
-0128                 indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
-0129                 speedDiffPercTask(ii);
-0130         <span class="keyword">end</span>
-0131     <span class="keyword">end</span>
-0132 <span class="keyword">end</span>
-0133 
-0134 <span class="comment">%% Assign Parameters to Data Matrix</span>
-0135 data = nan(length(initTime), length(paramLabels));
-0136 <span class="keyword">for</span> ii = 1:length(paramLabels)
-0137     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
-0138 <span class="keyword">end</span>
+0123         <span class="keyword">if</span> length(speedDiffPercTask) &gt;= ii
+0124             pertSizePercTask( <span class="keyword">...</span>
+0125                 indsInitStride(ii):indsEndStride(ii)) = <span class="keyword">...</span>
+0126                 speedDiffPercTask(ii);
+0127         <span class="keyword">end</span>
+0128     <span class="keyword">end</span>
+0129 <span class="keyword">end</span>
+0130 
+0131 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0132 data = nan(length(initTime), length(paramLabels));
+0133 data(:, 1) = percTaskInitStride;
+0134 data(:, 2) = percTaskEndStride;
+0135 data(:, 3) = percTask;
+0136 data(:, 4) = pertSizePercTask;
+0137 data(:, 5) = SLAinPercTask;
+0138 data(:, 6) = SLAnotPercTask;
 0139 
 0140 <span class="comment">%% Output Computed Parameters</span>
 0141 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
 0142 
 0143 <span class="keyword">end</span>
 0144</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

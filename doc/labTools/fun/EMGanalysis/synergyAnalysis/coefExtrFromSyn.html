@@ -4,7 +4,7 @@
 <head>
   <title>Description of coefExtrFromSyn</title>
   <meta name="keywords" content="coefExtrFromSyn">
-  <meta name="description" content="coefExtrFromSyn Extract a coeficient (activation) matrix such that it">
+  <meta name="description" content="COEFEXTRFROMSYN Activation coefficients that fit data from synergies.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,15 +21,28 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>coefExtrFromSyn Extract a coeficient (activation) matrix such that it</strong></div>
+<div class="box"><strong>COEFEXTRFROMSYN Activation coefficients that fit data from synergies.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [coefs] = coefExtrFromSyn(data,syn) </strong></div>
+<div class="box"><strong>function coefs = coefExtrFromSyn(data,syn) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">coefExtrFromSyn Extract a coeficient (activation) matrix such that it
-solves the least squares problem data=syn*act; subject to the
-non-negativity of the activations.</pre></div>
+<div class="fragment"><pre class="comment">COEFEXTRFROMSYN Activation coefficients that fit data from synergies.
+
+   Solves the least squares problem data = syn * act for each row of data
+ with non-negative activations (lsqnonneg), in parallel over rows.
+
+ NOTE: opens and closes a pool with matlabpool, which no longer exists in
+   current MATLAB releases, so the call fails there.
+
+ Inputs:
+   data - samples x channels matrix to reconstruct
+   syn  - synergy matrix, channels x synergies
+
+ Outputs:
+   coefs - activations, synergies x samples
+
+ Toolbox Dependencies: Parallel Computing Toolbox (parfor)</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -44,33 +57,47 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [coefs] = coefExtrFromSyn(data,syn)</a>
-0002 <span class="comment">%coefExtrFromSyn Extract a coeficient (activation) matrix such that it</span>
-0003 <span class="comment">%solves the least squares problem data=syn*act; subject to the</span>
-0004 <span class="comment">%non-negativity of the activations.</span>
-0005 
-0006 
-0007 opts= optimset(<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'TolFun'</span>,.0001/size(data,2)^2,<span class="string">'TolX'</span>,.0001);
-0008 x0=ones(size(syn,2),size(data,1));
-0009 
-0010 poolFlag=0;
-0011 matlabpool size;
-0012 <span class="keyword">if</span> (ans==0)
-0013     matlabpool open
-0014     poolFlag=1;
-0015 <span class="keyword">end</span>
-0016    
-0017 coefs=[];
-0018 parfor i=1:size(data,1)
-0019     x0=ones(size(syn,2),1);
-0020     coefs(:,i) = lsqnonneg(syn,data(i,:)',opts);
-0021 <span class="keyword">end</span>
-0022 
-0023 <span class="keyword">if</span> poolFlag==1
-0024     matlabpool close
-0025 <span class="keyword">end</span>
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function coefs = coefExtrFromSyn(data,syn)</a>
+0002 <span class="comment">%COEFEXTRFROMSYN Activation coefficients that fit data from synergies.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Solves the least squares problem data = syn * act for each row of data</span>
+0005 <span class="comment">% with non-negative activations (lsqnonneg), in parallel over rows.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% NOTE: opens and closes a pool with matlabpool, which no longer exists in</span>
+0008 <span class="comment">%   current MATLAB releases, so the call fails there.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   data - samples x channels matrix to reconstruct</span>
+0012 <span class="comment">%   syn  - synergy matrix, channels x synergies</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   coefs - activations, synergies x samples</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: Parallel Computing Toolbox (parfor)</span>
+0018 
+0019 
+0020 opts = optimset(<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'TolFun'</span>,0.0001/size(data,2)^2,<span class="string">'TolX'</span>, <span class="keyword">...</span>
+0021     0.0001);
+0022 x0   = ones(size(syn,2),size(data,1));
+0023 
+0024 poolFlag = 0;
+0025 matlabpool size;
+0026 <span class="keyword">if</span> (ans == 0)
+0027     matlabpool open
+0028     poolFlag = 1;
+0029 <span class="keyword">end</span>
+0030 
+0031 coefs = [];
+0032 parfor ii = 1:size(data,1)
+0033     x0 = ones(size(syn,2),1);
+0034     coefs(:,ii) = lsqnonneg(syn,data(ii,:)',opts);
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> poolFlag == 1
+0038     matlabpool close
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of effconvn</title>
   <meta name="keywords" content="effconvn">
-  <meta name="description" content="effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.">
+  <meta name="description" content="EFFCONVN Convolve N-D arrays via FFT.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,36 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</strong></div>
+<div class="box"><strong>EFFCONVN Convolve N-D arrays via FFT.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [newP] = effconvn(pValues1,pValues2,shape) </strong></div>
+<div class="box"><strong>function newP = effconvn(pValues1, pValues2, shape) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</pre></div>
+<div class="fragment"><pre class="comment">EFFCONVN Convolve N-D arrays via FFT.
+
+   Implements convn using FFTs; equivalent to convn(A, B, shape). Note:
+ FFT-based convolution is generally faster only for large arrays. Only
+ 'full' output is currently implemented; passing 'valid' or 'same' triggers
+ a warning and returns an empty array.
+
+ Inputs:
+   pValues1 - first N-D numeric array
+   pValues2 - second N-D numeric array
+   shape    - (optional) output shape: 'full' (default), 'valid', 'same'
+
+ Outputs:
+   newP - convolution result (full shape only; empty for other shapes)
+
+ Toolbox Dependencies: None
+
+ See also <a href="effconvnfull.html" class="code" title="function newP = effconvnfull(pValues1, pValues2)">EFFCONVNFULL</a>, CONVN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="effconvnfull.html" class="code" title="function [newP] = effconvnfull(pValues1,pValues2)">effconvnfull</a>	effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</li></ul>
+<li><a href="effconvnfull.html" class="code" title="function newP = effconvnfull(pValues1, pValues2)">effconvnfull</a>	EFFCONVNFULL Convolve N-D arrays via FFT (full output).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 </ul>
@@ -42,23 +59,44 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newP] = effconvn(pValues1,pValues2,shape)</a>
-0002 <span class="comment">%effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</span>
-0003 
-0004 [newP] = <a href="effconvnfull.html" class="code" title="function [newP] = effconvnfull(pValues1,pValues2)">effconvnfull</a>(pValues1,pValues2);
-0005 
-0006 <span class="keyword">if</span> nargin&gt;2
-0007     warning(<span class="string">'Shape argument still not implemented.'</span>)
-0008     <span class="keyword">if</span> strcmp(shape,<span class="string">'valid'</span>)
-0009         newP=[];
-0010     <span class="keyword">elseif</span> strcmp(shape,<span class="string">'same'</span>)
-0011         newP=[];
-0012     <span class="keyword">end</span> <span class="comment">%Assumes method='full'</span>
-0013 <span class="keyword">end</span>
-0014 
-0015 
-0016 <span class="keyword">end</span>
-0017</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newP = effconvn(pValues1, pValues2, shape)</a>
+0002 <span class="comment">%EFFCONVN Convolve N-D arrays via FFT.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Implements convn using FFTs; equivalent to convn(A, B, shape). Note:</span>
+0005 <span class="comment">% FFT-based convolution is generally faster only for large arrays. Only</span>
+0006 <span class="comment">% 'full' output is currently implemented; passing 'valid' or 'same' triggers</span>
+0007 <span class="comment">% a warning and returns an empty array.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   pValues1 - first N-D numeric array</span>
+0011 <span class="comment">%   pValues2 - second N-D numeric array</span>
+0012 <span class="comment">%   shape    - (optional) output shape: 'full' (default), 'valid', 'same'</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   newP - convolution result (full shape only; empty for other shapes)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also EFFCONVNFULL, CONVN.</span>
+0020 
+0021 arguments
+0022     pValues1
+0023     pValues2
+0024     shape {mustBeTextScalar} = <span class="string">'full'</span>
+0025 <span class="keyword">end</span>
+0026 
+0027 newP = <a href="effconvnfull.html" class="code" title="function newP = effconvnfull(pValues1, pValues2)">effconvnfull</a>(pValues1, pValues2);
+0028 
+0029 <span class="keyword">if</span> ~strcmp(shape, <span class="string">'full'</span>)
+0030     warning(<span class="string">'Shape argument still not implemented.'</span>)
+0031     <span class="keyword">if</span> strcmp(shape, <span class="string">'valid'</span>)
+0032         newP = [];
+0033     <span class="keyword">elseif</span> strcmp(shape, <span class="string">'same'</span>)
+0034         newP = [];
+0035     <span class="keyword">end</span> <span class="comment">% Assumes method='full'</span>
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

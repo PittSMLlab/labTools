@@ -86,11 +86,11 @@ This function is called by:
 0025     fsample     (1,1) double {mustBePositive}
 0026 <span class="keyword">end</span>
 0027 
-0028 nyquist    = 0.5 * fsample;  <span class="comment">% Nyquist frequency (Hz)</span>
-0029 [b, a]     = butter(filterOrder, fcut / nyquist);
-0030 data       = filtfilt(b, a, data);  <span class="comment">% zero-phase filtering</span>
+0028 nyquist = 0.5 * fsample;  <span class="comment">% Nyquist frequency (Hz)</span>
+0029 [b, a] = butter(filterOrder, fcut / nyquist);
+0030 data = filtfilt(b, a, data);  <span class="comment">% zero-phase filtering</span>
 0031 
 0032 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

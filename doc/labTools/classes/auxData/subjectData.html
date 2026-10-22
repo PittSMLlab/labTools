@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@labData/process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li><li><a href="../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@labData/process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	PROCESS Process raw trial data into angles, events, and parameters.</li><li><a href="../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEXPERIMENTINFO Re-enter session information and rebuild the files.</li><li><a href="../../../labTools/gui/importc3d/loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	LOADSUBJECT Load, process, and save an experimental session from C3D.</li><li><a href="../../../labTools/testing/TestSpinalAdaptBoutSegments.html" class="code" title="">TestSpinalAdaptBoutSegments</a>	TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -45,159 +45,173 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="subjectData.html" class="code" title="">subjectData</a>
-0002     <span class="comment">%subjectData  Stores information about study participants</span>
+0002     <span class="comment">%SUBJECTDATA Stores information about study participants.</span>
 0003     <span class="comment">%</span>
 0004     <span class="comment">%   subjectData contains demographic and anthropometric information</span>
-0005     <span class="comment">%   about research participants, with privacy protections for date of</span>
-0006     <span class="comment">%   birth information.</span>
+0005     <span class="comment">% about research participants, with privacy protections for date of</span>
+0006     <span class="comment">% birth information.</span>
 0007     <span class="comment">%</span>
-0008     <span class="comment">%subjectData properties:</span>
-0009     <span class="comment">%   dateOfBirth - labDate object (private, discouraged for privacy)</span>
-0010     <span class="comment">%   sex - string, either 'male' or 'female'</span>
-0011     <span class="comment">%   fastLeg - string, either 'L' or 'R'</span>
-0012     <span class="comment">%   dominantLeg - string, either 'L' or 'R'</span>
-0013     <span class="comment">%   dominantArm - string, either 'L' or 'R'</span>
-0014     <span class="comment">%   height - height in centimeters</span>
-0015     <span class="comment">%   weight - weight in kilograms</span>
-0016     <span class="comment">%   age - age in years at time of experiment</span>
+0008     <span class="comment">% subjectData properties:</span>
+0009     <span class="comment">%   dateOfBirth     - labDate object (private, discouraged for privacy)</span>
+0010     <span class="comment">%   sex             - string, either 'male' or 'female'</span>
+0011     <span class="comment">%   fastLeg         - string, either 'L' or 'R'</span>
+0012     <span class="comment">%   dominantLeg     - string, either 'L' or 'R'</span>
+0013     <span class="comment">%   dominantArm     - string, either 'L' or 'R'</span>
+0014     <span class="comment">%   height          - height in centimeters</span>
+0015     <span class="comment">%   weight          - weight in kilograms</span>
+0016     <span class="comment">%   age             - age in years at time of experiment</span>
 0017     <span class="comment">%   cognitiveScores - cognitiveData object with test results</span>
-0018     <span class="comment">%   ID - string containing experimental identifier (e.g., 'OG90')</span>
-0019     <span class="comment">%</span>
-0020     <span class="comment">%subjectData methods:</span>
-0021     <span class="comment">%   subjectData - constructor for subject data</span>
-0022     <span class="comment">%</span>
-0023     <span class="comment">%See also: labDate, strokeSubjectData, cognitiveData</span>
-0024 
-0025     <span class="comment">%% Properties</span>
-0026     properties (SetAccess = private)
-0027         dateOfBirth = labDate.default;
-0028         sex = <span class="string">''</span>;
-0029         fastLeg = <span class="string">''</span>;
-0030         dominantLeg = <span class="string">''</span>;
-0031         dominantArm = <span class="string">''</span>;
-0032         height = []; <span class="comment">% centimeters</span>
-0033         weight = []; <span class="comment">% kgs</span>
-0034         age = []; <span class="comment">% in years, at time of experiment</span>
-0035     <span class="keyword">end</span>
-0036 
-0037     properties <span class="comment">% other</span>
-0038         cognitiveScores
-0039         ID = []; <span class="comment">% experimental ID assigned</span>
-0040     <span class="keyword">end</span>
-0041 
-0042     <span class="comment">%% Constructor</span>
-0043     methods
-0044         <a name="_sub0" href="#_subfunctions" class="code">function this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, </a><span class="keyword">...</span>
-0045                 age, ID, fLeg)
-0046             <span class="comment">%subjectData  Constructor for subjectData class</span>
-0047             <span class="comment">%</span>
-0048             <span class="comment">%   this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, age,</span>
-0049             <span class="comment">%   ID, fLeg) creates a subject data object with specified</span>
-0050             <span class="comment">%   information</span>
-0051             <span class="comment">%</span>
-0052             <span class="comment">%   Inputs:</span>
-0053             <span class="comment">%       DOB - date of birth as labDate (optional, ignored for</span>
-0054             <span class="comment">%             privacy)</span>
-0055             <span class="comment">%       sex - 'male' or 'female' (optional)</span>
-0056             <span class="comment">%       dLeg - dominant leg, 'L' or 'R' (optional)</span>
-0057             <span class="comment">%       dArm - dominant arm, 'L' or 'R' (optional)</span>
-0058             <span class="comment">%       hgt - height in cm (optional)</span>
-0059             <span class="comment">%       wgt - weight in kg (optional)</span>
-0060             <span class="comment">%       age - age in years at experiment time (optional)</span>
-0061             <span class="comment">%       ID - subject identifier string (optional)</span>
-0062             <span class="comment">%       fLeg - fast leg, 'L' or 'R' (optional)</span>
-0063             <span class="comment">%</span>
-0064             <span class="comment">%   Outputs:</span>
-0065             <span class="comment">%       this - subjectData object</span>
-0066             <span class="comment">%</span>
-0067             <span class="comment">%   Note: Date of birth is ignored for privacy protection.</span>
-0068             <span class="comment">%         Use age instead.</span>
-0069             <span class="comment">%</span>
-0070             <span class="comment">%   See also: labDate, experimentData</span>
-0071 
-0072             <span class="keyword">if</span> nargin &gt; 0 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(DOB)
-0073                 warning(<span class="string">'subjectData:DOB'</span>, [<span class="string">'Date of birth was provided'</span><span class="keyword">...</span>
-0074                     <span class="string">' but will be ignored for privacy.'</span>]);
-0075             <span class="keyword">end</span>
-0076             <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sex)
-0077                 this.sex = sex;
-0078             <span class="keyword">end</span>
-0079             <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dLeg)
-0080                 this.dominantLeg = dLeg;
-0081             <span class="keyword">end</span>
-0082             <span class="keyword">if</span> nargin &gt; 3 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dArm)
-0083                 this.dominantArm = dArm;
-0084             <span class="keyword">end</span>
-0085             <span class="keyword">if</span> nargin &gt; 4 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(hgt)
-0086                 this.height = hgt;
-0087             <span class="keyword">end</span>
-0088             <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(wgt)
-0089                 this.weight = wgt;
-0090             <span class="keyword">end</span>
-0091             <span class="keyword">if</span> nargin &gt; 6 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(age)
-0092                 this.age = age;
-0093             <span class="keyword">end</span>
-0094             <span class="keyword">if</span> nargin &gt; 7 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ID)
-0095                 this.ID = ID;
-0096             <span class="keyword">end</span>
-0097             <span class="keyword">if</span> nargin &gt; 8 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fLeg)
-0098                 this.fastLeg = fLeg;
-0099             <span class="keyword">end</span>
-0100         <span class="keyword">end</span>
-0101     <span class="keyword">end</span>
-0102 
-0103     <span class="comment">%% Property Setters</span>
-0104     methods
-0105         <a name="_sub1" href="#_subfunctions" class="code">function this = set.cognitiveScores(this, scores)</a>
-0106             <span class="comment">%set.cognitiveScores  Validates and sets cognitive test scores</span>
-0107             <span class="comment">%</span>
-0108             <span class="comment">%   Inputs:</span>
-0109             <span class="comment">%       this - subjectData object</span>
-0110             <span class="comment">%       scores - cognitiveData object or empty</span>
-0111 
-0112             <span class="keyword">if</span> isa(scores, <span class="string">'cognitiveData'</span>) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(scores)
-0113                 this.cognitiveScores = scores;
-0114             <span class="keyword">else</span>
-0115                 ME = MException(<span class="string">'subjectData:Setter'</span>, <span class="keyword">...</span>
-0116                     [<span class="string">'cognitiveScores parameter is not object of the '</span> <span class="keyword">...</span>
-0117                     <span class="string">'cognitiveData class'</span>]);
-0118                 throw(ME);
-0119             <span class="keyword">end</span>
-0120         <span class="keyword">end</span>
-0121     <span class="keyword">end</span>
-0122 
-0123     <span class="comment">%% Static Methods</span>
-0124     methods (Static)
-0125         <a name="_sub2" href="#_subfunctions" class="code">function this = loadobj(this)</a>
-0126             <span class="comment">%loadobj  Object loading method for privacy protection</span>
-0127             <span class="comment">%</span>
-0128             <span class="comment">%   this = loadobj(this) warns if date of birth information</span>
-0129             <span class="comment">%   is present when loading saved subjectData objects</span>
-0130             <span class="comment">%</span>
-0131             <span class="comment">%   Inputs:</span>
-0132             <span class="comment">%       this - subjectData object being loaded</span>
-0133             <span class="comment">%</span>
-0134             <span class="comment">%   Outputs:</span>
-0135             <span class="comment">%       this - subjectData object</span>
-0136             <span class="comment">%</span>
-0137             <span class="comment">%   Note: This function was created to warn about DOB being</span>
-0138             <span class="comment">%         present at load time. DOB is not automatically</span>
-0139             <span class="comment">%         scrubbed to prevent loss of information.</span>
-0140             <span class="comment">%</span>
-0141             <span class="comment">%   See also: experimentData/loadobj</span>
-0142 
-0143             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.dateOfBirth)
-0144                 warning(<span class="string">'subjectData:DOB'</span>, <span class="keyword">...</span>
-0145                     [<span class="string">'Subject data contains DOB for subject '</span> this.ID <span class="keyword">...</span>
-0146                     <span class="string">', which is in violation of HIPAA requirements '</span> <span class="keyword">...</span>
-0147                     <span class="string">'for sharing data. Do not share until DOB has '</span> <span class="keyword">...</span>
-0148                     <span class="string">'been scrubbed.'</span>]);
-0149             <span class="keyword">end</span>
-0150         <span class="keyword">end</span>
-0151     <span class="keyword">end</span>
-0152 
-0153 <span class="keyword">end</span>
-0154</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0018     <span class="comment">%   ID              - string containing experimental identifier (e.g.,</span>
+0019     <span class="comment">%                     'OG90')</span>
+0020     <span class="comment">%</span>
+0021     <span class="comment">% subjectData methods:</span>
+0022     <span class="comment">%   subjectData - constructor for subject data</span>
+0023     <span class="comment">%</span>
+0024     <span class="comment">% Toolbox Dependencies: None</span>
+0025     <span class="comment">%</span>
+0026     <span class="comment">% See also LABDATE, STROKESUBJECTDATA, COGNITIVEDATA.</span>
+0027 
+0028     <span class="comment">%% Properties</span>
+0029     properties (SetAccess = private)
+0030         dateOfBirth = labDate.default;
+0031         sex         = <span class="string">''</span>;
+0032         fastLeg     = <span class="string">''</span>;
+0033         dominantLeg = <span class="string">''</span>;
+0034         dominantArm = <span class="string">''</span>;
+0035         height      = []; <span class="comment">% centimeters</span>
+0036         weight      = []; <span class="comment">% kgs</span>
+0037         age         = []; <span class="comment">% in years, at time of experiment</span>
+0038     <span class="keyword">end</span>
+0039 
+0040     properties <span class="comment">% other</span>
+0041         cognitiveScores
+0042         ID = []; <span class="comment">% experimental ID assigned</span>
+0043     <span class="keyword">end</span>
+0044 
+0045     <span class="comment">%% Constructor</span>
+0046     methods
+0047         <a name="_sub0" href="#_subfunctions" class="code">function this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, </a><span class="keyword">...</span>
+0048             age, ID, fLeg)
+0049             <span class="comment">%SUBJECTDATA Constructor for subjectData class.</span>
+0050             <span class="comment">%</span>
+0051             <span class="comment">%   this = subjectData(DOB, sex, dLeg, dArm, hgt, wgt, age, ID,</span>
+0052             <span class="comment">% fLeg) creates a subject data object with specified information</span>
+0053             <span class="comment">%</span>
+0054             <span class="comment">% Inputs:</span>
+0055             <span class="comment">%   DOB  - date of birth as labDate (optional, ignored for</span>
+0056             <span class="comment">%          privacy)</span>
+0057             <span class="comment">%   sex  - 'male' or 'female' (optional)</span>
+0058             <span class="comment">%   dLeg - dominant leg, 'L' or 'R' (optional)</span>
+0059             <span class="comment">%   dArm - dominant arm, 'L' or 'R' (optional)</span>
+0060             <span class="comment">%   hgt  - height in cm (optional)</span>
+0061             <span class="comment">%   wgt  - weight in kg (optional)</span>
+0062             <span class="comment">%   age  - age in years at experiment time (optional)</span>
+0063             <span class="comment">%   ID   - subject identifier string (optional)</span>
+0064             <span class="comment">%   fLeg - fast leg, 'L' or 'R' (optional)</span>
+0065             <span class="comment">%</span>
+0066             <span class="comment">% Outputs:</span>
+0067             <span class="comment">%   this - subjectData object</span>
+0068             <span class="comment">%</span>
+0069             <span class="comment">%   Note: Date of birth is ignored for privacy protection.</span>
+0070             <span class="comment">%         Use age instead.</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">% Toolbox Dependencies: None</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">% See also LABDATE, EXPERIMENTDATA.</span>
+0075 
+0076             <span class="keyword">if</span> nargin &gt; 0 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(DOB)
+0077                 warning(<span class="string">'subjectData:DOB'</span>, [<span class="string">'Date of birth was provided'</span><span class="keyword">...</span>
+0078                     <span class="string">' but will be ignored for privacy.'</span>]);
+0079             <span class="keyword">end</span>
+0080             <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sex)
+0081                 this.sex = sex;
+0082             <span class="keyword">end</span>
+0083             <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dLeg)
+0084                 this.dominantLeg = dLeg;
+0085             <span class="keyword">end</span>
+0086             <span class="keyword">if</span> nargin &gt; 3 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dArm)
+0087                 this.dominantArm = dArm;
+0088             <span class="keyword">end</span>
+0089             <span class="keyword">if</span> nargin &gt; 4 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(hgt)
+0090                 this.height = hgt;
+0091             <span class="keyword">end</span>
+0092             <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(wgt)
+0093                 this.weight = wgt;
+0094             <span class="keyword">end</span>
+0095             <span class="keyword">if</span> nargin &gt; 6 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(age)
+0096                 this.age = age;
+0097             <span class="keyword">end</span>
+0098             <span class="keyword">if</span> nargin &gt; 7 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ID)
+0099                 this.ID = ID;
+0100             <span class="keyword">end</span>
+0101             <span class="keyword">if</span> nargin &gt; 8 &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fLeg)
+0102                 this.fastLeg = fLeg;
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105     <span class="keyword">end</span>
+0106 
+0107     <span class="comment">%% Property Setters</span>
+0108     methods
+0109         <a name="_sub1" href="#_subfunctions" class="code">function this = set.cognitiveScores(this, scores)</a>
+0110             <span class="comment">%SET.COGNITIVESCORES Validates and sets cognitive test scores.</span>
+0111             <span class="comment">%</span>
+0112             <span class="comment">%   Throws subjectData:Setter if scores is neither a</span>
+0113             <span class="comment">% cognitiveData object nor empty.</span>
+0114             <span class="comment">%</span>
+0115             <span class="comment">% Inputs:</span>
+0116             <span class="comment">%   this   - subjectData object</span>
+0117             <span class="comment">%   scores - cognitiveData object or empty</span>
+0118             <span class="comment">%</span>
+0119             <span class="comment">% Outputs:</span>
+0120             <span class="comment">%   this - subjectData object with the updated cognitiveScores</span>
+0121             <span class="comment">%</span>
+0122             <span class="comment">% Toolbox Dependencies: None</span>
+0123 
+0124             <span class="keyword">if</span> isa(scores, <span class="string">'cognitiveData'</span>) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(scores)
+0125                 this.cognitiveScores = scores;
+0126             <span class="keyword">else</span>
+0127                 ME = MException(<span class="string">'subjectData:Setter'</span>, <span class="keyword">...</span>
+0128                     [<span class="string">'cognitiveScores parameter is not object of the '</span> <span class="keyword">...</span>
+0129                     <span class="string">'cognitiveData class'</span>]);
+0130                 throw(ME);
+0131             <span class="keyword">end</span>
+0132         <span class="keyword">end</span>
+0133     <span class="keyword">end</span>
+0134 
+0135     <span class="comment">%% Static Methods</span>
+0136     methods (Static)
+0137         <a name="_sub2" href="#_subfunctions" class="code">function this = loadobj(this)</a>
+0138             <span class="comment">%LOADOBJ Object loading method for privacy protection.</span>
+0139             <span class="comment">%</span>
+0140             <span class="comment">%   this = loadobj(this) warns if date of birth information is</span>
+0141             <span class="comment">% present when loading saved subjectData objects</span>
+0142             <span class="comment">%</span>
+0143             <span class="comment">% Inputs:</span>
+0144             <span class="comment">%   this - subjectData object being loaded</span>
+0145             <span class="comment">%</span>
+0146             <span class="comment">% Outputs:</span>
+0147             <span class="comment">%   this - subjectData object</span>
+0148             <span class="comment">%</span>
+0149             <span class="comment">%   Note: This function was created to warn about DOB being</span>
+0150             <span class="comment">%         present at load time. DOB is not automatically</span>
+0151             <span class="comment">%         scrubbed to prevent loss of information.</span>
+0152             <span class="comment">%</span>
+0153             <span class="comment">% Toolbox Dependencies: None</span>
+0154             <span class="comment">%</span>
+0155             <span class="comment">% See also EXPERIMENTDATA/LOADOBJ.</span>
+0156 
+0157             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.dateOfBirth)
+0158                 warning(<span class="string">'subjectData:DOB'</span>, <span class="keyword">...</span>
+0159                     [<span class="string">'Subject data contains DOB for subject '</span> this.ID <span class="keyword">...</span>
+0160                     <span class="string">', which is in violation of HIPAA requirements '</span> <span class="keyword">...</span>
+0161                     <span class="string">'for sharing data. Do not share until DOB has '</span> <span class="keyword">...</span>
+0162                     <span class="string">'been scrubbed.'</span>]);
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165     <span class="keyword">end</span>
+0166 
+0167 <span class="keyword">end</span>
+0168</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeDiffMatrix</title>
   <meta name="keywords" content="computeDiffMatrix">
-  <meta name="description" content="Gets position data as N markers x 3D x M frames and for each frame">
+  <meta name="description" content="COMPUTEDIFFMATRIX Pairwise differences between marker components.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,35 +21,63 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Gets position data as N markers x 3D x M frames and for each frame</strong></div>
+<div class="box"><strong>COMPUTEDIFFMATRIX Pairwise differences between marker components.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [D] = computeDiffMatrix(pos) </strong></div>
+<div class="box"><strong>function D = computeDiffMatrix(pos) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Gets position data as N markers x 3D x M frames and for each frame
-computes all pairwise differences btw marker components, returns Nx3xNxM</pre></div>
+<div class="fragment"><pre class="comment">COMPUTEDIFFMATRIX Pairwise differences between marker components.
+
+   D = COMPUTEDIFFMATRIX(pos) computes, for every frame, the difference
+ between each pair of markers along each coordinate: D(a,k,b,m) =
+ pos(a,k,m) - pos(b,k,m).
+
+ Inputs:
+   pos - N markers x dim coordinates x M frames position array
+
+ Outputs:
+   D - N x dim x N x M array of pairwise component differences
+
+ Toolbox Dependencies: None
+
+ See also <a href="computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">COMPUTEDISTANCEMATRIX</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two alignedTimeSeries.</li><li><a href="../../../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two labTimeSeries.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function [xMLE] = sk3Denforce(x,P,s,R)">sk3Denforce</a>	Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>	Returns model such that W*pos(:,:,i) ~ N(m,R)</li></ul>
+<li><a href="computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">sk3Ddetect</a>	SK3DDETECT Score markers against a 3-D static skeleton model.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Denforce.html" class="code" title="function xMLE = sk3Denforce(x,P,s,R)">sk3Denforce</a>	SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">sk3Dlearn</a>	SK3DLEARN Learn a naive-Bayes 3-D static skeleton model.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [D] = computeDiffMatrix(pos)</a>
-0002 <span class="comment">%Gets position data as N markers x 3D x M frames and for each frame</span>
-0003 <span class="comment">%computes all pairwise differences btw marker components, returns Nx3xNxM</span>
-0004 [N,dim,M]=size(pos);
-0005 D=bsxfun(@<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,reshape(pos,[N,dim,1,M]),reshape(permute(pos,[2,1,3]),[1,dim,N,M]));
-0006 <span class="keyword">end</span>
-0007</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function D = computeDiffMatrix(pos)</a>
+0002 <span class="comment">%COMPUTEDIFFMATRIX Pairwise differences between marker components.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   D = COMPUTEDIFFMATRIX(pos) computes, for every frame, the difference</span>
+0005 <span class="comment">% between each pair of markers along each coordinate: D(a,k,b,m) =</span>
+0006 <span class="comment">% pos(a,k,m) - pos(b,k,m).</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   pos - N markers x dim coordinates x M frames position array</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   D - N x dim x N x M array of pairwise component differences</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also COMPUTEDISTANCEMATRIX.</span>
+0017 
+0018 [N,dim,M] = size(pos);
+0019 D = bsxfun(@<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,reshape(pos,[N,dim,1,M]), <span class="keyword">...</span>
+0020     reshape(permute(pos,[2,1,3]),[1,dim,N,M]));
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

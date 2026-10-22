@@ -4,7 +4,7 @@
 <head>
   <title>Description of getLabelPrefix</title>
   <meta name="keywords" content="getLabelPrefix">
-  <meta name="description" content="getLabelPrefix  Returns label prefixes without x/y/z">
+  <meta name="description" content="GETLABELPREFIX Returns label prefixes without x/y/z.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,31 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getLabelPrefix  Returns label prefixes without x/y/z</strong></div>
+<div class="box"><strong>GETLABELPREFIX Returns label prefixes without x/y/z.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function labelPref = getLabelPrefix(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getLabelPrefix  Returns label prefixes without x/y/z
+<div class="fragment"><pre class="comment">GETLABELPREFIX Returns label prefixes without x/y/z.
 
-   labelPref = getLabelPrefix(this) returns marker/variable prefixes
-   by removing x/y/z suffixes
+   labelPref = getLabelPrefix(this) returns marker/variable prefixes by
+ removing x/y/z suffixes
 
-   Inputs:
-       this - orientedLabTimeSeries object
+ Inputs:
+   this - orientedLabTimeSeries object
 
-   Outputs:
-       labelPref - cell array of label prefixes
+ Outputs:
+   labelPref - cell array of label prefixes
 
-   Example:
-       this.labels = {'RPSISx', 'RPSISy', 'RPSISz', 'LPSISx', ...}
-       labelPref = getLabelPrefix(this)
-       labelPref = {'RPSIS', 'LPSIS', ...}
+ Example:
+   this.labels = {'RPSISx', 'RPSISy', 'RPSISz', 'LPSISx', ...}
+   labelPref = getLabelPrefix(this)
+   labelPref = {'RPSIS', 'LPSIS', ...}
 
-   See also: <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">addLabelSuffix</a>, <a href="isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">isaLabelPrefix</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">ADDLABELSUFFIX</a>, <a href="isaLabelPrefix.html" class="code" title="function [boolFlag, labelIdx] = isaLabelPrefix(this, label)">ISALABELPREFIX</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -59,30 +61,32 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function labelPref = getLabelPrefix(this)</a>
-0002 <span class="comment">%getLabelPrefix  Returns label prefixes without x/y/z</span>
+0002 <span class="comment">%GETLABELPREFIX Returns label prefixes without x/y/z.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   labelPref = getLabelPrefix(this) returns marker/variable prefixes</span>
-0005 <span class="comment">%   by removing x/y/z suffixes</span>
+0004 <span class="comment">%   labelPref = getLabelPrefix(this) returns marker/variable prefixes by</span>
+0005 <span class="comment">% removing x/y/z suffixes</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - orientedLabTimeSeries object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       labelPref - cell array of label prefixes</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   labelPref - cell array of label prefixes</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   Example:</span>
-0014 <span class="comment">%       this.labels = {'RPSISx', 'RPSISy', 'RPSISz', 'LPSISx', ...}</span>
-0015 <span class="comment">%       labelPref = getLabelPrefix(this)</span>
-0016 <span class="comment">%       labelPref = {'RPSIS', 'LPSIS', ...}</span>
+0013 <span class="comment">% Example:</span>
+0014 <span class="comment">%   this.labels = {'RPSISx', 'RPSISy', 'RPSISz', 'LPSISx', ...}</span>
+0015 <span class="comment">%   labelPref = getLabelPrefix(this)</span>
+0016 <span class="comment">%   labelPref = {'RPSIS', 'LPSIS', ...}</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   See also: addLabelSuffix, isaLabelPrefix</span>
-0019 
-0020 <span class="comment">% isolate correct prefixes</span>
-0021 aux = cellfun(@(x) x(1:end - 1), this.labels, <span class="string">'UniformOutput'</span>, false);
-0022 <span class="comment">% remove duplicate prefixes for each marker</span>
-0023 labelPref = aux(1:3:end);
-0024 <span class="keyword">end</span>
-0025</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also ADDLABELSUFFIX, ISALABELPREFIX.</span>
+0021 
+0022 <span class="comment">% isolate correct prefixes</span>
+0023 aux = cellfun(@(x) x(1:end - 1), this.labels, <span class="string">'UniformOutput'</span>, false);
+0024 <span class="comment">% remove duplicate prefixes for each marker</span>
+0025 labelPref = aux(1:3:end);
+0026 <span class="keyword">end</span>
+0027</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

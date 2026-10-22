@@ -4,7 +4,7 @@
 <head>
   <title>Description of getBaseData</title>
   <meta name="keywords" content="getBaseData">
-  <meta name="description" content="Returns data from last 40 strides of baseline, exempting the last 5.">
+  <meta name="description" content="GETBASEDATA Return baseline data: last 40 strides, minus the last 5.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,20 +21,38 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>Returns data from last 40 strides of baseline, exempting the last 5.</strong></div>
+<div class="box"><strong>GETBASEDATA Return baseline data: last 40 strides, minus the last 5.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [data,baseConds,trialTypes]=getBaseData(this,baseConds,labels) </strong></div>
+<div class="box"><strong>function [data, baseConds, trialTypes] = getBaseData(this, baseConds,labels) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Returns data from last 40 strides of baseline, exempting the last 5.
-If baseConds is not given, it will find conditions that match the string 'base' for each trial type (same as removeBiasV3)</pre></div>
+<div class="fragment"><pre class="comment">GETBASEDATA Return baseline data: last 40 strides, minus the last 5.
+
+   Takes the last 40 strides of the baseline condition, exempting the
+ final 5. If baseConds is not given, it is found with
+ GETBASECONDITIONS (same rule as removeBiasV3).
+
+ Inputs:
+   this      - adaptationData object
+   baseConds - (optional) cell array of baseline condition names
+   labels    - (optional) parameter labels to return; [] for all
+
+ Outputs:
+   data       - parameter data of the first condition returned by
+                GETEARLYLATEDATA_V2
+   baseConds  - baseline conditions used
+   trialTypes - trial types searched ([] if baseConds was given)
+
+ Toolbox Dependencies: None
+
+ See also <a href="getBaseConditions.html" class="code" title="function [baseConds, trialTypes] = getBaseConditions(this, trialType)">GETBASECONDITIONS</a>, <a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">GETEARLYLATEDATA_V2</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="getBaseConditions.html" class="code" title="function [baseConds,trialTypes]=getBaseConditions(this,trialType)">getBaseConditions</a>	</li><li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="getBaseConditions.html" class="code" title="function [baseConds, trialTypes] = getBaseConditions(this, trialType)">getBaseConditions</a>	GETBASECONDITIONS Find the baseline condition of each trial type.</li><li><a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	GETEARLYLATEDATA_V2 Get the earliest and latest strides of conditions.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -43,28 +61,47 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data,baseConds,trialTypes]=getBaseData(this,baseConds,labels)</a>
-0002 <span class="comment">%Returns data from last 40 strides of baseline, exempting the last 5.</span>
-0003 <span class="comment">%If baseConds is not given, it will find conditions that match the string 'base' for each trial type (same as removeBiasV3)</span>
-0004 
-0005 <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(baseConds)
-0006     [baseConds,trialTypes]=<a href="getBaseConditions.html" class="code" title="function [baseConds,trialTypes]=getBaseConditions(this,trialType)">getBaseConditions</a>(this);
-0007 <span class="keyword">else</span>
-0008     trialTypes=[]; <span class="comment">%Doxy</span>
-0009 <span class="keyword">end</span>
-0010 <span class="keyword">if</span> nargin&lt;3
-0011   labels=[];
-0012 <span class="keyword">end</span>
-0013 
-0014 numberOfStrides=-40;
-0015 exemptFirst=10;
-0016 exemptLast=5;
-0017 removeBiasFlag=0;
-0018 [data]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,labels,baseConds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
-0019 data=data{1};
-0020 
-0021 
-0022 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, baseConds, trialTypes] = getBaseData(this, baseConds, </a><span class="keyword">...</span>
+0002     labels)
+0003 <span class="comment">%GETBASEDATA Return baseline data: last 40 strides, minus the last 5.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Takes the last 40 strides of the baseline condition, exempting the</span>
+0006 <span class="comment">% final 5. If baseConds is not given, it is found with</span>
+0007 <span class="comment">% GETBASECONDITIONS (same rule as removeBiasV3).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this      - adaptationData object</span>
+0011 <span class="comment">%   baseConds - (optional) cell array of baseline condition names</span>
+0012 <span class="comment">%   labels    - (optional) parameter labels to return; [] for all</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   data       - parameter data of the first condition returned by</span>
+0016 <span class="comment">%                GETEARLYLATEDATA_V2</span>
+0017 <span class="comment">%   baseConds  - baseline conditions used</span>
+0018 <span class="comment">%   trialTypes - trial types searched ([] if baseConds was given)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also GETBASECONDITIONS, GETEARLYLATEDATA_V2.</span>
+0023 
+0024 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(baseConds)
+0025     [baseConds, trialTypes] = <a href="getBaseConditions.html" class="code" title="function [baseConds, trialTypes] = getBaseConditions(this, trialType)">getBaseConditions</a>(this);
+0026 <span class="keyword">else</span>
+0027     trialTypes = [];
+0028 <span class="keyword">end</span>
+0029 <span class="keyword">if</span> nargin &lt; 3
+0030     labels = [];
+0031 <span class="keyword">end</span>
+0032 
+0033 numberOfStrides = -40;  <span class="comment">% negative: count back from the end of the condition</span>
+0034 exemptFirst     = 10;
+0035 exemptLast      = 5;
+0036 removeBiasFlag  = 0;
+0037 data = <a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this, labels, baseConds, removeBiasFlag, <span class="keyword">...</span>
+0038     numberOfStrides, exemptLast, exemptFirst);
+0039 data = data{1};
+0040 
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

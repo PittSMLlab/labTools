@@ -4,7 +4,7 @@
 <head>
   <title>Description of lowpassfiltering2</title>
   <meta name="keywords" content="lowpassfiltering2">
-  <meta name="description" content="LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with">
+  <meta name="description" content="LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,14 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with</strong></div>
+<div class="box"><strong>LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function data = lowpassfiltering2(data, fcut, filterOrder, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with
-mirrored-boundary padding.
+<div class="fragment"><pre class="comment">LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.
 
    Applies a Butterworth lowpass filter with mirrored boundary padding to
  avoid edge transients. The filter is applied using an FFT-based zero-phase
@@ -46,7 +45,7 @@ mirrored-boundary padding.
  Outputs:
    data - (N×C) double, filtered data (same size as input)
 
- Toolbox Dependencies: None (butter, filter, fft, ifft are core MATLAB)
+ Toolbox Dependencies: Signal Processing Toolbox (butter)
 
  See also <a href="lowpassfiltering.html" class="code" title="function data = lowpassfiltering(data, fcut, filterOrder, fsample)">LOWPASSFILTERING</a>, <a href="filtfilthd_short.html" class="code" title="function filteredData = filtfilthd_short(filterObj, data, method, M1)">FILTFILTHD_SHORT</a>.</pre></div>
 
@@ -57,62 +56,62 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/eventExtraction/getStanceFromForcesAlt.html" class="code" title="function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)">getStanceFromForcesAlt</a>	GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.</li></ul>
+<li><a href="../../../../../labTools/fun/eventExtraction/getStanceFromForcesAlt.html" class="code" title="function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)">getStanceFromForcesAlt</a>	GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = lowpassfiltering2(data, fcut, filterOrder, fsample)</a>
-0002 <span class="comment">%LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with</span>
-0003 <span class="comment">%mirrored-boundary padding.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%   Applies a Butterworth lowpass filter with mirrored boundary padding to</span>
-0006 <span class="comment">% avoid edge transients. The filter is applied using an FFT-based zero-phase</span>
-0007 <span class="comment">% method: the impulse response is computed, its magnitude squared is applied</span>
-0008 <span class="comment">% to the data spectrum, and the result is inverse-transformed. Mirrors the</span>
-0009 <span class="comment">% input signal end-to-end before filtering so that boundary conditions are</span>
-0010 <span class="comment">% smooth, then returns only the first half of the filtered result.</span>
-0011 <span class="comment">%</span>
-0012 <span class="comment">% Inputs:</span>
-0013 <span class="comment">%   data        - (N×C) double, data to filter (columns are channels)</span>
-0014 <span class="comment">%   fcut        - scalar double, lowpass cutoff frequency (Hz)</span>
-0015 <span class="comment">%   filterOrder - scalar integer, Butterworth filter order</span>
-0016 <span class="comment">%   fsample     - scalar double, sampling frequency (Hz)</span>
-0017 <span class="comment">%</span>
-0018 <span class="comment">% Outputs:</span>
-0019 <span class="comment">%   data - (N×C) double, filtered data (same size as input)</span>
-0020 <span class="comment">%</span>
-0021 <span class="comment">% Toolbox Dependencies: None (butter, filter, fft, ifft are core MATLAB)</span>
-0022 <span class="comment">%</span>
-0023 <span class="comment">% See also LOWPASSFILTERING, FILTFILTHD_SHORT.</span>
-0024 
-0025 arguments
-0026     data        (:,:) double
-0027     fcut        (1,1) double {mustBePositive}
-0028     filterOrder (1,1) double {mustBePositive, mustBeInteger}
-0029     fsample     (1,1) double {mustBePositive}
-0030 <span class="keyword">end</span>
-0031 
-0032 <span class="comment">%% Pad data with mirrored reflection to avoid edge transients</span>
-0033 dataMirrored = [data; data(end:-1:1, :)];
-0034 
-0035 <span class="comment">%% Design filter and compute its impulse response</span>
-0036 nyquist      = 0.5 * fsample;             <span class="comment">% Nyquist frequency (Hz)</span>
-0037 [b, a]       = butter(filterOrder, fcut / nyquist);
-0038 impulse      = [1; zeros(size(dataMirrored, 1) - 1, 1)];
-0039 filterImpulse = filter(b, a, impulse);
-0040 
-0041 <span class="comment">%% Apply zero-phase filter via FFT: convolve spectra, take magnitude squared</span>
-0042 <span class="comment">% Squaring the magnitude of the impulse spectrum implements zero-phase</span>
-0043 <span class="comment">% (forward + backward) filtering without running the filter twice.</span>
-0044 filteredMirrored = ifft( <span class="keyword">...</span>
-0045     fft(dataMirrored) .* abs(fft(filterImpulse * ones(1, size(data, 2)))) .^ 2);
+0002 <span class="comment">%LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Applies a Butterworth lowpass filter with mirrored boundary padding to</span>
+0005 <span class="comment">% avoid edge transients. The filter is applied using an FFT-based zero-phase</span>
+0006 <span class="comment">% method: the impulse response is computed, its magnitude squared is applied</span>
+0007 <span class="comment">% to the data spectrum, and the result is inverse-transformed. Mirrors the</span>
+0008 <span class="comment">% input signal end-to-end before filtering so that boundary conditions are</span>
+0009 <span class="comment">% smooth, then returns only the first half of the filtered result.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   data        - (N×C) double, data to filter (columns are channels)</span>
+0013 <span class="comment">%   fcut        - scalar double, lowpass cutoff frequency (Hz)</span>
+0014 <span class="comment">%   filterOrder - scalar integer, Butterworth filter order</span>
+0015 <span class="comment">%   fsample     - scalar double, sampling frequency (Hz)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   data - (N×C) double, filtered data (same size as input)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (butter)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also LOWPASSFILTERING, FILTFILTHD_SHORT.</span>
+0023 
+0024 arguments
+0025     data        (:,:) double
+0026     fcut        (1,1) double {mustBePositive}
+0027     filterOrder (1,1) double {mustBePositive, mustBeInteger}
+0028     fsample     (1,1) double {mustBePositive}
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">%% Pad data with mirrored reflection to avoid edge transients</span>
+0032 dataMirrored = [data; data(end:-1:1, :)];
+0033 
+0034 <span class="comment">%% Design filter and compute its impulse response</span>
+0035 nyquist = 0.5 * fsample;             <span class="comment">% Nyquist frequency (Hz)</span>
+0036 [b, a] = butter(filterOrder, fcut / nyquist);
+0037 impulse       = [1; zeros(size(dataMirrored, 1) - 1, 1)];
+0038 filterImpulse = filter(b, a, impulse);
+0039 
+0040 <span class="comment">%% Apply zero-phase filter via FFT: convolve spectra, take magnitude squared</span>
+0041 <span class="comment">% Squaring the magnitude of the impulse spectrum implements zero-phase</span>
+0042 <span class="comment">% (forward + backward) filtering without running the filter twice.</span>
+0043 filteredMirrored = ifft( <span class="keyword">...</span>
+0044     fft(dataMirrored) .* abs(fft(filterImpulse * <span class="keyword">...</span>
+0045     ones(1, size(data, 2)))) .^ 2);
 0046 
 0047 <span class="comment">%% Return only the original (un-mirrored) portion</span>
 0048 data = filteredMirrored(1:size(data, 1), :);
 0049 
 0050 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of getAlignedData</title>
   <meta name="keywords" content="getAlignedData">
-  <meta name="description" content="getAlignedData  Extracts phase-aligned data">
+  <meta name="description" content="GETALIGNEDDATA Extracts phase-aligned data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,32 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getAlignedData  Extracts phase-aligned data</strong></div>
+<div class="box"><strong>GETALIGNEDDATA Extracts phase-aligned data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function alignedData = getAlignedData(this, spacing, trial,fieldName, labelList) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getAlignedData  Extracts phase-aligned data
+<div class="fragment"><pre class="comment">GETALIGNEDDATA Extracts phase-aligned data.
 
    alignedData = getAlignedData(this, spacing, trial, fieldName,
-   labelList) extracts data aligned to gait phases with specified
-   sample counts per phase
+ labelList) extracts data aligned to gait phases with specified
+ sample counts per phase
 
-   Inputs:
-       this - stridedExperimentData object
-       spacing - vector specifying number of samples for each of 4
-                 phases [DS_LR, SS_L, DS_RL, SS_R]
-       trial - trial number to extract from
-       fieldName - name of field to extract (e.g., 'procEMGData')
-       labelList - cell array of data labels to extract
+ Inputs:
+   this      - stridedExperimentData object
+   spacing   - vector specifying number of samples for each of 4 phases
+               [DS_LR, SS_L, DS_RL, SS_R]
+   trial     - trial number to extract from
+   fieldName - name of field to extract (e.g., 'procEMGData')
+   labelList - cell array of data labels to extract
 
-   Outputs:
-       alignedData - 3D array (samples x labels x strides) with
-                     phase-aligned data
+ Outputs:
+   alignedData - 3D array (samples x labels x strides) with phase-aligned
+                 data
 
-   See also: strideData/getDoubleSupportLR,
-             strideData/getSingleStanceL</pre></div>
+ Toolbox Dependencies: None
+
+ See also STRIDEDATA/GETDOUBLESUPPORTLR, STRIDEDATA/GETSINGLESTANCEL.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -63,53 +64,54 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function alignedData = getAlignedData(this, spacing, trial, </a><span class="keyword">...</span>
 0002     fieldName, labelList)
-0003 <span class="comment">%getAlignedData  Extracts phase-aligned data</span>
+0003 <span class="comment">%GETALIGNEDDATA Extracts phase-aligned data.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   alignedData = getAlignedData(this, spacing, trial, fieldName,</span>
-0006 <span class="comment">%   labelList) extracts data aligned to gait phases with specified</span>
-0007 <span class="comment">%   sample counts per phase</span>
+0006 <span class="comment">% labelList) extracts data aligned to gait phases with specified</span>
+0007 <span class="comment">% sample counts per phase</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - stridedExperimentData object</span>
-0011 <span class="comment">%       spacing - vector specifying number of samples for each of 4</span>
-0012 <span class="comment">%                 phases [DS_LR, SS_L, DS_RL, SS_R]</span>
-0013 <span class="comment">%       trial - trial number to extract from</span>
-0014 <span class="comment">%       fieldName - name of field to extract (e.g., 'procEMGData')</span>
-0015 <span class="comment">%       labelList - cell array of data labels to extract</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this      - stridedExperimentData object</span>
+0011 <span class="comment">%   spacing   - vector specifying number of samples for each of 4 phases</span>
+0012 <span class="comment">%               [DS_LR, SS_L, DS_RL, SS_R]</span>
+0013 <span class="comment">%   trial     - trial number to extract from</span>
+0014 <span class="comment">%   fieldName - name of field to extract (e.g., 'procEMGData')</span>
+0015 <span class="comment">%   labelList - cell array of data labels to extract</span>
 0016 <span class="comment">%</span>
-0017 <span class="comment">%   Outputs:</span>
-0018 <span class="comment">%       alignedData - 3D array (samples x labels x strides) with</span>
-0019 <span class="comment">%                     phase-aligned data</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   alignedData - 3D array (samples x labels x strides) with phase-aligned</span>
+0019 <span class="comment">%                 data</span>
 0020 <span class="comment">%</span>
-0021 <span class="comment">%   See also: strideData/getDoubleSupportLR,</span>
-0022 <span class="comment">%             strideData/getSingleStanceL</span>
-0023 
-0024 data = this;
-0025 M = spacing;
-0026 aux = [0 cumsum(M)];
-0027 strides = data.stridedTrials{trial};
-0028 alignedData = zeros(sum(M), length(labelList), length(strides));
-0029 Nphases = 4;
-0030 <span class="keyword">for</span> phase = 1:Nphases
-0031     samples = zeros(length(strides), length(labelList));
-0032     <span class="keyword">for</span> stride = 1:length(strides)
-0033         <span class="keyword">switch</span> phase
-0034             <span class="keyword">case</span> 1
-0035                 thisPhase = strides{stride}.getDoubleSupportLR;
-0036             <span class="keyword">case</span> 2
-0037                 thisPhase = strides{stride}.getSingleStanceL;
-0038             <span class="keyword">case</span> 3
-0039                 thisPhase = strides{stride}.getDoubleSupportRL;
-0040             <span class="keyword">case</span> 4
-0041                 thisPhase = strides{stride}.getSingleStanceR;
-0042         <span class="keyword">end</span>
-0043         alignedData(aux(phase) + 1:aux(phase) + M(phase), :, <span class="keyword">...</span>
-0044             stride) = thisPhase.(fieldName).resampleN(M(phase))<span class="keyword">...</span>
-0045             .getDataAsVector(labelList);
-0046     <span class="keyword">end</span>
-0047 <span class="keyword">end</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also STRIDEDATA/GETDOUBLESUPPORTLR, STRIDEDATA/GETSINGLESTANCEL.</span>
+0024 
+0025 data        = this;
+0026 M           = spacing;
+0027 aux         = [0 cumsum(M)];
+0028 strides     = data.stridedTrials{trial};
+0029 alignedData = zeros(sum(M), length(labelList), length(strides));
+0030 Nphases     = 4;
+0031 <span class="keyword">for</span> phase = 1:Nphases
+0032     samples = zeros(length(strides), length(labelList));
+0033     <span class="keyword">for</span> stride = 1:length(strides)
+0034         <span class="keyword">switch</span> phase
+0035             <span class="keyword">case</span> 1
+0036                 thisPhase = strides{stride}.getDoubleSupportLR;
+0037             <span class="keyword">case</span> 2
+0038                 thisPhase = strides{stride}.getSingleStanceL;
+0039             <span class="keyword">case</span> 3
+0040                 thisPhase = strides{stride}.getDoubleSupportRL;
+0041             <span class="keyword">case</span> 4
+0042                 thisPhase = strides{stride}.getSingleStanceR;
+0043         <span class="keyword">end</span>
+0044         alignedData(aux(phase) + 1:aux(phase) + M(phase), :, <span class="keyword">...</span>
+0045             stride) = thisPhase.(fieldName).resampleN(M(phase))<span class="keyword">...</span>
+0046             .getDataAsVector(labelList);
+0047     <span class="keyword">end</span>
 0048 <span class="keyword">end</span>
-0049</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0049 <span class="keyword">end</span>
+0050</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of figureFullScreen</title>
   <meta name="keywords" content="figureFullScreen">
-  <meta name="description" content="figureFullScreen">
+  <meta name="description" content="FIGUREFULLSCREEN Open a figure that fills the screen.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>figureFullScreen</strong></div>
+<div class="box"><strong>FIGUREFULLSCREEN Open a figure that fills the screen.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [h,scrsz]=figureFullScreen() </strong></div>
+<div class="box"><strong>function [h,scrsz] = figureFullScreen() </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">figureFullScreen</pre></div>
+<div class="fragment"><pre class="comment">FIGUREFULLSCREEN Open a figure that fills the screen.
+
+   Opens a figure with normalized outer position [0 0 1 1] and returns its
+ handle and the screen size.
+
+ Side effects: opens a figure.
+
+ Inputs:
+   none
+
+ Outputs:
+   h     - figure handle
+   scrsz - screen size [left bottom width height] in pixels
+
+ Toolbox Dependencies: None
+
+ See also <a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">OPTIMIZEDSUBPLOT</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -36,20 +52,38 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
+<li><a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%figureFullScreen</span>
-0002 <a name="_sub0" href="#_subfunctions" class="code">function [h,scrsz]=figureFullScreen()</a>
-0003 
-0004 scrsz = get(0,<span class="string">'ScreenSize'</span>); <span class="comment">% left, bottom, width, height</span>
-0005 <span class="comment">%for windows:</span>
-0006 <span class="comment">%figure('OuterPosition',[scrsz(1) scrsz(2)+50 scrsz(3) scrsz(4)-50]); %50 is the number of pixels of the bar at bottom of screen</span>
-0007 <span class="comment">%for linux or mac:</span>
-0008 h=figure(<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1]);</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h,scrsz] = figureFullScreen()</a>
+0002 <span class="comment">%FIGUREFULLSCREEN Open a figure that fills the screen.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Opens a figure with normalized outer position [0 0 1 1] and returns its</span>
+0005 <span class="comment">% handle and the screen size.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Side effects: opens a figure.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   none</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   h     - figure handle</span>
+0014 <span class="comment">%   scrsz - screen size [left bottom width height] in pixels</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also OPTIMIZEDSUBPLOT.</span>
+0019 
+0020 scrsz = get(0,<span class="string">'ScreenSize'</span>); <span class="comment">% left, bottom, width, height</span>
+0021 <span class="comment">%for windows:</span>
+0022 <span class="comment">%figure('OuterPosition',[scrsz(1) scrsz(2)+50 scrsz(3) ...</span>
+0023 <span class="comment">%    scrsz(4)-50]); %50 is the number of pixels of the bar at bottom of</span>
+0024 <span class="comment">%    screen</span>
+0025 <span class="comment">%for linux or mac:</span>
+0026 h = figure(<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1]);</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

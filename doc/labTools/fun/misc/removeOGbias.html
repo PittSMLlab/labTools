@@ -4,7 +4,7 @@
 <head>
   <title>Description of removeOGbias</title>
   <meta name="keywords" content="removeOGbias">
-  <meta name="description" content="Over ground baseline data are ordered based on where the subject was">
+  <meta name="description" content="REMOVEOGBIAS Remove spatial bias from overground gait data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,84 +21,122 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Over ground baseline data are ordered based on where the subject was</strong></div>
+<div class="box"><strong>REMOVEOGBIAS Remove spatial bias from overground gait data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials) </strong></div>
+<div class="box"><strong>function newData = removeOGbias(adaptData, OGtrials, OGbaseTrials) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Over ground baseline data are ordered based on where the subject was
-located in the lab during each particular gait cycle. The data is then
-characterized spatially and a bias is removed form all overground data
-taking spatial dependancies into account.</pre></div>
+<div class="fragment"><pre class="comment">REMOVEOGBIAS Remove spatial bias from overground gait data.
+
+   Orders overground baseline data by spatial position in the lab,
+ computes a running-average fit to characterize the position-dependent
+ bias, then subtracts that bias from all overground trial data.
+
+ Inputs:
+   adaptData    - adaptationData object containing the trial data
+   OGtrials     - indices of all overground trials to debias
+   OGbaseTrials - indices of overground baseline trials used to
+                  fit the spatial bias model
+
+ Outputs:
+   newData - debiased parameter data matrix (same size as
+             adaptData.data.Data)
+
+ Toolbox Dependencies: None
+
+ See also ADAPTATIONDATA, <a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">BIN_DATAV1</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li></ul>
+<li><a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>	BIN_DATAV1 Compute a running average along the rows of a matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList] =removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	REMOVEBIASV2 Deprecated: errors immediately, use REMOVEBIASV3 instead.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials)</a>
-0002 <span class="comment">%Over ground baseline data are ordered based on where the subject was</span>
-0003 <span class="comment">%located in the lab during each particular gait cycle. The data is then</span>
-0004 <span class="comment">%characterized spatially and a bias is removed form all overground data</span>
-0005 <span class="comment">%taking spatial dependancies into account.</span>
-0006 
-0007 labels=adaptData.data.labels;
-0008 newData=nan(size(adaptData.data.Data));
-0009 <span class="comment">%seperate data based on walking direction</span>
-0010 baseOG1=[];
-0011 baseOG2=[];
-0012 baseData=adaptData.getParamInTrial(labels,OGbaseTrials);
-0013 baseHipVel=adaptData.getParamInTrial(<span class="string">'direction'</span>,OGbaseTrials);
-0014 baseHipPos=adaptData.getParamInTrial(<span class="string">'hipPos'</span>,OGbaseTrials);
-0015 <span class="keyword">for</span> i=1:size(baseData,1)
-0016     <span class="keyword">if</span> baseHipVel(i)&lt;0
-0017         baseOG1 = [baseOG1; i baseHipPos(i) baseData(i,:)];
-0018     <span class="keyword">else</span>
-0019         baseOG2 = [baseOG2; i baseHipPos(i) baseData(i,:)];
-0020     <span class="keyword">end</span>
-0021 <span class="keyword">end</span>
-0022 allOG1=[];
-0023 allOG2=[];
-0024 [allData,inds]=adaptData.getParamInTrial(labels,OGtrials);
-0025 allHipVel=adaptData.getParamInTrial(<span class="string">'direction'</span>,OGtrials);
-0026 allHipPos=adaptData.getParamInTrial(<span class="string">'hipPos'</span>,OGtrials);
-0027 <span class="keyword">for</span> i=1:size(allData,1)
-0028     <span class="keyword">if</span> allHipVel(i)&lt;0
-0029         allOG1 = [allOG1; i allHipPos(i) allData(i,:)];
-0030     <span class="keyword">else</span>
-0031         allOG2 = [allOG2; i allHipPos(i) allData(i,:)];
-0032     <span class="keyword">end</span>
-0033 <span class="keyword">end</span>
-0034 
-0035 <span class="comment">%Model baseline tendency and subtract from data</span>
-0036 baseOG1=sortrows(baseOG1,2); <span class="comment">%ordered based on hip pos</span>
-0037 baseOG1Fit=<a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(baseOG1,5); <span class="comment">%runnning average of 5 data points</span>
-0038 baseOG2=sortrows(baseOG2,2);
-0039 baseOG2Fit=<a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(baseOG2,5);
-0040 
-0041 <span class="keyword">for</span> i=1:size(allOG1,1)
-0042     [~, ind]=min(abs(baseOG1Fit(:,2)-allOG1(i,2)));<span class="comment">%find Fit point that is closest to data point i spatially</span>
-0043     bias=baseOG1Fit(ind,:);
-0044     allOG1(i,3:end)=allOG1(i,3:end)-bias(3:end); <span class="comment">%do not remove bias from time index or position (hence '3:end')</span>
-0045 <span class="keyword">end</span>
-0046 <span class="keyword">for</span> i=1:size(allOG2,1)
-0047     [~, ind]=min(abs(baseOG2Fit(:,2)-allOG2(i,2)));
-0048     bias=baseOG2Fit(ind,:);
-0049     allOG2(i,3:end)=allOG2(i,3:end)-bias(3:end);
-0050 <span class="keyword">end</span>
-0051 newOG=sortrows([allOG1; allOG2],1); <span class="comment">%re-order based on time points</span>
-0052 newData(inds,:)=newOG(:,3:end); <span class="comment">%first two columns are just for book keeping, do not get saved.</span>
-0053 
-0054 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newData = removeOGbias(adaptData, OGtrials, OGbaseTrials)</a>
+0002 <span class="comment">%REMOVEOGBIAS Remove spatial bias from overground gait data.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Orders overground baseline data by spatial position in the lab,</span>
+0005 <span class="comment">% computes a running-average fit to characterize the position-dependent</span>
+0006 <span class="comment">% bias, then subtracts that bias from all overground trial data.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   adaptData    - adaptationData object containing the trial data</span>
+0010 <span class="comment">%   OGtrials     - indices of all overground trials to debias</span>
+0011 <span class="comment">%   OGbaseTrials - indices of overground baseline trials used to</span>
+0012 <span class="comment">%                  fit the spatial bias model</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   newData - debiased parameter data matrix (same size as</span>
+0016 <span class="comment">%             adaptData.data.Data)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also ADAPTATIONDATA, BIN_DATAV1.</span>
+0021 
+0022 <span class="comment">%% Separate baseline strides by walking direction</span>
+0023 labels  = adaptData.data.labels;
+0024 newData = nan(size(adaptData.data.Data));
+0025 
+0026 baseOG1 = [];
+0027 baseOG2 = [];
+0028 baseData    = adaptData.getParamInTrial(labels, OGbaseTrials);
+0029 baseHipVel  = adaptData.getParamInTrial(<span class="string">'direction'</span>, OGbaseTrials);
+0030 baseHipPos  = adaptData.getParamInTrial(<span class="string">'hipPos'</span>, OGbaseTrials);
+0031 
+0032 <span class="keyword">for</span> ii = 1:size(baseData, 1)
+0033     <span class="keyword">if</span> baseHipVel(ii) &lt; 0
+0034         baseOG1 = [baseOG1; ii baseHipPos(ii) baseData(ii,:)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0035     <span class="keyword">else</span>
+0036         baseOG2 = [baseOG2; ii baseHipPos(ii) baseData(ii,:)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">%% Separate all OG strides by walking direction</span>
+0041 allOG1 = [];
+0042 allOG2 = [];
+0043 [allData, inds] = adaptData.getParamInTrial(labels, OGtrials);
+0044 allHipVel       = adaptData.getParamInTrial(<span class="string">'direction'</span>, OGtrials);
+0045 allHipPos       = adaptData.getParamInTrial(<span class="string">'hipPos'</span>, OGtrials);
+0046 
+0047 <span class="keyword">for</span> ii = 1:size(allData, 1)
+0048     <span class="keyword">if</span> allHipVel(ii) &lt; 0
+0049         allOG1 = [allOG1; ii allHipPos(ii) allData(ii,:)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0050     <span class="keyword">else</span>
+0051         allOG2 = [allOG2; ii allHipPos(ii) allData(ii,:)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">%% Fit baseline spatial trend and subtract from data</span>
+0056 runAvgWidth = 5;                        <span class="comment">% running-average width (strides)</span>
+0057 baseOG1     = sortrows(baseOG1, 2);         <span class="comment">% sort by hip position</span>
+0058 baseOG1Fit  = <a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>(baseOG1, runAvgWidth);
+0059 baseOG2     = sortrows(baseOG2, 2);
+0060 baseOG2Fit  = <a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">bin_dataV1</a>(baseOG2, runAvgWidth);
+0061 
+0062 <span class="keyword">for</span> ii = 1:size(allOG1, 1)
+0063     <span class="comment">% find fit point closest to data point spatially</span>
+0064     [~, ind] = min(abs(baseOG1Fit(:,2) - allOG1(ii,2)));
+0065     bias = baseOG1Fit(ind, :);
+0066     allOG1(ii, 3:end) = allOG1(ii, 3:end) - bias(3:end);
+0067 <span class="keyword">end</span>
+0068 <span class="keyword">for</span> ii = 1:size(allOG2, 1)
+0069     [~, ind] = min(abs(baseOG2Fit(:,2) - allOG2(ii,2)));
+0070     bias = baseOG2Fit(ind, :);
+0071     allOG2(ii, 3:end) = allOG2(ii, 3:end) - bias(3:end);
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">% re-order by time, then store (skip index and position columns)</span>
+0075 newOG = sortrows([allOG1; allOG2], 1);
+0076 newData(inds, :) = newOG(:, 3:end);
+0077 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

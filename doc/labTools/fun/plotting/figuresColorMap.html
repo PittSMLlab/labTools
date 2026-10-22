@@ -4,7 +4,7 @@
 <head>
   <title>Description of figuresColorMap</title>
   <meta name="keywords" content="figuresColorMap">
-  <meta name="description" content="Colormap:">
+  <meta name="description" content="% Figures color map (old copy)">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,52 +21,106 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Colormap:</strong></div>
+<div class="box"><strong>% Figures color map (old copy)</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Colormap:</pre></div>
+<div class="fragment"><pre class="comment">% Figures color map (old copy)
+ Script. Builds the diverging color map `map` (red to white to blue) and
+ the default condition colors `condColors` used by prettyBarPlot and
+ the plotting functions. The CoolWarmMap.mat map that is loaded first
+ is overwritten by the map built from the two extreme colors.
+
+ Inputs:
+   none
+
+ Outputs:
+   map        - (workspace) 202 x 3 diverging color map
+   condColors - (workspace) 3 x 3 colors of the default conditions
+   ex1, ex2   - (workspace) extreme colors of the map
+   gamma      - (workspace) gamma of the interpolation
+
+ Side effects: warns 'Loading OLD figuresColorMap' (deprecated copy); loads
+   CoolWarmMap.mat (must be on the path).
+
+ NOTE: with genpath this older copy is first on the path and shadows
+       colors/figuresColorMap.m (checked with `which -all` in MATLAB
+       R2024a). The copies differ in condColors, and this one warns on
+       every run; the copy a caller gets depends on the path order.
+
+ Toolbox Dependencies: None
+
+ See also <a href="prettyBarPlot.html" class="code" title="function [fh,ph] = prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">PRETTYBARPLOT</a>, <a href="niceMap.html" class="code" title="function map = niceMap(extreme,gamma)">NICEMAP</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two labTimeSeries</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	plus  Adds two OTS (override)</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	PLUS Adds two alignedTimeSeries.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies by constant.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	PLUS Adds two labTimeSeries.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies data by constant.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>	PLUS Adds two OTS (override).</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	TIMES Multiplies by constant (override).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li></ul>
+<li><a href="prettyBarPlot.html" class="code" title="function [fh,ph] = prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	PRETTYBARPLOT Grouped bar plot with spread and individual data points.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%Colormap:</span>
-0002 warning(<span class="string">'Loading OLD figuresColorMap'</span>)
-0003 ex1=[.85,0,.1];
-0004 ex2=[0,.1,.6];
-0005 gamma=.5;
-0006 map=[bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex1,bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex1,[0:.01:1]'));bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex2,bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex2,[1:-.01:0]'))].^gamma;
-0007 
-0008 <span class="comment">%Alt: use external function:</span>
-0009 <span class="comment">%map=diverging_map([0:.01:1],round(ex1),round(ex2));</span>
-0010 
-0011 load(<span class="string">'CoolWarmMap.mat'</span>)
-0012 map=CoolWarmMap/255; <span class="comment">%This uses gray in the middle</span>
-0013 
-0014 <span class="comment">%Same extreme colors, but white in the middle:</span>
-0015 <span class="comment">%ex1=map(1,:);</span>
-0016 <span class="comment">%ex2=map(end,:);</span>
-0017 ex2=[0.2314    0.2980    0.7529];
-0018 ex1=[0.7255    0.0863    0.1608];
-0019 <span class="comment">%ex1=[12,35,64]/255; %Pitt blue</span>
-0020 <span class="comment">%ex2=[179, 163, 105]/255; %Pitt gold</span>
-0021 <span class="comment">%[203,192,130]/255 %Pitt gold from swanson logo</span>
-0022 
-0023 map=[bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex1.^(1/gamma),bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex2.^(1/gamma),bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
-0024 
-0025 condColors=[.4,.4,.4; 0,.5,.4; .5,.2,.6];</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%% Figures color map (old copy)</span>
+0002 <span class="comment">% Script. Builds the diverging color map `map` (red to white to blue) and</span>
+0003 <span class="comment">% the default condition colors `condColors` used by prettyBarPlot and</span>
+0004 <span class="comment">% the plotting functions. The CoolWarmMap.mat map that is loaded first</span>
+0005 <span class="comment">% is overwritten by the map built from the two extreme colors.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   none</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   map        - (workspace) 202 x 3 diverging color map</span>
+0012 <span class="comment">%   condColors - (workspace) 3 x 3 colors of the default conditions</span>
+0013 <span class="comment">%   ex1, ex2   - (workspace) extreme colors of the map</span>
+0014 <span class="comment">%   gamma      - (workspace) gamma of the interpolation</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Side effects: warns 'Loading OLD figuresColorMap' (deprecated copy); loads</span>
+0017 <span class="comment">%   CoolWarmMap.mat (must be on the path).</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% NOTE: with genpath this older copy is first on the path and shadows</span>
+0020 <span class="comment">%       colors/figuresColorMap.m (checked with `which -all` in MATLAB</span>
+0021 <span class="comment">%       R2024a). The copies differ in condColors, and this one warns on</span>
+0022 <span class="comment">%       every run; the copy a caller gets depends on the path order.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies: None</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also PRETTYBARPLOT, NICEMAP.</span>
+0027 
+0028 warning(<span class="string">'Loading OLD figuresColorMap'</span>)
+0029 ex1   = [0.85,0,0.1];
+0030 ex2   = [0,0.1,0.6];
+0031 gamma = 0.5;
+0032 map   = [bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex1,bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex1,[0:0.01:1]')); <span class="keyword">...</span>
+0033     bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex2,bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex2,[1:-0.01:0]'))].^gamma;
+0034 
+0035 <span class="comment">%Alt: use external function:</span>
+0036 <span class="comment">%map=diverging_map([0:.01:1],round(ex1),round(ex2));</span>
+0037 
+0038 load(<span class="string">'CoolWarmMap.mat'</span>)
+0039 map = CoolWarmMap/255; <span class="comment">%This uses gray in the middle</span>
+0040 
+0041 <span class="comment">%Same extreme colors, but white in the middle:</span>
+0042 <span class="comment">%ex1=map(1,:);</span>
+0043 <span class="comment">%ex2=map(end,:);</span>
+0044 ex2 = [0.2314    0.2980    0.7529];
+0045 ex1 = [0.7255    0.0863    0.1608];
+0046 <span class="comment">%ex1=[12,35,64]/255; %Pitt blue</span>
+0047 <span class="comment">%ex2=[179, 163, 105]/255; %Pitt gold</span>
+0048 <span class="comment">%[203,192,130]/255 %Pitt gold from swanson logo</span>
+0049 
+0050 map = [bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex1.^(1/gamma),bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex1.^(1/gamma), <span class="keyword">...</span>
+0051     [0:0.01:1]'));bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plus.html" class="code" title="function newThis = plus(this, other)">plus</a>,ex2.^(1/gamma), <span class="keyword">...</span>
+0052     bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>,1-ex2.^(1/gamma),[1:-0.01:0]'))].^gamma;
+0053 
+0054 condColors = [0.4,0.4,0.4; 0,0.5,0.4; 0.5,0.2,0.6];</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

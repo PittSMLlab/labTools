@@ -4,7 +4,7 @@
 <head>
   <title>Description of getStanceFromForces</title>
   <meta name="keywords" content="getStanceFromForces">
-  <meta name="description" content="GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.">
+  <meta name="description" content="GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.</strong></div>
+<div class="box"><strong>GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function stance = getStanceFromForces(Fz, threshold, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.
+<div class="fragment"><pre class="comment">GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.
 
    Applies median filtering to remove quantization noise, corrects for
  non-zeroed force plates, and thresholds the result to produce a binary
@@ -41,7 +41,8 @@
  Outputs:
    stance - N×1 logical, stance phase (true = stance)
 
- Toolbox Dependencies: None
+ Toolbox Dependencies:
+   Signal Processing Toolbox (medfilt1)
 
  See also <a href="getStanceFromForcesAlt.html" class="code" title="function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)">GETSTANCEFROMFORCESALT</a>, <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">DELETESHORTPHASES</a>, <a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">GETEVENTSFROMFORCES</a>.</pre></div>
 
@@ -49,17 +50,17 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	threshold  Thresholds by vector magnitude</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>	THRESHOLD Thresholds by vector magnitude.</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li></ul>
+<li><a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stance = getStanceFromForces(Fz, threshold, fsample)</a>
-0002 <span class="comment">%GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.</span>
+0002 <span class="comment">%GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Applies median filtering to remove quantization noise, corrects for</span>
 0005 <span class="comment">% non-zeroed force plates, and thresholds the result to produce a binary</span>
@@ -73,39 +74,42 @@ This function is called by:
 0013 <span class="comment">% Outputs:</span>
 0014 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">% Toolbox Dependencies: None</span>
-0017 <span class="comment">%</span>
-0018 <span class="comment">% See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.</span>
-0019 
-0020 <span class="comment">%% Get stance from forces</span>
-0021 N = round(0.01 * fsample); <span class="comment">% median filter window: 10 ms</span>
-0022 <span class="keyword">if</span> mod(N, 2) == 0
-0023     N = N + 1;
-0024 <span class="keyword">end</span>
-0025 N1 = round(0.005 * fsample); <span class="comment">% median filter window: 5 ms</span>
-0026 <span class="keyword">if</span> mod(N1, 2) == 0
-0027     N1 = N1 + 1;
-0028 <span class="keyword">end</span>
-0029 forces = medfilt1(Fz, N1);
-0030 forces = medfilt1(forces, N);
-0031 
-0032 <span class="comment">% sanity check: correct non-zeroed force plates</span>
-0033 <span class="keyword">if</span> mode(forces) ~= 0
-0034     warning(<span class="string">'getStanceFromForces:nonZeroMode'</span>, <span class="keyword">...</span>
-0035         [<span class="string">'Vertical GRF has non-zero mode. '</span> <span class="keyword">...</span>
-0036          <span class="string">'Subtracting mode from force data before event detection.'</span>]);
-0037     forces = forces - mode(forces);
-0038 <span class="keyword">end</span>
-0039 
-0040 forceSign = sign(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(forces, <span class="string">'omitnan'</span>)); <span class="comment">% use filtered forces in case plates were not zeroed</span>
-0041 forces    = forces * forceSign; <span class="comment">% ensure forces are positive on average</span>
-0042 
-0043 stance = forces &gt; <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>;
+0016 <span class="comment">% Toolbox Dependencies:</span>
+0017 <span class="comment">%   Signal Processing Toolbox (medfilt1)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.</span>
+0020 
+0021 <span class="comment">%% Get stance from forces</span>
+0022 N = round(0.01 * fsample); <span class="comment">% median filter window: 10 ms</span>
+0023 <span class="keyword">if</span> mod(N, 2) == 0
+0024     N = N + 1;
+0025 <span class="keyword">end</span>
+0026 N1 = round(0.005 * fsample); <span class="comment">% median filter window: 5 ms</span>
+0027 <span class="keyword">if</span> mod(N1, 2) == 0
+0028     N1 = N1 + 1;
+0029 <span class="keyword">end</span>
+0030 forces = medfilt1(Fz, N1);
+0031 forces = medfilt1(forces, N);
+0032 
+0033 <span class="comment">% sanity check: correct non-zeroed force plates</span>
+0034 <span class="keyword">if</span> mode(forces) ~= 0
+0035     warning(<span class="string">'getStanceFromForces:nonZeroMode'</span>, <span class="keyword">...</span>
+0036         [<span class="string">'Vertical GRF has non-zero mode. '</span> <span class="keyword">...</span>
+0037          <span class="string">'Subtracting mode from force data before event detection.'</span>]);
+0038     forces = forces - mode(forces);
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% use filtered forces in case plates were not zeroed</span>
+0042 forceSign = sign(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(forces, <span class="string">'omitnan'</span>));
+0043 forces    = forces * forceSign; <span class="comment">% ensure forces are positive on average</span>
 0044 
-0045 <span class="comment">%% Eliminate stance and swing phases shorter than 100 ms</span>
-0046 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.1); <span class="comment">% used to be 200 ms, but that is too long for stroke subjects</span>
-0047 
-0048 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0045 stance = forces &gt; <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/threshold.html" class="code" title="function newThis = threshold(this, th)">threshold</a>;
+0046 
+0047 <span class="comment">%% Eliminate stance and swing phases shorter than 100 ms</span>
+0048 <span class="comment">% 100 ms; 200 ms is too long for stroke subjects</span>
+0049 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.1);
+0050 
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

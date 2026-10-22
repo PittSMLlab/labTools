@@ -4,7 +4,7 @@
 <head>
   <title>Description of setExpDescription</title>
   <meta name="keywords" content="setExpDescription">
-  <meta name="description" content="setExpDescription  Populates GetInfoGUI condition fields from an">
+  <meta name="description" content="SETEXPDESCRIPTION Populate GetInfoGUI condition fields from an">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,14 +21,14 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>setExpDescription  Populates GetInfoGUI condition fields from an</strong></div>
+<div class="box"><strong>SETEXPDESCRIPTION Populate GetInfoGUI condition fields from an</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function handles = setExpDescription(handles, expDes) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> setExpDescription  Populates GetInfoGUI condition fields from an
-   experiment description struct.
+<div class="fragment"><pre class="comment">SETEXPDESCRIPTION Populate GetInfoGUI condition fields from an
+ experiment description struct.
 
    Reads condition numbers, names, descriptions, trial numbers, and trial
  types from an experiment description struct (loaded from an ExpDetails
@@ -53,11 +53,10 @@
      handles - updated handles struct with handles.group set to
                the experiment group label from expDes
 
-   Toolbox Dependencies:
-     None
+   Toolbox Dependencies: None
 
-   See also: <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, description_edit_Callback,
-             description_edit_CreateFcn</pre></div>
+   See also <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GETINFOGUI</a>, DESCRIPTION_EDIT_CALLBACK,
+   DESCRIPTION_EDIT_CREATEFCN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -73,8 +72,8 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function handles = setExpDescription(handles, expDes)</a>
-0002 <span class="comment">% setExpDescription  Populates GetInfoGUI condition fields from an</span>
-0003 <span class="comment">%   experiment description struct.</span>
+0002 <span class="comment">%SETEXPDESCRIPTION Populate GetInfoGUI condition fields from an</span>
+0003 <span class="comment">% experiment description struct.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   Reads condition numbers, names, descriptions, trial numbers, and trial</span>
 0006 <span class="comment">% types from an experiment description struct (loaded from an ExpDetails</span>
@@ -99,56 +98,55 @@ This function is called by:
 0025 <span class="comment">%     handles - updated handles struct with handles.group set to</span>
 0026 <span class="comment">%               the experiment group label from expDes</span>
 0027 <span class="comment">%</span>
-0028 <span class="comment">%   Toolbox Dependencies:</span>
-0029 <span class="comment">%     None</span>
-0030 <span class="comment">%</span>
-0031 <span class="comment">%   See also: GetInfoGUI, description_edit_Callback,</span>
-0032 <span class="comment">%             description_edit_CreateFcn</span>
-0033 
-0034 <span class="comment">%% Set Experiment Group Label</span>
-0035 handles.group = expDes.group;
-0036 
-0037 <span class="comment">%% Populate Condition Rows</span>
-0038 count = 0;
-0039 <span class="keyword">for</span> ii = 1:handles.lines
-0040     iStr = num2str(ii);
-0041     <span class="comment">% Condition numbers</span>
-0042     <span class="keyword">if</span> isfield(expDes, [<span class="string">'condition'</span> iStr])
-0043         set(handles.([<span class="string">'condition'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
-0044             num2str(expDes.([<span class="string">'condition'</span> iStr])));
-0045         count = count + 1;
-0046     <span class="keyword">end</span>
-0047     <span class="comment">% Condition names</span>
-0048     <span class="keyword">if</span> isfield(expDes, [<span class="string">'condName'</span> iStr])
-0049         set(handles.([<span class="string">'condName'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
-0050             expDes.([<span class="string">'condName'</span> iStr]));
-0051     <span class="keyword">end</span>
-0052     <span class="comment">% Condition descriptions</span>
-0053     <span class="keyword">if</span> isfield(expDes, [<span class="string">'description'</span> iStr])
-0054         set(handles.([<span class="string">'description'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
-0055             expDes.([<span class="string">'description'</span> iStr]));
-0056     <span class="keyword">end</span>
-0057     <span class="comment">% Trial numbers for each condition</span>
-0058     <span class="keyword">if</span> isfield(expDes, [<span class="string">'trialnum'</span> iStr])
-0059         set(handles.([<span class="string">'trialnum'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
-0060             expDes.([<span class="string">'trialnum'</span> iStr]));
-0061     <span class="keyword">end</span>
-0062     <span class="comment">% Trial types</span>
-0063     <span class="keyword">if</span> isfield(expDes, [<span class="string">'type'</span> iStr])
-0064         set(handles.([<span class="string">'type'</span> iStr]), <span class="string">'string'</span>, expDes.([<span class="string">'type'</span> iStr]));
-0065     <span class="keyword">end</span>
-0066 <span class="keyword">end</span>
-0067 
-0068 <span class="comment">%% Update Number of Conditions Field</span>
-0069 <span class="keyword">if</span> isfield(expDes, <span class="string">'numofconds'</span>)
-0070     set(handles.numofconds, <span class="string">'string'</span>, expDes.numofconds);
-0071 <span class="keyword">else</span>
-0072     <span class="comment">% Fall back to the count of populated condition rows</span>
-0073     set(handles.numofconds, <span class="string">'string'</span>, num2str(count));
-0074 <span class="keyword">end</span>
-0075 
-0076 <span class="keyword">end</span>
-0077</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0028 <span class="comment">%   Toolbox Dependencies: None</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   See also GETINFOGUI, DESCRIPTION_EDIT_CALLBACK,</span>
+0031 <span class="comment">%   DESCRIPTION_EDIT_CREATEFCN.</span>
+0032 
+0033 <span class="comment">%% Set Experiment Group Label</span>
+0034 handles.group = expDes.group;
+0035 
+0036 <span class="comment">%% Populate Condition Rows</span>
+0037 count = 0;
+0038 <span class="keyword">for</span> ii = 1:handles.lines
+0039     iStr = num2str(ii);
+0040     <span class="comment">% Condition numbers</span>
+0041     <span class="keyword">if</span> isfield(expDes, [<span class="string">'condition'</span> iStr])
+0042         set(handles.([<span class="string">'condition'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
+0043             num2str(expDes.([<span class="string">'condition'</span> iStr])));
+0044         count = count + 1;
+0045     <span class="keyword">end</span>
+0046     <span class="comment">% Condition names</span>
+0047     <span class="keyword">if</span> isfield(expDes, [<span class="string">'condName'</span> iStr])
+0048         set(handles.([<span class="string">'condName'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
+0049             expDes.([<span class="string">'condName'</span> iStr]));
+0050     <span class="keyword">end</span>
+0051     <span class="comment">% Condition descriptions</span>
+0052     <span class="keyword">if</span> isfield(expDes, [<span class="string">'description'</span> iStr])
+0053         set(handles.([<span class="string">'description'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
+0054             expDes.([<span class="string">'description'</span> iStr]));
+0055     <span class="keyword">end</span>
+0056     <span class="comment">% Trial numbers for each condition</span>
+0057     <span class="keyword">if</span> isfield(expDes, [<span class="string">'trialnum'</span> iStr])
+0058         set(handles.([<span class="string">'trialnum'</span> iStr]), <span class="string">'string'</span>, <span class="keyword">...</span>
+0059             expDes.([<span class="string">'trialnum'</span> iStr]));
+0060     <span class="keyword">end</span>
+0061     <span class="comment">% Trial types</span>
+0062     <span class="keyword">if</span> isfield(expDes, [<span class="string">'type'</span> iStr])
+0063         set(handles.([<span class="string">'type'</span> iStr]), <span class="string">'string'</span>, expDes.([<span class="string">'type'</span> iStr]));
+0064     <span class="keyword">end</span>
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="comment">%% Update Number of Conditions Field</span>
+0068 <span class="keyword">if</span> isfield(expDes, <span class="string">'numofconds'</span>)
+0069     set(handles.numofconds, <span class="string">'string'</span>, expDes.numofconds);
+0070 <span class="keyword">else</span>
+0071     <span class="comment">% Fall back to the count of populated condition rows</span>
+0072     set(handles.numofconds, <span class="string">'string'</span>, num2str(count));
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="keyword">end</span>
+0076</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

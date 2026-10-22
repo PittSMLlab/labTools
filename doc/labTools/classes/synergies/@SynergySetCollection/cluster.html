@@ -4,7 +4,7 @@
 <head>
   <title>Description of cluster</title>
   <meta name="keywords" content="cluster">
-  <meta name="description" content="CLUSTER Implementation of the cluster function for the class">
+  <meta name="description" content="CLUSTER Hierarchical clustering of all synergies in a collection.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,84 +21,130 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>CLUSTER Implementation of the cluster function for the class</strong></div>
+<div class="box"><strong>CLUSTER Hierarchical clustering of all synergies in a collection.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters) </strong></div>
+<div class="box"><strong>function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">CLUSTER Implementation of the cluster function for the class
-SynergySetCollection</pre></div>
+<div class="fragment"><pre class="comment">CLUSTER Hierarchical clustering of all synergies in a collection.
+
+   Stacks every synergy with getContentAsSet, computes the pairwise angles
+ (SynergySet.distance), and builds an average-linkage tree. If Nclusters is
+ empty, the number of clusters is increased from 1 until no cluster
+ contains two synergies from the same SynergySet; otherwise the tree is cut
+ at Nclusters.
+
+ Inputs:
+   this      - SynergySetCollection object
+   method    - not used
+   Nclusters - number of clusters to force (optional)
+
+ Outputs:
+   clusteredSet      - ClusteredSynergySetCollection with one SynergySet
+                       per cluster
+   clusteringIndexes - cell array shaped like the collection; cell k is a
+                       column vector with the cluster index of every
+                       synergy in set k
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also LINKAGE, CLUSTEREDSYNERGYSETCOLLECTION.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>	CLUSTER Implementation of the cluster function for the class</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/checkBelongings.html" class="code" title="function [flag] = checkBelongings(idx1,idx2)">checkBelongings</a>	checkBelongings Gets two vectors of equal size and checks that no pair of</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>	CLUSTER Hierarchical clustering of all synergies in a collection.</li><li><a href="../../../../labTools/fun/ext/pitools/usefulCode/checkBelongings.html" class="code" title="function flag = checkBelongings(idx1, idx2)">checkBelongings</a>	CHECKBELONGINGS Check pair-wise uniqueness of two index vectors.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>	CLUSTER Implementation of the cluster function for the class</li></ul>
+<li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>	CLUSTER Hierarchical clustering of all synergies in a collection.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)</a>
-0002 
-0003 <span class="comment">%CLUSTER Implementation of the cluster function for the class</span>
-0004 <span class="comment">%SynergySetCollection</span>
-0005 
-0006 <span class="keyword">if</span> nargin&lt;3
-0007     Nclusters=[];
-0008 <span class="keyword">end</span>
-0009 
-0010 [contentAsSet,originalIndexes]=getContentAsSet(this);
-0011 whatMatters=contentAsSet.content;
-0012 Nelements=size(whatMatters,2); <span class="comment">%Should coincide with length(originalIndexes)</span>
-0013 
-0014 <span class="comment">%% -----------------------------------------------------------------</span>
-0015 <span class="comment">%%Clustering method 1</span>
-0016 
-0017 <span class="comment">%Compute appropriate distance matrix:</span>
-0018 D=distance(contentAsSet);
-0019 
-0020 <span class="comment">%Compute linkage tree</span>
-0021 Z = linkage(D,<span class="string">'average'</span>); <span class="comment">%Can also use 'single' or 'complete' linkage. 'Single' gives not so nice results.</span>
-0022 <span class="comment">%Dendrogram (for debugging purposes):</span>
-0023 <span class="comment">%figure</span>
-0024 <span class="comment">%dendrogram(Z)</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)</a>
+0002 <span class="comment">%CLUSTER Hierarchical clustering of all synergies in a collection.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Stacks every synergy with getContentAsSet, computes the pairwise angles</span>
+0005 <span class="comment">% (SynergySet.distance), and builds an average-linkage tree. If Nclusters is</span>
+0006 <span class="comment">% empty, the number of clusters is increased from 1 until no cluster</span>
+0007 <span class="comment">% contains two synergies from the same SynergySet; otherwise the tree is cut</span>
+0008 <span class="comment">% at Nclusters.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   this      - SynergySetCollection object</span>
+0012 <span class="comment">%   method    - not used</span>
+0013 <span class="comment">%   Nclusters - number of clusters to force (optional)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   clusteredSet      - ClusteredSynergySetCollection with one SynergySet</span>
+0017 <span class="comment">%                       per cluster</span>
+0018 <span class="comment">%   clusteringIndexes - cell array shaped like the collection; cell k is a</span>
+0019 <span class="comment">%                       column vector with the cluster index of every</span>
+0020 <span class="comment">%                       synergy in set k</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also LINKAGE, CLUSTEREDSYNERGYSETCOLLECTION.</span>
 0025 
-0026 <span class="comment">%Succesively increase cluster number until there are no collisions, unless Nclusters is provided</span>
-0027 <span class="comment">%Collisions are defined when two elements with equal originalIndexes are</span>
-0028 <span class="comment">%classified as members of the same cluster.</span>
-0029 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Nclusters)
-0030     <span class="comment">%Force number of clusters</span>
-0031     T = <a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>(Z,<span class="string">'maxclust'</span>,Nclusters);
-0032 <span class="keyword">else</span>
-0033     <span class="comment">%Iteratively increase number of clusters</span>
-0034     forbidden=1;
-0035     clusterSize=0;
-0036     <span class="keyword">while</span> forbidden
-0037         <span class="comment">%STEP 1: Increase cluster size</span>
-0038         clusterSize=clusterSize+1;
-0039         <span class="comment">%STEP 2: Do clustering</span>
-0040         T = <a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>(Z,<span class="string">'maxclust'</span>,clusterSize);
-0041         <span class="comment">%Check if forbidden</span>
-0042         forbidden=~<a href="../../../../labTools/fun/ext/pitools/usefulCode/checkBelongings.html" class="code" title="function [flag] = checkBelongings(idx1,idx2)">checkBelongings</a>(T,originalIndexes(:,1));
-0043     <span class="keyword">end</span>
-0044 <span class="keyword">end</span>
-0045 
-0046 <span class="comment">%Assign output arguments</span>
-0047 clusteringIndexes=cell(this.getCollectionSize);
-0048 <span class="keyword">for</span> i=1:length(T)
-0049     j=ind2sub(this.getCollectionSize,originalIndexes(i,1));
-0050     clusteringIndexes{j}(originalIndexes(i,2),1)=T(i);
-0051 <span class="keyword">end</span>
-0052 clusteredSet=<a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>(clusteringIndexes,this.content,this.indexCategories,this.indexLabels,this.name);
-0053 
-0054 <span class="comment">%-----------------------------------------------------------------</span>
-0055 <span class="keyword">end</span>
-0056</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0026 <span class="keyword">if</span> nargin &lt; 3
+0027     Nclusters = [];
+0028 <span class="keyword">end</span>
+0029 
+0030 [contentAsSet,originalIndexes] = getContentAsSet(this);
+0031 whatMatters = contentAsSet.content;
+0032 <span class="comment">%Should coincide with length(originalIndexes)</span>
+0033 Nelements = size(whatMatters,2);
+0034 
+0035 <span class="comment">%% -----------------------------------------------------------------</span>
+0036 <span class="comment">%%Clustering method 1</span>
+0037 
+0038 <span class="comment">%Compute appropriate distance matrix:</span>
+0039 D = distance(contentAsSet);
+0040 
+0041 <span class="comment">%Compute linkage tree</span>
+0042 <span class="comment">%Can also use 'single' or 'complete' linkage. 'Single' gives not so nice</span>
+0043 <span class="comment">%results.</span>
+0044 Z = linkage(D,<span class="string">'average'</span>);
+0045 <span class="comment">%Dendrogram (for debugging purposes):</span>
+0046 <span class="comment">%figure</span>
+0047 <span class="comment">%dendrogram(Z)</span>
+0048 
+0049 <span class="comment">%Succesively increase cluster number until there are no collisions, unless</span>
+0050 <span class="comment">%Nclusters is provided</span>
+0051 <span class="comment">%Collisions are defined when two elements with equal originalIndexes are</span>
+0052 <span class="comment">%classified as members of the same cluster.</span>
+0053 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Nclusters)
+0054     <span class="comment">%Force number of clusters</span>
+0055     T = <a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>(Z,<span class="string">'maxclust'</span>,Nclusters);
+0056 <span class="keyword">else</span>
+0057     <span class="comment">%Iteratively increase number of clusters</span>
+0058     forbidden   = 1;
+0059     clusterSize = 0;
+0060     <span class="keyword">while</span> forbidden
+0061         <span class="comment">%STEP 1: Increase cluster size</span>
+0062         clusterSize = clusterSize+1;
+0063         <span class="comment">%STEP 2: Do clustering</span>
+0064         T = <a href="cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>(Z,<span class="string">'maxclust'</span>,clusterSize);
+0065         <span class="comment">%Check if forbidden</span>
+0066         forbidden = ~<a href="../../../../labTools/fun/ext/pitools/usefulCode/checkBelongings.html" class="code" title="function flag = checkBelongings(idx1, idx2)">checkBelongings</a>(T,originalIndexes(:,1));
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%Assign output arguments</span>
+0071 clusteringIndexes = cell(this.getCollectionSize);
+0072 <span class="keyword">for</span> ii = 1:length(T)
+0073     j = ind2sub(this.getCollectionSize,originalIndexes(ii,1));
+0074     clusteringIndexes{j}(originalIndexes(ii,2),1) = T(ii);
+0075 <span class="keyword">end</span>
+0076 clusteredSet = <a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>(clusteringIndexes, <span class="keyword">...</span>
+0077     this.content,this.indexCategories,this.indexLabels,this.name);
+0078 
+0079 <span class="comment">%-----------------------------------------------------------------</span>
+0080 <span class="keyword">end</span>
+0081</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

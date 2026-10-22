@@ -4,7 +4,7 @@
 <head>
   <title>Description of loadTrials</title>
   <meta name="keywords" content="loadTrials">
-  <meta name="description" content="loadTrials  Generates rawTrialData instances for each trial.">
+  <meta name="description" content="LOADTRIALS Generate rawTrialData instances for each trial.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>loadTrials  Generates rawTrialData instances for each trial.</strong></div>
+<div class="box"><strong>LOADTRIALS Generate rawTrialData instances for each trial.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function trials = loadTrials(trialMD, fileList, secFileList, info) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> loadTrials  Generates rawTrialData instances for each trial.
+<div class="fragment"><pre class="comment">LOADTRIALS Generate rawTrialData instances for each trial.
 
    Reads kinematic, force, and EMG data from C3D files for each trial
  in the experimental session. For each trial, the function imports
@@ -41,43 +41,43 @@
  filled PC2 channels so that all rawTrialData objects in the session
  share a consistent channel layout.
 
-   Inputs:
-     trialMD     - Cell array of trialMetaData objects; cell index
-                   corresponds to trial number
-     fileList    - Cell array of C3D file paths (without extension)
-                   containing kinematic and force data; index
-                   corresponds to trial number
-     secFileList - Cell array of secondary file paths (without extension)
-                   containing EMG data from a second PC; empty entries
-                   indicate no secondary file for that trial
-     info        - Struct of session information returned by GetInfoGUI
+ Inputs:
+   trialMD     - cell array of trialMetaData objects; cell index
+                 corresponds to trial number
+   fileList    - cell array of C3D file paths (without extension)
+                 containing kinematic and force data; index
+                 corresponds to trial number
+   secFileList - cell array of secondary file paths (without extension)
+                 containing EMG data from a second PC; empty entries
+                 indicate no secondary file for that trial
+   info        - struct, session information returned by GetInfoGUI
 
-   Outputs:
-     trials - Cell array of rawTrialData objects; cell index
-              corresponds to trial number
+ Outputs:
+   trials - cell array of rawTrialData objects; cell index
+            corresponds to trial number
 
-   Toolbox Dependencies:
-     BTK - Biomechanics Toolkit     (btkReadAcquisition, btkGetAnalogs,
-                                     btkGetMarkers; external dependency)
+ Toolbox Dependencies:
+   BTK - Biomechanics Toolkit (btkReadAcquisition, btkGetAnalogs,
+   btkGetMarkers; external dependency)
 
-   See also: rawTrialData, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>, <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>,
-   <a href="syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>, <a href="processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">processGRFData</a></pre></div>
+ See also RAWTRIALDATA, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">LOADSUBJECT</a>, <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">GETTRIALMETADATA</a>, <a href="syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">SYNCEMGDATA</a>,
+ <a href="processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">PROCESSGRFDATA</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogs.html" class="code" title="function [analogs analogsInfo] = btkGetAnalogs(h) %#ok">btkGetAnalogs</a>	BTKGETANALOGS Extract analogs from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>	BTKGETMARKERS Extract markers from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@IO/btkReadAcquisition.html" class="code" title="function h = btkReadAcquisition(filename) %#ok">btkReadAcquisition</a>	BTKREADACQUISITION Read an acquisition's file (C3D, TRC, ...)</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>	RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>	TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.</li><li><a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>	</li><li><a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>	function to deal with different marker labels from vicon. For the code to</li><li><a href="getEMGworksdata.html" class="code" title="function [analogsNexus,EMGList,relData,relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2] = getEMGworksdata(infoEMGList1,infoEMGList2 ,secFileList,fileList, NexusfileList)">getEMGworksdata</a>	get EMG from EMGworks</li><li><a href="processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">processGRFData</a>	PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</li><li><a href="syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetAnalogs.html" class="code" title="function [analogs analogsInfo] = btkGetAnalogs(h) %#ok">btkGetAnalogs</a>	BTKGETANALOGS Extract analogs from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>	BTKGETMARKERS Extract markers from a biomechanical acquisition</li><li><a href="../../../labTools/fun/ext/BTK/matlab/@IO/btkReadAcquisition.html" class="code" title="function h = btkReadAcquisition(filename) %#ok">btkReadAcquisition</a>	BTKREADACQUISITION Read an acquisition's file (C3D, TRC, ...)</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>	RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>	TRUNCATETOSAMELENGTH Truncate two matrices to the same number of rows.</li><li><a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>	ADDMARKERPAIR Register an alternate Vicon label for a marker.</li><li><a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>	FINDLABEL Map a Vicon marker label to the standard label.</li><li><a href="getEMGworksdata.html" class="code" title="function [analogsNexus,EMGList,relData,relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2] = getEMGworksdata(infoEMGList1,infoEMGList2 ,secFileList,fileList, NexusfileList)">getEMGworksdata</a>	GETEMGWORKSDATA Load EMG channels exported by EMGworks for one trial.</li><li><a href="processGRFData.html" class="code" title="function [GRFData, analogs] = processGRFData(analogs, analogsInfo,info, tr)">processGRFData</a>	PROCESSGRFDATA Load and calibrate ground reaction force data from C3D.</li><li><a href="syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	LOADSUBJECT Load, process, and save an experimental session from C3D.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function trials = loadTrials(trialMD, fileList, secFileList, info)</a>
-0002 <span class="comment">% loadTrials  Generates rawTrialData instances for each trial.</span>
+0002 <span class="comment">%LOADTRIALS Generate rawTrialData instances for each trial.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Reads kinematic, force, and EMG data from C3D files for each trial</span>
 0005 <span class="comment">% in the experimental session. For each trial, the function imports</span>
@@ -91,27 +91,27 @@ This function is called by:
 0013 <span class="comment">% filled PC2 channels so that all rawTrialData objects in the session</span>
 0014 <span class="comment">% share a consistent channel layout.</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">%   Inputs:</span>
-0017 <span class="comment">%     trialMD     - Cell array of trialMetaData objects; cell index</span>
-0018 <span class="comment">%                   corresponds to trial number</span>
-0019 <span class="comment">%     fileList    - Cell array of C3D file paths (without extension)</span>
-0020 <span class="comment">%                   containing kinematic and force data; index</span>
-0021 <span class="comment">%                   corresponds to trial number</span>
-0022 <span class="comment">%     secFileList - Cell array of secondary file paths (without extension)</span>
-0023 <span class="comment">%                   containing EMG data from a second PC; empty entries</span>
-0024 <span class="comment">%                   indicate no secondary file for that trial</span>
-0025 <span class="comment">%     info        - Struct of session information returned by GetInfoGUI</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   trialMD     - cell array of trialMetaData objects; cell index</span>
+0018 <span class="comment">%                 corresponds to trial number</span>
+0019 <span class="comment">%   fileList    - cell array of C3D file paths (without extension)</span>
+0020 <span class="comment">%                 containing kinematic and force data; index</span>
+0021 <span class="comment">%                 corresponds to trial number</span>
+0022 <span class="comment">%   secFileList - cell array of secondary file paths (without extension)</span>
+0023 <span class="comment">%                 containing EMG data from a second PC; empty entries</span>
+0024 <span class="comment">%                 indicate no secondary file for that trial</span>
+0025 <span class="comment">%   info        - struct, session information returned by GetInfoGUI</span>
 0026 <span class="comment">%</span>
-0027 <span class="comment">%   Outputs:</span>
-0028 <span class="comment">%     trials - Cell array of rawTrialData objects; cell index</span>
-0029 <span class="comment">%              corresponds to trial number</span>
+0027 <span class="comment">% Outputs:</span>
+0028 <span class="comment">%   trials - cell array of rawTrialData objects; cell index</span>
+0029 <span class="comment">%            corresponds to trial number</span>
 0030 <span class="comment">%</span>
-0031 <span class="comment">%   Toolbox Dependencies:</span>
-0032 <span class="comment">%     BTK - Biomechanics Toolkit     (btkReadAcquisition, btkGetAnalogs,</span>
-0033 <span class="comment">%                                     btkGetMarkers; external dependency)</span>
+0031 <span class="comment">% Toolbox Dependencies:</span>
+0032 <span class="comment">%   BTK - Biomechanics Toolkit (btkReadAcquisition, btkGetAnalogs,</span>
+0033 <span class="comment">%   btkGetMarkers; external dependency)</span>
 0034 <span class="comment">%</span>
-0035 <span class="comment">%   See also: rawTrialData, loadSubject, getTrialMetaData,</span>
-0036 <span class="comment">%   syncEMGData, processGRFData</span>
+0035 <span class="comment">% See also RAWTRIALDATA, LOADSUBJECT, GETTRIALMETADATA, SYNCEMGDATA,</span>
+0036 <span class="comment">% PROCESSGRFDATA.</span>
 0037 
 0038 arguments
 0039     trialMD     cell
@@ -363,279 +363,280 @@ This function is called by:
 0285         <span class="comment">% warn if any are found that are not sync signals</span>
 0286         inOrdered = ismember(lower(EMGList(:)), lower(orderedEMGList(:)));
 0287         isSync    = cellfun( <span class="keyword">...</span>
-0288             @(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(regexpi(x, <span class="string">'^sync'</span>, <span class="string">'once'</span>)), EMGList(~inOrdered));
-0289         <span class="keyword">if</span> any(~inOrdered) &amp;&amp; ~all(isSync)
-0290             ignoredLabels = strjoin(EMGList(~inOrdered &amp; ~isSync), <span class="string">', '</span>);
-0291             warning([<span class="string">'loadTrials: Some provided EMG channels are not '</span> <span class="keyword">...</span>
-0292                 <span class="string">'in the ordered list and will be ignored: '</span> ignoredLabels]);
-0293         <span class="keyword">end</span>
-0294 
-0295         <span class="comment">% Set exactly-zero samples to NaN (unavailable samples)</span>
-0296         allData(allData == 0) = NaN;
-0297         <span class="comment">% Discard sync signal; store remainder as EMGData object</span>
-0298         EMGData = <a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(allData(:, orderedIndexes), 0, <span class="keyword">...</span>
-0299             1/EMGfrequency, EMGList(orderedIndexes));
-0300         clear allData* relData* auxData*;
-0301 
-0302         <span class="comment">%% Process Accelerometer Data</span>
-0303         <span class="comment">% -- Primary file (PC 1)</span>
-0304         <span class="keyword">if</span> info.Nexus == 1
-0305             relData   = [];
-0306             fieldList = fieldnames(analogs);
-0307 
-0308             <span class="comment">% Identify ACC fields and loop only over those, assigning</span>
-0309             <span class="comment">% each channel into a 3D array (samples × channel × axis).</span>
-0310             <span class="comment">% rmfield is called once on all ACC fields after the loop.</span>
-0311             accMask   = contains(fieldList, <span class="string">'ACC'</span>);
-0312             accFields = fieldList(accMask);
-0313             <span class="keyword">for</span> jj = 1:length(accFields)
-0314                 accPos = strfind(accFields{jj}, <span class="string">'ACC'</span>);
-0315                 chIdx  = str2double(accFields{jj}(accPos+4:end));
-0316                 <span class="keyword">switch</span> accFields{jj}(accPos+3)
-0317                     <span class="keyword">case</span> <span class="string">'X'</span>,  axIdx = 1;
-0318                     <span class="keyword">case</span> <span class="string">'Y'</span>,  axIdx = 2;
-0319                     <span class="keyword">case</span> <span class="string">'Z'</span>,  axIdx = 3;
-0320                 <span class="keyword">end</span>
-0321                 relData(:, chIdx, axIdx) = analogs.(accFields{jj});
-0322             <span class="keyword">end</span>
-0323             analogs = rmfield(analogs, accFields);
-0324 
-0325             relData = permute(relData(:, ~emptyChannels1, :), [1, 3, 2]);
-0326             relData = relData(:, :);
-0327             <span class="comment">% Downsample if frequency changed during EMG processing</span>
-0328             <span class="keyword">if</span> EMGfrequency ~= analogsInfo.frequency
-0329                 P       = analogsInfo.frequency / EMGfrequency;
-0330                 R       = round(P);
-0331                 relData = relData(1:R:<span class="keyword">end</span>, :);
-0332             <span class="keyword">end</span>
-0333             <span class="comment">% Apply time alignment correction</span>
-0334             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)
-0335                 relData = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0336                     relData, 1, lagInSamplesA, 1);
-0337             <span class="keyword">end</span>
-0338 
-0339             <span class="comment">% -- Secondary file (PC 2)</span>
-0340             relData2 = [];
-0341             <span class="keyword">if</span> secondFile
-0342                 fieldList = fieldnames(analogs2);
-0343 
-0344                 <span class="comment">% Identify ACC fields and assign into 3D array;</span>
-0345                 <span class="comment">% rmfield is called once after the loop</span>
-0346                 accMask2   = contains(fieldList, <span class="string">'ACC'</span>);
-0347                 accFields2 = fieldList(accMask2);
-0348                 <span class="keyword">for</span> jj = 1:length(accFields2)
-0349                     accPos = strfind(accFields2{jj}, <span class="string">'ACC'</span>);
-0350                     chIdx  = str2double(accFields2{jj}(accPos+4:end));
-0351                     <span class="keyword">switch</span> accFields2{jj}(accPos+3)
-0352                         <span class="keyword">case</span> <span class="string">'X'</span>,  axIdx = 1;
-0353                         <span class="keyword">case</span> <span class="string">'Y'</span>,  axIdx = 2;
-0354                         <span class="keyword">case</span> <span class="string">'Z'</span>,  axIdx = 3;
-0355                     <span class="keyword">end</span>
-0356                     relData2(:, chIdx, axIdx) = analogs2.(accFields2{jj});
-0357                 <span class="keyword">end</span>
-0358                 analogs2 = rmfield(analogs2, accFields2);
-0359 
-0360                 relData2 = permute( <span class="keyword">...</span>
-0361                     relData2(:, ~emptyChannels2, :), [1, 3, 2]);
-0362                 relData2 = relData2(:, :);
-0363                 <span class="comment">% Downsample if frequency changed</span>
-0364                 <span class="keyword">if</span> EMGfrequency ~= analogsInfo2.frequency
-0365                     P        = analogsInfo2.frequency / EMGfrequency;
-0366                     R        = round(P);
-0367                     relData2 = relData2(1:R:<span class="keyword">end</span>, :);
-0368                 <span class="keyword">end</span>
-0369                 <span class="comment">% Apply time alignment correction</span>
-0370                 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)
-0371                     <span class="comment">% Align relData2 to relData1</span>
-0372                     relData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0373                         relData2, timeScaleFactor, lagInSamples, 1);
-0374                     relData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
-0375                         relData2, 1, lagInSamplesA, 1);
-0376                     [auxData, auxData2] = <span class="keyword">...</span>
-0377                         <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(relData, relData2);
-0378                     clear relData*;
-0379                     allData = [auxData, auxData2];
-0380                     clear auxData*;
-0381                 <span class="keyword">else</span>
-0382                     allData = [relData, relData2]; <span class="comment">% no sync, two files</span>
-0383                 <span class="keyword">end</span>
-0384             <span class="keyword">else</span>
-0385                 allData = relData;
-0386                 <span class="comment">% When PC2 file was missing, append NaN columns for</span>
-0387                 <span class="comment">% PC2 ACC channels (3 axes per channel) so that all</span>
-0388                 <span class="comment">% trials have the same accelerometer channel layout</span>
-0389                 <span class="keyword">if</span> pc2Missing
-0390                     nPC2acc = 3 * sum(~emptyChannels2);
-0391                     allData = [allData, NaN(size(allData, 1), nPC2acc)];
-0392                 <span class="keyword">end</span>
-0393             <span class="keyword">end</span>
-0394 
-0395             <span class="comment">% Assign ACC channel name labels.</span>
-0396             <span class="comment">% At this point EMGList includes both PC1 and (when</span>
-0397             <span class="comment">% applicable) PC2 names, so ACCList covers all channels.</span>
-0398             ACCList = {};
-0399             <span class="keyword">for</span> jj = 1:length(EMGList)
-0400                 ACCList{end+1} = [EMGList{jj} <span class="string">'x'</span>];
-0401                 ACCList{end+1} = [EMGList{jj} <span class="string">'y'</span>];
-0402                 ACCList{end+1} = [EMGList{jj} <span class="string">'z'</span>];
-0403             <span class="keyword">end</span>
-0404 
-0405             <span class="comment">% Downsample by accDownsampleFactor to approximately</span>
-0406             <span class="comment">% 150 Hz (closer to original 148 Hz rate)</span>
-0407             <span class="comment">% (where does this get upsampled? why?)</span>
-0408             accData = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>( <span class="keyword">...</span>
-0409                 allData(1:accDownsampleFactor:<span class="keyword">end</span>, :), 0, <span class="keyword">...</span>
-0410                 accDownsampleFactor/EMGfrequency, ACCList, orientation);
-0411             <span class="comment">% Note: orientation is local and unique to each sensor,</span>
-0412             <span class="comment">% which is affixed to a body segment</span>
-0413         <span class="keyword">elseif</span> info.EMGworks == 1
-0414             <span class="comment">% [ACCList, allData, analogsInfo] = getEMGworksdataAcc( ...</span>
-0415             <span class="comment">%     info.EMGList2, info.secEMGworksdir_location, ...</span>
-0416             <span class="comment">%     info.EMGworksdir_location, fileList{tr}, ...</span>
-0417             <span class="comment">%     emptyChannels1, emptyChannels2, EMGList);</span>
-0418             <span class="comment">% Samplingfrequency = analogsInfo.frequency;</span>
-0419             accData = [];
-0420             <span class="comment">% accData = orientedLabTimeSeries( ...</span>
-0421             <span class="comment">%     allData(1:accDownsampleFactor:end,:), 0, ...</span>
-0422             <span class="comment">%     Samplingfrequency, ACCList, orientation);</span>
-0423         <span class="keyword">end</span>
-0424         clear allData* relData* auxData*;
-0425     <span class="keyword">else</span>
-0426         EMGData = [];
-0427         accData = [];
-0428     <span class="keyword">end</span>
-0429 
-0430     <span class="comment">%% Add H-Reflex Stimulator Pin If Present</span>
-0431     relData   = [];
-0432     fieldList = fieldnames(analogs);
-0433 
-0434     <span class="comment">% Identify stimulator trigger fields and extract labels, units,</span>
-0435     <span class="comment">% and data in one pass using cellfun, avoiding a growth loop</span>
-0436     stimMask   = startsWith(fieldList, <span class="string">'Stimulator_Trigger_Sync_'</span>);
-0437     stimFields = fieldList(stimMask);
-0438     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stimFields)         <span class="comment">% if there is a stimulator pin, ...</span>
-0439         stimLabels = stimFields';
-0440         stimCells  = cellfun(@(f) analogs.(f), stimFields, <span class="keyword">...</span>
-0441             <span class="string">'UniformOutput'</span>, false);
-0442         relData    = [stimCells{:}];
-0443         <span class="comment">% NOTE: second argument is time offset (zero, like force data)</span>
-0444         <span class="comment">% third argument is sampling period (1/frequency)</span>
-0445         HreflexStimPinData = <a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
-0446             relData, 0, 1/analogsInfo.frequency, stimLabels);
-0447         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(GRFData)        <span class="comment">% if there is GRF data, ...</span>
-0448             <span class="comment">% Verify data length matches GRF data</span>
-0449             <span class="keyword">if</span> GRFData.Length ~= HreflexStimPinData.Length
-0450                 error([<span class="string">'Hreflex stimulator pin data has a '</span> <span class="keyword">...</span>
-0451                     <span class="string">'different length than GRF data. This should '</span> <span class="keyword">...</span>
-0452                     <span class="string">'never happen. Data is compromised.'</span>]);
-0453             <span class="keyword">end</span>
-0454         <span class="keyword">end</span>
-0455     <span class="keyword">else</span>                            <span class="comment">% otherwise, ...</span>
-0456         HreflexStimPinData = [];
-0457     <span class="keyword">end</span>
-0458 
-0459     <span class="comment">%% Process Motion Capture Marker Data</span>
-0460     <span class="comment">% Clear analog data to free memory; no longer needed after loading</span>
-0461     clear analogs*;
-0462     <span class="keyword">if</span> info.kinematics          <span class="comment">% if there is kinematic data, ...</span>
-0463         [markers, markerInfo] = <a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>(H);
-0464         relData    = [];
-0465         fieldList  = fieldnames(markers);
-0466         markerList = {};
-0467 
-0468         <span class="comment">% Check that required marker labels are present in .c3d files</span>
-0469         mustHaveLabels = {<span class="string">'LHIP'</span>, <span class="string">'RHIP'</span>, <span class="string">'LANK'</span>, <span class="string">'RANK'</span>, <span class="string">'RHEE'</span>, <span class="keyword">...</span>
-0470             <span class="string">'LHEE'</span>, <span class="string">'LTOE'</span>, <span class="string">'RTOE'</span>, <span class="string">'RKNE'</span>, <span class="string">'LKNE'</span>};
-0471         labelPresent = false(1, length(mustHaveLabels));
-0472         <span class="keyword">for</span> ii = 1:length(fieldList)
-0473             newFieldList{ii} = <a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{ii});
-0474             labelPresent     = labelPresent + <span class="keyword">...</span>
-0475                 ismember(mustHaveLabels, newFieldList{ii});
-0476         <span class="keyword">end</span>
-0477 
-0478         <span class="comment">% If any required labels are missing, terminate with error</span>
-0479         <span class="comment">% if any(~labelPresent)</span>
-0480         <span class="comment">%     missingLabels = find(~labelPresent);</span>
-0481         <span class="comment">%     str = ' ';</span>
-0482         <span class="comment">%     for jj = missingLabels</span>
-0483         <span class="comment">%         str = [str ', ' mustHaveLabels{jj}];</span>
-0484         <span class="comment">%     end</span>
-0485         <span class="comment">%     ME = MException('loadTrials:markerDataError', ...</span>
-0486         <span class="comment">%         ['Marker data does not contain:' str ...</span>
-0487         <span class="comment">%         '. Edit ''findLabel'' code to fix.']);</span>
-0488         <span class="comment">%     throw(ME);</span>
-0489         <span class="comment">% end</span>
-0490 
-0491         <span class="comment">% Alternatively, prompt user to map any missing labels</span>
-0492         <span class="keyword">if</span> any(~labelPresent)
-0493             missingLabels    = find(~labelPresent);
-0494             potentialMatches = <span class="keyword">...</span>
-0495                 newFieldList(~ismember(newFieldList, mustHaveLabels));
-0496             <span class="keyword">for</span> jj = missingLabels
-0497                 choice = menu( <span class="keyword">...</span>
-0498                     [{[<span class="string">'WARNING: the marker label '</span> mustHaveLabels{jj}]},<span class="keyword">...</span>
-0499                     {<span class="string">' was not found, but is necessary for'</span>}, <span class="keyword">...</span>
-0500                     {<span class="string">'future calculations. Please indicate which'</span>}, <span class="keyword">...</span>
-0501                     {[<span class="string">' marker corresponds to the '</span> <span class="keyword">...</span>
-0502                     mustHaveLabels{jj} <span class="string">' label:'</span>]}], <span class="keyword">...</span>
-0503                     [potentialMatches {<span class="string">'NaN'</span>}]);
-0504                 <span class="keyword">if</span> choice == 0
-0505                     ME = MException( <span class="keyword">...</span>
-0506                         <span class="string">'loadTrials:markerDataError'</span>, <span class="keyword">...</span>
-0507                         [<span class="string">'Operation terminated by user while '</span> <span class="keyword">...</span>
-0508                         <span class="string">'finding names of necessary labels.'</span>]);
-0509                     throw(ME);
-0510                 <span class="keyword">elseif</span> choice &gt; length(potentialMatches)
-0511                     <span class="comment">% nop</span>
-0512                     warning(<span class="string">'loadTrials:missingRequiredMarker'</span>, <span class="keyword">...</span>
-0513                         [<span class="string">'A required marker ('</span> mustHaveLabels{jj} <span class="keyword">...</span>
-0514                         <span class="string">') was missing from the marker list. This '</span> <span class="keyword">...</span>
-0515                         <span class="string">'will be problematic when computing '</span> <span class="keyword">...</span>
-0516                         <span class="string">'parameters.'</span>]);
-0517                 <span class="keyword">else</span>
-0518                     <span class="comment">% Map the chosen label to the required label</span>
-0519                     <a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>( <span class="keyword">...</span>
-0520                         mustHaveLabels{jj}, potentialMatches{choice});
-0521                 <span class="keyword">end</span>
-0522             <span class="keyword">end</span>
-0523         <span class="keyword">end</span>
-0524 
-0525         <span class="keyword">for</span> jj = 1:length(fieldList)
-0526             <span class="comment">% Skip unlabeled markers (Vicon 'C_' prefix)</span>
-0527             <span class="keyword">if</span> length(fieldList{jj}) &gt; 2 &amp;&amp; <span class="keyword">...</span>
-0528                     ~strcmp(fieldList{jj}(1:2), <span class="string">'C_'</span>)
-0529                 relData = [relData, markers.(fieldList{jj})];
-0530                 <span class="comment">% Standardize marker name via findLabel</span>
-0531                 markerLabel       = <a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{jj});
-0532                 markerList{end+1} = [markerLabel <span class="string">'x'</span>];
-0533                 markerList{end+1} = [markerLabel <span class="string">'y'</span>];
-0534                 markerList{end+1} = [markerLabel <span class="string">'z'</span>];
-0535             <span class="keyword">end</span>
-0536             <span class="comment">% Remove processed marker to save memory</span>
-0537             markers = rmfield(markers, fieldList{jj});
-0538         <span class="keyword">end</span>
-0539         <span class="comment">% Force missing marker data to NaN</span>
-0540         relData(relData == 0) = NaN;
-0541         markerData = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(relData, 0, <span class="keyword">...</span>
-0542             1/markerInfo.frequency, markerList, orientation);
-0543         clear relData;
-0544         markerData.DataInfo.Units = markerInfo.units.ALLMARKERS;
-0545     <span class="keyword">else</span>
-0546         markerData = [];
-0547     <span class="keyword">end</span>
-0548 
-0549     <span class="comment">%% Construct rawTrialData Object</span>
-0550     <span class="comment">% rawTrialData(metaData, markerData, EMGData, GRFData,</span>
-0551     <span class="comment">%     beltSpeedSetData, beltSpeedReadData, accData, EEGData,</span>
-0552     <span class="comment">%     footSwitches, HreflexStimPinData)</span>
-0553     trials{tr} = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>(trialMD{tr}, markerData, EMGData, <span class="keyword">...</span>
-0554         GRFData, [], [], accData, [], [], HreflexStimPinData);
-0555 
-0556 <span class="keyword">end</span>
-0557 
-0558 <span class="keyword">end</span>
-0559 
-0560</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0288             @(x) ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(regexpi(x, <span class="string">'^sync'</span>, <span class="string">'once'</span>)), <span class="keyword">...</span>
+0289             EMGList(~inOrdered));
+0290         <span class="keyword">if</span> any(~inOrdered) &amp;&amp; ~all(isSync)
+0291             ignoredLabels = strjoin(EMGList(~inOrdered &amp; ~isSync), <span class="string">', '</span>);
+0292             warning([<span class="string">'loadTrials: Some provided EMG channels are not '</span> <span class="keyword">...</span>
+0293                 <span class="string">'in the ordered list and will be ignored: '</span> ignoredLabels]);
+0294         <span class="keyword">end</span>
+0295 
+0296         <span class="comment">% Set exactly-zero samples to NaN (unavailable samples)</span>
+0297         allData(allData == 0) = NaN;
+0298         <span class="comment">% Discard sync signal; store remainder as EMGData object</span>
+0299         EMGData = <a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(allData(:, orderedIndexes), 0, <span class="keyword">...</span>
+0300             1/EMGfrequency, EMGList(orderedIndexes));
+0301         clear allData* relData* auxData*;
+0302 
+0303         <span class="comment">%% Process Accelerometer Data</span>
+0304         <span class="comment">% -- Primary file (PC 1)</span>
+0305         <span class="keyword">if</span> info.Nexus == 1
+0306             relData   = [];
+0307             fieldList = fieldnames(analogs);
+0308 
+0309             <span class="comment">% Identify ACC fields and loop only over those, assigning</span>
+0310             <span class="comment">% each channel into a 3D array (samples × channel × axis).</span>
+0311             <span class="comment">% rmfield is called once on all ACC fields after the loop.</span>
+0312             accMask   = contains(fieldList, <span class="string">'ACC'</span>);
+0313             accFields = fieldList(accMask);
+0314             <span class="keyword">for</span> jj = 1:length(accFields)
+0315                 accPos = strfind(accFields{jj}, <span class="string">'ACC'</span>);
+0316                 chIdx  = str2double(accFields{jj}(accPos+4:end));
+0317                 <span class="keyword">switch</span> accFields{jj}(accPos+3)
+0318                     <span class="keyword">case</span> <span class="string">'X'</span>,  axIdx = 1;
+0319                     <span class="keyword">case</span> <span class="string">'Y'</span>,  axIdx = 2;
+0320                     <span class="keyword">case</span> <span class="string">'Z'</span>,  axIdx = 3;
+0321                 <span class="keyword">end</span>
+0322                 relData(:, chIdx, axIdx) = analogs.(accFields{jj});
+0323             <span class="keyword">end</span>
+0324             analogs = rmfield(analogs, accFields);
+0325 
+0326             relData = permute(relData(:, ~emptyChannels1, :), [1, 3, 2]);
+0327             relData = relData(:, :);
+0328             <span class="comment">% Downsample if frequency changed during EMG processing</span>
+0329             <span class="keyword">if</span> EMGfrequency ~= analogsInfo.frequency
+0330                 P       = analogsInfo.frequency / EMGfrequency;
+0331                 R       = round(P);
+0332                 relData = relData(1:R:<span class="keyword">end</span>, :);
+0333             <span class="keyword">end</span>
+0334             <span class="comment">% Apply time alignment correction</span>
+0335             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)
+0336                 relData = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0337                     relData, 1, lagInSamplesA, 1);
+0338             <span class="keyword">end</span>
+0339 
+0340             <span class="comment">% -- Secondary file (PC 2)</span>
+0341             relData2 = [];
+0342             <span class="keyword">if</span> secondFile
+0343                 fieldList = fieldnames(analogs2);
+0344 
+0345                 <span class="comment">% Identify ACC fields and assign into 3D array;</span>
+0346                 <span class="comment">% rmfield is called once after the loop</span>
+0347                 accMask2   = contains(fieldList, <span class="string">'ACC'</span>);
+0348                 accFields2 = fieldList(accMask2);
+0349                 <span class="keyword">for</span> jj = 1:length(accFields2)
+0350                     accPos = strfind(accFields2{jj}, <span class="string">'ACC'</span>);
+0351                     chIdx  = str2double(accFields2{jj}(accPos+4:end));
+0352                     <span class="keyword">switch</span> accFields2{jj}(accPos+3)
+0353                         <span class="keyword">case</span> <span class="string">'X'</span>,  axIdx = 1;
+0354                         <span class="keyword">case</span> <span class="string">'Y'</span>,  axIdx = 2;
+0355                         <span class="keyword">case</span> <span class="string">'Z'</span>,  axIdx = 3;
+0356                     <span class="keyword">end</span>
+0357                     relData2(:, chIdx, axIdx) = analogs2.(accFields2{jj});
+0358                 <span class="keyword">end</span>
+0359                 analogs2 = rmfield(analogs2, accFields2);
+0360 
+0361                 relData2 = permute( <span class="keyword">...</span>
+0362                     relData2(:, ~emptyChannels2, :), [1, 3, 2]);
+0363                 relData2 = relData2(:, :);
+0364                 <span class="comment">% Downsample if frequency changed</span>
+0365                 <span class="keyword">if</span> EMGfrequency ~= analogsInfo2.frequency
+0366                     P        = analogsInfo2.frequency / EMGfrequency;
+0367                     R        = round(P);
+0368                     relData2 = relData2(1:R:<span class="keyword">end</span>, :);
+0369                 <span class="keyword">end</span>
+0370                 <span class="comment">% Apply time alignment correction</span>
+0371                 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sync)
+0372                     <span class="comment">% Align relData2 to relData1</span>
+0373                     relData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0374                         relData2, timeScaleFactor, lagInSamples, 1);
+0375                     relData2 = <a href="../../../labTools/fun/ext/pitools/signalProcessing/resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>( <span class="keyword">...</span>
+0376                         relData2, 1, lagInSamplesA, 1);
+0377                     [auxData, auxData2] = <span class="keyword">...</span>
+0378                         <a href="../../../labTools/fun/ext/pitools/signalProcessing/truncateToSameLength.html" class="code" title="function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)">truncateToSameLength</a>(relData, relData2);
+0379                     clear relData*;
+0380                     allData = [auxData, auxData2];
+0381                     clear auxData*;
+0382                 <span class="keyword">else</span>
+0383                     allData = [relData, relData2]; <span class="comment">% no sync, two files</span>
+0384                 <span class="keyword">end</span>
+0385             <span class="keyword">else</span>
+0386                 allData = relData;
+0387                 <span class="comment">% When PC2 file was missing, append NaN columns for</span>
+0388                 <span class="comment">% PC2 ACC channels (3 axes per channel) so that all</span>
+0389                 <span class="comment">% trials have the same accelerometer channel layout</span>
+0390                 <span class="keyword">if</span> pc2Missing
+0391                     nPC2acc = 3 * sum(~emptyChannels2);
+0392                     allData = [allData, NaN(size(allData, 1), nPC2acc)];
+0393                 <span class="keyword">end</span>
+0394             <span class="keyword">end</span>
+0395 
+0396             <span class="comment">% Assign ACC channel name labels.</span>
+0397             <span class="comment">% At this point EMGList includes both PC1 and (when</span>
+0398             <span class="comment">% applicable) PC2 names, so ACCList covers all channels.</span>
+0399             ACCList = {};
+0400             <span class="keyword">for</span> jj = 1:length(EMGList)
+0401                 ACCList{end+1} = [EMGList{jj} <span class="string">'x'</span>];
+0402                 ACCList{end+1} = [EMGList{jj} <span class="string">'y'</span>];
+0403                 ACCList{end+1} = [EMGList{jj} <span class="string">'z'</span>];
+0404             <span class="keyword">end</span>
+0405 
+0406             <span class="comment">% Downsample by accDownsampleFactor to approximately</span>
+0407             <span class="comment">% 150 Hz (closer to original 148 Hz rate)</span>
+0408             <span class="comment">% (where does this get upsampled? why?)</span>
+0409             accData = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>( <span class="keyword">...</span>
+0410                 allData(1:accDownsampleFactor:<span class="keyword">end</span>, :), 0, <span class="keyword">...</span>
+0411                 accDownsampleFactor/EMGfrequency, ACCList, orientation);
+0412             <span class="comment">% Note: orientation is local and unique to each sensor,</span>
+0413             <span class="comment">% which is affixed to a body segment</span>
+0414         <span class="keyword">elseif</span> info.EMGworks == 1
+0415             <span class="comment">% [ACCList, allData, analogsInfo] = getEMGworksdataAcc( ...</span>
+0416             <span class="comment">%     info.EMGList2, info.secEMGworksdir_location, ...</span>
+0417             <span class="comment">%     info.EMGworksdir_location, fileList{tr}, ...</span>
+0418             <span class="comment">%     emptyChannels1, emptyChannels2, EMGList);</span>
+0419             <span class="comment">% Samplingfrequency = analogsInfo.frequency;</span>
+0420             accData = [];
+0421             <span class="comment">% accData = orientedLabTimeSeries( ...</span>
+0422             <span class="comment">%     allData(1:accDownsampleFactor:end,:), 0, ...</span>
+0423             <span class="comment">%     Samplingfrequency, ACCList, orientation);</span>
+0424         <span class="keyword">end</span>
+0425         clear allData* relData* auxData*;
+0426     <span class="keyword">else</span>
+0427         EMGData = [];
+0428         accData = [];
+0429     <span class="keyword">end</span>
+0430 
+0431     <span class="comment">%% Add H-Reflex Stimulator Pin If Present</span>
+0432     relData   = [];
+0433     fieldList = fieldnames(analogs);
+0434 
+0435     <span class="comment">% Identify stimulator trigger fields and extract labels, units,</span>
+0436     <span class="comment">% and data in one pass using cellfun, avoiding a growth loop</span>
+0437     stimMask   = startsWith(fieldList, <span class="string">'Stimulator_Trigger_Sync_'</span>);
+0438     stimFields = fieldList(stimMask);
+0439     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stimFields)         <span class="comment">% if there is a stimulator pin, ...</span>
+0440         stimLabels = stimFields';
+0441         stimCells  = cellfun(@(f) analogs.(f), stimFields, <span class="keyword">...</span>
+0442             <span class="string">'UniformOutput'</span>, false);
+0443         relData    = [stimCells{:}];
+0444         <span class="comment">% NOTE: second argument is time offset (zero, like force data)</span>
+0445         <span class="comment">% third argument is sampling period (1/frequency)</span>
+0446         HreflexStimPinData = <a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
+0447             relData, 0, 1/analogsInfo.frequency, stimLabels);
+0448         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(GRFData)        <span class="comment">% if there is GRF data, ...</span>
+0449             <span class="comment">% Verify data length matches GRF data</span>
+0450             <span class="keyword">if</span> GRFData.Length ~= HreflexStimPinData.Length
+0451                 error([<span class="string">'Hreflex stimulator pin data has a '</span> <span class="keyword">...</span>
+0452                     <span class="string">'different length than GRF data. This should '</span> <span class="keyword">...</span>
+0453                     <span class="string">'never happen. Data is compromised.'</span>]);
+0454             <span class="keyword">end</span>
+0455         <span class="keyword">end</span>
+0456     <span class="keyword">else</span>                            <span class="comment">% otherwise, ...</span>
+0457         HreflexStimPinData = [];
+0458     <span class="keyword">end</span>
+0459 
+0460     <span class="comment">%% Process Motion Capture Marker Data</span>
+0461     <span class="comment">% Clear analog data to free memory; no longer needed after loading</span>
+0462     clear analogs*;
+0463     <span class="keyword">if</span> info.kinematics          <span class="comment">% if there is kinematic data, ...</span>
+0464         [markers, markerInfo] = <a href="../../../labTools/fun/ext/BTK/matlab/@Common/btkGetMarkers.html" class="code" title="function [markers markersInfo] = btkGetMarkers(h) %#ok">btkGetMarkers</a>(H);
+0465         relData    = [];
+0466         fieldList  = fieldnames(markers);
+0467         markerList = {};
+0468 
+0469         <span class="comment">% Check that required marker labels are present in .c3d files</span>
+0470         mustHaveLabels = {<span class="string">'LHIP'</span>, <span class="string">'RHIP'</span>, <span class="string">'LANK'</span>, <span class="string">'RANK'</span>, <span class="string">'RHEE'</span>, <span class="keyword">...</span>
+0471             <span class="string">'LHEE'</span>, <span class="string">'LTOE'</span>, <span class="string">'RTOE'</span>, <span class="string">'RKNE'</span>, <span class="string">'LKNE'</span>};
+0472         labelPresent = false(1, length(mustHaveLabels));
+0473         <span class="keyword">for</span> ii = 1:length(fieldList)
+0474             newFieldList{ii} = <a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{ii});
+0475             labelPresent     = labelPresent + <span class="keyword">...</span>
+0476                 ismember(mustHaveLabels, newFieldList{ii});
+0477         <span class="keyword">end</span>
+0478 
+0479         <span class="comment">% If any required labels are missing, terminate with error</span>
+0480         <span class="comment">% if any(~labelPresent)</span>
+0481         <span class="comment">%     missingLabels = find(~labelPresent);</span>
+0482         <span class="comment">%     str = ' ';</span>
+0483         <span class="comment">%     for jj = missingLabels</span>
+0484         <span class="comment">%         str = [str ', ' mustHaveLabels{jj}];</span>
+0485         <span class="comment">%     end</span>
+0486         <span class="comment">%     ME = MException('loadTrials:markerDataError', ...</span>
+0487         <span class="comment">%         ['Marker data does not contain:' str ...</span>
+0488         <span class="comment">%         '. Edit ''findLabel'' code to fix.']);</span>
+0489         <span class="comment">%     throw(ME);</span>
+0490         <span class="comment">% end</span>
+0491 
+0492         <span class="comment">% Alternatively, prompt user to map any missing labels</span>
+0493         <span class="keyword">if</span> any(~labelPresent)
+0494             missingLabels    = find(~labelPresent);
+0495             potentialMatches = <span class="keyword">...</span>
+0496                 newFieldList(~ismember(newFieldList, mustHaveLabels));
+0497             <span class="keyword">for</span> jj = missingLabels
+0498                 choice = menu( <span class="keyword">...</span>
+0499                     [{[<span class="string">'WARNING: the marker label '</span> mustHaveLabels{jj}]},<span class="keyword">...</span>
+0500                     {<span class="string">' was not found, but is necessary for'</span>}, <span class="keyword">...</span>
+0501                     {<span class="string">'future calculations. Please indicate which'</span>}, <span class="keyword">...</span>
+0502                     {[<span class="string">' marker corresponds to the '</span> <span class="keyword">...</span>
+0503                     mustHaveLabels{jj} <span class="string">' label:'</span>]}], <span class="keyword">...</span>
+0504                     [potentialMatches {<span class="string">'NaN'</span>}]);
+0505                 <span class="keyword">if</span> choice == 0
+0506                     ME = MException( <span class="keyword">...</span>
+0507                         <span class="string">'loadTrials:markerDataError'</span>, <span class="keyword">...</span>
+0508                         [<span class="string">'Operation terminated by user while '</span> <span class="keyword">...</span>
+0509                         <span class="string">'finding names of necessary labels.'</span>]);
+0510                     throw(ME);
+0511                 <span class="keyword">elseif</span> choice &gt; length(potentialMatches)
+0512                     <span class="comment">% nop</span>
+0513                     warning(<span class="string">'loadTrials:missingRequiredMarker'</span>, <span class="keyword">...</span>
+0514                         [<span class="string">'A required marker ('</span> mustHaveLabels{jj} <span class="keyword">...</span>
+0515                         <span class="string">') was missing from the marker list. This '</span> <span class="keyword">...</span>
+0516                         <span class="string">'will be problematic when computing '</span> <span class="keyword">...</span>
+0517                         <span class="string">'parameters.'</span>]);
+0518                 <span class="keyword">else</span>
+0519                     <span class="comment">% Map the chosen label to the required label</span>
+0520                     <a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>( <span class="keyword">...</span>
+0521                         mustHaveLabels{jj}, potentialMatches{choice});
+0522                 <span class="keyword">end</span>
+0523             <span class="keyword">end</span>
+0524         <span class="keyword">end</span>
+0525 
+0526         <span class="keyword">for</span> jj = 1:length(fieldList)
+0527             <span class="comment">% Skip unlabeled markers (Vicon 'C_' prefix)</span>
+0528             <span class="keyword">if</span> length(fieldList{jj}) &gt; 2 &amp;&amp; <span class="keyword">...</span>
+0529                     ~strcmp(fieldList{jj}(1:2), <span class="string">'C_'</span>)
+0530                 relData = [relData, markers.(fieldList{jj})];
+0531                 <span class="comment">% Standardize marker name via findLabel</span>
+0532                 markerLabel       = <a href="findLabel.html" class="code" title="function markerLabel = findLabel(viconLabel)">findLabel</a>(fieldList{jj});
+0533                 markerList{end+1} = [markerLabel <span class="string">'x'</span>];
+0534                 markerList{end+1} = [markerLabel <span class="string">'y'</span>];
+0535                 markerList{end+1} = [markerLabel <span class="string">'z'</span>];
+0536             <span class="keyword">end</span>
+0537             <span class="comment">% Remove processed marker to save memory</span>
+0538             markers = rmfield(markers, fieldList{jj});
+0539         <span class="keyword">end</span>
+0540         <span class="comment">% Force missing marker data to NaN</span>
+0541         relData(relData == 0) = NaN;
+0542         markerData = <a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(relData, 0, <span class="keyword">...</span>
+0543             1/markerInfo.frequency, markerList, orientation);
+0544         clear relData;
+0545         markerData.DataInfo.Units = markerInfo.units.ALLMARKERS;
+0546     <span class="keyword">else</span>
+0547         markerData = [];
+0548     <span class="keyword">end</span>
+0549 
+0550     <span class="comment">%% Construct rawTrialData Object</span>
+0551     <span class="comment">% rawTrialData(metaData, markerData, EMGData, GRFData,</span>
+0552     <span class="comment">%     beltSpeedSetData, beltSpeedReadData, accData, EEGData,</span>
+0553     <span class="comment">%     footSwitches, HreflexStimPinData)</span>
+0554     trials{tr} = <a href="../../../labTools/classes/dataStructs/@rawTrialData/rawTrialData.html" class="code" title="">rawTrialData</a>(trialMD{tr}, markerData, EMGData, <span class="keyword">...</span>
+0555         GRFData, [], [], accData, [], [], HreflexStimPinData);
+0556 
+0557 <span class="keyword">end</span>
+0558 
+0559 <span class="keyword">end</span>
+0560 
+0561</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

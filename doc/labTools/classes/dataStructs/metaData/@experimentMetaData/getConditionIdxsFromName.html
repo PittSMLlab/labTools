@@ -4,7 +4,7 @@
 <head>
   <title>Description of getConditionIdxsFromName</title>
   <meta name="keywords" content="getConditionIdxsFromName">
-  <meta name="description" content="getConditionIdxsFromName  Returns condition indices from names">
+  <meta name="description" content="GETCONDITIONIDXSFROMNAME Returns condition indices from names.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,47 +21,48 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>getConditionIdxsFromName  Returns condition indices from names</strong></div>
+<div class="box"><strong>GETCONDITIONIDXSFROMNAME Returns condition indices from names.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getConditionIdxsFromName  Returns condition indices from names
+<div class="fragment"><pre class="comment">GETCONDITIONIDXSFROMNAME Returns condition indices from names.
 
    conditionIdxs = getConditionIdxsFromName(this, conditionNames)
-   looks for condition names similar to those given and returns
-   corresponding condition indices. Accepts partial matches.
+ looks for condition names similar to those given and returns
+ corresponding condition indices. Accepts partial matches.
 
    conditionIdxs = getConditionIdxsFromName(this, conditionNames,
-   exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over
-   matching behavior
+ exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over
+ matching behavior
 
-   Inputs:
-       this - experimentMetaData object
-       conditionNames - cell array containing strings or nested cell
-                        arrays of strings (e.g., {'Base', 'Adap',
-                        {'Post', 'wash'}})
-       exactMatchesOnlyFlag - if true, only exact matches accepted
-                              (default: false)
-       ignoreMissingNamesFlag - if true, missing names generate
-                                warning instead of error (default:
-                                false)
+ Inputs:
+   this                   - experimentMetaData object
+   conditionNames         - cell array containing strings or nested cell
+                            arrays of strings (e.g., {'Base', 'Adap',
+                            {'Post', 'wash'}})
+   exactMatchesOnlyFlag   - if true, only exact matches accepted (default:
+                            false)
+   ignoreMissingNamesFlag - if true, missing names generate warning instead
+                            of error (default: false)
 
-   Outputs:
-       conditionIdxs - vector of condition indices (NaN for conditions
-                       not found)
+ Outputs:
+   conditionIdxs - vector of condition indices (NaN for conditions not
+                   found)
 
-   See also: <a href="getTrialsInCondition.html" class="code" title="function trialNums = getTrialsInCondition(this, conditionNames)">getTrialsInCondition</a>, <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getTrialsInCondition.html" class="code" title="function trialNums = getTrialsInCondition(this, conditionNames)">GETTRIALSINCONDITION</a>, <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">GETCONDITIONSTHATMATCH</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>	getAlignedField  Extracts time-aligned field data across</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>	getStridedField  Extracts stride-segmented field data across</li><li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/getAlignedField.html" class="code" title="function [alignedField, originalTrial, bad] = getAlignedField(this, field, conditions, gaitEventLabel, alignmentLengths)">getAlignedField</a>	GETALIGNEDFIELD Extract time-aligned field data across trials.</li><li><a href="../../../../../labTools/classes/dataStructs/@experimentData/getStridedField.html" class="code" title="function [stridedField, bad, originalTrial,originalInitTime, gaitEventLabel] = getStridedField(this, field, conditions, gaitEventLabel)">getStridedField</a>	GETSTRIDEDFIELD Extract stride-segmented field data across trials.</li><li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
 <!-- crossreference -->
 
 
@@ -69,97 +70,98 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function conditionIdxs = getConditionIdxsFromName(this, </a><span class="keyword">...</span>
 0002     conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)
-0003 <span class="comment">%getConditionIdxsFromName  Returns condition indices from names</span>
+0003 <span class="comment">%GETCONDITIONIDXSFROMNAME Returns condition indices from names.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   conditionIdxs = getConditionIdxsFromName(this, conditionNames)</span>
-0006 <span class="comment">%   looks for condition names similar to those given and returns</span>
-0007 <span class="comment">%   corresponding condition indices. Accepts partial matches.</span>
+0006 <span class="comment">% looks for condition names similar to those given and returns</span>
+0007 <span class="comment">% corresponding condition indices. Accepts partial matches.</span>
 0008 <span class="comment">%</span>
 0009 <span class="comment">%   conditionIdxs = getConditionIdxsFromName(this, conditionNames,</span>
-0010 <span class="comment">%   exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over</span>
-0011 <span class="comment">%   matching behavior</span>
+0010 <span class="comment">% exactMatchesOnlyFlag, ignoreMissingNamesFlag) allows control over</span>
+0011 <span class="comment">% matching behavior</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   Inputs:</span>
-0014 <span class="comment">%       this - experimentMetaData object</span>
-0015 <span class="comment">%       conditionNames - cell array containing strings or nested cell</span>
-0016 <span class="comment">%                        arrays of strings (e.g., {'Base', 'Adap',</span>
-0017 <span class="comment">%                        {'Post', 'wash'}})</span>
-0018 <span class="comment">%       exactMatchesOnlyFlag - if true, only exact matches accepted</span>
-0019 <span class="comment">%                              (default: false)</span>
-0020 <span class="comment">%       ignoreMissingNamesFlag - if true, missing names generate</span>
-0021 <span class="comment">%                                warning instead of error (default:</span>
-0022 <span class="comment">%                                false)</span>
-0023 <span class="comment">%</span>
-0024 <span class="comment">%   Outputs:</span>
-0025 <span class="comment">%       conditionIdxs - vector of condition indices (NaN for conditions</span>
-0026 <span class="comment">%                       not found)</span>
-0027 <span class="comment">%</span>
-0028 <span class="comment">%   See also: getTrialsInCondition, getConditionsThatMatch</span>
-0029 
-0030 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exactMatchesOnlyFlag)
-0031     <span class="comment">% Default behavior accepts partial matches</span>
-0032     exactMatchesOnlyFlag = 0;
-0033 <span class="keyword">end</span>
-0034 
-0035 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ignoreMissingNamesFlag)
-0036     ignoreMissingNamesFlag = 0;
-0037 <span class="keyword">end</span>
-0038 
-0039 <span class="keyword">if</span> isa(conditionNames, <span class="string">'char'</span>)
-0040     conditionNames = {conditionNames};
-0041 <span class="keyword">end</span>
-0042 
-0043 nConds = length(conditionNames);
-0044 conditionIdxs = NaN(nConds, 1);
-0045 <span class="keyword">for</span> i = 1:nConds
-0046     <span class="comment">% First: find if there is condition with similar name to the one given</span>
-0047     clear condName;
-0048     <span class="keyword">if</span> iscell(conditionNames{i})
-0049         <span class="keyword">for</span> j = 1:length(conditionNames{i})
-0050             condName{j} = lower(conditionNames{i}{j});
-0051         <span class="keyword">end</span>
-0052     <span class="keyword">else</span>
-0053         condName{1} = lower(conditionNames{i}); <span class="comment">% Lower case</span>
-0054     <span class="keyword">end</span>
-0055     aux = this.conditionName;
-0056     aux(cellfun(@<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, aux)) = {<span class="string">''</span>};
-0057     allConds = lower(aux);
-0058     condIdx = [];
-0059     j = 0;
-0060     <span class="keyword">while</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condIdx) &amp;&amp; j &lt; length(condName)
-0061         j = j + 1;
-0062         matches = find(strcmpi(allConds, condName{j})); <span class="comment">% Exact matches</span>
-0063         <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(matches) &amp;&amp; exactMatchesOnlyFlag == 0
-0064             warning([<span class="string">'Looking for conditions named '''</span> condName{j} <span class="keyword">...</span>
-0065                 <span class="string">''' but found no exact matches. Looking for partial '</span> <span class="keyword">...</span>
-0066                 <span class="string">'matches.'</span>]);
-0067             matches = find(~cellfun(@<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, strfind(allConds, <span class="keyword">...</span>
-0068                 condName{j})));
-0069         <span class="keyword">end</span>
-0070         <span class="keyword">if</span> length(matches) &gt; 1
-0071             warning([<span class="string">'Looking for conditions named '''</span> condName{j} <span class="keyword">...</span>
-0072                 <span class="string">''' but found multiple matches. Using '''</span> <span class="keyword">...</span>
-0073                 allConds{matches(1)}]);
-0074             matches = matches(1);
-0075         <span class="keyword">end</span>
-0076         condIdx = matches;
-0077     <span class="keyword">end</span>
-0078     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condIdx)
-0079         conditionIdxs(i) = condIdx;
-0080     <span class="keyword">else</span>
-0081         <span class="keyword">if</span> ~ignoreMissingNamesFlag
-0082             error([<span class="string">'Looking for conditions named '''</span> <span class="keyword">...</span>
-0083                 <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(condName, <span class="string">','</span>)) <span class="keyword">...</span>
-0084                 <span class="string">'''but found no matches, stopping.'</span>]);
-0085         <span class="keyword">else</span>
-0086             warning([<span class="string">'Looking for conditions named '''</span> <span class="keyword">...</span>
-0087                 <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(condName, <span class="string">','</span>)) <span class="keyword">...</span>
-0088                 <span class="string">'''but found no matches, ignoring.'</span>]);
-0089         <span class="keyword">end</span>
-0090     <span class="keyword">end</span>
-0091 <span class="keyword">end</span>
+0013 <span class="comment">% Inputs:</span>
+0014 <span class="comment">%   this                   - experimentMetaData object</span>
+0015 <span class="comment">%   conditionNames         - cell array containing strings or nested cell</span>
+0016 <span class="comment">%                            arrays of strings (e.g., {'Base', 'Adap',</span>
+0017 <span class="comment">%                            {'Post', 'wash'}})</span>
+0018 <span class="comment">%   exactMatchesOnlyFlag   - if true, only exact matches accepted (default:</span>
+0019 <span class="comment">%                            false)</span>
+0020 <span class="comment">%   ignoreMissingNamesFlag - if true, missing names generate warning instead</span>
+0021 <span class="comment">%                            of error (default: false)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Outputs:</span>
+0024 <span class="comment">%   conditionIdxs - vector of condition indices (NaN for conditions not</span>
+0025 <span class="comment">%                   found)</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Toolbox Dependencies: None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% See also GETTRIALSINCONDITION, GETCONDITIONSTHATMATCH.</span>
+0030 
+0031 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exactMatchesOnlyFlag)
+0032     <span class="comment">% Default behavior accepts partial matches</span>
+0033     exactMatchesOnlyFlag = 0;
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ignoreMissingNamesFlag)
+0037     ignoreMissingNamesFlag = 0;
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">if</span> isa(conditionNames, <span class="string">'char'</span>)
+0041     conditionNames = {conditionNames};
+0042 <span class="keyword">end</span>
+0043 
+0044 nConds        = length(conditionNames);
+0045 conditionIdxs = NaN(nConds, 1);
+0046 <span class="keyword">for</span> con = 1:nConds
+0047     <span class="comment">% First: find if there is condition with similar name to the one given</span>
+0048     clear condName;
+0049     <span class="keyword">if</span> iscell(conditionNames{con})
+0050         <span class="keyword">for</span> jj = 1:length(conditionNames{con})
+0051             condName{jj} = lower(conditionNames{con}{jj});
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">else</span>
+0054         condName{1} = lower(conditionNames{con}); <span class="comment">% Lower case</span>
+0055     <span class="keyword">end</span>
+0056     aux = this.conditionName;
+0057     aux(cellfun(@<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, aux)) = {<span class="string">''</span>};
+0058     allConds = lower(aux);
+0059     condIdx  = [];
+0060     jj        = 0;
+0061     <span class="keyword">while</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condIdx) &amp;&amp; jj &lt; length(condName)
+0062         jj       = jj + 1;
+0063         matches = find(strcmpi(allConds, condName{jj})); <span class="comment">% Exact matches</span>
+0064         <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(matches) &amp;&amp; exactMatchesOnlyFlag == 0
+0065             warning([<span class="string">'Looking for conditions named '''</span> condName{jj} <span class="keyword">...</span>
+0066                 <span class="string">''' but found no exact matches. Looking for partial '</span> <span class="keyword">...</span>
+0067                 <span class="string">'matches.'</span>]);
+0068             matches = find(~cellfun(@<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, strfind(allConds, <span class="keyword">...</span>
+0069                 condName{jj})));
+0070         <span class="keyword">end</span>
+0071         <span class="keyword">if</span> length(matches) &gt; 1
+0072             warning([<span class="string">'Looking for conditions named '''</span> condName{jj} <span class="keyword">...</span>
+0073                 <span class="string">''' but found multiple matches. Using '''</span> <span class="keyword">...</span>
+0074                 allConds{matches(1)}]);
+0075             matches = matches(1);
+0076         <span class="keyword">end</span>
+0077         condIdx = matches;
+0078     <span class="keyword">end</span>
+0079     <span class="keyword">if</span> ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condIdx)
+0080         conditionIdxs(con) = condIdx;
+0081     <span class="keyword">else</span>
+0082         <span class="keyword">if</span> ~ignoreMissingNamesFlag
+0083             error([<span class="string">'Looking for conditions named '''</span> <span class="keyword">...</span>
+0084                 <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(condName, <span class="string">','</span>)) <span class="keyword">...</span>
+0085                 <span class="string">'''but found no matches, stopping.'</span>]);
+0086         <span class="keyword">else</span>
+0087             warning([<span class="string">'Looking for conditions named '''</span> <span class="keyword">...</span>
+0088                 <a href="../../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(strcat(condName, <span class="string">','</span>)) <span class="keyword">...</span>
+0089                 <span class="string">'''but found no matches, ignoring.'</span>]);
+0090         <span class="keyword">end</span>
+0091     <span class="keyword">end</span>
 0092 <span class="keyword">end</span>
-0093</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0093 <span class="keyword">end</span>
+0094</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

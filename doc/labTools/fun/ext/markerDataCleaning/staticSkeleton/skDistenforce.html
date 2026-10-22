@@ -4,7 +4,7 @@
 <head>
   <title>Description of skDistenforce</title>
   <meta name="keywords" content="skDistenforce">
-  <meta name="description" content="Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the">
+  <meta name="description" content="SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,102 +21,174 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</strong></div>
+<div class="box"><strong>SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [xMLE] = skDistlearnenforce(x,P,s,R) </strong></div>
+<div class="box"><strong>function xMLE = skDistlearnenforce(x,P,s,R) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the
-relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal
-(bayesian) estimate of x
-If elements of x are NaN, they are considered 'missing' and assigned an
-arbitrary value with (numerically) infinite uncertainty</pre></div>
+<div class="fragment"><pre class="comment">SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.
+
+   xMLE = SKDISTLEARNENFORCE(x,P,s,R) combines a prior estimate x (normal,
+ with covariance P) of the marker positions with the pairwise-distance
+ model d(x) ~ N(s,diag(R)). The distance constraints are linearized
+ around the current estimate and solved with UPDATEKF until the estimate
+ changes by less than 1e-3 or 25 iterations are reached. Elements of x
+ that are NaN are treated as missing and given numerically infinite
+ uncertainty.
+
+ NOTE: the function is named skDistlearnenforce but the file is
+ skDistenforce.m, so MATLAB calls it by the file name. UPDATEKF is not in
+ the repository.
+
+ Inputs:
+   x - N x d prior marker positions (NaN marks a missing element)
+   P - prior covariance of x(:)
+   s - N x N mean pairwise distances
+   R - N x N variances of the pairwise distances
+
+ Outputs:
+   xMLE - estimated positions (vectorized, N*d x 1)
+
+ Toolbox Dependencies: None
+
+ See also <a href="skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">SKDISTLEARN</a>, <a href="skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">SKDISTDETECT</a>, <a href="sk3Denforce.html" class="code" title="function xMLE = sk3Denforce(x,P,s,R)">SK3DENFORCE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Computes inter-marker distances.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li></ul>
+<li><a href="../../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function [Do,W]=linearizeDist(xo)</a></li><li><a href="#_sub2" class="code">function testLinearization(xo)</a></li></ul>
+<li><a href="#_sub1" class="code">function [Do,W] = linearizeDist(xo)</a></li><li><a href="#_sub2" class="code">function testLinearization(xo)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xMLE] = skDistlearnenforce(x,P,s,R)</a>
-0002 <span class="comment">%Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</span>
-0003 <span class="comment">%relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal</span>
-0004 <span class="comment">%(bayesian) estimate of x</span>
-0005 <span class="comment">%If elements of x are NaN, they are considered 'missing' and assigned an</span>
-0006 <span class="comment">%arbitrary value with (numerically) infinite uncertainty</span>
-0007 [N,d]=size(x);
-0008 
-0009 <span class="comment">%Deal with NaNs in data:</span>
-0010 idx=isnan(x(:));
-0011 x(idx)=0;
-0012 aux=zeros(N*d,1);
-0013 aux(idx)=1;
-0014 P=P+1e15*max(P(:))*diag(aux);
-0015 
-0016 <span class="comment">%Iterate: linearize, find optimal solution</span>
-0017 endFlag=false;
-0018 changeTh=1e-3;
-0019 xMLE=x(:); <span class="comment">%Nd x 1</span>
-0020 <span class="comment">%Reshaping parameters for updateKF:</span>
-0021 y=zeros(N^2,1);s=s(:);R=diag(R(:));x=x(:);
-0022 lastXMLE=x; <span class="comment">%Init guess</span>
-0023 iter=0;
-0024 maxIter=25;
-0025 <span class="keyword">while</span> ~endFlag &amp;&amp; iter&lt;maxIter
-0026   <span class="comment">%Linearize distance constraints:</span>
-0027   [off,W]=<a href="#_sub1" class="code" title="subfunction [Do,W]=linearizeDist(xo)">linearizeDist</a>(reshape(lastXMLE,N,d));
-0028   <span class="comment">%Optimal bayesian solution around linearized point:</span>
-0029   [xMLE,PMLE]=updateKF(W,R,x,P,s-off(:),y);
-0030   change=sqrt(sum((xMLE-lastXMLE(:)).^2));
-0031   endFlag=change&lt;changeTh;
-0032   lastXMLE=xMLE;
-0033   iter=iter+1;
-0034 <span class="keyword">end</span>
-0035 <span class="keyword">end</span>
-0036 
-0037 <a name="_sub1" href="#_subfunctions" class="code">function [Do,W]=linearizeDist(xo)</a>
-0038   <span class="comment">%Computes an approximation of the function</span>
-0039   <span class="comment">%D=computedDistanceMatrix(x) around x=xo</span>
-0040   <span class="comment">%As: D(:) ~ Do(:) + W*x(:)</span>
-0041   <span class="comment">%Assumed xo is Nxd</span>
-0042   [N,d]=size(xo);
-0043   D=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(xo);
-0044   G1=reshape(xo,N,1,d)./(D+eye(N));
-0045   G2=reshape(xo,1,N,d)./(D+eye(N));
-0046   W1=zeros(N,N,N,d);
-0047   W2=zeros(N,N,N,d);
-0048   <span class="keyword">for</span> i=1:N
-0049     W1(i,:,i,:)=G1(:,i,:);
-0050     W2(:,i,i,:)=G2(:,i,:);
-0051   <span class="keyword">end</span>
-0052   <span class="comment">%Need to reshape G/pad with 0's, so W is NxNxNd</span>
-0053   W=W1-W2; <span class="comment">%NxNxNxd</span>
-0054   W=reshape(W,N^2,N*d);
-0055   Do=D-reshape(W*xo(:),N,N); <span class="comment">%NxN</span>
-0056 <span class="keyword">end</span>
-0057 
-0058 <a name="_sub2" href="#_subfunctions" class="code">function testLinearization(xo)</a>
-0059 D=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(xo);
-0060 [Do,W]=<a href="#_sub1" class="code" title="subfunction [Do,W]=linearizeDist(xo)">linearizeDist</a>(xo);
-0061 e=1e-3;
-0062 p=e*randn(size(xo));
-0063 x=xo+p;
-0064 D1=<a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(x);
-0065 D1app=Do(:)+W*x(:);
-0066 
-0067 <span class="comment">%Check: D1 ~ D1app</span>
-0068 norm(D1(:)-D1app) <span class="comment">%Should be very small</span>
-0069 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function xMLE = skDistlearnenforce(x,P,s,R)</a>
+0002 <span class="comment">%SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   xMLE = SKDISTLEARNENFORCE(x,P,s,R) combines a prior estimate x (normal,</span>
+0005 <span class="comment">% with covariance P) of the marker positions with the pairwise-distance</span>
+0006 <span class="comment">% model d(x) ~ N(s,diag(R)). The distance constraints are linearized</span>
+0007 <span class="comment">% around the current estimate and solved with UPDATEKF until the estimate</span>
+0008 <span class="comment">% changes by less than 1e-3 or 25 iterations are reached. Elements of x</span>
+0009 <span class="comment">% that are NaN are treated as missing and given numerically infinite</span>
+0010 <span class="comment">% uncertainty.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% NOTE: the function is named skDistlearnenforce but the file is</span>
+0013 <span class="comment">% skDistenforce.m, so MATLAB calls it by the file name. UPDATEKF is not in</span>
+0014 <span class="comment">% the repository.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   x - N x d prior marker positions (NaN marks a missing element)</span>
+0018 <span class="comment">%   P - prior covariance of x(:)</span>
+0019 <span class="comment">%   s - N x N mean pairwise distances</span>
+0020 <span class="comment">%   R - N x N variances of the pairwise distances</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   xMLE - estimated positions (vectorized, N*d x 1)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies: None</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also SKDISTLEARN, SKDISTDETECT, SK3DENFORCE.</span>
+0028 
+0029 [N,d] = size(x);
+0030 
+0031 <span class="comment">%Deal with NaNs in data:</span>
+0032 missingScale = 1e15; <span class="comment">% makes the uncertainty of missing elements infinite</span>
+0033 idx = isnan(x(:));
+0034 x(idx) = 0;
+0035 aux = zeros(N*d,1);
+0036 aux(idx) = 1;
+0037 P = P+missingScale*max(P(:))*diag(aux);
+0038 
+0039 <span class="comment">%Iterate: linearize, find optimal solution</span>
+0040 endFlag  = false;
+0041 changeTh = 1e-3;
+0042 xMLE     = x(:); <span class="comment">%Nd x 1</span>
+0043 <span class="comment">%Reshaping parameters for updateKF:</span>
+0044 y        = zeros(N^2,1);s = s(:);R = diag(R(:));x = x(:);
+0045 lastXMLE = x; <span class="comment">%Init guess</span>
+0046 iter     = 0;
+0047 maxIter  = 25;
+0048 <span class="keyword">while</span> ~endFlag &amp;&amp; iter &lt; maxIter
+0049     <span class="comment">%Linearize distance constraints:</span>
+0050     [off,W] = <a href="#_sub1" class="code" title="subfunction [Do,W] = linearizeDist(xo)">linearizeDist</a>(reshape(lastXMLE,N,d));
+0051     <span class="comment">%Optimal bayesian solution around linearized point:</span>
+0052     [xMLE,PMLE] = updateKF(W,R,x,P,s-off(:),y);
+0053     change   = sqrt(sum((xMLE-lastXMLE(:)).^2));
+0054     endFlag  = change &lt; changeTh;
+0055     lastXMLE = xMLE;
+0056     iter     = iter+1;
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">end</span>
+0059 
+0060 <a name="_sub1" href="#_subfunctions" class="code">function [Do,W] = linearizeDist(xo)</a>
+0061 <span class="comment">%LINEARIZEDIST Linearize the pairwise distance matrix around a point.</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">%   [Do,W] = LINEARIZEDIST(xo) approximates D = computeDistanceMatrix(x)</span>
+0064 <span class="comment">% around x = xo as D(:) ~ Do(:) + W*x(:).</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">% Inputs:</span>
+0067 <span class="comment">%   xo - N x d positions to linearize around</span>
+0068 <span class="comment">%</span>
+0069 <span class="comment">% Outputs:</span>
+0070 <span class="comment">%   Do - N x N offset term</span>
+0071 <span class="comment">%   W  - N^2 x (N*d) Jacobian of the distance matrix</span>
+0072 <span class="comment">%</span>
+0073 <span class="comment">% Toolbox Dependencies: None</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">% See also COMPUTEDISTANCEMATRIX, TESTLINEARIZATION.</span>
+0076 
+0077 [N,d] = size(xo);
+0078 D  = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(xo);
+0079 G1 = reshape(xo,N,1,d)./(D+eye(N));
+0080 G2 = reshape(xo,1,N,d)./(D+eye(N));
+0081 W1 = zeros(N,N,N,d);
+0082 W2 = zeros(N,N,N,d);
+0083 <span class="keyword">for</span> mrkr = 1:N
+0084     W1(mrkr,:,mrkr,:) = G1(:,mrkr,:);
+0085     W2(:,mrkr,mrkr,:) = G2(:,mrkr,:);
+0086 <span class="keyword">end</span>
+0087 <span class="comment">%Need to reshape G/pad with 0's, so W is NxNxNd</span>
+0088 W  = W1-W2; <span class="comment">%NxNxNxd</span>
+0089 W  = reshape(W,N^2,N*d);
+0090 Do = D-reshape(W*xo(:),N,N); <span class="comment">%NxN</span>
+0091 <span class="keyword">end</span>
+0092 
+0093 <a name="_sub2" href="#_subfunctions" class="code">function testLinearization(xo)</a>
+0094 <span class="comment">%TESTLINEARIZATION Check LINEARIZEDIST against a small perturbation.</span>
+0095 <span class="comment">%</span>
+0096 <span class="comment">%   TESTLINEARIZATION(xo) perturbs xo by a small random amount and prints</span>
+0097 <span class="comment">% the norm of the difference between the true and the linearized distance</span>
+0098 <span class="comment">% matrix, which should be very small.</span>
+0099 <span class="comment">%</span>
+0100 <span class="comment">% Inputs:</span>
+0101 <span class="comment">%   xo - N x d positions to linearize around</span>
+0102 <span class="comment">%</span>
+0103 <span class="comment">% Outputs:</span>
+0104 <span class="comment">%   none (prints the norm of the linearization error)</span>
+0105 <span class="comment">%</span>
+0106 <span class="comment">% Toolbox Dependencies: None</span>
+0107 <span class="comment">%</span>
+0108 <span class="comment">% See also LINEARIZEDIST.</span>
+0109 
+0110 D = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(xo);
+0111 [Do,W] = <a href="#_sub1" class="code" title="subfunction [Do,W] = linearizeDist(xo)">linearizeDist</a>(xo);
+0112 e     = 1e-3;
+0113 p     = e*randn(size(xo));
+0114 x     = xo+p;
+0115 D1    = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(x);
+0116 D1app = Do(:)+W*x(:);
+0117 
+0118 <span class="comment">%Check: D1 ~ D1app</span>
+0119 norm(D1(:)-D1app) <span class="comment">%Should be very small</span>
+0120 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

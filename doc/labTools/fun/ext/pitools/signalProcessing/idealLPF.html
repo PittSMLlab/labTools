@@ -29,16 +29,15 @@
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.
 
-   Filters data in the frequency domain by zeroing all frequency
- components above fcut. Uses the DTFT/IDTFT pair via FFT, with the
- spectrum shifted to center zero frequency before masking. Zero phase
- lag is achieved because the mask is applied symmetrically to the
- centered spectrum.
+   Filters data in the frequency domain by zeroing all frequency components
+ above fcut. Uses the DTFT/IDTFT pair via FFT, with the spectrum shifted to
+ center zero frequency before masking. Zero phase lag is achieved because
+ the mask is applied symmetrically to the centered spectrum.
 
  Inputs:
    data - (N×C) double, data to filter (columns are channels)
-   fcut - scalar double, normalized cutoff frequency in [0, 0.5]
-          (i.e., fcut = f_cutoff_Hz / fsample)
+   fcut - scalar double, normalized cutoff frequency in [0, 0.5] (i.e.,
+          fcut = f_cutoff_Hz / fsample)
 
  Outputs:
    filteredData - (N×C) double, filtered data (same size as input)
@@ -54,7 +53,7 @@ This function calls:
 <li><a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>	DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</li></ul>
+<li><a href="../../../../../labTools/fun/eventExtraction/getStanceFromToeAndHeel.html" class="code" title="function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.</li></ul>
 <!-- crossreference -->
 
 
@@ -63,41 +62,40 @@ This function is called by:
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function filteredData = idealLPF(data, fcut)</a>
 0002 <span class="comment">%IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Filters data in the frequency domain by zeroing all frequency</span>
-0005 <span class="comment">% components above fcut. Uses the DTFT/IDTFT pair via FFT, with the</span>
-0006 <span class="comment">% spectrum shifted to center zero frequency before masking. Zero phase</span>
-0007 <span class="comment">% lag is achieved because the mask is applied symmetrically to the</span>
-0008 <span class="comment">% centered spectrum.</span>
-0009 <span class="comment">%</span>
-0010 <span class="comment">% Inputs:</span>
-0011 <span class="comment">%   data - (N×C) double, data to filter (columns are channels)</span>
-0012 <span class="comment">%   fcut - scalar double, normalized cutoff frequency in [0, 0.5]</span>
-0013 <span class="comment">%          (i.e., fcut = f_cutoff_Hz / fsample)</span>
-0014 <span class="comment">%</span>
-0015 <span class="comment">% Outputs:</span>
-0016 <span class="comment">%   filteredData - (N×C) double, filtered data (same size as input)</span>
-0017 <span class="comment">%</span>
-0018 <span class="comment">% Toolbox Dependencies: None</span>
-0019 <span class="comment">%</span>
-0020 <span class="comment">% See also DISCRETETIMEFOURIERTRANSFORM, LOWPASSFILTERING2.</span>
-0021 
-0022 arguments
-0023     data (:,:) double
-0024     fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
-0025 <span class="keyword">end</span>
-0026 
-0027 <span class="comment">%% Transform to frequency domain (centered spectrum)</span>
-0028 [Fdata, fvector] = <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>(data, 1);
-0029 
-0030 <span class="comment">%% Apply brick-wall lowpass mask</span>
-0031 <span class="comment">% Broadcasting: (abs(fvector) &lt;= fcut) is Nx1; Fdata is NxC.</span>
-0032 <span class="comment">% MATLAB automatically replicates the mask across columns.</span>
-0033 Fdata = Fdata .* (abs(fvector) &lt;= fcut);
-0034 
-0035 <span class="comment">%% Inverse transform; ifftshift undoes the centering before ifft</span>
-0036 filteredData = ifft(ifftshift(Fdata, 1));
-0037 
-0038 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0004 <span class="comment">%   Filters data in the frequency domain by zeroing all frequency components</span>
+0005 <span class="comment">% above fcut. Uses the DTFT/IDTFT pair via FFT, with the spectrum shifted to</span>
+0006 <span class="comment">% center zero frequency before masking. Zero phase lag is achieved because</span>
+0007 <span class="comment">% the mask is applied symmetrically to the centered spectrum.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   data - (N×C) double, data to filter (columns are channels)</span>
+0011 <span class="comment">%   fcut - scalar double, normalized cutoff frequency in [0, 0.5] (i.e.,</span>
+0012 <span class="comment">%          fcut = f_cutoff_Hz / fsample)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   filteredData - (N×C) double, filtered data (same size as input)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also DISCRETETIMEFOURIERTRANSFORM, LOWPASSFILTERING2.</span>
+0020 
+0021 arguments
+0022     data (:,:) double
+0023     fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="comment">%% Transform to frequency domain (centered spectrum)</span>
+0027 [Fdata, fvector] = <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)">DiscreteTimeFourierTransform</a>(data, 1);
+0028 
+0029 <span class="comment">%% Apply brick-wall lowpass mask</span>
+0030 <span class="comment">% Broadcasting: (abs(fvector) &lt;= fcut) is Nx1; Fdata is NxC.</span>
+0031 <span class="comment">% MATLAB automatically replicates the mask across columns.</span>
+0032 Fdata = Fdata .* (abs(fvector) &lt;= fcut);
+0033 
+0034 <span class="comment">%% Inverse transform; ifftshift undoes the centering before ifft</span>
+0035 filteredData = ifft(ifftshift(Fdata, 1));
+0036 
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

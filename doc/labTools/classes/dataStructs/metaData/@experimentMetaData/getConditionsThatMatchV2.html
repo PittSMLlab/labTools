@@ -4,7 +4,7 @@
 <head>
   <title>Description of getConditionsThatMatchV2</title>
   <meta name="keywords" content="getConditionsThatMatchV2">
-  <meta name="description" content="getConditionsThatMatchV2  Returns condition names matching pattern">
+  <meta name="description" content="GETCONDITIONSTHATMATCHV2 Return matching condition names, with fallback.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,39 +21,41 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>getConditionsThatMatchV2  Returns condition names matching pattern</strong></div>
+<div class="box"><strong>GETCONDITIONSTHATMATCHV2 Return matching condition names, with fallback.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function condNames = getConditionsThatMatchV2(this, name, type) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getConditionsThatMatchV2  Returns condition names matching pattern
-with fallback
+<div class="fragment"><pre class="comment">GETCONDITIONSTHATMATCHV2 Return matching condition names, with fallback.
 
    condNames = getConditionsThatMatchV2(this, name, type) returns
-   condition names matching both name and type patterns, with fallback
-   to 'TR' (training) type if no matches found for 'NIM' or 'TM' types
+ condition names matching both name and type patterns, with fallback
+ to 'TR' (training) type if no matches found for 'NIM' or 'TM' types
 
-   Inputs:
-       this - experimentMetaData object
-       name - string pattern to search for in condition names
-       type - string pattern for type filtering (optional)
+ Inputs:
+   this - experimentMetaData object
+   name - string pattern to search for in condition names
+   type - string pattern for type filtering (optional)
 
-   Outputs:
-       condNames - cell array of matching condition names
+ Outputs:
+   condNames - cell array of matching condition names
 
-   Note: This is a variant of getConditionsThatMatch with special
-         handling for training conditions. When searching for 'NIM' or
-         'TM' type conditions and finding none, it falls back to
-         searching for 'TR' (training) conditions.
+ NOTE: This is a variant of getConditionsThatMatch with special handling
+       for training conditions. When searching for 'NIM' or 'TM' type
+       conditions and finding none, it falls back to searching for 'TR'
+       (training) conditions.
+       The matching itself is delegated to GETCONDITIONSTHATMATCH.
 
-   See also: <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>, <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">GETCONDITIONSTHATMATCH</a>, <a href="getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">GETCONDITIONIDXSFROMNAME</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>	GETCONDITIONSTHATMATCH Returns condition names matching pattern.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
@@ -63,70 +65,67 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function condNames = getConditionsThatMatchV2(this, name, type)</a>
-0002 <span class="comment">%getConditionsThatMatchV2  Returns condition names matching pattern</span>
-0003 <span class="comment">%with fallback</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%   condNames = getConditionsThatMatchV2(this, name, type) returns</span>
-0006 <span class="comment">%   condition names matching both name and type patterns, with fallback</span>
-0007 <span class="comment">%   to 'TR' (training) type if no matches found for 'NIM' or 'TM' types</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - experimentMetaData object</span>
-0011 <span class="comment">%       name - string pattern to search for in condition names</span>
-0012 <span class="comment">%       type - string pattern for type filtering (optional)</span>
-0013 <span class="comment">%</span>
-0014 <span class="comment">%   Outputs:</span>
-0015 <span class="comment">%       condNames - cell array of matching condition names</span>
-0016 <span class="comment">%</span>
-0017 <span class="comment">%   Note: This is a variant of getConditionsThatMatch with special</span>
-0018 <span class="comment">%         handling for training conditions. When searching for 'NIM' or</span>
-0019 <span class="comment">%         'TM' type conditions and finding none, it falls back to</span>
-0020 <span class="comment">%         searching for 'TR' (training) conditions.</span>
+0002 <span class="comment">%GETCONDITIONSTHATMATCHV2 Return matching condition names, with fallback.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   condNames = getConditionsThatMatchV2(this, name, type) returns</span>
+0005 <span class="comment">% condition names matching both name and type patterns, with fallback</span>
+0006 <span class="comment">% to 'TR' (training) type if no matches found for 'NIM' or 'TM' types</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   this - experimentMetaData object</span>
+0010 <span class="comment">%   name - string pattern to search for in condition names</span>
+0011 <span class="comment">%   type - string pattern for type filtering (optional)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   condNames - cell array of matching condition names</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% NOTE: This is a variant of getConditionsThatMatch with special handling</span>
+0017 <span class="comment">%       for training conditions. When searching for 'NIM' or 'TM' type</span>
+0018 <span class="comment">%       conditions and finding none, it falls back to searching for 'TR'</span>
+0019 <span class="comment">%       (training) conditions.</span>
+0020 <span class="comment">%       The matching itself is delegated to GETCONDITIONSTHATMATCH.</span>
 0021 <span class="comment">%</span>
-0022 <span class="comment">%   See also: getConditionsThatMatch, getConditionIdxsFromName</span>
-0023 
-0024 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name) || ~isa(name, <span class="string">'char'</span>)
-0025     error(<span class="string">'Pattern name to search for needs to be a string'</span>);
-0026 <span class="keyword">end</span>
-0027 
-0028 ccNames = this.conditionName;
-0029 idx = cellfun(@(x) <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), ccNames);
-0030 <span class="keyword">if</span> sum(idx) &gt;= 1
-0031     r = find(idx == 1);
-0032     <span class="keyword">for</span> q = 1:length(r)
-0033         <span class="comment">% Need a more elegant solution for empty condition names</span>
-0034         ccNames{r(q)} = [<span class="string">'awsdfasdas'</span> num2str(q)];
-0035     <span class="keyword">end</span>
+0022 <span class="comment">% Toolbox Dependencies: None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also GETCONDITIONSTHATMATCH, GETCONDITIONIDXSFROMNAME.</span>
+0025 
+0026 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name) || ~isa(name, <span class="string">'char'</span>)
+0027     error(<span class="string">'Pattern name to search for needs to be a string'</span>);
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="comment">% Delegate the matching to getConditionsThatMatch; only the fallback</span>
+0031 <span class="comment">% below is specific to this version.</span>
+0032 <span class="keyword">if</span> nargin &lt; 3
+0033     condNames = <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>(this, name);
+0034 <span class="keyword">else</span>
+0035     condNames = <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>(this, name, type);
 0036 <span class="keyword">end</span>
-0037 patternMatches = cellfun(@(x) ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), (strfind(lower(ccNames), <span class="keyword">...</span>
-0038     lower(name))));
-0039 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(type) &amp;&amp; isa(type, <span class="string">'char'</span>)
-0040     typeMatches = cellfun(@(x) ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), (strfind(lower(ccNames), <span class="keyword">...</span>
-0041         lower(type))));
-0042     <span class="comment">% if sum(typeMatches) == 0 || strcmp(type, 'TM') % Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01</span>
-0043     <span class="comment">%     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), lower('TR'))));</span>
-0044     <span class="comment">% end</span>
-0045 <span class="keyword">else</span>
-0046     typeMatches = true(size(patternMatches));
-0047 <span class="keyword">end</span>
-0048 <span class="comment">% patternMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(name))));</span>
-0049 <span class="comment">% if nargin &gt; 2 &amp;&amp; ~isempty(type) &amp;&amp; isa(type, 'char')</span>
-0050 <span class="comment">%     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(type))));</span>
+0037 
+0038 <span class="comment">% Earlier inline version of the matching (kept as comments):</span>
+0039 <span class="comment">% Need a more elegant solution for empty condition names</span>
+0040 <span class="comment">% if sum(typeMatches) == 0 || strcmp(type, ...</span>
+0041 <span class="comment">%    'TM')</span>
+0042 <span class="comment">% (disabled alternative of the 'TR' fallback below)</span>
+0043 <span class="comment">%     typeMatches = cellfun(@(x) ~isempty(x), ...</span>
+0044 <span class="comment">%    (strfind(lower(ccNames), lower('TR'))));</span>
+0045 <span class="comment">% end</span>
+0046 <span class="comment">% patternMatches = cellfun(@(x) ~isempty(x), ...</span>
+0047 <span class="comment">%    (strfind(lower(this.conditionName), lower(name))));</span>
+0048 <span class="comment">% if nargin &gt; 2 &amp;&amp; ~isempty(type) &amp;&amp; isa(type, 'char')</span>
+0049 <span class="comment">%     typeMatches = cellfun(@(x) ~isempty(x), ...</span>
+0050 <span class="comment">%    (strfind(lower(this.conditionName), lower(type))));</span>
 0051 <span class="comment">% else</span>
 0052 <span class="comment">%     typeMatches = true(size(patternMatches));</span>
 0053 <span class="comment">% end</span>
-0054 condNames = this.conditionName(patternMatches &amp; typeMatches);
-0055 
-0056 <span class="comment">% Marcela &amp; DMMO: I am not sure if this is the best way to do this but</span>
-0057 <span class="comment">% its a temporal fix for R01</span>
-0058 <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condNames) &amp;&amp; strcmp(type, <span class="string">'NIM'</span>) || <span class="keyword">...</span>
-0059         <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condNames) &amp;&amp; strcmp(type, <span class="string">'TM'</span>)
-0060     typeMatches = cellfun(@(x) ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x), (strfind(lower(ccNames), <span class="keyword">...</span>
-0061         lower(<span class="string">'TR'</span>))));
-0062     condNames = this.conditionName(patternMatches &amp; typeMatches);
-0063 <span class="keyword">end</span>
-0064 <span class="keyword">end</span>
-0065</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0054 
+0055 <span class="comment">% TODO: temporary fix for R01; confirm the 'TR' fallback is the best</span>
+0056 <span class="comment">% approach.</span>
+0057 <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condNames) &amp;&amp; strcmp(type, <span class="string">'NIM'</span>) || <span class="keyword">...</span>
+0058         <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condNames) &amp;&amp; strcmp(type, <span class="string">'TM'</span>)
+0059     condNames = <a href="getConditionsThatMatch.html" class="code" title="function condNames = getConditionsThatMatch(this, name, type)">getConditionsThatMatch</a>(this, name, <span class="string">'TR'</span>);
+0060 <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

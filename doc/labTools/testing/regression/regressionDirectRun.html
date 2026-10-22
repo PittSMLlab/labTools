@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionDirectRun</title>
+  <meta name="keywords" content="regressionDirectRun">
+  <meta name="description" content="REGRESSIONDIRECTRUN Direct before/after check for code the gate skips.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionDirectRun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionDirectRun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONDIRECTRUN Direct before/after check for code the gate skips.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionDirectRun(name, mode, baseDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONDIRECTRUN Direct before/after check for code the gate skips.
+
+   REGRESSIONDIRECTRUN(name, mode, baseDir) runs the synthetic-input
+ cases of one function family and either saves the results
+ ('baseline', run on the reference tree) or compares them with the
+ saved ones ('compare'). Add a local direct&lt;Name&gt; function for new
+ cases. Each
+ case records the outputs, the error identifier and message, and the
+ last warning (identifier and text), so frozen warning/error text is
+ compared too. Figure cases record a property snapshot of every
+ graphics object. Errors when any case differs.
+
+ Inputs:
+   name    - char, 'ConditionsThatMatch', 'Correlations' or
+             'NanJackKnife'
+   mode    - char, 'baseline' or 'compare'
+   baseDir - char, folder for the MAT files
+
+ Outputs:
+   none (prints one line per case; errors on any difference)
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+ (Correlations)
+
+ See also <a href="regressionStrictCheck.html" class="code" title="function regressionStrictCheck(report, label)">REGRESSIONSTRICTCHECK</a>, <a href="regressionAll.html" class="code" title="function regressionAll(baseDir, sessionID, eventClass)">REGRESSIONALL</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa, Li] = nanJackKnife(varargin)">nanJackKnife</a>	NANJACKKNIFE Plot shaded error-bar patches around a data curve.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cases = directConditionsThatMatch()</a></li><li><a href="#_sub2" class="code">function cases = directNanJackKnife()</a></li><li><a href="#_sub3" class="code">function out = figCall(fcn, a)</a></li><li><a href="#_sub4" class="code">function cases = directCorrelations()</a></li><li><a href="#_sub5" class="code">function out = corrCall(a)</a></li><li><a href="#_sub6" class="code">function snap = snapshotNew(before)</a></li><li><a href="#_sub7" class="code">function closeNew(before)</a></li><li><a href="#_sub8" class="code">function res = capture(fcn)</a></li><li><a href="#_sub9" class="code">function snap = snapshot(h)</a></li><li><a href="#_sub10" class="code">function tf = isAxisLabel(txt)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionDirectRun(name, mode, baseDir)</a>
+0002 <span class="comment">%REGRESSIONDIRECTRUN Direct before/after check for code the gate skips.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   REGRESSIONDIRECTRUN(name, mode, baseDir) runs the synthetic-input</span>
+0005 <span class="comment">% cases of one function family and either saves the results</span>
+0006 <span class="comment">% ('baseline', run on the reference tree) or compares them with the</span>
+0007 <span class="comment">% saved ones ('compare'). Add a local direct&lt;Name&gt; function for new</span>
+0008 <span class="comment">% cases. Each</span>
+0009 <span class="comment">% case records the outputs, the error identifier and message, and the</span>
+0010 <span class="comment">% last warning (identifier and text), so frozen warning/error text is</span>
+0011 <span class="comment">% compared too. Figure cases record a property snapshot of every</span>
+0012 <span class="comment">% graphics object. Errors when any case differs.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   name    - char, 'ConditionsThatMatch', 'Correlations' or</span>
+0016 <span class="comment">%             'NanJackKnife'</span>
+0017 <span class="comment">%   mode    - char, 'baseline' or 'compare'</span>
+0018 <span class="comment">%   baseDir - char, folder for the MAT files</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   none (prints one line per case; errors on any difference)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0024 <span class="comment">% (Correlations)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also REGRESSIONSTRICTCHECK, REGRESSIONALL.</span>
+0027 
+0028 warning(<span class="string">'off'</span>, <span class="string">'backtrace'</span>);
+0029 set(groot, <span class="string">'DefaultFigureVisible'</span>, <span class="string">'off'</span>);
+0030 restore = onCleanup(@() set(groot, <span class="string">'DefaultFigureVisible'</span>, <span class="string">'on'</span>));
+0031 cases = feval([<span class="string">'direct'</span> name]);
+0032 file  = fullfile(baseDir, [<span class="string">'direct_'</span> name <span class="string">'.mat'</span>]);
+0033 <span class="keyword">switch</span> mode
+0034     <span class="keyword">case</span> <span class="string">'baseline'</span>
+0035         save(file, <span class="string">'cases'</span>);
+0036         fprintf(<span class="string">'DIRECT %s baseline saved: %d cases\n'</span>, name, <span class="keyword">...</span>
+0037             numel(cases));
+0038     <span class="keyword">case</span> <span class="string">'compare'</span>
+0039         ref  = load(file);
+0040         nBad = 0;
+0041         assert(numel(ref.cases) == numel(cases), <span class="string">'case count differs'</span>);
+0042         <span class="keyword">for</span> ii = 1:numel(cases)
+0043             same = isequaln(ref.cases(ii), cases(ii));
+0044             <span class="keyword">if</span> ~same
+0045                 nBad = nBad + 1;
+0046                 fprintf(<span class="string">'DIRECT %s case %d (%s) DIFFERS\n'</span>, name, ii, <span class="keyword">...</span>
+0047                     cases(ii).label);
+0048             <span class="keyword">end</span>
+0049         <span class="keyword">end</span>
+0050         fprintf(<span class="string">'DIRECT %s: %d of %d cases differ\n'</span>, name, nBad, <span class="keyword">...</span>
+0051             numel(cases));
+0052         <span class="keyword">if</span> nBad &gt; 0
+0053             error(<span class="string">'regressionDirectRun:changed'</span>, <span class="string">'Direct %s failed.'</span>, name);
+0054         <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 <a name="_sub1" href="#_subfunctions" class="code">function cases = directConditionsThatMatch()</a>
+0059 <span class="comment">%DIRECTCONDITIONSTHATMATCH getConditionsThatMatch(V2) on fake metadata.</span>
+0060 names = {<span class="string">'TM base'</span>, <span class="string">'OG base'</span>, <span class="string">'Adaptation'</span>, <span class="string">'TR post'</span>, <span class="string">''</span>, <span class="keyword">...</span>
+0061     <span class="string">'NIM catch'</span>, <span class="string">'TM short'</span>};
+0062 m = <a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(<span class="string">'X'</span>, labDate.default, <span class="string">'e'</span>, <span class="string">''</span>, names, <span class="keyword">...</span>
+0063     repmat({<span class="string">''</span>}, 1, 7), num2cell(1:7), 7);
+0064 calls = {
+0065     {<span class="string">'base'</span>}
+0066     {<span class="string">'base'</span>, <span class="string">'TM'</span>}
+0067     {<span class="string">'base'</span>, <span class="string">'OG'</span>}
+0068     {<span class="string">'adapt'</span>, <span class="string">'TM'</span>}
+0069     {<span class="string">'post'</span>, <span class="string">'TM'</span>}
+0070     {<span class="string">'post'</span>, <span class="string">'NIM'</span>}
+0071     {<span class="string">'catch'</span>, <span class="string">'NIM'</span>}
+0072     {<span class="string">'zzz'</span>, <span class="string">'NIM'</span>}
+0073     {<span class="string">'zzz'</span>, <span class="string">'TM'</span>}
+0074     {<span class="string">'zzz'</span>, <span class="string">'OG'</span>}
+0075     {<span class="string">'base'</span>, 5}
+0076     {<span class="string">'post'</span>, []}
+0077     {<span class="string">'zzz'</span>}
+0078     {<span class="string">'short'</span>}
+0079     {5}
+0080     {<span class="string">''</span>}
+0081     {<span class="string">'tm'</span>, <span class="string">'tm'</span>}
+0082     {<span class="string">'awsdfasdas'</span>, <span class="string">'TM'</span>}
+0083     };
+0084 cases = struct(<span class="string">'label'</span>, {}, <span class="string">'v1'</span>, {}, <span class="string">'v2'</span>, {});
+0085 <span class="keyword">for</span> ii = 1:numel(calls)
+0086     a = calls{ii};
+0087     cases(ii).label = sprintf(<span class="string">'call %d'</span>, ii);
+0088     cases(ii).v1 = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() m.getConditionsThatMatch(a{:}));
+0089     cases(ii).v2 = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() m.getConditionsThatMatchV2(a{:}));
+0090 <span class="keyword">end</span>
+0091 <span class="comment">% an object whose names are all empty</span>
+0092 m2 = <a href="../../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(<span class="string">'Y'</span>, labDate.default, <span class="string">'e'</span>, <span class="string">''</span>, {<span class="string">''</span>, <span class="string">'Zed'</span>}, <span class="keyword">...</span>
+0093     {<span class="string">''</span>, <span class="string">''</span>}, {1, 2}, 2);
+0094 cases(end+1).label = <span class="string">'all empty'</span>;
+0095 cases(end).v1 = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() m2.getConditionsThatMatch(<span class="string">'a'</span>, <span class="string">'TM'</span>));
+0096 cases(end).v2 = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() m2.getConditionsThatMatchV2(<span class="string">'a'</span>, <span class="string">'TM'</span>));
+0097 <span class="keyword">end</span>
+0098 
+0099 <a name="_sub2" href="#_subfunctions" class="code">function cases = directNanJackKnife()</a>
+0100 <span class="comment">%DIRECTNANJACKKNIFE nanJackKnife for nargin 3 to 7, plus invalid nargin.</span>
+0101 x = 1:6;
+0102 y = [1 2 NaN 4 5 6];
+0103 E = [0.5 0.4 0.3 0.2 0.1 0.6];
+0104 L = y - E;
+0105 U = y + 2 * E;
+0106 col = [0.8 0.2 0.1];
+0107 pat = [0.9 0.9 0.5];
+0108 w   = [1 0 1 0 1 0];
+0109 args = {
+0110     {x, y, E}
+0111     {x, y, L, U}
+0112     {x, y, E, col, pat}
+0113     {x, y, E, col, pat, 0.4}
+0114     {x, y, E, col, pat, 0.4, w}
+0115     {x, y, zeros(1, 6)}
+0116     {x, y, y, y}
+0117     {x, y, zeros(1, 6), col, pat, 0.5, w}
+0118     {x, y}
+0119     {x, y, E, col, pat, 0.4, w, 9}
+0120     {x, y, E, <span class="string">'r'</span>, pat}
+0121     };
+0122 cases = struct(<span class="string">'label'</span>, {}, <span class="string">'out'</span>, {});
+0123 <span class="keyword">for</span> ii = 1:numel(args)
+0124     cases(ii).label = sprintf(<span class="string">'args %d'</span>, ii);
+0125     a = args{ii};
+0126     cases(ii).out = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() <a href="#_sub3" class="code" title="subfunction out = figCall(fcn, a)">figCall</a>(@<a href="../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa, Li] = nanJackKnife(varargin)">nanJackKnife</a>, a));
+0127 <span class="keyword">end</span>
+0128 <span class="keyword">end</span>
+0129 
+0130 <a name="_sub3" href="#_subfunctions" class="code">function out = figCall(fcn, a)</a>
+0131 <span class="comment">%FIGCALL Run fcn in a fresh invisible figure and snapshot the result.</span>
+0132 before  = findall(groot, <span class="string">'Type'</span>, <span class="string">'figure'</span>);
+0133 cleanup = onCleanup(@() <a href="#_sub7" class="code" title="subfunction closeNew(before)">closeNew</a>(before));
+0134 figure();
+0135 [pa, li] = fcn(a{:});
+0136 out.pa   = <a href="#_sub9" class="code" title="subfunction snap = snapshot(h)">snapshot</a>(pa);
+0137 out.li   = <a href="#_sub9" class="code" title="subfunction snap = snapshot(h)">snapshot</a>(li);
+0138 out.snap = <a href="#_sub6" class="code" title="subfunction snap = snapshotNew(before)">snapshotNew</a>(before);
+0139 <span class="keyword">end</span>
+0140 
+0141 <a name="_sub4" href="#_subfunctions" class="code">function cases = directCorrelations()</a>
+0142 <span class="comment">%DIRECTCORRELATIONS adaptationData.Correlations, types 1 and 2.</span>
+0143 rng(7);
+0144 conds  = {<span class="string">'c1'</span>, <span class="string">'c2'</span>, <span class="string">'c3'</span>};
+0145 params = {<span class="string">'pA'</span>, <span class="string">'pB'</span>, <span class="string">'pC'</span>};
+0146 groups = {<span class="string">'g1'</span>, <span class="string">'g2'</span>};
+0147 results = struct();
+0148 <span class="keyword">for</span> cc = 1:numel(conds)
+0149     <span class="keyword">for</span> pp = 1:numel(params)
+0150         n = 12;
+0151         results.(conds{cc}).indiv.(params{pp}) = <span class="keyword">...</span>
+0152             [repmat([1; 2], n / 2, 1), randn(n, 1) + cc + pp];
+0153     <span class="keyword">end</span>
+0154 <span class="keyword">end</span>
+0155 results.c3.indiv.pB(2, 2) = NaN;
+0156 colors = [0.9 0.1 0.1; 0.1 0.1 0.9; 0.1 0.8 0.1];
+0157 calls = {
+0158     {[], results, params, conds, groups, colors, 1}
+0159     {[], results, params, conds, groups, colors, 2}
+0160     {[], results, params(1:2), conds, groups, [], 1}
+0161     {[], results, params(1:2), conds, groups, colors, 2}
+0162     {[], results, params, conds(1:2), groups, colors, 2}
+0163     {[], results, params, conds, groups, colors, 3}
+0164     };
+0165 cases = struct(<span class="string">'label'</span>, {}, <span class="string">'out'</span>, {});
+0166 <span class="keyword">for</span> ii = 1:numel(calls)
+0167     cases(ii).label = sprintf(<span class="string">'call %d'</span>, ii);
+0168     a = calls{ii};
+0169     cases(ii).out = <a href="#_sub8" class="code" title="subfunction res = capture(fcn)">capture</a>(@() <a href="#_sub5" class="code" title="subfunction out = corrCall(a)">corrCall</a>(a));
+0170 <span class="keyword">end</span>
+0171 <span class="keyword">end</span>
+0172 
+0173 <a name="_sub5" href="#_subfunctions" class="code">function out = corrCall(a)</a>
+0174 <span class="comment">%CORRCALL Run Correlations in a fresh invisible figure and snapshot it.</span>
+0175 before  = findall(groot, <span class="string">'Type'</span>, <span class="string">'figure'</span>);
+0176 cleanup = onCleanup(@() <a href="#_sub7" class="code" title="subfunction closeNew(before)">closeNew</a>(before));
+0177 figure();
+0178 adaptationData.Correlations(a{:});
+0179 out.snap     = <a href="#_sub6" class="code" title="subfunction snap = snapshotNew(before)">snapshotNew</a>(before);
+0180 out.renderer = get(gcf, <span class="string">'Renderer'</span>);
+0181 <span class="keyword">end</span>
+0182 
+0183 <a name="_sub6" href="#_subfunctions" class="code">function snap = snapshotNew(before)</a>
+0184 <span class="comment">%SNAPSHOTNEW Snapshot of every figure created since BEFORE.</span>
+0185 figs = setdiff(findall(groot, <span class="string">'Type'</span>, <span class="string">'figure'</span>), before);
+0186 snap = {};
+0187 <span class="keyword">for</span> ff = 1:numel(figs)
+0188     snap = [snap, <a href="#_sub9" class="code" title="subfunction snap = snapshot(h)">snapshot</a>(findall(figs(ff)))]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0189 <span class="keyword">end</span>
+0190 <span class="keyword">end</span>
+0191 
+0192 <a name="_sub7" href="#_subfunctions" class="code">function closeNew(before)</a>
+0193 <span class="comment">%CLOSENEW Close every figure created since BEFORE.</span>
+0194 close(setdiff(findall(groot, <span class="string">'Type'</span>, <span class="string">'figure'</span>), before));
+0195 <span class="keyword">end</span>
+0196 
+0197 <a name="_sub8" href="#_subfunctions" class="code">function res = capture(fcn)</a>
+0198 <span class="comment">%CAPTURE Outputs, error id/message and last warning of fcn().</span>
+0199 lastwarn(<span class="string">''</span>);
+0200 res = struct(<span class="string">'out'</span>, [], <span class="string">'errId'</span>, <span class="string">''</span>, <span class="string">'errMsg'</span>, <span class="string">''</span>, <span class="string">'warnId'</span>, <span class="string">''</span>, <span class="keyword">...</span>
+0201     <span class="string">'warnMsg'</span>, <span class="string">''</span>);
+0202 <span class="keyword">try</span>
+0203     res.out = fcn();
+0204 <span class="keyword">catch</span> err
+0205     res.errId  = err.identifier;
+0206     res.errMsg = err.message;
+0207 <span class="keyword">end</span>
+0208 [res.warnMsg, res.warnId] = lastwarn();
+0209 <span class="keyword">end</span>
+0210 
+0211 <a name="_sub9" href="#_subfunctions" class="code">function snap = snapshot(h)</a>
+0212 <span class="comment">%SNAPSHOT Property snapshot of graphics objects, in handle order.</span>
+0213 snap = {};
+0214 props = struct( <span class="keyword">...</span>
+0215     <span class="string">'axes'</span>, {{<span class="string">'XLim'</span>, <span class="string">'YLim'</span>, <span class="string">'Position'</span>, <span class="string">'XDir'</span>, <span class="string">'YDir'</span>, <span class="keyword">...</span>
+0216         <span class="string">'FontSize'</span>, <span class="string">'DataAspectRatio'</span>, <span class="string">'PlotBoxAspectRatio'</span>}}, <span class="keyword">...</span>
+0217     <span class="string">'line'</span>, {{<span class="string">'XData'</span>, <span class="string">'YData'</span>, <span class="string">'Color'</span>, <span class="string">'Marker'</span>, <span class="string">'MarkerSize'</span>, <span class="keyword">...</span>
+0218         <span class="string">'LineStyle'</span>, <span class="string">'LineWidth'</span>, <span class="string">'MarkerFaceColor'</span>, <span class="keyword">...</span>
+0219         <span class="string">'MarkerEdgeColor'</span>}}, <span class="keyword">...</span>
+0220     <span class="string">'patch'</span>, {{<span class="string">'XData'</span>, <span class="string">'YData'</span>, <span class="string">'FaceColor'</span>, <span class="string">'EdgeColor'</span>, <span class="keyword">...</span>
+0221         <span class="string">'FaceAlpha'</span>, <span class="string">'LineStyle'</span>, <span class="string">'LineWidth'</span>}}, <span class="keyword">...</span>
+0222     <span class="string">'text'</span>, {{<span class="string">'String'</span>, <span class="string">'Position'</span>, <span class="string">'FontSize'</span>}}, <span class="keyword">...</span>
+0223     <span class="string">'legend'</span>, {{<span class="string">'String'</span>}});
+0224 <span class="keyword">for</span> ii = 1:numel(h)
+0225     <span class="keyword">if</span> ~isgraphics(h(ii))
+0226         <span class="keyword">continue</span>
+0227     <span class="keyword">end</span>
+0228     typ = get(h(ii), <span class="string">'Type'</span>);
+0229     <span class="keyword">if</span> ~isfield(props, typ)
+0230         <span class="keyword">continue</span>
+0231     <span class="keyword">end</span>
+0232     rec = struct(<span class="string">'type'</span>, typ);
+0233     <span class="keyword">for</span> pp = props.(typ)
+0234         <span class="comment">% auto-placed title and axis labels move by ~1e-3 with the</span>
+0235         <span class="comment">% renderer's font metrics; their strings are still compared</span>
+0236         <span class="keyword">if</span> strcmp(typ, <span class="string">'text'</span>) &amp;&amp; strcmp(pp{1}, <span class="string">'Position'</span>) &amp;&amp; <span class="keyword">...</span>
+0237                 <a href="#_sub10" class="code" title="subfunction tf = isAxisLabel(txt)">isAxisLabel</a>(h(ii))
+0238             <span class="keyword">continue</span>
+0239         <span class="keyword">end</span>
+0240         rec.(pp{1}) = get(h(ii), pp{1});
+0241     <span class="keyword">end</span>
+0242     <span class="keyword">if</span> strcmp(typ, <span class="string">'axes'</span>)
+0243         rec.title  = get(get(h(ii), <span class="string">'Title'</span>), <span class="string">'String'</span>);
+0244         rec.xlabel = get(get(h(ii), <span class="string">'XLabel'</span>), <span class="string">'String'</span>);
+0245         rec.ylabel = get(get(h(ii), <span class="string">'YLabel'</span>), <span class="string">'String'</span>);
+0246     <span class="keyword">end</span>
+0247     snap{end+1} = rec; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0248 <span class="keyword">end</span>
+0249 <span class="keyword">end</span>
+0250 
+0251 <a name="_sub10" href="#_subfunctions" class="code">function tf = isAxisLabel(txt)</a>
+0252 <span class="comment">%ISAXISLABEL True for the title and axis labels of the parent axes.</span>
+0253 ax = ancestor(txt, <span class="string">'axes'</span>);
+0254 tf = ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ax) &amp;&amp; any(txt == [ax.Title, ax.XLabel, ax.YLabel, <span class="keyword">...</span>
+0255     ax.ZLabel]);
+0256 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

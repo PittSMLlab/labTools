@@ -1,0 +1,350 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getSpinalAdaptBoutSegments</title>
+  <meta name="keywords" content="getSpinalAdaptBoutSegments">
+  <meta name="description" content="GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; getSpinalAdaptBoutSegments.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\gui\importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getSpinalAdaptBoutSegments
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function segments = getSpinalAdaptBoutSegments(datlog) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.
+
+   Parses the audio-cue rows that the ExperimentalGUI SpinalAdapt
+ controller (NirsHreflexArduinoOpenLoopWithAudio) logs to
+ datlog.audioCues into one ramp and one steady-state (SS) time window
+ per walking bout. Rows are named '&lt;Profile&gt;_&lt;Event&gt;&lt;NN&gt;' (e.g.,
+ 'AdaptSplitFastR_Split03'); only three row types set boundaries:
+   - ramp start: '&lt;P&gt;_AccRamp##' (tied) or '&lt;P&gt;_DccRamp2Split##'
+     (split), logged with the &quot;walk&quot; cue while the belts are still
+     stopped. Bout 1 of a trial that starts walking begins instead at
+     the pre-loop '&lt;P&gt;_Mid01' row, since its ramp row is logged
+     mid-ramp.
+   - SS start: the '&lt;P&gt;_Mid##' or '&lt;P&gt;_Split##' row after the ramp row.
+   - bout end: '&lt;P&gt;_Rest##_CountForward', logged with the &quot;silently
+     count forward&quot; cue after the belts have stopped.
+ The spoken &quot;stop&quot; cue has no row of its own. The '&lt;P&gt;_Rest##' fNIRS
+ marker and the trial-end row serve only as fallback ends for an
+ interrupted bout. Standing intervals between segments (pre-walk,
+ inter-bout rests, trailing rest) belong to no segment.
+
+ Inputs:
+   datlog - struct; one trial's data log as saved by the controller
+
+ Outputs:
+   segments - table with one row per segment, in chronological order:
+                bout      - bout number from the cue names
+                segment   - &quot;Ramp&quot; or &quot;SS&quot;
+                startTime - s, datlog relative time (the time base of
+                            audioCues.startInRelativeTime)
+                endTime   - s, same time base; NaN = end of trial
+                startCue  - cue row that opens the segment
+                endCue    - cue row that closes it (&quot;&quot; if none)
+                endSource - &quot;SS&quot; or &quot;CountForward&quot; for a complete
+                            bout; &quot;Rest&quot;, &quot;TrialEnd&quot;, or &quot;EndOfTrial&quot;
+                            mark a fallback end (interrupted bout)
+              Zero rows if the datlog has no audioCues or no ramp cue
+              (e.g., calibration, 6MWT, and tied-fastest trials).
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">SPLITSPINALADAPTBOUTCONDS</a>, <a href="SyncDatalog.html" class="code" title="function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)">SYNCDATALOG</a>,
+   <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData,resSavePath, subjectID, eventClass, studyName, muscleLabels,normalizationRefCond, biasRemovalCond)">SEPCONDSINEXPBYAUDIOCUE</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>	SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.</li><li><a href="../../../labTools/testing/TestSpinalAdaptBoutSegments.html" class="code" title="">TestSpinalAdaptBoutSegments</a>	TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</li><li><a href="../../../labTools/testing/ValidateSpinalAdaptBoutSplitOnServer.html" class="code" title="">ValidateSpinalAdaptBoutSplitOnServer</a>	ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [closeCue, closeSource] = findBoutEnd(isCandidate,</a></li><li><a href="#_sub2" class="code">function segments = makeSegmentTable(bout, segment, startTime,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function segments = getSpinalAdaptBoutSegments(datlog)</a>
+0002 <span class="comment">%GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Parses the audio-cue rows that the ExperimentalGUI SpinalAdapt</span>
+0005 <span class="comment">% controller (NirsHreflexArduinoOpenLoopWithAudio) logs to</span>
+0006 <span class="comment">% datlog.audioCues into one ramp and one steady-state (SS) time window</span>
+0007 <span class="comment">% per walking bout. Rows are named '&lt;Profile&gt;_&lt;Event&gt;&lt;NN&gt;' (e.g.,</span>
+0008 <span class="comment">% 'AdaptSplitFastR_Split03'); only three row types set boundaries:</span>
+0009 <span class="comment">%   - ramp start: '&lt;P&gt;_AccRamp##' (tied) or '&lt;P&gt;_DccRamp2Split##'</span>
+0010 <span class="comment">%     (split), logged with the &quot;walk&quot; cue while the belts are still</span>
+0011 <span class="comment">%     stopped. Bout 1 of a trial that starts walking begins instead at</span>
+0012 <span class="comment">%     the pre-loop '&lt;P&gt;_Mid01' row, since its ramp row is logged</span>
+0013 <span class="comment">%     mid-ramp.</span>
+0014 <span class="comment">%   - SS start: the '&lt;P&gt;_Mid##' or '&lt;P&gt;_Split##' row after the ramp row.</span>
+0015 <span class="comment">%   - bout end: '&lt;P&gt;_Rest##_CountForward', logged with the &quot;silently</span>
+0016 <span class="comment">%     count forward&quot; cue after the belts have stopped.</span>
+0017 <span class="comment">% The spoken &quot;stop&quot; cue has no row of its own. The '&lt;P&gt;_Rest##' fNIRS</span>
+0018 <span class="comment">% marker and the trial-end row serve only as fallback ends for an</span>
+0019 <span class="comment">% interrupted bout. Standing intervals between segments (pre-walk,</span>
+0020 <span class="comment">% inter-bout rests, trailing rest) belong to no segment.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Inputs:</span>
+0023 <span class="comment">%   datlog - struct; one trial's data log as saved by the controller</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Outputs:</span>
+0026 <span class="comment">%   segments - table with one row per segment, in chronological order:</span>
+0027 <span class="comment">%                bout      - bout number from the cue names</span>
+0028 <span class="comment">%                segment   - &quot;Ramp&quot; or &quot;SS&quot;</span>
+0029 <span class="comment">%                startTime - s, datlog relative time (the time base of</span>
+0030 <span class="comment">%                            audioCues.startInRelativeTime)</span>
+0031 <span class="comment">%                endTime   - s, same time base; NaN = end of trial</span>
+0032 <span class="comment">%                startCue  - cue row that opens the segment</span>
+0033 <span class="comment">%                endCue    - cue row that closes it (&quot;&quot; if none)</span>
+0034 <span class="comment">%                endSource - &quot;SS&quot; or &quot;CountForward&quot; for a complete</span>
+0035 <span class="comment">%                            bout; &quot;Rest&quot;, &quot;TrialEnd&quot;, or &quot;EndOfTrial&quot;</span>
+0036 <span class="comment">%                            mark a fallback end (interrupted bout)</span>
+0037 <span class="comment">%              Zero rows if the datlog has no audioCues or no ramp cue</span>
+0038 <span class="comment">%              (e.g., calibration, 6MWT, and tied-fastest trials).</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% Toolbox Dependencies:</span>
+0041 <span class="comment">%   None</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% See also SPLITSPINALADAPTBOUTCONDS, SYNCDATALOG,</span>
+0044 <span class="comment">%   SEPCONDSINEXPBYAUDIOCUE.</span>
+0045 
+0046 arguments
+0047     datlog (1,1) struct
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">%% Define the Cue Grammar</span>
+0051 <span class="comment">% &lt;Profile&gt;_&lt;Event&gt;&lt;2-digit bout&gt;[_CountForward]; the lazy event match</span>
+0052 <span class="comment">% parses 'DccRamp2Split01' as event 'DccRamp2Split', bout 01</span>
+0053 cuePattern      = [<span class="string">'^(?&lt;prefix&gt;[A-Za-z0-9]+)_(?&lt;event&gt;[A-Za-z0-9]+?)'</span> <span class="keyword">...</span>
+0054     <span class="string">'(?&lt;bout&gt;\d{2})(?&lt;suffix&gt;_CountForward)?$'</span>];
+0055 trialEndPattern = <span class="string">'_Trial_?End$'</span>;   <span class="comment">% '_Trial_End' before 2026-09-18</span>
+0056 rampEvents      = {<span class="string">'AccRamp'</span>, <span class="string">'DccRamp2Split'</span>};
+0057 steadyEvents    = {<span class="string">'Mid'</span>, <span class="string">'Split'</span>};
+0058 restEvent       = <span class="string">'Rest'</span>;
+0059 
+0060 segments = <a href="#_sub2" class="code" title="subfunction segments = makeSegmentTable(bout, segment, startTime, ">makeSegmentTable</a>(zeros(0, 1), strings(0, 1), zeros(0, 1), <span class="keyword">...</span>
+0061     zeros(0, 1), strings(0, 1), strings(0, 1), strings(0, 1));
+0062 <span class="keyword">if</span> ~isfield(datlog, <span class="string">'audioCues'</span>) || <span class="keyword">...</span>
+0063         ~isfield(datlog.audioCues, <span class="string">'audio_instruction_message'</span>)
+0064     <span class="keyword">return</span>
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="comment">%% Classify Every Cue Row</span>
+0068 cueNames = cellstr(datlog.audioCues.audio_instruction_message(:));
+0069 numCues  = numel(cueNames);
+0070 tokens   = regexp(cueNames, cuePattern, <span class="string">'names'</span>, <span class="string">'once'</span>);
+0071 
+0072 eventName      = repmat({<span class="string">''</span>}, numCues, 1);
+0073 boutNum        = nan(numCues, 1);
+0074 isCountForward = false(numCues, 1);
+0075 <span class="keyword">for</span> cue = find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, tokens))'
+0076     eventName{cue}      = tokens{cue}.event;
+0077     boutNum(cue)        = str2double(tokens{cue}.bout);
+0078     isCountForward(cue) = ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(tokens{cue}.suffix);
+0079 <span class="keyword">end</span>
+0080 isRamp   = ismember(eventName, rampEvents) &amp; ~isCountForward;
+0081 isSteady = ismember(eventName, steadyEvents) &amp; ~isCountForward;
+0082 isRest   = strcmp(eventName, restEvent) &amp; ~isCountForward;
+0083 <span class="keyword">if</span> ~any(isRamp)
+0084     <span class="keyword">return</span>
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="keyword">if</span> ~isfield(datlog.audioCues, <span class="string">'startInRelativeTime'</span>) || <span class="keyword">...</span>
+0088         numel(datlog.audioCues.startInRelativeTime) ~= numCues
+0089     error(<span class="string">'getSpinalAdaptBoutSegments:cueTimes'</span>, <span class="keyword">...</span>
+0090         [<span class="string">'audioCues.startInRelativeTime is missing or does not '</span> <span class="keyword">...</span>
+0091         <span class="string">'match the %d cue names.'</span>], numCues);
+0092 <span class="keyword">end</span>
+0093 cueTimes    = datlog.audioCues.startInRelativeTime(:);
+0094 cueIdx      = (1:numCues)';
+0095 trialEndCue = find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, <span class="keyword">...</span>
+0096     regexp(cueNames, trialEndPattern, <span class="string">'once'</span>)), 1, <span class="string">'last'</span>);
+0097 
+0098 rampCues = find(isRamp);
+0099 numBouts = numel(rampCues);
+0100 <span class="keyword">if</span> numel(unique(boutNum(rampCues))) &lt; numBouts
+0101     error(<span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="keyword">...</span>
+0102         <span class="string">'More than one ramp cue carries the same bout number.'</span>);
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="comment">%% Build One Ramp and One SS Segment per Bout</span>
+0106 numRows = 2 * numBouts;
+0107 [bout, startTime, endTime]             = deal(nan(numRows, 1));
+0108 [segment, startCue, endCue, endSource] = deal(strings(numRows, 1));
+0109 numSegments = 0;
+0110 <span class="keyword">for</span> bb = 1:numBouts
+0111     rampCue = rampCues(bb);
+0112     isLast  = bb == numBouts;
+0113     <span class="keyword">if</span> isLast
+0114         nextRampCue = numCues + 1;
+0115     <span class="keyword">else</span>
+0116         nextRampCue = rampCues(bb + 1);
+0117     <span class="keyword">end</span>
+0118     inBout = boutNum == boutNum(rampCue) &amp; cueIdx &lt; nextRampCue;
+0119 
+0120     <span class="comment">% a pre-loop Mid row of the same bout opens bout 1 of a trial that</span>
+0121     <span class="comment">% starts walking; otherwise the ramp cue opens the bout</span>
+0122     openCue = find(inBout &amp; isSteady &amp; cueIdx &lt; rampCue, 1, <span class="string">'first'</span>);
+0123     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(openCue)
+0124         openCue = rampCue;
+0125     <span class="keyword">end</span>
+0126     ssCue       = find(inBout &amp; isSteady &amp; cueIdx &gt; rampCue, 1, <span class="string">'first'</span>);
+0127     lastWalkCue = max([rampCue; ssCue]);
+0128 
+0129     [closeCue, closeSource] = <a href="#_sub1" class="code" title="subfunction [closeCue, closeSource] = findBoutEnd(isCandidate, ">findBoutEnd</a>(inBout &amp; <span class="keyword">...</span>
+0130         cueIdx &gt; lastWalkCue, isCountForward, isRest, trialEndCue, <span class="keyword">...</span>
+0131         lastWalkCue, isLast);
+0132     <span class="keyword">if</span> ~isLast &amp;&amp; (<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ssCue) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(closeCue))
+0133         error(<span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="keyword">...</span>
+0134             [<span class="string">'Bout %02d lacks a steady-state or end cue but later '</span> <span class="keyword">...</span>
+0135             <span class="string">'bouts follow it.'</span>], boutNum(rampCue));
+0136     <span class="keyword">end</span>
+0137     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(closeCue)
+0138         boutEndTime = NaN;
+0139         boutEndCue  = &quot;&quot;;
+0140     <span class="keyword">else</span>
+0141         boutEndTime = cueTimes(closeCue);
+0142         boutEndCue  = string(cueNames{closeCue});
+0143     <span class="keyword">end</span>
+0144 
+0145     numSegments = numSegments + 1;
+0146     bout(numSegments)      = boutNum(rampCue);
+0147     segment(numSegments)   = &quot;Ramp&quot;;
+0148     startTime(numSegments) = cueTimes(openCue);
+0149     startCue(numSegments)  = cueNames{openCue};
+0150     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ssCue)       <span class="comment">% interrupted during the ramp</span>
+0151         endTime(numSegments)   = boutEndTime;
+0152         endCue(numSegments)    = boutEndCue;
+0153         endSource(numSegments) = closeSource;
+0154         <span class="keyword">continue</span>
+0155     <span class="keyword">end</span>
+0156     endTime(numSegments)   = cueTimes(ssCue);
+0157     endCue(numSegments)    = cueNames{ssCue};
+0158     endSource(numSegments) = &quot;SS&quot;;
+0159 
+0160     numSegments = numSegments + 1;
+0161     bout(numSegments)      = boutNum(rampCue);
+0162     segment(numSegments)   = &quot;SS&quot;;
+0163     startTime(numSegments) = cueTimes(ssCue);
+0164     startCue(numSegments)  = cueNames{ssCue};
+0165     endTime(numSegments)   = boutEndTime;
+0166     endCue(numSegments)    = boutEndCue;
+0167     endSource(numSegments) = closeSource;
+0168 <span class="keyword">end</span>
+0169 
+0170 keep     = 1:numSegments;
+0171 segments = <a href="#_sub2" class="code" title="subfunction segments = makeSegmentTable(bout, segment, startTime, ">makeSegmentTable</a>(bout(keep), segment(keep), <span class="keyword">...</span>
+0172     startTime(keep), endTime(keep), startCue(keep), endCue(keep), <span class="keyword">...</span>
+0173     endSource(keep));
+0174 
+0175 <span class="comment">%% Check That Segments Are Chronological</span>
+0176 bounds = reshape([segments.startTime segments.endTime]', [], 1);
+0177 <span class="keyword">if</span> any(isnan(bounds(1:end - 1))) || <span class="keyword">...</span>
+0178         any(diff(bounds(~isnan(bounds))) &lt; 0)
+0179     error(<span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="keyword">...</span>
+0180         <span class="string">'Bout cue times are out of chronological order.'</span>);
+0181 <span class="keyword">end</span>
+0182 
+0183 <span class="keyword">end</span>
+0184 
+0185 <span class="comment">% ============================================================</span>
+0186 <span class="comment">% ==================== Local Functions =======================</span>
+0187 <span class="comment">% ============================================================</span>
+0188 
+0189 <a name="_sub1" href="#_subfunctions" class="code">function [closeCue, closeSource] = findBoutEnd(isCandidate, </a><span class="keyword">...</span>
+0190     isCountForward, isRest, trialEndCue, lastWalkCue, isLast)
+0191 <span class="comment">%FINDBOUTEND Pick the cue row that closes a bout.</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">%   Prefers the bout's '_CountForward' row, then its 'Rest' row, then</span>
+0194 <span class="comment">% (last bout only) the trial-end row; returns empty when none exists,</span>
+0195 <span class="comment">% meaning the bout runs to the end of the trial.</span>
+0196 <span class="comment">%</span>
+0197 <span class="comment">% Inputs:</span>
+0198 <span class="comment">%   isCandidate    - logical column; rows of this bout after its last</span>
+0199 <span class="comment">%                    walking cue and before the next bout's ramp cue</span>
+0200 <span class="comment">%   isCountForward - logical column; '_CountForward' rows</span>
+0201 <span class="comment">%   isRest         - logical column; 'Rest' rows</span>
+0202 <span class="comment">%   trialEndCue    - row index of the trial-end cue, or []</span>
+0203 <span class="comment">%   lastWalkCue    - row index of the bout's last ramp/SS cue</span>
+0204 <span class="comment">%   isLast         - logical; true for the trial's last bout</span>
+0205 <span class="comment">%</span>
+0206 <span class="comment">% Outputs:</span>
+0207 <span class="comment">%   closeCue    - row index of the closing cue, or [] if none</span>
+0208 <span class="comment">%   closeSource - &quot;CountForward&quot;, &quot;Rest&quot;, &quot;TrialEnd&quot;, or &quot;EndOfTrial&quot;</span>
+0209 <span class="comment">%</span>
+0210 <span class="comment">% Toolbox Dependencies:</span>
+0211 <span class="comment">%   None</span>
+0212 <span class="comment">%</span>
+0213 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS.</span>
+0214 
+0215 closeSource = &quot;CountForward&quot;;
+0216 closeCue    = find(isCandidate &amp; isCountForward, 1, <span class="string">'first'</span>);
+0217 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(closeCue)
+0218     closeSource = &quot;Rest&quot;;
+0219     closeCue    = find(isCandidate &amp; isRest, 1, <span class="string">'first'</span>);
+0220 <span class="keyword">end</span>
+0221 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(closeCue) &amp;&amp; isLast &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialEndCue) &amp;&amp; <span class="keyword">...</span>
+0222         trialEndCue &gt; lastWalkCue
+0223     closeSource = &quot;TrialEnd&quot;;
+0224     closeCue    = trialEndCue;
+0225 <span class="keyword">end</span>
+0226 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(closeCue)
+0227     closeSource = &quot;EndOfTrial&quot;;
+0228 <span class="keyword">end</span>
+0229 
+0230 <span class="keyword">end</span>
+0231 
+0232 <a name="_sub2" href="#_subfunctions" class="code">function segments = makeSegmentTable(bout, segment, startTime, </a><span class="keyword">...</span>
+0233     endTime, startCue, endCue, endSource)
+0234 <span class="comment">%MAKESEGMENTTABLE Assemble the bout-segment output table.</span>
+0235 <span class="comment">%</span>
+0236 <span class="comment">%   Keeps the output variable names and order in one place for both the</span>
+0237 <span class="comment">% empty and the populated result.</span>
+0238 <span class="comment">%</span>
+0239 <span class="comment">% Inputs:</span>
+0240 <span class="comment">%   bout      - column; bout numbers</span>
+0241 <span class="comment">%   segment   - string column; &quot;Ramp&quot; or &quot;SS&quot;</span>
+0242 <span class="comment">%   startTime - column; segment start times (s)</span>
+0243 <span class="comment">%   endTime   - column; segment end times (s), NaN = end of trial</span>
+0244 <span class="comment">%   startCue  - string column; opening cue rows</span>
+0245 <span class="comment">%   endCue    - string column; closing cue rows</span>
+0246 <span class="comment">%   endSource - string column; how each segment was closed</span>
+0247 <span class="comment">%</span>
+0248 <span class="comment">% Outputs:</span>
+0249 <span class="comment">%   segments - table with the variables above</span>
+0250 <span class="comment">%</span>
+0251 <span class="comment">% Toolbox Dependencies:</span>
+0252 <span class="comment">%   None</span>
+0253 <span class="comment">%</span>
+0254 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS.</span>
+0255 
+0256 segments = table(bout, segment, startTime, endTime, startCue, <span class="keyword">...</span>
+0257     endCue, endSource);
+0258 
+0259 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

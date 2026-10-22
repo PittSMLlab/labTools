@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionLineCoverage</title>
+  <meta name="keywords" content="regressionLineCoverage">
+  <meta name="description" content="REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionLineCoverage.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionLineCoverage
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionLineCoverage(outFile, baseDir, sessionID, eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.
+
+   Runs the flush compare, the event check and the process-stage
+ compare (as REGRESSIONALL) under the MATLAB profiler and writes, per
+ executed repo file, the sorted executed line numbers to a text file
+ (one line per file: path TAB comma-separated line numbers). Intersect
+ it with the files a change touches to find code the checks never run.
+ A failing check is reported but does not stop the run.
+
+ Inputs:
+   outFile    - char, text file to write
+   baseDir    - char, folder with the baselines (see REGRESSIONALL)
+   sessionID  - char, session ID (file name stem)
+   eventClass - char, '' | 'kin' | 'force' (same as the baseline)
+
+ Outputs:
+   none
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionAll.html" class="code" title="function regressionAll(baseDir, sessionID, eventClass)">REGRESSIONALL</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>	REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</li><li><a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">regressionEventsCheck</a>	REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).</li><li><a href="regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">regressionProcessRun</a>	REGRESSIONPROCESSRUN Process-stage regression: RAW -> process -> params.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionLineCoverage(outFile, baseDir, sessionID, eventClass)</a>
+0002 <span class="comment">%REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Runs the flush compare, the event check and the process-stage</span>
+0005 <span class="comment">% compare (as REGRESSIONALL) under the MATLAB profiler and writes, per</span>
+0006 <span class="comment">% executed repo file, the sorted executed line numbers to a text file</span>
+0007 <span class="comment">% (one line per file: path TAB comma-separated line numbers). Intersect</span>
+0008 <span class="comment">% it with the files a change touches to find code the checks never run.</span>
+0009 <span class="comment">% A failing check is reported but does not stop the run.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   outFile    - char, text file to write</span>
+0013 <span class="comment">%   baseDir    - char, folder with the baselines (see REGRESSIONALL)</span>
+0014 <span class="comment">%   sessionID  - char, session ID (file name stem)</span>
+0015 <span class="comment">%   eventClass - char, '' | 'kin' | 'force' (same as the baseline)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   none</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also REGRESSIONALL.</span>
+0023 
+0024 arguments
+0025     outFile    (1,:) char
+0026     baseDir    (1,:) char
+0027     sessionID  (1,:) char
+0028     eventClass (1,:) char
+0029 <span class="keyword">end</span>
+0030 
+0031 warning(<span class="string">'off'</span>, <span class="string">'backtrace'</span>);
+0032 expFile = fullfile(baseDir, <span class="string">'session'</span>, [sessionID <span class="string">'.mat'</span>]);
+0033 rawFile = fullfile(baseDir, <span class="string">'session'</span>, [sessionID <span class="string">'RAW.mat'</span>]);
+0034 
+0035 <span class="comment">%% Profile the three checks</span>
+0036 profile(<span class="string">'clear'</span>);
+0037 profile(<span class="string">'on'</span>);
+0038 checks = {<span class="string">'flush'</span>, <span class="string">'events'</span>, <span class="string">'process'</span>};
+0039 <span class="keyword">for</span> ii = 1:numel(checks)
+0040     <span class="keyword">try</span>
+0041         <span class="keyword">switch</span> checks{ii}
+0042             <span class="keyword">case</span> <span class="string">'flush'</span>
+0043                 <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>(expFile, eventClass, baseDir);
+0044             <span class="keyword">case</span> <span class="string">'events'</span>
+0045                 <a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">regressionEventsCheck</a>(<span class="string">'compare'</span>, baseDir, expFile);
+0046             <span class="keyword">case</span> <span class="string">'process'</span>
+0047                 <a href="regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">regressionProcessRun</a>(<span class="string">'compare'</span>, rawFile, eventClass, <span class="keyword">...</span>
+0048                     baseDir);
+0049         <span class="keyword">end</span>
+0050         fprintf(<span class="string">'LINECOV %s ran\n'</span>, checks{ii});
+0051     <span class="keyword">catch</span> err
+0052         fprintf(<span class="string">'LINECOV %s FAILED: %s\n'</span>, checks{ii}, err.message);
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 profile(<span class="string">'off'</span>);
+0056 ft = profile(<span class="string">'info'</span>).FunctionTable;
+0057 
+0058 <span class="comment">%% Executed lines per file</span>
+0059 repo = fileparts(fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))));
+0060 fid = fopen(outFile, <span class="string">'w'</span>);
+0061 files = unique({ft.FileName});
+0062 <span class="keyword">for</span> ii = 1:numel(files)
+0063     <span class="keyword">if</span> ~startsWith(files{ii}, repo)
+0064         <span class="keyword">continue</span>
+0065     <span class="keyword">end</span>
+0066     rows = strcmp({ft.FileName}, files{ii});
+0067     lines = [];
+0068     <span class="keyword">for</span> kk = find(rows)
+0069         el = ft(kk).ExecutedLines;
+0070         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(el)
+0071             lines = [lines; el(:, 1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074     lines = unique(lines)';
+0075     fprintf(fid, <span class="string">'%s\t%s\n'</span>, files{ii}, strjoin(string(lines), <span class="string">','</span>));
+0076 <span class="keyword">end</span>
+0077 fclose(fid);
+0078 fprintf(<span class="string">'LINECOV done\n'</span>);
+0079 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

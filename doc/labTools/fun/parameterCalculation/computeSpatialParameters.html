@@ -57,7 +57,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	prctile  Computes percentile</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function lag=circCorr(trace1,trace2)">circCorr</a>	Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be</li><li><a href="getKinematicData.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicData(eventTimes, markerData, angleData, s)">getKinematicData</a>	GETKINEMATICDATA Extract marker and angle data at gait event times.</li><li><a href="getKinematicDataAbs.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicDataAbs(eventTimes, markerData, angleData, s)">getKinematicDataAbs</a>	GETKINEMATICDATAABS Extract marker data in absolute lab-frame coordinates.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/prctile.html" class="code" title="function prctileTS = prctile(this, p, strideIdxs)">prctile</a>	PRCTILE Computes percentile.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function phaseShift = circCorr(trace1, trace2)">circCorr</a>	CIRCCORR Estimate the phase shift between two sinusoidal traces.</li><li><a href="getKinematicData.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicData(eventTimes, markerData, angleData, s)">getKinematicData</a>	GETKINEMATICDATA Extract marker and angle data at gait event times.</li><li><a href="getKinematicDataAbs.html" class="code" title="function [rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D,sAngle, fAngle, direction, hipPosSHS,sAnk_fromAvgHip, fAnk_fromAvgHip] =getKinematicDataAbs(eventTimes, markerData, angleData, s)">getKinematicDataAbs</a>	GETKINEMATICDATAABS Extract marker data in absolute lab-frame coordinates.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
@@ -422,14 +422,14 @@ This function is called by:
 0354             fLimb = angleData.split( <span class="keyword">...</span>
 0355                 timeSHS(ii), timeSHS2(ii)).getDataAsVector({[f <span class="string">'Limb'</span>]});
 0356             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sLimb) &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fLimb)
-0357                 phaseShift(ii) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function lag=circCorr(trace1,trace2)">circCorr</a>(sLimb, fLimb);
+0357                 phaseShift(ii) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function phaseShift = circCorr(trace1, trace2)">circCorr</a>(sLimb, fLimb);
 0358             <span class="keyword">end</span>
 0359         <span class="keyword">end</span>
 0360         Pos = rotatedMarkerData.split(timeSHS(ii), timeSHS2(ii)) <span class="keyword">...</span>
 0361             .getOrientedData({[s <span class="string">'ANK'</span>], [f <span class="string">'ANK'</span>]});
 0362         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(Pos)
 0363             <span class="comment">% Use only y-axis components, equivalent to sAnkFwd</span>
-0364             phaseShiftPos(ii) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function lag=circCorr(trace1,trace2)">circCorr</a>(Pos(:, 1, 2), Pos(:, 2, 2));
+0364             phaseShiftPos(ii) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/circCorr.html" class="code" title="function phaseShift = circCorr(trace1, trace2)">circCorr</a>(Pos(:, 1, 2), Pos(:, 2, 2));
 0365         <span class="keyword">end</span>
 0366     <span class="keyword">end</span>
 0367 <span class="keyword">end</span>
@@ -505,7 +505,7 @@ This function is called by:
 0437 velocityContributionPNorm = velocityContributionP ./ Dist;
 0438 netContributionPNorm      = netContributionP      ./ Dist;
 0439 
-0440 <span class="comment">% Added by Marcela 06/01/2021: displacement for single stance.</span>
+0440 <span class="comment">% Displacement for single stance.</span>
 0441 <span class="comment">% FIXME: DO NOT use absolute value; if the sign is supposed to be the</span>
 0442 <span class="comment">% opposite one, just leave it as is since the absolute value makes it</span>
 0443 <span class="comment">% murky to know what this quantity means.</span>
@@ -520,8 +520,8 @@ This function is called by:
 0452 singleStanceSpeedDiff = singleStanceSpeedFast - singleStanceSpeedSlow;
 0453 
 0454 <span class="comment">% Contributions in absolute frame using rotated marker data.</span>
-0455 <span class="comment">% NOTE: modified by Digna de Kam (April 2018) to use rotated markerdata,</span>
-0456 <span class="comment">% which allows using these values for overground trials.</span>
+0455 <span class="comment">% NOTE: uses rotated marker data, which allows using these values for</span>
+0456 <span class="comment">% overground trials.</span>
 0457 aux = -rotatedMarkerDataAbs.getDataAsTS( <span class="keyword">...</span>
 0458     {[f <span class="string">'ANKy'</span>], [s <span class="string">'ANKy'</span>]}).getSample(eventTimes, <span class="string">'closest'</span>);
 0459 spatialContributionP2 = <span class="keyword">...</span>
@@ -639,15 +639,126 @@ This function is called by:
 0571 
 0572 <span class="comment">%% Assign Parameters to Data Matrix</span>
 0573 data = nan(length(timeSHS), length(paramLabels));
-0574 <span class="keyword">for</span> ii = 1:length(paramLabels)
-0575     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
-0576 <span class="keyword">end</span>
-0577 
-0578 <span class="comment">%% Output Computed Parameters</span>
-0579 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
-0580 
-0581 <span class="keyword">end</span>
-0582</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0574 data(:,   1) = direction;
+0575 data(:,   2) = hipPos;
+0576 data(:,   3) = stepLengthSlow;
+0577 data(:,   4) = stepLengthFast;
+0578 data(:,   5) = takeOffLengthSlow;
+0579 data(:,   6) = takeOffLengthFast;
+0580 data(:,   7) = alphaSlow;
+0581 data(:,   8) = alphaTemp;
+0582 data(:,   9) = alphaFast;
+0583 data(:,  10) = alphaDiff;
+0584 data(:,  11) = alphaAsym;
+0585 data(:,  12) = alphaAngSlow;
+0586 data(:,  13) = alphaAngFast;
+0587 data(:,  14) = betaSlow;
+0588 data(:,  15) = betaFast;
+0589 data(:,  16) = XSlow;
+0590 data(:,  17) = XFast;
+0591 data(:,  18) = Xdiff;
+0592 data(:,  19) = Xasym;
+0593 data(:,  20) = RFastPos;
+0594 data(:,  21) = RSloWPos;
+0595 data(:,  22) = RFastPosSHS;
+0596 data(:,  23) = RSlowPosFHS;
+0597 data(:,  24) = betaAngSlow;
+0598 data(:,  25) = betaAngFast;
+0599 data(:,  26) = stanceRangeSlow;
+0600 data(:,  27) = stanceRangeFast;
+0601 data(:,  28) = stanceRangeAngSlow;
+0602 data(:,  29) = stanceRangeAngFast;
+0603 data(:,  30) = swingRangeSlow;
+0604 data(:,  31) = swingRangeFast;
+0605 data(:,  32) = omegaSlow;
+0606 data(:,  33) = omegaFast;
+0607 data(:,  34) = alphaRatioSlow;
+0608 data(:,  35) = alphaRatioFast;
+0609 data(:,  36) = alphaDeltaSlow;
+0610 data(:,  37) = alphaDeltaFast;
+0611 data(:,  38) = stepLengthDiff;
+0612 data(:,  39) = stepLengthDiff2D;
+0613 data(:,  40) = stepLengthAsym;
+0614 data(:,  41) = stepLengthAsym2D;
+0615 data(:,  42) = angularSpreadDiff;
+0616 data(:,  43) = angularSpreadAsym;
+0617 data(:,  44) = Sout;
+0618 data(:,  45) = Serror;
+0619 data(:,  46) = SerrorOld;
+0620 data(:,  47) = Sgoal;
+0621 data(:,  48) = angleOfOscillationAsym;
+0622 data(:,  49) = phaseShift;
+0623 data(:,  50) = phaseShiftPos;
+0624 data(:,  51) = spatialContribution;
+0625 data(:,  52) = stepTimeContribution;
+0626 data(:,  53) = velocityContribution;
+0627 data(:,  54) = netContribution;
+0628 data(:,  55) = spatialContributionP;
+0629 data(:,  56) = stepTimeContributionP;
+0630 data(:,  57) = velocityContributionP;
+0631 data(:,  58) = netContributionP;
+0632 data(:,  59) = spatialContributionPNorm;
+0633 data(:,  60) = stepTimeContributionPNorm;
+0634 data(:,  61) = velocityContributionPNorm;
+0635 data(:,  62) = netContributionPNorm;
+0636 data(:,  63) = spatialContributionPNorm2;
+0637 data(:,  64) = stepTimeContributionPNorm2;
+0638 data(:,  65) = velocityContributionPNorm2;
+0639 data(:,  66) = netContributionPNorm2;
+0640 data(:,  67) = spatialContributionAlt;
+0641 data(:,  68) = stepTimeContributionAlt;
+0642 data(:,  69) = velocityContributionAlt;
+0643 data(:,  70) = netContributionAlt;
+0644 data(:,  71) = spatialContributionAltRatio;
+0645 data(:,  72) = stepTimeContributionAltRatio;
+0646 data(:,  73) = velocityContributionAltRatio;
+0647 data(:,  74) = netContributionAltRatio;
+0648 data(:,  75) = spatialContributionNorm2;
+0649 data(:,  76) = stepTimeContributionNorm2;
+0650 data(:,  77) = velocityContributionNorm2;
+0651 data(:,  78) = netContributionNorm2;
+0652 data(:,  79) = stepTimeIdealT;
+0653 data(:,  80) = spatialIdealT;
+0654 data(:,  81) = stepTimeErrorT;
+0655 data(:,  82) = spatialErrorT;
+0656 data(:,  83) = stepTimeIdealS;
+0657 data(:,  84) = spatialIdealS;
+0658 data(:,  85) = stepTimeErrorS;
+0659 data(:,  86) = spatialErrorS;
+0660 data(:,  87) = equivalentSpeed;
+0661 data(:,  88) = singleStanceSpeedSlowAbs;
+0662 data(:,  89) = singleStanceSpeedFastAbs;
+0663 data(:,  90) = singleStanceSpeedSlowAbsANK;
+0664 data(:,  91) = singleStanceSpeedFastAbsANK;
+0665 data(:,  92) = singleStanceSpeedDiffAbsAnk;
+0666 data(:,  93) = stepSpeedSlow;
+0667 data(:,  94) = stepSpeedFast;
+0668 data(:,  95) = stepSpeedAvg;
+0669 data(:,  96) = stanceSpeedSlow;
+0670 data(:,  97) = stanceSpeedFast;
+0671 data(:,  98) = alphaTemp_fromAvgHip;
+0672 data(:,  99) = alphaFast_fromAvgHip;
+0673 data(:, 100) = alphaSlow_fromAvgHip;
+0674 data(:, 101) = xTemp_fromAvgHip;
+0675 data(:, 102) = xFast_fromAvgHip;
+0676 data(:, 103) = xSlow_fromAvgHip;
+0677 data(:, 104) = velocitySlow;
+0678 data(:, 105) = velocityFast;
+0679 data(:, 106) = velocityAltContribution;
+0680 data(:, 107) = velocityAltContributionAlt;
+0681 data(:, 108) = velocityAltContributionNorm2;
+0682 data(:, 109) = velocityAltContributionP;
+0683 data(:, 110) = velocityAltContributionPNorm;
+0684 data(:, 111) = singleStanceSpeedSlow;
+0685 data(:, 112) = singleStanceSpeedFast;
+0686 data(:, 113) = singleStanceSpeedAvg;
+0687 data(:, 114) = singleStanceSpeedDiff;
+0688 
+0689 <span class="comment">%% Output Computed Parameters</span>
+0690 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0691 
+0692 <span class="keyword">end</span>
+0693</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -30,15 +30,15 @@
 <div class="fragment"><pre class="comment">RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.
 
    Transforms signals by resampling at timeScaleFactor, shifting by
- lagInSamples samples, and dividing by scaleGain. Resampling uses
- linear interpolation and is skipped when the scale factor would
- produce less than half a sample of drift over the full signal length.
- The integer portion of lagInSamples is applied by padding or
- truncating; sub-sample correction is reserved for future use.
+ lagInSamples samples, and dividing by scaleGain. Resampling uses linear
+ interpolation and is skipped when the scale factor would produce less than
+ half a sample of drift over the full signal length. The integer portion of
+ lagInSamples is applied by padding or truncating; sub-sample correction is
+ reserved for future use.
 
  Inputs:
-   signals         - (M x N) double array of N time series, each M
-                     samples long
+   signals         - (M x N) double array of N time series, each M samples
+                     long
    timeScaleFactor - resampling factor; values &gt; 1 interpolate (upscale),
                      values &lt; 1 decimate (downscale)
    lagInSamples    - time shift in samples; positive pads leading zeros,
@@ -59,26 +59,26 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Find and apply the transformation that best aligns signal2</li><li><a href="../../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	loadTrials  Generates rawTrialData instances for each trial.</li><li><a href="../../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="matchSignals.html" class="code" title="function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2)">matchSignals</a>	MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).</li><li><a href="../../../../../labTools/gui/importc3d/loadTrials.html" class="code" title="function trials = loadTrials(trialMD, fileList, secFileList, info)">loadTrials</a>	LOADTRIALS Generate rawTrialData instances for each trial.</li><li><a href="../../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newSignals = resampleShiftAndScale( </a><span class="keyword">...</span>
-0002         signals, timeScaleFactor, lagInSamples, scaleGain)
+0002     signals, timeScaleFactor, lagInSamples, scaleGain)
 0003 <span class="comment">%RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   Transforms signals by resampling at timeScaleFactor, shifting by</span>
-0006 <span class="comment">% lagInSamples samples, and dividing by scaleGain. Resampling uses</span>
-0007 <span class="comment">% linear interpolation and is skipped when the scale factor would</span>
-0008 <span class="comment">% produce less than half a sample of drift over the full signal length.</span>
-0009 <span class="comment">% The integer portion of lagInSamples is applied by padding or</span>
-0010 <span class="comment">% truncating; sub-sample correction is reserved for future use.</span>
+0006 <span class="comment">% lagInSamples samples, and dividing by scaleGain. Resampling uses linear</span>
+0007 <span class="comment">% interpolation and is skipped when the scale factor would produce less than</span>
+0008 <span class="comment">% half a sample of drift over the full signal length. The integer portion of</span>
+0009 <span class="comment">% lagInSamples is applied by padding or truncating; sub-sample correction is</span>
+0010 <span class="comment">% reserved for future use.</span>
 0011 <span class="comment">%</span>
 0012 <span class="comment">% Inputs:</span>
-0013 <span class="comment">%   signals         - (M x N) double array of N time series, each M</span>
-0014 <span class="comment">%                     samples long</span>
+0013 <span class="comment">%   signals         - (M x N) double array of N time series, each M samples</span>
+0014 <span class="comment">%                     long</span>
 0015 <span class="comment">%   timeScaleFactor - resampling factor; values &gt; 1 interpolate (upscale),</span>
 0016 <span class="comment">%                     values &lt; 1 decimate (downscale)</span>
 0017 <span class="comment">%   lagInSamples    - time shift in samples; positive pads leading zeros,</span>
@@ -138,6 +138,6 @@ This function is called by:
 0071 newSignals = newSignals / scaleGain;
 0072 
 0073 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

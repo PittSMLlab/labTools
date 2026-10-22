@@ -4,7 +4,7 @@
 <head>
   <title>Description of scatterPlotLab</title>
   <meta name="keywords" content="scatterPlotLab">
-  <meta name="description" content="Plots up to 3 parameters as coordinates in a single cartesian axes system">
+  <meta name="description" content="SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,47 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>Plots up to 3 parameters as coordinates in a single cartesian axes system</strong></div>
+<div class="box"><strong>SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID) </strong></div>
+<div class="box"><strong>function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Plots up to 3 parameters as coordinates in a single cartesian axes system</pre></div>
+<div class="fragment"><pre class="comment">SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.
+
+   For each subject, plots the median of 2 or 3 parameters in each
+ condition and joins consecutive conditions with a line, so each
+ subject traces a trajectory through parameter space. Markers differ by
+ group; the legend lists subject IDs.
+
+ Inputs:
+   adaptDataList   - adaptationData objects: a cell array (one group) or
+                     a cell array of cell arrays (several groups)
+   labels          - cell array of 2 or 3 parameter labels
+   conditionIdxs   - condition indices, or a cell array of condition
+                     names (resolved per subject)
+   figHandle       - (optional) existing figure to draw into
+   marker          - unused; the marker is chosen per group
+   binSize         - [] (default) plots no individual strides; 1 plots
+                     every stride; &gt;1 averages blocks of binSize
+                     strides (smoothed for 3 parameters)
+   trajectoryColor - (optional) color(s) of the trajectories
+   removeBias      - 1 to remove bias first (default 0)
+   addID           - 1 (default) to label the first point with the
+                     subject ID
+
+ Outputs:
+   figHandle - figure handle
+
+ Toolbox Dependencies: Curve Fitting Toolbox (SMOOTH)
+
+ See also GETPARAMINCOND, REMOVEBIAS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Gets condition indices from names</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>	getConditionIdxsFromName  Returns condition indices from names</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	plot3  Plots 3D trajectories</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	Define color scheme</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@experimentData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>	GETCONDITIONIDXSFROMNAME Gets condition indices from names</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../../labTools/classes/dataStructs/metaData/@experimentMetaData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames, exactMatchesOnlyFlag, ignoreMissingNamesFlag)">getConditionIdxsFromName</a>	GETCONDITIONIDXSFROMNAME Returns condition indices from names.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>	PLOT3 Plots 3D trajectories.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	% Color scheme</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	% Poster colors</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -42,170 +70,222 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)</a>
-0002 <span class="comment">%Plots up to 3 parameters as coordinates in a single cartesian axes system</span>
-0003 
-0004 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
-0005     <span class="keyword">if</span> ~isa(adaptDataList{1},<span class="string">'cell'</span>)
-0006         adaptDataList={adaptDataList};
-0007     <span class="keyword">end</span>
-0008 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
-0009     adaptDataList={{adaptDataList}};
-0010 <span class="keyword">end</span>
-0011 Ngroups=length(adaptDataList);
-0012 
-0013 <span class="keyword">if</span> nargin&lt;8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBias)
-0014     removeBias=0;
-0015 <span class="keyword">end</span>
-0016 <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
-0017     figHandle=figure;
-0018 <span class="keyword">else</span>
-0019     figure(figHandle);
-0020     hold on
-0021 <span class="keyword">end</span>
-0022 markerList={<span class="string">'v'</span>,<span class="string">'o'</span>,<span class="string">'h'</span>,<span class="string">'+'</span>,<span class="string">'*'</span>,<span class="string">'s'</span>,<span class="string">'x'</span>,<span class="string">'^'</span>,<span class="string">'d'</span>,<span class="string">'.'</span>,<span class="string">'p'</span>,<span class="string">'&lt;'</span>,<span class="string">'&gt;'</span>};
-0023 <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
-0024 colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; [0 0 0];p_yellow];
-0025 color=[colorOrder;colorOrder.^5];
-0026 
-0027 
-0028 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(conditionIdxs)
-0029     conditionIdxs=[];
-0030 <span class="keyword">end</span>
-0031 <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize)
-0032     binSize=[];
-0033 <span class="keyword">end</span>
-0034 
-0035 <span class="keyword">if</span> nargin&lt;9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(addID)
-0036     addID=1;
-0037 <span class="keyword">end</span>
-0038 
-0039 <span class="keyword">if</span> Ngroups&gt;1
-0040 labelID=[];
-0041 dot=[];
-0042 <span class="keyword">end</span>
-0043 
-0044 <span class="comment">% if nargin&lt;5 || isempty(marker) %Dulce</span>
-0045 <span class="comment">%     marker=markerList{randi(length(markerList),1)};</span>
-0046 <span class="comment">% end</span>
-0047 
-0048 <span class="keyword">for</span> g=1:Ngroups
-0049             marker=markerList{g};
-0050     <span class="keyword">for</span> i=1:length(adaptDataList{g})
-0051         r=(i-1)/(length(adaptDataList{g})-1);
-0052         <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trajectoryColor)
-0053             trajectoryColor=[1,0,0] + r*[-1,0,1];
-0054         <span class="keyword">elseif</span> iscell(trajectoryColor)
-0055             trajectoryColor=trajectoryColor{i};
-0056         <span class="keyword">elseif</span> size(trajectoryColor,2)==3
-0057             trajectoryColor=trajectoryColor(mod(i,size(trajectoryColor,1))+1,:);
-0058         <span class="keyword">else</span>
-0059             warning(<span class="string">'Could not interpret trajecColors input'</span>)
-0060             trajectoryColor=<span class="string">'k'</span>;
-0061         <span class="keyword">end</span>
-0062         this=adaptDataList{g}{i};
-0063         fieldList=fields(this);
-0064         a=this.(fieldList{1});
-0065         <span class="keyword">if</span> iscell(conditionIdxs) <span class="comment">%This gives the possibility to pass condition names instead of the indexes for each subject, which might be different</span>
-0066             conditionIdxs1=<a href="../../../../labTools/classes/dataStructs/@experimentData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>(a,conditionIdxs);
-0067         <span class="keyword">else</span>
-0068             conditionIdxs1=conditionIdxs;
-0069         <span class="keyword">end</span>
-0070         
-0071         <span class="keyword">if</span> removeBias==1
-0072             this=this.removeBias;
-0073         <span class="keyword">end</span>
-0074         
-0075         <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
-0076 
-0077         aux=<a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(colorConds');
-0078         set(gca,<span class="string">'ColorOrder'</span>,aux(1:length(conditionIdxs),:));
-0079         hold on
-0080         <span class="keyword">if</span> length(labels)&gt;3
-0081             error(<span class="string">'adaptationData:scatterPlot'</span>,<span class="string">'Cannot plot more than 3 parameters at a time'</span>)
-0082         <span class="keyword">end</span>
-0083   
-0084         <span class="keyword">if</span> length(labels)==3
-0085             last=[];
-0086             <span class="keyword">for</span> c=1:length(conditionIdxs)
-0087              
-0088                 [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
-0089                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize&gt;1
-0090          
-0091                     <span class="keyword">for</span> ii=1:size(data,2)
-0092                         data(:,ii)=smooth(data(:,ii),binSize,<span class="string">'rlowess'</span>);
-0093                     <span class="keyword">end</span>
-0094                 <span class="keyword">end</span>
-0095                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize~=0              
-0096                     hh(c)=<a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(:,1),data(:,2),data(:,3),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
-0097                     uistack(hh(c),<span class="string">'bottom'</span>)
-0098                 <span class="keyword">end</span>
-0099                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(last)
-0100                      h=<a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(:,1),data(:,2),data(:,3),<span class="string">'Color'</span>,color(i,:),<span class="string">'LineWidth'</span>,1);
-0101                     uistack(h,<span class="string">'bottom'</span>)
-0102                     <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'Color'</span>,color(i,:))
-0103                 <span class="keyword">else</span>
-0104                     <span class="keyword">if</span> addID==1
-0105                         hhh=text([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],this.subData.ID);
-0106                         set(hhh,<span class="string">'LineWidth'</span>,1,<span class="string">'FontSize'</span>,14);
-0107                     <span class="keyword">end</span>
-0108                 <span class="keyword">end</span>
-0109                 last=nanmedian(data,1);
-0110             <span class="keyword">end</span>
-0111             xlabel(labels{1})
-0112             ylabel(labels{2})
-0113             zlabel(labels{3})
-0114         <span class="keyword">elseif</span> length(labels)==2
-0115             last=[];
-0116             <span class="keyword">for</span> c=1:length(conditionIdxs)
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs, </a><span class="keyword">...</span>
+0002     figHandle,marker,binSize,trajectoryColor,removeBias,addID)
+0003 <span class="comment">%SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   For each subject, plots the median of 2 or 3 parameters in each</span>
+0006 <span class="comment">% condition and joins consecutive conditions with a line, so each</span>
+0007 <span class="comment">% subject traces a trajectory through parameter space. Markers differ by</span>
+0008 <span class="comment">% group; the legend lists subject IDs.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   adaptDataList   - adaptationData objects: a cell array (one group) or</span>
+0012 <span class="comment">%                     a cell array of cell arrays (several groups)</span>
+0013 <span class="comment">%   labels          - cell array of 2 or 3 parameter labels</span>
+0014 <span class="comment">%   conditionIdxs   - condition indices, or a cell array of condition</span>
+0015 <span class="comment">%                     names (resolved per subject)</span>
+0016 <span class="comment">%   figHandle       - (optional) existing figure to draw into</span>
+0017 <span class="comment">%   marker          - unused; the marker is chosen per group</span>
+0018 <span class="comment">%   binSize         - [] (default) plots no individual strides; 1 plots</span>
+0019 <span class="comment">%                     every stride; &gt;1 averages blocks of binSize</span>
+0020 <span class="comment">%                     strides (smoothed for 3 parameters)</span>
+0021 <span class="comment">%   trajectoryColor - (optional) color(s) of the trajectories</span>
+0022 <span class="comment">%   removeBias      - 1 to remove bias first (default 0)</span>
+0023 <span class="comment">%   addID           - 1 (default) to label the first point with the</span>
+0024 <span class="comment">%                     subject ID</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Outputs:</span>
+0027 <span class="comment">%   figHandle - figure handle</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Toolbox Dependencies: Curve Fitting Toolbox (SMOOTH)</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% See also GETPARAMINCOND, REMOVEBIAS.</span>
+0032 
+0033 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0034     <span class="keyword">if</span> ~isa(adaptDataList{1},<span class="string">'cell'</span>)
+0035         adaptDataList = {adaptDataList};
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
+0038     adaptDataList = {{adaptDataList}};
+0039 <span class="keyword">end</span>
+0040 Ngroups = length(adaptDataList);
+0041 
+0042 <span class="keyword">if</span> nargin &lt; 8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(removeBias)
+0043     removeBias = 0;
+0044 <span class="keyword">end</span>
+0045 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
+0046     figHandle = figure;
+0047 <span class="keyword">else</span>
+0048     figure(figHandle);
+0049     hold on
+0050 <span class="keyword">end</span>
+0051 markerList = {<span class="string">'v'</span>,<span class="string">'o'</span>,<span class="string">'h'</span>,<span class="string">'+'</span>,<span class="string">'*'</span>,<span class="string">'s'</span>,<span class="string">'x'</span>,<span class="string">'^'</span>,<span class="string">'d'</span>,<span class="string">'.'</span>,<span class="string">'p'</span>,<span class="string">'&lt;'</span>,<span class="string">'&gt;'</span>};
+0052 <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
+0053 colorOrder = [p_red; p_orange; p_fade_green; p_fade_blue; p_plum; <span class="keyword">...</span>
+0054     p_green; p_blue; p_fade_red; p_lime; [0 0 0];p_yellow];
+0055 color = [colorOrder;colorOrder.^5];
+0056 
+0057 
+0058 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(conditionIdxs)
+0059     conditionIdxs = [];
+0060 <span class="keyword">end</span>
+0061 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize)
+0062     binSize = [];
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="keyword">if</span> nargin &lt; 9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(addID)
+0066     addID = 1;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="keyword">if</span> Ngroups &gt; 1
+0070     labelID = [];
+0071     dot     = [];
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">% if nargin&lt;5 || isempty(marker)</span>
+0075 <span class="comment">%     marker=markerList{randi(length(markerList),1)};</span>
+0076 <span class="comment">% end</span>
+0077 
+0078 <span class="keyword">for</span> g = 1:Ngroups
+0079     marker = markerList{g};
+0080     <span class="keyword">for</span> sub = 1:length(adaptDataList{g})
+0081         r = (sub-1)/(length(adaptDataList{g})-1);
+0082         <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trajectoryColor)
+0083             trajectoryColor = [1,0,0] + r*[-1,0,1];
+0084         <span class="keyword">elseif</span> iscell(trajectoryColor)
+0085             trajectoryColor = trajectoryColor{sub};
+0086         <span class="keyword">elseif</span> size(trajectoryColor,2) == 3
+0087             trajectoryColor = <span class="keyword">...</span>
+0088                 trajectoryColor(mod(sub,size(trajectoryColor,1))+1,:);
+0089         <span class="keyword">else</span>
+0090             warning(<span class="string">'Could not interpret trajecColors input'</span>)
+0091             trajectoryColor = <span class="string">'k'</span>;
+0092         <span class="keyword">end</span>
+0093         this      = adaptDataList{g}{sub};
+0094         fieldList = fields(this);
+0095         a         = this.(fieldList{1});
+0096         <span class="comment">%This gives the possibility to pass condition names instead of the</span>
+0097         <span class="comment">%indexes for each subject, which might be different</span>
+0098         <span class="keyword">if</span> iscell(conditionIdxs)
+0099             conditionIdxs1 = <a href="../../../../labTools/classes/dataStructs/@experimentData/getConditionIdxsFromName.html" class="code" title="function conditionIdxs = getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>(a,conditionIdxs);
+0100         <span class="keyword">else</span>
+0101             conditionIdxs1 = conditionIdxs;
+0102         <span class="keyword">end</span>
+0103 
+0104         <span class="keyword">if</span> removeBias == 1
+0105             this = this.removeBias();
+0106         <span class="keyword">end</span>
+0107 
+0108         <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
+0109 
+0110         aux = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(colorConds');
+0111         set(gca,<span class="string">'ColorOrder'</span>,aux(1:length(conditionIdxs),:));
+0112         hold on
+0113         <span class="keyword">if</span> length(labels) &gt; 3
+0114             error(<span class="string">'adaptationData:scatterPlot'</span>, <span class="keyword">...</span>
+0115                 <span class="string">'Cannot plot more than 3 parameters at a time'</span>)
+0116         <span class="keyword">end</span>
 0117 
-0118                 [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
-0119                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize&gt;1
-0120                     data2=conv2(data,ones(binSize,1)/binSize);
-0121                     data=data2(1:binSize:<span class="keyword">end</span>,:);
-0122                     hh(c)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
-0123                 <span class="keyword">end</span>
-0124                 cc=aux(mod(c,size(aux,1))+1,:);
-0125                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize==1
-0126                     hh(c)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
-0127                     uistack(hh(c),<span class="string">'bottom'</span>)
-0128                 <span class="keyword">end</span>
-0129                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(last)
-0130                     h=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],<span class="string">'Color'</span>,color(i,:),<span class="string">'LineWidth'</span>,2);
-0131                     uistack(h,<span class="string">'bottom'</span>)
-0132                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([nanmedian(data(:,1))],[nanmedian(data(:,2))],<span class="string">'o'</span>,<span class="string">'Color'</span>,color(i,:),<span class="string">'MarkerFaceColor'</span>,color(i,:))
-0133                 <span class="keyword">end</span>
-0134             
-0135                 last=nanmedian(data,1);
-0136             <span class="keyword">end</span>
-0137             xlabel(labels{1})
-0138             ylabel(labels{2})
-0139         <span class="keyword">end</span>
-0140         
-0141         <span class="keyword">if</span> length(conditionIdxs)==1 &amp;&amp; Ngroups==1<span class="comment">%%Dulce</span>
-0142             labelID{i}=this.subData.ID;
-0143             dot{i}=hh;
-0144         <span class="keyword">elseif</span> length(conditionIdxs)&gt;1 &amp;&amp; Ngroups==1
-0145             labelID{i}=this.subData.ID;
-0146             dot{i}=hh(1);
-0147         <span class="keyword">elseif</span> length(conditionIdxs)&gt;1 &amp;&amp; Ngroups&gt;1
-0148             labelID2{i}=this.subData.ID;
-0149             dot2{i}=hh(1); 
-0150           
-0151         <span class="keyword">elseif</span> length(conditionIdxs)==1 &amp;&amp; Ngroups&gt;1
-0152             labelID2{i}=this.subData.ID;
-0153             dot2{i}=hh(1);
-0154         <span class="keyword">end</span>
-0155     <span class="keyword">end</span>
-0156     <span class="keyword">if</span> Ngroups&gt;1
-0157         labelID=[labelID labelID2];
-0158         dot=[dot dot2];  
-0159     <span class="keyword">end</span>
-0160                       
-0161 <span class="keyword">end</span>
-0162 
-0163 legend([dot{:}],[labelID(:)])
-0164 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0118         <span class="keyword">if</span> length(labels) == 3
+0119             last = [];
+0120             <span class="keyword">for</span> c = 1:length(conditionIdxs)
+0121 
+0122                 [data,~,~,origTrials] = <span class="keyword">...</span>
+0123                     getParamInCond(this,labels,conditionIdxs(c));
+0124                 <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize &gt; 1
+0125 
+0126                     <span class="keyword">for</span> ii = 1:size(data,2)
+0127                         data(:,ii) = smooth(data(:,ii),binSize,<span class="string">'rlowess'</span>);
+0128                     <span class="keyword">end</span>
+0129                 <span class="keyword">end</span>
+0130                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize ~= 0
+0131                     hh(c) = <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(:,1),data(:,2),data(:,3),marker, <span class="keyword">...</span>
+0132                         <span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(sub,:), <span class="keyword">...</span>
+0133                         <span class="string">'MarkerEdgeColor'</span>,color(sub,:));
+0134                     uistack(hh(c),<span class="string">'bottom'</span>)
+0135                 <span class="keyword">end</span>
+0136                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(last)
+0137                     h = <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>(data(:,1),data(:,2),data(:,3),<span class="string">'Color'</span>, <span class="keyword">...</span>
+0138                         color(sub,:),<span class="string">'LineWidth'</span>,1);
+0139                     uistack(h,<span class="string">'bottom'</span>)
+0140                     <a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/plot3.html" class="code" title="function fh = plot3(this, fh)">plot3</a>([<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,1), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0141                         [<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,2), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0142                         [<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,3), <span class="string">'omitnan'</span>)],<span class="string">'o'</span>, <span class="keyword">...</span>
+0143                         <span class="string">'MarkerFaceColor'</span>,color(sub,:),<span class="string">'Color'</span>,color(sub,:))
+0144                 <span class="keyword">else</span>
+0145                     <span class="keyword">if</span> addID == 1
+0146                         hhh = text([<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,1), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0147                             [<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,2), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0148                             [<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,3), <span class="string">'omitnan'</span>)],this.subData.ID);
+0149                         set(hhh,<span class="string">'LineWidth'</span>,1,<span class="string">'FontSize'</span>,14);
+0150                     <span class="keyword">end</span>
+0151                 <span class="keyword">end</span>
+0152                 last = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data, 1, <span class="string">'omitnan'</span>);
+0153             <span class="keyword">end</span>
+0154             xlabel(labels{1})
+0155             ylabel(labels{2})
+0156             zlabel(labels{3})
+0157         <span class="keyword">elseif</span> length(labels) == 2
+0158             last = [];
+0159             <span class="keyword">for</span> c = 1:length(conditionIdxs)
+0160 
+0161                 [data,~,~,origTrials] = <span class="keyword">...</span>
+0162                     getParamInCond(this,labels,conditionIdxs(c));
+0163                 <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize &gt; 1
+0164                     data2 = conv2(data,ones(binSize,1)/binSize);
+0165                     data  = data2(1:binSize:<span class="keyword">end</span>,:);
+0166                     hh(c) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>, <span class="keyword">...</span>
+0167                         1,<span class="string">'MarkerFaceColor'</span>,color(sub,:), <span class="keyword">...</span>
+0168                         <span class="string">'MarkerEdgeColor'</span>,color(sub,:));
+0169                 <span class="keyword">end</span>
+0170                 cc = aux(mod(c,size(aux,1))+1,:);
+0171                 <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(binSize) &amp;&amp; binSize == 1
+0172                     hh(c) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>, <span class="keyword">...</span>
+0173                         1,<span class="string">'MarkerFaceColor'</span>,color(sub,:), <span class="keyword">...</span>
+0174                         <span class="string">'MarkerEdgeColor'</span>,color(sub,:));
+0175                     uistack(hh(c),<span class="string">'bottom'</span>)
+0176                 <span class="keyword">end</span>
+0177                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(last)
+0178                     h = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([last(1) <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,1), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0179                         [last(2) <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,2), <span class="string">'omitnan'</span>)],<span class="string">'Color'</span>, <span class="keyword">...</span>
+0180                         color(sub,:),<span class="string">'LineWidth'</span>,2);
+0181                     uistack(h,<span class="string">'bottom'</span>)
+0182                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,1), <span class="string">'omitnan'</span>)], <span class="keyword">...</span>
+0183                         [<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data(:,2), <span class="string">'omitnan'</span>)],<span class="string">'o'</span>,<span class="string">'Color'</span>, <span class="keyword">...</span>
+0184                         color(sub,:),<span class="string">'MarkerFaceColor'</span>,color(sub,:))
+0185                 <span class="keyword">end</span>
+0186 
+0187                 last = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(data, 1, <span class="string">'omitnan'</span>);
+0188             <span class="keyword">end</span>
+0189             xlabel(labels{1})
+0190             ylabel(labels{2})
+0191         <span class="keyword">end</span>
+0192 
+0193         <span class="keyword">if</span> length(conditionIdxs) == 1 &amp;&amp; Ngroups == 1
+0194             labelID{sub} = this.subData.ID;
+0195             dot{sub} = hh;
+0196         <span class="keyword">elseif</span> length(conditionIdxs) &gt; 1 &amp;&amp; Ngroups == 1
+0197             labelID{sub} = this.subData.ID;
+0198             dot{sub} = hh(1);
+0199         <span class="keyword">elseif</span> length(conditionIdxs) &gt; 1 &amp;&amp; Ngroups &gt; 1
+0200             labelID2{sub} = this.subData.ID;
+0201             dot2{sub} = hh(1);
+0202 
+0203         <span class="keyword">elseif</span> length(conditionIdxs) == 1 &amp;&amp; Ngroups &gt; 1
+0204             labelID2{sub} = this.subData.ID;
+0205             dot2{sub} = hh(1);
+0206         <span class="keyword">end</span>
+0207     <span class="keyword">end</span>
+0208     <span class="keyword">if</span> Ngroups &gt; 1
+0209         labelID = [labelID labelID2];
+0210         dot     = [dot dot2];
+0211     <span class="keyword">end</span>
+0212 
+0213 <span class="keyword">end</span>
+0214 
+0215 legend([dot{:}],[labelID(:)])
+0216 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of skDistlearn</title>
   <meta name="keywords" content="skDistlearn">
-  <meta name="description" content="Returns model such that W*d(pos(:,:,i)) ~ N(m,R)">
+  <meta name="description" content="SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,39 +21,70 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Returns model such that W*d(pos(:,:,i)) ~ N(m,R)</strong></div>
+<div class="box"><strong>SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function [m,R] = skDistlearn(pos) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Returns model such that W*d(pos(:,:,i)) ~ N(m,R)
-W is a selection matrix to reduce complexity</pre></div>
+<div class="fragment"><pre class="comment">SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.
+
+   [m,R] = SKDISTLEARN(pos) returns the model such that the pairwise
+ distances W*d(pos(:,:,i)) ~ N(m,R), with the mean m and the variances R
+ computed over the frames. W is a selection matrix that reduces the
+ complexity.
+
+ Inputs:
+   pos - N markers x d coordinates x M frames positions
+
+ Outputs:
+   m - N x N mean pairwise distances
+   R - N x N variances of the pairwise distances (naive Bayes)
+
+ Toolbox Dependencies: None
+
+ See also <a href="skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">SKDISTDETECT</a>, <a href="skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">SKDISTENFORCE</a>, <a href="sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">SK3DLEARN</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	computeDistanceMatrix  Computes inter-marker distances</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Computes inter-marker distances.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDistanceMatrix.html" class="code" title="function D = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li></ul>
+<li><a href="../../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [m,R] = skDistlearn(pos)</a>
-0002 <span class="comment">%Returns model such that W*d(pos(:,:,i)) ~ N(m,R)</span>
-0003 <span class="comment">%W is a selection matrix to reduce complexity</span>
-0004 [N,d,M]=size(pos);
-0005 [D] = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(pos); <span class="comment">%NxNxM</span>
-0006 m=nanmean(D,3);
-0007 R=nan(N,N); <span class="comment">%Naive bayes</span>
-0008 <span class="keyword">for</span> i=1:N <span class="comment">%For each marker, compute mean vector, and its cov</span>
-0009     R(i,:)=nanvar(reshape(D(i,:,:),N,M),[],2); <span class="comment">%Nx(N)x(Nd)</span>
-0010 <span class="keyword">end</span>
-0011 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [m,R] = SKDISTLEARN(pos) returns the model such that the pairwise</span>
+0005 <span class="comment">% distances W*d(pos(:,:,i)) ~ N(m,R), with the mean m and the variances R</span>
+0006 <span class="comment">% computed over the frames. W is a selection matrix that reduces the</span>
+0007 <span class="comment">% complexity.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   pos - N markers x d coordinates x M frames positions</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   m - N x N mean pairwise distances</span>
+0014 <span class="comment">%   R - N x N variances of the pairwise distances (naive Bayes)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also SKDISTDETECT, SKDISTENFORCE, SK3DLEARN.</span>
+0019 
+0020 [N,d,M] = size(pos);
+0021 D = <a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/computeDistanceMatrix.html" class="code" title="function [distMatrix, labels, labels2, Time] = computeDistanceMatrix(this, t0, t1, labels, labels2)">computeDistanceMatrix</a>(pos); <span class="comment">%NxNxM</span>
+0022 m = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(D, 3, <span class="string">'omitnan'</span>);
+0023 R = nan(N,N); <span class="comment">%Naive bayes</span>
+0024 <span class="keyword">for</span> mrkr = 1:N <span class="comment">%For each marker, compute mean vector, and its cov</span>
+0025     R(mrkr,:) = var(reshape(D(mrkr,:,:),N,M), [], 2, <span class="string">'omitnan'</span>); <span class="comment">%Nx(N)x(Nd)</span>
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

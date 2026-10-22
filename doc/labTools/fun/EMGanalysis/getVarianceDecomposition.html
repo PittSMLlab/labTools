@@ -4,7 +4,7 @@
 <head>
   <title>Description of getVarianceDecomposition</title>
   <meta name="keywords" content="getVarianceDecomposition">
-  <meta name="description" content="">
+  <meta name="description" content="GETVARIANCEDECOMPOSITION Split EMG energy into mean, shape, and noise.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,51 +21,93 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETVARIANCEDECOMPOSITION Split EMG energy into mean, shape, and noise.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData) </strong></div>
+<div class="box"><strong>function [decomposition,meanValue,avgStride,trial2trialVariability] =getVarianceDecomposition(alignedData) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETVARIANCEDECOMPOSITION Split EMG energy into mean, shape, and noise.
+
+   Decomposes the energy of aligned strides into the mean level, the
+ variation of the average stride around that mean, and the stride-to-
+ stride variability, and returns each as an RMS value. Warns if the
+ three parts do not add up to the signal energy within 0.1%.
+
+ Inputs:
+   alignedData - aligned strides; time x channels x strides
+
+ Outputs:
+   decomposition          - 3 x channels RMS of the mean value, the
+                            average stride shape, and the trial-to-trial
+                            variability
+   meanValue              - mean of the average stride per channel
+   avgStride              - average stride with the mean removed
+   trial2trialVariability - alignedData minus the average stride
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two alignedTimeSeries.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two labTimeSeries.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/energyDecomposition.html" class="code" title="function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this)">energyDecomposition</a>	energyDecomposition  Decomposes variance</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/energyDecomposition.html" class="code" title="function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this)">energyDecomposition</a>	ENERGYDECOMPOSITION Decomposes variance.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)</a>
-0002 
-0003 avgStride=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(alignedData,3);
-0004 meanValue=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(avgStride,1);
-0005 trial2trialVariability=bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,alignedData,avgStride);
-0006 avgStride=bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,avgStride,meanValue);
-0007 
-0008 
-0009 decomposition(1,:)=meanValue.^2 * size(alignedData,3) * size(alignedData,1);
-0010 decomposition(2,:)=sum(avgStride.^2,1) * size(alignedData,3);
-0011 decomposition(3,:)=sum(sum(trial2trialVariability.^2,3),1);
-0012 
-0013 
-0014 <span class="comment">%Check: difference btw decomposition and actual energy is not more than .1%</span>
-0015 <span class="comment">%of total energy</span>
-0016 <span class="keyword">if</span> any(sum(decomposition,1)-sum(sum(alignedData.^2,3),1)&gt;.001*sum(sum(alignedData.^2,3),1))
-0017     warning(<span class="string">'Decomposition does not add up to actual signal energy'</span>)
-0018 <span class="keyword">end</span>
-0019 
-0020 
-0021 <span class="comment">%Normalize decomposition so we get RMS values of each component:</span>
-0022 decomposition=sqrt(decomposition/(size(alignedData,3)*size(alignedData,1)));
-0023 <span class="keyword">end</span>
-0024</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [decomposition,meanValue,avgStride,trial2trialVariability] = </a><span class="keyword">...</span>
+0002     getVarianceDecomposition(alignedData)
+0003 <span class="comment">%GETVARIANCEDECOMPOSITION Split EMG energy into mean, shape, and noise.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Decomposes the energy of aligned strides into the mean level, the</span>
+0006 <span class="comment">% variation of the average stride around that mean, and the stride-to-</span>
+0007 <span class="comment">% stride variability, and returns each as an RMS value. Warns if the</span>
+0008 <span class="comment">% three parts do not add up to the signal energy within 0.1%.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   alignedData - aligned strides; time x channels x strides</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   decomposition          - 3 x channels RMS of the mean value, the</span>
+0015 <span class="comment">%                            average stride shape, and the trial-to-trial</span>
+0016 <span class="comment">%                            variability</span>
+0017 <span class="comment">%   meanValue              - mean of the average stride per channel</span>
+0018 <span class="comment">%   avgStride              - average stride with the mean removed</span>
+0019 <span class="comment">%   trial2trialVariability - alignedData minus the average stride</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 
+0023 avgStride = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(alignedData,3);
+0024 meanValue = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(avgStride,1);
+0025 trial2trialVariability = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,alignedData,avgStride);
+0026 avgStride = bsxfun(@<a href="../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,avgStride,meanValue);
+0027 
+0028 
+0029 decomposition(1,:) = meanValue.^2 * size(alignedData,3) * <span class="keyword">...</span>
+0030     size(alignedData,1);
+0031 decomposition(2,:) = sum(avgStride.^2,1) * size(alignedData,3);
+0032 decomposition(3,:) = sum(sum(trial2trialVariability.^2,3),1);
+0033 
+0034 
+0035 maxEnergyMismatch = 0.001;      <span class="comment">% 0.1% of total energy</span>
+0036 <span class="comment">%Check: difference btw decomposition and actual energy is not more than .1%</span>
+0037 <span class="comment">%of total energy</span>
+0038 <span class="keyword">if</span> any(sum(decomposition,1)-sum(sum(alignedData.^2,3),1) &gt; <span class="keyword">...</span>
+0039         maxEnergyMismatch*sum(sum(alignedData.^2,3),1))
+0040     warning(<span class="string">'Decomposition does not add up to actual signal energy'</span>)
+0041 <span class="keyword">end</span>
+0042 
+0043 
+0044 <span class="comment">%Normalize decomposition so we get RMS values of each component:</span>
+0045 decomposition = <span class="keyword">...</span>
+0046     sqrt(decomposition/(size(alignedData,3)*size(alignedData,1)));
+0047 <span class="keyword">end</span>
+0048</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

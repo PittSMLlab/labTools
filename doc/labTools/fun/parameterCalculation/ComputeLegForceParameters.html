@@ -65,7 +65,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li></ul>
@@ -128,10 +128,10 @@ This function is called by:
 0052 
 0053 <span class="comment">% Identify the AP impact peak in the first 15% of the stride</span>
 0054 [ImpactMagS, impactIdx] = max( <span class="keyword">...</span>
-0055     apForceTrace(1:round(impactWinFrac*length(apForceTrace))), [], <span class="string">'omitnan'</span>);
-0056 
-0057 <span class="comment">% Exclude pre-impact samples from braking and propulsion classification</span>
-0058 <span class="comment">% (new method 2/25/2020)</span>
+0055     apForceTrace(1:round(impactWinFrac*length(apForceTrace))), [], <span class="keyword">...</span>
+0056     <span class="string">'omitnan'</span>);
+0057 
+0058 <span class="comment">% Exclude pre-impact samples from braking and propulsion classification</span>
 0059 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(impactIdx)
 0060     propIdx(find(propIdx &lt; impactIdx))       = [];
 0061     brakingIdx(find(brakingIdx &lt; impactIdx)) = [];
@@ -159,45 +159,48 @@ This function is called by:
 0083 <span class="comment">%% Peak Braking and Propulsion Forces</span>
 0084 <span class="comment">% Save pre-trim index copies; then remove the trailing 10% (end-of-stance</span>
 0085 <span class="comment">% decay) and leading 10% (impact transient) so neither is misidentified</span>
-0086 <span class="comment">% as the true braking or propulsion peak; 2/14/2018 (4/11/2017 CJS)</span>
+0086 <span class="comment">% as the true braking or propulsion peak.</span>
 0087 brakingIdxAll = brakingIdx;
 0088 propIdxAll    = propIdx;
-0089 brakingIdx(find(brakingIdx &gt;= (1 - peakTrimFrac)*length(apForceTrace))) = [];
-0090 propIdx(find(propIdx &lt;= peakTrimFrac*length(apForceTrace)))              = [];
-0091 
-0092 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(brakingIdx)
-0093     SBmax    = NaN;
-0094     SBmaxAbs = NaN;
-0095     SBmaxQS  = NaN;
-0096 <span class="keyword">else</span>
-0097     SBmax    = min( <span class="keyword">...</span>
-0098         apForceTrace(brakingIdx), [], <span class="string">'omitnan'</span>);  <span class="comment">%-forceBaseline</span>
-0099     SBmax    = brakingSign .* SBmax;
-0100     SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;
-0101     SBmaxAbs = brakingSign .* <span class="keyword">...</span>
-0102         min(apForceTrace - forceBaseline, [], <span class="string">'omitnan'</span>);
-0103 <span class="keyword">end</span>
-0104 
-0105 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(propIdx)
-0106     SPmax   = NaN;
-0107     SPmaxQS = NaN;
-0108 <span class="keyword">else</span>
-0109     SPmax   = max(apForceTrace(propIdx), [], <span class="string">'omitnan'</span>);  <span class="comment">%-forceBaseline</span>
-0110     SPmaxQS = SPmax - 2 .* forceBaseline;
-0111 <span class="keyword">end</span>
-0112 
-0113 <span class="comment">% if propIdx(MaxWhereS) &lt;= 0.1*length(apForceTrace)</span>
-0114 <span class="comment">%     figure</span>
-0115 <span class="comment">%     plot(apForceTrace, 'k'); hold on</span>
-0116 <span class="comment">%     line([0.1*length(apForceTrace) 0.1*length(apForceTrace)], [-0.2 0.2])</span>
-0117 <span class="comment">%     line([0.9*length(apForceTrace) 0.9*length(apForceTrace)], [-0.2 0.2])</span>
-0118 <span class="comment">%     plot(propIdx(MaxWhereS), apForceTrace(propIdx(MaxWhereS)), 'r*')</span>
-0119 <span class="comment">%     plot(brakingIdx(MinWhereS), apForceTrace(brakingIdx(MinWhereS)), 'b*')</span>
-0120 <span class="comment">%     title(titleText)</span>
-0121 <span class="comment">% end</span>
-0122 
-0123 <span class="keyword">end</span>
-0124</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0089 brakingIdx(find(brakingIdx &gt;= <span class="keyword">...</span>
+0090     (1 - peakTrimFrac)*length(apForceTrace))) = [];
+0091 propIdx(find(propIdx &lt;= <span class="keyword">...</span>
+0092     peakTrimFrac*length(apForceTrace))) = [];
+0093 
+0094 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(brakingIdx)
+0095     SBmax    = NaN;
+0096     SBmaxAbs = NaN;
+0097     SBmaxQS  = NaN;
+0098 <span class="keyword">else</span>
+0099     SBmax    = min( <span class="keyword">...</span>
+0100         apForceTrace(brakingIdx), [], <span class="string">'omitnan'</span>);  <span class="comment">%-forceBaseline</span>
+0101     SBmax    = brakingSign .* SBmax;
+0102     <span class="comment">% TODO: verify formula</span>
+0103     SBmaxQS  = SBmax - 2 .* brakingSign .* forceBaseline;
+0104     SBmaxAbs = brakingSign .* <span class="keyword">...</span>
+0105         min(apForceTrace - forceBaseline, [], <span class="string">'omitnan'</span>);
+0106 <span class="keyword">end</span>
+0107 
+0108 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(propIdx)
+0109     SPmax   = NaN;
+0110     SPmaxQS = NaN;
+0111 <span class="keyword">else</span>
+0112     SPmax   = max(apForceTrace(propIdx), [], <span class="string">'omitnan'</span>);  <span class="comment">%-forceBaseline</span>
+0113     SPmaxQS = SPmax - 2 .* forceBaseline;  <span class="comment">% TODO: verify formula</span>
+0114 <span class="keyword">end</span>
+0115 
+0116 <span class="comment">% if propIdx(MaxWhereS) &lt;= 0.1*length(apForceTrace)</span>
+0117 <span class="comment">%     figure</span>
+0118 <span class="comment">%     plot(apForceTrace, 'k'); hold on</span>
+0119 <span class="comment">%     line([0.1*length(apForceTrace) 0.1*length(apForceTrace)], [-0.2 0.2])</span>
+0120 <span class="comment">%     line([0.9*length(apForceTrace) 0.9*length(apForceTrace)], [-0.2 0.2])</span>
+0121 <span class="comment">%     plot(propIdx(MaxWhereS), apForceTrace(propIdx(MaxWhereS)), 'r*')</span>
+0122 <span class="comment">%     plot(brakingIdx(MinWhereS), apForceTrace(brakingIdx(MinWhereS)), 'b*')</span>
+0123 <span class="comment">%     title(titleText)</span>
+0124 <span class="comment">% end</span>
+0125 
+0126 <span class="keyword">end</span>
+0127</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

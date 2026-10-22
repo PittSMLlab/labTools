@@ -4,7 +4,7 @@
 <head>
   <title>Description of plotGroupedSubjectsTimeCourse</title>
   <meta name="keywords" content="plotGroupedSubjectsTimeCourse">
-  <meta name="description" content="">
+  <meta name="description" content="PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,46 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) </strong></div>
+<div class="box"><strong>function [figHandle,allData] =plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.
+
+   Errors immediately: the code after the error call is kept as the
+ starting point for a fix. See the commented example below for the
+ equivalent PLOTAVGTIMECOURSE call.
+
+ Inputs:
+   adaptDataList       - subject file names (see PLOTGROUPEDSUBJECTSBARS)
+   label               - cell array of parameter labels
+   removeBiasFlag      - remove bias before plotting
+   plotIndividualsFlag - plot each subject (default true)
+   condList            - conditions to plot
+   earlyNumber         - strides in the early set
+   lateNumber          - strides in the late set
+   exemptLast          - strides skipped at the end
+   legendNames         - group names for the legend
+
+ Outputs:
+   figHandle - figure handle
+   allData   - plotted data
+
+ NOTE: superseded by PLOTAVGTIMECOURSE. This function errors on its
+       first statement; the only reference is the inline wrapper in
+       adaptationData.m, which is documented as not functional.
+
+ Toolbox Dependencies: None
+
+ See also <a href="plotAvgTimeCourse.html" class="code" title="function varargout = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">PLOTAVGTIMECOURSE</a>, <a href="plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">PLOTGROUPEDSUBJECTSBARSV2</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	Define color scheme</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>	% Color scheme</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -42,166 +69,220 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)</a>
-0002 error(<span class="string">'This function needs fixing, try using adaptationData.plotAvgTimeCourse'</span>)
-0003 <span class="comment">%% This function needs fixing, suggestion, call on this piece of code:</span>
-0004 
-0005 <span class="comment">% colorScheme</span>
-0006 <span class="comment">% color_palette=color_palette([1,3,2,4:size(color_palette,1)],:);</span>
-0007 <span class="comment">% binwidth=10;</span>
-0008 <span class="comment">% trialMarkerFlag=0;</span>
-0009 <span class="comment">% indivFlag=0; %This uses different subplots for each parameter, otherwise they are on top of each other (?)</span>
-0010 <span class="comment">% indivSubs=[];</span>
-0011 <span class="comment">% colorOrder=color_palette;</span>
-0012 <span class="comment">% colors=color_palette;</span>
-0013 <span class="comment">% biofeedback=[];</span>
-0014 <span class="comment">% groupNames={'Keyboard','Alpha'};</span>
-0015 <span class="comment">% medianFlag=1;</span>
-0016 <span class="comment">% plotIndividualsFlag=0;</span>
-0017 <span class="comment">% legendNames=[];</span>
-0018 <span class="comment">% significanceThreshold=.05;</span>
-0019 <span class="comment">% numberOfStrides=[100 -50];</span>
-0020 <span class="comment">% labels=kG.adaptData{1}.data.getLabelsThatMatch('Norm2$')';</span>
-0021 <span class="comment">% removeBiasFlag=0;</span>
-0022 <span class="comment">% significancePlotMatrix=[];</span>
-0023 <span class="comment">% alignEnd=abs(numberOfStrides(2));</span>
-0024 <span class="comment">% signifPlotMatrixConds=zeros(6);</span>
-0025 <span class="comment">% signifPlotMatrixConds(2,[5,6])=1;</span>
-0026 <span class="comment">% signifPlotMatrixConds(sub2ind([6,6],[1:5],[2:6]))=1;</span>
-0027 <span class="comment">% %Time courses:</span>
-0028 <span class="comment">% %fh=adaptationData.plotAvgTimeCourse({patientsNoP15Unbiased.adaptData,groupsUnbiased{2}.adaptData},labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,ph(:,1),alignEnd);</span>
-0029 <span class="comment">% fh=adaptationData.plotAvgTimeCourse({kGUnb.adaptData,bGUnb.adaptData},labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,[],alignEnd);</span>
-0030 
-0031 <span class="comment">%%</span>
-0032 <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
-0033 <span class="keyword">if</span> nargin&lt;4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotIndividualsFlag)
-0034     plotIndividualsFlag=true;
-0035 <span class="keyword">end</span>
-0036 <span class="keyword">if</span> nargin&lt;9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(legendNames) || length(legendNames)&lt;length(adaptDataList)
-0037     legendNames=adaptDataList;
-0038 <span class="keyword">end</span>
-0039 
-0040 <span class="comment">%First: see if adaptDataList is a single subject (char), a cell</span>
-0041 <span class="comment">%array of subject names (one group of subjects), or a cell array of cell arrays of</span>
-0042 <span class="comment">%subjects names (several groups of subjects), and put all the</span>
-0043 <span class="comment">%cases into the same format</span>
-0044 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
-0045     <span class="keyword">if</span> isa(adaptDataList{1},<span class="string">'cell'</span>)
-0046         auxList=adaptDataList;
-0047     <span class="keyword">else</span>
-0048         auxList{1}=adaptDataList;
-0049     <span class="keyword">end</span>
-0050 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
-0051     auxList{1}={adaptDataList};
-0052 <span class="keyword">end</span>
-0053 Ngroups=length(auxList);
-0054 
-0055 <span class="keyword">if</span> nargin&lt;6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(earlyNumber)
-0056     N2=5; <span class="comment">%early number of points</span>
-0057 <span class="keyword">else</span>
-0058     N2=earlyNumber;
-0059 <span class="keyword">end</span>
-0060 <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lateNumber)
-0061     N3=20; <span class="comment">%late number of points</span>
-0062 <span class="keyword">else</span>
-0063     N3=lateNumber;
-0064 <span class="keyword">end</span>
-0065 <span class="keyword">if</span> nargin&lt;8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
-0066     Ne=5;
-0067 <span class="keyword">else</span>
-0068     Ne=exemptLast;
-0069 <span class="keyword">end</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData] = </a><span class="keyword">...</span>
+0002     plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag, <span class="keyword">...</span>
+0003     plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast, <span class="keyword">...</span>
+0004     legendNames)
+0005 <span class="comment">%PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Errors immediately: the code after the error call is kept as the</span>
+0008 <span class="comment">% starting point for a fix. See the commented example below for the</span>
+0009 <span class="comment">% equivalent PLOTAVGTIMECOURSE call.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   adaptDataList       - subject file names (see PLOTGROUPEDSUBJECTSBARS)</span>
+0013 <span class="comment">%   label               - cell array of parameter labels</span>
+0014 <span class="comment">%   removeBiasFlag      - remove bias before plotting</span>
+0015 <span class="comment">%   plotIndividualsFlag - plot each subject (default true)</span>
+0016 <span class="comment">%   condList            - conditions to plot</span>
+0017 <span class="comment">%   earlyNumber         - strides in the early set</span>
+0018 <span class="comment">%   lateNumber          - strides in the late set</span>
+0019 <span class="comment">%   exemptLast          - strides skipped at the end</span>
+0020 <span class="comment">%   legendNames         - group names for the legend</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   figHandle - figure handle</span>
+0024 <span class="comment">%   allData   - plotted data</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% NOTE: superseded by PLOTAVGTIMECOURSE. This function errors on its</span>
+0027 <span class="comment">%       first statement; the only reference is the inline wrapper in</span>
+0028 <span class="comment">%       adaptationData.m, which is documented as not functional.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Toolbox Dependencies: None</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% See also PLOTAVGTIMECOURSE, PLOTGROUPEDSUBJECTSBARSV2.</span>
+0033 
+0034 error([<span class="string">'This function needs fixing, try using '</span> <span class="keyword">...</span>
+0035     <span class="string">'adaptationData.plotAvgTimeCourse'</span>])
+0036 <span class="comment">%% This function needs fixing, suggestion, call on this piece of code:</span>
+0037 
+0038 <span class="comment">% colorScheme</span>
+0039 <span class="comment">% color_palette=color_palette([1,3,2,4:size(color_palette,1)],:);</span>
+0040 <span class="comment">% binwidth=10;</span>
+0041 <span class="comment">% trialMarkerFlag=0;</span>
+0042 <span class="comment">% indivFlag=0; %This uses different subplots for each parameter, otherwise</span>
+0043 <span class="comment">% they are on top of each other (?)</span>
+0044 <span class="comment">% indivSubs=[];</span>
+0045 <span class="comment">% colorOrder=color_palette;</span>
+0046 <span class="comment">% colors=color_palette;</span>
+0047 <span class="comment">% biofeedback=[];</span>
+0048 <span class="comment">% groupNames={'Keyboard','Alpha'};</span>
+0049 <span class="comment">% medianFlag=1;</span>
+0050 <span class="comment">% plotIndividualsFlag=0;</span>
+0051 <span class="comment">% legendNames=[];</span>
+0052 <span class="comment">% significanceThreshold=.05;</span>
+0053 <span class="comment">% numberOfStrides=[100 -50];</span>
+0054 <span class="comment">% labels=kG.adaptData{1}.data.getLabelsThatMatch('Norm2$')';</span>
+0055 <span class="comment">% removeBiasFlag=0;</span>
+0056 <span class="comment">% significancePlotMatrix=[];</span>
+0057 <span class="comment">% alignEnd=abs(numberOfStrides(2));</span>
+0058 <span class="comment">% signifPlotMatrixConds=zeros(6);</span>
+0059 <span class="comment">% signifPlotMatrixConds(2,[5,6])=1;</span>
+0060 <span class="comment">% signifPlotMatrixConds(sub2ind([6,6],[1:5],[2:6]))=1;</span>
+0061 <span class="comment">% %Time courses:</span>
+0062 <span class="comment">% %fh=adaptationData.plotAvgTimeCourse({patientsNoP15Unbiased.adaptData, ...</span>
+0063 <span class="comment">%    groupsUnbiased{2}.adaptData},labels,conds,binwidth,trialMarkerFlag, ...</span>
+0064 <span class="comment">%    indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag, ...</span>
+0065 <span class="comment">%    groupNames,medianFlag,ph(:,1),alignEnd);</span>
+0066 <span class="comment">% fh=adaptationData.plotAvgTimeCourse({kGUnb.adaptData,bGUnb.adaptData}, ...</span>
+0067 <span class="comment">%    labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs, ...</span>
+0068 <span class="comment">%    colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,[], ...</span>
+0069 <span class="comment">%    alignEnd);</span>
 0070 
-0071 [ah,figHandle]=<a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(length(label),4,1);
-0072 
-0073 a=load(auxList{1}{1});
-0074 aux=fields(a);
-0075 this=a.(aux{1});
-0076 <span class="keyword">if</span> nargin&lt;5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condList)
-0077     condList=this.metaData.conditionName(~cellfun(@<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,this.metaData.conditionName));
-0078     conds=condList;
-0079 <span class="keyword">else</span>
-0080     conds=condList;
-0081     <span class="keyword">for</span> i=1:length(condList)
-0082         <span class="keyword">if</span> iscell(condList{i})
-0083             condList{i}=condList{i}{1};
-0084         <span class="keyword">end</span>
-0085     <span class="keyword">end</span>
-0086 <span class="keyword">end</span>
-0087 nConds=length(conds);
-0088 <span class="keyword">for</span> l=1:length(label)
-0089     axes(ah(l))
-0090     hold on
-0091     
-0092     <span class="keyword">for</span> group=1:Ngroups
-0093         [veryEarlyPoints,earlyPoints,latePoints]=adaptationData.getGroupedData(auxList{group},label(l),conds,removeBiasFlag,N2,N3,Ne);
-0094         <span class="comment">%plot</span>
-0095         offset=(N2+N3+15);
-0096         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([1 offset*nConds],[0,0],<span class="string">'k--'</span>)
-0097         <span class="keyword">for</span> i=1:nConds
-0098             clear hLeg
-0099             <span class="comment">%Early part</span>
-0100             xCoord=(i-1)*offset + [1:N2];
-0101             yCoord=nanmean(earlyPoints(i,:,:),3);
-0102             yStd=nanstd(earlyPoints(i,:,:),[],3);
-0103             hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],colorGroups{group},<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,.5);
-0104             uistack(hh,<span class="string">'bottom'</span>)
-0105             hLeg(1)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(xCoord,yCoord,<span class="string">'LineWidth'</span>,3,<span class="string">'Color'</span>,colorGroups{group});
-0106             <span class="keyword">if</span> plotIndividualsFlag==1
-0107                 <span class="keyword">for</span> j=1:size(earlyPoints,3)
-0108                     hLeg(j+1)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>((i-1)*offset + [1:N2],squeeze(earlyPoints(i,:,j)),<span class="string">'Color'</span>,colorConds{mod(j,length(colorConds))+1});
-0109                 <span class="keyword">end</span>
-0110             <span class="keyword">end</span>
-0111             <span class="comment">%LAte part:</span>
-0112             xCoord=(i-1)*offset + [offset-N3-4:offset-5];
-0113             yCoord=nanmean(latePoints(i,:,:),3);
-0114             yStd=nanstd(latePoints(i,:,:),[],3);
-0115             hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],colorGroups{group},<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,.5);
-0116             uistack(hh,<span class="string">'bottom'</span>)
-0117             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(xCoord,yCoord,<span class="string">'LineWidth'</span>,3,<span class="string">'Color'</span>,colorGroups{group})
-0118             <span class="keyword">if</span> plotIndividualsFlag==1
-0119                 <span class="keyword">for</span> j=1:size(earlyPoints,3)
-0120                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>((i-1)*offset + [offset-N3-4:offset-5],squeeze(latePoints(i,:,j)),<span class="string">'Color'</span>,colorConds{mod(j,length(colorConds))+1})
-0121                 <span class="keyword">end</span>
-0122             <span class="keyword">end</span>
-0123         <span class="keyword">end</span>
-0124         <span class="comment">%Save all data plotted into struct</span>
-0125         <span class="keyword">if</span> Ngroups==1
-0126             allData{l}.early=earlyPoints;
-0127             allData{l}.late=latePoints;
-0128             allData{l}.veryEarly=veryEarlyPoints;
-0129             allData{l}.subIDs=auxList{group};
-0130         <span class="keyword">else</span>
-0131             allData{l}.group{group}.early=earlyPoints;
-0132             allData{l}.group{group}.late=latePoints;
-0133             allData{l}.group{group}.veryEarly=veryEarlyPoints;
-0134             allData{l}.group{group}.subIDs=auxList{group};
-0135         <span class="keyword">end</span>
-0136         allData{l}.parameterLabel=label{l};
-0137     <span class="keyword">end</span>
-0138     xTickPos=N2+5+[0:nConds-1]*offset;
-0139     set(gca,<span class="string">'XTick'</span>,xTickPos,<span class="string">'XTickLabel'</span>,condList)
-0140     <span class="keyword">if</span> removeBiasFlag==1
-0141         title([label{l} <span class="string">' w/o Bias'</span>])
-0142     <span class="keyword">else</span>
-0143         title([label{l}])
-0144     <span class="keyword">end</span>
-0145     hold off
-0146 <span class="keyword">end</span>
-0147 linkaxes(ah,<span class="string">'x'</span>)
-0148 axis tight
-0149 condDes = this.metaData.conditionName;
-0150 <span class="keyword">if</span> Ngroups==1
-0151     legend(hLeg,[{<span class="string">'Group mean'</span>}, legendNames]);
-0152 <span class="keyword">else</span>
-0153     legStr={};
-0154     <span class="keyword">for</span> group=1:Ngroups
-0155         legStr=[legStr, {[<span class="string">'Group '</span> num2str(group) <span class="string">' average'</span>]}];
-0156     <span class="keyword">end</span>
-0157     legend(legStr)
-0158 <span class="keyword">end</span>
-0159 <span class="keyword">end</span>
-0160</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0071 <span class="comment">%%</span>
+0072 <a href="../../../../labTools/fun/plotting/colors/colorScheme.html" class="code" title="">colorScheme</a>
+0073 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(plotIndividualsFlag)
+0074     plotIndividualsFlag = true;
+0075 <span class="keyword">end</span>
+0076 <span class="keyword">if</span> nargin &lt; 9 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(legendNames) || <span class="keyword">...</span>
+0077         length(legendNames) &lt; length(adaptDataList)
+0078     legendNames = adaptDataList;
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">%First: see if adaptDataList is a single subject (char), a cell array of</span>
+0082 <span class="comment">%subject names (one group of subjects), or a cell array of cell arrays of</span>
+0083 <span class="comment">%subjects names (several groups of subjects), and put all the cases into</span>
+0084 <span class="comment">%the same format</span>
+0085 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0086     <span class="keyword">if</span> isa(adaptDataList{1},<span class="string">'cell'</span>)
+0087         auxList = adaptDataList;
+0088     <span class="keyword">else</span>
+0089         auxList{1} = adaptDataList;
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
+0092     auxList{1} = {adaptDataList};
+0093 <span class="keyword">end</span>
+0094 Ngroups = length(auxList);
+0095 
+0096 <span class="keyword">if</span> nargin &lt; 6 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(earlyNumber)
+0097     N2 = 5; <span class="comment">%early number of points</span>
+0098 <span class="keyword">else</span>
+0099     N2 = earlyNumber;
+0100 <span class="keyword">end</span>
+0101 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lateNumber)
+0102     N3 = 20; <span class="comment">%late number of points</span>
+0103 <span class="keyword">else</span>
+0104     N3 = lateNumber;
+0105 <span class="keyword">end</span>
+0106 <span class="keyword">if</span> nargin &lt; 8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(exemptLast)
+0107     Ne = 5;
+0108 <span class="keyword">else</span>
+0109     Ne = exemptLast;
+0110 <span class="keyword">end</span>
+0111 
+0112 [ah,figHandle] = <a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(length(label),4,1);
+0113 
+0114 a    = load(auxList{1}{1});
+0115 aux  = fields(a);
+0116 this = a.(aux{1});
+0117 <span class="keyword">if</span> nargin &lt; 5 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(condList)
+0118     condList = <span class="keyword">...</span>
+0119         this.metaData.conditionName(~cellfun(@<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, <span class="keyword">...</span>
+0120         this.metaData.conditionName));
+0121     conds = condList;
+0122 <span class="keyword">else</span>
+0123     conds = condList;
+0124     <span class="keyword">for</span> ii = 1:length(condList)
+0125         <span class="keyword">if</span> iscell(condList{ii})
+0126             condList{ii} = condList{ii}{1};
+0127         <span class="keyword">end</span>
+0128     <span class="keyword">end</span>
+0129 <span class="keyword">end</span>
+0130 nConds = length(conds);
+0131 <span class="keyword">for</span> l = 1:length(label)
+0132     axes(ah(l))
+0133     hold on
+0134 
+0135     <span class="keyword">for</span> group = 1:Ngroups
+0136         [veryEarlyPoints,earlyPoints,latePoints] = <span class="keyword">...</span>
+0137             adaptationData.getGroupedData(auxList{group},label(l),conds, <span class="keyword">...</span>
+0138             removeBiasFlag,N2,N3,Ne);
+0139         <span class="comment">%plot</span>
+0140         offset = (N2+N3+15);
+0141         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>([1 offset*nConds],[0,0],<span class="string">'k--'</span>)
+0142         <span class="keyword">for</span> ii = 1:nConds
+0143             clear hLeg
+0144             <span class="comment">%Early part</span>
+0145             xCoord = (ii-1)*offset + [1:N2];
+0146             yCoord = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(earlyPoints(ii,:,:), 3, <span class="string">'omitnan'</span>);
+0147             yStd   = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(earlyPoints(ii,:,:), [], 3, <span class="string">'omitnan'</span>);
+0148             hh = patch([xCoord,xCoord(end:-1:1)], <span class="keyword">...</span>
+0149                 [yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)], <span class="keyword">...</span>
+0150                 colorGroups{group},<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5);
+0151             uistack(hh,<span class="string">'bottom'</span>)
+0152             hLeg(1) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(xCoord,yCoord,<span class="string">'LineWidth'</span>,3,<span class="string">'Color'</span>, <span class="keyword">...</span>
+0153                 colorGroups{group});
+0154             <span class="keyword">if</span> plotIndividualsFlag == 1
+0155                 <span class="keyword">for</span> jj = 1:size(earlyPoints,3)
+0156                     hLeg(jj+1) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>((ii-1)*offset + [1:N2], <span class="keyword">...</span>
+0157                         squeeze(earlyPoints(ii,:,jj)),<span class="string">'Color'</span>, <span class="keyword">...</span>
+0158                         colorConds{mod(jj,length(colorConds))+1});
+0159                 <span class="keyword">end</span>
+0160             <span class="keyword">end</span>
+0161             <span class="comment">%LAte part:</span>
+0162             xCoord = (ii-1)*offset + [offset-N3-4:offset-5];
+0163             yCoord = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(latePoints(ii,:,:), 3, <span class="string">'omitnan'</span>);
+0164             yStd   = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(latePoints(ii,:,:), [], 3, <span class="string">'omitnan'</span>);
+0165             hh = patch([xCoord,xCoord(end:-1:1)], <span class="keyword">...</span>
+0166                 [yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)], <span class="keyword">...</span>
+0167                 colorGroups{group},<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5);
+0168             uistack(hh,<span class="string">'bottom'</span>)
+0169             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(xCoord,yCoord,<span class="string">'LineWidth'</span>,3,<span class="string">'Color'</span>,colorGroups{group})
+0170             <span class="keyword">if</span> plotIndividualsFlag == 1
+0171                 <span class="keyword">for</span> jj = 1:size(earlyPoints,3)
+0172                     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>((ii-1)*offset + [offset-N3-4:offset-5], <span class="keyword">...</span>
+0173                         squeeze(latePoints(ii,:,jj)),<span class="string">'Color'</span>, <span class="keyword">...</span>
+0174                         colorConds{mod(jj,length(colorConds))+1})
+0175                 <span class="keyword">end</span>
+0176             <span class="keyword">end</span>
+0177         <span class="keyword">end</span>
+0178         <span class="comment">%Save all data plotted into struct</span>
+0179         <span class="keyword">if</span> Ngroups == 1
+0180             allData{l}.early = earlyPoints;
+0181             allData{l}.late = latePoints;
+0182             allData{l}.veryEarly = veryEarlyPoints;
+0183             allData{l}.subIDs = auxList{group};
+0184         <span class="keyword">else</span>
+0185             allData{l}.group{group}.early = earlyPoints;
+0186             allData{l}.group{group}.late = latePoints;
+0187             allData{l}.group{group}.veryEarly = veryEarlyPoints;
+0188             allData{l}.group{group}.subIDs = auxList{group};
+0189         <span class="keyword">end</span>
+0190         allData{l}.parameterLabel = label{l};
+0191     <span class="keyword">end</span>
+0192     xTickPos = N2+5+[0:nConds-1]*offset;
+0193     set(gca,<span class="string">'XTick'</span>,xTickPos,<span class="string">'XTickLabel'</span>,condList)
+0194     <span class="keyword">if</span> removeBiasFlag == 1
+0195         title([label{l} <span class="string">' w/o Bias'</span>])
+0196     <span class="keyword">else</span>
+0197         title([label{l}])
+0198     <span class="keyword">end</span>
+0199     hold off
+0200 <span class="keyword">end</span>
+0201 linkaxes(ah,<span class="string">'x'</span>)
+0202 axis tight
+0203 condDes = this.metaData.conditionName;
+0204 <span class="keyword">if</span> Ngroups == 1
+0205     legend(hLeg,[{<span class="string">'Group mean'</span>}, legendNames]);
+0206 <span class="keyword">else</span>
+0207     legStr = {};
+0208     <span class="keyword">for</span> group = 1:Ngroups
+0209         legStr = [legStr, {[<span class="string">'Group '</span> num2str(group) <span class="string">' average'</span>]}];
+0210     <span class="keyword">end</span>
+0211     legend(legStr)
+0212 <span class="keyword">end</span>
+0213 <span class="keyword">end</span>
+0214</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

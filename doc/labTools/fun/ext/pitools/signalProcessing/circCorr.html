@@ -4,7 +4,7 @@
 <head>
   <title>Description of circCorr</title>
   <meta name="keywords" content="circCorr">
-  <meta name="description" content="Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be">
+  <meta name="description" content="CIRCCORR Estimate the phase shift between two sinusoidal traces.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,20 +21,39 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be</strong></div>
+<div class="box"><strong>CIRCCORR Estimate the phase shift between two sinusoidal traces.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function lag=circCorr(trace1,trace2) </strong></div>
+<div class="box"><strong>function phaseShift = circCorr(trace1, trace2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be
-vectors of the same length.</pre></div>
+<div class="fragment"><pre class="comment">CIRCCORR Estimate the phase shift between two sinusoidal traces.
+
+   Performs a circular (cyclic) correlation by iteratively shifting trace2
+ and computing the normalized inner product with trace1 at each lag. The
+ peak-lag index is returned as a fraction of the cycle length. NOTE: the
+ formula is equivalent to Pearson r only when both inputs are zero-mean;
+ callers must center traces before calling if needed.
+
+ Inputs:
+   trace1 - (n x 1) reference sinusoidal trace (zero-mean assumed)
+   trace2 - (n x 1) sinusoidal trace to shift (zero-mean assumed); both
+            vectors must have the same length n
+
+ Outputs:
+   phaseShift - phase shift as a fraction of cycle length (0 to 1), or NaN
+                if peak correlation falls below quality threshold (0.5) or
+                inputs have zero variance
+
+ Toolbox Dependencies: None
+
+ See also COMPUTESPATIALPARAMETERS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="../../../../../labTools/fun/parameterCalculation/computeSpatialParameters.html" class="code" title="function out = computeSpatialParameters(strideEvents, markerData,angleData, s)">computeSpatialParameters</a>	COMPUTESPATIALPARAMETERS Compute spatial parameters per stride.</li></ul>
@@ -43,28 +62,50 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function lag=circCorr(trace1,trace2)</a>
-0002 <span class="comment">%Finds the phase shift of two sinuoidal traces. trace1 and trace2 must be</span>
-0003 <span class="comment">%vectors of the same length.</span>
-0004 
-0005 s1=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(trace1);
-0006 s2=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(trace2);
-0007 
-0008 c=[];
-0009 n=length(trace1);
-0010 <span class="keyword">for</span> t=1:n
-0011     c(t)=(trace1'*trace2)./((n-1)*s1*s2);
-0012     trace2=circshift(trace2,1);
-0013 <span class="keyword">end</span>
-0014 
-0015 [cmax,lag]=max(c);
-0016 lag=lag/n;
-0017 
-0018 <span class="keyword">if</span> cmax&lt;0.5 || isnan(cmax);
-0019     lag=NaN;
-0020 <span class="keyword">end</span>
-0021 
-0022 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function phaseShift = circCorr(trace1, trace2)</a>
+0002 <span class="comment">%CIRCCORR Estimate the phase shift between two sinusoidal traces.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Performs a circular (cyclic) correlation by iteratively shifting trace2</span>
+0005 <span class="comment">% and computing the normalized inner product with trace1 at each lag. The</span>
+0006 <span class="comment">% peak-lag index is returned as a fraction of the cycle length. NOTE: the</span>
+0007 <span class="comment">% formula is equivalent to Pearson r only when both inputs are zero-mean;</span>
+0008 <span class="comment">% callers must center traces before calling if needed.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   trace1 - (n x 1) reference sinusoidal trace (zero-mean assumed)</span>
+0012 <span class="comment">%   trace2 - (n x 1) sinusoidal trace to shift (zero-mean assumed); both</span>
+0013 <span class="comment">%            vectors must have the same length n</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   phaseShift - phase shift as a fraction of cycle length (0 to 1), or NaN</span>
+0017 <span class="comment">%                if peak correlation falls below quality threshold (0.5) or</span>
+0018 <span class="comment">%                inputs have zero variance</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also COMPUTESPATIALPARAMETERS.</span>
+0023 
+0024 stdTrace1 = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(trace1);
+0025 stdTrace2 = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(trace2);
+0026 nSamples  = length(trace1);
+0027 circCorrs = zeros(1, nSamples);
+0028 
+0029 <span class="keyword">for</span> sh = 1:nSamples
+0030     circCorrs(sh) = (trace1' * trace2) ./ <span class="keyword">...</span>
+0031         ((nSamples - 1) * stdTrace1 * stdTrace2);  <span class="comment">% n-1: unbiased std</span>
+0032     trace2 = circshift(trace2, 1);
+0033 <span class="keyword">end</span>
+0034 
+0035 [maxCorr, maxShift] = max(circCorrs);
+0036 phaseShift = maxShift / nSamples;
+0037 
+0038 <span class="comment">% Return NaN if peak correlation is below empirical quality threshold</span>
+0039 <span class="comment">% or undefined (e.g., zero-variance input)</span>
+0040 <span class="keyword">if</span> maxCorr &lt; 0.5 || isnan(maxCorr)
+0041     phaseShift = NaN;
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

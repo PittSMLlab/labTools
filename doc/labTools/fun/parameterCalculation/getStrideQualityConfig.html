@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getStrideQualityConfig</title>
+  <meta name="keywords" content="getStrideQualityConfig">
+  <meta name="description" content="GETSTRIDEQUALITYCONFIG Return default stride-quality labeling config.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; getStrideQualityConfig.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getStrideQualityConfig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>GETSTRIDEQUALITYCONFIG Return default stride-quality labeling config.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function cfg = getStrideQualityConfig() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GETSTRIDEQUALITYCONFIG Return default stride-quality labeling config.
+
+   Single source of truth for the thresholds and reason-column schema
+ used by ADJUDICATESTRIDEQUALITY and FLAGTRIAGEOUTLIERS. Centralizing
+ these values here keeps stride-quality labeling identical across
+ marker-based and marker-less pipelines: both should call this
+ function (or construct an equivalent struct) rather than
+ hardcoding thresholds independently.
+
+ Outputs:
+   cfg - struct with fields:
+           minStrideDur         - (s) stride shorter than this is bad
+           maxStrideDur         - (s) stride longer than this is bad
+           durationMedianFactor - stride longer than this factor
+                                  times the trial's median duration
+                                  is bad
+           startStopSpeedMmS    - (mm/s) TM single-stance speed below
+                                  this on both legs marks start/stop
+           reasonLabels         - 1xN cell array of all bad-stride
+                                  reason column names, in the order
+                                  they are added to 'basic' parameters
+           reasonDescriptions   - 1xN cell array of descriptions,
+                                  aligned with reasonLabels
+           defaultBadReasons    - subset of reasonLabels folded into
+                                  the aggregate 'bad' flag by default
+           triageParams         - parameter labels checked for triage
+                                  outliers
+           triageWindowStrides  - moving-median window length
+                                  (strides) used by FLAGTRIAGEOUTLIERS
+           triageMadFactor      - multiple of the (MAD-based) robust
+                                  residual scale beyond which a
+                                  stride is flagged for triage
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="adjudicateStrideQuality.html" class="code" title="function [bad, reasons] = adjudicateStrideQuality(extendedEventTimes, strideDuration, singleStanceSpeed,trialType, cfg)">ADJUDICATESTRIDEQUALITY</a>, <a href="flagTriageOutliers.html" class="code" title="function triageOutlier = flagTriageOutliers(paramValues, cfg)">FLAGTRIAGEOUTLIERS</a>, <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>,
+   REMOVESTRIDESBYREASON.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList] =removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	REMOVEBIASV2 Deprecated: errors immediately, use REMOVEBIASV3 instead.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList] =removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>	REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList] =removeBiasV4(this,refConditions,normalizeFlag,padWithNaNFlag,numStrides,medianFlag)">removeBiasV4</a>	REMOVEBIASV4 Remove the baseline of every parameter (last N strides).</li><li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function cfg = getStrideQualityConfig()</a>
+0002 <span class="comment">%GETSTRIDEQUALITYCONFIG Return default stride-quality labeling config.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Single source of truth for the thresholds and reason-column schema</span>
+0005 <span class="comment">% used by ADJUDICATESTRIDEQUALITY and FLAGTRIAGEOUTLIERS. Centralizing</span>
+0006 <span class="comment">% these values here keeps stride-quality labeling identical across</span>
+0007 <span class="comment">% marker-based and marker-less pipelines: both should call this</span>
+0008 <span class="comment">% function (or construct an equivalent struct) rather than</span>
+0009 <span class="comment">% hardcoding thresholds independently.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   cfg - struct with fields:</span>
+0013 <span class="comment">%           minStrideDur         - (s) stride shorter than this is bad</span>
+0014 <span class="comment">%           maxStrideDur         - (s) stride longer than this is bad</span>
+0015 <span class="comment">%           durationMedianFactor - stride longer than this factor</span>
+0016 <span class="comment">%                                  times the trial's median duration</span>
+0017 <span class="comment">%                                  is bad</span>
+0018 <span class="comment">%           startStopSpeedMmS    - (mm/s) TM single-stance speed below</span>
+0019 <span class="comment">%                                  this on both legs marks start/stop</span>
+0020 <span class="comment">%           reasonLabels         - 1xN cell array of all bad-stride</span>
+0021 <span class="comment">%                                  reason column names, in the order</span>
+0022 <span class="comment">%                                  they are added to 'basic' parameters</span>
+0023 <span class="comment">%           reasonDescriptions   - 1xN cell array of descriptions,</span>
+0024 <span class="comment">%                                  aligned with reasonLabels</span>
+0025 <span class="comment">%           defaultBadReasons    - subset of reasonLabels folded into</span>
+0026 <span class="comment">%                                  the aggregate 'bad' flag by default</span>
+0027 <span class="comment">%           triageParams         - parameter labels checked for triage</span>
+0028 <span class="comment">%                                  outliers</span>
+0029 <span class="comment">%           triageWindowStrides  - moving-median window length</span>
+0030 <span class="comment">%                                  (strides) used by FLAGTRIAGEOUTLIERS</span>
+0031 <span class="comment">%           triageMadFactor      - multiple of the (MAD-based) robust</span>
+0032 <span class="comment">%                                  residual scale beyond which a</span>
+0033 <span class="comment">%                                  stride is flagged for triage</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% Toolbox Dependencies:</span>
+0036 <span class="comment">%   None</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% See also ADJUDICATESTRIDEQUALITY, FLAGTRIAGEOUTLIERS, CALCPARAMETERS,</span>
+0039 <span class="comment">%   REMOVESTRIDESBYREASON.</span>
+0040 
+0041 <span class="comment">% Duration/event thresholds for the aggregate bad-stride criteria.</span>
+0042 minStrideDur         = 0.4;  <span class="comment">% TODO: confirm physiological bound rationale</span>
+0043 maxStrideDur         = 2.5;  <span class="comment">% TODO: confirm physiological bound rationale</span>
+0044 durationMedianFactor = 1.5;  <span class="comment">% TODO: 2.5 s may be too stringent</span>
+0045                              <span class="comment">% for slower older adult walkers, and this</span>
+0046                              <span class="comment">% factor alone may suffice to exclude</span>
+0047                              <span class="comment">% outliers (especially in overground</span>
+0048                              <span class="comment">% trials); consider removing maxStrideDur</span>
+0049 startStopSpeedMmS    = 50;   <span class="comment">% mm/s; treadmill starting/stopping bound</span>
+0050 
+0051 <span class="comment">% Reason schema: one row per stride-quality reason column. Columns not</span>
+0052 <span class="comment">% yet backed by a stride-level detector are documented STUBs (always</span>
+0053 <span class="comment">% false) so the reason set stays identical across marker-based and</span>
+0054 <span class="comment">% marker-less pipelines while detectors are implemented incrementally.</span>
+0055 aux = { <span class="keyword">...</span>
+0056     <span class="string">'badMissingEvent'</span>,    <span class="string">'True if any gait event time (SHS/FTO/FHS/STO/SHS2/FTO2) is missing (NaN) for this stride.'</span>; <span class="keyword">...</span>
+0057     <span class="string">'badDisordered'</span>,      <span class="string">'True if consecutive gait event times for this stride are out of order (negative time difference).'</span>; <span class="keyword">...</span>
+0058     <span class="string">'badDurationOutlier'</span>, <span class="string">'True if stride duration exceeds durationMedianFactor times the trial''s median stride duration.'</span>; <span class="keyword">...</span>
+0059     <span class="string">'badDurationShort'</span>,   <span class="string">'True if stride duration is shorter than minStrideDur.'</span>; <span class="keyword">...</span>
+0060     <span class="string">'badDurationLong'</span>,    <span class="string">'True if stride duration is longer than maxStrideDur.'</span>; <span class="keyword">...</span>
+0061     <span class="string">'badStartStop'</span>,       <span class="string">'True if both legs'' single-stance speed is below startStopSpeedMmS (treadmill starting/stopping); TM trials only, false otherwise.'</span>; <span class="keyword">...</span>
+0062     <span class="string">'badTurning'</span>,         <span class="string">'STUB: always false. Intended to flag substantial within-stride heading change. TODO: wire to the ''direction'' spatial parameter (computeSpatialParameters) once a turning detector is implemented.'</span>; <span class="keyword">...</span>
+0063     <span class="string">'badWalkwayBounds'</span>,   <span class="string">'STUB: always false. Intended to flag strides that ended outside the walkway extent (OG trials). TODO: wire to validateMarkerModel''s ''outOfBoundsOutlier'' output (or an equivalent per-stride walkway-extent check).'</span>; <span class="keyword">...</span>
+0064     <span class="string">'badMarkerDropout'</span>,   <span class="string">'STUB: always false. Intended to flag marker dropout affecting this stride. TODO: wire to markerData.assessMissing / findOutliers per-stride dropout fraction.'</span>; <span class="keyword">...</span>
+0065     };
+0066 reasonLabels       = aux(:, 1)';
+0067 reasonDescriptions = aux(:, 2)';
+0068 
+0069 <span class="comment">% Reasons folded into the aggregate 'bad' flag by default: the</span>
+0070 <span class="comment">% event/duration criteria plus treadmill start/stop. Handrail holding,</span>
+0071 <span class="comment">% triage, and the stub reasons above are intentionally excluded (opt-in</span>
+0072 <span class="comment">% only; see REMOVESTRIDESBYREASON and REMOVEHANDRAILSTRIDES).</span>
+0073 defaultBadReasons = { <span class="keyword">...</span>
+0074     <span class="string">'badMissingEvent'</span>, <span class="string">'badDisordered'</span>, <span class="string">'badDurationOutlier'</span>, <span class="keyword">...</span>
+0075     <span class="string">'badDurationShort'</span>, <span class="string">'badDurationLong'</span>, <span class="string">'badStartStop'</span>};
+0076 
+0077 <span class="comment">% Triage config: non-destructive outlier candidate flagging, not part</span>
+0078 <span class="comment">% of 'bad'. Parameter set matches the historical (now-removed; see</span>
+0079 <span class="comment">% CALCPARAMETERS revision history) outlier-detection block.</span>
+0080 triageParams = {<span class="string">'stepLengthSlow'</span>, <span class="string">'stepLengthFast'</span>, <span class="string">'alphaSlow'</span>, <span class="keyword">...</span>
+0081     <span class="string">'alphaFast'</span>, <span class="string">'alphaTemp'</span>, <span class="string">'betaSlow'</span>, <span class="string">'betaFast'</span>};
+0082 triageWindowStrides = 3;    <span class="comment">% strides; moving-median window for triage</span>
+0083 triageMadFactor     = 3.5;  <span class="comment">% matches historical 3.5x IQR outlier cutoff</span>
+0084 
+0085 cfg = struct();
+0086 cfg.minStrideDur         = minStrideDur;
+0087 cfg.maxStrideDur         = maxStrideDur;
+0088 cfg.durationMedianFactor = durationMedianFactor;
+0089 cfg.startStopSpeedMmS    = startStopSpeedMmS;
+0090 cfg.reasonLabels         = reasonLabels;
+0091 cfg.reasonDescriptions   = reasonDescriptions;
+0092 cfg.defaultBadReasons    = defaultBadReasons;
+0093 cfg.triageParams         = triageParams;
+0094 cfg.triageWindowStrides  = triageWindowStrides;
+0095 cfg.triageMadFactor      = triageMadFactor;
+0096 
+0097 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

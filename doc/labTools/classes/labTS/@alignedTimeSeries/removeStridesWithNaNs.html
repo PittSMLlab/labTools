@@ -4,7 +4,7 @@
 <head>
   <title>Description of removeStridesWithNaNs</title>
   <meta name="keywords" content="removeStridesWithNaNs">
-  <meta name="description" content="removeStridesWithNaNs  Removes strides with missing data">
+  <meta name="description" content="REMOVESTRIDESWITHNANS Removes strides with missing data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,30 +21,32 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>removeStridesWithNaNs  Removes strides with missing data</strong></div>
+<div class="box"><strong>REMOVESTRIDESWITHNANS Removes strides with missing data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = removeStridesWithNaNs(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">removeStridesWithNaNs  Removes strides with missing data
+<div class="fragment"><pre class="comment">REMOVESTRIDESWITHNANS Removes strides with missing data.
 
-   newThis = removeStridesWithNaNs(this) removes all strides that
-   contain any NaN values
+   newThis = removeStridesWithNaNs(this) removes all strides that contain
+ any NaN values
 
-   Inputs:
-       this - alignedTimeSeries object
+ Inputs:
+   this - alignedTimeSeries object
 
-   Outputs:
-       newThis - alignedTimeSeries with complete strides only
+ Outputs:
+   newThis - alignedTimeSeries with complete strides only
 
-   See also: <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">GETPARTIALSTRIDESASATS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>	getPartialStridesAsATS  Extracts subset of strides</li></ul>
+<li><a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>	GETPARTIALSTRIDESASATS Extracts subset of strides.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
@@ -54,23 +56,25 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = removeStridesWithNaNs(this)</a>
-0002 <span class="comment">%removeStridesWithNaNs  Removes strides with missing data</span>
+0002 <span class="comment">%REMOVESTRIDESWITHNANS Removes strides with missing data.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = removeStridesWithNaNs(this) removes all strides that</span>
-0005 <span class="comment">%   contain any NaN values</span>
+0004 <span class="comment">%   newThis = removeStridesWithNaNs(this) removes all strides that contain</span>
+0005 <span class="comment">% any NaN values</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - alignedTimeSeries object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - alignedTimeSeries object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       newThis - alignedTimeSeries with complete strides only</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   newThis - alignedTimeSeries with complete strides only</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: getPartialStridesAsATS</span>
-0014 
-0015 inds = find(all(all(~isnan(this.Data), 2), 1));
-0016 newThis = <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>(this, inds);
-0017 <span class="keyword">end</span>
-0018</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also GETPARTIALSTRIDESASATS.</span>
+0016 
+0017 inds    = find(all(all(~isnan(this.Data), 2), 1));
+0018 newThis = <a href="getPartialStridesAsATS.html" class="code" title="function newThis = getPartialStridesAsATS(this, inds)">getPartialStridesAsATS</a>(this, inds);
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

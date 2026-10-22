@@ -4,7 +4,7 @@
 <head>
   <title>Description of barGroups</title>
   <meta name="keywords" content="barGroups">
-  <meta name="description" content="Make a bar plot to compare groups for a given epoch and parameter">
+  <meta name="description" content="BARGROUPS Make a bar plot comparing groups across epochs and parameters.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,100 +21,155 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>Make a bar plot to compare groups for a given epoch and parameter</strong></div>
+<div class="box"><strong>BARGROUPS Make a bar plot comparing groups across epochs and parameters.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode) </strong></div>
+<div class="box"><strong>function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Make a bar plot to compare groups for a given epoch and parameter
-   TO DO: make function be able to accept a group array that is different
-   thand the groups in the results matrix</pre></div>
+<div class="fragment"><pre class="comment">BARGROUPS Make a bar plot comparing groups across epochs and parameters.
+
+   Creates a subplot grid of bar charts — one subplot per (parameter,
+ epoch) combination. Bars represent group means with error bars for
+ standard error. Optionally overlays individual subject data points.
+
+ Inputs:
+   Study      - Struct with group fields, each containing an ID field
+                with subject identifiers
+   results    - Struct with epoch fields; each epoch has avg (groups ×
+                params), se (same size), and indiv sub-struct
+   groups     - Cell array of group name strings
+   params     - Cell array of parameter name strings
+   epochs     - Cell array of epoch name strings
+   indivFlag  - Logical; if true, overlay individual subject data points
+   colorOrder - K×3 matrix of RGB colors (one row per group/subject);
+                defaults to poster_colors if empty or not 3-column
+   mode       - Display mode: 1 = filled bars, 2 = error bars only
+
+ Outputs:
+   None (creates a figure)
+
+ Toolbox Dependencies: None
+
+ See also OPTIMIZEDSUBPLOT, POSTER_COLORS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	1          2          3          4          5          6          7        8           9        10            11        12</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>	% Poster colors</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getForceResults.html" class="code" title="function results = getForceResults( SMatrix,params,groups,maxPerturb,plotFlag,indivFlag, removeBias )">getForceResults</a>	UNTITLED Summary of this function goes here</li><li><a href="getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)">getResultsBF</a>	</li><li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li><li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
+<li><a href="getForceResults.html" class="code" title="function results = getForceResults(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag, removeBias)">getForceResults</a>	GETFORCERESULTS Compute force-parameter adaptation results per group.</li><li><a href="getResultsBF.html" class="code" title="function results = getResultsBF(SMatrix, groups, plotFlag, indivFlag)">getResultsBF</a>	GETRESULTSBF Compute body-frame perception results per group.</li><li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix, params, groups,maxPerturb, plotFlag, indivFlag)">getResultsSMART</a>	GETRESULTSSMART Compute adaptation results with strides-to-SS and</li><li><a href="../../../../labTools/gui/eventReview/PlotParamsGUI.html" class="code" title="function varargout = PlotParamsGUI(varargin)">PlotParamsGUI</a>	PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)</a>
-0002 <span class="comment">%Make a bar plot to compare groups for a given epoch and parameter</span>
-0003 <span class="comment">%   TO DO: make function be able to accept a group array that is different</span>
-0004 <span class="comment">%   thand the groups in the results matrix</span>
-0005 
-0006 <span class="keyword">if</span> nargin&lt;8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(mode)
-0007     mode=1;
-0008 <span class="keyword">end</span>
-0009 <span class="keyword">if</span> nargin&lt;7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorOrder) || size(colorOrder,2)~=3    
-0010     <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
-0011     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; p_gray; p_black;[1 1 1]];         
-0012 <span class="keyword">end</span>
-0013 <span class="comment">% Set grey colors to use when individual subjects are plotted</span>
-0014 greyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.2 0.2 0.2;0.9 0.9 0.9;0.1 0.1 0.1;0.8 0.8 0.8;0.3 0.3 0.3;0.7 0.7 0.7];
-0015 
-0016 ngroups=length(groups);         
-0017 numPlots=length(epochs)*length(params);
-0018 numE=length(epochs);
-0019 ah=<a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(numPlots,length(params),numE,<span class="string">'lr'</span>,12,10,12);
-0020 i=1;
-0021 <span class="keyword">for</span> p=1:length(params)
-0022    limy=[];
-0023    <span class="keyword">for</span> t=1:numE
-0024        axes(ah(i))
-0025        hold on
-0026        <span class="keyword">for</span> b=1:ngroups
-0027            nSubs=length(Study.(groups{b}).ID);
-0028            
-0029            <span class="comment">%attempt to abbreviate group name</span>
-0030 <span class="comment">%            adaptData=Study.(groups{b}).adaptData{1};</span>
-0031 <span class="comment">%            group=adaptData.metaData.ID;</span>
-0032 <span class="comment">%            spaces=find(group==' ');</span>
-0033 <span class="comment">%            abrevGroup=group(spaces+1);%</span>
-0034 <span class="comment">%            abrevGroups{b}=[group(1) abrevGroup];</span>
-0035                       
-0036            ind=find(strcmp(fields(Study),groups{b}));
-0037            <span class="keyword">switch</span> mode
-0038                <span class="keyword">case</span> 1
-0039                    <span class="keyword">if</span> nargin&gt;5 &amp;&amp; indivFlag
-0040                        bar(b,results.(epochs{t}).avg(b,p),<span class="string">'facecolor'</span>,greyOrder(ind,:));
-0041                        <span class="keyword">for</span> s=1:nSubs
-0042                            aux=results.(epochs{t}).indiv.(params{p});
-0043                            aux=aux(aux(:,1)==b,2);                   
-0044                            <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(b,aux(s),<span class="string">'*'</span>,<span class="string">'Color'</span>,colorOrder(s,:))                 
-0045                        <span class="keyword">end</span>
-0046                    <span class="keyword">else</span>
-0047                        bar(b,results.(epochs{t}).avg(b,p),<span class="string">'facecolor'</span>,colorOrder(ind,:));
-0048                    <span class="keyword">end</span>
-0049                <span class="keyword">case</span> 2
-0050                    <span class="comment">%nop</span>
-0051            <span class="keyword">end</span>
-0052        <span class="keyword">end</span>
-0053        <span class="keyword">switch</span> mode
-0054            <span class="keyword">case</span> 1
-0055                 errorbar(results.(epochs{t}).avg(:,p),results.(epochs{t}).se(:,p),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>)
-0056            <span class="keyword">case</span> 2
-0057                errorbar(results.(epochs{t}).avg(:,p),results.(epochs{t}).se(:,p),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>)
-0058        <span class="keyword">end</span>
-0059        set(gca,<span class="string">'Xtick'</span>,1:ngroups,<span class="string">'XTickLabel'</span>,groups,<span class="string">'fontSize'</span>,12)
-0060        axis tight
-0061        limy=[limy get(gca,<span class="string">'Ylim'</span>)];
-0062        ylabel(params{p})
-0063        title(epochs{t})
-0064        i=i+1;
-0065    <span class="keyword">end</span>
-0066    set(ah(p*numE-(numE-1):p*numE),<span class="string">'Ylim'</span>,[min(limy) max(limy)])
-0067    set(gcf,<span class="string">'Renderer'</span>,<span class="string">'painters'</span>);
-0068 <span class="keyword">end</span>
-0069 
-0070 <span class="keyword">end</span>
-0071</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function barGroups(Study, results, groups, params, epochs, </a><span class="keyword">...</span>
+0002     indivFlag, colorOrder, mode)
+0003 <span class="comment">%BARGROUPS Make a bar plot comparing groups across epochs and parameters.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Creates a subplot grid of bar charts — one subplot per (parameter,</span>
+0006 <span class="comment">% epoch) combination. Bars represent group means with error bars for</span>
+0007 <span class="comment">% standard error. Optionally overlays individual subject data points.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   Study      - Struct with group fields, each containing an ID field</span>
+0011 <span class="comment">%                with subject identifiers</span>
+0012 <span class="comment">%   results    - Struct with epoch fields; each epoch has avg (groups ×</span>
+0013 <span class="comment">%                params), se (same size), and indiv sub-struct</span>
+0014 <span class="comment">%   groups     - Cell array of group name strings</span>
+0015 <span class="comment">%   params     - Cell array of parameter name strings</span>
+0016 <span class="comment">%   epochs     - Cell array of epoch name strings</span>
+0017 <span class="comment">%   indivFlag  - Logical; if true, overlay individual subject data points</span>
+0018 <span class="comment">%   colorOrder - K×3 matrix of RGB colors (one row per group/subject);</span>
+0019 <span class="comment">%                defaults to poster_colors if empty or not 3-column</span>
+0020 <span class="comment">%   mode       - Display mode: 1 = filled bars, 2 = error bars only</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   None (creates a figure)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Toolbox Dependencies: None</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also OPTIMIZEDSUBPLOT, POSTER_COLORS.</span>
+0028 
+0029 <span class="comment">% TODO: accept a group array different from the groups in results</span>
+0030 
+0031 <span class="keyword">if</span> nargin &lt; 8 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(mode)
+0032     mode = 1;
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> nargin &lt; 7 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorOrder) || size(colorOrder, 2) ~= 3
+0035     <a href="../../../../labTools/fun/plotting/colors/poster_colors.html" class="code" title="">poster_colors</a>;
+0036     colorOrder = [p_red;    p_orange; p_fade_green; p_fade_blue; <span class="keyword">...</span>
+0037         p_plum;   p_green;  p_blue;        p_fade_red;  <span class="keyword">...</span>
+0038         p_lime;   p_yellow; p_gray;         p_black;     <span class="keyword">...</span>
+0039         [1 1 1]];
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% Grey color scale for individual-subject overlay</span>
+0043 greyOrder = [0   0   0;   1   1   1;   0.5 0.5 0.5; <span class="keyword">...</span>
+0044     0.2 0.2 0.2; 0.9 0.9 0.9; 0.1 0.1 0.1; <span class="keyword">...</span>
+0045     0.8 0.8 0.8; 0.3 0.3 0.3; 0.7 0.7 0.7];
+0046 
+0047 ngroups  = length(groups);
+0048 numPlots = length(epochs) * length(params);
+0049 numE     = length(epochs);
+0050 ah       = <a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>(numPlots, length(params), numE, <span class="keyword">...</span>
+0051     <span class="string">'lr'</span>, 12, 10, 12);
+0052 plotIdx  = 1;
+0053 
+0054 <span class="keyword">for</span> pp = 1:length(params)
+0055     limy = [];
+0056     <span class="keyword">for</span> ep = 1:numE
+0057         axes(ah(plotIdx)); <span class="comment">%#ok&lt;LAXES&gt;</span>
+0058         hold on
+0059         <span class="keyword">for</span> gg = 1:ngroups
+0060             nSubs = length(Study.(groups{gg}).ID);
+0061             ind   = find(strcmp(fields(Study), groups{gg}));
+0062             <span class="keyword">switch</span> mode
+0063                 <span class="keyword">case</span> 1
+0064                     <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; indivFlag
+0065                         bar(gg, results.(epochs{ep}).avg(gg, pp), <span class="keyword">...</span>
+0066                             <span class="string">'facecolor'</span>, greyOrder(ind, :));
+0067                         <span class="keyword">for</span> ss = 1:nSubs
+0068                             aux = results.(epochs{ep}).indiv.(params{pp});
+0069                             aux = aux(aux(:, 1) == gg, 2);
+0070                             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(gg, aux(ss), <span class="string">'*'</span>, <span class="keyword">...</span>
+0071                                 <span class="string">'Color'</span>, colorOrder(ss, :))
+0072                         <span class="keyword">end</span>
+0073                     <span class="keyword">else</span>
+0074                         bar(gg, results.(epochs{ep}).avg(gg, pp), <span class="keyword">...</span>
+0075                             <span class="string">'facecolor'</span>, colorOrder(ind, :));
+0076                     <span class="keyword">end</span>
+0077                 <span class="keyword">case</span> 2
+0078                     <span class="comment">%nop</span>
+0079             <span class="keyword">end</span>
+0080         <span class="keyword">end</span>
+0081         <span class="keyword">switch</span> mode
+0082             <span class="keyword">case</span> 1
+0083                 errorbar(results.(epochs{ep}).avg(:, pp), <span class="keyword">...</span>
+0084                     results.(epochs{ep}).se(:, pp), <span class="string">'.'</span>, <span class="keyword">...</span>
+0085                     <span class="string">'LineWidth'</span>, 2, <span class="string">'Color'</span>, <span class="string">'k'</span>)
+0086             <span class="keyword">case</span> 2
+0087                 errorbar(results.(epochs{ep}).avg(:, pp), <span class="keyword">...</span>
+0088                     results.(epochs{ep}).se(:, pp), <span class="keyword">...</span>
+0089                     <span class="string">'LineWidth'</span>, 2, <span class="string">'Color'</span>, <span class="string">'k'</span>)
+0090         <span class="keyword">end</span>
+0091         set(gca, <span class="string">'Xtick'</span>, 1:ngroups, <span class="string">'XTickLabel'</span>, groups, <span class="keyword">...</span>
+0092             <span class="string">'fontSize'</span>, 12)
+0093         axis tight
+0094         limy = [limy get(gca, <span class="string">'Ylim'</span>)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0095         ylabel(params{pp})
+0096         title(epochs{ep})
+0097         plotIdx = plotIdx + 1;
+0098     <span class="keyword">end</span>
+0099     set(ah(pp * numE - (numE - 1):pp * numE), <span class="keyword">...</span>
+0100         <span class="string">'Ylim'</span>, [min(limy) max(limy)])
+0101     set(gcf, <span class="string">'Renderer'</span>, <span class="string">'painters'</span>);
+0102 <span class="keyword">end</span>
+0103 
+0104 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

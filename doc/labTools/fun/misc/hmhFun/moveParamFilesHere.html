@@ -4,7 +4,7 @@
 <head>
   <title>Description of moveParamFilesHere</title>
   <meta name="keywords" content="moveParamFilesHere">
-  <meta name="description" content="searches for files in all folders in path">
+  <meta name="description" content="MOVEPARAMFILESHERE Copy params.mat files from subfolders to the current">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,15 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>searches for files in all folders in path</strong></div>
+<div class="box"><strong>MOVEPARAMFILESHERE Copy params.mat files from subfolders to the current</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function moveParamFilesHere(path) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> searches for files in all folders in path
- what happens with conflicts? --&gt; semms to just overwrite old file.
- use recursion to look at all levels --&gt; uncomment section.</pre></div>
+<div class="fragment"><pre class="comment">MOVEPARAMFILESHERE Copy params.mat files from subfolders to the current
+ directory.
+
+   Searches all immediate subdirectories of path for files whose names
+ end in 'params.mat' and copies them into the current working directory.
+ Conflicts are resolved by overwriting.
+
+ Inputs:
+   path - Character vector specifying the folder to search (default:
+          './')
+
+ Outputs:
+   None (copies files to current directory)
+
+ Toolbox Dependencies: None
+
+ See also <a href="subFileList.html" class="code" title="function output = subFileList(input)">SUBFILELIST</a>, <a href="getSubsFromFolders.html" class="code" title="function subs = getSubsFromFolders(path)">GETSUBSFROMFOLDERS</a>, COPYFILE.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -45,35 +59,49 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function moveParamFilesHere(path)</a>
-0002 <span class="comment">% searches for files in all folders in path</span>
-0003 <span class="comment">% what happens with conflicts? --&gt; semms to just overwrite old file.</span>
-0004 <span class="comment">% use recursion to look at all levels --&gt; uncomment section.</span>
-0005 
-0006 
-0007 <span class="keyword">if</span> nargin&lt;1
-0008     path=<span class="string">'./'</span>;
-0009 <span class="keyword">end</span>
-0010 
-0011 things=dir(path);
-0012 
-0013 <span class="keyword">for</span> i=1:length(things)
-0014     <span class="keyword">if</span> things(i).isdir
-0015         <span class="keyword">if</span> ~strcmp(things(i).name(1),<span class="string">'.'</span>) <span class="comment">%not a folder or file if false</span>
-0016             thingsInFolder=dir([path things(i).name]);
-0017             <span class="keyword">for</span> j=1:length(thingsInFolder)
-0018                 <span class="keyword">if</span> ~strcmp(thingsInFolder(j).name(1),<span class="string">'.'</span>)
-0019                     <span class="keyword">if</span> strcmp(thingsInFolder(j).name(max([1 end-9]):end),<span class="string">'params.mat'</span>)
-0020                         copyfile([path things(i).name filesep thingsInFolder(j).name],<span class="string">'./'</span>)
-0021 <span class="comment">%                     elseif thingsInFolder(j).isdir</span>
-0022 <span class="comment">%                         moveParamFilesHere([path things(i).name filesep])</span>
-0023                     <span class="keyword">end</span>
-0024                 <span class="keyword">end</span>
-0025             <span class="keyword">end</span>
-0026         <span class="keyword">end</span>                          
-0027     <span class="keyword">end</span>
-0028 <span class="keyword">end</span>
-0029 
-0030 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%MOVEPARAMFILESHERE Copy params.mat files from subfolders to the current</span>
+0003 <span class="comment">% directory.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Searches all immediate subdirectories of path for files whose names</span>
+0006 <span class="comment">% end in 'params.mat' and copies them into the current working directory.</span>
+0007 <span class="comment">% Conflicts are resolved by overwriting.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   path - Character vector specifying the folder to search (default:</span>
+0011 <span class="comment">%          './')</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   None (copies files to current directory)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also SUBFILELIST, GETSUBSFROMFOLDERS, COPYFILE.</span>
+0019 
+0020 <span class="keyword">if</span> nargin &lt; 1
+0021     path = <span class="string">'./'</span>;
+0022 <span class="keyword">end</span>
+0023 
+0024 things = dir(path);
+0025 
+0026 <span class="keyword">for</span> ii = 1:length(things)
+0027     <span class="keyword">if</span> things(ii).isdir
+0028         <span class="keyword">if</span> ~strcmp(things(ii).name(1), <span class="string">'.'</span>)
+0029             thingsInFolder = dir([path things(ii).name]);
+0030             <span class="keyword">for</span> jj = 1:length(thingsInFolder)
+0031                 <span class="keyword">if</span> ~strcmp(thingsInFolder(jj).name(1), <span class="string">'.'</span>)
+0032                     nameEnd = thingsInFolder(jj).name( <span class="keyword">...</span>
+0033                         max([1 end-9]):end);
+0034                     <span class="keyword">if</span> strcmp(nameEnd, <span class="string">'params.mat'</span>)
+0035                         copyfile(fullfile([path things(ii).name], <span class="keyword">...</span>
+0036                             thingsInFolder(jj).name), <span class="string">'./'</span>)
+0037                     <span class="keyword">end</span>
+0038                 <span class="keyword">end</span>
+0039             <span class="keyword">end</span>
+0040         <span class="keyword">end</span>
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

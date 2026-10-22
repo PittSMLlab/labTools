@@ -4,7 +4,7 @@
 <head>
   <title>Description of removeOutliers</title>
   <meta name="keywords" content="removeOutliers">
-  <meta name="description" content="removeOutliers  Removes outlier data points">
+  <meta name="description" content="REMOVEOUTLIERS Removes outlier data points.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>removeOutliers  Removes outlier data points</strong></div>
+<div class="box"><strong>REMOVEOUTLIERS Removes outlier data points.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = removeOutliers(this, model) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">removeOutliers  Removes outlier data points
+<div class="fragment"><pre class="comment">REMOVEOUTLIERS Removes outlier data points.
 
    newThis = removeOutliers(this, model) detects and removes outliers
 
-   Inputs:
-       this - orientedLabTimeSeries object
-       model - naiveDistances model for detection
+ Inputs:
+   this  - orientedLabTimeSeries object
+   model - naiveDistances model for detection
 
-   Outputs:
-       newThis - orientedLabTimeSeries with outliers set to NaN
+ Outputs:
+   newThis - orientedLabTimeSeries with outliers set to NaN
 
-   See also: <a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">findOutliers</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="findOutliers.html" class="code" title="function [this, logL] = findOutliers(this, model, verbose)">FINDOUTLIERS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -54,26 +56,28 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = removeOutliers(this, model)</a>
-0002 <span class="comment">%removeOutliers  Removes outlier data points</span>
+0002 <span class="comment">%REMOVEOUTLIERS Removes outlier data points.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newThis = removeOutliers(this, model) detects and removes outliers</span>
 0005 <span class="comment">%</span>
-0006 <span class="comment">%   Inputs:</span>
-0007 <span class="comment">%       this - orientedLabTimeSeries object</span>
-0008 <span class="comment">%       model - naiveDistances model for detection</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   this  - orientedLabTimeSeries object</span>
+0008 <span class="comment">%   model - naiveDistances model for detection</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       newThis - orientedLabTimeSeries with outliers set to NaN</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   newThis - orientedLabTimeSeries with outliers set to NaN</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: findOutliers</span>
-0014 
-0015 <span class="comment">% Detect:</span>
-0016 newThis = this.findOutliers(model);
-0017 <span class="comment">% Remove:</span>
-0018 bad = (newThis.Quality == 1);
-0019 newThis.Data(bad) = NaN;
-0020 <span class="keyword">end</span>
-0021</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also FINDOUTLIERS.</span>
+0016 
+0017 <span class="comment">% Detect:</span>
+0018 newThis = this.findOutliers(model);
+0019 <span class="comment">% Remove:</span>
+0020 bad = (newThis.Quality == 1);
+0021 newThis.Data(bad) = NaN;
+0022 <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

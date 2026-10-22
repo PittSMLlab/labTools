@@ -4,7 +4,7 @@
 <head>
   <title>Description of getDoubleSupportRL</title>
   <meta name="keywords" content="getDoubleSupportRL">
-  <meta name="description" content="getDoubleSupportRL  Extracts right-to-left double support phase">
+  <meta name="description" content="GETDOUBLESUPPORTRL Extracts right-to-left double support phase.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,32 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getDoubleSupportRL  Extracts right-to-left double support phase</strong></div>
+<div class="box"><strong>GETDOUBLESUPPORTRL Extracts right-to-left double support phase.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [dsRL, duration] = getDoubleSupportRL(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getDoubleSupportRL  Extracts right-to-left double support phase
+<div class="fragment"><pre class="comment">GETDOUBLESUPPORTRL Extracts right-to-left double support phase.
 
-   [dsRL, duration] = getDoubleSupportRL(this) extracts the
-   phase from right heel strike to left toe off
+   [dsRL, duration] = getDoubleSupportRL(this) extracts the phase from
+ right heel strike to left toe off
 
-   Inputs:
-       this - strideData object
+ Inputs:
+   this - strideData object
 
-   Outputs:
-       dsRL - strideData object containing double support phase
-       duration - duration of phase in seconds
+ Outputs:
+   dsRL     - strideData object containing double support phase
+   duration - duration of phase in seconds
 
-   See also: <a href="getDoubleSupportLR.html" class="code" title="function [dsLR, duration] = getDoubleSupportLR(this)">getDoubleSupportLR</a>, <a href="getSingleStanceR.html" class="code" title="function [int, dur] = getSingleStanceR(this)">getSingleStanceR</a>,
-             <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getDoubleSupportLR.html" class="code" title="function [dsLR, duration] = getDoubleSupportLR(this)">GETDOUBLESUPPORTLR</a>, <a href="getSingleStanceR.html" class="code" title="function [int, dur] = getSingleStanceR(this)">GETSINGLESTANCER</a>, <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">GETINTERVALBTWEVENTS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>	getIntervalBtwEvents  Extracts data between two gait events</li></ul>
+<li><a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>	GETINTERVALBTWEVENTS Extracts data between two gait events.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
@@ -56,25 +57,26 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [dsRL, duration] = getDoubleSupportRL(this)</a>
-0002 <span class="comment">%getDoubleSupportRL  Extracts right-to-left double support phase</span>
+0002 <span class="comment">%GETDOUBLESUPPORTRL Extracts right-to-left double support phase.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   [dsRL, duration] = getDoubleSupportRL(this) extracts the</span>
-0005 <span class="comment">%   phase from right heel strike to left toe off</span>
+0004 <span class="comment">%   [dsRL, duration] = getDoubleSupportRL(this) extracts the phase from</span>
+0005 <span class="comment">% right heel strike to left toe off</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - strideData object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - strideData object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       dsRL - strideData object containing double support phase</span>
-0012 <span class="comment">%       duration - duration of phase in seconds</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   dsRL     - strideData object containing double support phase</span>
+0012 <span class="comment">%   duration - duration of phase in seconds</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: getDoubleSupportLR, getSingleStanceR,</span>
-0015 <span class="comment">%             getIntervalBtwEvents</span>
-0016 
-0017 dsRL = <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>(this, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>);
-0018 duration = dsRL.gaitEvents.timeRange;
-0019 <span class="keyword">end</span>
-0020</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also GETDOUBLESUPPORTLR, GETSINGLESTANCER, GETINTERVALBTWEVENTS.</span>
+0017 
+0018 dsRL     = <a href="getIntervalBtwEvents.html" class="code" title="function interval = getIntervalBtwEvents(this, event1, event2)">getIntervalBtwEvents</a>(this, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>);
+0019 duration = dsRL.gaitEvents.timeRange;
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

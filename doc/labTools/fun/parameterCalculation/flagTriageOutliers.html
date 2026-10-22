@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of flagTriageOutliers</title>
+  <meta name="keywords" content="flagTriageOutliers">
+  <meta name="description" content="FLAGTRIAGEOUTLIERS Non-destructive stride outlier triage flag.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; flagTriageOutliers.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\fun\parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>flagTriageOutliers
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>FLAGTRIAGEOUTLIERS Non-destructive stride outlier triage flag.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function triageOutlier = flagTriageOutliers(paramValues, cfg) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">FLAGTRIAGEOUTLIERS Non-destructive stride outlier triage flag.
+
+   Flags candidate outlier strides for human review WITHOUT censoring
+ them: the result is never OR'd into the 'bad' aggregate. For each
+ column of 'paramValues', computes a moving-median residual and flags
+ strides whose residual magnitude exceeds a robust (MAD-based)
+ multiple of the residual scale. A stride is flagged if ANY input
+ parameter column trips the threshold.
+
+   The moving-median window is stride-scaled (cfg.triageWindowStrides).
+ The result only labels a 'triageOutlier' column for review and leaves
+ 'bad' untouched.
+
+ Inputs:
+   paramValues - (numStrides x numParams) matrix of parameter values
+                (e.g., stepLengthSlow, alphaFast, ...; NaN allowed)
+   cfg         - config struct from GETSTRIDEQUALITYCONFIG; uses the
+                'triageWindowStrides' and 'triageMadFactor' fields
+
+ Outputs:
+   triageOutlier - (numStrides x 1) logical; true if any parameter's
+                  residual exceeds the robust threshold for that
+                  stride
+
+ Toolbox Dependencies:
+   None
+
+ See also <a href="getStrideQualityConfig.html" class="code" title="function cfg = getStrideQualityConfig()">GETSTRIDEQUALITYCONFIG</a>, <a href="adjudicateStrideQuality.html" class="code" title="function [bad, reasons] = adjudicateStrideQuality(extendedEventTimes, strideDuration, singleStanceSpeed,trialType, cfg)">ADJUDICATESTRIDEQUALITY</a>,
+   <a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">CALCPARAMETERS</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function triageOutlier = flagTriageOutliers(paramValues, cfg)</a>
+0002 <span class="comment">%FLAGTRIAGEOUTLIERS Non-destructive stride outlier triage flag.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Flags candidate outlier strides for human review WITHOUT censoring</span>
+0005 <span class="comment">% them: the result is never OR'd into the 'bad' aggregate. For each</span>
+0006 <span class="comment">% column of 'paramValues', computes a moving-median residual and flags</span>
+0007 <span class="comment">% strides whose residual magnitude exceeds a robust (MAD-based)</span>
+0008 <span class="comment">% multiple of the residual scale. A stride is flagged if ANY input</span>
+0009 <span class="comment">% parameter column trips the threshold.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   The moving-median window is stride-scaled (cfg.triageWindowStrides).</span>
+0012 <span class="comment">% The result only labels a 'triageOutlier' column for review and leaves</span>
+0013 <span class="comment">% 'bad' untouched.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Inputs:</span>
+0016 <span class="comment">%   paramValues - (numStrides x numParams) matrix of parameter values</span>
+0017 <span class="comment">%                (e.g., stepLengthSlow, alphaFast, ...; NaN allowed)</span>
+0018 <span class="comment">%   cfg         - config struct from GETSTRIDEQUALITYCONFIG; uses the</span>
+0019 <span class="comment">%                'triageWindowStrides' and 'triageMadFactor' fields</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   triageOutlier - (numStrides x 1) logical; true if any parameter's</span>
+0023 <span class="comment">%                  residual exceeds the robust threshold for that</span>
+0024 <span class="comment">%                  stride</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies:</span>
+0027 <span class="comment">%   None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% See also GETSTRIDEQUALITYCONFIG, ADJUDICATESTRIDEQUALITY,</span>
+0030 <span class="comment">%   CALCPARAMETERS.</span>
+0031 
+0032 arguments
+0033     paramValues (:,:) double
+0034     cfg          struct
+0035 <span class="keyword">end</span>
+0036 
+0037 numStrides = size(paramValues, 1);
+0038 triageOutlier = false(numStrides, 1);
+0039 madToSigmaFactor = 1.4826;  <span class="comment">% MAD-to-std consistency factor (normality)</span>
+0040 
+0041 <span class="keyword">for</span> jj = 1:size(paramValues, 2)     <span class="comment">% for each triage parameter, ...</span>
+0042     paramCol = paramValues(:, jj);
+0043     <span class="keyword">if</span> all(isnan(paramCol))
+0044         <span class="keyword">continue</span>
+0045     <span class="keyword">end</span>
+0046     residual = paramCol - <span class="keyword">...</span>
+0047         movmedian(paramCol, cfg.triageWindowStrides, <span class="string">'omitnan'</span>);
+0048     robustSigma = madToSigmaFactor * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>( <span class="keyword">...</span>
+0049         abs(residual - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(residual, <span class="string">'omitnan'</span>)), <span class="string">'omitnan'</span>);
+0050     <span class="keyword">if</span> robustSigma == 0 || isnan(robustSigma)
+0051         <span class="keyword">continue</span>  <span class="comment">% degenerate (constant or all-NaN) residual: skip</span>
+0052     <span class="keyword">end</span>
+0053     triageOutlier = triageOutlier | <span class="keyword">...</span>
+0054         (abs(residual) &gt; cfg.triageMadFactor * robustSigma);
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

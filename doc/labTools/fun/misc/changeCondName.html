@@ -4,7 +4,7 @@
 <head>
   <title>Description of changeCondName</title>
   <meta name="keywords" content="changeCondName">
-  <meta name="description" content="Changes the condition names of a param file.">
+  <meta name="description" content="CHANGECONDNAME Rename conditions in an adaptationData params file.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,39 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Changes the condition names of a param file.</strong></div>
+<div class="box"><strong>CHANGECONDNAME Rename conditions in an adaptationData params file.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function changeCondName(subID,oldNames,newNames) </strong></div>
+<div class="box"><strong>function changeCondName(subID, oldNames, newNames) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Changes the condition names of a param file. 
-   INPTUS:
-   subID: a string (or cell array of strings) with the subject's ID (i.e. the
-   characters preceeding 'params' in the file name)
-   oldNames: a string (or cell array of strings) with the condition name(s) to be replaced
-   newNames: a string (or cell array of strings) with the condition name(s) that should replace the old ones</pre></div>
+<div class="fragment"><pre class="comment">CHANGECONDNAME Rename conditions in an adaptationData params file.
+
+   For each subject in SUBID, loads the corresponding params file,
+ replaces every condition name in OLDNAMES with the corresponding
+ name in NEWNAMES, and saves the updated file back to disk. The params
+ files are read from and silently overwritten in the current folder (see
+ DATA_OUTPUTS.md).
+
+ Inputs:
+   subID    - string or cell array of strings; subject ID prefix
+              (characters preceding 'params' in the filename)
+   oldNames - string or cell array of condition names to replace
+   newNames - string or cell array of replacement condition names;
+              must be the same length as oldNames
+
+ Outputs:
+   (none) — modifies params files on disk in-place
+
+ Toolbox Dependencies: None
+
+ See also ADAPTATIONDATA.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -47,63 +62,86 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function changeCondName(subID,oldNames,newNames)</a>
-0002 <span class="comment">%Changes the condition names of a param file.</span>
-0003 <span class="comment">%   INPTUS:</span>
-0004 <span class="comment">%   subID: a string (or cell array of strings) with the subject's ID (i.e. the</span>
-0005 <span class="comment">%   characters preceeding 'params' in the file name)</span>
-0006 <span class="comment">%   oldNames: a string (or cell array of strings) with the condition name(s) to be replaced</span>
-0007 <span class="comment">%   newNames: a string (or cell array of strings) with the condition name(s) that should replace the old ones</span>
-0008 
-0009 <span class="comment">%Check inputs.</span>
-0010 
-0011 <span class="keyword">if</span> isa(subID,<span class="string">'char'</span>)
-0012     subID={subID};
-0013 <span class="keyword">elseif</span> ~(isa(subID,<span class="string">'cell'</span>) &amp;&amp; isa(subID{1},<span class="string">'char'</span>))       
-0014     ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'subID needs to be a string or cell array of strings.'</span>);
-0015     throw(ME);
-0016 <span class="keyword">end</span>
-0017 
-0018 <span class="keyword">if</span> isa(oldNames,<span class="string">'char'</span>)
-0019     oldNames={oldNames};
-0020 <span class="keyword">elseif</span> ~(isa(oldNames,<span class="string">'cell'</span>) &amp;&amp; isa(oldNames{1},<span class="string">'char'</span>))       
-0021    ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'oldNames needs to be a string or cell array of strings.'</span>);
-0022    throw(ME);
-0023 <span class="keyword">end</span>
-0024 
-0025 <span class="keyword">if</span> isa(newNames,<span class="string">'char'</span>)
-0026     newNames={newNames};
-0027 <span class="keyword">elseif</span> ~(isa(newNames,<span class="string">'cell'</span>) &amp;&amp; isa(newNames{1},<span class="string">'char'</span>))       
-0028    ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'oldNames needs to be a string or cell array of strings.'</span>);
-0029    throw(ME);
-0030 <span class="keyword">end</span>
-0031 
-0032 <span class="keyword">if</span> length(oldNames) ~= length(newNames)
-0033    ME=MException(<span class="string">'changeCondName:badInput'</span>,<span class="string">'oldNames and newNames inputs must be the same length.'</span>);
-0034    throw(ME);
-0035 <span class="keyword">end</span>
-0036 
-0037 <span class="keyword">for</span> s=1:length(subID)
-0038     <span class="keyword">try</span>
-0039         load([subID{s} <span class="string">'params.mat'</span>])
-0040     <span class="keyword">catch</span>
-0041         ME=MException(<span class="string">'changeCondName:badInput'</span>,[<span class="string">'The params file for '</span> subID{s} <span class="string">' does not appear to be in your current folder.'</span>]);
-0042         throw(ME);
-0043     <span class="keyword">end</span>
-0044     
-0045     <span class="keyword">for</span> c=1:length(oldNames)
-0046         ind=find(ismember(adaptData.metaData.conditionName,oldNames(c)));
-0047         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ind)
-0048             warning([subID{s}  <span class="string">'''s file does not contain condition '''</span> oldNames{c} <span class="string">''' and was not replaced with '''</span> newNames{c} <span class="string">''''</span>])
-0049             <span class="keyword">continue</span>
-0050         <span class="keyword">else</span>
-0051             adaptData.metaData.conditionName{ind}=newNames{c};        
-0052         <span class="keyword">end</span>
-0053     <span class="keyword">end</span>
-0054     save([subID{s} <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>,<span class="string">'-v7.3'</span>)
-0055 <span class="keyword">end</span>
-0056     
-0057</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function changeCondName(subID, oldNames, newNames)</a>
+0002 <span class="comment">%CHANGECONDNAME Rename conditions in an adaptationData params file.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For each subject in SUBID, loads the corresponding params file,</span>
+0005 <span class="comment">% replaces every condition name in OLDNAMES with the corresponding</span>
+0006 <span class="comment">% name in NEWNAMES, and saves the updated file back to disk. The params</span>
+0007 <span class="comment">% files are read from and silently overwritten in the current folder (see</span>
+0008 <span class="comment">% DATA_OUTPUTS.md).</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   subID    - string or cell array of strings; subject ID prefix</span>
+0012 <span class="comment">%              (characters preceding 'params' in the filename)</span>
+0013 <span class="comment">%   oldNames - string or cell array of condition names to replace</span>
+0014 <span class="comment">%   newNames - string or cell array of replacement condition names;</span>
+0015 <span class="comment">%              must be the same length as oldNames</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   (none) — modifies params files on disk in-place</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also ADAPTATIONDATA.</span>
+0023 
+0024 <span class="comment">%% Validate inputs</span>
+0025 <span class="keyword">if</span> isa(subID, <span class="string">'char'</span>)
+0026     subID = {subID};
+0027 <span class="keyword">elseif</span> ~(isa(subID, <span class="string">'cell'</span>) &amp;&amp; isa(subID{1}, <span class="string">'char'</span>))
+0028     ME = MException(<span class="string">'changeCondName:inputMismatch'</span>, <span class="keyword">...</span>
+0029         <span class="string">'subID needs to be a string or cell array of strings.'</span>);
+0030     throw(ME);
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="keyword">if</span> isa(oldNames, <span class="string">'char'</span>)
+0034     oldNames = {oldNames};
+0035 <span class="keyword">elseif</span> ~(isa(oldNames, <span class="string">'cell'</span>) &amp;&amp; isa(oldNames{1}, <span class="string">'char'</span>))
+0036     ME = MException(<span class="string">'changeCondName:inputMismatch'</span>, <span class="keyword">...</span>
+0037         <span class="string">'oldNames needs to be a string or cell array of strings.'</span>);
+0038     throw(ME);
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> isa(newNames, <span class="string">'char'</span>)
+0042     newNames = {newNames};
+0043 <span class="keyword">elseif</span> ~(isa(newNames, <span class="string">'cell'</span>) &amp;&amp; isa(newNames{1}, <span class="string">'char'</span>))
+0044     ME = MException(<span class="string">'changeCondName:inputMismatch'</span>, <span class="keyword">...</span>
+0045         <span class="string">'newNames needs to be a string or cell array of strings.'</span>);
+0046     throw(ME);
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="keyword">if</span> length(oldNames) ~= length(newNames)
+0050     ME = MException(<span class="string">'changeCondName:badInput'</span>, <span class="keyword">...</span>
+0051         <span class="string">'oldNames and newNames inputs must be the same length.'</span>);
+0052     throw(ME);
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">%% Rename conditions in each subject's params file</span>
+0056 <span class="keyword">for</span> ii = 1:length(subID)
+0057     <span class="keyword">try</span>
+0058         load([subID{ii} <span class="string">'params.mat'</span>])
+0059     <span class="keyword">catch</span>
+0060         ME = MException(<span class="string">'changeCondName:badInput'</span>, <span class="keyword">...</span>
+0061             [<span class="string">'The params file for '</span> subID{ii} <span class="string">' does not appear '</span> <span class="keyword">...</span>
+0062             <span class="string">'to be in your current folder.'</span>]);
+0063         throw(ME);
+0064     <span class="keyword">end</span>
+0065 
+0066     <span class="keyword">for</span> jj = 1:length(oldNames)
+0067         ind = find(ismember( <span class="keyword">...</span>
+0068             adaptData.metaData.conditionName, oldNames(jj)));
+0069         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ind)
+0070             warning([subID{ii} <span class="string">'''s file does not contain condition '''</span> <span class="keyword">...</span>
+0071                 oldNames{jj} <span class="string">''' and was not replaced with '''</span> <span class="keyword">...</span>
+0072                 newNames{jj} <span class="string">''''</span>])
+0073             <span class="keyword">continue</span>
+0074         <span class="keyword">else</span>
+0075             adaptData.metaData.conditionName{ind} = newNames{jj};
+0076         <span class="keyword">end</span>
+0077     <span class="keyword">end</span>
+0078     save([subID{ii} <span class="string">'params.mat'</span>], <span class="string">'adaptData'</span>, <span class="string">'-v7.3'</span>)
+0079 <span class="keyword">end</span>
+0080 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

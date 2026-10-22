@@ -4,7 +4,7 @@
 <head>
   <title>Description of exportSessionToC3D</title>
   <meta name="keywords" content="exportSessionToC3D">
-  <meta name="description" content="EXPORTSESSIONTOC3D Saves specified trials in a session folder to C3D files">
+  <meta name="description" content="EXPORTSESSIONTOC3D Save selected session trials as C3D files.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,40 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>EXPORTSESSIONTOC3D Saves specified trials in a session folder to C3D files</strong></div>
+<div class="box"><strong>EXPORTSESSIONTOC3D Save selected session trials as C3D files.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function exportSessionToC3D(pathSess,indsTrials,vicon) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">EXPORTSESSIONTOC3D Saves specified trials in a session folder to C3D files
-   This function finds all trials in the session folder with filenames
- starting with 'Trial', filters them based on the specified indices, and
- exports each trial as a C3D file.
+<div class="fragment"><pre class="comment">EXPORTSESSIONTOC3D Save selected session trials as C3D files.
 
- input(s):
-   pathSess: path to the session folder where all trial data is stored.
-   indsTrials: (optional) array of indices indicating which trials to
-       process. By default, all files starting with 'Trial' are processed.
-   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-       object will be created and connected.</pre></div>
+   Finds the Trial*.x1d files in a session folder, keeps the requested
+ trial numbers, and exports each one as a C3D file through Vicon Nexus
+ with no further processing.
+
+ Side effects: needs a running Vicon Nexus (a connection is opened when
+   no vicon object is passed); opens each trial and writes its C3D file.
+   Errors if the session folder does not exist.
+
+ Inputs:
+   pathSess   - path to the session folder holding the trial files
+   indsTrials - (optional) trial numbers to export; numbers without a
+                trial file are ignored (default: all trials)
+   vicon      - (optional) Vicon Nexus SDK object
+
+ Outputs:
+   none
+
+ Toolbox Dependencies: None
+
+ See also DATAMOTION.<a href="exportTrialToC3D.html" class="code" title="function exportTrialToC3D(pathTrial,vicon)">EXPORTTRIALTOC3D</a>, DATAMOTION.<a href="openTrialIfNeeded.html" class="code" title="function isOpen = openTrialIfNeeded(pathTrial,vicon)">OPENTRIALIFNEEDED</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -53,61 +64,72 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function exportSessionToC3D(pathSess,indsTrials,vicon)</a>
-0002 <span class="comment">%EXPORTSESSIONTOC3D Saves specified trials in a session folder to C3D files</span>
-0003 <span class="comment">%   This function finds all trials in the session folder with filenames</span>
-0004 <span class="comment">% starting with 'Trial', filters them based on the specified indices, and</span>
-0005 <span class="comment">% exports each trial as a C3D file.</span>
-0006 <span class="comment">%</span>
-0007 <span class="comment">% input(s):</span>
-0008 <span class="comment">%   pathSess: path to the session folder where all trial data is stored.</span>
-0009 <span class="comment">%   indsTrials: (optional) array of indices indicating which trials to</span>
-0010 <span class="comment">%       process. By default, all files starting with 'Trial' are processed.</span>
-0011 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon</span>
-0012 <span class="comment">%       object will be created and connected.</span>
-0013 
-0014 narginchk(1,3);                 <span class="comment">% verify correct number of input arguments</span>
-0015 
-0016 <span class="comment">% ensure session folder path exists</span>
-0017 <span class="keyword">if</span> ~isfolder(pathSess)
-0018     error(<span class="string">'The session folder path specified does not exist: %s'</span>,pathSess);
-0019 <span class="keyword">end</span>
-0020 
-0021 <span class="comment">% get all trial files that start with 'Trial'</span>
-0022 trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
-0023 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)      <span class="comment">% if no trial files found, ...</span>
-0024     fprintf(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
-0025     <span class="keyword">return</span>;
-0026 <span class="keyword">end</span>
-0027 
-0028 <span class="comment">% extract trial indices from filenames</span>
-0029 [~,namesFiles] = cellfun(@(s) fileparts(s),{trialFiles.name}, <span class="keyword">...</span>
-0030     <span class="string">'UniformOutput'</span>,false);
-0031 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
-0032 
-0033 <span class="comment">% select trials to process</span>
-0034 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsTrials)    <span class="comment">% if 'indsTrials' not provided, ...</span>
-0035     indsTrials = indsTrialsAll;         <span class="comment">% process all trials</span>
-0036 <span class="keyword">else</span>    <span class="comment">% otherwise, ensure no values provided as input do not exist</span>
-0037     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
-0038 <span class="keyword">end</span>
-0039 
-0040 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
-0041 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
-0042     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
-0043         <span class="string">'Nexus...\n'</span>]);
-0044     vicon = ViconNexus();
-0045 <span class="keyword">end</span>
-0046 
-0047 <span class="keyword">for</span> tr = indsTrials     <span class="comment">% for each trial specified, ...</span>
-0048     pathTrial = fullfile(pathSess,sprintf(<span class="string">'Trial%02d'</span>,tr));
-0049     fprintf(<span class="string">'Processing trial %d: %s\n'</span>,tr,pathTrial);
+0002 <span class="comment">%EXPORTSESSIONTOC3D Save selected session trials as C3D files.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Finds the Trial*.x1d files in a session folder, keeps the requested</span>
+0005 <span class="comment">% trial numbers, and exports each one as a C3D file through Vicon Nexus</span>
+0006 <span class="comment">% with no further processing.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Side effects: needs a running Vicon Nexus (a connection is opened when</span>
+0009 <span class="comment">%   no vicon object is passed); opens each trial and writes its C3D file.</span>
+0010 <span class="comment">%   Errors if the session folder does not exist.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   pathSess   - path to the session folder holding the trial files</span>
+0014 <span class="comment">%   indsTrials - (optional) trial numbers to export; numbers without a</span>
+0015 <span class="comment">%                trial file are ignored (default: all trials)</span>
+0016 <span class="comment">%   vicon      - (optional) Vicon Nexus SDK object</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   none</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also DATAMOTION.EXPORTTRIALTOC3D, DATAMOTION.OPENTRIALIFNEEDED.</span>
+0024 
+0025 narginchk(1,3);                 <span class="comment">% verify correct number of input arguments</span>
+0026 
+0027 <span class="comment">%% Validate the session folder</span>
+0028 <span class="keyword">if</span> ~isfolder(pathSess)
+0029     error(<span class="string">'The session folder path specified does not exist: %s'</span>,pathSess);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">% get all trial files that start with 'Trial'</span>
+0033 trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
+0034 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)      <span class="comment">% if no trial files found, ...</span>
+0035     fprintf(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
+0036     <span class="keyword">return</span>;
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">%% Select trials</span>
+0040 [~,namesFiles] = cellfun(@(s) fileparts(s),{trialFiles.name}, <span class="keyword">...</span>
+0041     <span class="string">'UniformOutput'</span>,false);
+0042 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+0043 
+0044 <span class="comment">% select trials to process</span>
+0045 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsTrials)    <span class="comment">% if 'indsTrials' not provided, ...</span>
+0046     indsTrials = indsTrialsAll;         <span class="comment">% process all trials</span>
+0047 <span class="keyword">else</span>    <span class="comment">% otherwise, ensure no values provided as input do not exist</span>
+0048     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
+0049 <span class="keyword">end</span>
 0050 
-0051     <span class="comment">% export trial to C3D using previously implemented function</span>
-0052     dataMotion.exportTrialToC3D(pathTrial,vicon);
-0053 <span class="keyword">end</span>
-0054 
-0055 <span class="keyword">end</span>
-0056</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0051 <span class="comment">%% Connect to Nexus and export</span>
+0052 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0053     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0054         <span class="string">'Nexus...\n'</span>]);
+0055     vicon = ViconNexus();
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="keyword">for</span> tr = indsTrials     <span class="comment">% for each trial specified, ...</span>
+0059     pathTrial = fullfile(pathSess,sprintf(<span class="string">'Trial%02d'</span>,tr));
+0060     fprintf(<span class="string">'Processing trial %d: %s\n'</span>,tr,pathTrial);
+0061 
+0062     <span class="comment">% export trial to C3D using previously implemented function</span>
+0063     dataMotion.exportTrialToC3D(pathTrial,vicon);
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="keyword">end</span>
+0067</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

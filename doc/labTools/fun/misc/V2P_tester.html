@@ -4,7 +4,7 @@
 <head>
   <title>Description of V2P_tester</title>
   <meta name="keywords" content="V2P_tester">
-  <meta name="description" content="">
+  <meta name="description" content="% V2P_Tester — Parse and Inspect V2P Data File">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,25 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>% V2P_Tester — Parse and Inspect V2P Data File</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">% V2P_Tester — Parse and Inspect V2P Data File
+ purpose: Load a data file (JSON or CSV), extract force and event
+   columns, and report basic timing statistics.
+
+ Toolbox Dependencies: None
+
+ See also <a href="JSONtxt2cell.html" class="code" title="function [header, outmat] = JSONtxt2cell(filename)">JSONTXT2CELL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="JSONtxt2cell.html" class="code" title="function [header, outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -42,46 +48,60 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 clear
-0002 clc
-0003 close all
-0004 
-0005 filename = uigetfile(<span class="string">'*.*'</span>);
-0006 
-0007 f = fopen(filename);
-0008 g = fgetl(f);
-0009 fclose(f);
-0010 
-0011 <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
-0012     [header,data] = <a href="JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>(filename);
-0013 <span class="keyword">else</span>
-0014     S = importdata(filename,<span class="string">','</span>,1);
-0015     data = S.data;
-0016     Header = S.textdata;
-0017 <span class="keyword">end</span>
-0018 
-0019 frame = data(:,1)-data(1,1);
-0020 <span class="comment">% disp(['% data received: ' num2str(length(frame)/frame(end)*100)]);</span>
-0021 Rz = data(:,2);
-0022 Lz = data(:,3);
-0023 RHS = data(:,4);
-0024 LHS = data(:,5);
-0025 
-0026 bframe = frame(10:end);
-0027 <span class="comment">% bframe = frame;</span>
-0028 framediff = diff(bframe);
-0029 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(framediff)
-0030 disp([<span class="string">'% data received: '</span> num2str(length(bframe)/(bframe(end)-bframe(1))*100)]);
-0031 timeelap = (bframe(end)-bframe(1))/100;
-0032 freq = length(bframe)/timeelap
-0033 
-0034 figure(1)
-0035 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(framediff);
-0036 ylim([-4 6])
-0037 
-0038 RHS(isnan(RHS))=[];
-0039 figure(2)
-0040 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(frame,Rz,1:length(RHS),RHS);</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%% V2P_Tester — Parse and Inspect V2P Data File</span>
+0002 <span class="comment">% purpose: Load a data file (JSON or CSV), extract force and event</span>
+0003 <span class="comment">%   columns, and report basic timing statistics.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Toolbox Dependencies: None</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% See also JSONTXT2CELL.</span>
+0008 
+0009 clear
+0010 clc
+0011 close all
+0012 
+0013 <span class="comment">%% Load file</span>
+0014 filename = uigetfile(<span class="string">'*.*'</span>);
+0015 
+0016 f = fopen(filename);
+0017 g = fgetl(f);
+0018 fclose(f);
+0019 
+0020 <span class="keyword">if</span> strcmp(g(1), <span class="string">'['</span>)
+0021     [header, data] = <a href="JSONtxt2cell.html" class="code" title="function [header, outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>(filename);
+0022 <span class="keyword">else</span>
+0023     S      = importdata(filename, <span class="string">','</span>, 1);
+0024     data   = S.data;
+0025     Header = S.textdata;
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%% Extract signals</span>
+0029 frame = data(:, 1) - data(1, 1);
+0030 Rz  = data(:, 2);
+0031 Lz  = data(:, 3);
+0032 RHS = data(:, 4);
+0033 LHS = data(:, 5);
+0034 
+0035 <span class="comment">%% Compute timing statistics</span>
+0036 <span class="comment">% TODO: source? first frame kept (earlier frames skipped) and frame rate</span>
+0037 firstFrame = 10;
+0038 frameRate  = 100;                       <span class="comment">% frame counter units per second</span>
+0039 bframe    = frame(firstFrame:end);
+0040 framediff = diff(bframe);
+0041 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(framediff)                 <span class="comment">% display mean frame interval (diagnostic)</span>
+0042 disp([<span class="string">'% data received: '</span> <span class="keyword">...</span>
+0043     num2str(length(bframe) / (bframe(end) - bframe(1)) * 100)]);
+0044 timeelap = (bframe(end) - bframe(1)) / frameRate;
+0045 freq = length(bframe) / timeelap   <span class="comment">% display computed frequency (diagnostic)</span>
+0046 
+0047 <span class="comment">%% Plot</span>
+0048 figure(1)
+0049 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(framediff);
+0050 ylim([-4 6])
+0051 
+0052 RHS(isnan(RHS)) = [];
+0053 figure(2)
+0054 <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(frame, Rz, 1:length(RHS), RHS);</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

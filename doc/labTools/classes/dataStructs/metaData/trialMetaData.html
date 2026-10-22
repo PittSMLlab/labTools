@@ -36,7 +36,7 @@ This function calls:
 <li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li><li><a href="../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEEXPERIMENTINFO Revise experimental session information in MAT files</li><li><a href="../../../../labTools/gui/importc3d/getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	getTrialMetaData creates trialMetaData object for each trial of experiment</li></ul>
+<li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li><li><a href="../../../../labTools/fun/reviseExperimentInfo.html" class="code" title="function  [expData,rawExpData,adaptData] = reviseExperimentInfo()">reviseExperimentInfo</a>	REVISEEXPERIMENTINFO Re-enter session information and rebuild the files.</li><li><a href="../../../../labTools/gui/importc3d/getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info)">getTrialMetaData</a>	GETTRIALMETADATA Create trialMetaData objects and file lists for a session.</li><li><a href="../../../../labTools/testing/TestSpinalAdaptBoutSegments.html" class="code" title="">TestSpinalAdaptBoutSegments</a>	TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -45,9 +45,9 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="trialMetaData.html" class="code" title="">trialMetaData</a>
-0002     <span class="comment">%trialMetaData  Information that is specific to an individual trial</span>
+0002     <span class="comment">%TRIALMETADATA Information that is specific to an individual trial.</span>
 0003     <span class="comment">%</span>
-0004     <span class="comment">%trialMetaData properties:</span>
+0004     <span class="comment">% trialMetaData properties:</span>
 0005     <span class="comment">%   name - short description of condition (e.g., 'slow base')</span>
 0006     <span class="comment">%   description - long description of condition (e.g., '300</span>
 0007     <span class="comment">%                 strides at 0.5 m/s')</span>
@@ -67,134 +67,148 @@ This function is called by:
 0021     <span class="comment">%   ID - trial identifier string</span>
 0022     <span class="comment">%   datlog - data log structure</span>
 0023     <span class="comment">%</span>
-0024     <span class="comment">%trialMetaData methods:</span>
+0024     <span class="comment">% trialMetaData methods:</span>
 0025     <span class="comment">%   trialMetaData - constructor for trial metadata</span>
-0026 
-0027     <span class="comment">%% Properties</span>
-0028     properties
-0029         name = <span class="string">''</span>;
-0030         description = <span class="string">''</span>; <span class="comment">% describes condition</span>
-0031         observations = <span class="string">''</span>;
-0032         refLeg = <span class="string">''</span>;
-0033         condition = [];
-0034         <span class="comment">% string or cell array of strings, if there are many files</span>
-0035         rawDataFilename = <span class="string">''</span>;
-0036         type = <span class="string">''</span>;
-0037         schenleyLab = <span class="string">''</span>;
-0038         perceptualTasks = <span class="string">''</span>;
-0039         ID = <span class="string">''</span>;
-0040         datlog = <span class="string">''</span>;
-0041     <span class="keyword">end</span>
-0042 
-0043     <span class="comment">%% Constructor</span>
-0044     methods
-0045         <a name="_sub0" href="#_subfunctions" class="code">function this = trialMetaData(name, desc, obs, refLeg, cond, </a><span class="keyword">...</span>
-0046                 filename, type, schenleyLab, perceptualTasks, ID, datlog)
-0047             <span class="comment">%trialMetaData  Constructor for trialMetaData class</span>
-0048             <span class="comment">%</span>
-0049             <span class="comment">%   this = trialMetaData(name) creates a trial metadata object</span>
-0050             <span class="comment">%   with the specified trial name</span>
-0051             <span class="comment">%</span>
-0052             <span class="comment">%   this = trialMetaData(name, desc, obs, refLeg, cond,</span>
-0053             <span class="comment">%   filename, type, schenleyLab, perceptualTasks, ID, datlog)</span>
-0054             <span class="comment">%   creates trial metadata object with all specified parameters</span>
+0026     <span class="comment">%</span>
+0027     <span class="comment">% Toolbox Dependencies: None</span>
+0028     <span class="comment">%</span>
+0029     <span class="comment">% See also EXPERIMENTMETADATA, DERIVEDMETADATA.</span>
+0030 
+0031     <span class="comment">%% Properties</span>
+0032     properties
+0033         name         = <span class="string">''</span>;
+0034         description  = <span class="string">''</span>; <span class="comment">% describes condition</span>
+0035         observations = <span class="string">''</span>;
+0036         refLeg       = <span class="string">''</span>;
+0037         condition    = [];
+0038         <span class="comment">% string or cell array of strings, if there are many files</span>
+0039         rawDataFilename = <span class="string">''</span>;
+0040         type = <span class="string">''</span>;
+0041         schenleyLab = <span class="string">''</span>;
+0042         perceptualTasks = <span class="string">''</span>;
+0043         ID = <span class="string">''</span>;
+0044         datlog = <span class="string">''</span>;
+0045     <span class="keyword">end</span>
+0046 
+0047     <span class="comment">%% Constructor</span>
+0048     methods
+0049         <a name="_sub0" href="#_subfunctions" class="code">function this = trialMetaData(name, desc, obs, refLeg, cond, </a><span class="keyword">...</span>
+0050             filename, type, schenleyLab, perceptualTasks, ID, datlog)
+0051             <span class="comment">%TRIALMETADATA Constructor for trialMetaData class.</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">%   this = trialMetaData(name) creates a trial metadata</span>
+0054             <span class="comment">% object with the specified trial name.</span>
 0055             <span class="comment">%</span>
-0056             <span class="comment">%   Inputs:</span>
-0057             <span class="comment">%       name - short name/label for the trial condition</span>
-0058             <span class="comment">%       desc - detailed description of the condition (optional)</span>
-0059             <span class="comment">%       obs - observations or notes about the trial (optional)</span>
-0060             <span class="comment">%       refLeg - reference leg, 'L' or 'R' (optional)</span>
-0061             <span class="comment">%       cond - condition number (optional)</span>
-0062             <span class="comment">%       filename - raw data filename(s), string or cell array</span>
-0063             <span class="comment">%                  (optional)</span>
-0064             <span class="comment">%       type - trial type: 'TM' (treadmill), 'OG' (overground),</span>
-0065             <span class="comment">%              'NIM' (Nimbus), or 'IN' (instrumented)</span>
-0066             <span class="comment">%              (optional, default: 'TM')</span>
-0067             <span class="comment">%       schenleyLab - flag for Schenley lab data (optional,</span>
-0068             <span class="comment">%                     default: 0)</span>
-0069             <span class="comment">%       perceptualTasks - flag for perceptual tasks (optional,</span>
-0070             <span class="comment">%                         default: 0)</span>
-0071             <span class="comment">%       ID - trial identifier (optional)</span>
-0072             <span class="comment">%       datlog - data log structure (optional)</span>
-0073             <span class="comment">%</span>
-0074             <span class="comment">%   Outputs:</span>
-0075             <span class="comment">%       this - trialMetaData object</span>
-0076 
-0077             <span class="keyword">if</span> isa(name, <span class="string">'char'</span>)
-0078                 this.name = name;
-0079             <span class="keyword">end</span>
-0080             <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; isa(desc, <span class="string">'char'</span>)
-0081                 this.description = desc;
-0082             <span class="keyword">end</span>
-0083             <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; isa(obs, <span class="string">'char'</span>)
-0084                 this.observations = obs;
-0085             <span class="keyword">end</span>
-0086             <span class="keyword">if</span> nargin &gt; 3 &amp;&amp; (isa(refLeg, <span class="string">'char'</span>))
-0087                 <span class="comment">% Must be either 'L' or 'R'</span>
-0088                 <span class="keyword">if</span> strcmpi(refLeg, <span class="string">'R'</span>) || strcmpi(refLeg, <span class="string">'L'</span>)
-0089                     this.refLeg = refLeg;
-0090                 <span class="keyword">else</span>
-0091                     ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
-0092                         <span class="string">'refLeg must be either ''L'' or ''R''.'</span>);
-0093                     throw(ME);
-0094                 <span class="keyword">end</span>
-0095             <span class="keyword">end</span>
-0096             <span class="keyword">if</span> nargin &gt; 4 &amp;&amp; isa(cond, <span class="string">'double'</span>)
-0097                 this.condition = cond;
-0098             <span class="keyword">end</span>
-0099             <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; (isa(filename, <span class="string">'char'</span>) || <span class="keyword">...</span>
-0100                     (isa(filename, <span class="string">'cell'</span>) &amp;&amp; isa(filename{1}, <span class="string">'char'</span>)))
-0101                 this.rawDataFilename = filename;
-0102             <span class="keyword">end</span>
-0103             <span class="keyword">if</span> nargin &gt; 6 &amp;&amp; (isa(type, <span class="string">'char'</span>))
-0104                 <span class="keyword">if</span> strcmpi(type, <span class="string">'TM'</span>) || strcmpi(type, <span class="string">'OG'</span>) || <span class="keyword">...</span>
-0105                         strcmpi(type, <span class="string">'NIM'</span>) || strcmpi(type, <span class="string">'IN'</span>)
-0106                     this.type = type;
-0107                 <span class="keyword">else</span>
-0108                     ME = MException(<span class="string">'labMetaData:Constructor'</span>, <span class="keyword">...</span>
-0109                         [<span class="string">'type must be either ''OG'' or ''TM'', '</span> <span class="keyword">...</span>
-0110                         <span class="string">'''NIM'' or ''IN''.'</span>]);
-0111                     throw(ME);
-0112                 <span class="keyword">end</span>
-0113             <span class="keyword">else</span>
-0114                 this.type = <span class="string">'TM'</span>;
-0115                 warning(<span class="string">'Assuming trial is conducted on the treadmill'</span>);
+0056             <span class="comment">%   this = trialMetaData(name, desc, obs, refLeg, cond,</span>
+0057             <span class="comment">% filename, type, schenleyLab, perceptualTasks, ID, datlog)</span>
+0058             <span class="comment">% creates a trial metadata object with all specified</span>
+0059             <span class="comment">% parameters.</span>
+0060             <span class="comment">%</span>
+0061             <span class="comment">% Inputs:</span>
+0062             <span class="comment">%   name            - short name/label for the trial condition</span>
+0063             <span class="comment">%   desc            - (optional) detailed description of the</span>
+0064             <span class="comment">%                     condition</span>
+0065             <span class="comment">%   obs             - (optional) observations or notes about</span>
+0066             <span class="comment">%                     the trial</span>
+0067             <span class="comment">%   refLeg          - (optional) reference leg, 'L' or 'R'</span>
+0068             <span class="comment">%   cond            - (optional) condition number</span>
+0069             <span class="comment">%   filename        - (optional) raw data filename(s), string</span>
+0070             <span class="comment">%                     or cell array</span>
+0071             <span class="comment">%   type            - (optional) trial type: 'TM' (treadmill),</span>
+0072             <span class="comment">%                     'OG' (overground), 'NIM' (Nimbus), or</span>
+0073             <span class="comment">%                     'IN' (instrumented); default 'TM'</span>
+0074             <span class="comment">%   schenleyLab     - (optional) flag for Schenley lab data;</span>
+0075             <span class="comment">%                     default 0</span>
+0076             <span class="comment">%   perceptualTasks - (optional) flag for perceptual tasks;</span>
+0077             <span class="comment">%                     default 0</span>
+0078             <span class="comment">%   ID              - (optional) trial identifier</span>
+0079             <span class="comment">%   datlog          - (optional) data log structure</span>
+0080             <span class="comment">%</span>
+0081             <span class="comment">% Outputs:</span>
+0082             <span class="comment">%   this - trialMetaData object</span>
+0083             <span class="comment">%</span>
+0084             <span class="comment">% NOTE: Omitted type, schenleyLab, and perceptualTasks fall</span>
+0085             <span class="comment">%       back to their defaults with a warning.</span>
+0086             <span class="comment">%</span>
+0087             <span class="comment">% Toolbox Dependencies: None</span>
+0088             <span class="comment">%</span>
+0089             <span class="comment">% See also EXPERIMENTMETADATA, DERIVEDMETADATA.</span>
+0090 
+0091             <span class="keyword">if</span> isa(name, <span class="string">'char'</span>)
+0092                 this.name = name;
+0093             <span class="keyword">end</span>
+0094             <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; isa(desc, <span class="string">'char'</span>)
+0095                 this.description = desc;
+0096             <span class="keyword">end</span>
+0097             <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; isa(obs, <span class="string">'char'</span>)
+0098                 this.observations = obs;
+0099             <span class="keyword">end</span>
+0100             <span class="keyword">if</span> nargin &gt; 3 &amp;&amp; (isa(refLeg, <span class="string">'char'</span>))
+0101                 <span class="comment">% Must be either 'L' or 'R'</span>
+0102                 <span class="keyword">if</span> strcmpi(refLeg, <span class="string">'R'</span>) || strcmpi(refLeg, <span class="string">'L'</span>)
+0103                     this.refLeg = refLeg;
+0104                 <span class="keyword">else</span>
+0105                     ME = MException(<span class="string">'experimentMetaData:Constructor'</span>, <span class="keyword">...</span>
+0106                         <span class="string">'refLeg must be either ''L'' or ''R''.'</span>);
+0107                     throw(ME);
+0108                 <span class="keyword">end</span>
+0109             <span class="keyword">end</span>
+0110             <span class="keyword">if</span> nargin &gt; 4 &amp;&amp; isa(cond, <span class="string">'double'</span>)
+0111                 this.condition = cond;
+0112             <span class="keyword">end</span>
+0113             <span class="keyword">if</span> nargin &gt; 5 &amp;&amp; (isa(filename, <span class="string">'char'</span>) || <span class="keyword">...</span>
+0114                     (isa(filename, <span class="string">'cell'</span>) &amp;&amp; isa(filename{1}, <span class="string">'char'</span>)))
+0115                 this.rawDataFilename = filename;
 0116             <span class="keyword">end</span>
-0117             <span class="keyword">if</span> nargin &gt; 7 &amp;&amp; (isa(schenleyLab, <span class="string">'double'</span>))
-0118                 this.schenleyLab = schenleyLab;
-0119             <span class="keyword">else</span>
-0120                 this.schenleyLab = 0;
-0121                 warning([<span class="string">'Assuming this data was not collected on '</span> <span class="keyword">...</span>
-0122                     <span class="string">'Schenley lab. This will only affect overground '</span> <span class="keyword">...</span>
-0123                     <span class="string">'trial turn removal.'</span>])
-0124             <span class="keyword">end</span>
-0125             <span class="keyword">if</span> nargin &gt; 8 &amp;&amp; (isa(perceptualTasks, <span class="string">'double'</span>))
-0126                 this.perceptualTasks = perceptualTasks;
+0117             <span class="keyword">if</span> nargin &gt; 6 &amp;&amp; (isa(type, <span class="string">'char'</span>))
+0118                 <span class="keyword">if</span> strcmpi(type, <span class="string">'TM'</span>) || strcmpi(type, <span class="string">'OG'</span>) || <span class="keyword">...</span>
+0119                         strcmpi(type, <span class="string">'NIM'</span>) || strcmpi(type, <span class="string">'IN'</span>)
+0120                     this.type = type;
+0121                 <span class="keyword">else</span>
+0122                     ME = MException(<span class="string">'labMetaData:Constructor'</span>, <span class="keyword">...</span>
+0123                         [<span class="string">'type must be either ''OG'' or ''TM'', '</span> <span class="keyword">...</span>
+0124                         <span class="string">'''NIM'' or ''IN''.'</span>]);
+0125                     throw(ME);
+0126                 <span class="keyword">end</span>
 0127             <span class="keyword">else</span>
-0128                 this.perceptualTasks = 0;
-0129                 warning([<span class="string">'Assuming this experiment does not have any '</span> <span class="keyword">...</span>
-0130                     <span class="string">'perceptual tasks (2AFC tasks).'</span>]);
-0131             <span class="keyword">end</span>
-0132             <span class="keyword">if</span> nargin &gt; 9 &amp;&amp; (isa(ID, <span class="string">'char'</span>))
-0133                 this.ID = ID;
-0134             <span class="keyword">else</span>
-0135                 this.ID = <span class="string">''</span>;
-0136             <span class="keyword">end</span>
-0137             <span class="keyword">if</span> nargin &gt; 10 &amp;&amp; (isa(datlog, <span class="string">'struct'</span>))
-0138                 this.datlog = datlog;
-0139                 <span class="comment">% datlog is saved in datlog.datlog, this will be true</span>
-0140                 <span class="comment">% depends on how the datlog was loaded.</span>
-0141                 <span class="keyword">if</span> isfield(datlog, <span class="string">'datlog'</span>)
-0142                     this.datlog = this.datlog.datlog;
-0143                 <span class="keyword">end</span>
-0144             <span class="keyword">else</span>
-0145                 this.datlog = <span class="string">''</span>;
-0146             <span class="keyword">end</span>
-0147         <span class="keyword">end</span>
-0148     <span class="keyword">end</span>
-0149 
-0150 <span class="keyword">end</span>
-0151</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0128                 this.type = <span class="string">'TM'</span>;
+0129                 warning(<span class="string">'Assuming trial is conducted on the treadmill'</span>);
+0130             <span class="keyword">end</span>
+0131             <span class="keyword">if</span> nargin &gt; 7 &amp;&amp; (isa(schenleyLab, <span class="string">'double'</span>))
+0132                 this.schenleyLab = schenleyLab;
+0133             <span class="keyword">else</span>
+0134                 this.schenleyLab = 0;
+0135                 warning([<span class="string">'Assuming this data was not collected on '</span> <span class="keyword">...</span>
+0136                     <span class="string">'Schenley lab. This will only affect overground '</span> <span class="keyword">...</span>
+0137                     <span class="string">'trial turn removal.'</span>])
+0138             <span class="keyword">end</span>
+0139             <span class="keyword">if</span> nargin &gt; 8 &amp;&amp; (isa(perceptualTasks, <span class="string">'double'</span>))
+0140                 this.perceptualTasks = perceptualTasks;
+0141             <span class="keyword">else</span>
+0142                 this.perceptualTasks = 0;
+0143                 warning([<span class="string">'Assuming this experiment does not have any '</span> <span class="keyword">...</span>
+0144                     <span class="string">'perceptual tasks (2AFC tasks).'</span>]);
+0145             <span class="keyword">end</span>
+0146             <span class="keyword">if</span> nargin &gt; 9 &amp;&amp; (isa(ID, <span class="string">'char'</span>))
+0147                 this.ID = ID;
+0148             <span class="keyword">else</span>
+0149                 this.ID = <span class="string">''</span>;
+0150             <span class="keyword">end</span>
+0151             <span class="keyword">if</span> nargin &gt; 10 &amp;&amp; (isa(datlog, <span class="string">'struct'</span>))
+0152                 this.datlog = datlog;
+0153                 <span class="comment">% datlog is saved in datlog.datlog, this will be true</span>
+0154                 <span class="comment">% depends on how the datlog was loaded.</span>
+0155                 <span class="keyword">if</span> isfield(datlog, <span class="string">'datlog'</span>)
+0156                     this.datlog = this.datlog.datlog;
+0157                 <span class="keyword">end</span>
+0158             <span class="keyword">else</span>
+0159                 this.datlog = <span class="string">''</span>;
+0160             <span class="keyword">end</span>
+0161         <span class="keyword">end</span>
+0162     <span class="keyword">end</span>
+0163 
+0164 <span class="keyword">end</span>
+0165</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

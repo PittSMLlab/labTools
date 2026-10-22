@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionRunPipeline</title>
+  <meta name="keywords" content="regressionRunPipeline">
+  <meta name="description" content="REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionRunPipeline.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionRunPipeline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.
+
+   Loads the first experimentData variable in refExpDataFile, runs
+ flushAndRecomputeParameters(eventClass) one trial at a time under
+ EVALC so warnings can be attributed per trial, then builds the
+ adaptationData with makeDataObj() (no filename, so nothing is saved).
+ recomputeEvents is deliberately not called: it currently errors.
+
+ Inputs:
+   refExpDataFile - char, path to the reference *expData.mat
+   eventClass     - char, '' | 'kin' | 'force'
+
+ Outputs:
+   adaptData     - adaptationData object
+   trialWarnings - cell array {trialIdx, warningText} per trial
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionBaselineRun.html" class="code" title="function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONBASELINERUN</a>, <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONCOMPARERUN</a>, CALCPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="regressionBaselineRun.html" class="code" title="function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)">regressionBaselineRun</a>	REGRESSIONBASELINERUN Save a flush-stage regression baseline.</li><li><a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>	REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [adaptData, trialWarnings] = regressionRunPipeline( </a><span class="keyword">...</span>
+0002     refExpDataFile, eventClass)
+0003 <span class="comment">%REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Loads the first experimentData variable in refExpDataFile, runs</span>
+0006 <span class="comment">% flushAndRecomputeParameters(eventClass) one trial at a time under</span>
+0007 <span class="comment">% EVALC so warnings can be attributed per trial, then builds the</span>
+0008 <span class="comment">% adaptationData with makeDataObj() (no filename, so nothing is saved).</span>
+0009 <span class="comment">% recomputeEvents is deliberately not called: it currently errors.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   refExpDataFile - char, path to the reference *expData.mat</span>
+0013 <span class="comment">%   eventClass     - char, '' | 'kin' | 'force'</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   adaptData     - adaptationData object</span>
+0017 <span class="comment">%   trialWarnings - cell array {trialIdx, warningText} per trial</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also REGRESSIONBASELINERUN, REGRESSIONCOMPARERUN, CALCPARAMETERS.</span>
+0022 
+0023 arguments
+0024     refExpDataFile (1,:) char
+0025     eventClass     (1,:) char
+0026 <span class="keyword">end</span>
+0027 
+0028 info    = whos(<span class="string">'-file'</span>, refExpDataFile);
+0029 isExp   = strcmp({info.class}, <span class="string">'experimentData'</span>);
+0030 <span class="keyword">if</span> ~any(isExp)
+0031     error(<span class="string">'regressionRunPipeline:noExpData'</span>, <span class="keyword">...</span>
+0032         <span class="string">'No experimentData variable in %s (found: %s).'</span>, <span class="keyword">...</span>
+0033         refExpDataFile, strjoin({info.class}, <span class="string">', '</span>));
+0034 <span class="keyword">end</span>
+0035 varName = info(find(isExp, 1)).name;
+0036 loaded  = load(refExpDataFile, varName);
+0037 expData = loaded.(varName);
+0038 
+0039 <span class="comment">% NOTE: same per-trial call as flushAndRecomputeParameters with default</span>
+0040 <span class="comment">% initEventSide, so warnings can be captured trial by trial. Backtraces</span>
+0041 <span class="comment">% are off: their stack lines carry repo line numbers (which style edits</span>
+0042 <span class="comment">% shift) and the caller's name, so they would differ between runs.</span>
+0043 trials        = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(expData.metaData.trialsInCondition);
+0044 trialWarnings = cell(numel(trials), 2);
+0045 btState       = warning(<span class="string">'off'</span>, <span class="string">'backtrace'</span>);
+0046 restoreBt     = onCleanup(@() warning(btState));
+0047 <span class="keyword">for</span> ii = 1:numel(trials)
+0048     tr  = trials(ii);
+0049     txt = evalc([<span class="string">'expData.data{tr}.adaptParams = calcParameters('</span> <span class="keyword">...</span>
+0050         <span class="string">'expData.data{tr}, expData.subData, eventClass, '''');'</span>]);
+0051     trialWarnings(ii, :) = {tr, strtrim(txt)};
+0052 <span class="keyword">end</span>
+0053 adaptData = expData.makeDataObj();
+0054 fprintf(<span class="string">'PIPELINE done: %d trials, %d strides, %d parameters\n'</span>, <span class="keyword">...</span>
+0055     numel(trials), size(adaptData.data.Data, 1), <span class="keyword">...</span>
+0056     size(adaptData.data.Data, 2));
+0057 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

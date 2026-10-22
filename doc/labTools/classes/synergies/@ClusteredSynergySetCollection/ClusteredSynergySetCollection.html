@@ -33,64 +33,150 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/cluster.html" class="code" title="function [clusteredSet,clusteringIndexes]=cluster(this,method,Nclusters)">cluster</a>	CLUSTER Implementation of the cluster function for the class</li><li><a href="../../../../labTools/classes/synergies/exampleClusteredSynergySetCollection.html" class="code" title="">exampleClusteredSynergySetCollection</a>	</li></ul>
+<li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/cluster.html" class="code" title="function [clusteredSet,clusteringIndexes] = cluster(this,method,Nclusters)">cluster</a>	CLUSTER Hierarchical clustering of all synergies in a collection.</li><li><a href="../../../../labTools/classes/synergies/exampleClusteredSynergySetCollection.html" class="code" title="">exampleClusteredSynergySetCollection</a>	EXAMPLECLUSTEREDSYNERGYSETCOLLECTION Clustered collection demo.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function s=ClusteredSynergySetCollection(clusteringIndexes,unclusteredCollectionContents,unclusteredCollectionCategories,unclusteredCollectionLabels,unclusteredCollectionName)</a></li><li><a href="#_sub2" class="code">function display(this)</a></li><li><a href="#_sub3" class="code">function figHandle=plotAs3DSpace(this)</a></li></ul>
+<li><a href="#_sub1" class="code">function s = ClusteredSynergySetCollection(clusteringIndexes,</a></li><li><a href="#_sub2" class="code">function display(this)</a></li><li><a href="#_sub3" class="code">function figHandle = plotAs3DSpace(this)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a> &lt; <a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>
-0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
-0003     <span class="comment">%   Detailed explanation goes here</span>
-0004     
-0005     properties
-0006         originalCollection <span class="comment">%Saving the original, unclustered synergySetCollection, just in case</span>
-0007         indexInOriginalCollection <span class="comment">%Saving the linear indexes on the original collection</span>
-0008     <span class="keyword">end</span>
-0009     
-0010     
-0011     methods
-0012         <a name="_sub0" href="#_subfunctions" class="code">function s=ClusteredSynergySetCollection(clusteringIndexes,unclusteredCollectionContents,unclusteredCollectionCategories,unclusteredCollectionLabels,unclusteredCollectionName)</a>
-0013             clusteringIndexesAsMatrix=<a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(clusteringIndexes(:));
-0014             <span class="keyword">for</span> i=1:max(clusteringIndexesAsMatrix(:))
-0015                 content=[];
-0016                 originalIndexes=[]; <span class="comment">%Here the index of the collection element (SynergySet) with respect to the full collection is saved</span>
-0017                 originalIndexes2=[]; <span class="comment">%Here the index of the particular element within the SynegySet is saved</span>
-0018                 <span class="keyword">for</span> j=1:numel(unclusteredCollectionContents)
-0019                     aux=[1:length(clusteringIndexes{j})];
-0020                     <span class="keyword">if</span> any(clusteringIndexes{j}==i)
-0021                         content=[content;unclusteredCollectionContents{j}.content(clusteringIndexes{j}==i,:)];
-0022                         originalIndexes=[originalIndexes;j*ones(sum(clusteringIndexes{j}==i),1)];
-0023                         originalIndexes2=[originalIndexes2;aux(clusteringIndexes{j}==i)];
-0024                     <span class="keyword">end</span>
-0025                 <span class="keyword">end</span>
-0026                 sindexInOriginalCollection{i}=[originalIndexes,originalIndexes2];
-0027                 scontent{i,1}=<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(content,unclusteredCollectionContents{1}.muscleList);
-0028                 indexLabels{1}{i,1}=num2str(i);
-0029             <span class="keyword">end</span>
-0030             s=s@<a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(scontent,{<span class="string">'Cluster'</span>},indexLabels);<span class="comment">%Call superclass constructor</span>
-0031             s.indexInOriginalCollection=sindexInOriginalCollection;
-0032             s.originalCollection=<a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(unclusteredCollectionContents,unclusteredCollectionCategories,unclusteredCollectionLabels,unclusteredCollectionName);
-0033             s.name=[<span class="string">'Clustered '</span> unclusteredCollectionName];
-0034         <span class="keyword">end</span>
-0035         
-0036         [figHandle,subplotHandles]=<a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(this); <span class="comment">%Override</span>
-0037         <a name="_sub1" href="#_subfunctions" class="code">function display(this) </a><span class="comment">%Override. Is this necessary?</span>
-0038             <a href="#_sub2" class="code" title="subfunction display(this) ">display</a>@<a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(this)
-0039         <span class="keyword">end</span>
-0040         <a name="_sub2" href="#_subfunctions" class="code">function figHandle=plotAs3DSpace(this)</a>
-0041             <span class="comment">%Use multidim scaling to plot the cluster elements as points in</span>
-0042             <span class="comment">%a 3D space</span>
-0043         <span class="keyword">end</span>
-0044     <span class="keyword">end</span>
-0045     
-0046 <span class="keyword">end</span>
-0047</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002     <span class="comment">%CLUSTEREDSYNERGYSETCOLLECTION Synergies grouped by cluster.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   A SynergySetCollection created by clustering the synergies of</span>
+0005     <span class="comment">% another collection: cell k holds the SynergySet with the synergies of</span>
+0006     <span class="comment">% cluster k.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">% ClusteredSynergySetCollection properties:</span>
+0009     <span class="comment">%   originalCollection - the unclustered SynergySetCollection</span>
+0010     <span class="comment">%   indexInOriginalCollection - cell array; cell k is a Kx2 matrix with</span>
+0011     <span class="comment">%                               the linear index of the source</span>
+0012     <span class="comment">%                               SynergySet and the row within that set</span>
+0013     <span class="comment">%                               for each synergy of cluster k</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">% ClusteredSynergySetCollection methods:</span>
+0016     <span class="comment">%   ClusteredSynergySetCollection - constructor</span>
+0017     <span class="comment">%   plot - plots every cluster</span>
+0018     <span class="comment">%   display - prints the collection</span>
+0019     <span class="comment">%   plotAs3DSpace - placeholder, not implemented</span>
+0020     <span class="comment">%</span>
+0021     <span class="comment">% Toolbox Dependencies: None</span>
+0022     <span class="comment">%</span>
+0023     <span class="comment">% See also SYNERGYSETCOLLECTION/CLUSTER.</span>
+0024 
+0025     properties
+0026         <span class="comment">%Saving the original, unclustered synergySetCollection, just in case</span>
+0027         originalCollection
+0028         <span class="comment">%Saving the linear indexes on the original collection</span>
+0029         indexInOriginalCollection
+0030     <span class="keyword">end</span>
+0031 
+0032 
+0033     methods
+0034         <a name="_sub0" href="#_subfunctions" class="code">function s = ClusteredSynergySetCollection(clusteringIndexes, </a><span class="keyword">...</span>
+0035             unclusteredCollectionContents, <span class="keyword">...</span>
+0036             unclusteredCollectionCategories,unclusteredCollectionLabels, <span class="keyword">...</span>
+0037             unclusteredCollectionName)
+0038             <span class="comment">%CLUSTEREDSYNERGYSETCOLLECTION Constructor for the class.</span>
+0039             <span class="comment">%</span>
+0040             <span class="comment">%   s = ClusteredSynergySetCollection(clusteringIndexes,</span>
+0041             <span class="comment">% contents, categories, labels, name) gathers the synergies that</span>
+0042             <span class="comment">% share a cluster index into one SynergySet per cluster and</span>
+0043             <span class="comment">% keeps the original collection.</span>
+0044             <span class="comment">%</span>
+0045             <span class="comment">% Inputs:</span>
+0046             <span class="comment">%   clusteringIndexes - cell array shaped like the original</span>
+0047             <span class="comment">%                       collection; each cell holds the cluster</span>
+0048             <span class="comment">%                       index of every synergy of that set</span>
+0049             <span class="comment">%   unclusteredCollectionContents - cell array of SynergySet</span>
+0050             <span class="comment">%                                   objects</span>
+0051             <span class="comment">%   unclusteredCollectionCategories - index categories of the</span>
+0052             <span class="comment">%                                     original collection</span>
+0053             <span class="comment">%   unclusteredCollectionLabels - index labels of the original</span>
+0054             <span class="comment">%                                 collection</span>
+0055             <span class="comment">%   unclusteredCollectionName - name of the original collection</span>
+0056             <span class="comment">%</span>
+0057             <span class="comment">% Outputs:</span>
+0058             <span class="comment">%   s - ClusteredSynergySetCollection named 'Clustered &lt;name&gt;'</span>
+0059             <span class="comment">%</span>
+0060             <span class="comment">% Toolbox Dependencies: None</span>
+0061 
+0062             clusteringIndexesAsMatrix = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(clusteringIndexes(:));
+0063             <span class="keyword">for</span> ii = 1:max(clusteringIndexesAsMatrix(:))
+0064                 content = [];
+0065                 <span class="comment">%Here the index of the collection element (SynergySet) with</span>
+0066                 <span class="comment">%respect to the full collection is saved</span>
+0067                 originalIndexes = [];
+0068                 <span class="comment">%Here the index of the particular element within the</span>
+0069                 <span class="comment">%SynegySet is saved</span>
+0070                 originalIndexes2 = [];
+0071                 <span class="keyword">for</span> jj = 1:numel(unclusteredCollectionContents)
+0072                     aux = [1:length(clusteringIndexes{jj})];
+0073                     <span class="keyword">if</span> any(clusteringIndexes{jj} == ii)
+0074                         content = <span class="keyword">...</span>
+0075                             [content; <span class="keyword">...</span>
+0076                             unclusteredCollectionContents{jj}.content( <span class="keyword">...</span>
+0077                             clusteringIndexes{jj} == ii,:)];
+0078                         originalIndexes = <span class="keyword">...</span>
+0079                             [originalIndexes; <span class="keyword">...</span>
+0080                             jj*ones(sum(clusteringIndexes{jj} == ii),1)];
+0081                         originalIndexes2 = <span class="keyword">...</span>
+0082                             [originalIndexes2; <span class="keyword">...</span>
+0083                             aux(clusteringIndexes{jj} == ii)];
+0084                     <span class="keyword">end</span>
+0085                 <span class="keyword">end</span>
+0086                 sindexInOriginalCollection{ii} = <span class="keyword">...</span>
+0087                     [originalIndexes,originalIndexes2];
+0088                 scontent{ii,1} = <a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(content, <span class="keyword">...</span>
+0089                     unclusteredCollectionContents{1}.muscleList);
+0090                 indexLabels{1}{ii,1} = num2str(ii);
+0091             <span class="keyword">end</span>
+0092             <span class="comment">%Call superclass constructor</span>
+0093             s = s@<a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(scontent,{<span class="string">'Cluster'</span>},indexLabels);
+0094             s.indexInOriginalCollection = sindexInOriginalCollection;
+0095             s.originalCollection = <span class="keyword">...</span>
+0096                 <a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(unclusteredCollectionContents, <span class="keyword">...</span>
+0097                 unclusteredCollectionCategories, <span class="keyword">...</span>
+0098                 unclusteredCollectionLabels,unclusteredCollectionName);
+0099             s.name = [<span class="string">'Clustered '</span> unclusteredCollectionName];
+0100         <span class="keyword">end</span>
+0101 
+0102         [figHandle,subplotHandles] = <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(this); <span class="comment">%Override</span>
+0103         <a name="_sub1" href="#_subfunctions" class="code">function display(this) </a><span class="comment">%Override. Is this necessary?</span>
+0104             <span class="comment">%DISPLAY Prints the collection (superclass method).</span>
+0105             <span class="comment">%</span>
+0106             <span class="comment">% Inputs:</span>
+0107             <span class="comment">%   this - ClusteredSynergySetCollection object</span>
+0108             <span class="comment">%</span>
+0109             <span class="comment">% Toolbox Dependencies: None</span>
+0110 
+0111             <a href="#_sub2" class="code" title="subfunction display(this) ">display</a>@<a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>(this)
+0112         <span class="keyword">end</span>
+0113         <a name="_sub2" href="#_subfunctions" class="code">function figHandle = plotAs3DSpace(this)</a>
+0114             <span class="comment">%PLOTAS3DSPACE Placeholder for a multidimensional-scaling plot.</span>
+0115             <span class="comment">%</span>
+0116             <span class="comment">%   Intended to show the cluster elements as points in a 3-D</span>
+0117             <span class="comment">% space. The method body is empty and nothing is returned.</span>
+0118             <span class="comment">%</span>
+0119             <span class="comment">% Inputs:</span>
+0120             <span class="comment">%   this - ClusteredSynergySetCollection object</span>
+0121             <span class="comment">%</span>
+0122             <span class="comment">% Outputs:</span>
+0123             <span class="comment">%   figHandle - not assigned</span>
+0124             <span class="comment">%</span>
+0125             <span class="comment">% Toolbox Dependencies: None</span>
+0126 
+0127             <span class="comment">%Use multidim scaling to plot the cluster elements as points in</span>
+0128             <span class="comment">%a 3D space</span>
+0129         <span class="keyword">end</span>
+0130     <span class="keyword">end</span>
+0131 
+0132 <span class="keyword">end</span>
+0133</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ValidateSpinalAdaptBoutSplitOnServer</title>
+  <meta name="keywords" content="ValidateSpinalAdaptBoutSplitOnServer">
+  <meta name="description" content="ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">testing</a> &gt; ValidateSpinalAdaptBoutSplitOnServer.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>ValidateSpinalAdaptBoutSplitOnServer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting
+ on real sessions without running the import pipeline.
+
+   Read-only and headless: it only loads files (never SAVEs), opens no
+ dialog, and needs neither GETINFOGUI nor a full C3D2MAT import. Three
+ independent parts, each skipped when its path is empty or missing:
+
+   A. Data logs only (e.g., SAYA91 before import). Per datlog: the cue
+      inventory, the GETSPINALADAPTBOUTSEGMENTS windows (datlog time),
+      and APPROXIMATE strides per segment, counted from the
+      controller's own online slow-leg heel strikes (stepdata times;
+      Step# is never used, since it includes the simulated strides the
+      controller skips over at each rest).
+   B. A session's '&lt;ID&gt;params.mat' (e.g., SAYA90). Cue windows are
+      shifted onto the Vicon clock with the embedded
+      dataLogTimeOffsetBest, and the offline strides are assigned by
+      initTime exactly as SPLITSPINALADAPTBOUTCONDS assigns them.
+   C. (Optional, ~3.6 GB for SAYA90) a session's processed
+      '&lt;ID&gt;.mat' (expData). Runs the real SPLITSPINALADAPTBOUTCONDS and
+      MAKEDATAOBJ in memory, and checks stride preservation and the
+      condition -&gt; stride mapping.
+
+   Flagged: any zero- or one-stride segment, any GOOD stride left
+ outside every segment, and any trial with ramp cues that did not
+ parse into segments. Expected per bout: ~3 ramp strides (2-3 after
+ gait initiation) and ~10 SS strides (plus the bad stop strides).
+
+   NOTE: after an import with the split, '&lt;ID&gt;.mat' and
+ '&lt;ID&gt;params.mat' ARE the split files; point Parts B and C at
+ '&lt;ID&gt;OriginalCondNameparams.mat' / '&lt;ID&gt;OriginalCondName.mat'.
+
+   Usage:
+     1. Edit the paths below (defaults point at the server, read only).
+     2. Run: run('testing/ValidateSpinalAdaptBoutSplitOnServer.m')
+
+ Toolbox Dependencies:
+   None
+
+ See also GETSPINALADAPTBOUTSEGMENTS, SPLITSPINALADAPTBOUTCONDS,
+   <a href="TestSpinalAdaptBoutSegments.html" class="code" title="">TESTSPINALADAPTBOUTSEGMENTS</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>	GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.</li><li><a href="../../labTools/gui/importc3d/splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>	SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [numFlags, isAssigned] = reportSegments(segs, strideTime,</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%ValidateSpinalAdaptBoutSplitOnServer Validates SpinalAdapt bout splitting</span>
+0002 <span class="comment">% on real sessions without running the import pipeline.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Read-only and headless: it only loads files (never SAVEs), opens no</span>
+0005 <span class="comment">% dialog, and needs neither GETINFOGUI nor a full C3D2MAT import. Three</span>
+0006 <span class="comment">% independent parts, each skipped when its path is empty or missing:</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   A. Data logs only (e.g., SAYA91 before import). Per datlog: the cue</span>
+0009 <span class="comment">%      inventory, the GETSPINALADAPTBOUTSEGMENTS windows (datlog time),</span>
+0010 <span class="comment">%      and APPROXIMATE strides per segment, counted from the</span>
+0011 <span class="comment">%      controller's own online slow-leg heel strikes (stepdata times;</span>
+0012 <span class="comment">%      Step# is never used, since it includes the simulated strides the</span>
+0013 <span class="comment">%      controller skips over at each rest).</span>
+0014 <span class="comment">%   B. A session's '&lt;ID&gt;params.mat' (e.g., SAYA90). Cue windows are</span>
+0015 <span class="comment">%      shifted onto the Vicon clock with the embedded</span>
+0016 <span class="comment">%      dataLogTimeOffsetBest, and the offline strides are assigned by</span>
+0017 <span class="comment">%      initTime exactly as SPLITSPINALADAPTBOUTCONDS assigns them.</span>
+0018 <span class="comment">%   C. (Optional, ~3.6 GB for SAYA90) a session's processed</span>
+0019 <span class="comment">%      '&lt;ID&gt;.mat' (expData). Runs the real SPLITSPINALADAPTBOUTCONDS and</span>
+0020 <span class="comment">%      MAKEDATAOBJ in memory, and checks stride preservation and the</span>
+0021 <span class="comment">%      condition -&gt; stride mapping.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   Flagged: any zero- or one-stride segment, any GOOD stride left</span>
+0024 <span class="comment">% outside every segment, and any trial with ramp cues that did not</span>
+0025 <span class="comment">% parse into segments. Expected per bout: ~3 ramp strides (2-3 after</span>
+0026 <span class="comment">% gait initiation) and ~10 SS strides (plus the bad stop strides).</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%   NOTE: after an import with the split, '&lt;ID&gt;.mat' and</span>
+0029 <span class="comment">% '&lt;ID&gt;params.mat' ARE the split files; point Parts B and C at</span>
+0030 <span class="comment">% '&lt;ID&gt;OriginalCondNameparams.mat' / '&lt;ID&gt;OriginalCondName.mat'.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   Usage:</span>
+0033 <span class="comment">%     1. Edit the paths below (defaults point at the server, read only).</span>
+0034 <span class="comment">%     2. Run: run('testing/ValidateSpinalAdaptBoutSplitOnServer.m')</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% Toolbox Dependencies:</span>
+0037 <span class="comment">%   None</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS, SPLITSPINALADAPTBOUTCONDS,</span>
+0040 <span class="comment">%   TESTSPINALADAPTBOUTSEGMENTS.</span>
+0041 
+0042 <span class="comment">%% Configuration -- Edit These Paths (Read Only; Nothing Is Saved)</span>
+0043 dataRoot      = <span class="string">'Z:\Chase\SpinalAdapt\Data'</span>;
+0044 datlogDir     = fullfile(dataRoot, <span class="string">'SAYA91'</span>, <span class="string">'Visit01'</span>, <span class="string">'DataLogs'</span>);
+0045 paramsFile    = fullfile(dataRoot, <span class="string">'SAYA90'</span>, <span class="string">'Visit01'</span>, <span class="keyword">...</span>
+0046     <span class="string">'SAYA90params.mat'</span>);
+0047 expDataFile   = <span class="string">''</span>;  <span class="comment">% optional (Part C), e.g., fullfile(dataRoot,</span>
+0048                      <span class="comment">% 'SAYA90', 'Visit01', 'SAYA90.mat')</span>
+0049 probeCondName = <span class="string">'Adapt 1 SS03'</span>;     <span class="comment">% Part C condition -&gt; stride check</span>
+0050 
+0051 expectedRampStrides  = 3;  <span class="comment">% strides; rampStrides in</span>
+0052                            <span class="comment">% generateProfiles_SpinalAdaptBouts</span>
+0053 expectedSSStrides    = 10; <span class="comment">% strides; ssStrides, same file</span>
+0054 minStridesPerSegment = 2;  <span class="comment">% strides; fewer = zero/one-stride segment</span>
+0055 rampCueTokens = {<span class="string">'AccRamp'</span>, <span class="string">'DccRamp2Split'</span>}; <span class="comment">% raw ramp-cue substrings</span>
+0056 numFlags = 0;
+0057 fprintf(<span class="string">'Expected per bout: %d ramp + %d SS strides.\n'</span>, <span class="keyword">...</span>
+0058     expectedRampStrides, expectedSSStrides);
+0059 
+0060 <span class="comment">%% Part A: Data Logs Only (Online Heel Strikes, Datlog Time)</span>
+0061 datlogFiles = [];
+0062 <span class="keyword">if</span> ~<a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(datlogDir) &amp;&amp; isfolder(datlogDir)
+0063     datlogFiles = dir(fullfile(datlogDir, <span class="string">'*.mat'</span>));
+0064     datlogFiles = datlogFiles(~strcmp({datlogFiles.name}, <span class="keyword">...</span>
+0065         <span class="string">'lastDatlog.mat'</span>));
+0066 <span class="keyword">end</span>
+0067 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(datlogFiles)
+0068     fprintf(<span class="string">'\nPart A skipped: no datlog files in ''%s''.\n'</span>, datlogDir);
+0069 <span class="keyword">end</span>
+0070 <span class="keyword">for</span> ff = 1:numel(datlogFiles)
+0071     fileName = datlogFiles(ff).name;
+0072     loaded   = load(fullfile(datlogDir, fileName), <span class="string">'datlog'</span>);
+0073     <span class="keyword">if</span> ~isfield(loaded, <span class="string">'datlog'</span>)
+0074         <span class="keyword">continue</span>
+0075     <span class="keyword">end</span>
+0076     datlog = loaded.datlog;
+0077     fprintf(<span class="string">'\n=== Part A: %s\n'</span>, fileName);
+0078     <span class="keyword">if</span> ~isfield(datlog, <span class="string">'audioCues'</span>)
+0079         fprintf(<span class="string">'  no audioCues field (e.g., tied fastest): unsplit\n'</span>);
+0080         <span class="keyword">continue</span>
+0081     <span class="keyword">end</span>
+0082     cueNames = cellstr(datlog.audioCues.audio_instruction_message(:));
+0083     fprintf(<span class="string">'  %d cue rows; inventory: %s\n'</span>, numel(cueNames), <span class="keyword">...</span>
+0084         strjoin(unique(regexprep(cueNames, <span class="string">'\d{2}'</span>, <span class="string">'##'</span>)), <span class="string">', '</span>));
+0085 
+0086     segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(datlog);
+0087     <span class="keyword">if</span> height(segs) == 0
+0088         <span class="keyword">if</span> any(contains(cueNames, rampCueTokens))
+0089             fprintf(<span class="string">'  FLAG: ramp cues present but no segments parsed\n'</span>);
+0090             numFlags = numFlags + 1;
+0091         <span class="keyword">else</span>
+0092             fprintf(<span class="string">'  no ramp cues: unsplit trial\n'</span>);
+0093         <span class="keyword">end</span>
+0094         <span class="keyword">continue</span>
+0095     <span class="keyword">end</span>
+0096 
+0097     <span class="comment">% slow leg = the slower belt of a split profile; tied: left, which</span>
+0098     <span class="comment">% stands in for the reference leg (either leg's strides count)</span>
+0099     profile = datlog.speedprofile;
+0100     <span class="keyword">if</span> <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(profile.velL, <span class="string">'omitnan'</span>) &gt; <a href="../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(profile.velR, <span class="string">'omitnan'</span>)
+0101         slowLeg = <span class="string">'R'</span>;
+0102     <span class="keyword">else</span>
+0103         slowLeg = <span class="string">'L'</span>;
+0104     <span class="keyword">end</span>
+0105     hsData = datlog.stepdata.([slowLeg <span class="string">'HSdata'</span>]);
+0106     hsTime = hsData(hsData(:, 2) &gt; 0, 4);   <span class="comment">% trim preallocated rows</span>
+0107     [numFlags, isAssigned] = <a href="#_sub1" class="code" title="subfunction [numFlags, isAssigned] = reportSegments(segs, strideTime, ">reportSegments</a>(segs, hsTime, 0, [], <span class="keyword">...</span>
+0108         minStridesPerSegment, numFlags, sprintf(<span class="string">'%sHS'</span>, slowLeg));
+0109     fprintf(<span class="string">'  heel strikes outside every segment: %d of %d\n'</span>, <span class="keyword">...</span>
+0110         nnz(~isAssigned), numel(hsTime));
+0111 <span class="keyword">end</span>
+0112 
+0113 <span class="comment">%% Part B: params.mat (Offline Strides, Vicon Time)</span>
+0114 <span class="keyword">if</span> ~<a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(paramsFile) &amp;&amp; isfile(paramsFile)
+0115     loaded    = load(paramsFile, <span class="string">'adaptData'</span>);
+0116     adaptData = loaded.adaptData;
+0117     meta      = adaptData.metaData;
+0118     trialCol  = adaptData.data.getDataAsVector(<span class="string">'trial'</span>);
+0119     initTime  = adaptData.data.getDataAsVector(<span class="string">'initTime'</span>);
+0120     isGood    = adaptData.data.getDataAsVector(<span class="string">'bad'</span>) == 0;
+0121     fprintf(<span class="string">'\n=== Part B: %s\n'</span>, paramsFile);
+0122     trialsToCheck = 1:numel(meta.datlog);
+0123     <span class="keyword">if</span> any(~cellfun(@<a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, regexp(meta.conditionName, <span class="keyword">...</span>
+0124             <span class="string">' (Ramp|SS)\d{2}$'</span>, <span class="string">'once'</span>)))
+0125         fprintf([<span class="string">'  already split: point paramsFile at '</span> <span class="keyword">...</span>
+0126             <span class="string">'&lt;ID&gt;OriginalCondNameparams.mat instead\n'</span>]);
+0127         numFlags      = numFlags + 1;
+0128         trialsToCheck = [];
+0129     <span class="keyword">end</span>
+0130     <span class="keyword">for</span> tr = trialsToCheck
+0131         datlog = meta.datlog{tr};
+0132         <span class="keyword">if</span> ~isstruct(datlog)
+0133             <span class="keyword">continue</span>
+0134         <span class="keyword">end</span>
+0135         segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(datlog);
+0136         <span class="keyword">if</span> height(segs) == 0
+0137             hasRampCue = isfield(datlog, <span class="string">'audioCues'</span>) &amp;&amp; <span class="keyword">...</span>
+0138                 any(contains(datlog.audioCues.audio_instruction_message, <span class="keyword">...</span>
+0139                 rampCueTokens));
+0140             <span class="keyword">if</span> hasRampCue
+0141                 fprintf(<span class="string">'Trial%02d FLAG: ramp cues but no segments\n'</span>, tr);
+0142                 numFlags = numFlags + 1;
+0143             <span class="keyword">else</span>
+0144                 fprintf(<span class="string">'Trial%02d: no bout cues (unsplit)\n'</span>, tr);
+0145             <span class="keyword">end</span>
+0146             <span class="keyword">continue</span>
+0147         <span class="keyword">end</span>
+0148         <span class="keyword">if</span> ~isfield(datlog, <span class="string">'dataLogTimeOffsetBest'</span>)
+0149             fprintf(<span class="string">'Trial%02d FLAG: bout cues but no sync offset\n'</span>, tr);
+0150             numFlags = numFlags + 1;
+0151             <span class="keyword">continue</span>
+0152         <span class="keyword">end</span>
+0153         inTrial = trialCol == tr;
+0154         fprintf(<span class="string">'Trial%02d (%s), %d strides:\n'</span>, tr, <span class="keyword">...</span>
+0155             segs.startCue(1), nnz(inTrial));
+0156         [numFlags, isAssigned] = <a href="#_sub1" class="code" title="subfunction [numFlags, isAssigned] = reportSegments(segs, strideTime, ">reportSegments</a>(segs, <span class="keyword">...</span>
+0157             initTime(inTrial), datlog.dataLogTimeOffsetBest, <span class="keyword">...</span>
+0158             isGood(inTrial), minStridesPerSegment, numFlags, <span class="string">'strides'</span>);
+0159         numUnassignedGood = nnz(~isAssigned &amp; isGood(inTrial));
+0160         fprintf(<span class="string">'  unassigned strides: %d (%d good)\n'</span>, <span class="keyword">...</span>
+0161             nnz(~isAssigned), numUnassignedGood);
+0162         <span class="keyword">if</span> numUnassignedGood &gt; 0
+0163             fprintf(<span class="string">'  FLAG: good strides fall outside every segment\n'</span>);
+0164             numFlags = numFlags + 1;
+0165         <span class="keyword">end</span>
+0166     <span class="keyword">end</span>
+0167 <span class="keyword">else</span>
+0168     fprintf(<span class="string">'\nPart B skipped: ''%s'' not found.\n'</span>, paramsFile);
+0169 <span class="keyword">end</span>
+0170 
+0171 <span class="comment">%% Part C (Optional): Real Splitter on a Processed expData</span>
+0172 <span class="keyword">if</span> ~<a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(expDataFile) &amp;&amp; isfile(expDataFile)
+0173     fprintf(<span class="string">'\n=== Part C: %s (loading...)\n'</span>, expDataFile);
+0174     loaded  = load(expDataFile, <span class="string">'expData'</span>);
+0175     expData = loaded.expData;
+0176     [expSplit, splitReport] = <a href="../../labTools/gui/importc3d/splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>(expData);
+0177     disp(splitReport.trials);
+0178 
+0179     <span class="comment">% every stride of a split trial lands in exactly one segment or in a</span>
+0180     <span class="comment">% standing interval (partition, no recompute)</span>
+0181     <span class="keyword">for</span> row = 1:height(splitReport.trials)
+0182         tr = splitReport.trials.origTrial(row);
+0183         numBefore   = size(expData.data{tr}.adaptParams.Data, 1);
+0184         numAfter    = sum(splitReport.segments.nStrides( <span class="keyword">...</span>
+0185             splitReport.segments.origTrial == tr));
+0186         numStanding = splitReport.trials.nUnassigned(row);
+0187         <span class="keyword">if</span> numAfter + numStanding ~= numBefore
+0188             fprintf(<span class="string">'  FLAG: trial %d strides %d ~= %d + %d\n'</span>, tr, <span class="keyword">...</span>
+0189                 numBefore, numAfter, numStanding);
+0190             numFlags = numFlags + 1;
+0191         <span class="keyword">end</span>
+0192     <span class="keyword">end</span>
+0193 
+0194     adaptSplit = expSplit.makeDataObj([]);
+0195     fprintf(<span class="string">'  %d conditions, %d trials, %d strides after split\n'</span>, <span class="keyword">...</span>
+0196         numel(expSplit.metaData.conditionName), <span class="keyword">...</span>
+0197         numel(expSplit.data), size(adaptSplit.data.Data, 1));
+0198     probeRow = splitReport.segments.condition == probeCondName;
+0199     <span class="keyword">if</span> any(probeRow)
+0200         probeInit = adaptSplit.getParamInCond(<span class="string">'initTime'</span>, probeCondName);
+0201         <span class="keyword">if</span> numel(probeInit) ~= splitReport.segments.nStrides(probeRow)
+0202             fprintf(<span class="string">'  FLAG: ''%s'' maps to %d strides, expected %d\n'</span>, <span class="keyword">...</span>
+0203                 probeCondName, numel(probeInit), <span class="keyword">...</span>
+0204                 splitReport.segments.nStrides(probeRow));
+0205             numFlags = numFlags + 1;
+0206         <span class="keyword">else</span>
+0207             fprintf(<span class="string">'  ''%s'' maps to its %d strides\n'</span>, probeCondName, <span class="keyword">...</span>
+0208                 numel(probeInit));
+0209         <span class="keyword">end</span>
+0210     <span class="keyword">end</span>
+0211 <span class="keyword">end</span>
+0212 
+0213 <span class="comment">%% Summary</span>
+0214 fprintf(<span class="string">'\nValidateSpinalAdaptBoutSplitOnServer: %d flag(s).\n'</span>, numFlags);
+0215 
+0216 <span class="comment">%% Local Functions</span>
+0217 
+0218 <a name="_sub0" href="#_subfunctions" class="code">function [numFlags, isAssigned] = reportSegments(segs, strideTime, </a><span class="keyword">...</span>
+0219     timeOffset, isGood, minStrides, numFlags, countLabel)
+0220 <span class="comment">%REPORTSEGMENTS Print strides per bout segment and flag short segments.</span>
+0221 <span class="comment">%</span>
+0222 <span class="comment">%   Assigns each stride (or heel strike) to the segment containing its</span>
+0223 <span class="comment">% time, exactly as SPLITSPINALADAPTBOUTCONDS assigns strides by initTime,</span>
+0224 <span class="comment">% and prints one compact line per bout.</span>
+0225 <span class="comment">%</span>
+0226 <span class="comment">% Inputs:</span>
+0227 <span class="comment">%   segs       - table from GETSPINALADAPTBOUTSEGMENTS</span>
+0228 <span class="comment">%   strideTime - column; stride start (or heel-strike) times (s)</span>
+0229 <span class="comment">%   timeOffset - s; added to the segment times (0 for datlog time,</span>
+0230 <span class="comment">%                dataLogTimeOffsetBest for Vicon time)</span>
+0231 <span class="comment">%   isGood     - logical column of good strides, or [] if unknown</span>
+0232 <span class="comment">%   minStrides - fewest strides a segment may hold without a flag</span>
+0233 <span class="comment">%   numFlags   - running flag count</span>
+0234 <span class="comment">%   countLabel - char; what is being counted (for the printout)</span>
+0235 <span class="comment">%</span>
+0236 <span class="comment">% Outputs:</span>
+0237 <span class="comment">%   numFlags   - updated flag count</span>
+0238 <span class="comment">%   isAssigned - logical column; strides inside some segment</span>
+0239 <span class="comment">%</span>
+0240 <span class="comment">% Toolbox Dependencies:</span>
+0241 <span class="comment">%   None</span>
+0242 <span class="comment">%</span>
+0243 <span class="comment">% See also SPLITSPINALADAPTBOUTCONDS.</span>
+0244 
+0245 isAssigned = false(size(strideTime));
+0246 <span class="keyword">for</span> sg = 1:height(segs)
+0247     t0 = segs.startTime(sg) + timeOffset;
+0248     t1 = segs.endTime(sg) + timeOffset;
+0249     inSeg = strideTime &gt;= t0 &amp; (isnan(t1) | strideTime &lt; t1);
+0250     isAssigned = isAssigned | inSeg;
+0251     numStrides = nnz(inSeg);
+0252     goodText = <span class="string">''</span>;
+0253     <span class="keyword">if</span> ~<a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(isGood)
+0254         goodText = sprintf(<span class="string">' (%d good)'</span>, nnz(inSeg &amp; isGood));
+0255     <span class="keyword">end</span>
+0256     fprintf(<span class="string">'  bout %02d %-4s [%8.2f, %8.2f) s: %2d %s%s, end %s\n'</span>, <span class="keyword">...</span>
+0257         segs.bout(sg), segs.segment(sg), t0, t1, numStrides, <span class="keyword">...</span>
+0258         countLabel, goodText, segs.endSource(sg));
+0259     <span class="keyword">if</span> numStrides &lt; minStrides
+0260         fprintf(<span class="string">'  FLAG: bout %02d %s holds %d %s\n'</span>, segs.bout(sg), <span class="keyword">...</span>
+0261             segs.segment(sg), numStrides, countLabel);
+0262         numFlags = numFlags + 1;
+0263     <span class="keyword">end</span>
+0264 <span class="keyword">end</span>
+0265 
+0266 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

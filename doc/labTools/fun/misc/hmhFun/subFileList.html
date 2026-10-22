@@ -4,7 +4,7 @@
 <head>
   <title>Description of subFileList</title>
   <meta name="keywords" content="subFileList">
-  <meta name="description" content="">
+  <meta name="description" content="SUBFILELIST Extract parameter file paths from a study input structure.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>SUBFILELIST Extract parameter file paths from a study input structure.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function output=subFileList(input) </strong></div>
+<div class="box"><strong>function output = subFileList(input) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">SUBFILELIST Extract parameter file paths from a study input structure.
+
+   Returns a cell array of file path strings by reading the ninth column
+ of input.IDs for each subject entry.
+
+ Inputs:
+   input - Struct with an IDs field; IDs is an N×9 cell array where the
+           ninth column contains parameter file paths
+
+ Outputs:
+   output - 1×N cell array of file path strings
+
+ Toolbox Dependencies: None
+
+ See also <a href="getSubsFromFolders.html" class="code" title="function subs = getSubsFromFolders(path)">GETSUBSFROMFOLDERS</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -42,15 +56,31 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output=subFileList(input)</a>
-0002 
-0003 subs=input.IDs(:,1);
-0004 output=cell(1,length(subs));
-0005 
-0006 <span class="keyword">for</span> i=1:length(subs)
-0007     <span class="comment">%output{end+1}=[subs{i} 'params.mat'];</span>
-0008     output{i}=input.IDs{i,9};
-0009 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = subFileList(input)</a>
+0002 <span class="comment">%SUBFILELIST Extract parameter file paths from a study input structure.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Returns a cell array of file path strings by reading the ninth column</span>
+0005 <span class="comment">% of input.IDs for each subject entry.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   input - Struct with an IDs field; IDs is an N×9 cell array where the</span>
+0009 <span class="comment">%           ninth column contains parameter file paths</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   output - 1×N cell array of file path strings</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also GETSUBSFROMFOLDERS.</span>
+0017 
+0018 subs   = input.IDs(:, 1);
+0019 output = cell(1, length(subs));
+0020 
+0021 <span class="keyword">for</span> ii = 1:length(subs)
+0022     output{ii} = input.IDs{ii, 9};
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

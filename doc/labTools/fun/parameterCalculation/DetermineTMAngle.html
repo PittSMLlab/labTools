@@ -57,10 +57,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li></ul>
+<li><a href="computeForceParameters.html" class="code" title="function out = computeForceParameters(strideEvents, GRFData, slowleg,fastleg, BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	COMPUTEFORCEPARAMETERS Compute kinetic treadmill parameters per stride.</li><li><a href="computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP AP GRF parameters from overground plates.</li><li><a href="computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents,GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Stride-aligned AP GRF parameters.</li></ul>
 <!-- crossreference -->
 
 
@@ -109,71 +109,83 @@ This function is called by:
 0041 <span class="keyword">end</span>
 0042 
 0043 <span class="comment">%% Determine Treadmill Angle</span>
-0044 <span class="comment">% (old condition):</span>
-0045 <span class="comment">% (~iscell(regexp(trial, 'deg')) &amp;&amp; ~iscell(cell2mat(regexp(trial, 'deg'))))|| ~iscell(regexp(trial, '8.5')) %~isempty(cell2mat(regexp(trial, 'deg'))) || ~isempty(cell2mat(regexp(trial, '8.5')))</span>
-0046 failRead = false;
-0047 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'deg'</span>))
-0048     <span class="comment">%     if ~isempty(strfind(trial, '8.5 deg incline')) || ~isempty(strfind(trial, '8.5 deg uphill'))</span>
-0049     <span class="comment">%         ang=8.5;</span>
-0050     <span class="comment">%     elseif ~isempty(strfind(trial, '8.5 deg decline')) || ~isempty(strfind(trial, '8.5 decline')) || ~isempty(strfind(trial, '8.5 deg downhill'))</span>
-0051     <span class="comment">%         ang=-8.5;</span>
-0052     <span class="comment">%     elseif ~isempty(cell2mat(regexp(trial, '5 deg incline')))|| ~isempty(cell2mat(regexp(trial, '5 deg uphill'))) || ~isempty(cell2mat(regexp(trial, '5 deg')))</span>
-0053     <span class="comment">%         ang=5;</span>
-0054     <span class="comment">%     elseif ~isempty(cell2mat(regexp(trial, '5 deg decline')))|| ~isempty(cell2mat(regexp(trial, '5 deg downhill')))</span>
-0055     <span class="comment">%         ang=-5;</span>
-0056     <span class="comment">%     else</span>
-0057     <span class="comment">%         ang=input(['What angle (in degrees) was the study run at ', trial, ': ',trialData.type ,'?   ']);</span>
-0058     <span class="comment">%     end</span>
-0059     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'decline'</span>)) || <span class="keyword">...</span>
-0060             ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'downhill'</span>))
-0061         angleSign = -1;
-0062     <span class="keyword">else</span>  <span class="comment">% assume incline by default</span>
-0063         angleSign = 1;
-0064     <span class="keyword">end</span>
-0065     degIdx = strfind(trial, <span class="string">'deg'</span>);
-0066     degIdx = degIdx(1);  <span class="comment">% use first occurrence if multiple</span>
-0067     <span class="comment">% Extract substring ending at 'deg'; start up to 6 chars before</span>
-0068     degSubstr = trial(max([degIdx, 7]) - 6 : degIdx);
-0069     <span class="comment">% NOTE: assumes angle digits precede 'deg' by at most 5 characters</span>
-0070     digitInds = regexp(degSubstr, <span class="string">'\d'</span>);
-0071     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(digitInds)
-0072         <span class="comment">% extracting only digit chars drops the decimal point from the value</span>
-0073         numVal        = str2double(degSubstr(digitInds));
-0074         firstDigitPos = digitInds(1);
-0075         lastDigitPos  = digitInds(end);
-0076         <span class="keyword">if</span> firstDigitPos ~= lastDigitPos
-0077             dotInds = regexp(degSubstr, <span class="string">'\.'</span>);
-0078             <span class="comment">% Check that digit and dot positions form a consecutive</span>
-0079             <span class="comment">% sequence with no gaps, as expected for a numeric literal</span>
-0080             sortedInds = sort([digitInds dotInds], <span class="string">'ascend'</span>);
-0081             <span class="keyword">if</span> any((sortedInds - firstDigitPos - <span class="keyword">...</span>
-0082                     (0:length(sortedInds) - 1)) ~= 0)
-0083                 failRead = true;
-0084             <span class="keyword">end</span>
-0085             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dotInds)
-0086                 dotInds    = dotInds(1);
-0087                 decimalPos = lastDigitPos - dotInds;
-0088                 numVal     = numVal / 10^decimalPos;
-0089             <span class="keyword">end</span>
-0090         <span class="keyword">end</span>
-0091         <span class="keyword">if</span> firstDigitPos &gt; 1 &amp;&amp; degSubstr(firstDigitPos - 1) == <span class="string">'-'</span>
-0092             angleSign = -1;  <span class="comment">% minus sign in description overrides keyword</span>
-0093         <span class="keyword">end</span>
-0094         ang = numVal * angleSign;
-0095     <span class="keyword">else</span>  <span class="comment">% no digits found before 'deg'</span>
-0096         failRead = true;
-0097     <span class="keyword">end</span>
-0098     <span class="keyword">if</span> failRead
-0099         prompt = [<span class="string">'What angle (in degrees) was the study run at ('</span> <span class="keyword">...</span>
-0100             trial <span class="string">'): '</span> trialData.type <span class="string">'?   '</span>];
-0101         ang = input(prompt);
-0102     <span class="keyword">end</span>
-0103 <span class="keyword">else</span>
-0104     ang = 0;
-0105 <span class="keyword">end</span>
-0106 
-0107 <span class="keyword">end</span>
-0108</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0044 <span class="comment">% Commented-out alternative condition:</span>
+0045 <span class="comment">% (~iscell(regexp(trial, 'deg')) &amp;&amp; ~iscell(cell2mat(regexp(trial, ...</span>
+0046 <span class="comment">%     'deg'))))|| ~iscell(regexp(trial, '8.5')) ...</span>
+0047 <span class="comment">%     %~isempty(cell2mat(regexp(trial, 'deg'))) || ...</span>
+0048 <span class="comment">%     ~isempty(cell2mat(regexp(trial, '8.5')))</span>
+0049 failRead = false;
+0050 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'deg'</span>))
+0051     <span class="comment">%     if ~isempty(strfind(trial, '8.5 deg incline')) || ...</span>
+0052     <span class="comment">%         ~isempty(strfind(trial, '8.5 deg uphill'))</span>
+0053     <span class="comment">%         ang=8.5;</span>
+0054     <span class="comment">%     elseif ~isempty(strfind(trial, '8.5 deg decline')) || ...</span>
+0055     <span class="comment">%         ~isempty(strfind(trial, '8.5 decline')) || ...</span>
+0056     <span class="comment">%         ~isempty(strfind(trial, '8.5 deg downhill'))</span>
+0057     <span class="comment">%         ang=-8.5;</span>
+0058     <span class="comment">%     elseif ~isempty(cell2mat(regexp(trial, '5 deg incline')))|| ...</span>
+0059     <span class="comment">%         ~isempty(cell2mat(regexp(trial, '5 deg uphill'))) || ...</span>
+0060     <span class="comment">%         ~isempty(cell2mat(regexp(trial, '5 deg')))</span>
+0061     <span class="comment">%         ang=5;</span>
+0062     <span class="comment">%     elseif ~isempty(cell2mat(regexp(trial, '5 deg decline')))|| ...</span>
+0063     <span class="comment">%         ~isempty(cell2mat(regexp(trial, '5 deg downhill')))</span>
+0064     <span class="comment">%         ang=-5;</span>
+0065     <span class="comment">%     else</span>
+0066     <span class="comment">%         ang=input([ ...</span>
+0067     <span class="comment">%             'What angle (in degrees) was the study run at ', ...</span>
+0068     <span class="comment">%             trial, ': ',trialData.type ,'?   ']);</span>
+0069     <span class="comment">%     end</span>
+0070     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'decline'</span>)) || <span class="keyword">...</span>
+0071             ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(strfind(trial, <span class="string">'downhill'</span>))
+0072         angleSign = -1;
+0073     <span class="keyword">else</span>  <span class="comment">% assume incline by default</span>
+0074         angleSign = 1;
+0075     <span class="keyword">end</span>
+0076     degIdx = strfind(trial, <span class="string">'deg'</span>);
+0077     degIdx = degIdx(1);  <span class="comment">% use first occurrence if multiple</span>
+0078     <span class="comment">% Extract substring ending at 'deg'; start up to 6 chars before.</span>
+0079     <span class="comment">% max([degIdx, 7]) - 6 clamps the start index to 1 when degIdx &lt;= 6</span>
+0080     degSubstr = trial(max([degIdx, 7]) - 6 : degIdx);
+0081     <span class="comment">% NOTE: assumes angle digits precede 'deg' by at most 5 characters</span>
+0082     digitInds = regexp(degSubstr, <span class="string">'\d'</span>);
+0083     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(digitInds)
+0084         <span class="comment">% extracting only digit chars drops the decimal point from the value</span>
+0085         numVal        = str2double(degSubstr(digitInds));
+0086         firstDigitPos = digitInds(1);
+0087         lastDigitPos  = digitInds(end);
+0088         <span class="keyword">if</span> firstDigitPos ~= lastDigitPos
+0089             dotInds = regexp(degSubstr, <span class="string">'\.'</span>);
+0090             <span class="comment">% Check that digit and dot positions form a consecutive</span>
+0091             <span class="comment">% sequence with no gaps, as expected for a numeric literal</span>
+0092             sortedInds = sort([digitInds dotInds], <span class="string">'ascend'</span>);
+0093             <span class="keyword">if</span> any((sortedInds - firstDigitPos - <span class="keyword">...</span>
+0094                     (0:length(sortedInds) - 1)) ~= 0)
+0095                 failRead = true;
+0096             <span class="keyword">end</span>
+0097             <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dotInds)
+0098                 dotInds    = dotInds(1);
+0099                 decimalPos = lastDigitPos - dotInds;
+0100                 numVal     = numVal / 10^decimalPos;
+0101             <span class="keyword">end</span>
+0102         <span class="keyword">end</span>
+0103         <span class="keyword">if</span> firstDigitPos &gt; 1 &amp;&amp; degSubstr(firstDigitPos - 1) == <span class="string">'-'</span>
+0104             angleSign = -1;  <span class="comment">% minus sign in description overrides keyword</span>
+0105         <span class="keyword">end</span>
+0106         ang = numVal * angleSign;
+0107     <span class="keyword">else</span>  <span class="comment">% no digits found before 'deg'</span>
+0108         failRead = true;
+0109     <span class="keyword">end</span>
+0110     <span class="keyword">if</span> failRead
+0111         prompt = [<span class="string">'What angle (in degrees) was the study run at ('</span> <span class="keyword">...</span>
+0112             trial <span class="string">'): '</span> trialData.type <span class="string">'?   '</span>];
+0113         ang = input(prompt);
+0114     <span class="keyword">end</span>
+0115 <span class="keyword">else</span>
+0116     ang = 0;
+0117 <span class="keyword">end</span>
+0118 
+0119 <span class="keyword">end</span>
+0120</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

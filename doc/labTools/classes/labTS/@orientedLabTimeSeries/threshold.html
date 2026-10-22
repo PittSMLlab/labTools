@@ -4,7 +4,7 @@
 <head>
   <title>Description of threshold</title>
   <meta name="keywords" content="threshold">
-  <meta name="description" content="threshold  Thresholds by vector magnitude">
+  <meta name="description" content="THRESHOLD Thresholds by vector magnitude.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,25 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>threshold  Thresholds by vector magnitude</strong></div>
+<div class="box"><strong>THRESHOLD Thresholds by vector magnitude.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = threshold(this, th) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">threshold  Thresholds by vector magnitude
+<div class="fragment"><pre class="comment">THRESHOLD Thresholds by vector magnitude.
 
-   newThis = threshold(this, th) zeros samples where vector magnitude
-   is below threshold
+   newThis = threshold(this, th) zeros samples where vector magnitude is
+ below threshold
 
-   Inputs:
-       this - orientedLabTimeSeries object
-       th - magnitude threshold value
+ Inputs:
+   this - orientedLabTimeSeries object
+   th   - magnitude threshold value
 
-   Outputs:
-       newThis - thresholded orientedLabTimeSeries
+ Outputs:
+   newThis - thresholded orientedLabTimeSeries
 
-   See also: <a href="thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">thresholdByChannel</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="thresholdByChannel.html" class="code" title="function newThis = thresholdByChannel(this, th, label, moreThanFlag)">THRESHOLDBYCHANNEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -48,31 +50,33 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	INTERPOLTRAJ Fill marker gaps by interpolating each trajectory axis.</li><li><a href="../../../../labTools/fun/eventExtraction/getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	GETSTANCEFROMFORCES Estimate stance phase from vertical GRF.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = threshold(this, th)</a>
-0002 <span class="comment">%threshold  Thresholds by vector magnitude</span>
+0002 <span class="comment">%THRESHOLD Thresholds by vector magnitude.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = threshold(this, th) zeros samples where vector magnitude</span>
-0005 <span class="comment">%   is below threshold</span>
+0004 <span class="comment">%   newThis = threshold(this, th) zeros samples where vector magnitude is</span>
+0005 <span class="comment">% below threshold</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
-0009 <span class="comment">%       th - magnitude threshold value</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - orientedLabTimeSeries object</span>
+0009 <span class="comment">%   th   - magnitude threshold value</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       newThis - thresholded orientedLabTimeSeries</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   newThis - thresholded orientedLabTimeSeries</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: thresholdByChannel</span>
-0015 
-0016 newThis = this;
-0017 newThis.Data(sqrt(sum(newThis.Data.^2)) &lt; th, :) = 0;
-0018 <span class="keyword">end</span>
-0019</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also THRESHOLDBYCHANNEL.</span>
+0017 
+0018 newThis = this;
+0019 newThis.Data(sqrt(sum(newThis.Data.^2)) &lt; th, :) = 0;
+0020 <span class="keyword">end</span>
+0021</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

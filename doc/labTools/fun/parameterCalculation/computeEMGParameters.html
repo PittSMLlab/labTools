@@ -57,7 +57,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	cat  Concatenates alignedTimeSeries</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	cat  Concatenates two parameterSeries</li><li><a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>	</li><li><a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>	COMPUTETSDISCRETEPARAMETERS Discretize time series into stride phases.</li><li><a href="computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/cat.html" class="code" title="function newThis = cat(this, other, dim, forceFlag)">cat</a>	CAT Concatenates alignedTimeSeries.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	CAT Concatenates (override).</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/cat.html" class="code" title="function newThis = cat(this, other)">cat</a>	CAT Concatenates two parameterSeries.</li><li><a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f = getOtherLeg(s)">getOtherLeg</a>	GETOTHERLEG Return the label for the opposite leg or pace.</li><li><a href="computeTSDiscreteParameters.html" class="code" title="function out = computeTSDiscreteParameters(tsData, gaitEvents,eventTypes, alignmentVector, summaryFun)">computeTSDiscreteParameters</a>	COMPUTETSDISCRETEPARAMETERS Discretize time series into stride phases.</li><li><a href="computeTSStatParameters.html" class="code" title="function out = computeTSStatParameters(tsData, strideEvents)">computeTSStatParameters</a>	COMPUTETSSTATPARAMETERS Compute summary statistics per stride.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
@@ -104,7 +104,7 @@ This function is called by:
 0036 <span class="comment">%% Pre-Process EMG Labels</span>
 0037 <span class="comment">% Rename channel labels from L/R convention to s/f convention so that</span>
 0038 <span class="comment">% downstream parameter names are leg-agnostic</span>
-0039 fastLeg = <a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f=getOtherLeg(s)">getOtherLeg</a>(slowLeg);
+0039 fastLeg = <a href="../../../labTools/fun/misc/getOtherLeg.html" class="code" title="function f = getOtherLeg(s)">getOtherLeg</a>(slowLeg);
 0040 slowLabels = EMGData.getLabelsThatMatch([<span class="string">'^'</span> slowLeg]);
 0041 fastLabels = EMGData.getLabelsThatMatch([<span class="string">'^'</span> fastLeg]);
 0042 
@@ -151,6 +151,6 @@ This function is called by:
 0083 
 0084 <span class="keyword">end</span>
 0085</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

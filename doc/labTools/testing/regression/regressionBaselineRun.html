@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionBaselineRun</title>
+  <meta name="keywords" content="regressionBaselineRun">
+  <meta name="description" content="REGRESSIONBASELINERUN Save a flush-stage regression baseline.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionBaselineRun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionBaselineRun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONBASELINERUN Save a flush-stage regression baseline.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionBaselineRun(refExpDataFile, eventClass, baselineDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONBASELINERUN Save a flush-stage regression baseline.
+
+   Loads the reference experimentData (read-only; nothing is written
+ next to it), runs flushAndRecomputeParameters(eventClass) and
+ makeDataObj, and saves the result plus per-trial warnings to
+ &lt;baselineDir&gt;/baselineParams.mat. Run ONLY on the reference tree.
+ Then runs two sanity checks: baseline vs itself, and a second flush
+ vs the baseline (determinism); both must report 0 Changed.
+
+ Inputs:
+   refExpDataFile - char, path to the reference *expData.mat
+   eventClass     - char, '' | 'kin' | 'force' (must be identical in
+                    every later compare run)
+   baselineDir    - char, output folder (see README.md)
+
+ Outputs:
+   none (writes baselineParams.mat; exits nonzero on a failed check
+   when run under matlab -batch)
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONCOMPARERUN</a>, COMPAREADAPTATIONDATA,
+   FLUSHANDRECOMPUTEPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>	COMPAREADAPTATIONDATA Compare two adaptationData objects or files.</li><li><a href="regressionRunPipeline.html" class="code" title="function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass)">regressionRunPipeline</a>	REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)</a>
+0002 <span class="comment">%REGRESSIONBASELINERUN Save a flush-stage regression baseline.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Loads the reference experimentData (read-only; nothing is written</span>
+0005 <span class="comment">% next to it), runs flushAndRecomputeParameters(eventClass) and</span>
+0006 <span class="comment">% makeDataObj, and saves the result plus per-trial warnings to</span>
+0007 <span class="comment">% &lt;baselineDir&gt;/baselineParams.mat. Run ONLY on the reference tree.</span>
+0008 <span class="comment">% Then runs two sanity checks: baseline vs itself, and a second flush</span>
+0009 <span class="comment">% vs the baseline (determinism); both must report 0 Changed.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   refExpDataFile - char, path to the reference *expData.mat</span>
+0013 <span class="comment">%   eventClass     - char, '' | 'kin' | 'force' (must be identical in</span>
+0014 <span class="comment">%                    every later compare run)</span>
+0015 <span class="comment">%   baselineDir    - char, output folder (see README.md)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   none (writes baselineParams.mat; exits nonzero on a failed check</span>
+0019 <span class="comment">%   when run under matlab -batch)</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: None</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also REGRESSIONCOMPARERUN, COMPAREADAPTATIONDATA,</span>
+0024 <span class="comment">%   FLUSHANDRECOMPUTEPARAMETERS.</span>
+0025 
+0026 arguments
+0027     refExpDataFile (1,:) char
+0028     eventClass     (1,:) char
+0029     baselineDir    (1,:) char
+0030 <span class="keyword">end</span>
+0031 
+0032 [adaptData, trialWarnings] = <a href="regressionRunPipeline.html" class="code" title="function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass)">regressionRunPipeline</a>(refExpDataFile, <span class="keyword">...</span>
+0033     eventClass);
+0034 meta = struct(<span class="string">'refExpDataFile'</span>, refExpDataFile, <span class="string">'eventClass'</span>, <span class="keyword">...</span>
+0035     eventClass, <span class="string">'created'</span>, char(datetime(<span class="string">'now'</span>)), <span class="string">'matlab'</span>, version);
+0036 save(fullfile(baselineDir, <span class="string">'baselineParams.mat'</span>), <span class="string">'adaptData'</span>, <span class="keyword">...</span>
+0037     <span class="string">'trialWarnings'</span>, <span class="string">'meta'</span>, <span class="string">'-v7.3'</span>);
+0038 fprintf(<span class="string">'BASELINE saved: %s\n'</span>, fullfile(baselineDir, <span class="keyword">...</span>
+0039     <span class="string">'baselineParams.mat'</span>));
+0040 
+0041 <span class="comment">%% Sanity checks</span>
+0042 selfReport = <a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>(adaptData, adaptData, <span class="keyword">...</span>
+0043     RefName=<span class="string">'baseline'</span>, NewName=<span class="string">'baseline'</span>, Verbose=false);
+0044 [againData, againWarnings] = <a href="regressionRunPipeline.html" class="code" title="function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass)">regressionRunPipeline</a>(refExpDataFile, <span class="keyword">...</span>
+0045     eventClass);
+0046 detReport = <a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>(adaptData, againData, <span class="keyword">...</span>
+0047     RefName=<span class="string">'baseline'</span>, NewName=<span class="string">'second flush'</span>);
+0048 warnSame = isequal(trialWarnings, againWarnings);
+0049 fprintf([<span class="string">'SANITY self-compare nChanged = %d | determinism nChanged '</span> <span class="keyword">...</span>
+0050     <span class="string">'= %d | per-trial warnings identical = %d\n'</span>], <span class="keyword">...</span>
+0051     selfReport.nChanged, detReport.nChanged, warnSame);
+0052 <span class="keyword">if</span> selfReport.nChanged &gt; 0 || detReport.nChanged &gt; 0 || ~warnSame
+0053     error(<span class="string">'regressionBaselineRun:sanityFailed'</span>, <span class="string">'Sanity check failed.'</span>);
+0054 <span class="keyword">end</span>
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of TorqueCalculatorNew</title>
   <meta name="keywords" content="TorqueCalculatorNew">
-  <meta name="description" content="% Get Center of Mass Time Series (COMTS) data">
+  <meta name="description" content="TORQUECALCULATORNEW Joint moments of both legs by inverse dynamics.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,50 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>% Get Center of Mass Time Series (COMTS) data</strong></div>
+<div class="box"><strong>TORQUECALCULATORNEW Joint moments of both legs by inverse dynamics.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function AllMomentsTS =TorqueCalculatorNew(COMTS,COPTS,markerData,GRFData,weight) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Get Center of Mass Time Series (COMTS) data</pre></div>
+<div class="fragment"><pre class="comment">TORQUECALCULATORNEW Joint moments of both legs by inverse dynamics.
+
+   Computes ankle, knee, and hip moments of both legs from the segment
+ centers of mass, the center of pressure and ground reaction forces, and
+ the marker positions. Starting at the foot, segment accelerations come
+ from the double derivative of the COM positions (low-passed at 20 Hz),
+ segment masses and moments of inertia from body weight fractions, and
+ each joint inherits the force and moment of the joint below. Moments
+ larger than the limit in momentLimit are set to NaN.
+
+ Side effects: warns when a marker is missing from markerData or the
+   orientation has to be assumed.
+
+ Inputs:
+   COMTS      - segment centers of mass from COMCalculator
+   COPTS      - center of pressure and forces from COPCalculator
+   markerData - orientedLabTimeSeries of marker positions (mm)
+   GRFData    - GRF time series (LFz and RFz are read but not used; the
+                body weight comes from weight)
+   weight     - body weight
+
+ Outputs:
+   AllMomentsTS - labTimeSeries with RAnkM, LAnkM, RKneM, LKneM, RHipM,
+                  LHipM
+
+ NOTE: no live caller. TORQUECALCULATOR (called by
+       labData.computeTorques) is the live driver; its call to this
+       function is commented out.
+
+ Toolbox Dependencies: Signal Processing Toolbox (butter, filtfilt)
+
+ See also <a href="TorqueCalculator.html" class="code" title="function [AllMomentsTS,COPTS,COMTS] = TorqueCalculator(rawTrialData,weight)">TORQUECALCULATOR</a>, <a href="COMCalculator.html" class="code" title="function COMTS = COMCalculator(markerData)">COMCALCULATOR</a>, <a href="COPCalculator.html" class="code" title="function COPTS = COPCalculator(GRFData)">COPCALCULATOR</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -44,355 +75,426 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function AllMomentsTS = </a><span class="keyword">...</span>
 0002     TorqueCalculatorNew(COMTS,COPTS,markerData,GRFData,weight)
-0003 
-0004 <span class="comment">%% Get Center of Mass Time Series (COMTS) data</span>
-0005 fcomR = squeeze(COMTS.getOrientedData({<span class="string">'RfCOM'</span>}));  <span class="comment">% right foot COM</span>
-0006 fcomxR = fcomR(:,1);
-0007 fcomyR = fcomR(:,2);
-0008 fcomzR = fcomR(:,3);
-0009 
-0010 fcomL = squeeze(COMTS.getOrientedData({<span class="string">'LfCOM'</span>}));  <span class="comment">% left foot COM</span>
-0011 fcomxL = fcomL(:,1);
-0012 fcomyL = fcomL(:,2);
-0013 fcomzL = fcomL(:,3);
-0014 
-0015 scomR = squeeze(COMTS.getOrientedData({<span class="string">'RsCOM'</span>}));  <span class="comment">% right shank COM</span>
-0016 scomxR = scomR(:,1);
-0017 scomyR = scomR(:,2);
-0018 scomzR = scomR(:,3);
-0019 
-0020 scomL = squeeze(COMTS.getOrientedData({<span class="string">'LsCOM'</span>}));  <span class="comment">% left shank COM</span>
-0021 scomxL = scomL(:,1);
-0022 scomyL = scomL(:,2);
-0023 scomzL = scomL(:,3);
-0024 
-0025 tcomR = squeeze(COMTS.getOrientedData({<span class="string">'RtCOM'</span>}));  <span class="comment">% right thigh COM</span>
-0026 tcomxR = tcomR(:,1);
-0027 tcomyR = tcomR(:,2);
-0028 tcomzR = tcomR(:,3);
-0029 
-0030 tcomL = squeeze(COMTS.getOrientedData({<span class="string">'LtCOM'</span>}));  <span class="comment">% left thigh COM</span>
-0031 tcomxL = tcomL(:,1);
-0032 tcomyL = tcomL(:,2);
-0033 tcomzL = tcomL(:,3);
-0034 
-0035 <span class="comment">%% Get Center of Pressure Time Series (COPTS) data</span>
-0036 NewGRFs=COPTS.getDataAsTS({<span class="string">'RGRFx'</span>,<span class="string">'RGRFy'</span>,<span class="string">'RGRFz'</span>,<span class="string">'LGRFx'</span>,<span class="string">'LGRFy'</span>,<span class="string">'LGRFz'</span>}).getSample(markerData.Time);
-0037 NewGRFzR=NewGRFs(:,3);
-0038 NewGRFyR=NewGRFs(:,2);
-0039 NewGRFxR=NewGRFs(:,1);
-0040 NewGRFzL=NewGRFs(:,6);
-0041 NewGRFyL=NewGRFs(:,5);
-0042 NewGRFxL=NewGRFs(:,4);
-0043 NewCOPs=COPTS.getDataAsTS({<span class="string">'LCOPx'</span>,<span class="string">'LCOPy'</span>,<span class="string">'RCOPx'</span>,<span class="string">'RCOPy'</span>}).getSample(markerData.Time);
-0044 NewCOPyR=NewCOPs(:,4);
-0045 NewCOPxR=NewCOPs(:,3);
-0046 NewCOPyL=NewCOPs(:,2);
-0047 NewCOPxL=NewCOPs(:,1);
-0048 
-0049 <span class="comment">%% Get relevant markerData</span>
-0050 <span class="comment">%get orientation</span>
-0051 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerData.orientation)
-0052     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
-0053     orientation=<a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
-0054 <span class="keyword">else</span>
-0055     orientation=markerData.orientation;
-0056 <span class="keyword">end</span>
-0057 
-0058 <span class="comment">% Define the body weight of the patient</span>
-0059 LFz=GRFData.getDataAsVector(<span class="string">'LFz'</span>);
-0060 RFz=GRFData.getDataAsVector(<span class="string">'RFz'</span>);
-0061 BW=weight;<span class="comment">%abs(LFz(1,1)+RFz(1,1));</span>
-0062 
-0063 FootWeight=(BW*.0145);
-0064 ShankWeight=BW*.0465;
-0065 ThighWeight=BW*0.1;
+0003 <span class="comment">%TORQUECALCULATORNEW Joint moments of both legs by inverse dynamics.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Computes ankle, knee, and hip moments of both legs from the segment</span>
+0006 <span class="comment">% centers of mass, the center of pressure and ground reaction forces, and</span>
+0007 <span class="comment">% the marker positions. Starting at the foot, segment accelerations come</span>
+0008 <span class="comment">% from the double derivative of the COM positions (low-passed at 20 Hz),</span>
+0009 <span class="comment">% segment masses and moments of inertia from body weight fractions, and</span>
+0010 <span class="comment">% each joint inherits the force and moment of the joint below. Moments</span>
+0011 <span class="comment">% larger than the limit in momentLimit are set to NaN.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Side effects: warns when a marker is missing from markerData or the</span>
+0014 <span class="comment">%   orientation has to be assumed.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Inputs:</span>
+0017 <span class="comment">%   COMTS      - segment centers of mass from COMCalculator</span>
+0018 <span class="comment">%   COPTS      - center of pressure and forces from COPCalculator</span>
+0019 <span class="comment">%   markerData - orientedLabTimeSeries of marker positions (mm)</span>
+0020 <span class="comment">%   GRFData    - GRF time series (LFz and RFz are read but not used; the</span>
+0021 <span class="comment">%                body weight comes from weight)</span>
+0022 <span class="comment">%   weight     - body weight</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Outputs:</span>
+0025 <span class="comment">%   AllMomentsTS - labTimeSeries with RAnkM, LAnkM, RKneM, LKneM, RHipM,</span>
+0026 <span class="comment">%                  LHipM</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% NOTE: no live caller. TORQUECALCULATOR (called by</span>
+0029 <span class="comment">%       labData.computeTorques) is the live driver; its call to this</span>
+0030 <span class="comment">%       function is commented out.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (butter, filtfilt)</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% See also TORQUECALCULATOR, COMCALCULATOR, COPCALCULATOR.</span>
+0035 
+0036 <span class="comment">%% Get Center of Mass Time Series (COMTS) data</span>
+0037 fcomR  = squeeze(COMTS.getOrientedData({<span class="string">'RfCOM'</span>}));  <span class="comment">% right foot COM</span>
+0038 fcomxR = fcomR(:,1);
+0039 fcomyR = fcomR(:,2);
+0040 fcomzR = fcomR(:,3);
+0041 
+0042 fcomL  = squeeze(COMTS.getOrientedData({<span class="string">'LfCOM'</span>}));  <span class="comment">% left foot COM</span>
+0043 fcomxL = fcomL(:,1);
+0044 fcomyL = fcomL(:,2);
+0045 fcomzL = fcomL(:,3);
+0046 
+0047 scomR  = squeeze(COMTS.getOrientedData({<span class="string">'RsCOM'</span>}));  <span class="comment">% right shank COM</span>
+0048 scomxR = scomR(:,1);
+0049 scomyR = scomR(:,2);
+0050 scomzR = scomR(:,3);
+0051 
+0052 scomL  = squeeze(COMTS.getOrientedData({<span class="string">'LsCOM'</span>}));  <span class="comment">% left shank COM</span>
+0053 scomxL = scomL(:,1);
+0054 scomyL = scomL(:,2);
+0055 scomzL = scomL(:,3);
+0056 
+0057 tcomR  = squeeze(COMTS.getOrientedData({<span class="string">'RtCOM'</span>}));  <span class="comment">% right thigh COM</span>
+0058 tcomxR = tcomR(:,1);
+0059 tcomyR = tcomR(:,2);
+0060 tcomzR = tcomR(:,3);
+0061 
+0062 tcomL  = squeeze(COMTS.getOrientedData({<span class="string">'LtCOM'</span>}));  <span class="comment">% left thigh COM</span>
+0063 tcomxL = tcomL(:,1);
+0064 tcomyL = tcomL(:,2);
+0065 tcomzL = tcomL(:,3);
 0066 
-0067 <span class="comment">% Get marker data</span>
-0068 u=[orientation.sideSign, orientation.foreaftSign, orientation.updownSign];
-0069 markerList={<span class="string">'RHip'</span>,<span class="string">'LHip'</span>,<span class="string">'RAnk'</span>,<span class="string">'LAnk'</span>,<span class="string">'RKne'</span>,<span class="string">'LKne'</span>,<span class="string">'RToe'</span>,<span class="string">'LToe'</span>};
-0070 <span class="keyword">for</span> i=1:length(markerList)
-0071     name=markerData.getLabelsThatMatch([<span class="string">'^'</span> upper(markerList{i}) <span class="string">'*x$'</span>]); <span class="comment">%To allow variations of the type: RKNEx and RKNEEx</span>
-0072     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)
-0073         name=name{1}(1:end-1);
-0074         aux=markerData.getDataAsVector({[name orientation.sideAxis],[name orientation.foreaftAxis],[name orientation.updownAxis]});
-0075         aux=aux.*u;
-0076     <span class="keyword">else</span> <span class="comment">%Marker is missing from full trial (it happens)</span>
-0077         aux=nan(length(markerData.Time),3);
-0078         warning([<span class="string">'Marker '</span> markerList{i} <span class="string">' was missing from markerData.'</span>])
-0079     <span class="keyword">end</span>
-0080     eval([markerList{i} <span class="string">'=aux;'</span>]);
-0081     <span class="comment">%assignin('base',markerList{i},aux) %This is more elegant than eval (and</span>
-0082     <span class="comment">%recommended, but it doesnt seem to work)</span>
-0083 <span class="keyword">end</span>
+0067 <span class="comment">%% Get Center of Pressure Time Series (COPTS) data</span>
+0068 NewGRFs  = <span class="keyword">...</span>
+0069     COPTS.getDataAsTS({<span class="string">'RGRFx'</span>,<span class="string">'RGRFy'</span>,<span class="string">'RGRFz'</span>,<span class="string">'LGRFx'</span>,<span class="string">'LGRFy'</span>, <span class="keyword">...</span>
+0070     <span class="string">'LGRFz'</span>}).getSample(markerData.Time);
+0071 NewGRFzR = NewGRFs(:,3);
+0072 NewGRFyR = NewGRFs(:,2);
+0073 NewGRFxR = NewGRFs(:,1);
+0074 NewGRFzL = NewGRFs(:,6);
+0075 NewGRFyL = NewGRFs(:,5);
+0076 NewGRFxL = NewGRFs(:,4);
+0077 NewCOPs  = <span class="keyword">...</span>
+0078     COPTS.getDataAsTS({<span class="string">'LCOPx'</span>,<span class="string">'LCOPy'</span>,<span class="string">'RCOPx'</span>, <span class="keyword">...</span>
+0079     <span class="string">'RCOPy'</span>}).getSample(markerData.Time);
+0080 NewCOPyR = NewCOPs(:,4);
+0081 NewCOPxR = NewCOPs(:,3);
+0082 NewCOPyL = NewCOPs(:,2);
+0083 NewCOPxL = NewCOPs(:,1);
 0084 
-0085 <span class="comment">%%</span>
-0086 fcomRangle=[]; fcomLangle=[]; scomRangle=[]; scomLangle=[]; tcomRangle=[]; tcomLangle=[];
-0087 VerticalVector=[0,0,1];
-0088 
-0089 <span class="keyword">for</span> i=1:size(fcomL,1)
-0090     RFootCOMLength=RAnk(i,:)-fcomR(i,:);
-0091     LFootCOMLength=LAnk(i,:)-fcomL(i,:);
-0092     RShankCOMLength=RKne(i,:)-scomR(i,:);
-0093     LShankCOMLength=LKne(i,:)-scomL(i,:);
-0094     RThighCOMLength=RHip(i,:)-tcomR(i,:);
-0095     LThighCOMLength=LHip(i,:)-tcomL(i,:);
-0096 
-0097     fcomRangle(i)=atan2(RFootCOMLength(1,2)-VerticalVector(1,2),RFootCOMLength(1,3)-VerticalVector(1,3));
-0098     fcomLangle(i)=atan2(LFootCOMLength(1,2)-VerticalVector(1,2),LFootCOMLength(1,3)-VerticalVector(1,3));
-0099     scomRangle(i)=atan2(RShankCOMLength(1,2)-VerticalVector(1,2),RShankCOMLength(1,3)-VerticalVector(1,3));
-0100     scomLangle(i)=atan2(LShankCOMLength(1,2)-VerticalVector(1,2),LShankCOMLength(1,3)-VerticalVector(1,3));
-0101     tcomRangle(i)=atan2(RThighCOMLength(1,2)-VerticalVector(1,2),RThighCOMLength(1,3)-VerticalVector(1,3));
-0102     tcomLangle(i)=atan2(LThighCOMLength(1,2)-VerticalVector(1,2),LThighCOMLength(1,3)-VerticalVector(1,3));
-0103 <span class="keyword">end</span>
-0104 <span class="comment">% Determine the acceleration by differentiating the center of mass</span>
-0105 <span class="comment">% position twice and then applying a small filter on the data.</span>
-0106 [B,A]=butter(1, 20/(1000/2));
-0107 AfcomxR=diff(diff(fcomxR./1000));
-0108 AfcomxR=filtfilt(B,A,AfcomxR);
-0109 AfcomyR=diff(diff(fcomyR./1000));
-0110 AfcomyR=filtfilt(B,A,AfcomyR);
-0111 AfcomzR=diff(diff(fcomzR./1000));
-0112 AfcomzR=filtfilt(B,A,AfcomzR);
-0113 AfcomxL=diff(diff(fcomxL./1000));
-0114 AfcomxL=filtfilt(B,A,AfcomxL);
-0115 AfcomyL=diff(diff(fcomyL./1000));
-0116 AfcomyL=filtfilt(B,A,AfcomyL);
-0117 AfcomzL=diff(diff(fcomzL./1000));
-0118 AfcomzL=filtfilt(B,A,AfcomzL);
-0119 
-0120 AscomxR=diff(diff(scomxR./1000));
-0121 AscomxR=filtfilt(B,A,AscomxR);
-0122 AscomyR=diff(diff(scomyR./1000));
-0123 AscomyR=filtfilt(B,A,AscomyR);
-0124 AscomzR=diff(diff(scomzR./1000));
-0125 AscomzR=filtfilt(B,A,AscomzR);
-0126 AscomzL=diff(diff(scomzL./1000));
-0127 AscomzL=filtfilt(B,A,AscomzL);
-0128 AscomyL=diff(diff(scomyL./1000));
-0129 AscomyL=filtfilt(B,A,AscomyL);
-0130 AscomxL=diff(diff(scomxL./1000));
-0131 AscomxL=filtfilt(B,A,AscomxL);
-0132 
-0133 AtcomxR=diff(diff(tcomxR./1000));
-0134 AtcomxR=filtfilt(B,A,AtcomxR);
-0135 AtcomyR=diff(diff(tcomyR./1000));
-0136 AtcomyR=filtfilt(B,A,AtcomyR);
-0137 AtcomzR=diff(diff(tcomzR./1000));
-0138 AtcomzR=filtfilt(B,A,AtcomzR);
-0139 AtcomxL=diff(diff(tcomxL./1000));
-0140 AtcomxL=filtfilt(B,A,AtcomxL);
-0141 AtcomyL=diff(diff(tcomyL./1000));
-0142 AtcomyL=filtfilt(B,A,AtcomyL);
-0143 AtcomzL=diff(diff(tcomzL./1000));
-0144 AtcomzL=filtfilt(B,A,AtcomzL);
-0145 <span class="comment">% Define the angular accleration by finding the angle that the limb is</span>
-0146 <span class="comment">% away from a vertical point, and then differentiate this signal twice.</span>
-0147 <span class="comment">% Then a small filter is applied to the angular accleration data.</span>
-0148 alphaRfoot=diff(diff(fcomRangle));
-0149 alphaRfoot=filtfilt(B,A,alphaRfoot);
-0150 alphaLfoot=diff(diff(fcomLangle));
-0151 alphaLfoot=filtfilt(B,A,alphaLfoot);
-0152 alphaRshank=diff(diff(scomRangle));
-0153 alphaRshank=filtfilt(B,A,alphaRshank);
-0154 alphaLshank=diff(diff(scomLangle));
-0155 alphaLshank=filtfilt(B,A,alphaLshank);
-0156 alphaRthigh=diff(diff(tcomRangle));
-0157 alphaRthigh=filtfilt(B,A,alphaRthigh);
-0158 alphaLthigh=diff(diff(tcomLangle));
-0159 alphaLthigh=filtfilt(B,A,alphaLthigh);
-0160 <span class="comment">% Define the angular velocity in a similar manner</span>
-0161 wfcomyR=diff(fcomRangle);
-0162 wfcomyR=filtfilt(B,A,wfcomyR);
-0163 wfcomyL=diff(fcomLangle);
-0164 wfcomyL=filtfilt(B,A,wfcomyL);
-0165 wscomyR=diff(scomRangle);
-0166 wscomyR=filtfilt(B,A,wscomyR);
-0167 wscomyL=diff(scomLangle);
-0168 wscomyL=filtfilt(B,A,wscomyL);
-0169 wtcomyR=diff(tcomRangle);
-0170 wtcomyR=filtfilt(B,A,wtcomyR);
-0171 wtcomyL=diff(tcomLangle);
-0172 wtcomyL=filtfilt(B,A,wtcomyL);
-0173 
-0174 
-0175 
-0176 <span class="comment">%From here on, anywhere it says F should say R, and anywhere that says s</span>
-0177 <span class="comment">%should say L (domLeg==1)</span>
+0085 <span class="comment">%% Get relevant markerData</span>
+0086 <span class="comment">%get orientation</span>
+0087 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerData.orientation)
+0088     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0089     orientation = <a href="../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
+0090 <span class="keyword">else</span>
+0091     orientation = markerData.orientation;
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="comment">%% Constants</span>
+0095 footMassFraction     = 0.0145;  <span class="comment">% TODO: source? (fraction of body weight)</span>
+0096 shankMassFraction    = 0.0465;  <span class="comment">% TODO: source? (fraction of body weight)</span>
+0097 thighMassFraction    = 0.1;     <span class="comment">% TODO: source? (fraction of body weight)</span>
+0098 footGyrationRatio    = 0.690;   <span class="comment">% TODO: source? (times segment length)</span>
+0099 shankGyrationRatio   = 0.645;   <span class="comment">% TODO: source? (times segment length)</span>
+0100 thighGyrationRatio   = 0.54;    <span class="comment">% TODO: source? (times segment length)</span>
+0101 gravity              = 9.8;     <span class="comment">% m/s^2</span>
+0102 mmPerM               = 1000;    <span class="comment">% marker positions are in mm</span>
+0103 cutoffHz             = 20;      <span class="comment">% TODO: source? (COM acceleration filter)</span>
+0104 sampFreqHz           = 1000;    <span class="comment">% TODO: source? (filter sampling rate)</span>
+0105 momentLimit          = 3000;    <span class="comment">% TODO: source? (larger moments: NaN)</span>
+0106 
+0107 <span class="comment">% Define the body weight of the patient</span>
+0108 LFz = GRFData.getDataAsVector(<span class="string">'LFz'</span>);
+0109 RFz = GRFData.getDataAsVector(<span class="string">'RFz'</span>);
+0110 BW  = weight;<span class="comment">%abs(LFz(1,1)+RFz(1,1));</span>
+0111 
+0112 FootWeight  = (BW*footMassFraction);
+0113 ShankWeight = BW*shankMassFraction;
+0114 ThighWeight = BW*thighMassFraction;
+0115 
+0116 <span class="comment">% Get marker data</span>
+0117 u          = [orientation.sideSign, orientation.foreaftSign, <span class="keyword">...</span>
+0118     orientation.updownSign];
+0119 markerList = {<span class="string">'RHip'</span>,<span class="string">'LHip'</span>,<span class="string">'RAnk'</span>,<span class="string">'LAnk'</span>,<span class="string">'RKne'</span>,<span class="string">'LKne'</span>,<span class="string">'RToe'</span>,<span class="string">'LToe'</span>};
+0120 <span class="keyword">for</span> ii = 1:length(markerList)
+0121     <span class="comment">%To allow variations of the type: RKNEx and RKNEEx</span>
+0122     name = markerData.getLabelsThatMatch([<span class="string">'^'</span> upper(markerList{ii}) <span class="string">'*x$'</span>]);
+0123     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(name)
+0124         name = name{1}(1:end-1);
+0125         aux  = markerData.getDataAsVector({[name orientation.sideAxis], <span class="keyword">...</span>
+0126             [name orientation.foreaftAxis],[name orientation.updownAxis]});
+0127         aux  = aux.*u;
+0128     <span class="keyword">else</span> <span class="comment">%Marker is missing from full trial (it happens)</span>
+0129         aux = nan(length(markerData.Time),3);
+0130         warning([<span class="string">'Marker '</span> markerList{ii} <span class="string">' was missing from markerData.'</span>])
+0131     <span class="keyword">end</span>
+0132     eval([markerList{ii} <span class="string">'=aux;'</span>]);
+0133     <span class="comment">%assignin('base',markerList{i},aux) %This is more elegant than eval (and</span>
+0134     <span class="comment">%recommended, but it doesnt seem to work)</span>
+0135 <span class="keyword">end</span>
+0136 
+0137 <span class="comment">%% Segment angles</span>
+0138 fcomRangle     = []; fcomLangle = []; scomRangle = []; scomLangle = <span class="keyword">...</span>
+0139     []; tcomRangle = []; tcomLangle = [];
+0140 VerticalVector = [0,0,1];
+0141 
+0142 <span class="keyword">for</span> ii = 1:size(fcomL,1)
+0143     RFootCOMLength  = RAnk(ii,:)-fcomR(ii,:);
+0144     LFootCOMLength  = LAnk(ii,:)-fcomL(ii,:);
+0145     RShankCOMLength = RKne(ii,:)-scomR(ii,:);
+0146     LShankCOMLength = LKne(ii,:)-scomL(ii,:);
+0147     RThighCOMLength = RHip(ii,:)-tcomR(ii,:);
+0148     LThighCOMLength = LHip(ii,:)-tcomL(ii,:);
+0149 
+0150     fcomRangle(ii) = atan2(RFootCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0151         RFootCOMLength(1,3)-VerticalVector(1,3));
+0152     fcomLangle(ii) = atan2(LFootCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0153         LFootCOMLength(1,3)-VerticalVector(1,3));
+0154     scomRangle(ii) = atan2(RShankCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0155         RShankCOMLength(1,3)-VerticalVector(1,3));
+0156     scomLangle(ii) = atan2(LShankCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0157         LShankCOMLength(1,3)-VerticalVector(1,3));
+0158     tcomRangle(ii) = atan2(RThighCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0159         RThighCOMLength(1,3)-VerticalVector(1,3));
+0160     tcomLangle(ii) = atan2(LThighCOMLength(1,2)-VerticalVector(1,2), <span class="keyword">...</span>
+0161         LThighCOMLength(1,3)-VerticalVector(1,3));
+0162 <span class="keyword">end</span>
+0163 <span class="comment">% Determine the acceleration by differentiating the center of mass</span>
+0164 <span class="comment">% position twice and then applying a small filter on the data.</span>
+0165 [B,A] = butter(1, cutoffHz/(sampFreqHz/2));
+0166 AfcomxR = diff(diff(fcomxR./mmPerM));
+0167 AfcomxR = filtfilt(B,A,AfcomxR);
+0168 AfcomyR = diff(diff(fcomyR./mmPerM));
+0169 AfcomyR = filtfilt(B,A,AfcomyR);
+0170 AfcomzR = diff(diff(fcomzR./mmPerM));
+0171 AfcomzR = filtfilt(B,A,AfcomzR);
+0172 AfcomxL = diff(diff(fcomxL./mmPerM));
+0173 AfcomxL = filtfilt(B,A,AfcomxL);
+0174 AfcomyL = diff(diff(fcomyL./mmPerM));
+0175 AfcomyL = filtfilt(B,A,AfcomyL);
+0176 AfcomzL = diff(diff(fcomzL./mmPerM));
+0177 AfcomzL = filtfilt(B,A,AfcomzL);
 0178 
-0179 <span class="comment">% The number of frames differs betwen the force and marker data by a</span>
-0180 <span class="comment">% few frames after getting the new forces. Find the difference to make</span>
-0181 <span class="comment">% sure future for loops do not break.</span>
-0182 lengthdiff=abs(length(RAnk)-length(NewGRFzR));
-0183 COPcount=1;
-0184 Cross1=[]; Cross2=[];
-0185 <span class="keyword">for</span> i=1:(length(RAnk)-lengthdiff-2)
-0186     <span class="comment">% Define second moment of inertia for the segment.</span>
-0187     RFootLength=norm(RAnk(i,:)-RToe(i,:))/1000;
-0188     RFootI0=FootWeight*(RFootLength*0.690)^2;
-0189     <span class="comment">% Define the reaction forces at the ankle based on a freebody</span>
-0190     <span class="comment">% diagram of the foot.</span>
-0191     RzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzR(i)+NewGRFzR(i);
-0192     RyAnkleForce(i)=NewGRFyR(i)-FootWeight*AfcomyR(i);
-0193     RxAnkleForce(i)=NewGRFxR(i)-FootWeight*AfcomxR(i);
-0194 
-0195     <span class="comment">% Place the ground reaciton forces and the reaction forces into</span>
-0196     <span class="comment">% their own matrices.</span>
-0197     GRFR=[NewGRFxR(i),NewGRFyR(i),NewGRFzR(i)];
-0198     COPfR=[NewCOPxR(COPcount),NewCOPyR(COPcount),0];
-0199     RAnkF=[RxAnkleForce(i),RyAnkleForce(i),RzAnkleForce(i)];
-0200     <span class="comment">% Place the center of masses and the center of pressures into their</span>
-0201     <span class="comment">% own matrices.</span>
-0202     fcomR=[fcomxR(i),fcomyR(i),fcomzR(i)];
-0203     <span class="comment">% Ensure that when the foot is not on the ground that the distance</span>
-0204     <span class="comment">% between the center of mass and center of pressure is zero.</span>
-0205     r1=(fcomR-COPfR)/1000;
-0206     <span class="keyword">if</span> isnan(NewCOPxR(COPcount))==1
-0207         r1=[0,0,0];
-0208     <span class="keyword">end</span>
-0209     r2=(RAnk(i,:)-fcomR)/1000;
-0210     <span class="comment">% Perform a cross product between the distances and forces to get</span>
-0211     <span class="comment">% the overall moments occuring at the right ankle joint.</span>
-0212     Cross1(i,:)=cross(r1,GRFR);
-0213     Cross2(i,:)=cross(r2,RAnkF);
-0214     RAnkleCross=Cross1(i,:)+Cross2(i,:);
-0215     <span class="comment">% Subtract away the moment of intertia multiplied by the angular</span>
-0216     <span class="comment">% accleration to get the total ankle moment.</span>
-0217     RAnkleMoment(i)=RAnkleCross(1,1)-RFootI0*alphaRfoot(i);
-0218     RAnklePower(i)=RAnkleMoment(i)*wfcomyR(i);
-0219     COPcount=COPcount+1;
-0220 <span class="keyword">end</span>
-0221 COPcount=1;
-0222 Cross1=[]; Cross2=[];
-0223 <span class="keyword">for</span> i=1:(length(LAnk)-lengthdiff-2)
-0224     <span class="comment">% Define second moment of inertia for the segment.</span>
-0225     LFootLength=norm(LAnk(i,:)-LToe(i,:))/1000;
-0226     LFootI0=FootWeight*(LFootLength*0.690)^2;
-0227     <span class="comment">% Define the reaction forces at the ankle based on a freebody</span>
-0228     <span class="comment">% diagram of the foot.</span>
-0229     LzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzL(i)+NewGRFzL(i);
-0230     LyAnkleForce(i)=NewGRFyL(i)-FootWeight*AfcomyL(i);
-0231     LxAnkleForce(i)=NewGRFxL(i)-FootWeight*AfcomxL(i);
-0232     <span class="comment">% Place the ground reaciton forces and the reaction forces into</span>
-0233     <span class="comment">% their own matrices.</span>
-0234     GRFL=[NewGRFxL(i),NewGRFyL(i),NewGRFzL(i)];
-0235     COPfL=[NewCOPxL(COPcount),NewCOPyL(COPcount),0];
-0236     LAnkF=[LxAnkleForce(i),LyAnkleForce(i),LzAnkleForce(i)];
-0237     <span class="comment">% Place the center of masses and the center of pressures into their</span>
-0238     <span class="comment">% own matrices.</span>
-0239     fcomL=[fcomxL(i),fcomyL(i),fcomzL(i)];
-0240     <span class="comment">% Ensure that when the foot is not on the ground that the distance</span>
-0241     <span class="comment">% between the center of mass and center of pressure is zero.</span>
-0242     r1=(fcomL-COPfL)/1000;
-0243     <span class="keyword">if</span> isnan(NewCOPxL(COPcount))==1
-0244         r1=[0,0,0];
-0245     <span class="keyword">end</span>
-0246     r2=(LAnk(i,:)-fcomL)/1000;
-0247     <span class="comment">% Perform a cross product between the distances and forces to get</span>
-0248     <span class="comment">% the overall moments occuring at the right ankle joint.</span>
-0249     Cross1(i,:)=cross(r1,GRFL);
-0250     Cross2(i,:)=cross(r2,LAnkF);
-0251     LAnkleCross=Cross1(i,:)+Cross2(i,:);
-0252     <span class="comment">% Subtract away the moment of intertia multiplied by the angular</span>
-0253     <span class="comment">% accleration to get the total ankle moment.</span>
-0254     LAnkleMoment(i)=LAnkleCross(1,1)-LFootI0*alphaLfoot(i);
-0255     LAnklePower(i)=LAnkleMoment(i)*wfcomyL(i);
-0256     COPcount=COPcount+1;
-0257 <span class="keyword">end</span>
-0258 
-0259 
-0260 <span class="keyword">for</span> i=1:abs(length(NewGRFzL)-lengthdiff-2)
-0261     RShankLength=norm(RKne(i,:)-RAnk(i,:))/1000;
-0262     RShankI0=ShankWeight*(RShankLength*0.645)^2;
-0263     RyKneeForce(i)=RyAnkleForce(i)-ShankWeight*AscomyR(i);
-0264     RzKneeForce(i)=RzAnkleForce(i)-ShankWeight*AscomzR(i)-ShankWeight*9.8;
-0265     RxKneeForce(i)=RxAnkleForce(i)-ShankWeight*AscomxR(i);
-0266 
-0267     RAnkF=[RxAnkleForce(i),RyAnkleForce(i),RzAnkleForce(i)];
-0268     RKneeF=[RxKneeForce(i),RyKneeForce(i),RzKneeForce(i)];
-0269     scomR(i,:)=[scomxR(i),scomyR(i),scomzR(i)];
-0270     r1=(scomR(i,:)-RAnk(i,:))/1000;
-0271     r2=(RKne(i,:)-scomR(i,:))/1000;
-0272     RKneeCross=cross(r1,RAnkF)+cross(r2,RKneeF);
-0273     RKneeMoment(i)=-1*((RKneeCross(1,1))-RShankI0*alphaRshank(i)+RAnkleMoment(i));
-0274     RKneePower(i)=RKneeMoment(i)*wscomyR(i);
-0275 <span class="keyword">end</span>
-0276 <span class="keyword">for</span> i=1:abs(length(NewGRFzL)-lengthdiff-2)
-0277     LShankLength=norm(LKne(i,:)-LAnk(i,:))/1000;
-0278     LShankI0=ShankWeight*(LShankLength*0.645)^2;
-0279     LyKneeForce(i)=LyAnkleForce(i)-ShankWeight*AscomyL(i);
-0280     LzKneeForce(i)=LzAnkleForce(i)-ShankWeight*AscomzL(i)-ShankWeight*9.8;
-0281     LxKneeForce(i)=LxAnkleForce(i)-ShankWeight*AscomxL(i);
-0282     LAnkF=[LxAnkleForce(i),LyAnkleForce(i),LzAnkleForce(i)];
-0283     LKneeF=[LxKneeForce(i),LyKneeForce(i),LzKneeForce(i)];
-0284     scomL(i,:)=[scomxL(i),scomyL(i),scomzL(i)];
-0285     r1=(scomL(i,:)-LAnk(i,:))/1000;
-0286     r2=(LKne(i,:)-scomL(i,:))/1000;
-0287     LKneeCross=cross(r1,LAnkF)+cross(r2,LKneeF);
-0288     LKneeMoment(i)=-1*((LKneeCross(1,1))-LShankI0*alphaLshank(i)+LAnkleMoment(i));
-0289     LKneePower(i)=LKneeMoment(i)*wscomyL(i);
-0290 <span class="keyword">end</span>
-0291 
-0292 <span class="keyword">for</span> i=1:abs(length(NewGRFzL)-lengthdiff-2)
-0293     RThighLength=norm(RHip(i,:)-RKne(i,:))/1000;
-0294     RThighI0=ThighWeight*(RThighLength*0.54)^2;
-0295     RxHipForce(i)=RxKneeForce(i)-ThighWeight*AtcomxR(i);
-0296     RyHipForce(i)=RyKneeForce(i)-ThighWeight*AtcomyR(i);
-0297     RzHipForce(i)=RzKneeForce(i)-ThighWeight*AtcomzR(i)-ThighWeight*9.8;
-0298     RHipF=[RxHipForce(i), RyHipForce(i), RzHipForce(i)];
-0299     RKneeF=[RxKneeForce(i), RyKneeForce(i), RzKneeForce(i)];
-0300     tcomF=[tcomxR(i), tcomyR(i), tcomzR(i)];
-0301     r1=(tcomF-RKne(i,:))/1000;
-0302     r2=(RHip(i,:)-tcomF)/1000;
-0303     RHipCross=cross(r1,RKneeF)+cross(r2,RHipF);
-0304     RHipMoment(i)=RHipCross(1,1)-RThighI0*alphaRthigh(i)+RKneeMoment(i);
-0305     RHipPower(i)=RHipMoment(i)*wtcomyR(i);
-0306 <span class="keyword">end</span>
-0307 <span class="keyword">for</span> i=1:abs(length(NewGRFzL)-lengthdiff-2)
-0308     LThighLength=norm(LHip(i,:)-LKne(i,:))/1000;
-0309     LThighI0=ThighWeight*(LThighLength*0.54)^2;
-0310     LxHipForce(i)=LxKneeForce(i)-ThighWeight*AtcomxL(i);
-0311     LyHipForce(i)=LyKneeForce(i)-ThighWeight*AtcomyL(i);
-0312     LzHipForce(i)=LzKneeForce(i)-ThighWeight*AtcomzL(i)-ThighWeight*9.8;
-0313     LHipF=[LxHipForce(i), LyHipForce(i), LzHipForce(i)];
-0314     LKneeF=[LxKneeForce(i), LyKneeForce(i), LzKneeForce(i)];
-0315     tcomS=[tcomxL(i), tcomyL(i), tcomzL(i)];
-0316     r1=(tcomS-LKne(i,:))/1000;
-0317     r2=(LHip(i,:)-tcomS)/1000;
-0318     LHipCross=cross(r1,LKneeF)+cross(r2,LHipF);
-0319     LHipMoment(i)=LHipCross(1,1)-LThighI0*alphaLthigh(i)+LKneeMoment(i);
-0320     LHipPower(i)=LHipMoment(i)*wtcomyL(i);
-0321 <span class="keyword">end</span>
-0322 
-0323 
-0324 <span class="comment">% Destroys outliers</span>
-0325 <span class="keyword">for</span> i=1:length(RAnkleMoment)
-0326     <span class="keyword">if</span> abs(RAnkleMoment(i))&gt;3000
-0327         RAnkleMoment(i)=NaN;
-0328     <span class="keyword">end</span>
-0329     <span class="keyword">if</span> abs(LAnkleMoment(i))&gt;3000
-0330         LAnkleMoment(i)=NaN;
-0331     <span class="keyword">end</span>
-0332     <span class="keyword">if</span> abs(RKneeMoment(i))&gt;3000
-0333         RKneeMoment(i)=NaN;
-0334     <span class="keyword">end</span>
-0335     <span class="keyword">if</span> abs(LKneeMoment(i))&gt;3000
-0336         LKneeMoment(i)=NaN;
-0337     <span class="keyword">end</span>
-0338     <span class="keyword">if</span> abs(RHipMoment(i))&gt;3000
-0339         RHipMoment(i)=NaN;
-0340     <span class="keyword">end</span>
-0341     <span class="keyword">if</span> abs(LHipMoment(i))&gt;3000
-0342         LHipMoment(i)=NaN;
-0343     <span class="keyword">end</span>
-0344 <span class="keyword">end</span>
-0345 
-0346 AllMoments=[RAnkleMoment' LAnkleMoment' RKneeMoment' LKneeMoment' RHipMoment' LHipMoment'];
-0347 labels={<span class="string">'RAnkM'</span>,<span class="string">'LAnkM'</span>,<span class="string">'RKneM'</span>,<span class="string">'LKneM'</span>,<span class="string">'RHipM'</span>,<span class="string">'LHipM'</span>};
-0348 AllMomentsTS=<a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(AllMoments,markerData.Time(1),markerData.sampPeriod,labels(:));
-0349 
-0350 <span class="keyword">end</span>
-0351</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0179 AscomxR = diff(diff(scomxR./mmPerM));
+0180 AscomxR = filtfilt(B,A,AscomxR);
+0181 AscomyR = diff(diff(scomyR./mmPerM));
+0182 AscomyR = filtfilt(B,A,AscomyR);
+0183 AscomzR = diff(diff(scomzR./mmPerM));
+0184 AscomzR = filtfilt(B,A,AscomzR);
+0185 AscomzL = diff(diff(scomzL./mmPerM));
+0186 AscomzL = filtfilt(B,A,AscomzL);
+0187 AscomyL = diff(diff(scomyL./mmPerM));
+0188 AscomyL = filtfilt(B,A,AscomyL);
+0189 AscomxL = diff(diff(scomxL./mmPerM));
+0190 AscomxL = filtfilt(B,A,AscomxL);
+0191 
+0192 AtcomxR = diff(diff(tcomxR./mmPerM));
+0193 AtcomxR = filtfilt(B,A,AtcomxR);
+0194 AtcomyR = diff(diff(tcomyR./mmPerM));
+0195 AtcomyR = filtfilt(B,A,AtcomyR);
+0196 AtcomzR = diff(diff(tcomzR./mmPerM));
+0197 AtcomzR = filtfilt(B,A,AtcomzR);
+0198 AtcomxL = diff(diff(tcomxL./mmPerM));
+0199 AtcomxL = filtfilt(B,A,AtcomxL);
+0200 AtcomyL = diff(diff(tcomyL./mmPerM));
+0201 AtcomyL = filtfilt(B,A,AtcomyL);
+0202 AtcomzL = diff(diff(tcomzL./mmPerM));
+0203 AtcomzL = filtfilt(B,A,AtcomzL);
+0204 <span class="comment">% Define the angular accleration by finding the angle that the limb is</span>
+0205 <span class="comment">% away from a vertical point, and then differentiate this signal twice.</span>
+0206 <span class="comment">% Then a small filter is applied to the angular accleration data.</span>
+0207 alphaRfoot  = diff(diff(fcomRangle));
+0208 alphaRfoot  = filtfilt(B,A,alphaRfoot);
+0209 alphaLfoot  = diff(diff(fcomLangle));
+0210 alphaLfoot  = filtfilt(B,A,alphaLfoot);
+0211 alphaRshank = diff(diff(scomRangle));
+0212 alphaRshank = filtfilt(B,A,alphaRshank);
+0213 alphaLshank = diff(diff(scomLangle));
+0214 alphaLshank = filtfilt(B,A,alphaLshank);
+0215 alphaRthigh = diff(diff(tcomRangle));
+0216 alphaRthigh = filtfilt(B,A,alphaRthigh);
+0217 alphaLthigh = diff(diff(tcomLangle));
+0218 alphaLthigh = filtfilt(B,A,alphaLthigh);
+0219 <span class="comment">% Define the angular velocity in a similar manner</span>
+0220 wfcomyR = diff(fcomRangle);
+0221 wfcomyR = filtfilt(B,A,wfcomyR);
+0222 wfcomyL = diff(fcomLangle);
+0223 wfcomyL = filtfilt(B,A,wfcomyL);
+0224 wscomyR = diff(scomRangle);
+0225 wscomyR = filtfilt(B,A,wscomyR);
+0226 wscomyL = diff(scomLangle);
+0227 wscomyL = filtfilt(B,A,wscomyL);
+0228 wtcomyR = diff(tcomRangle);
+0229 wtcomyR = filtfilt(B,A,wtcomyR);
+0230 wtcomyL = diff(tcomLangle);
+0231 wtcomyL = filtfilt(B,A,wtcomyL);
+0232 
+0233 
+0234 
+0235 <span class="comment">%From here on, anywhere it says F should say R, and anywhere that says s</span>
+0236 <span class="comment">%should say L (domLeg==1)</span>
+0237 
+0238 <span class="comment">% The number of frames differs betwen the force and marker data by a</span>
+0239 <span class="comment">% few frames after getting the new forces. Find the difference to make</span>
+0240 <span class="comment">% sure future for loops do not break.</span>
+0241 lengthdiff = abs(length(RAnk)-length(NewGRFzR));
+0242 COPcount   = 1;
+0243 Cross1     = []; Cross2 = [];
+0244 <span class="keyword">for</span> ii = 1:(length(RAnk)-lengthdiff-2)
+0245     <span class="comment">% Define second moment of inertia for the segment.</span>
+0246     RFootLength = norm(RAnk(ii,:)-RToe(ii,:))/mmPerM;
+0247     RFootI0     = FootWeight*(RFootLength*footGyrationRatio)^2;
+0248     <span class="comment">% Define the reaction forces at the ankle based on a freebody</span>
+0249     <span class="comment">% diagram of the foot.</span>
+0250     RzAnkleForce(ii) = -1*FootWeight*gravity-FootWeight*AfcomzR(ii) <span class="keyword">...</span>
+0251         +NewGRFzR(ii);
+0252     RyAnkleForce(ii) = NewGRFyR(ii)-FootWeight*AfcomyR(ii);
+0253     RxAnkleForce(ii) = NewGRFxR(ii)-FootWeight*AfcomxR(ii);
+0254 
+0255     <span class="comment">% Place the ground reaciton forces and the reaction forces into</span>
+0256     <span class="comment">% their own matrices.</span>
+0257     GRFR  = [NewGRFxR(ii),NewGRFyR(ii),NewGRFzR(ii)];
+0258     COPfR = [NewCOPxR(COPcount),NewCOPyR(COPcount),0];
+0259     RAnkF = [RxAnkleForce(ii),RyAnkleForce(ii),RzAnkleForce(ii)];
+0260     <span class="comment">% Place the center of masses and the center of pressures into their</span>
+0261     <span class="comment">% own matrices.</span>
+0262     fcomR = [fcomxR(ii),fcomyR(ii),fcomzR(ii)];
+0263     <span class="comment">% Ensure that when the foot is not on the ground that the distance</span>
+0264     <span class="comment">% between the center of mass and center of pressure is zero.</span>
+0265     r1 = (fcomR-COPfR)/mmPerM;
+0266     <span class="keyword">if</span> isnan(NewCOPxR(COPcount)) == 1
+0267         r1 = [0,0,0];
+0268     <span class="keyword">end</span>
+0269     r2 = (RAnk(ii,:)-fcomR)/mmPerM;
+0270     <span class="comment">% Perform a cross product between the distances and forces to get</span>
+0271     <span class="comment">% the overall moments occuring at the right ankle joint.</span>
+0272     Cross1(ii,:) = cross(r1,GRFR);
+0273     Cross2(ii,:) = cross(r2,RAnkF);
+0274     RAnkleCross = Cross1(ii,:)+Cross2(ii,:);
+0275     <span class="comment">% Subtract away the moment of intertia multiplied by the angular</span>
+0276     <span class="comment">% accleration to get the total ankle moment.</span>
+0277     RAnkleMoment(ii) = RAnkleCross(1,1)-RFootI0*alphaRfoot(ii);
+0278     RAnklePower(ii) = RAnkleMoment(ii)*wfcomyR(ii);
+0279     COPcount = COPcount+1;
+0280 <span class="keyword">end</span>
+0281 COPcount = 1;
+0282 Cross1   = []; Cross2 = [];
+0283 <span class="keyword">for</span> ii = 1:(length(LAnk)-lengthdiff-2)
+0284     <span class="comment">% Define second moment of inertia for the segment.</span>
+0285     LFootLength = norm(LAnk(ii,:)-LToe(ii,:))/mmPerM;
+0286     LFootI0     = FootWeight*(LFootLength*footGyrationRatio)^2;
+0287     <span class="comment">% Define the reaction forces at the ankle based on a freebody</span>
+0288     <span class="comment">% diagram of the foot.</span>
+0289     LzAnkleForce(ii) = -1*FootWeight*gravity-FootWeight*AfcomzL(ii) <span class="keyword">...</span>
+0290         +NewGRFzL(ii);
+0291     LyAnkleForce(ii) = NewGRFyL(ii)-FootWeight*AfcomyL(ii);
+0292     LxAnkleForce(ii) = NewGRFxL(ii)-FootWeight*AfcomxL(ii);
+0293     <span class="comment">% Place the ground reaciton forces and the reaction forces into</span>
+0294     <span class="comment">% their own matrices.</span>
+0295     GRFL  = [NewGRFxL(ii),NewGRFyL(ii),NewGRFzL(ii)];
+0296     COPfL = [NewCOPxL(COPcount),NewCOPyL(COPcount),0];
+0297     LAnkF = [LxAnkleForce(ii),LyAnkleForce(ii),LzAnkleForce(ii)];
+0298     <span class="comment">% Place the center of masses and the center of pressures into their</span>
+0299     <span class="comment">% own matrices.</span>
+0300     fcomL = [fcomxL(ii),fcomyL(ii),fcomzL(ii)];
+0301     <span class="comment">% Ensure that when the foot is not on the ground that the distance</span>
+0302     <span class="comment">% between the center of mass and center of pressure is zero.</span>
+0303     r1 = (fcomL-COPfL)/mmPerM;
+0304     <span class="keyword">if</span> isnan(NewCOPxL(COPcount)) == 1
+0305         r1 = [0,0,0];
+0306     <span class="keyword">end</span>
+0307     r2 = (LAnk(ii,:)-fcomL)/mmPerM;
+0308     <span class="comment">% Perform a cross product between the distances and forces to get</span>
+0309     <span class="comment">% the overall moments occuring at the right ankle joint.</span>
+0310     Cross1(ii,:) = cross(r1,GRFL);
+0311     Cross2(ii,:) = cross(r2,LAnkF);
+0312     LAnkleCross = Cross1(ii,:)+Cross2(ii,:);
+0313     <span class="comment">% Subtract away the moment of intertia multiplied by the angular</span>
+0314     <span class="comment">% accleration to get the total ankle moment.</span>
+0315     LAnkleMoment(ii) = LAnkleCross(1,1)-LFootI0*alphaLfoot(ii);
+0316     LAnklePower(ii) = LAnkleMoment(ii)*wfcomyL(ii);
+0317     COPcount = COPcount+1;
+0318 <span class="keyword">end</span>
+0319 
+0320 
+0321 <span class="keyword">for</span> ii = 1:abs(length(NewGRFzL)-lengthdiff-2)
+0322     RShankLength = norm(RKne(ii,:)-RAnk(ii,:))/mmPerM;
+0323     RShankI0     = ShankWeight*(RShankLength*shankGyrationRatio)^2;
+0324     RyKneeForce(ii) = RyAnkleForce(ii)-ShankWeight*AscomyR(ii);
+0325     RzKneeForce(ii) = RzAnkleForce(ii)-ShankWeight*AscomzR(ii) <span class="keyword">...</span>
+0326         -ShankWeight*gravity;
+0327     RxKneeForce(ii) = RxAnkleForce(ii)-ShankWeight*AscomxR(ii);
+0328 
+0329     RAnkF  = [RxAnkleForce(ii),RyAnkleForce(ii),RzAnkleForce(ii)];
+0330     RKneeF = [RxKneeForce(ii),RyKneeForce(ii),RzKneeForce(ii)];
+0331     scomR(ii,:) = [scomxR(ii),scomyR(ii),scomzR(ii)];
+0332     r1         = (scomR(ii,:)-RAnk(ii,:))/mmPerM;
+0333     r2         = (RKne(ii,:)-scomR(ii,:))/mmPerM;
+0334     RKneeCross = cross(r1,RAnkF)+cross(r2,RKneeF);
+0335     RKneeMoment(ii) = <span class="keyword">...</span>
+0336         -1*((RKneeCross(1,1))-RShankI0*alphaRshank(ii)+RAnkleMoment(ii));
+0337     RKneePower(ii) = RKneeMoment(ii)*wscomyR(ii);
+0338 <span class="keyword">end</span>
+0339 <span class="keyword">for</span> ii = 1:abs(length(NewGRFzL)-lengthdiff-2)
+0340     LShankLength = norm(LKne(ii,:)-LAnk(ii,:))/mmPerM;
+0341     LShankI0     = ShankWeight*(LShankLength*shankGyrationRatio)^2;
+0342     LyKneeForce(ii) = LyAnkleForce(ii)-ShankWeight*AscomyL(ii);
+0343     LzKneeForce(ii) = LzAnkleForce(ii)-ShankWeight*AscomzL(ii) <span class="keyword">...</span>
+0344         -ShankWeight*gravity;
+0345     LxKneeForce(ii) = LxAnkleForce(ii)-ShankWeight*AscomxL(ii);
+0346     LAnkF  = [LxAnkleForce(ii),LyAnkleForce(ii),LzAnkleForce(ii)];
+0347     LKneeF = [LxKneeForce(ii),LyKneeForce(ii),LzKneeForce(ii)];
+0348     scomL(ii,:) = [scomxL(ii),scomyL(ii),scomzL(ii)];
+0349     r1         = (scomL(ii,:)-LAnk(ii,:))/mmPerM;
+0350     r2         = (LKne(ii,:)-scomL(ii,:))/mmPerM;
+0351     LKneeCross = cross(r1,LAnkF)+cross(r2,LKneeF);
+0352     LKneeMoment(ii) = <span class="keyword">...</span>
+0353         -1*((LKneeCross(1,1))-LShankI0*alphaLshank(ii)+LAnkleMoment(ii));
+0354     LKneePower(ii) = LKneeMoment(ii)*wscomyL(ii);
+0355 <span class="keyword">end</span>
+0356 
+0357 <span class="keyword">for</span> ii = 1:abs(length(NewGRFzL)-lengthdiff-2)
+0358     RThighLength = norm(RHip(ii,:)-RKne(ii,:))/mmPerM;
+0359     RThighI0     = ThighWeight*(RThighLength*thighGyrationRatio)^2;
+0360     RxHipForce(ii) = RxKneeForce(ii)-ThighWeight*AtcomxR(ii);
+0361     RyHipForce(ii) = RyKneeForce(ii)-ThighWeight*AtcomyR(ii);
+0362     RzHipForce(ii) = RzKneeForce(ii)-ThighWeight*AtcomzR(ii) <span class="keyword">...</span>
+0363         -ThighWeight*gravity;
+0364     RHipF     = [RxHipForce(ii), RyHipForce(ii), RzHipForce(ii)];
+0365     RKneeF    = [RxKneeForce(ii), RyKneeForce(ii), RzKneeForce(ii)];
+0366     tcomF     = [tcomxR(ii), tcomyR(ii), tcomzR(ii)];
+0367     r1        = (tcomF-RKne(ii,:))/mmPerM;
+0368     r2        = (RHip(ii,:)-tcomF)/mmPerM;
+0369     RHipCross = cross(r1,RKneeF)+cross(r2,RHipF);
+0370     RHipMoment(ii) = RHipCross(1,1)-RThighI0*alphaRthigh(ii) <span class="keyword">...</span>
+0371         +RKneeMoment(ii);
+0372     RHipPower(ii) = RHipMoment(ii)*wtcomyR(ii);
+0373 <span class="keyword">end</span>
+0374 <span class="keyword">for</span> ii = 1:abs(length(NewGRFzL)-lengthdiff-2)
+0375     LThighLength = norm(LHip(ii,:)-LKne(ii,:))/mmPerM;
+0376     LThighI0     = ThighWeight*(LThighLength*thighGyrationRatio)^2;
+0377     LxHipForce(ii) = LxKneeForce(ii)-ThighWeight*AtcomxL(ii);
+0378     LyHipForce(ii) = LyKneeForce(ii)-ThighWeight*AtcomyL(ii);
+0379     LzHipForce(ii) = LzKneeForce(ii)-ThighWeight*AtcomzL(ii) <span class="keyword">...</span>
+0380         -ThighWeight*gravity;
+0381     LHipF     = [LxHipForce(ii), LyHipForce(ii), LzHipForce(ii)];
+0382     LKneeF    = [LxKneeForce(ii), LyKneeForce(ii), LzKneeForce(ii)];
+0383     tcomS     = [tcomxL(ii), tcomyL(ii), tcomzL(ii)];
+0384     r1        = (tcomS-LKne(ii,:))/mmPerM;
+0385     r2        = (LHip(ii,:)-tcomS)/mmPerM;
+0386     LHipCross = cross(r1,LKneeF)+cross(r2,LHipF);
+0387     LHipMoment(ii) = LHipCross(1,1)-LThighI0*alphaLthigh(ii) <span class="keyword">...</span>
+0388         +LKneeMoment(ii);
+0389     LHipPower(ii) = LHipMoment(ii)*wtcomyL(ii);
+0390 <span class="keyword">end</span>
+0391 
+0392 
+0393 <span class="comment">% Destroys outliers</span>
+0394 <span class="keyword">for</span> ii = 1:length(RAnkleMoment)
+0395     <span class="keyword">if</span> abs(RAnkleMoment(ii)) &gt; momentLimit
+0396         RAnkleMoment(ii) = NaN;
+0397     <span class="keyword">end</span>
+0398     <span class="keyword">if</span> abs(LAnkleMoment(ii)) &gt; momentLimit
+0399         LAnkleMoment(ii) = NaN;
+0400     <span class="keyword">end</span>
+0401     <span class="keyword">if</span> abs(RKneeMoment(ii)) &gt; momentLimit
+0402         RKneeMoment(ii) = NaN;
+0403     <span class="keyword">end</span>
+0404     <span class="keyword">if</span> abs(LKneeMoment(ii)) &gt; momentLimit
+0405         LKneeMoment(ii) = NaN;
+0406     <span class="keyword">end</span>
+0407     <span class="keyword">if</span> abs(RHipMoment(ii)) &gt; momentLimit
+0408         RHipMoment(ii) = NaN;
+0409     <span class="keyword">end</span>
+0410     <span class="keyword">if</span> abs(LHipMoment(ii)) &gt; momentLimit
+0411         LHipMoment(ii) = NaN;
+0412     <span class="keyword">end</span>
+0413 <span class="keyword">end</span>
+0414 
+0415 AllMoments   = [RAnkleMoment' LAnkleMoment' RKneeMoment' LKneeMoment' <span class="keyword">...</span>
+0416     RHipMoment' LHipMoment'];
+0417 labels       = {<span class="string">'RAnkM'</span>,<span class="string">'LAnkM'</span>,<span class="string">'RKneM'</span>,<span class="string">'LKneM'</span>,<span class="string">'RHipM'</span>,<span class="string">'LHipM'</span>};
+0418 AllMomentsTS = <a href="../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(AllMoments,markerData.Time(1), <span class="keyword">...</span>
+0419     markerData.sampPeriod,labels(:));
+0420 
+0421 <span class="keyword">end</span>
+0422</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

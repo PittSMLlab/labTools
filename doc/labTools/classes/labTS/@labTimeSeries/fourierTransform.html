@@ -4,7 +4,7 @@
 <head>
   <title>Description of fourierTransform</title>
   <meta name="keywords" content="fourierTransform">
-  <meta name="description" content="fourierTransform  Computes Fourier transform">
+  <meta name="description" content="FOURIERTRANSFORM Computes Fourier transform.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,30 +21,30 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>fourierTransform  Computes Fourier transform</strong></div>
+<div class="box"><strong>FOURIERTRANSFORM Computes Fourier transform.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function Fthis = fourierTransform(this, M) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">fourierTransform  Computes Fourier transform
+<div class="fragment"><pre class="comment">FOURIERTRANSFORM Computes Fourier transform.
 
-   Fthis = fourierTransform(this) computes discrete Fourier transform
-   of data
+   Fthis = fourierTransform(this) computes discrete Fourier transform of
+ data
 
    Fthis = fourierTransform(this, M) ignores M parameter (deprecated)
 
-   Inputs:
-       this - labTimeSeries object
-       M - ignored parameter (optional)
+ Inputs:
+   this - labTimeSeries object
+   M    - ignored parameter (optional)
 
-   Outputs:
-       Fthis - labTimeSeries containing Fourier transform with
-               frequency as time axis
+ Outputs:
+   Fthis - labTimeSeries containing Fourier transform with frequency as
+           time axis
 
-   Note: Changed Apr 1st 2015 to return a timeseries. Now ignores 2nd arg
+ Toolbox Dependencies: None
 
-   See also: DiscreteTimeFourierTransform, <a href="spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">spectrogram</a></pre></div>
+ See also DISCRETETIMEFOURIERTRANSFORM, <a href="spectrogram.html" class="code" title="function Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)">SPECTROGRAM</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -60,24 +60,24 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Fthis = fourierTransform(this, M)</a>
-0002 <span class="comment">%fourierTransform  Computes Fourier transform</span>
+0002 <span class="comment">%FOURIERTRANSFORM Computes Fourier transform.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Fthis = fourierTransform(this) computes discrete Fourier transform</span>
-0005 <span class="comment">%   of data</span>
+0004 <span class="comment">%   Fthis = fourierTransform(this) computes discrete Fourier transform of</span>
+0005 <span class="comment">% data</span>
 0006 <span class="comment">%</span>
 0007 <span class="comment">%   Fthis = fourierTransform(this, M) ignores M parameter (deprecated)</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - labTimeSeries object</span>
-0011 <span class="comment">%       M - ignored parameter (optional)</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this - labTimeSeries object</span>
+0011 <span class="comment">%   M    - ignored parameter (optional)</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   Outputs:</span>
-0014 <span class="comment">%       Fthis - labTimeSeries containing Fourier transform with</span>
-0015 <span class="comment">%               frequency as time axis</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   Fthis - labTimeSeries containing Fourier transform with frequency as</span>
+0015 <span class="comment">%           time axis</span>
 0016 <span class="comment">%</span>
-0017 <span class="comment">%   Note: Changed Apr 1st 2015 to return a timeseries. Now ignores 2nd arg</span>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
 0018 <span class="comment">%</span>
-0019 <span class="comment">%   See also: DiscreteTimeFourierTransform, spectrogram</span>
+0019 <span class="comment">% See also DISCRETETIMEFOURIERTRANSFORM, SPECTROGRAM.</span>
 0020 
 0021 <span class="keyword">if</span> nargin &gt; 1
 0022     warning(<span class="string">'labTimeSeries:fourierTransform'</span>, <span class="string">'Ignoring second argument'</span>);
@@ -88,6 +88,6 @@ This function is called by:
 0027 Fthis.TimeInfo.Units = <span class="string">'Hz'</span>;
 0028 <span class="keyword">end</span>
 0029</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

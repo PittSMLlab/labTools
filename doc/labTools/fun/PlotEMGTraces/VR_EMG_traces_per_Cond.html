@@ -4,7 +4,7 @@
 <head>
   <title>Description of VR_EMG_traces_per_Cond</title>
   <meta name="keywords" content="VR_EMG_traces_per_Cond">
-  <meta name="description" content="%Traces from example subject to show how data is summarized">
+  <meta name="description" content="% EMG traces per condition (virtual reality study)">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,36 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>%Traces from example subject to show how data is summarized</strong></div>
+<div class="box"><strong>% EMG traces per condition (virtual reality study)</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">%Traces from example subject to show how data is summarized
-% Load data
- load('/Volumes/Users/Dulce/R01_Nimbus2021/VROG_Devon/VrG_Devon.mat')
- subID = 'CTR_01';
- scriptDir = fileparts(matlab.desktop.editor.getActiveFilename); 
- load([scriptDir '/data/' subID])</pre></div>
+<div class="fragment"><pre class="comment">% EMG traces per condition (virtual reality study)
+ Script. Plots normalized EMG traces for the virtual reality data with
+ plotEMGtraces, normalized to the TR base condition: the late baseline
+ conditions, the late conditions of the whole experiment, and the early
+ conditions after baseline.
+
+ Inputs:
+   expData - (workspace) processed experimentData of the subject
+
+ Outputs:
+   fh - (workspace) handle of the last figure
+
+ Side effects: opens three figures.
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox (through
+   plotEMGtraces)
+
+ See also PLOTEMGTRACES, <a href="Nim_EMG_traces_per_Cond.html" class="code" title="">NIM_EMG_TRACES_PER_COND</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	% Plot the EMG ttraces for the Nimbus generalization project</li></ul>
+<li><a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	PLOTEMGTRACES Plot EMG traces of several conditions for each muscle.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -47,266 +59,334 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%%Traces from example subject to show how data is summarized</span>
-0002 <span class="comment">%% Load data</span>
-0003 <span class="comment">% load('/Volumes/Users/Dulce/R01_Nimbus2021/VROG_Devon/VrG_Devon.mat')</span>
-0004 <span class="comment">% subID = 'CTR_01';</span>
-0005 <span class="comment">% scriptDir = fileparts(matlab.desktop.editor.getActiveFilename);</span>
-0006 <span class="comment">% load([scriptDir '/data/' subID])</span>
-0007 
-0008 <span class="comment">%% Set muscle to plot</span>
-0009 
-0010 muscle={<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'SOL'</span>, <span class="string">'LG'</span>, <span class="string">'MG'</span>, <span class="string">'BF'</span>, <span class="string">'SEMB'</span>, <span class="string">'SEMT'</span>, <span class="string">'VM'</span>, <span class="string">'VL'</span>, <span class="string">'RF'</span>, <span class="string">'TFL'</span>, <span class="string">'GLU'</span>,<span class="string">'HIP'</span>};
-0011 normalize = 1;  <span class="comment">% 1 to normalize data</span>
-0012 normCond = {<span class="string">'TR base'</span>};
-0013 
-0014 <span class="comment">%% Baseline condtions</span>
-0015 conds={<span class="string">'OG base'</span>,<span class="string">'TM tied 1'</span>,<span class="string">'TR base'</span>};
-0016 late=1;
-0017 strides=40;
-0018 fh=<a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond);
+<div class="fragment"><pre>0001 <span class="comment">%% EMG traces per condition (virtual reality study)</span>
+0002 <span class="comment">% Script. Plots normalized EMG traces for the virtual reality data with</span>
+0003 <span class="comment">% plotEMGtraces, normalized to the TR base condition: the late baseline</span>
+0004 <span class="comment">% conditions, the late conditions of the whole experiment, and the early</span>
+0005 <span class="comment">% conditions after baseline.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   expData - (workspace) processed experimentData of the subject</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   fh - (workspace) handle of the last figure</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Side effects: opens three figures.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox (through</span>
+0016 <span class="comment">%   plotEMGtraces)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also PLOTEMGTRACES, NIM_EMG_TRACES_PER_COND.</span>
 0019 
-0020 <span class="comment">%% Late condition</span>
-0021 late=1;
-0022 strides=40;
-0023 conds={<span class="string">'OG base'</span>,<span class="string">'TM tied 1'</span>,<span class="keyword">...</span>
-0024     <span class="string">'TR base'</span>,<span class="string">'Adaptation'</span>,<span class="keyword">...</span>
-0025     <span class="string">'Post 1'</span>,<span class="string">'Post 2'</span>};
-0026 fh=<a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond);
+0020 <span class="comment">%% Load data</span>
+0021 <span class="comment">% load('/Volumes/Users/Dulce/R01_Nimbus2021/VROG_Devon/VrG_Devon.mat')</span>
+0022 <span class="comment">% subID = 'CTR_01';</span>
+0023 <span class="comment">% scriptDir = fileparts(matlab.desktop.editor.getActiveFilename);</span>
+0024 <span class="comment">% load([scriptDir '/data/' subID])</span>
+0025 
+0026 <span class="comment">%% Set muscle to plot</span>
 0027 
-0028 
-0029 <span class="comment">%% Early conditions</span>
-0030 late=0;
-0031 strides=30;
-0032 conds={<span class="string">'TR base'</span>,<span class="string">'Pos short'</span>,<span class="keyword">...</span>
-0033     <span class="string">'Neg Short'</span>,<span class="string">'Adaptation'</span>,<span class="keyword">...</span>
-0034     <span class="string">'Post 1'</span>,<span class="string">'Post 2'</span>};
-0035 fh=<a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond);
-0036 
-0037 
-0038 
-0039 <span class="comment">%% save figures</span>
-0040 <span class="comment">% if late</span>
-0041 <span class="comment">%     if baseOnly</span>
-0042 <span class="comment">%         saveas(fh, [scriptDir '/EMGTraces/' subID '_BaseLate.png']);</span>
-0043 <span class="comment">%     else</span>
-0044 <span class="comment">%         saveas(fh, [scriptDir '/EMGTraces/' subID '_Late.png']);</span>
-0045 <span class="comment">%     end</span>
-0046 <span class="comment">% else</span>
-0047 <span class="comment">%     saveas(fh, [scriptDir '/EMGTraces/' subID '_Early.png']);</span>
-0048 <span class="comment">% end</span>
-0049 
-0050 
-0051 <span class="comment">%% Set period to plot</span>
-0052 <span class="comment">% close all;</span>
-0053 <span class="comment">% late=1;</span>
-0054 <span class="comment">% baseOnly=0;</span>
-0055 
-0056 <span class="comment">%% Old code use as references to understand the functions above</span>
+0028 muscle    = {<span class="string">'TA'</span>, <span class="string">'PER'</span>, <span class="string">'SOL'</span>, <span class="string">'LG'</span>, <span class="string">'MG'</span>, <span class="string">'BF'</span>, <span class="string">'SEMB'</span>, <span class="string">'SEMT'</span>, <span class="string">'VM'</span>, <span class="keyword">...</span>
+0029     <span class="string">'VL'</span>, <span class="string">'RF'</span>, <span class="string">'TFL'</span>, <span class="string">'GLU'</span>,<span class="string">'HIP'</span>};
+0030 normalize = 1;  <span class="comment">% 1 to normalize data</span>
+0031 normCond  = {<span class="string">'TR base'</span>};
+0032 
+0033 <span class="comment">%% Baseline condtions</span>
+0034 conds   = {<span class="string">'OG base'</span>,<span class="string">'TM tied 1'</span>,<span class="string">'TR base'</span>};
+0035 late    = 1;
+0036 strides = 40;
+0037 fh      = <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize, <span class="keyword">...</span>
+0038     normCond);
+0039 
+0040 <span class="comment">%% Late condition</span>
+0041 late    = 1;
+0042 strides = 40;
+0043 conds = {<span class="string">'OG base'</span>,<span class="string">'TM tied 1'</span>,<span class="keyword">...</span>
+0044     <span class="string">'TR base'</span>,<span class="string">'Adaptation'</span>,<span class="keyword">...</span>
+0045     <span class="string">'Post 1'</span>,<span class="string">'Post 2'</span>};
+0046 fh = <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond);
+0047 
+0048 
+0049 <span class="comment">%% Early conditions</span>
+0050 late    = 0;
+0051 strides = 30;
+0052 conds = {<span class="string">'TR base'</span>,<span class="string">'Pos short'</span>,<span class="keyword">...</span>
+0053     <span class="string">'Neg Short'</span>,<span class="string">'Adaptation'</span>,<span class="keyword">...</span>
+0054     <span class="string">'Post 1'</span>,<span class="string">'Post 2'</span>};
+0055 fh = <a href="../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>(expData,conds,muscle,late,strides,normalize,normCond);
+0056 
 0057 
-0058 <span class="comment">% conds={'OG base','TR base','Pos Short','Neg Short',...</span>
-0059 <span class="comment">%     'TM tied 1',...</span>
-0060 <span class="comment">%     'Adaptation','Post 1','Post 2'};</span>
-0061 <span class="comment">%</span>
-0062 <span class="comment">%</span>
-0063 <span class="comment">% events={'RHS','LTO','LHS','RTO'};</span>
-0064 <span class="comment">%</span>
-0065 <span class="comment">% alignmentLengths=[16,32,16,32];</span>
-0066 <span class="comment">%</span>
-0067 <span class="comment">% muscle={'TA', 'PER', 'SOL', 'LG', 'MG', 'BF', 'SEMB', 'SEMT', 'VM', 'VL', 'RF', 'TFL', 'GLU','HIP'};</span>
-0068 <span class="comment">% % muscle={'HIP'};</span>
-0069 <span class="comment">% lm=1:2:35;</span>
-0070 <span class="comment">%</span>
-0071 <span class="comment">% if late==1</span>
-0072 <span class="comment">%</span>
-0073 <span class="comment">%     if baseOnly==1</span>
-0074 <span class="comment">%         condlegend={'OGbase_{late}','TRbase_{late}','TMtied1_{late}'};</span>
-0075 <span class="comment">%     else</span>
-0076 <span class="comment">%         condlegend={'OGbase_{late}','TRbase_{late}','TMtied1_{late}','Adaptation_{late}',...</span>
-0077 <span class="comment">%             'Post1_{late}','Post2_{late}'};</span>
-0078 <span class="comment">%     end</span>
-0079 <span class="comment">%</span>
-0080 <span class="comment">% else</span>
-0081 <span class="comment">%     condlegend={'TRbase_{late}','Pos Short','Neg Short',...</span>
-0082 <span class="comment">%         'Post1_{early}','Post2_{early}'};</span>
-0083 <span class="comment">% end</span>
+0058 
+0059 <span class="comment">%% save figures</span>
+0060 <span class="comment">% if late</span>
+0061 <span class="comment">%     if baseOnly</span>
+0062 <span class="comment">%         saveas(fh, [scriptDir '/EMGTraces/' subID '_BaseLate.png']);</span>
+0063 <span class="comment">%     else</span>
+0064 <span class="comment">%         saveas(fh, [scriptDir '/EMGTraces/' subID '_Late.png']);</span>
+0065 <span class="comment">%     end</span>
+0066 <span class="comment">% else</span>
+0067 <span class="comment">%     saveas(fh, [scriptDir '/EMGTraces/' subID '_Early.png']);</span>
+0068 <span class="comment">% end</span>
+0069 
+0070 
+0071 <span class="comment">%% Set period to plot</span>
+0072 <span class="comment">% close all;</span>
+0073 <span class="comment">% late=1;</span>
+0074 <span class="comment">% baseOnly=0;</span>
+0075 
+0076 <span class="comment">%% Old code use as references to understand the functions above</span>
+0077 
+0078 <span class="comment">% conds={'OG base','TR base','Pos Short','Neg Short',...</span>
+0079 <span class="comment">%     'TM tied 1',...</span>
+0080 <span class="comment">%     'Adaptation','Post 1','Post 2'};</span>
+0081 <span class="comment">%</span>
+0082 <span class="comment">%</span>
+0083 <span class="comment">% events={'RHS','LTO','LHS','RTO'};</span>
 0084 <span class="comment">%</span>
-0085 <span class="comment">% fh=figure('Units','Normalized');</span>
+0085 <span class="comment">% alignmentLengths=[16,32,16,32];</span>
 0086 <span class="comment">%</span>
-0087 <span class="comment">%</span>
-0088 <span class="comment">% for m=1:length(muscle)</span>
-0089 <span class="comment">%</span>
-0090 <span class="comment">%     %OG base No VR</span>
-0091 <span class="comment">%     ROGBase=expData.getAlignedField('procEMGData',conds(1),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0092 <span class="comment">%     LOGBase=expData.getAlignedField('procEMGData',conds(1),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0087 <span class="comment">% muscle={'TA', 'PER', 'SOL', 'LG', 'MG', 'BF', 'SEMB', 'SEMT', 'VM', ...</span>
+0088 <span class="comment">%    'VL', 'RF', 'TFL', 'GLU','HIP'};</span>
+0089 <span class="comment">% % muscle={'HIP'};</span>
+0090 <span class="comment">% lm=1:2:35;</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">% if late==1</span>
 0093 <span class="comment">%</span>
-0094 <span class="comment">%     %TM base VR</span>
-0095 <span class="comment">%     RTRbase=expData.getAlignedField('procEMGData',conds(2),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0096 <span class="comment">%     LTRbase=expData.getAlignedField('procEMGData',conds(2),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
-0097 <span class="comment">%</span>
-0098 <span class="comment">%     %Short Split + No VR</span>
-0099 <span class="comment">%     RPosi=expData.getAlignedField('procEMGData',conds(3),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0100 <span class="comment">%     LPosi=expData.getAlignedField('procEMGData',conds(3),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0094 <span class="comment">%     if baseOnly==1</span>
+0095 <span class="comment">%         condlegend={'OGbase_{late}','TRbase_{late}','TMtied1_{late}'};</span>
+0096 <span class="comment">%     else</span>
+0097 <span class="comment">%         condlegend={'OGbase_{late}','TRbase_{late}','TMtied1_{late}', ...</span>
+0098 <span class="comment">%    'Adaptation_{late}',...</span>
+0099 <span class="comment">%             'Post1_{late}','Post2_{late}'};</span>
+0100 <span class="comment">%     end</span>
 0101 <span class="comment">%</span>
-0102 <span class="comment">%     %Short Split - No VR</span>
-0103 <span class="comment">%     RNeg=expData.getAlignedField('procEMGData',conds(4),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0104 <span class="comment">%     LNeg=expData.getAlignedField('procEMGData',conds(4),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
-0105 <span class="comment">%</span>
-0106 <span class="comment">%     %TM base no VR</span>
-0107 <span class="comment">%     RTMBase=expData.getAlignedField('procEMGData',conds(5),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0108 <span class="comment">%     LTMBase=expData.getAlignedField('procEMGData',conds(5),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0102 <span class="comment">% else</span>
+0103 <span class="comment">%     condlegend={'TRbase_{late}','Pos Short','Neg Short',...</span>
+0104 <span class="comment">%         'Post1_{early}','Post2_{early}'};</span>
+0105 <span class="comment">% end</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">% fh=figure('Units','Normalized');</span>
+0108 <span class="comment">%</span>
 0109 <span class="comment">%</span>
-0110 <span class="comment">%     %Adaptation VR</span>
-0111 <span class="comment">%     RAdap=expData.getAlignedField('procEMGData',conds(6),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0112 <span class="comment">%     LAdap=expData.getAlignedField('procEMGData',conds(6),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
-0113 <span class="comment">%</span>
-0114 <span class="comment">%     %OG post NO VR</span>
-0115 <span class="comment">%     RPost1=expData.getAlignedField('procEMGData',conds(7),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0116 <span class="comment">%     LPost1=expData.getAlignedField('procEMGData',conds(7),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
-0117 <span class="comment">%</span>
-0118 <span class="comment">%     %TMpost VR</span>
-0119 <span class="comment">%     RPost2=expData.getAlignedField('procEMGData',conds(8),events,alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
-0120 <span class="comment">%     LPost2=expData.getAlignedField('procEMGData',conds(8),events([3,4,1,2]),alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
-0121 <span class="comment">%</span>
-0122 <span class="comment">%     % Create plots</span>
-0123 <span class="comment">%     % close all;</span>
-0124 <span class="comment">%     poster_colors;</span>
-0125 <span class="comment">%     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];</span>
-0126 <span class="comment">%     condColors=colorOrder;</span>
-0127 <span class="comment">%</span>
-0128 <span class="comment">%</span>
-0129 <span class="comment">%     for l=1:2</span>
-0130 <span class="comment">%         switch l</span>
-0131 <span class="comment">%             case 1</span>
+0110 <span class="comment">% for m=1:length(muscle)</span>
+0111 <span class="comment">%</span>
+0112 <span class="comment">%     %OG base No VR</span>
+0113 <span class="comment">%     ROGBase=expData.getAlignedField('procEMGData',conds(1),events, ...</span>
+0114 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0115 <span class="comment">%     LOGBase=expData.getAlignedField('procEMGData',conds(1), ...</span>
+0116 <span class="comment">%    events([3,4,1,2]), ...</span>
+0117 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0118 <span class="comment">%</span>
+0119 <span class="comment">%     %TM base VR</span>
+0120 <span class="comment">%     RTRbase=expData.getAlignedField('procEMGData',conds(2),events, ...</span>
+0121 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0122 <span class="comment">%     LTRbase=expData.getAlignedField('procEMGData',conds(2), ...</span>
+0123 <span class="comment">%    events([3,4,1,2]), ...</span>
+0124 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0125 <span class="comment">%</span>
+0126 <span class="comment">%     %Short Split + No VR</span>
+0127 <span class="comment">%     RPosi=expData.getAlignedField('procEMGData',conds(3),events, ...</span>
+0128 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0129 <span class="comment">%     LPosi=expData.getAlignedField('procEMGData',conds(3), ...</span>
+0130 <span class="comment">%    events([3,4,1,2]), ...</span>
+0131 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
 0132 <span class="comment">%</span>
-0133 <span class="comment">%                 %Late</span>
-0134 <span class="comment">%                 OGbase_late=ROGBase.getPartialStridesAsATS(size(ROGBase.Data,3)-40:size(ROGBase.Data,3));</span>
-0135 <span class="comment">%                 TRbase_late=RTRbase.getPartialStridesAsATS(size(RTRbase.Data,3)-40:size(RTRbase.Data,3));</span>
-0136 <span class="comment">%                 TMBase_late=RTMBase.getPartialStridesAsATS(size(RTMBase.Data,3)-40:size(RTMBase.Data,3));</span>
-0137 <span class="comment">%                 Adaptation_late=RAdap.getPartialStridesAsATS(size(RAdap.Data,3)-40:size(RAdap.Data,3));</span>
-0138 <span class="comment">%                 Post2_Late=RPost2.getPartialStridesAsATS(size(RPost2.Data,3)-40:size(RPost2.Data,3));</span>
-0139 <span class="comment">%                 Post1_Late=RPost1.getPartialStridesAsATS(size(RPost1.Data,3)-40:size(RPost1.Data,3));</span>
-0140 <span class="comment">%</span>
-0141 <span class="comment">%                 %Early</span>
-0142 <span class="comment">%                 Post1_early=RPost1.getPartialStridesAsATS(1:30);</span>
-0143 <span class="comment">%                 Pos=RPosi.getPartialStridesAsATS(1:30);</span>
-0144 <span class="comment">%                 Neg=RNeg.getPartialStridesAsATS(1:30);</span>
-0145 <span class="comment">%                 Post2_early=RPost2.getPartialStridesAsATS(1:30);</span>
+0133 <span class="comment">%     %Short Split - No VR</span>
+0134 <span class="comment">%     RNeg=expData.getAlignedField('procEMGData',conds(4),events, ...</span>
+0135 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0136 <span class="comment">%     LNeg=expData.getAlignedField('procEMGData',conds(4), ...</span>
+0137 <span class="comment">%    events([3,4,1,2]), ...</span>
+0138 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0139 <span class="comment">%</span>
+0140 <span class="comment">%     %TM base no VR</span>
+0141 <span class="comment">%     RTMBase=expData.getAlignedField('procEMGData',conds(5),events, ...</span>
+0142 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0143 <span class="comment">%     LTMBase=expData.getAlignedField('procEMGData',conds(5), ...</span>
+0144 <span class="comment">%    events([3,4,1,2]), ...</span>
+0145 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
 0146 <span class="comment">%</span>
-0147 <span class="comment">%</span>
-0148 <span class="comment">%</span>
-0149 <span class="comment">%                 tit=['R' muscle{m}];</span>
-0150 <span class="comment">%             case 2</span>
-0151 <span class="comment">%</span>
-0152 <span class="comment">%                 %Late</span>
-0153 <span class="comment">%                 OGbase_late=LOGBase.getPartialStridesAsATS(size(LOGBase.Data,3)-40:size(LOGBase.Data,3));</span>
-0154 <span class="comment">%                 TRbase_late=LTRbase.getPartialStridesAsATS(size(LTRbase.Data,3)-40:size(LTRbase.Data,3));</span>
-0155 <span class="comment">%                 TMBase_late=LTMBase.getPartialStridesAsATS(size(LTMBase.Data,3)-40:size(LTMBase.Data,3));</span>
-0156 <span class="comment">%                 Adaptation_late=LAdap.getPartialStridesAsATS(size(LAdap.Data,3)-40:size(LAdap.Data,3));</span>
-0157 <span class="comment">%</span>
-0158 <span class="comment">%                 %                 if m==14</span>
-0159 <span class="comment">%                 %</span>
-0160 <span class="comment">%                 %                 else</span>
-0161 <span class="comment">%                 Post1_Late=LPost1.getPartialStridesAsATS(size(LPost1.Data,3)-40:size(LPost1.Data,3));</span>
-0162 <span class="comment">%                 Post2_Late=LPost2.getPartialStridesAsATS(size(LPost2.Data,3)-40:size(LPost2.Data,3));</span>
-0163 <span class="comment">%                 %                 end</span>
-0164 <span class="comment">%</span>
-0165 <span class="comment">%</span>
-0166 <span class="comment">%</span>
-0167 <span class="comment">%                 %Early</span>
-0168 <span class="comment">%                 Pos=LPosi.getPartialStridesAsATS(1:30);</span>
-0169 <span class="comment">%                 Neg=LNeg.getPartialStridesAsATS(1:30);</span>
-0170 <span class="comment">%                 Post1_early=LPost1.getPartialStridesAsATS(1:30);</span>
-0171 <span class="comment">%                 Post2_early=LPost2.getPartialStridesAsATS(1:30);</span>
-0172 <span class="comment">%                 %                 if m==14</span>
-0173 <span class="comment">%                 %</span>
-0174 <span class="comment">%                 %                 else</span>
-0175 <span class="comment">%                 %</span>
-0176 <span class="comment">%                 %                 end</span>
-0177 <span class="comment">%</span>
-0178 <span class="comment">%</span>
-0179 <span class="comment">%                 tit=['L' muscle{m}];</span>
-0180 <span class="comment">%</span>
-0181 <span class="comment">%         end</span>
-0182 <span class="comment">%</span>
-0183 <span class="comment">%         norm2=nanmean(nanmax(squeeze(TRbase_late.Data)));</span>
-0184 <span class="comment">%</span>
-0185 <span class="comment">%         %Late</span>
-0186 <span class="comment">%         OGbase_late.Data=bsxfun(@rdivide,OGbase_late.Data,norm2);</span>
-0187 <span class="comment">%         TRbase_late.Data=bsxfun(@rdivide,TRbase_late.Data,norm2);</span>
-0188 <span class="comment">%         TMBase_late.Data=bsxfun(@rdivide,TMBase_late.Data,norm2);</span>
-0189 <span class="comment">%         Adaptation_late.Data=bsxfun(@rdivide,Adaptation_late.Data,norm2);</span>
-0190 <span class="comment">%         Post1_Late.Data=bsxfun(@rdivide,Post1_Late.Data,norm2);</span>
-0191 <span class="comment">%         Post2_Late.Data=bsxfun(@rdivide,Post2_Late.Data,norm2);</span>
-0192 <span class="comment">%</span>
-0193 <span class="comment">%         %             Early</span>
-0194 <span class="comment">%         Pos.Data=bsxfun(@rdivide,Pos.Data,norm2);</span>
-0195 <span class="comment">%         Neg.Data=bsxfun(@rdivide,Neg.Data,norm2);</span>
-0196 <span class="comment">%         Post1_early.Data=bsxfun(@rdivide,Post1_early.Data,norm2);</span>
-0197 <span class="comment">%         Post2_early.Data=bsxfun(@rdivide,Post2_early.Data,norm2);</span>
-0198 <span class="comment">%         %</span>
-0199 <span class="comment">%         condColors=colorOrder;</span>
-0200 <span class="comment">%         % ph=[];</span>
-0201 <span class="comment">%         ph1=[];</span>
-0202 <span class="comment">%         prc=[16,84];</span>
-0203 <span class="comment">%         MM=sum(alignmentLengths);</span>
-0204 <span class="comment">%         M=cumsum([0 alignmentLengths]);</span>
-0205 <span class="comment">%         xt=sort([M,M(1:end-1)+[diff(M)/2]]);</span>
-0206 <span class="comment">%         phaseSize=8;</span>
-0207 <span class="comment">%         xt=[0:phaseSize:MM];</span>
-0208 <span class="comment">%         %xt=[0:8:MM];s</span>
-0209 <span class="comment">%         fs=16; %FontSize</span>
-0210 <span class="comment">%</span>
-0211 <span class="comment">%</span>
-0212 <span class="comment">%         ph=subplot(5,6,lm(m)+l-1);</span>
-0213 <span class="comment">%         %     ph=subplot(1,2,l);</span>
-0214 <span class="comment">%         set(gcf,'color','w');</span>
-0215 <span class="comment">%         %     set(ph,'Position',[.07 .48 .35 .45]);</span>
-0216 <span class="comment">%         hold on</span>
-0217 <span class="comment">%</span>
-0218 <span class="comment">%</span>
-0219 <span class="comment">%         if late==1</span>
-0220 <span class="comment">%             if baseOnly==1</span>
-0221 <span class="comment">%                 OGbase_late.plot(fh,ph,condColors(1,:),[],0,[-49:0],prc,true);</span>
-0222 <span class="comment">%                 TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0],prc,true);</span>
-0223 <span class="comment">%                 TMBase_late.plot(fh,ph,condColors(5,:),[],0,[-49:0],prc,true);</span>
-0224 <span class="comment">%             else</span>
-0225 <span class="comment">%                 OGbase_late.plot(fh,ph,condColors(1,:),[],0,[-49:0],prc,true);</span>
-0226 <span class="comment">%                 TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0],prc,true);</span>
-0227 <span class="comment">%                 TMBase_late.plot(fh,ph,condColors(5,:),[],0,[-49:0],prc,true);</span>
-0228 <span class="comment">%                 Adaptation_late.plot(fh,ph,condColors(6,:),[],0,[-49:0],prc,true);</span>
-0229 <span class="comment">%                 Post1_Late.plot(fh,ph,condColors(7,:),[],0,[-49:0],prc,true);</span>
-0230 <span class="comment">%                 Post2_Late.plot(fh,ph,condColors(8,:),[],0,[-49:0],prc,true);</span>
-0231 <span class="comment">%</span>
-0232 <span class="comment">%</span>
-0233 <span class="comment">%             end</span>
-0234 <span class="comment">%             %</span>
-0235 <span class="comment">%         else</span>
-0236 <span class="comment">%             TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0],prc,true);</span>
-0237 <span class="comment">%             Pos.plot(fh,ph,condColors(9,:),[],0,[-49:0],prc,true);</span>
-0238 <span class="comment">%             Neg.plot(fh,ph,condColors(4,:),[],0,[-49:0],prc,true);</span>
-0239 <span class="comment">%             Post1_early.plot(fh,ph,condColors(7,:),[],0,[-49:0],prc,true);</span>
-0240 <span class="comment">%             Post2_early.plot(fh,ph,condColors(8,:),[],0,[-49:0],prc,true);</span>
-0241 <span class="comment">%         end</span>
-0242 <span class="comment">%         axis tight</span>
-0243 <span class="comment">%         ylabel('')</span>
-0244 <span class="comment">%         ylabel(tit)</span>
-0245 <span class="comment">%         %     set(ph,'YTick',[0,1],'YTickLabel',{'0%','100%'})</span>
-0246 <span class="comment">%         grid on</span>
-0247 <span class="comment">%         ll=findobj(ph,'Type','Line');</span>
-0248 <span class="comment">%</span>
-0249 <span class="comment">%     end</span>
-0250 <span class="comment">% end</span>
-0251 <span class="comment">% if late==1</span>
-0252 <span class="comment">%     title('Late Phases')</span>
-0253 <span class="comment">%</span>
-0254 <span class="comment">% else</span>
-0255 <span class="comment">%     title('Early Phases')</span>
-0256 <span class="comment">% end</span>
-0257 <span class="comment">% legend(ll(end:-1:1),condlegend{:})</span>
-0258 <span class="comment">% % end%%</span>
-0259 <span class="comment">% set(gcf,'color','w');</span>
-0260</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0147 <span class="comment">%     %Adaptation VR</span>
+0148 <span class="comment">%     RAdap=expData.getAlignedField('procEMGData',conds(6),events, ...</span>
+0149 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0150 <span class="comment">%     LAdap=expData.getAlignedField('procEMGData',conds(6), ...</span>
+0151 <span class="comment">%    events([3,4,1,2]), ...</span>
+0152 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0153 <span class="comment">%</span>
+0154 <span class="comment">%     %OG post NO VR</span>
+0155 <span class="comment">%     RPost1=expData.getAlignedField('procEMGData',conds(7),events, ...</span>
+0156 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0157 <span class="comment">%     LPost1=expData.getAlignedField('procEMGData',conds(7), ...</span>
+0158 <span class="comment">%    events([3,4,1,2]), ...</span>
+0159 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0160 <span class="comment">%</span>
+0161 <span class="comment">%     %TMpost VR</span>
+0162 <span class="comment">%     RPost2=expData.getAlignedField('procEMGData',conds(8),events, ...</span>
+0163 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['R' muscle{m}]});</span>
+0164 <span class="comment">%     LPost2=expData.getAlignedField('procEMGData',conds(8), ...</span>
+0165 <span class="comment">%    events([3,4,1,2]), ...</span>
+0166 <span class="comment">%    alignmentLengths).getPartialDataAsATS({['L' muscle{m}]});</span>
+0167 <span class="comment">%</span>
+0168 <span class="comment">%     % Create plots</span>
+0169 <span class="comment">%     % close all;</span>
+0170 <span class="comment">%     poster_colors;</span>
+0171 <span class="comment">%     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; ...</span>
+0172 <span class="comment">%    p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];</span>
+0173 <span class="comment">%     condColors=colorOrder;</span>
+0174 <span class="comment">%</span>
+0175 <span class="comment">%</span>
+0176 <span class="comment">%     for l=1:2</span>
+0177 <span class="comment">%         switch l</span>
+0178 <span class="comment">%             case 1</span>
+0179 <span class="comment">%</span>
+0180 <span class="comment">%                 %Late</span>
+0181 <span class="comment">%                 OGbase_late=ROGBase.getPartialStridesAsATS( ...</span>
+0182 <span class="comment">%    size(ROGBase.Data,3)-40:size(ROGBase.Data,3));</span>
+0183 <span class="comment">%                 TRbase_late=RTRbase.getPartialStridesAsATS( ...</span>
+0184 <span class="comment">%    size(RTRbase.Data,3)-40:size(RTRbase.Data,3));</span>
+0185 <span class="comment">%                 TMBase_late=RTMBase.getPartialStridesAsATS( ...</span>
+0186 <span class="comment">%    size(RTMBase.Data,3)-40:size(RTMBase.Data,3));</span>
+0187 <span class="comment">%                 Adaptation_late=RAdap.getPartialStridesAsATS( ...</span>
+0188 <span class="comment">%    size(RAdap.Data,3)-40:size(RAdap.Data,3));</span>
+0189 <span class="comment">%                 Post2_Late=RPost2.getPartialStridesAsATS( ...</span>
+0190 <span class="comment">%    size(RPost2.Data,3)-40:size(RPost2.Data,3));</span>
+0191 <span class="comment">%                 Post1_Late=RPost1.getPartialStridesAsATS( ...</span>
+0192 <span class="comment">%    size(RPost1.Data,3)-40:size(RPost1.Data,3));</span>
+0193 <span class="comment">%</span>
+0194 <span class="comment">%                 %Early</span>
+0195 <span class="comment">%                 Post1_early=RPost1.getPartialStridesAsATS(1:30);</span>
+0196 <span class="comment">%                 Pos=RPosi.getPartialStridesAsATS(1:30);</span>
+0197 <span class="comment">%                 Neg=RNeg.getPartialStridesAsATS(1:30);</span>
+0198 <span class="comment">%                 Post2_early=RPost2.getPartialStridesAsATS(1:30);</span>
+0199 <span class="comment">%</span>
+0200 <span class="comment">%</span>
+0201 <span class="comment">%</span>
+0202 <span class="comment">%                 tit=['R' muscle{m}];</span>
+0203 <span class="comment">%             case 2</span>
+0204 <span class="comment">%</span>
+0205 <span class="comment">%                 %Late</span>
+0206 <span class="comment">%                 OGbase_late=LOGBase.getPartialStridesAsATS( ...</span>
+0207 <span class="comment">%    size(LOGBase.Data,3)-40:size(LOGBase.Data,3));</span>
+0208 <span class="comment">%                 TRbase_late=LTRbase.getPartialStridesAsATS( ...</span>
+0209 <span class="comment">%    size(LTRbase.Data,3)-40:size(LTRbase.Data,3));</span>
+0210 <span class="comment">%                 TMBase_late=LTMBase.getPartialStridesAsATS( ...</span>
+0211 <span class="comment">%    size(LTMBase.Data,3)-40:size(LTMBase.Data,3));</span>
+0212 <span class="comment">%                 Adaptation_late=LAdap.getPartialStridesAsATS( ...</span>
+0213 <span class="comment">%    size(LAdap.Data,3)-40:size(LAdap.Data,3));</span>
+0214 <span class="comment">%</span>
+0215 <span class="comment">%                 %                 if m==14</span>
+0216 <span class="comment">%                 %</span>
+0217 <span class="comment">%                 %                 else</span>
+0218 <span class="comment">%                 Post1_Late=LPost1.getPartialStridesAsATS( ...</span>
+0219 <span class="comment">%    size(LPost1.Data,3)-40:size(LPost1.Data,3));</span>
+0220 <span class="comment">%                 Post2_Late=LPost2.getPartialStridesAsATS( ...</span>
+0221 <span class="comment">%    size(LPost2.Data,3)-40:size(LPost2.Data,3));</span>
+0222 <span class="comment">%                 %                 end</span>
+0223 <span class="comment">%</span>
+0224 <span class="comment">%</span>
+0225 <span class="comment">%</span>
+0226 <span class="comment">%                 %Early</span>
+0227 <span class="comment">%                 Pos=LPosi.getPartialStridesAsATS(1:30);</span>
+0228 <span class="comment">%                 Neg=LNeg.getPartialStridesAsATS(1:30);</span>
+0229 <span class="comment">%                 Post1_early=LPost1.getPartialStridesAsATS(1:30);</span>
+0230 <span class="comment">%                 Post2_early=LPost2.getPartialStridesAsATS(1:30);</span>
+0231 <span class="comment">%                 %                 if m==14</span>
+0232 <span class="comment">%                 %</span>
+0233 <span class="comment">%                 %                 else</span>
+0234 <span class="comment">%                 %</span>
+0235 <span class="comment">%                 %                 end</span>
+0236 <span class="comment">%</span>
+0237 <span class="comment">%</span>
+0238 <span class="comment">%                 tit=['L' muscle{m}];</span>
+0239 <span class="comment">%</span>
+0240 <span class="comment">%         end</span>
+0241 <span class="comment">%</span>
+0242 <span class="comment">%         norm2=nanmean(nanmax(squeeze(TRbase_late.Data)));</span>
+0243 <span class="comment">%</span>
+0244 <span class="comment">%         %Late</span>
+0245 <span class="comment">%         OGbase_late.Data=bsxfun(@rdivide,OGbase_late.Data,norm2);</span>
+0246 <span class="comment">%         TRbase_late.Data=bsxfun(@rdivide,TRbase_late.Data,norm2);</span>
+0247 <span class="comment">%         TMBase_late.Data=bsxfun(@rdivide,TMBase_late.Data,norm2);</span>
+0248 <span class="comment">%         Adaptation_late.Data=bsxfun(@rdivide,Adaptation_late.Data,norm2);</span>
+0249 <span class="comment">%         Post1_Late.Data=bsxfun(@rdivide,Post1_Late.Data,norm2);</span>
+0250 <span class="comment">%         Post2_Late.Data=bsxfun(@rdivide,Post2_Late.Data,norm2);</span>
+0251 <span class="comment">%</span>
+0252 <span class="comment">%         %             Early</span>
+0253 <span class="comment">%         Pos.Data=bsxfun(@rdivide,Pos.Data,norm2);</span>
+0254 <span class="comment">%         Neg.Data=bsxfun(@rdivide,Neg.Data,norm2);</span>
+0255 <span class="comment">%         Post1_early.Data=bsxfun(@rdivide,Post1_early.Data,norm2);</span>
+0256 <span class="comment">%         Post2_early.Data=bsxfun(@rdivide,Post2_early.Data,norm2);</span>
+0257 <span class="comment">%         %</span>
+0258 <span class="comment">%         condColors=colorOrder;</span>
+0259 <span class="comment">%         % ph=[];</span>
+0260 <span class="comment">%         ph1=[];</span>
+0261 <span class="comment">%         prc=[16,84];</span>
+0262 <span class="comment">%         MM=sum(alignmentLengths);</span>
+0263 <span class="comment">%         M=cumsum([0 alignmentLengths]);</span>
+0264 <span class="comment">%         xt=sort([M,M(1:end-1)+[diff(M)/2]]);</span>
+0265 <span class="comment">%         phaseSize=8;</span>
+0266 <span class="comment">%         xt=[0:phaseSize:MM];</span>
+0267 <span class="comment">%         %xt=[0:8:MM];s</span>
+0268 <span class="comment">%         fs=16; %FontSize</span>
+0269 <span class="comment">%</span>
+0270 <span class="comment">%</span>
+0271 <span class="comment">%         ph=subplot(5,6,lm(m)+l-1);</span>
+0272 <span class="comment">%         %     ph=subplot(1,2,l);</span>
+0273 <span class="comment">%         set(gcf,'color','w');</span>
+0274 <span class="comment">%         %     set(ph,'Position',[.07 .48 .35 .45]);</span>
+0275 <span class="comment">%         hold on</span>
+0276 <span class="comment">%</span>
+0277 <span class="comment">%</span>
+0278 <span class="comment">%         if late==1</span>
+0279 <span class="comment">%             if baseOnly==1</span>
+0280 <span class="comment">%                 OGbase_late.plot(fh,ph,condColors(1,:),[],0,[-49:0], ...</span>
+0281 <span class="comment">%    prc,true);</span>
+0282 <span class="comment">%                 TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0], ...</span>
+0283 <span class="comment">%    prc,true);</span>
+0284 <span class="comment">%                 TMBase_late.plot(fh,ph,condColors(5,:),[],0,[-49:0], ...</span>
+0285 <span class="comment">%    prc,true);</span>
+0286 <span class="comment">%             else</span>
+0287 <span class="comment">%                 OGbase_late.plot(fh,ph,condColors(1,:),[],0,[-49:0], ...</span>
+0288 <span class="comment">%    prc,true);</span>
+0289 <span class="comment">%                 TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0], ...</span>
+0290 <span class="comment">%    prc,true);</span>
+0291 <span class="comment">%                 TMBase_late.plot(fh,ph,condColors(5,:),[],0,[-49:0], ...</span>
+0292 <span class="comment">%    prc,true);</span>
+0293 <span class="comment">%                 Adaptation_late.plot(fh,ph,condColors(6,:),[],0, ...</span>
+0294 <span class="comment">%    [-49:0],prc,true);</span>
+0295 <span class="comment">%                 Post1_Late.plot(fh,ph,condColors(7,:),[],0,[-49:0], ...</span>
+0296 <span class="comment">%    prc,true);</span>
+0297 <span class="comment">%                 Post2_Late.plot(fh,ph,condColors(8,:),[],0,[-49:0], ...</span>
+0298 <span class="comment">%    prc,true);</span>
+0299 <span class="comment">%</span>
+0300 <span class="comment">%</span>
+0301 <span class="comment">%             end</span>
+0302 <span class="comment">%             %</span>
+0303 <span class="comment">%         else</span>
+0304 <span class="comment">%             TRbase_late.plot(fh,ph,condColors(2,:),[],0,[-49:0],prc,true);</span>
+0305 <span class="comment">%             Pos.plot(fh,ph,condColors(9,:),[],0,[-49:0],prc,true);</span>
+0306 <span class="comment">%             Neg.plot(fh,ph,condColors(4,:),[],0,[-49:0],prc,true);</span>
+0307 <span class="comment">%             Post1_early.plot(fh,ph,condColors(7,:),[],0,[-49:0],prc,true);</span>
+0308 <span class="comment">%             Post2_early.plot(fh,ph,condColors(8,:),[],0,[-49:0],prc,true);</span>
+0309 <span class="comment">%         end</span>
+0310 <span class="comment">%         axis tight</span>
+0311 <span class="comment">%         ylabel('')</span>
+0312 <span class="comment">%         ylabel(tit)</span>
+0313 <span class="comment">%         %     set(ph,'YTick',[0,1],'YTickLabel',{'0%','100%'})</span>
+0314 <span class="comment">%         grid on</span>
+0315 <span class="comment">%         ll=findobj(ph,'Type','Line');</span>
+0316 <span class="comment">%</span>
+0317 <span class="comment">%     end</span>
+0318 <span class="comment">% end</span>
+0319 <span class="comment">% if late==1</span>
+0320 <span class="comment">%     title('Late Phases')</span>
+0321 <span class="comment">%</span>
+0322 <span class="comment">% else</span>
+0323 <span class="comment">%     title('Early Phases')</span>
+0324 <span class="comment">% end</span>
+0325 <span class="comment">% legend(ll(end:-1:1),condlegend{:})</span>
+0326 <span class="comment">% % end%%</span>
+0327 <span class="comment">% set(gcf,'color','w');</span>
+0328</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

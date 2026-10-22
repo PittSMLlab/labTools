@@ -36,7 +36,7 @@ This function calls:
 <li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@labData/split.html" class="code" title="function newThis = split(this, t0, t1, newClass)">split</a>	split  Splits data into time-delimited segments</li><li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="strideMetaData.html" class="code" title="">strideMetaData</a>	</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@labData/split.html" class="code" title="function newThis = split(this, t0, t1, newClass)">split</a>	SPLIT Splits data into time-delimited segments.</li><li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="strideMetaData.html" class="code" title="">strideMetaData</a>	</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -45,132 +45,136 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="derivedMetaData.html" class="code" title="">derivedMetaData</a> &lt; <a href="trialMetaData.html" class="code" title="">trialMetaData</a>
-0002     <span class="comment">%derivedMetaData  Metadata for data derived from a parent trial</span>
+0002     <span class="comment">%DERIVEDMETADATA Metadata for data derived from a parent trial.</span>
 0003     <span class="comment">%</span>
-0004     <span class="comment">%   derivedMetaData extends trialMetaData to represent metadata</span>
-0005     <span class="comment">%   for data segments or processed data derived from a parent</span>
-0006     <span class="comment">%   trial. It maintains a reference to the parent trial's</span>
-0007     <span class="comment">%   metadata and can inherit properties from it.</span>
+0004     <span class="comment">%   derivedMetaData extends trialMetaData to represent metadata for</span>
+0005     <span class="comment">% data segments or processed data derived from a parent trial. It</span>
+0006     <span class="comment">% maintains a reference to the parent trial's metadata and can</span>
+0007     <span class="comment">% inherit properties from it.</span>
 0008     <span class="comment">%</span>
-0009     <span class="comment">%derivedMetaData properties:</span>
+0009     <span class="comment">% derivedMetaData properties:</span>
 0010     <span class="comment">%   parentMetaData - reference to the parent trial's metadata</span>
 0011     <span class="comment">%                    object</span>
 0012     <span class="comment">%   (inherits all properties from trialMetaData)</span>
 0013     <span class="comment">%</span>
-0014     <span class="comment">%derivedMetaData methods:</span>
+0014     <span class="comment">% derivedMetaData methods:</span>
 0015     <span class="comment">%   derivedMetaData - constructor for derived metadata</span>
 0016     <span class="comment">%</span>
-0017     <span class="comment">%See also: trialMetaData, strideMetaData</span>
-0018 
-0019     <span class="comment">%% Properties</span>
-0020     properties (SetAccess = private)
-0021         parentMetaData
-0022     <span class="keyword">end</span>
-0023 
-0024     <span class="comment">%% Constructor</span>
-0025     methods
-0026         <a name="_sub0" href="#_subfunctions" class="code">function this = derivedMetaData(ID, date, experimenter, desc, </a><span class="keyword">...</span>
-0027                 obs, refLeg, parentMeta, condition, rawDataFilename, <span class="keyword">...</span>
-0028                 type, schenleyLab, perceptualTasks, datlog, fastLeg)
-0029             <span class="comment">%derivedMetaData  Constructor for derivedMetaData class</span>
-0030             <span class="comment">%</span>
-0031             <span class="comment">%   this = derivedMetaData(ID, date, experimenter, desc,</span>
-0032             <span class="comment">%   obs, refLeg, parentMeta) creates a derived metadata</span>
-0033             <span class="comment">%   object with specified parameters and inherits</span>
-0034             <span class="comment">%   remaining properties from parent metadata</span>
-0035             <span class="comment">%</span>
-0036             <span class="comment">%   this = derivedMetaData(ID, date, experimenter, desc,</span>
-0037             <span class="comment">%   obs, refLeg, parentMeta, condition, rawDataFilename,</span>
-0038             <span class="comment">%   type, schenleyLab, perceptualTasks, datlog, fastLeg)</span>
-0039             <span class="comment">%   creates a derived metadata object with all specified</span>
-0040             <span class="comment">%   parameters</span>
-0041             <span class="comment">%</span>
-0042             <span class="comment">%   Inputs:</span>
-0043             <span class="comment">%       ID - identifier string for the derived data</span>
-0044             <span class="comment">%       date - date of data creation</span>
-0045             <span class="comment">%       experimenter - name of experimenter</span>
-0046             <span class="comment">%       desc - description of the derived data</span>
-0047             <span class="comment">%       obs - observations about the derived data</span>
-0048             <span class="comment">%       refLeg - reference leg, 'L' or 'R'</span>
-0049             <span class="comment">%       parentMeta - parent trial's metadata object</span>
-0050             <span class="comment">%       condition - condition number (optional, inherits</span>
-0051             <span class="comment">%                   from parent if only 7 args)</span>
-0052             <span class="comment">%       rawDataFilename - raw data filename(s) (optional,</span>
-0053             <span class="comment">%                         inherits from parent if only 7</span>
-0054             <span class="comment">%                         args)</span>
-0055             <span class="comment">%       type - trial type (optional, inherits from parent</span>
-0056             <span class="comment">%              if only 7 args)</span>
-0057             <span class="comment">%       schenleyLab - Schenley lab flag (optional,</span>
-0058             <span class="comment">%                     inherits from parent if only 7 args)</span>
-0059             <span class="comment">%       perceptualTasks - perceptual tasks flag (optional,</span>
-0060             <span class="comment">%                         inherits from parent if only 7</span>
-0061             <span class="comment">%                         args)</span>
-0062             <span class="comment">%       datlog - data log structure (optional, inherits</span>
-0063             <span class="comment">%                from parent if only 7 args)</span>
-0064             <span class="comment">%       fastLeg - fast leg designation (optional,</span>
-0065             <span class="comment">%                 defaults to refLeg)</span>
-0066             <span class="comment">%</span>
-0067             <span class="comment">%   Outputs:</span>
-0068             <span class="comment">%       this - derivedMetaData object</span>
-0069             <span class="comment">%</span>
-0070             <span class="comment">%   See also: trialMetaData, strideMetaData</span>
-0071 
-0072             <span class="comment">% parentMeta is given, but no other args are given, set</span>
-0073             <span class="comment">% it to the parent</span>
-0074             <span class="keyword">if</span> nargin == 7
-0075                 condition = parentMeta.condition;
-0076                 rawDataFilename = parentMeta.rawDataFilename;
-0077                 type = parentMeta.type;
-0078                 schenleyLab = parentMeta.schenleyLab;
-0079                 perceptualTasks = parentMeta.perceptualTasks;
-0080                 datlog = parentMeta.datlog;
-0081                 <span class="comment">% fastLeg = parentMeta.fastLeg;</span>
-0082                 <span class="comment">% backwardCheck = parentMeta.backwardCheck;</span>
-0083             <span class="keyword">end</span>
-0084             <span class="comment">% no condition provided &amp; hasn't been set by parent meta.</span>
-0085             <span class="keyword">if</span> ~exist(<span class="string">'condition'</span>, <span class="string">'var'</span>)
-0086                 <span class="comment">% default to empty (the type of default to set see</span>
-0087                 <span class="comment">% @trialMetaData properties default)</span>
-0088                 condition = [];
-0089             <span class="keyword">end</span>
-0090             <span class="keyword">if</span> ~exist(<span class="string">'rawDataFilename'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0091                 rawDataFilename = &quot;&quot;; <span class="comment">% default to empty</span>
-0092             <span class="keyword">end</span>
-0093             <span class="keyword">if</span> ~exist(<span class="string">'type'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0094                 type = &quot;&quot;; <span class="comment">% default to empty</span>
-0095             <span class="keyword">end</span>
-0096             <span class="keyword">if</span> ~exist(<span class="string">'schenleyLab'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0097                 schenleyLab = &quot;&quot;; <span class="comment">% default to empty</span>
-0098             <span class="keyword">end</span>
-0099             <span class="keyword">if</span> ~exist(<span class="string">'perceptualTasks'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0100                 perceptualTasks = &quot;&quot;; <span class="comment">% default to empty</span>
-0101             <span class="keyword">end</span>
-0102             <span class="keyword">if</span> ~exist(<span class="string">'datlog'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0103                 datlog = &quot;&quot;; <span class="comment">% default to empty</span>
-0104             <span class="keyword">end</span>
-0105             <span class="keyword">if</span> ~exist(<span class="string">'fastLeg'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0106                 fastLeg = refLeg; <span class="comment">% default to refLeg</span>
-0107             <span class="keyword">end</span>
-0108             <span class="keyword">if</span> ~exist(<span class="string">'backwardCheck'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
-0109                 backwardCheck = &quot;&quot;; <span class="comment">% default to empty</span>
-0110             <span class="keyword">end</span>
-0111             this@<a href="trialMetaData.html" class="code" title="">trialMetaData</a>(ID, desc, obs, refLeg, condition, <span class="keyword">...</span>
-0112                 rawDataFilename, parentMeta.type, schenleyLab, <span class="keyword">...</span>
-0113                 perceptualTasks, datlog)
-0114             <span class="comment">% if isa(parentMeta, 'labMetaData'); % Had to comment this on</span>
-0115             <span class="comment">%   10/7/2014, because trialMetaData and experimentMetaData are</span>
-0116             <span class="comment">%   no longer labMetaData objects. -Pablo</span>
-0117             this.parentMetaData = parentMeta;
-0118             <span class="comment">% else</span>
-0119             <span class="comment">%     ME = MException('derivedMetaData:Constructor',</span>
-0120             <span class="comment">%     'parentMetaData is not a labMetaData object.');</span>
-0121             <span class="comment">%     throw(ME);</span>
-0122             <span class="comment">% end</span>
-0123         <span class="keyword">end</span>
-0124     <span class="keyword">end</span>
-0125 
-0126 <span class="keyword">end</span>
-0127</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0017     <span class="comment">% Toolbox Dependencies: None</span>
+0018     <span class="comment">%</span>
+0019     <span class="comment">% See also TRIALMETADATA, STRIDEMETADATA.</span>
+0020 
+0021     <span class="comment">%% Properties</span>
+0022     properties (SetAccess = private)
+0023         parentMetaData
+0024     <span class="keyword">end</span>
+0025 
+0026     <span class="comment">%% Constructor</span>
+0027     methods
+0028         <a name="_sub0" href="#_subfunctions" class="code">function this = derivedMetaData(ID, date, experimenter, desc, </a><span class="keyword">...</span>
+0029             obs, refLeg, parentMeta, condition, rawDataFilename, <span class="keyword">...</span>
+0030             type, schenleyLab, perceptualTasks, datlog, fastLeg)
+0031             <span class="comment">%DERIVEDMETADATA Constructor for derivedMetaData class.</span>
+0032             <span class="comment">%</span>
+0033             <span class="comment">%   this = derivedMetaData(ID, date, experimenter, desc, obs,</span>
+0034             <span class="comment">% refLeg, parentMeta) creates a derived metadata object with</span>
+0035             <span class="comment">% specified parameters and inherits the remaining properties</span>
+0036             <span class="comment">% from the parent metadata.</span>
+0037             <span class="comment">%</span>
+0038             <span class="comment">%   this = derivedMetaData(ID, date, experimenter, desc, obs,</span>
+0039             <span class="comment">% refLeg, parentMeta, condition, rawDataFilename, type,</span>
+0040             <span class="comment">% schenleyLab, perceptualTasks, datlog, fastLeg) creates a</span>
+0041             <span class="comment">% derived metadata object with all specified parameters.</span>
+0042             <span class="comment">%</span>
+0043             <span class="comment">% Inputs:</span>
+0044             <span class="comment">%   ID              - identifier string for the derived data</span>
+0045             <span class="comment">%   date            - date of data creation</span>
+0046             <span class="comment">%   experimenter    - name of experimenter</span>
+0047             <span class="comment">%   desc            - description of the derived data</span>
+0048             <span class="comment">%   obs             - observations about the derived data</span>
+0049             <span class="comment">%   refLeg          - reference leg, 'L' or 'R'</span>
+0050             <span class="comment">%   parentMeta      - parent trial's metadata object</span>
+0051             <span class="comment">%   condition       - (optional) condition number; inherited</span>
+0052             <span class="comment">%                     from parent if only 7 args</span>
+0053             <span class="comment">%   rawDataFilename - (optional) raw data filename(s);</span>
+0054             <span class="comment">%                     inherited from parent if only 7 args</span>
+0055             <span class="comment">%   type            - (optional) trial type; inherited from</span>
+0056             <span class="comment">%                     parent if only 7 args</span>
+0057             <span class="comment">%   schenleyLab     - (optional) Schenley lab flag; inherited</span>
+0058             <span class="comment">%                     from parent if only 7 args</span>
+0059             <span class="comment">%   perceptualTasks - (optional) perceptual tasks flag;</span>
+0060             <span class="comment">%                     inherited from parent if only 7 args</span>
+0061             <span class="comment">%   datlog          - (optional) data log structure; inherited</span>
+0062             <span class="comment">%                     from parent if only 7 args</span>
+0063             <span class="comment">%   fastLeg         - (optional) fast leg designation;</span>
+0064             <span class="comment">%                     defaults to refLeg</span>
+0065             <span class="comment">%</span>
+0066             <span class="comment">% Outputs:</span>
+0067             <span class="comment">%   this - derivedMetaData object</span>
+0068             <span class="comment">%</span>
+0069             <span class="comment">% NOTE: The superclass constructor receives parentMeta.type,</span>
+0070             <span class="comment">%       not the type argument.</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">% Toolbox Dependencies: None</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">% See also TRIALMETADATA, STRIDEMETADATA.</span>
+0075 
+0076             <span class="comment">% parentMeta is given, but no other args are given, set</span>
+0077             <span class="comment">% it to the parent</span>
+0078             <span class="keyword">if</span> nargin == 7
+0079                 condition = parentMeta.condition;
+0080                 rawDataFilename = parentMeta.rawDataFilename;
+0081                 type = parentMeta.type;
+0082                 schenleyLab = parentMeta.schenleyLab;
+0083                 perceptualTasks = parentMeta.perceptualTasks;
+0084                 datlog = parentMeta.datlog;
+0085                 <span class="comment">% fastLeg = parentMeta.fastLeg;</span>
+0086                 <span class="comment">% backwardCheck = parentMeta.backwardCheck;</span>
+0087             <span class="keyword">end</span>
+0088             <span class="comment">% no condition provided &amp; hasn't been set by parent meta.</span>
+0089             <span class="keyword">if</span> ~exist(<span class="string">'condition'</span>, <span class="string">'var'</span>)
+0090                 <span class="comment">% default to empty (the type of default to set see</span>
+0091                 <span class="comment">% @trialMetaData properties default)</span>
+0092                 condition = [];
+0093             <span class="keyword">end</span>
+0094             <span class="keyword">if</span> ~exist(<span class="string">'rawDataFilename'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0095                 rawDataFilename = &quot;&quot;; <span class="comment">% default to empty</span>
+0096             <span class="keyword">end</span>
+0097             <span class="keyword">if</span> ~exist(<span class="string">'type'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0098                 type = &quot;&quot;; <span class="comment">% default to empty</span>
+0099             <span class="keyword">end</span>
+0100             <span class="keyword">if</span> ~exist(<span class="string">'schenleyLab'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0101                 schenleyLab = &quot;&quot;; <span class="comment">% default to empty</span>
+0102             <span class="keyword">end</span>
+0103             <span class="keyword">if</span> ~exist(<span class="string">'perceptualTasks'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0104                 perceptualTasks = &quot;&quot;; <span class="comment">% default to empty</span>
+0105             <span class="keyword">end</span>
+0106             <span class="keyword">if</span> ~exist(<span class="string">'datlog'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0107                 datlog = &quot;&quot;; <span class="comment">% default to empty</span>
+0108             <span class="keyword">end</span>
+0109             <span class="keyword">if</span> ~exist(<span class="string">'fastLeg'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0110                 fastLeg = refLeg; <span class="comment">% default to refLeg</span>
+0111             <span class="keyword">end</span>
+0112             <span class="keyword">if</span> ~exist(<span class="string">'backwardCheck'</span>, <span class="string">'var'</span>) <span class="comment">% no condition provided</span>
+0113                 backwardCheck = &quot;&quot;; <span class="comment">% default to empty</span>
+0114             <span class="keyword">end</span>
+0115             this@<a href="trialMetaData.html" class="code" title="">trialMetaData</a>(ID, desc, obs, refLeg, condition, <span class="keyword">...</span>
+0116                 rawDataFilename, parentMeta.type, schenleyLab, <span class="keyword">...</span>
+0117                 perceptualTasks, datlog)
+0118             <span class="comment">% NOTE: parentMeta is not validated as a labMetaData object</span>
+0119             <span class="comment">% because trialMetaData and experimentMetaData do not extend it</span>
+0120             <span class="comment">% if isa(parentMeta, 'labMetaData');</span>
+0121             this.parentMetaData = parentMeta;
+0122             <span class="comment">% else</span>
+0123             <span class="comment">%     ME = MException('derivedMetaData:Constructor',</span>
+0124             <span class="comment">%     'parentMetaData is not a labMetaData object.');</span>
+0125             <span class="comment">%     throw(ME);</span>
+0126             <span class="comment">% end</span>
+0127         <span class="keyword">end</span>
+0128     <span class="keyword">end</span>
+0129 
+0130 <span class="keyword">end</span>
+0131</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of isaLabel</title>
   <meta name="keywords" content="isaLabel">
-  <meta name="description" content="isaLabel  Checks if labels exist">
+  <meta name="description" content="ISALABEL Checks if labels exist.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,26 +21,28 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>isaLabel  Checks if labels exist</strong></div>
+<div class="box"><strong>ISALABEL Checks if labels exist.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [boolFlag, labelIdx] = isaLabel(this, label) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">isaLabel  Checks if labels exist
+<div class="fragment"><pre class="comment">ISALABEL Checks if labels exist.
 
-   [boolFlag, labelIdx] = isaLabel(this, label) checks whether
-   specified labels are present
+   [boolFlag, labelIdx] = isaLabel(this, label) checks whether specified
+ labels are present
 
-   Inputs:
-       this - alignedTimeSeries object
-       label - cell array of label strings to check
+ Inputs:
+   this  - alignedTimeSeries object
+   label - cell array of label strings to check
 
-   Outputs:
-       boolFlag - logical vector indicating which labels exist
-       labelIdx - vector of label indices
+ Outputs:
+   boolFlag - logical vector indicating which labels exist
+   labelIdx - vector of label indices
 
-   See also: <a href="getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">getLabelsThatMatch</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getLabelsThatMatch.html" class="code" title="function labelList = getLabelsThatMatch(this, exp)">GETLABELSTHATMATCH</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -49,39 +51,41 @@ This function calls:
 <li><a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>	Faster version of compareLists. This does not accept list1 being a cell</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@cognitiveData/cognitiveData.html" class="code" title="">cognitiveData</a>	</li><li><a href="../../../../labTools/classes/auxData/@paramData/isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>	isaParameter  Checks if parameter(s) exist in dataset</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@cognitiveData/cognitiveData.html" class="code" title="">cognitiveData</a>	</li><li><a href="../../../../labTools/classes/auxData/@paramData/isaParameter.html" class="code" title="function [boolFlag, labelIdx] = isaParameter(this, label)">isaParameter</a>	ISAPARAMETER Checks if parameter(s) exist in dataset.</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [boolFlag, labelIdx] = isaLabel(this, label)</a>
-0002 <span class="comment">%isaLabel  Checks if labels exist</span>
+0002 <span class="comment">%ISALABEL Checks if labels exist.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether</span>
-0005 <span class="comment">%   specified labels are present</span>
+0004 <span class="comment">%   [boolFlag, labelIdx] = isaLabel(this, label) checks whether specified</span>
+0005 <span class="comment">% labels are present</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - alignedTimeSeries object</span>
-0009 <span class="comment">%       label - cell array of label strings to check</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this  - alignedTimeSeries object</span>
+0009 <span class="comment">%   label - cell array of label strings to check</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       boolFlag - logical vector indicating which labels exist</span>
-0013 <span class="comment">%       labelIdx - vector of label indices</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   boolFlag - logical vector indicating which labels exist</span>
+0013 <span class="comment">%   labelIdx - vector of label indices</span>
 0014 <span class="comment">%</span>
-0015 <span class="comment">%   See also: getLabelsThatMatch</span>
-0016 
-0017 boolFlag = false(size(label));
-0018 labelIdx = zeros(size(label));
-0019 [bool, idx] = <a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(label, this.labels);
-0020 <span class="keyword">for</span> j = 1:length(label)
-0021     <span class="keyword">if</span> any(idx == j)
-0022         boolFlag(j) = true;
-0023         labelIdx(j) = find(idx == j);
-0024     <span class="keyword">end</span>
-0025 <span class="keyword">end</span>
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0015 <span class="comment">% Toolbox Dependencies: None</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% See also GETLABELSTHATMATCH.</span>
+0018 
+0019 boolFlag = false(size(label));
+0020 labelIdx = zeros(size(label));
+0021 [bool, idx] = <a href="../../../../labTools/fun/ext/compareListsFast.html" class="code" title="function [bool,idxs] = compareListsFast(list1,list2)">compareListsFast</a>(label, this.labels);
+0022 <span class="keyword">for</span> jj = 1:length(label)
+0023     <span class="keyword">if</span> any(idx == jj)
+0024         boolFlag(jj) = true;
+0025         labelIdx(jj) = find(idx == jj);
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

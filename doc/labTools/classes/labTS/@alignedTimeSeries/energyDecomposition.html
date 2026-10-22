@@ -4,7 +4,7 @@
 <head>
   <title>Description of energyDecomposition</title>
   <meta name="keywords" content="energyDecomposition">
-  <meta name="description" content="energyDecomposition  Decomposes variance">
+  <meta name="description" content="ENERGYDECOMPOSITION Decomposes variance.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,34 +21,36 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>energyDecomposition  Decomposes variance</strong></div>
+<div class="box"><strong>ENERGYDECOMPOSITION Decomposes variance.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [decomposition, meanValue, avgStride,trial2trialVariability] = energyDecomposition(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">energyDecomposition  Decomposes variance
+<div class="fragment"><pre class="comment">ENERGYDECOMPOSITION Decomposes variance.
 
    [decomposition, meanValue, avgStride, trial2trialVariability] =
-   energyDecomposition(this) decomposes variance into mean, average
-   stride pattern, and trial-to-trial variability
+ energyDecomposition(this) decomposes variance into mean, average stride
+ pattern, and trial-to-trial variability
 
-   Inputs:
-       this - alignedTimeSeries object
+ Inputs:
+   this - alignedTimeSeries object
 
-   Outputs:
-       decomposition - variance decomposition results
-       meanValue - mean value component
-       avgStride - average stride pattern component
-       trial2trialVariability - trial-to-trial variability component
+ Outputs:
+   decomposition          - variance decomposition results
+   meanValue              - mean value component
+   avgStride              - average stride pattern component
+   trial2trialVariability - trial-to-trial variability component
 
-   See also: getVarianceDecomposition</pre></div>
+ Toolbox Dependencies: None
+
+ See also GETVARIANCEDECOMPOSITION.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>	</li></ul>
+<li><a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] =getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>	GETVARIANCEDECOMPOSITION Split EMG energy into mean, shape, and noise.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
@@ -59,28 +61,30 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [decomposition, meanValue, avgStride, </a><span class="keyword">...</span>
 0002     trial2trialVariability] = energyDecomposition(this)
-0003 <span class="comment">%energyDecomposition  Decomposes variance</span>
+0003 <span class="comment">%ENERGYDECOMPOSITION Decomposes variance.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   [decomposition, meanValue, avgStride, trial2trialVariability] =</span>
-0006 <span class="comment">%   energyDecomposition(this) decomposes variance into mean, average</span>
-0007 <span class="comment">%   stride pattern, and trial-to-trial variability</span>
+0006 <span class="comment">% energyDecomposition(this) decomposes variance into mean, average stride</span>
+0007 <span class="comment">% pattern, and trial-to-trial variability</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - alignedTimeSeries object</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this - alignedTimeSeries object</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   Outputs:</span>
-0013 <span class="comment">%       decomposition - variance decomposition results</span>
-0014 <span class="comment">%       meanValue - mean value component</span>
-0015 <span class="comment">%       avgStride - average stride pattern component</span>
-0016 <span class="comment">%       trial2trialVariability - trial-to-trial variability component</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   decomposition          - variance decomposition results</span>
+0014 <span class="comment">%   meanValue              - mean value component</span>
+0015 <span class="comment">%   avgStride              - average stride pattern component</span>
+0016 <span class="comment">%   trial2trialVariability - trial-to-trial variability component</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   See also: getVarianceDecomposition</span>
-0019 
-0020 alignedData = this.Data;
-0021 [decomposition, meanValue, avgStride, trial2trialVariability] = <span class="keyword">...</span>
-0022     <a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>(alignedData);
-0023 <span class="keyword">end</span>
-0024</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also GETVARIANCEDECOMPOSITION.</span>
+0021 
+0022 alignedData = this.Data;
+0023 [decomposition, meanValue, avgStride, trial2trialVariability] = <span class="keyword">...</span>
+0024     <a href="../../../../labTools/fun/EMGanalysis/getVarianceDecomposition.html" class="code" title="function [decomposition,meanValue,avgStride,trial2trialVariability] =getVarianceDecomposition(alignedData)">getVarianceDecomposition</a>(alignedData);
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

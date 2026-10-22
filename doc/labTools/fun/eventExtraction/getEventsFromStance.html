@@ -44,7 +44,7 @@
 
  Toolbox Dependencies: None
 
- See also <a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">GETEVENTSFROMFORCES</a>, GETEVENTSFROMTOENANDHEEL.</pre></div>
+ See also <a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">GETEVENTSFROMFORCES</a>, <a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">GETEVENTSFROMTOEANDHEEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -53,7 +53,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/fun/eventExtraction/deprecated/getEventsFromSwitches.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromSwitches(Lft_sw,Rft_sw,fsample)">getEventsFromSwitches</a>	retrieve left and right leg stance phases</li><li><a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</li></ul>
+<li><a href="../../../labTools/fun/eventExtraction/deprecated/getEventsFromSwitches.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromSwitches(Lft_sw,Rft_sw,fsample)">getEventsFromSwitches</a>	retrieve left and right leg stance phases</li><li><a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</li><li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOEANDHEEL Detect gait events from toe and heel marker data.</li></ul>
 <!-- crossreference -->
 
 
@@ -77,7 +77,7 @@ This function is called by:
 0016 <span class="comment">%</span>
 0017 <span class="comment">% Toolbox Dependencies: None</span>
 0018 <span class="comment">%</span>
-0019 <span class="comment">% See also GETEVENTSFROMFORCES, GETEVENTSFROMTOENANDHEEL.</span>
+0019 <span class="comment">% See also GETEVENTSFROMFORCES, GETEVENTSFROMTOEANDHEEL.</span>
 0020 
 0021 LTO = [false; diff(double(stanceL)) == -1];  <span class="comment">% &amp; stanceR;</span>
 0022 LHS = [false; diff(double(stanceL)) == 1];   <span class="comment">% &amp; stanceR;</span>
@@ -85,6 +85,6 @@ This function is called by:
 0024 RHS = [false; diff(double(stanceR)) == 1];   <span class="comment">% &amp; stanceL;</span>
 0025 
 0026 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

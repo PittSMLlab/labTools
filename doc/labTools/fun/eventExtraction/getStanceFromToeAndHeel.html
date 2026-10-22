@@ -4,7 +4,7 @@
 <head>
   <title>Description of getStanceFromToeAndHeel</title>
   <meta name="keywords" content="getStanceFromToeAndHeel">
-  <meta name="description" content="GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.">
+  <meta name="description" content="GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,18 +21,19 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</strong></div>
+<div class="box"><strong>GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.
+<div class="fragment"><pre class="comment">GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.
 
-   Combines two stance detection methods — velocity thresholding
- (getStance) and acceleration thresholding (getStance3) — and removes
- short phases. getStance2 (Hough-transform based) is available as an
- alternative but is currently disabled.
+   Thresholds ankle and toe marker speed relative to the ground
+ (getStance) and removes stance phases shorter than 200 ms.
+ getStance2 (Hough-transform floor detection) and getStance3
+ (acceleration thresholding) are kept as alternatives but are
+ currently unused.
 
  Inputs:
    ankKin  - N×3 double, ankle marker position (mm)
@@ -42,18 +43,21 @@
  Outputs:
    stance - N×1 logical, stance phase (true = stance)
 
- Toolbox Dependencies: None
+ Toolbox Dependencies:
+   Image Processing Toolbox (hough; unused getStance2 only)
+   Signal Processing Toolbox (medfilt1; unused getStance2 only)
+   Statistics and Machine Learning Toolbox (pca; unused getStance2 only)
 
- See also <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">GETSTANCEFROMFORCES</a>, <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">DELETESHORTPHASES</a>, GETEVENTSFROMTOENANDHEEL.</pre></div>
+ See also <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">GETSTANCEFROMFORCES</a>, <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">DELETESHORTPHASES</a>, <a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">GETEVENTSFROMTOEANDHEEL</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>	IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>	IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</li></ul>
+<li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOEANDHEEL Detect gait events from toe and heel marker data.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -62,287 +66,361 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)</a>
-0002 <span class="comment">%GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.</span>
+0002 <span class="comment">%GETSTANCEFROMTOEANDHEEL Estimate stance from ankle and toe kinematics.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   Combines two stance detection methods — velocity thresholding</span>
-0005 <span class="comment">% (getStance) and acceleration thresholding (getStance3) — and removes</span>
-0006 <span class="comment">% short phases. getStance2 (Hough-transform based) is available as an</span>
-0007 <span class="comment">% alternative but is currently disabled.</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">% Inputs:</span>
-0010 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
-0011 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
-0012 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
-0013 <span class="comment">%</span>
-0014 <span class="comment">% Outputs:</span>
-0015 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
-0016 <span class="comment">%</span>
-0017 <span class="comment">% Toolbox Dependencies: None</span>
-0018 <span class="comment">%</span>
-0019 <span class="comment">% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.</span>
-0020 
-0021 <span class="comment">% NOTE: getStance2 (Hough-transform floor detection) is an alternative</span>
-0022 <span class="comment">% that may be more robust for non-standard gait; see that nested function.</span>
-0023 stance1 = <a href="#_sub1" class="code" title="subfunction stance = getStance(ankKin, toeKin, fsample)">getStance</a>(ankKin, toeKin, fsample);   <span class="comment">% threshold velocities</span>
-0024 stance = stance1;
-0025 <span class="comment">% remove stance phases of less than 200 ms</span>
-0026 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
-0027 
-0028 <span class="comment">%IDEA: instead of using pure (classical) logic, use fuzzy logic, with a</span>
-0029 <span class="comment">%smoothing kernel, so that all samples in a neighbourhood get a say on the</span>
-0030 <span class="comment">%value of a particular sample.</span>
-0031 <span class="comment">%This might be particularly helpful to get rid of quantization noise</span>
-0032 <span class="comment">%(kernel with support of 3 samples: the central one, and one to each side),</span>
-0033 <span class="comment">%and also with some other types of noise (NOT SURE: it might make it more</span>
-0034 <span class="comment">%sensible to big errors in only one of the estimations)</span>
-0035 <span class="keyword">end</span>
-0036 
-0037 <span class="comment">%% Method 1: try to find full stance points and threshold relative speed</span>
-0038 <a name="_sub1" href="#_subfunctions" class="code">function stance = getStance(ankKin, toeKin, fsample)</a>
-0039 <span class="comment">%GETSTANCE Estimate stance from ankle and toe marker velocity.</span>
-0040 <span class="comment">%</span>
-0041 <span class="comment">%   Identifies core stance (full foot contact) as periods of low relative</span>
-0042 <span class="comment">% speed between ankle and toe markers, determines ground reference speed,</span>
-0043 <span class="comment">% then classifies stance when ankle or toe speed relative to ground falls</span>
-0044 <span class="comment">% below empirical thresholds.</span>
-0045 <span class="comment">%</span>
-0046 <span class="comment">% Inputs:</span>
-0047 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
-0048 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
-0049 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
-0050 <span class="comment">%</span>
-0051 <span class="comment">% Outputs:</span>
-0052 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
-0053 
-0054 NAN_FILL_VEL          = 10000; <span class="comment">% large sentinel to suppress NaN in idealLPF (mm/s)</span>
-0055 VEL_THRESH_ANK        = 500;   <span class="comment">% ankle speed threshold for stance (mm/s); empirical</span>
-0056 VEL_THRESH_TOE        = 250;   <span class="comment">% toe speed threshold for stance (mm/s); empirical</span>
-0057 coreStanceSpeedThresh = 150;   <span class="comment">% max relative ankle–toe speed for core stance (mm/s)</span>
-0058 
-0059 <span class="comment">%% Step 1: calculate speed</span>
-0060 ankleVel = fsample * diff(ankKin);
-0061 ankleVel(end+1, :) = ankleVel(<span class="keyword">end</span>, :);
-0062 toeVel = fsample * diff(toeKin);
-0063 toeVel(end+1, :) = toeVel(<span class="keyword">end</span>, :);
-0064 fcut = 10 / (2 * fsample); <span class="comment">% ideal lowpass cutoff, normalized (10 Hz)</span>
-0065 ankleVel(isnan(ankleVel)) = NAN_FILL_VEL;
-0066 toeVel(isnan(toeVel))     = NAN_FILL_VEL;
-0067 ankleVelFilt = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleVel, fcut);
-0068 toeVelFilt   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeVel, fcut);
-0069 
-0070 <span class="comment">%% Step 2: get core stance (full feet on ground) speed</span>
-0071 relV    = ankleVelFilt - toeVelFilt;           <span class="comment">% relative speed (mm/s)</span>
-0072 modRelV = sqrt(sum(relV .^ 2, 2));             <span class="comment">% magnitude of relative speed</span>
-0073 coreStance = (modRelV &lt; coreStanceSpeedThresh);
-0074 coreStance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(coreStance, fsample, 0.05); <span class="comment">% min core stance duration (s)</span>
-0075 
-0076 <span class="comment">% most common stance speed, rounded to nearest cm/s</span>
-0077 stanceSpeed = mode(10 * round(ankleVel(coreStance, :) / 10));
-0078 
-0079 <span class="comment">%% Step 3: threshold speed relative to ground for stance candidates</span>
-0080 ankV = ankleVel - ones(size(ankleVel, 1), 1) * stanceSpeed; <span class="comment">% ankle speed relative to ground</span>
-0081 toeV = toeVel   - ones(size(toeVel,   1), 1) * stanceSpeed; <span class="comment">% toe   speed relative to ground</span>
-0082 
-0083 modAnkV = sqrt(sum(ankV .^ 2, 2));
-0084 modToeV = sqrt(sum(toeV .^ 2, 2));
-0085 
-0086 <span class="comment">%% Step 4: classify stance from ankle OR toe stance</span>
-0087 ankStance = modAnkV &lt; VEL_THRESH_ANK;
-0088 toeStance = modToeV &lt; VEL_THRESH_TOE;
-0089 
-0090 stance = ankStance | toeStance;
-0091 
-0092 <span class="comment">%% Eliminate stance and swing phases shorter than 200 ms</span>
-0093 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
-0094 
-0095 <span class="keyword">end</span>
+0004 <span class="comment">%   Thresholds ankle and toe marker speed relative to the ground</span>
+0005 <span class="comment">% (getStance) and removes stance phases shorter than 200 ms.</span>
+0006 <span class="comment">% getStance2 (Hough-transform floor detection) and getStance3</span>
+0007 <span class="comment">% (acceleration thresholding) are kept as alternatives but are</span>
+0008 <span class="comment">% currently unused.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
+0012 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
+0013 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies:</span>
+0019 <span class="comment">%   Image Processing Toolbox (hough; unused getStance2 only)</span>
+0020 <span class="comment">%   Signal Processing Toolbox (medfilt1; unused getStance2 only)</span>
+0021 <span class="comment">%   Statistics and Machine Learning Toolbox (pca; unused getStance2 only)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOEANDHEEL.</span>
+0024 
+0025 <span class="comment">%% Detect stance</span>
+0026 <span class="comment">% stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations</span>
+0027 <span class="comment">% NOTE: getStance2 (Hough-transform floor detection) is an alternative</span>
+0028 <span class="comment">% that may be more robust for non-standard gait; see that local function.</span>
+0029 stance1 = <a href="#_sub1" class="code" title="subfunction stance = getStance(ankKin, toeKin, fsample)">getStance</a>(ankKin, toeKin, fsample);   <span class="comment">% threshold velocities</span>
+0030 <span class="comment">% stance1 = stance2;</span>
+0031 <span class="comment">% stance3 = stance2;</span>
+0032 
+0033 <span class="comment">% stance = (stance1 &amp; stance2) | (stance1 &amp; stance3) | (stance3 &amp; stance2);</span>
+0034 stance = stance1;
+0035 <span class="comment">% remove stance phases of less than 200 ms</span>
+0036 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
+0037 
+0038 <span class="comment">% IDEA: instead of using pure (classical) logic, use fuzzy logic, with a</span>
+0039 <span class="comment">% smoothing kernel, so that all samples in a neighbourhood get a say on</span>
+0040 <span class="comment">% the value of a particular sample.</span>
+0041 <span class="comment">% This might be particularly helpful to get rid of quantization noise</span>
+0042 <span class="comment">% (kernel with support of 3 samples: the central one, and one to each</span>
+0043 <span class="comment">% side), and also with some other types of noise (NOT SURE: it might make</span>
+0044 <span class="comment">% it more sensible to big errors in only one of the estimations)</span>
+0045 
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">%% Method 1: try to find full stance points and threshold relative speed</span>
+0049 <a name="_sub1" href="#_subfunctions" class="code">function stance = getStance(ankKin, toeKin, fsample)</a>
+0050 <span class="comment">%GETSTANCE Estimate stance from ankle and toe marker velocity.</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">%   Identifies core stance (full foot contact) as periods of low relative</span>
+0053 <span class="comment">% speed between ankle and toe markers, determines ground reference speed,</span>
+0054 <span class="comment">% then classifies stance when ankle or toe speed relative to ground falls</span>
+0055 <span class="comment">% below empirical thresholds.</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">% Inputs:</span>
+0058 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
+0059 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
+0060 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">% Outputs:</span>
+0063 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% Toolbox Dependencies: None</span>
+0066 
+0067 NAN_FILL_VEL          = 10000; <span class="comment">% large NaN sentinel for idealLPF (mm/s)</span>
+0068 VEL_THRESH_ANK        = 500;   <span class="comment">% ankle stance speed thresh (mm/s); empirical</span>
+0069 VEL_THRESH_TOE        = 250;   <span class="comment">% toe stance speed thresh (mm/s); empirical</span>
+0070 coreStanceSpeedThresh = 150;   <span class="comment">% max ankle–toe speed, core stance (mm/s)</span>
+0071 
+0072 <span class="comment">%% Step 1: calculate speed</span>
+0073 <span class="comment">% va(:,1) = derive(ankKin(:,1), fsample);</span>
+0074 <span class="comment">% va(:,2) = derive(ankKin(:,2), fsample);</span>
+0075 <span class="comment">% vt(:,1) = derive(toeKin(:,1), fsample);</span>
+0076 <span class="comment">% vt(:,2) = derive(toeKin(:,2), fsample);</span>
+0077 ankleVel = fsample * diff(ankKin);
+0078 ankleVel(end+1, :) = ankleVel(<span class="keyword">end</span>, :);
+0079 toeVel = fsample * diff(toeKin);
+0080 toeVel(end+1, :) = toeVel(<span class="keyword">end</span>, :);
+0081 fcut = 10 / (2 * fsample); <span class="comment">% ideal lowpass cutoff, normalized (10 Hz)</span>
+0082 ankleVel(isnan(ankleVel)) = NAN_FILL_VEL;
+0083 toeVel(isnan(toeVel))     = NAN_FILL_VEL;
+0084 ankleVelFilt = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleVel, fcut);
+0085 toeVelFilt   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeVel, fcut);
+0086 
+0087 <span class="comment">%% Step 2: get core stance (full feet on ground) speed</span>
+0088 relV    = ankleVelFilt - toeVelFilt;           <span class="comment">% relative speed (mm/s)</span>
+0089 modRelV = sqrt(sum(relV .^ 2, 2));             <span class="comment">% magnitude of relative speed</span>
+0090 coreStance = (modRelV &lt; coreStanceSpeedThresh);
+0091 <span class="comment">% min core stance duration (s)</span>
+0092 coreStance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(coreStance, fsample, 0.05);
+0093 
+0094 <span class="comment">% most common stance speed, rounded to nearest cm/s</span>
+0095 stanceSpeed = mode(10 * round(ankleVel(coreStance, :) / 10));
 0096 
-0097 <span class="comment">%% Method 2: find full stance points and threshold relative distance</span>
-0098 <a name="_sub2" href="#_subfunctions" class="code">function stance = getStance2(Rheel, Rtoe, fsample)</a>
-0099 <span class="comment">%GETSTANCE2 Estimate stance via Hough transform floor-plane detection.</span>
-0100 <span class="comment">%</span>
-0101 <span class="comment">%   Finds the floor plane using the Hough transform on 2D projections of</span>
-0102 <span class="comment">% heel and toe positions, then iteratively grows a set of &quot;on-floor&quot;</span>
-0103 <span class="comment">% points until they cover the full stance interval. This method is</span>
-0104 <span class="comment">% currently disabled in the calling function.</span>
-0105 <span class="comment">%</span>
-0106 <span class="comment">% Inputs:</span>
-0107 <span class="comment">%   Rheel   - N×3 double, heel marker position (mm)</span>
-0108 <span class="comment">%   Rtoe    - N×3 double, toe marker position (mm)</span>
-0109 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
-0110 <span class="comment">%</span>
-0111 <span class="comment">% Outputs:</span>
-0112 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
+0097 <span class="comment">%% Step 3: threshold speed relative to ground for stance candidates</span>
+0098 <span class="comment">% ankle and toe speed relative to ground</span>
+0099 ankV = ankleVel - ones(size(ankleVel, 1), 1) * stanceSpeed;
+0100 toeV = toeVel   - ones(size(toeVel,   1), 1) * stanceSpeed;
+0101 
+0102 modAnkV = sqrt(sum(ankV .^ 2, 2));
+0103 modToeV = sqrt(sum(toeV .^ 2, 2));
+0104 
+0105 <span class="comment">%% Step 4: classify stance from ankle OR toe stance</span>
+0106 <span class="comment">% empirical thresholds, alternative to the fixed ones below:</span>
+0107 <span class="comment">% velThreshA = 0.8 * median(modAnkV);</span>
+0108 <span class="comment">% velThreshT = 0.8 * median(modToeV);</span>
+0109 ankStance = modAnkV &lt; VEL_THRESH_ANK;
+0110 toeStance = modToeV &lt; VEL_THRESH_TOE;
+0111 
+0112 stance = ankStance | toeStance;
 0113 
-0114 <span class="comment">% Named constants for Hough-based floor-plane detection</span>
-0115 <span class="comment">% Two-segment angle range: near-vertical lines in both directions (deg)</span>
-0116 HOUGH_ANGLES    = [(-90:0.2:-70), (70:0.2:89.8)]; <span class="comment">% angle search range (deg)</span>
-0117 HOUGH_RHO_RES   = 0.5;  <span class="comment">% Hough ρ resolution (mm)</span>
-0118 OUTLIER_SD_MULT = 5;     <span class="comment">% std-dev multiplier for outlier rejection</span>
-0119 
-0120 <span class="comment">% Per-marker tolerance constants (mm)</span>
-0121 HEEL_FLOOR_TOL      = 4;  <span class="comment">% certain floor contact threshold, heel (mm)</span>
-0122 HEEL_EVENT_TOL      = 8;  <span class="comment">% heel-strike/toe-off boundary, heel (mm)</span>
-0123 HEEL_ERODE_RADIUS   = 3;  <span class="comment">% morphological erosion half-width, heel (samples)</span>
-0124 TOE_FLOOR_TOL       = 4;  <span class="comment">% certain floor contact threshold, toe (mm)</span>
-0125 TOE_EVENT_TOL       = 10; <span class="comment">% heel-strike/toe-off boundary, toe (mm)</span>
-0126 TOE_ERODE_RADIUS    = 15; <span class="comment">% morphological erosion half-width, toe (samples)</span>
-0127 EVENT_DILATE_RADIUS = 1;  <span class="comment">% final dilation half-width after convergence (samples)</span>
-0128 
-0129 backwards = false; <span class="comment">% direction flag; stance detection should not be direction-dependent</span>
-0130 <span class="keyword">for</span> jj = 1:2
-0131     flag = false;
-0132     clear roundedKin projOnFloor dist2Floor RHO THETA H A th r m n
-0133     <span class="keyword">switch</span> jj
-0134         <span class="keyword">case</span> 1
-0135             relevantKin = medfilt1(Rheel); <span class="comment">% non-strict filtering to kill far outliers</span>
-0136             tol  = HEEL_FLOOR_TOL;
-0137             tol2 = HEEL_EVENT_TOL;
-0138             N    = HEEL_ERODE_RADIUS;
-0139             N2   = EVENT_DILATE_RADIUS;
-0140         <span class="keyword">case</span> 2
-0141             relevantKin = medfilt1(Rtoe);
-0142             tol  = TOE_FLOOR_TOL;
-0143             tol2 = TOE_EVENT_TOL;
-0144             N    = TOE_ERODE_RADIUS;
-0145             N2   = EVENT_DILATE_RADIUS;
-0146     <span class="keyword">end</span>
-0147 
-0148     relevantKin(abs(relevantKin(:, 1) - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(relevantKin(:, 1))) <span class="keyword">...</span>
-0149         &gt; OUTLIER_SD_MULT * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(relevantKin(:, 1)), 1) = 0;
-0150     relevantKin(abs(relevantKin(:, 2) - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(relevantKin(:, 2))) <span class="keyword">...</span>
-0151         &gt; OUTLIER_SD_MULT * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(relevantKin(:, 2)), 2) = 0;
-0152     roundedKin = round(relevantKin);
-0153 
-0154     A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, <span class="keyword">...</span>
-0155                roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
-0156     <span class="keyword">try</span>
-0157         [H, THETA, RHO] = hough(full(A)', <span class="string">'RhoResolution'</span>, HOUGH_RHO_RES, <span class="keyword">...</span>
-0158             <span class="string">'Theta'</span>, HOUGH_ANGLES);
-0159     <span class="keyword">catch</span>
-0160         warning(<span class="string">'getStance2:houghFailed'</span>, <span class="string">'Exception during Hough transform.'</span>);
-0161     <span class="keyword">end</span>
-0162     [~, ind] = max(H(:));
-0163     [m, n]   = ind2sub(size(H), ind);
-0164     th = -THETA(n) / 90 * pi / 2;
-0165     r  = RHO(m);
-0166     dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) * cos(th) <span class="keyword">...</span>
-0167         - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) * sin(th) - r + 1;
-0168 
-0169     projOnFloor = relevantKin(:, 1) * sin(th) + relevantKin(:, 2) * cos(th); <span class="comment">% projection over the floor</span>
-0170     stance = (abs(dist2Floor) &lt; tol) &amp; ([0; diff(projOnFloor)] &lt; 0); <span class="comment">% points on the floor for sure</span>
-0171 
-0172     <span class="keyword">if</span> sum(stance) &lt; 3
-0173         <span class="comment">% probable backwards trial</span>
-0174         warning(<span class="string">'getStance2:backwardsTrial'</span>, <span class="string">'Probable backwards trial detected.'</span>)
-0175         flag   = true;
-0176         stance = (abs(dist2Floor) &lt; tol) &amp; ([0; diff(projOnFloor)] &gt; 0);
-0177     <span class="keyword">end</span>
-0178     CoM_x = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 1));
-0179     CoM_y = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 2));
-0180     M = pca(relevantKin(stance, 1:2));
-0181     <span class="keyword">try</span>
-0182         dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) <span class="keyword">...</span>
-0183             + (relevantKin(:, 2) - CoM_y) * M(2, 2); <span class="comment">% corrected floor distance</span>
-0184     <span class="keyword">catch</span>
-0185         warning(<span class="string">'getStance2:pcaFailed'</span>, <span class="string">'Exception during floor-distance PCA.'</span>);
-0186     <span class="keyword">end</span>
-0187 
-0188     <span class="keyword">if</span> (~backwards) &amp;&amp; (~flag)
-0189         swing = ([0; diff(projOnFloor)] &gt; 0); <span class="comment">% elements surely off the floor</span>
-0190     <span class="keyword">else</span>
-0191         swing = ([0; diff(projOnFloor)] &lt; 0);
-0192     <span class="keyword">end</span>
-0193     <span class="comment">% eliminate spurious swing samples</span>
-0194     swing = conv(double(swing), ones(2*N+1, 1), <span class="string">'same'</span>) == 2*N+1; <span class="comment">% erode</span>
-0195     swing = conv(double(swing), ones(2*N+1, 1), <span class="string">'same'</span>) &gt;= 1;     <span class="comment">% dilate</span>
-0196 
-0197     <span class="comment">%%</span>
-0198     change = true;
-0199     <span class="keyword">while</span> change
-0200         stance3 = conv(double(stance), ones(3, 1), <span class="string">'same'</span>) &gt;= 1;  <span class="comment">% dilate</span>
-0201         stance4 = stance3 &amp; ~swing;
-0202         thresh  = max([3 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(abs(dist2Floor(stance))), tol2]);
-0203         stance5 = (abs(dist2Floor) &lt; thresh);
-0204         stance4 = stance4 &amp; stance5;
-0205         <span class="keyword">if</span> any(stance4 ~= stance)
-0206             stance = stance4;
-0207             CoM_x  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 1));
-0208             CoM_y  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 2));
-0209             M      = pca(relevantKin(stance, 1:2));
-0210             <span class="keyword">try</span>
-0211                 dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) <span class="keyword">...</span>
-0212                     + (relevantKin(:, 2) - CoM_y) * M(2, 2);
-0213             <span class="keyword">catch</span>
-0214                 warning(<span class="string">'getStance2:pcaFailed'</span>, <span class="string">'Exception during floor-distance PCA.'</span>);
-0215             <span class="keyword">end</span>
-0216         <span class="keyword">else</span>
-0217             change = false;
-0218             stance = conv(double(stance4), ones(2*N2+1, 1), <span class="string">'same'</span>) == 2*N2+1; <span class="comment">% erode by N2</span>
-0219         <span class="keyword">end</span>
-0220     <span class="keyword">end</span>
-0221 
-0222     <span class="comment">% assign corresponding stance</span>
-0223     <span class="keyword">switch</span> jj
-0224         <span class="keyword">case</span> 1
-0225             stanceAnk = stance;
-0226         <span class="keyword">case</span> 2
-0227             stanceToe = stance;
-0228     <span class="keyword">end</span>
-0229 <span class="keyword">end</span>
-0230 
-0231 <span class="comment">% stance is when either toe or ankle is on the floor</span>
-0232 stance = stanceAnk | stanceToe;
-0233 
-0234 <span class="comment">% delete short stance phases</span>
-0235 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.25);
-0236 <span class="keyword">end</span>
-0237 
-0238 <span class="comment">%% Method 3: get stance from marker acceleration (during stance, acc ≈ 0)</span>
-0239 <a name="_sub3" href="#_subfunctions" class="code">function stance = getStance3(ankKin, toeKin, fsample)</a>
-0240 <span class="comment">%GETSTANCE3 Estimate stance by thresholding marker acceleration.</span>
-0241 <span class="comment">%</span>
-0242 <span class="comment">%   Computes the second finite difference of ankle and toe positions to</span>
-0243 <span class="comment">% approximate acceleration. Classifies a sample as stance when the</span>
-0244 <span class="comment">% acceleration magnitude is below an empirical threshold.</span>
-0245 <span class="comment">%</span>
-0246 <span class="comment">% Inputs:</span>
-0247 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
-0248 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
-0249 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
-0250 <span class="comment">%</span>
-0251 <span class="comment">% Outputs:</span>
-0252 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
-0253 
-0254 NAN_FILL_ACC = 100000; <span class="comment">% large sentinel to suppress NaN in idealLPF (mm/s²)</span>
-0255 accThresh    = 5000;   <span class="comment">% acceleration threshold (mm/s²); empirical</span>
-0256 
-0257 <span class="comment">%% Step 1: calculate acceleration via second finite difference</span>
-0258 ankleAcc = fsample ^ 2 * diff(diff(ankKin));
-0259 ankleAcc = [ankleAcc(1, :); ankleAcc; ankleAcc(<span class="keyword">end</span>, :)];
-0260 toeAcc   = fsample ^ 2 * diff(diff(toeKin));
-0261 toeAcc   = [toeAcc(1, :); toeAcc; toeAcc(<span class="keyword">end</span>, :)];
-0262 ankleAcc(isnan(ankleAcc)) = NAN_FILL_ACC;
-0263 toeAcc(isnan(toeAcc))     = NAN_FILL_ACC;
-0264 
-0265 <span class="comment">%% Step 3: low-pass filter accelerations then threshold for stance candidates</span>
-0266 fcut = 30 / (2 * fsample); <span class="comment">% ideal lowpass cutoff, normalized (30 Hz)</span>
-0267 ankleAccFilt(:, 1) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleAcc(:, 1), fcut);
-0268 ankleAccFilt(:, 2) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleAcc(:, 2), fcut);
-0269 toeAccFilt(:, 1)   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeAcc(:, 1),   fcut);
-0270 toeAccFilt(:, 2)   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeAcc(:, 2),   fcut);
-0271 modAnkA = sqrt(sum(ankleAccFilt .^ 2, 2));
-0272 modToeA = sqrt(sum(toeAccFilt   .^ 2, 2));
-0273 
-0274 <span class="comment">%% Step 4: classify stance from ankle OR toe stance</span>
-0275 ankStance = modAnkA &lt; accThresh;
-0276 toeStance = modToeA &lt; accThresh;
-0277 stance    = ankStance | toeStance;
-0278 
-0279 <span class="comment">%% Eliminate stance and swing phases shorter than 200 ms</span>
-0280 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
-0281 
-0282 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0114 <span class="comment">%% Eliminate stance and swing phases shorter than 200 ms</span>
+0115 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
+0116 
+0117 <span class="keyword">end</span>
+0118 
+0119 <span class="comment">%% Method 2: find full stance points and threshold relative distance</span>
+0120 <a name="_sub2" href="#_subfunctions" class="code">function stance = getStance2(Rheel, Rtoe, fsample)</a>
+0121 <span class="comment">%GETSTANCE2 Estimate stance via Hough transform floor-plane detection.</span>
+0122 <span class="comment">%</span>
+0123 <span class="comment">%   Finds the floor plane using the Hough transform on 2D projections of</span>
+0124 <span class="comment">% heel and toe positions, then iteratively grows a set of &quot;on-floor&quot;</span>
+0125 <span class="comment">% points until they cover the full stance interval. This method is</span>
+0126 <span class="comment">% currently disabled in the calling function.</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">% Inputs:</span>
+0129 <span class="comment">%   Rheel   - N×3 double, heel marker position (mm)</span>
+0130 <span class="comment">%   Rtoe    - N×3 double, toe marker position (mm)</span>
+0131 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
+0132 <span class="comment">%</span>
+0133 <span class="comment">% Outputs:</span>
+0134 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
+0135 <span class="comment">%</span>
+0136 <span class="comment">% Toolbox Dependencies:</span>
+0137 <span class="comment">%   Image Processing Toolbox (hough)</span>
+0138 <span class="comment">%   Signal Processing Toolbox (medfilt1)</span>
+0139 <span class="comment">%   Statistics and Machine Learning Toolbox (pca)</span>
+0140 
+0141 <span class="comment">% Named constants for Hough-based floor-plane detection</span>
+0142 <span class="comment">% Two-segment angle range: near-vertical lines in both directions (deg)</span>
+0143 HOUGH_ANGLES    = [(-90:0.2:-70), (70:0.2:89.8)]; <span class="comment">% angle search range (deg)</span>
+0144 HOUGH_RHO_RES   = 0.5;  <span class="comment">% Hough ρ resolution (mm)</span>
+0145 OUTLIER_SD_MULT = 5;     <span class="comment">% std-dev multiplier for outlier rejection</span>
+0146 
+0147 <span class="comment">% Per-marker tolerance constants (mm)</span>
+0148 HEEL_FLOOR_TOL      = 4;  <span class="comment">% certain floor contact threshold, heel (mm)</span>
+0149 HEEL_EVENT_TOL      = 8;  <span class="comment">% heel-strike/toe-off boundary, heel (mm)</span>
+0150 HEEL_ERODE_RADIUS   = 3;  <span class="comment">% morphological erosion half-width, heel (samples)</span>
+0151 TOE_FLOOR_TOL       = 4;  <span class="comment">% certain floor contact threshold, toe (mm)</span>
+0152 TOE_EVENT_TOL       = 10; <span class="comment">% heel-strike/toe-off boundary, toe (mm)</span>
+0153 TOE_ERODE_RADIUS    = 15; <span class="comment">% morphological erosion half-width, toe (samples)</span>
+0154 EVENT_DILATE_RADIUS = 1;  <span class="comment">% final dilation half-width (samples)</span>
+0155 
+0156 <span class="comment">% direction flag; stance detection should not be direction-dependent</span>
+0157 backwards = false;
+0158 <span class="keyword">for</span> jj = 1:2
+0159     flag = false;
+0160     clear roundedKin projOnFloor dist2Floor RHO THETA H A th r m n
+0161     <span class="keyword">switch</span> jj
+0162         <span class="keyword">case</span> 1
+0163             <span class="comment">% non-strict filtering to kill far outliers</span>
+0164             relevantKin = medfilt1(Rheel);
+0165             tol  = HEEL_FLOOR_TOL;
+0166             tol2 = HEEL_EVENT_TOL;
+0167             N    = HEEL_ERODE_RADIUS;
+0168             N2   = EVENT_DILATE_RADIUS;
+0169         <span class="keyword">case</span> 2
+0170             relevantKin = medfilt1(Rtoe);
+0171             tol  = TOE_FLOOR_TOL;
+0172             tol2 = TOE_EVENT_TOL;
+0173             N    = TOE_ERODE_RADIUS;
+0174             N2   = EVENT_DILATE_RADIUS;
+0175     <span class="keyword">end</span>
+0176 
+0177     relevantKin(abs(relevantKin(:, 1) - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(relevantKin(:, 1))) <span class="keyword">...</span>
+0178         &gt; OUTLIER_SD_MULT * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(relevantKin(:, 1)), 1) = 0;
+0179     relevantKin(abs(relevantKin(:, 2) - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(relevantKin(:, 2))) <span class="keyword">...</span>
+0180         &gt; OUTLIER_SD_MULT * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(relevantKin(:, 2)), 2) = 0;
+0181     roundedKin = round(relevantKin);
+0182 
+0183     <span class="comment">% In y: limit values to a 500mm range</span>
+0184     <span class="comment">% In x: limit values to a 2000mm range</span>
+0185     <span class="comment">% Throw everything outside those limits</span>
+0186 
+0187     <span class="comment">% A = zeros(max(roundedKin(:,1) - min(roundedKin(:,1))+1), ...</span>
+0188     <span class="comment">%     (max(roundedKin(:,2) - min(roundedKin(:,2))+1)));</span>
+0189     <span class="comment">% for i = 1:length(roundedKin(:,1))</span>
+0190     <span class="comment">% A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, ...</span>
+0191     <span class="comment">%     roundedKin(i,2) - min(roundedKin(:,2)) + 1) = ...</span>
+0192     <span class="comment">%     A(roundedKin(i,1) - min(roundedKin(:,1)) + 1, ...</span>
+0193     <span class="comment">%     roundedKin(i,2) - min(roundedKin(:,2)) + 1) + 1;</span>
+0194     <span class="comment">% end</span>
+0195     A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, <span class="keyword">...</span>
+0196         roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
+0197     <span class="keyword">try</span>
+0198         [H, THETA, RHO] = hough(full(A)', <span class="keyword">...</span>
+0199             <span class="string">'RhoResolution'</span>, HOUGH_RHO_RES, <span class="string">'Theta'</span>, HOUGH_ANGLES);
+0200     <span class="keyword">catch</span>
+0201         warning(<span class="string">'getStance2:houghFailed'</span>, <span class="keyword">...</span>
+0202             <span class="string">'Exception during Hough transform.'</span>);
+0203     <span class="keyword">end</span>
+0204     [~, ind] = max(H(:));
+0205     [m, n]   = ind2sub(size(H), ind);
+0206     th = -THETA(n) / 90 * pi / 2;
+0207     r  = RHO(m);
+0208     dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) <span class="keyword">...</span>
+0209         * cos(th) - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) <span class="keyword">...</span>
+0210         * sin(th) - r + 1;
+0211 
+0212     <span class="comment">% projection over the floor</span>
+0213     projOnFloor = relevantKin(:, 1) * sin(th) <span class="keyword">...</span>
+0214         + relevantKin(:, 2) * cos(th);
+0215     <span class="comment">% points on the floor for sure</span>
+0216     stance = (abs(dist2Floor) &lt; tol) &amp; ([0; diff(projOnFloor)] &lt; 0);
+0217 
+0218     <span class="keyword">if</span> sum(stance) &lt; 3
+0219         <span class="comment">% probable backwards trial</span>
+0220         warning(<span class="string">'getStance2:backwardsTrial'</span>, <span class="keyword">...</span>
+0221             <span class="string">'Probable backwards trial detected.'</span>)
+0222         flag   = true;
+0223         stance = (abs(dist2Floor) &lt; tol) &amp; ([0; diff(projOnFloor)] &gt; 0);
+0224     <span class="keyword">end</span>
+0225     CoM_x = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 1));
+0226     CoM_y = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 2));
+0227     M = pca(relevantKin(stance, 1:2));
+0228     <span class="keyword">try</span>
+0229         <span class="comment">% corrected floor distance</span>
+0230         dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) <span class="keyword">...</span>
+0231             + (relevantKin(:, 2) - CoM_y) * M(2, 2);
+0232     <span class="keyword">catch</span>
+0233         warning(<span class="string">'getStance2:pcaFailed'</span>, <span class="keyword">...</span>
+0234             <span class="string">'Exception during floor-distance PCA.'</span>);
+0235     <span class="keyword">end</span>
+0236 
+0237     <span class="keyword">if</span> (~backwards) &amp;&amp; (~flag)
+0238         <span class="comment">% elements surely off the floor</span>
+0239         swing = ([0; diff(projOnFloor)] &gt; 0);
+0240     <span class="keyword">else</span>
+0241         swing = ([0; diff(projOnFloor)] &lt; 0);
+0242     <span class="keyword">end</span>
+0243     <span class="comment">% eliminate spurious swing samples</span>
+0244     swing = conv(double(swing), ones(2*N+1, 1), <span class="string">'same'</span>) == 2*N+1; <span class="comment">% erode</span>
+0245     swing = conv(double(swing), ones(2*N+1, 1), <span class="string">'same'</span>) &gt;= 1;     <span class="comment">% dilate</span>
+0246 
+0247     <span class="comment">%%</span>
+0248     change = true;
+0249     <span class="keyword">while</span> change
+0250         stance3 = conv(double(stance), ones(3, 1), <span class="string">'same'</span>) &gt;= 1;  <span class="comment">% dilate</span>
+0251         stance4 = stance3 &amp; ~swing;
+0252         thresh  = max([3 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(abs(dist2Floor(stance))), tol2]);
+0253         stance5 = (abs(dist2Floor) &lt; thresh);
+0254         stance4 = stance4 &amp; stance5;
+0255         <span class="keyword">if</span> any(stance4 ~= stance)
+0256             stance = stance4;
+0257             CoM_x  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 1));
+0258             CoM_y  = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(relevantKin(stance, 2));
+0259             M      = pca(relevantKin(stance, 1:2));
+0260             <span class="keyword">try</span>
+0261                 dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) <span class="keyword">...</span>
+0262                     + (relevantKin(:, 2) - CoM_y) * M(2, 2);
+0263             <span class="keyword">catch</span>
+0264                 warning(<span class="string">'getStance2:pcaFailed'</span>, <span class="keyword">...</span>
+0265                     <span class="string">'Exception during floor-distance PCA.'</span>);
+0266             <span class="keyword">end</span>
+0267         <span class="keyword">else</span>
+0268             change = false;
+0269             <span class="comment">% erode by N2</span>
+0270             stance = conv(double(stance4), ones(2*N2+1, 1), <span class="string">'same'</span>) <span class="keyword">...</span>
+0271                 == 2*N2+1;
+0272         <span class="keyword">end</span>
+0273     <span class="keyword">end</span>
+0274 
+0275     <span class="comment">% assign corresponding stance</span>
+0276     <span class="keyword">switch</span> jj
+0277         <span class="keyword">case</span> 1
+0278             stanceAnk = stance;
+0279         <span class="keyword">case</span> 2
+0280             stanceToe = stance;
+0281     <span class="keyword">end</span>
+0282 <span class="keyword">end</span>
+0283 
+0284 <span class="comment">% stance is when either toe or ankle is on the floor</span>
+0285 stance = stanceAnk | stanceToe;
+0286 
+0287 <span class="comment">% delete short stance phases</span>
+0288 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.25);
+0289 <span class="keyword">end</span>
+0290 
+0291 <span class="comment">%% Method 3: get stance from marker acceleration (during stance, acc ≈ 0)</span>
+0292 <a name="_sub3" href="#_subfunctions" class="code">function stance = getStance3(ankKin, toeKin, fsample)</a>
+0293 <span class="comment">%GETSTANCE3 Estimate stance by thresholding marker acceleration.</span>
+0294 <span class="comment">%</span>
+0295 <span class="comment">%   Computes the second finite difference of ankle and toe positions to</span>
+0296 <span class="comment">% approximate acceleration. Classifies a sample as stance when the</span>
+0297 <span class="comment">% acceleration magnitude is below an empirical threshold.</span>
+0298 <span class="comment">%</span>
+0299 <span class="comment">% Inputs:</span>
+0300 <span class="comment">%   ankKin  - N×3 double, ankle marker position (mm)</span>
+0301 <span class="comment">%   toeKin  - N×3 double, toe marker position (mm)</span>
+0302 <span class="comment">%   fsample - scalar double, sampling frequency (Hz)</span>
+0303 <span class="comment">%</span>
+0304 <span class="comment">% Outputs:</span>
+0305 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
+0306 <span class="comment">%</span>
+0307 <span class="comment">% Toolbox Dependencies: None</span>
+0308 
+0309 NAN_FILL_ACC = 100000; <span class="comment">% large sentinel to suppress NaN in idealLPF (mm/s²)</span>
+0310 accThresh    = 5000;   <span class="comment">% acceleration threshold (mm/s²); empirical</span>
+0311 
+0312 <span class="comment">% Get velocities:</span>
+0313 <span class="comment">% va(:,1) = derive(ankKin(:,1), fsample); % fore-aft axis</span>
+0314 <span class="comment">% va(:,2) = derive(ankKin(:,2), fsample); % up-down axis</span>
+0315 <span class="comment">% vt(:,1) = derive(toeKin(:,1), fsample);</span>
+0316 <span class="comment">% vt(:,2) = derive(toeKin(:,2), fsample);</span>
+0317 <span class="comment">% Get accelerations:</span>
+0318 <span class="comment">% aa(:,1) = derive(va(:,1), fsample);</span>
+0319 <span class="comment">% aa(:,2) = derive(va(:,2), fsample);</span>
+0320 <span class="comment">% at(:,1) = derive(vt(:,1), fsample);</span>
+0321 <span class="comment">% at(:,2) = derive(vt(:,2), fsample);</span>
+0322 
+0323 <span class="comment">%% Step 1: calculate acceleration via second finite difference</span>
+0324 ankleAcc = fsample ^ 2 * diff(diff(ankKin));
+0325 ankleAcc = [ankleAcc(1, :); ankleAcc; ankleAcc(<span class="keyword">end</span>, :)];
+0326 toeAcc   = fsample ^ 2 * diff(diff(toeKin));
+0327 toeAcc   = [toeAcc(1, :); toeAcc; toeAcc(<span class="keyword">end</span>, :)];
+0328 ankleAcc(isnan(ankleAcc)) = NAN_FILL_ACC;
+0329 toeAcc(isnan(toeAcc))     = NAN_FILL_ACC;
+0330 
+0331 <span class="comment">%% Step 3: low-pass filter accelerations, then threshold for stance</span>
+0332 fcut = 30 / (2 * fsample); <span class="comment">% ideal lowpass cutoff, normalized (30 Hz)</span>
+0333 ankleAccFilt(:, 1) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleAcc(:, 1), fcut);
+0334 ankleAccFilt(:, 2) = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(ankleAcc(:, 2), fcut);
+0335 toeAccFilt(:, 1)   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeAcc(:, 1),   fcut);
+0336 toeAccFilt(:, 2)   = <a href="../../../labTools/fun/ext/pitools/signalProcessing/idealLPF.html" class="code" title="function filteredData = idealLPF(data, fcut)">idealLPF</a>(toeAcc(:, 2),   fcut);
+0337 modAnkA = sqrt(sum(ankleAccFilt .^ 2, 2));
+0338 modToeA = sqrt(sum(toeAccFilt   .^ 2, 2));
+0339 
+0340 <span class="comment">% filter    = hann(50);</span>
+0341 <span class="comment">% modAnkAf  = conv(modAnkA, filter, 'same') / sum(filter);</span>
+0342 <span class="comment">% modToeAf  = conv(modToeA, filter, 'same') / sum(filter);</span>
+0343 <span class="comment">% toeThresh = 0.1 * mean(modToeA(10:end-10));</span>
+0344 <span class="comment">% ankThresh = 0.1 * mean(modAnkA(10:end-10));</span>
+0345 
+0346 <span class="comment">%% Step 4: classify stance from ankle OR toe stance</span>
+0347 ankStance = modAnkA &lt; accThresh;
+0348 toeStance = modToeA &lt; accThresh;
+0349 <span class="comment">% ankStance = deleteShortPhases(ankStance, fsample, 0.25);</span>
+0350 <span class="comment">% toeStance = deleteShortPhases(toeStance, fsample, 0.25);</span>
+0351 stance    = ankStance | toeStance;
+0352 
+0353 <span class="comment">%% Eliminate stance and swing phases shorter than 200 ms</span>
+0354 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.2);
+0355 
+0356 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

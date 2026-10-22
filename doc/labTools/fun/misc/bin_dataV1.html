@@ -4,7 +4,7 @@
 <head>
   <title>Description of bin_dataV1</title>
   <meta name="keywords" content="bin_dataV1">
-  <meta name="description" content="writen based on bin_data">
+  <meta name="description" content="BIN_DATAV1 Compute a running average along the rows of a matrix.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,75 +21,98 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>writen based on bin_data</strong></div>
+<div class="box"><strong>BIN_DATAV1 Compute a running average along the rows of a matrix.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [xnew, xnewstd]=bin_dataV1(x,binwidth) </strong></div>
+<div class="box"><strong>function [xnew, xnewstd] = bin_dataV1(x, binwidth) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> writen based on bin_data
- function does running average. xnew averages rows of x
- binwidth indicates the duration of each time bin
-writen by GTO April 14th 2009</pre></div>
+<div class="fragment"><pre class="comment">BIN_DATAV1 Compute a running average along the rows of a matrix.
+
+   Computes a causal sliding-window mean and standard deviation for
+ each row of X using a window of BINWIDTH rows. Written by GTO,
+ April 14 2009.
+
+ Inputs:
+   x        - N×M numeric matrix
+   binwidth - number of rows in each sliding window
+
+ Outputs:
+   xnew    - running-average matrix (N-binwidth+1) × M
+   xnewstd - running standard deviation, same size as xnew
+
+ Toolbox Dependencies: None
+
+ See also <a href="runAvg.html" class="code" title="function [xnew, xnewstd] = runAvg(x, binwidth, dim)">RUNAVG</a>, MEAN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	this version was my first attempt to plot the postadaptation stuff,</li><li><a href="../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>	this version was my first attempt to plot the readaptation stuff,</li><li><a href="../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="removeOGbias.html" class="code" title="function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials)">removeOGbias</a>	Over ground baseline data are ordered based on where the subject was</li></ul>
+<li><a href="../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function Stride2SS = CalcStrides2SS_PostAdapt(allValues,SSraw, params,plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	CALCSTRIDES2SS_POSTADAPT Strides to reach steady state after adaptation.</li><li><a href="../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag,subID)">CalcStrides2SS</a>	CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.</li><li><a href="../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix, groups, plotFlag, indivFlag)">expResults</a>	EXPRESULTS Compute group-level steady-state and transfer results.</li><li><a href="removeOGbias.html" class="code" title="function newData = removeOGbias(adaptData, OGtrials, OGbaseTrials)">removeOGbias</a>	REMOVEOGBIAS Remove spatial bias from overground gait data.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xnew, xnewstd]=bin_dataV1(x,binwidth)</a>
-0002 <span class="comment">% writen based on bin_data</span>
-0003 <span class="comment">% function does running average. xnew averages rows of x</span>
-0004 <span class="comment">% binwidth indicates the duration of each time bin</span>
-0005 <span class="comment">%writen by GTO April 14th 2009</span>
-0006 
-0007 <span class="keyword">if</span> size(x,1)&gt;=binwidth
-0008     <span class="keyword">if</span> binwidth==1
-0009         xnew=x;
-0010         xnewstd=zeros(size(x,1),size(x,2));
-0011     <span class="keyword">else</span>
-0012         bstart=[1:size(x,1)-(binwidth-1)]; <span class="comment">%First value to be considered,</span>
-0013         bend=[bstart+binwidth-1]; <span class="comment">%Last value to be considered in the window for each element</span>
-0014         bend((bend&gt;size(x,1)))=size(x,1); <span class="comment">%This should do nothing. Changed to logical indexing 9/16/16. Pablo</span>
-0015 
-0016         <span class="keyword">for</span>  l=1:length(bstart)
-0017             t1 = bstart(l);
-0018             t2 = bend(l);
-0019             <span class="keyword">if</span> t2==t1;
-0020                 xnew(l,:)=NaN*zeros(1,size(x,2));
-0021                 xnewstd(l,:)=NaN*zeros(1,size(x,2));
-0022                 
-0023                 <span class="comment">%xnew(l,:)=x(t1,:);</span>
-0024                 <span class="comment">%xnewstd(l,:)=zeros(1,size(x,2));</span>
-0025 
-0026             <span class="keyword">else</span>
-0027                 xnew(l,:) = nanmean(x(t1:t2,:));
-0028                 xnewstd(l,:) = nanstd(x(t1:t2,:));
-0029             <span class="keyword">end</span>
-0030         <span class="keyword">end</span>
-0031     <span class="keyword">end</span>
-0032 <span class="keyword">else</span> <span class="comment">%Averaging how ever many strides we have even if it is very few</span>
-0033     warning([<span class="string">'Running average could not use the provided binwidth ('</span> num2str(binwidth) <span class="string">') because of too little strides ('</span> num2str(size(x,1)) <span class="string">'). Using available strides only.'</span>])
-0034     xnew=nanmean(x);
-0035     xnewstd=nanstd(x);
-0036 <span class="keyword">end</span>
-0037 
-0038 <span class="comment">%Alt function:</span>
-0039 <span class="comment">%Computes running average along the first dimension of x, but doesn't deal</span>
-0040 <span class="comment">%with NaNs</span>
-0041 <span class="comment">%if size(x,1)&gt;=binwidth %We can do it!</span>
-0042 <span class="comment">%   N=binwidth;</span>
-0043 <span class="comment">%   xnew=conv2(x,ones(N,1)/N,'valid');</span>
-0044 <span class="comment">%   xnewstd=conv2(x.^2,ones(N,1)/N,'valid') -xnew.^2;</span>
-0045 <span class="comment">%end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xnew, xnewstd] = bin_dataV1(x, binwidth)</a>
+0002 <span class="comment">%BIN_DATAV1 Compute a running average along the rows of a matrix.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes a causal sliding-window mean and standard deviation for</span>
+0005 <span class="comment">% each row of X using a window of BINWIDTH rows. Written by GTO,</span>
+0006 <span class="comment">% April 14 2009.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   x        - N×M numeric matrix</span>
+0010 <span class="comment">%   binwidth - number of rows in each sliding window</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   xnew    - running-average matrix (N-binwidth+1) × M</span>
+0014 <span class="comment">%   xnewstd - running standard deviation, same size as xnew</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also RUNAVG, MEAN.</span>
+0019 <span class="keyword">if</span> size(x, 1) &gt;= binwidth
+0020     <span class="keyword">if</span> binwidth == 1
+0021         xnew    = x;
+0022         xnewstd = zeros(size(x, 1), size(x, 2));
+0023     <span class="keyword">else</span>
+0024         bstart = 1:size(x, 1) - (binwidth - 1);    <span class="comment">% window start indices</span>
+0025         bend   = bstart + binwidth - 1;             <span class="comment">% window end indices</span>
+0026         bend(bend &gt; size(x, 1)) = size(x, 1);
+0027 
+0028         <span class="keyword">for</span> ii = 1:length(bstart)
+0029             t1 = bstart(ii);
+0030             t2 = bend(ii);
+0031             <span class="keyword">if</span> t2 == t1
+0032                 xnew(ii, :)    = NaN * zeros(1, size(x, 2)); <span class="comment">%#ok&lt;AGROW&gt;</span>
+0033                 xnewstd(ii, :) = NaN * zeros(1, size(x, 2)); <span class="comment">%#ok&lt;AGROW&gt;</span>
+0034             <span class="keyword">else</span>
+0035                 xnew(ii, :)    = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x(t1:t2, :), <span class="string">'omitnan'</span>); <span class="comment">%#ok&lt;AGROW&gt;</span>
+0036                 xnewstd(ii, :) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x(t1:t2, :), 0, <span class="string">'omitnan'</span>); <span class="comment">%#ok&lt;AGROW&gt;</span>
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">else</span>
+0041     <span class="comment">% fewer strides than binwidth — use all available strides</span>
+0042     warning([<span class="string">'Running average could not use the provided binwidth '</span> <span class="keyword">...</span>
+0043         <span class="string">'('</span> num2str(binwidth) <span class="string">') because of too few strides ('</span> <span class="keyword">...</span>
+0044         num2str(size(x, 1)) <span class="string">'). Using available strides only.'</span>])
+0045     xnew    = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x, <span class="string">'omitnan'</span>);
+0046     xnewstd = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x, 0, <span class="string">'omitnan'</span>);
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="comment">% NOTE: alternative causal implementation (no NaN handling):</span>
+0050 <span class="comment">%   if size(x,1) &gt;= binwidth</span>
+0051 <span class="comment">%       N    = binwidth;</span>
+0052 <span class="comment">%       xnew = conv2(x, ones(N,1)/N, 'valid');</span>
+0053 <span class="comment">%       xnewstd = conv2(x.^2, ones(N,1)/N, 'valid') - xnew.^2;</span>
+0054 <span class="comment">%   end</span>
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

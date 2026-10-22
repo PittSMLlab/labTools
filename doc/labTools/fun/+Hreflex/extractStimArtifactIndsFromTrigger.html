@@ -4,7 +4,7 @@
 <head>
   <title>Description of extractStimArtifactIndsFromTrigger</title>
   <meta name="keywords" content="extractStimArtifactIndsFromTrigger">
-  <meta name="description" content="EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.">
+  <meta name="description" content="EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract stim artifact peak indices.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,25 +21,35 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.</strong></div>
+<div class="box"><strong>EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract stim artifact peak indices.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, rawEMG_TAP, pinHreflexStim, options) </strong></div>
+<div class="box"><strong>function [indsStimArtifact, isWeakArtifact] =extractStimArtifactIndsFromTrigger(times, rawEMGArtifact,pinHreflexStim, options) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.
+<div class="fragment"><pre class="comment">EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract stim artifact peak indices.
 
-   Extract the indices of the stimulation artifact peaks in the proximal
- tibialis anterior EMG signal (more robust than calf muscles during
- walking) using the rising edge of the stimulation trigger pulse to
- localize the artifact peak.
+   Extract the indices of the stimulation artifact peaks in the
+ artifact localization muscle EMG signal (normally the proximal
+ tibialis anterior, more robust than the calf muscles during walking)
+ using the rising edge of the stimulation trigger pulse to localize the
+ artifact peak.
+   Within the search window the peak is taken as the largest ABSOLUTE
+ deflection from the window median. The artifact is frequently
+ negative-dominant (its initial deflection is downward, with a smaller
+ positive rebound ~1.5 ms later), so localizing on the signed maximum
+ either lands on the rebound or, when the artifact is small, misses it
+ entirely. Absolute deflection is polarity agnostic and needs no
+ detection threshold, because the window is already anchored to a known
+ trigger pulse.
 
  Inputs:
    times          - number of samples x 1 array of time in seconds from
                     the start of the trial for each sample
-   rawEMG_TAP     - 2-element cell of number of samples x 1 arrays for
-                    right (cell 1) and left (cell 2) proximal TA EMG
-                    (if one cell is empty, that leg is skipped)
+   rawEMGArtifact - 2-element cell of number of samples x 1 arrays for
+                    right (cell 1) and left (cell 2) artifact
+                    localization muscle EMG (if one cell is empty, that
+                    leg is skipped)
    pinHreflexStim - 2-element cell of number of samples x 1 arrays for
                     right (cell 1) and left (cell 2) stim trigger pulses
 
@@ -47,24 +57,34 @@
    threshStim      - stim trigger pulse detection threshold, V
                      (default: 2.5)
    winDurStim      - search window duration around trigger pulse, s
-                     (default: 0.1)
-   minArtifactPeak - minimum stim artifact peak height, V (default: 0.001)
+                     (default: 0.1). NOTE: the window must stay wide
+                     enough to span the wireless EMG transmission
+                     delay, which is ~50 ms for the Delsys system.
+   minArtifactPeak - quality control floor for the peak absolute
+                     artifact deflection, V (default: 0.001). A
+                     stimulus below it is still localized but is
+                     flagged in isWeakArtifact and warned about.
 
  Outputs:
    indsStimArtifact - 2 x 1 cell of number of stimuli x 1 arrays for
                       right (cell 1) and left (cell 2) stim artifact
                       indices
+   isWeakArtifact   - 2 x 1 cell of number of stimuli x 1 logical
+                      arrays; true where the peak absolute deflection
+                      was below minArtifactPeak (e.g., a disabled
+                      stimulator or a detached electrode)
 
  Toolbox Dependencies:
    None
 
- See also HREFLEX.<a href="extractSnippets.html" class="code" title="function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)">EXTRACTSNIPPETS</a>, COMPUTEHREFLEXPARAMETERS.</pre></div>
+ See also HREFLEX.<a href="extractSnippets.html" class="code" title="function [snippets, timesSnippet] = extractSnippets(indsPeaks, rawEMG, options)">EXTRACTSNIPPETS</a>, HREFLEX.<a href="plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times, rawEMG, indsPeaks, id,trialNum, options)">PLOTSTIMARTIFACTPEAKS</a>,
+   COMPUTEHREFLEXPARAMETERS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies by constant</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	times  Multiplies data by constant</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	times  Multiplies by constant (override)</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies by constant.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies data by constant.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	TIMES Multiplies by constant (override).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -72,122 +92,196 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)</a></li><li><a href="#_sub2" class="code">function indsStimArtifact = findStimArtifactInds(times, rawEMG,</a></li></ul>
+<li><a href="#_sub1" class="code">function stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)</a></li><li><a href="#_sub2" class="code">function [indsStimArtifact, isWeakArtifact] = findStimArtifactInds(</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function indsStimArtifact = extractStimArtifactIndsFromTrigger( </a><span class="keyword">...</span>
-0002     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG_TAP, pinHreflexStim, options)
-0003 <span class="comment">%EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%   Extract the indices of the stimulation artifact peaks in the proximal</span>
-0006 <span class="comment">% tibialis anterior EMG signal (more robust than calf muscles during</span>
-0007 <span class="comment">% walking) using the rising edge of the stimulation trigger pulse to</span>
-0008 <span class="comment">% localize the artifact peak.</span>
-0009 <span class="comment">%</span>
-0010 <span class="comment">% Inputs:</span>
-0011 <span class="comment">%   times          - number of samples x 1 array of time in seconds from</span>
-0012 <span class="comment">%                    the start of the trial for each sample</span>
-0013 <span class="comment">%   rawEMG_TAP     - 2-element cell of number of samples x 1 arrays for</span>
-0014 <span class="comment">%                    right (cell 1) and left (cell 2) proximal TA EMG</span>
-0015 <span class="comment">%                    (if one cell is empty, that leg is skipped)</span>
-0016 <span class="comment">%   pinHreflexStim - 2-element cell of number of samples x 1 arrays for</span>
-0017 <span class="comment">%                    right (cell 1) and left (cell 2) stim trigger pulses</span>
-0018 <span class="comment">%</span>
-0019 <span class="comment">% Optional Name-Value Inputs:</span>
-0020 <span class="comment">%   threshStim      - stim trigger pulse detection threshold, V</span>
-0021 <span class="comment">%                     (default: 2.5)</span>
-0022 <span class="comment">%   winDurStim      - search window duration around trigger pulse, s</span>
-0023 <span class="comment">%                     (default: 0.1)</span>
-0024 <span class="comment">%   minArtifactPeak - minimum stim artifact peak height, V (default: 0.001)</span>
-0025 <span class="comment">%</span>
-0026 <span class="comment">% Outputs:</span>
-0027 <span class="comment">%   indsStimArtifact - 2 x 1 cell of number of stimuli x 1 arrays for</span>
-0028 <span class="comment">%                      right (cell 1) and left (cell 2) stim artifact</span>
-0029 <span class="comment">%                      indices</span>
-0030 <span class="comment">%</span>
-0031 <span class="comment">% Toolbox Dependencies:</span>
-0032 <span class="comment">%   None</span>
-0033 <span class="comment">%</span>
-0034 <span class="comment">% See also HREFLEX.EXTRACTSNIPPETS, COMPUTEHREFLEXPARAMETERS.</span>
-0035 
-0036 arguments
-0037     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>             (:,1) double
-0038     rawEMG_TAP        cell
-0039     pinHreflexStim    cell
-0040     options.threshStim      (1,1) double {mustBePositive} = 2.5   <span class="comment">% V</span>
-0041     options.winDurStim      (1,1) double {mustBePositive} = 0.1   <span class="comment">% s</span>
-0042     options.minArtifactPeak (1,1) double {mustBePositive} = 0.001 <span class="comment">% V</span>
-0043 <span class="keyword">end</span>
-0044 
-0045 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, rawEMG_TAP)) || <span class="keyword">...</span>
-0046         all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, pinHreflexStim))
-0047     error([<span class="string">'There is data missing that is crucial for computing the '</span> <span class="keyword">...</span>
-0048         <span class="string">'stimulation artifact indices'</span>]);
-0049 <span class="keyword">end</span>
-0050 
-0051 <span class="comment">% NOTE: it does not work to use stim trigger pulse to retrieve peak times</span>
-0052 <span class="comment">% if stimulator is disabled during trial (because there will be a trigger</span>
-0053 <span class="comment">% pulse but the participant will not have been stimulated)</span>
-0054 
-0055 <span class="comment">%% Identify Stimulation Onset Times</span>
-0056 stimTimeRAbs = <a href="#_sub1" class="code" title="subfunction stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)">getStimOnsetTimes</a>( <span class="keyword">...</span>
-0057     pinHreflexStim{1}, <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, options.threshStim);
-0058 stimTimeLAbs = <a href="#_sub1" class="code" title="subfunction stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)">getStimOnsetTimes</a>( <span class="keyword">...</span>
-0059     pinHreflexStim{2}, <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, options.threshStim);
-0060 
-0061 <span class="comment">%% Localize Artifact Peaks in EMG Signal</span>
-0062 indsStimArtifact = cell(2, 1);
-0063 indsStimArtifact{1} = <a href="#_sub2" class="code" title="subfunction indsStimArtifact = findStimArtifactInds(times, rawEMG, ">findStimArtifactInds</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG_TAP{1}, <span class="keyword">...</span>
-0064     stimTimeRAbs, options.winDurStim, options.minArtifactPeak);
-0065 indsStimArtifact{2} = <a href="#_sub2" class="code" title="subfunction indsStimArtifact = findStimArtifactInds(times, rawEMG, ">findStimArtifactInds</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG_TAP{2}, <span class="keyword">...</span>
-0066     stimTimeLAbs, options.winDurStim, options.minArtifactPeak);
-0067 
-0068 <span class="keyword">end</span>
-0069 
-0070 <span class="comment">%% Helper Functions</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [indsStimArtifact, isWeakArtifact] = </a><span class="keyword">...</span>
+0002     extractStimArtifactIndsFromTrigger(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMGArtifact, <span class="keyword">...</span>
+0003     pinHreflexStim, options)
+0004 <span class="comment">%EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract stim artifact peak indices.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Extract the indices of the stimulation artifact peaks in the</span>
+0007 <span class="comment">% artifact localization muscle EMG signal (normally the proximal</span>
+0008 <span class="comment">% tibialis anterior, more robust than the calf muscles during walking)</span>
+0009 <span class="comment">% using the rising edge of the stimulation trigger pulse to localize the</span>
+0010 <span class="comment">% artifact peak.</span>
+0011 <span class="comment">%   Within the search window the peak is taken as the largest ABSOLUTE</span>
+0012 <span class="comment">% deflection from the window median. The artifact is frequently</span>
+0013 <span class="comment">% negative-dominant (its initial deflection is downward, with a smaller</span>
+0014 <span class="comment">% positive rebound ~1.5 ms later), so localizing on the signed maximum</span>
+0015 <span class="comment">% either lands on the rebound or, when the artifact is small, misses it</span>
+0016 <span class="comment">% entirely. Absolute deflection is polarity agnostic and needs no</span>
+0017 <span class="comment">% detection threshold, because the window is already anchored to a known</span>
+0018 <span class="comment">% trigger pulse.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Inputs:</span>
+0021 <span class="comment">%   times          - number of samples x 1 array of time in seconds from</span>
+0022 <span class="comment">%                    the start of the trial for each sample</span>
+0023 <span class="comment">%   rawEMGArtifact - 2-element cell of number of samples x 1 arrays for</span>
+0024 <span class="comment">%                    right (cell 1) and left (cell 2) artifact</span>
+0025 <span class="comment">%                    localization muscle EMG (if one cell is empty, that</span>
+0026 <span class="comment">%                    leg is skipped)</span>
+0027 <span class="comment">%   pinHreflexStim - 2-element cell of number of samples x 1 arrays for</span>
+0028 <span class="comment">%                    right (cell 1) and left (cell 2) stim trigger pulses</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Optional Name-Value Inputs:</span>
+0031 <span class="comment">%   threshStim      - stim trigger pulse detection threshold, V</span>
+0032 <span class="comment">%                     (default: 2.5)</span>
+0033 <span class="comment">%   winDurStim      - search window duration around trigger pulse, s</span>
+0034 <span class="comment">%                     (default: 0.1). NOTE: the window must stay wide</span>
+0035 <span class="comment">%                     enough to span the wireless EMG transmission</span>
+0036 <span class="comment">%                     delay, which is ~50 ms for the Delsys system.</span>
+0037 <span class="comment">%   minArtifactPeak - quality control floor for the peak absolute</span>
+0038 <span class="comment">%                     artifact deflection, V (default: 0.001). A</span>
+0039 <span class="comment">%                     stimulus below it is still localized but is</span>
+0040 <span class="comment">%                     flagged in isWeakArtifact and warned about.</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% Outputs:</span>
+0043 <span class="comment">%   indsStimArtifact - 2 x 1 cell of number of stimuli x 1 arrays for</span>
+0044 <span class="comment">%                      right (cell 1) and left (cell 2) stim artifact</span>
+0045 <span class="comment">%                      indices</span>
+0046 <span class="comment">%   isWeakArtifact   - 2 x 1 cell of number of stimuli x 1 logical</span>
+0047 <span class="comment">%                      arrays; true where the peak absolute deflection</span>
+0048 <span class="comment">%                      was below minArtifactPeak (e.g., a disabled</span>
+0049 <span class="comment">%                      stimulator or a detached electrode)</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">% Toolbox Dependencies:</span>
+0052 <span class="comment">%   None</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">% See also HREFLEX.EXTRACTSNIPPETS, HREFLEX.PLOTSTIMARTIFACTPEAKS,</span>
+0055 <span class="comment">%   COMPUTEHREFLEXPARAMETERS.</span>
+0056 
+0057 arguments
+0058     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>             (:,1) double
+0059     rawEMGArtifact    cell
+0060     pinHreflexStim    cell
+0061     options.threshStim      (1,1) double {mustBePositive} = 2.5   <span class="comment">% V</span>
+0062     options.winDurStim      (1,1) double {mustBePositive} = 0.1   <span class="comment">% s</span>
+0063     options.minArtifactPeak (1,1) double {mustBePositive} = 0.001 <span class="comment">% V</span>
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>) || all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, rawEMGArtifact)) || <span class="keyword">...</span>
+0067         all(cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, pinHreflexStim))
+0068     error([<span class="string">'There is data missing that is crucial for computing the '</span> <span class="keyword">...</span>
+0069         <span class="string">'stimulation artifact indices'</span>]);
+0070 <span class="keyword">end</span>
 0071 
-0072 <a name="_sub1" href="#_subfunctions" class="code">function stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)</a>
-0073 <span class="comment">% detect rising edges of stimulation trigger pulses</span>
-0074 indsStimAll = find(stimTrig &gt; threshStim);
-0075 <span class="comment">% determine which indices correspond to start of new stimulus pulse</span>
-0076 <span class="comment">% (i.e., there is jump in index greater than 1, not just next sample)</span>
-0077 indsNewPulse = diff([0; indsStimAll]) &gt; 1;      <span class="comment">% rising edges</span>
-0078 <span class="comment">% determine time since trial start when stim pulse began (rising edge)</span>
-0079 stimTimes = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>(indsStimAll(indsNewPulse));
-0080 <span class="keyword">end</span>
-0081 
-0082 <a name="_sub2" href="#_subfunctions" class="code">function indsStimArtifact = findStimArtifactInds(times, rawEMG, </a><span class="keyword">...</span>
-0083     stimTimes, winDurStim, minPeakHeight)
-0084 <span class="comment">% identify stim artifact indices in EMG signal around stimulation times</span>
-0085 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stimTimes)    <span class="comment">% if no EMG or stim data, ...</span>
-0086     indsStimArtifact = [];                  <span class="comment">% return empty array</span>
-0087     <span class="keyword">return</span>;
-0088 <span class="keyword">end</span>
-0089 
-0090 period = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(diff(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>));                 <span class="comment">% sampling period</span>
-0091 winSamples = round(winDurStim / period);    <span class="comment">% search window dur. in samples</span>
-0092 numStim = numel(stimTimes);                 <span class="comment">% number of stimuli</span>
-0093 indsStimArtifact = nan(numStim, 1);         <span class="comment">% initialize array of indices</span>
-0094 
-0095 <span class="keyword">for</span> st = 1:numStim                          <span class="comment">% for each stimulus, ...</span>
-0096     <span class="comment">% locate EMG data index corresponding to onset of stim trigger pulse</span>
-0097     [~, indStim] = min(abs(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a> - stimTimes(st)));
-0098     <span class="comment">% ensure window does not exceed EMG data in case stim near trial end</span>
-0099     winSearch = max(1, indStim - winSamples): <span class="keyword">...</span><span class="comment">   % search window around</span>
-0100         min(length(rawEMG), indStim + winSamples);  <span class="comment">% stimulation time</span>
-0101     [~, locs] = findpeaks(rawEMG(winSearch), <span class="keyword">...</span>
-0102         <span class="string">'MinPeakHeight'</span>, minPeakHeight);
-0103 
-0104     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(locs)                        <span class="comment">% if no peaks detected, ...</span>
-0105         [~, indMaxTAP] = max(rawEMG(winSearch)); <span class="comment">% use maximum as peak</span>
-0106     <span class="keyword">else</span>                                    <span class="comment">% otherwise, ...</span>
-0107         indMaxTAP = locs(1);                <span class="comment">% use first (earliest) peak</span>
-0108     <span class="keyword">end</span>
-0109 
-0110     indsStimArtifact(st) = winSearch(indMaxTAP);
-0111 <span class="keyword">end</span>
-0112 
-0113 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0072 <span class="comment">% NOTE: it does not work to use stim trigger pulse to retrieve peak times</span>
+0073 <span class="comment">% if stimulator is disabled during trial (because there will be a trigger</span>
+0074 <span class="comment">% pulse but the participant will not have been stimulated); such stimuli</span>
+0075 <span class="comment">% are flagged in isWeakArtifact rather than silently mislocalized</span>
+0076 
+0077 <span class="comment">%% Identify Stimulation Onset Times</span>
+0078 stimTimeRAbs = <a href="#_sub1" class="code" title="subfunction stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)">getStimOnsetTimes</a>( <span class="keyword">...</span>
+0079     pinHreflexStim{1}, <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, options.threshStim);
+0080 stimTimeLAbs = <a href="#_sub1" class="code" title="subfunction stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)">getStimOnsetTimes</a>( <span class="keyword">...</span>
+0081     pinHreflexStim{2}, <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, options.threshStim);
+0082 
+0083 <span class="comment">%% Localize Artifact Peaks in EMG Signal</span>
+0084 indsStimArtifact = cell(2, 1);
+0085 isWeakArtifact   = cell(2, 1);
+0086 [indsStimArtifact{1}, isWeakArtifact{1}] = <a href="#_sub2" class="code" title="subfunction [indsStimArtifact, isWeakArtifact] = findStimArtifactInds( ">findStimArtifactInds</a>( <span class="keyword">...</span>
+0087     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMGArtifact{1}, stimTimeRAbs, options.winDurStim, <span class="keyword">...</span>
+0088     options.minArtifactPeak);
+0089 [indsStimArtifact{2}, isWeakArtifact{2}] = <a href="#_sub2" class="code" title="subfunction [indsStimArtifact, isWeakArtifact] = findStimArtifactInds( ">findStimArtifactInds</a>( <span class="keyword">...</span>
+0090     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMGArtifact{2}, stimTimeLAbs, options.winDurStim, <span class="keyword">...</span>
+0091     options.minArtifactPeak);
+0092 
+0093 <span class="comment">%% Warn About Stimuli With a Weak Artifact</span>
+0094 labelsLegs = {<span class="string">'right'</span>, <span class="string">'left'</span>};
+0095 <span class="keyword">for</span> leg = 1:2                               <span class="comment">% for each leg, ...</span>
+0096     numWeak = sum(isWeakArtifact{leg});
+0097     <span class="keyword">if</span> numWeak &gt; 0                          <span class="comment">% if any weak artifact, ...</span>
+0098         warning(<span class="string">'Hreflex:weakStimArtifact'</span>, <span class="keyword">...</span>
+0099             [<span class="string">'%d of %d %s leg stimuli have a peak artifact '</span> <span class="keyword">...</span>
+0100             <span class="string">'deflection below %.4f V. Verify the stimulator was '</span> <span class="keyword">...</span>
+0101             <span class="string">'enabled and the electrodes attached.'</span>], numWeak, <span class="keyword">...</span>
+0102             numel(isWeakArtifact{leg}), labelsLegs{leg}, <span class="keyword">...</span>
+0103             options.minArtifactPeak);
+0104     <span class="keyword">end</span>
+0105 <span class="keyword">end</span>
+0106 
+0107 <span class="keyword">end</span>
+0108 
+0109 <span class="comment">%% Helper Functions</span>
+0110 
+0111 <a name="_sub1" href="#_subfunctions" class="code">function stimTimes = getStimOnsetTimes(stimTrig, times, threshStim)</a>
+0112 <span class="comment">%GETSTIMONSETTIMES Find the times of the stim trigger pulse rising edges.</span>
+0113 <span class="comment">%</span>
+0114 <span class="comment">% Inputs:</span>
+0115 <span class="comment">%   stimTrig   - number of samples x 1 array of stim trigger pulses (V)</span>
+0116 <span class="comment">%   times      - number of samples x 1 array of time in seconds</span>
+0117 <span class="comment">%   threshStim - stim trigger pulse detection threshold (V)</span>
+0118 <span class="comment">%</span>
+0119 <span class="comment">% Outputs:</span>
+0120 <span class="comment">%   stimTimes - number of stimuli x 1 array of rising edge times (s)</span>
+0121 <span class="comment">%</span>
+0122 <span class="comment">% Toolbox Dependencies:</span>
+0123 <span class="comment">%   None</span>
+0124 
+0125 <span class="comment">% detect rising edges of stimulation trigger pulses</span>
+0126 indsStimAll = find(stimTrig &gt; threshStim);
+0127 <span class="comment">% determine which indices correspond to start of new stimulus pulse</span>
+0128 <span class="comment">% (i.e., there is jump in index greater than 1, not just next sample)</span>
+0129 indsNewPulse = diff([0; indsStimAll]) &gt; 1;      <span class="comment">% rising edges</span>
+0130 <span class="comment">% determine time since trial start when stim pulse began (rising edge)</span>
+0131 stimTimes = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>(indsStimAll(indsNewPulse));
+0132 
+0133 <span class="keyword">end</span>
+0134 
+0135 <a name="_sub2" href="#_subfunctions" class="code">function [indsStimArtifact, isWeakArtifact] = findStimArtifactInds( </a><span class="keyword">...</span>
+0136     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>, rawEMG, stimTimes, winDurStim, minPeakHeight)
+0137 <span class="comment">%FINDSTIMARTIFACTINDS Locate stim artifact indices around stimulus times.</span>
+0138 <span class="comment">%</span>
+0139 <span class="comment">%   For each stimulus, take the sample of largest absolute deflection</span>
+0140 <span class="comment">% from the window median within +/- winDurStim of the trigger rising</span>
+0141 <span class="comment">% edge. Absolute deflection is used because the artifact is commonly</span>
+0142 <span class="comment">% negative-dominant; the window is anchored to a known trigger pulse, so</span>
+0143 <span class="comment">% the largest deflection within it is the artifact.</span>
+0144 <span class="comment">%</span>
+0145 <span class="comment">% Inputs:</span>
+0146 <span class="comment">%   times         - number of samples x 1 array of time in seconds</span>
+0147 <span class="comment">%   rawEMG        - number of samples x 1 array of raw EMG signal (V)</span>
+0148 <span class="comment">%   stimTimes     - number of stimuli x 1 array of stim onset times (s)</span>
+0149 <span class="comment">%   winDurStim    - search window duration around trigger pulse (s)</span>
+0150 <span class="comment">%   minPeakHeight - quality control floor for peak deflection (V)</span>
+0151 <span class="comment">%</span>
+0152 <span class="comment">% Outputs:</span>
+0153 <span class="comment">%   indsStimArtifact - number of stimuli x 1 array of artifact indices</span>
+0154 <span class="comment">%   isWeakArtifact   - number of stimuli x 1 logical array; true where</span>
+0155 <span class="comment">%                      the peak deflection was below minPeakHeight</span>
+0156 <span class="comment">%</span>
+0157 <span class="comment">% Toolbox Dependencies:</span>
+0158 <span class="comment">%   None</span>
+0159 
+0160 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(rawEMG) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(stimTimes)    <span class="comment">% if no EMG or stim data, ...</span>
+0161     indsStimArtifact = [];                  <span class="comment">% return empty arrays</span>
+0162     isWeakArtifact   = [];
+0163     <span class="keyword">return</span>;
+0164 <span class="keyword">end</span>
+0165 
+0166 period = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(diff(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>));                 <span class="comment">% sampling period</span>
+0167 winSamples = round(winDurStim / period);    <span class="comment">% search window dur. in samples</span>
+0168 numStim = numel(stimTimes);                 <span class="comment">% number of stimuli</span>
+0169 indsStimArtifact = nan(numStim, 1);         <span class="comment">% initialize array of indices</span>
+0170 isWeakArtifact = false(numStim, 1);         <span class="comment">% initialize QC flag array</span>
+0171 
+0172 <span class="keyword">for</span> st = 1:numStim                          <span class="comment">% for each stimulus, ...</span>
+0173     <span class="comment">% locate EMG data index corresponding to onset of stim trigger pulse</span>
+0174     [~, indStim] = min(abs(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a> - stimTimes(st)));
+0175     <span class="comment">% ensure window does not exceed EMG data in case stim near trial end</span>
+0176     winSearch = max(1, indStim - winSamples): <span class="keyword">...</span><span class="comment">   % search window around</span>
+0177         min(length(rawEMG), indStim + winSamples);  <span class="comment">% stimulation time</span>
+0178     segment = rawEMG(winSearch);
+0179     <span class="comment">% deflection from the window median, ignoring artifact polarity</span>
+0180     deflection = abs(segment - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(segment, <span class="string">'omitnan'</span>));
+0181     [peakDeflection, indPeak] = max(deflection, [], <span class="string">'omitnan'</span>);
+0182 
+0183     indsStimArtifact(st) = winSearch(indPeak);
+0184     isWeakArtifact(st)   = peakDeflection &lt; minPeakHeight;
+0185 <span class="keyword">end</span>
+0186 
+0187 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

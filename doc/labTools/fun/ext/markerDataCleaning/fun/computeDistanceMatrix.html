@@ -4,7 +4,7 @@
 <head>
   <title>Description of computeDistanceMatrix</title>
   <meta name="keywords" content="computeDistanceMatrix">
-  <meta name="description" content="Gets position data as N markers x 3D x M frames and for each frame">
+  <meta name="description" content="COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,36 +21,60 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Gets position data as N markers x 3D x M frames and for each frame</strong></div>
+<div class="box"><strong>COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [D] = computeDistanceMatrix(pos) </strong></div>
+<div class="box"><strong>function D = computeDistanceMatrix(pos) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Gets position data as N markers x 3D x M frames and for each frame
-computes all pairwise distances btw markers, returns NxNxM</pre></div>
+<div class="fragment"><pre class="comment">COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.
+
+   D = COMPUTEDISTANCEMATRIX(pos) computes, for every frame, the distance
+ between each pair of markers.
+
+ Inputs:
+   pos - N markers x dim coordinates x M frames position array
+
+ Outputs:
+   D - N x N x M array of pairwise distances (N x N when M is 1)
+
+ Toolbox Dependencies: None
+
+ See also <a href="computeDiffMatrix.html" class="code" title="function D = computeDiffMatrix(pos)">COMPUTEDIFFMATRIX</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="computeDiffMatrix.html" class="code" title="function [D] = computeDiffMatrix(pos)">computeDiffMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<li><a href="computeDiffMatrix.html" class="code" title="function D = computeDiffMatrix(pos)">computeDiffMatrix</a>	COMPUTEDIFFMATRIX Pairwise differences between marker components.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	UNTITLED6 Summary of this function goes here</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function [xMLE] = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	Returns model such that W*d(pos(:,:,i)) ~ N(m,R)</li></ul>
+<li><a href="../../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/models/naiveDistances.html" class="code" title="">naiveDistances</a>	</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	CREATEZEROMODEL Build a naive-Bayes "zero model" of marker distances.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/old_markerModels/determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	DETERMINELIKELIHOODFROMZEROMODEL Marker log-likelihoods under a zero model.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistdetect.html" class="code" title="function [markerLogL,totalLogL] = skDistdetect(data,m,R)">skDistdetect</a>	SKDISTDETECT Score markers against a pairwise-distance skeleton model.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">skDistenforce</a>	SKDISTLEARNENFORCE Bayesian estimate of positions under a distance model.</li><li><a href="../../../../../labTools/fun/ext/markerDataCleaning/staticSkeleton/skDistlearn.html" class="code" title="function [m,R] = skDistlearn(pos)">skDistlearn</a>	SKDISTLEARN Learn a naive-Bayes pairwise-distance skeleton model.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [D] = computeDistanceMatrix(pos)</a>
-0002 <span class="comment">%Gets position data as N markers x 3D x M frames and for each frame</span>
-0003 <span class="comment">%computes all pairwise distances btw markers, returns NxNxM</span>
-0004 
-0005 [E] = <a href="computeDiffMatrix.html" class="code" title="function [D] = computeDiffMatrix(pos)">computeDiffMatrix</a>(pos);
-0006 D=sqrt(squeeze(sum(E.^2,2)));
-0007 <span class="keyword">end</span>
-0008</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function D = computeDistanceMatrix(pos)</a>
+0002 <span class="comment">%COMPUTEDISTANCEMATRIX Pairwise Euclidean distances between markers.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   D = COMPUTEDISTANCEMATRIX(pos) computes, for every frame, the distance</span>
+0005 <span class="comment">% between each pair of markers.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   pos - N markers x dim coordinates x M frames position array</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   D - N x N x M array of pairwise distances (N x N when M is 1)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also COMPUTEDIFFMATRIX.</span>
+0016 
+0017 E = <a href="computeDiffMatrix.html" class="code" title="function D = computeDiffMatrix(pos)">computeDiffMatrix</a>(pos);
+0018 D = sqrt(squeeze(sum(E.^2,2)));
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

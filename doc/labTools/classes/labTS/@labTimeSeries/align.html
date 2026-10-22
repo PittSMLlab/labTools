@@ -4,7 +4,7 @@
 <head>
   <title>Description of align</title>
   <meta name="keywords" content="align">
-  <meta name="description" content="align  Aligns data to gait events">
+  <meta name="description" content="ALIGN Aligns data to gait events.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,36 +21,37 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>align  Aligns data to gait events</strong></div>
+<div class="box"><strong>ALIGN Aligns data to gait events.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [ATS, bad] = align(this, eventTS, eventLabel, N, ~) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">align  Aligns data to gait events
+<div class="fragment"><pre class="comment">ALIGN Aligns data to gait events.
 
    [ATS, bad] = align(this, eventTS, eventLabel, N) aligns data to
-   specified events with given sample counts between events
+ specified events with given sample counts between events
 
-   Inputs:
-       this - labTimeSeries object
-       eventTS - labTimeSeries with event markers
-       eventLabel - cell array of event labels (optional, default:
-                    first label)
-       N - vector of sample counts between events (optional, default:
-           256 for each interval)
+ Inputs:
+   this       - labTimeSeries object
+   eventTS    - labTimeSeries with event markers
+   eventLabel - cell array of event labels (optional, default: first label)
+   N          - vector of sample counts between events (optional, default:
+                256 for each interval)
 
-   Outputs:
-       ATS - alignedTimeSeries object
-       bad - logical vector indicating strides with issues
+ Outputs:
+   ATS - alignedTimeSeries object
+   bad - logical vector indicating strides with issues
 
-   See also: <a href="align_v2.html" class="code" title="function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)">align_v2</a>, alignedTimeSeries, <a href="discretize.html" class="code" title="function [DTS, bad] = discretize(this, eventTS, eventLabel, N,summaryFunction)">discretize</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="align_v2.html" class="code" title="function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)">ALIGN_V2</a>, ALIGNEDTIMESERIES, <a href="discretize.html" class="code" title="function [DTS, bad] = discretize(this, eventTS, eventLabel, N,summaryFunction)">DISCRETIZE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
@@ -60,35 +61,37 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)</a>
-0002 <span class="comment">%align  Aligns data to gait events</span>
+0002 <span class="comment">%ALIGN Aligns data to gait events.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   [ATS, bad] = align(this, eventTS, eventLabel, N) aligns data to</span>
-0005 <span class="comment">%   specified events with given sample counts between events</span>
+0005 <span class="comment">% specified events with given sample counts between events</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
-0009 <span class="comment">%       eventTS - labTimeSeries with event markers</span>
-0010 <span class="comment">%       eventLabel - cell array of event labels (optional, default:</span>
-0011 <span class="comment">%                    first label)</span>
-0012 <span class="comment">%       N - vector of sample counts between events (optional, default:</span>
-0013 <span class="comment">%           256 for each interval)</span>
-0014 <span class="comment">%</span>
-0015 <span class="comment">%   Outputs:</span>
-0016 <span class="comment">%       ATS - alignedTimeSeries object</span>
-0017 <span class="comment">%       bad - logical vector indicating strides with issues</span>
-0018 <span class="comment">%</span>
-0019 <span class="comment">%   See also: align_v2, alignedTimeSeries, discretize</span>
-0020 
-0021 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(eventLabel)
-0022     eventLabel = eventTS.labels(1);
-0023 <span class="keyword">end</span>
-0024 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(N)
-0025     N = 256 * ones(size(eventLabel));
-0026 <span class="keyword">end</span>
-0027 [ATS, bad] = this.align_v2(eventTS.split(this.Time(1) - <span class="keyword">...</span>
-0028     this.sampPeriod, this.Time(end) + this.sampPeriod), eventLabel, N);
-0029 <span class="keyword">end</span>
-0030</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this       - labTimeSeries object</span>
+0009 <span class="comment">%   eventTS    - labTimeSeries with event markers</span>
+0010 <span class="comment">%   eventLabel - cell array of event labels (optional, default: first label)</span>
+0011 <span class="comment">%   N          - vector of sample counts between events (optional, default:</span>
+0012 <span class="comment">%                256 for each interval)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   ATS - alignedTimeSeries object</span>
+0016 <span class="comment">%   bad - logical vector indicating strides with issues</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also ALIGN_V2, ALIGNEDTIMESERIES, DISCRETIZE.</span>
+0021 
+0022 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(eventLabel)
+0023     eventLabel = eventTS.labels(1);
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(N)
+0026     samplesPerInterval = 256; <span class="comment">% default documented above</span>
+0027     N = samplesPerInterval * ones(size(eventLabel));
+0028 <span class="keyword">end</span>
+0029 [ATS, bad] = this.align_v2(eventTS.split(this.Time(1) - <span class="keyword">...</span>
+0030     this.sampPeriod, this.Time(end) + this.sampPeriod), eventLabel, N);
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

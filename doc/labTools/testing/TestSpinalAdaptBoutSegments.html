@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of TestSpinalAdaptBoutSegments</title>
+  <meta name="keywords" content="TestSpinalAdaptBoutSegments">
+  <meta name="description" content="TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">testing</a> &gt; TestSpinalAdaptBoutSegments.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>TestSpinalAdaptBoutSegments
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.
+
+   Exercises GETSPINALADAPTBOUTSEGMENTS against small synthetic data
+ logs covering every cue grammar the SpinalAdapt controller has
+ produced: the 2026-09-18 grammar ('&lt;P&gt;_Trial_End', as logged for
+ SAYA90), the current one ('&lt;P&gt;_TrialEnd', per-leg split prefixes),
+ a trial resumed mid-way, bouts interrupted by the STOP button,
+ trials without bout cues, the unprefixed Pilot Study 2 grammar, and
+ malformed logs that must raise an error.
+
+ It also checks SPLITSPINALADAPTBOUTCONDS's input guards on minimal
+ mock sessions (an already split session is refused; a session with no
+ bout cues is returned unchanged).
+
+   Scope: this script validates the PARSER and the guards only. It is
+ not a substitute for VALIDATESPINALADAPTBOUTSPLITONSERVER.M, which
+ runs the parser and the stride partition against real SAYA90/SAYA91
+ data.
+
+   Usage:
+     run('testing/TestSpinalAdaptBoutSegments.m')
+
+ Toolbox Dependencies:
+   None
+
+ See also GETSPINALADAPTBOUTSEGMENTS, SPLITSPINALADAPTBOUTCONDS,
+   <a href="ValidateSpinalAdaptBoutSplitOnServer.html" class="code" title="">VALIDATESPINALADAPTBOUTSPLITONSERVER</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>	</li><li><a href="../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li><li><a href="../../labTools/classes/dataStructs/metaData/trialMetaData.html" class="code" title="">trialMetaData</a>	</li><li><a href="../../labTools/classes/dataStructs/processedTrialData.html" class="code" title="">processedTrialData</a>	</li><li><a href="../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies by constant.</li><li><a href="../../labTools/classes/labTS/@labTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>	TIMES Multiplies data by constant.</li><li><a href="../../labTools/classes/labTS/@orientedLabTimeSeries/times.html" class="code" title="function newThis = times(this, constant)">times</a>	TIMES Multiplies by constant (override).</li><li><a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>	GETSPINALADAPTBOUTSEGMENTS Find bout ramp and steady-state time windows.</li><li><a href="../../labTools/gui/importc3d/splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>	SPLITSPINALADAPTBOUTCONDS Split SpinalAdapt bout trials into conditions.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function datlog = makeDatlog(names, times)</a></li><li><a href="#_sub2" class="code">function expData = makeMockExpData(rawDataFilename)</a></li><li><a href="#_sub3" class="code">function assertThrows(fcn, expectedID, caseName)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%TestSpinalAdaptBoutSegments Unit tests for the SpinalAdapt cue parser.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Exercises GETSPINALADAPTBOUTSEGMENTS against small synthetic data</span>
+0004 <span class="comment">% logs covering every cue grammar the SpinalAdapt controller has</span>
+0005 <span class="comment">% produced: the 2026-09-18 grammar ('&lt;P&gt;_Trial_End', as logged for</span>
+0006 <span class="comment">% SAYA90), the current one ('&lt;P&gt;_TrialEnd', per-leg split prefixes),</span>
+0007 <span class="comment">% a trial resumed mid-way, bouts interrupted by the STOP button,</span>
+0008 <span class="comment">% trials without bout cues, the unprefixed Pilot Study 2 grammar, and</span>
+0009 <span class="comment">% malformed logs that must raise an error.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% It also checks SPLITSPINALADAPTBOUTCONDS's input guards on minimal</span>
+0012 <span class="comment">% mock sessions (an already split session is refused; a session with no</span>
+0013 <span class="comment">% bout cues is returned unchanged).</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Scope: this script validates the PARSER and the guards only. It is</span>
+0016 <span class="comment">% not a substitute for VALIDATESPINALADAPTBOUTSPLITONSERVER.M, which</span>
+0017 <span class="comment">% runs the parser and the stride partition against real SAYA90/SAYA91</span>
+0018 <span class="comment">% data.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   Usage:</span>
+0021 <span class="comment">%     run('testing/TestSpinalAdaptBoutSegments.m')</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies:</span>
+0024 <span class="comment">%   None</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS, SPLITSPINALADAPTBOUTCONDS,</span>
+0027 <span class="comment">%   VALIDATESPINALADAPTBOUTSPLITONSERVER.</span>
+0028 
+0029 <span class="comment">%% 2026-09-18 Grammar (Tied): Two Complete Bouts</span>
+0030 dl = <a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'PreAdaptFast_Mid01'</span>, <span class="string">'PreAdaptFast_AccRamp01'</span>, <span class="keyword">...</span>
+0031     <span class="string">'PreAdaptFast_Mid01'</span>, <span class="string">'PreAdaptFast_Rest01'</span>, <span class="keyword">...</span>
+0032     <span class="string">'PreAdaptFast_Rest01_CountForward'</span>, <span class="string">'PreAdaptFast_AccRamp02'</span>, <span class="keyword">...</span>
+0033     <span class="string">'PreAdaptFast_Mid02'</span>, <span class="string">'PreAdaptFast_Rest02'</span>, <span class="keyword">...</span>
+0034     <span class="string">'PreAdaptFast_Rest02_CountForward'</span>, <span class="string">'PreAdaptFast_Trial_End'</span>}, <span class="keyword">...</span>
+0035     [0 0.6 2.8 13.8 14.5 26.8 31.4 42.6 43.3 56]);
+0036 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(dl);
+0037 assert(height(segs) == 4, <span class="string">'Two bouts should give four segments.'</span>);
+0038 assert(isequal(segs.segment', [&quot;Ramp&quot; &quot;SS&quot; &quot;Ramp&quot; &quot;SS&quot;]), <span class="keyword">...</span>
+0039     <span class="string">'Segments should alternate Ramp, SS.'</span>);
+0040 assert(isequal(segs.bout', [1 1 2 2]), <span class="string">'Bout numbers are wrong.'</span>);
+0041 assert(isequal(segs.startTime', [0 2.8 26.8 31.4]), <span class="keyword">...</span>
+0042     [<span class="string">'Bout 1 must open at the pre-loop Mid row; later bouts at '</span> <span class="keyword">...</span>
+0043     <span class="string">'their ramp cue; SS at the Mid row after the ramp.'</span>]);
+0044 assert(isequal(segs.endTime', [2.8 14.5 31.4 43.3]), <span class="keyword">...</span>
+0045     <span class="string">'SS segments must close at the CountForward row, not Rest.'</span>);
+0046 assert(all(ismember(segs.endSource, [&quot;SS&quot; &quot;CountForward&quot;])), <span class="keyword">...</span>
+0047     <span class="string">'Complete bouts should not use a fallback end.'</span>);
+0048 
+0049 <span class="comment">%% Current Grammar (Split): Per-Leg Prefix and '_TrialEnd'</span>
+0050 dl = <a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'AdaptSplitFastR_Mid01'</span>, <span class="keyword">...</span>
+0051     <span class="string">'AdaptSplitFastR_DccRamp2Split01'</span>, <span class="string">'AdaptSplitFastR_Split01'</span>, <span class="keyword">...</span>
+0052     <span class="string">'AdaptSplitFastR_Rest01'</span>, <span class="string">'AdaptSplitFastR_Rest01_CountForward'</span>, <span class="keyword">...</span>
+0053     <span class="string">'AdaptSplitFastR_DccRamp2Split02'</span>, <span class="string">'AdaptSplitFastR_Split02'</span>, <span class="keyword">...</span>
+0054     <span class="string">'AdaptSplitFastR_Rest02'</span>, <span class="string">'AdaptSplitFastR_Rest02_CountForward'</span>, <span class="keyword">...</span>
+0055     <span class="string">'AdaptSplitFastR_TrialEnd'</span>}, [0 0.9 3.7 16.8 17.5 30.5 36.1 <span class="keyword">...</span>
+0056     50.8 51.5 64]);
+0057 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(dl);
+0058 assert(height(segs) == 4, <span class="string">'Split bouts should give four segments.'</span>);
+0059 assert(segs.startCue(1) == &quot;AdaptSplitFastR_Mid01&quot; &amp;&amp; <span class="keyword">...</span>
+0060     segs.endCue(1) == &quot;AdaptSplitFastR_Split01&quot;, <span class="keyword">...</span>
+0061     <span class="string">'''DccRamp2Split'' must parse as a ramp event despite its digit.'</span>);
+0062 assert(isequal(segs.endTime([2 4])', [17.5 51.5]), <span class="keyword">...</span>
+0063     <span class="string">'Split SS segments must close at CountForward.'</span>);
+0064 
+0065 <span class="comment">%% Resumed Trial: No Pre-Loop Marker, Bouts Start at 04</span>
+0066 dl = <a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'PostAdaptSlow_Rest03'</span>, <span class="keyword">...</span>
+0067     <span class="string">'PostAdaptSlow_Rest03_CountForward'</span>, <span class="string">'PostAdaptSlow_AccRamp04'</span>, <span class="keyword">...</span>
+0068     <span class="string">'PostAdaptSlow_Mid04'</span>, <span class="string">'PostAdaptSlow_Rest04'</span>, <span class="keyword">...</span>
+0069     <span class="string">'PostAdaptSlow_Rest04_CountForward'</span>, <span class="string">'PostAdaptSlow_TrialEnd'</span>}, <span class="keyword">...</span>
+0070     [0 0.7 12.5 17.0 28.1 28.8 41]);
+0071 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(dl);
+0072 assert(height(segs) == 2 &amp;&amp; all(segs.bout == 4), <span class="keyword">...</span>
+0073     <span class="string">'A resumed trial should give bout 04 only (Rest03 is standing).'</span>);
+0074 assert(segs.startTime(1) == 12.5, <span class="keyword">...</span>
+0075     <span class="string">'Without a pre-loop marker the ramp cue opens the bout.'</span>);
+0076 
+0077 <span class="comment">%% STOP During the Last Steady State: Fallback Ends</span>
+0078 names = {<span class="string">'X_Mid01'</span>, <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>, <span class="string">'X_Rest01'</span>, <span class="keyword">...</span>
+0079     <span class="string">'X_Rest01_CountForward'</span>, <span class="string">'X_AccRamp02'</span>, <span class="string">'X_Mid02'</span>, <span class="string">'X_TrialEnd'</span>};
+0080 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>(names, <span class="keyword">...</span>
+0081     [0 0.6 2.8 13.8 14.5 26.8 31.4 35.0]));
+0082 assert(segs.endSource(end) == &quot;TrialEnd&quot; &amp;&amp; segs.endTime(end) == 35, <span class="keyword">...</span>
+0083     <span class="string">'An interrupted last bout should close at the trial-end row.'</span>);
+0084 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>(names(1:end - 1), <span class="keyword">...</span>
+0085     [0 0.6 2.8 13.8 14.5 26.8 31.4]));
+0086 assert(segs.endSource(end) == &quot;EndOfTrial&quot; &amp;&amp; isnan(segs.endTime(end)), <span class="keyword">...</span>
+0087     <span class="string">'With no trial-end row the last bout should run to trial end.'</span>);
+0088 
+0089 <span class="comment">%% STOP During the Last Ramp: Ramp Without SS</span>
+0090 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>(names(1:6), <span class="keyword">...</span>
+0091     [0 0.6 2.8 13.8 14.5 26.8]));
+0092 assert(height(segs) == 3 &amp;&amp; segs.segment(end) == &quot;Ramp&quot; &amp;&amp; <span class="keyword">...</span>
+0093     isnan(segs.endTime(end)), <span class="keyword">...</span>
+0094     <span class="string">'A last bout stopped mid-ramp should give only a Ramp segment.'</span>);
+0095 
+0096 <span class="comment">%% Missing CountForward in an Earlier Bout: Rest Fallback</span>
+0097 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'X_Mid01'</span>, <span class="keyword">...</span>
+0098     <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>, <span class="string">'X_Rest01'</span>, <span class="string">'X_AccRamp02'</span>, <span class="string">'X_Mid02'</span>, <span class="keyword">...</span>
+0099     <span class="string">'X_Rest02'</span>, <span class="string">'X_Rest02_CountForward'</span>}, <span class="keyword">...</span>
+0100     [0 0.6 2.8 13.8 26.8 31.4 42.6 43.3]));
+0101 assert(segs.endSource(2) == &quot;Rest&quot; &amp;&amp; segs.endTime(2) == 13.8, <span class="keyword">...</span>
+0102     <span class="string">'A bout without CountForward should close at its Rest row.'</span>);
+0103 
+0104 <span class="comment">%% Trials Without Bout Cues Give Zero Rows</span>
+0105 assert(height(<a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(struct(<span class="string">'forces'</span>, 1))) == 0, <span class="keyword">...</span>
+0106     <span class="string">'A datlog without audioCues (tied fastest) should give no rows.'</span>);
+0107 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({ <span class="keyword">...</span>
+0108     <span class="string">'CalibrationSlow_Mid01'</span>, <span class="string">'CalibrationSlow_TrialEnd'</span>}, [0 300]));
+0109 assert(height(segs) == 0, <span class="string">'A calibration trial should give no rows.'</span>);
+0110 segs = <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'Rest1'</span>, <span class="string">'AccRamp1'</span>, <span class="keyword">...</span>
+0111     <span class="string">'Mid1'</span>, <span class="string">'DccRamp2Split1'</span>, <span class="string">'Split1'</span>, <span class="keyword">...</span>
+0112     <span class="string">'TMStopAudioCountDown_Train1'</span>, <span class="string">'Rest2'</span>, <span class="string">'Trial_End'</span>}, 1:8));
+0113 assert(height(segs) == 0, <span class="keyword">...</span>
+0114     <span class="string">'The unprefixed Pilot Study 2 grammar must not be parsed.'</span>);
+0115 
+0116 <span class="comment">%% Malformed Logs Raise Errors</span>
+0117 <a href="#_sub3" class="code" title="subfunction assertThrows(fcn, expectedID, caseName)">assertThrows</a>(@() <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'X_Mid01'</span>, <span class="keyword">...</span>
+0118     <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Rest01_CountForward'</span>, <span class="string">'X_AccRamp02'</span>, <span class="keyword">...</span>
+0119     <span class="string">'X_Mid02'</span>, <span class="string">'X_Rest02_CountForward'</span>}, 1:6)), <span class="keyword">...</span>
+0120     <span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="keyword">...</span>
+0121     <span class="string">'An earlier bout without an SS cue'</span>);
+0122 <a href="#_sub3" class="code" title="subfunction assertThrows(fcn, expectedID, caseName)">assertThrows</a>(@() <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'X_Mid01'</span>, <span class="keyword">...</span>
+0123     <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>, <span class="string">'X_Rest01_CountForward'</span>}, [0 1 5 3])), <span class="keyword">...</span>
+0124     <span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="string">'Out-of-order cue times'</span>);
+0125 <a href="#_sub3" class="code" title="subfunction assertThrows(fcn, expectedID, caseName)">assertThrows</a>(@() <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(<a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({ <span class="keyword">...</span>
+0126     <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>, <span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>}, 1:4)), <span class="keyword">...</span>
+0127     <span class="string">'getSpinalAdaptBoutSegments:malformedBout'</span>, <span class="string">'A repeated ramp bout'</span>);
+0128 dl = <a href="#_sub1" class="code" title="subfunction datlog = makeDatlog(names, times)">makeDatlog</a>({<span class="string">'X_AccRamp01'</span>, <span class="string">'X_Mid01'</span>}, 1:2);
+0129 dl.audioCues.startInRelativeTime = 1;
+0130 <a href="#_sub3" class="code" title="subfunction assertThrows(fcn, expectedID, caseName)">assertThrows</a>(@() <a href="../../labTools/gui/importc3d/getSpinalAdaptBoutSegments.html" class="code" title="function segments = getSpinalAdaptBoutSegments(datlog)">getSpinalAdaptBoutSegments</a>(dl), <span class="keyword">...</span>
+0131     <span class="string">'getSpinalAdaptBoutSegments:cueTimes'</span>, <span class="string">'Mismatched cue times'</span>);
+0132 
+0133 <span class="comment">%% splitSpinalAdaptBoutConds: Refuse an Already Split Session</span>
+0134 splitSession = <a href="#_sub2" class="code" title="subfunction expData = makeMockExpData(rawDataFilename)">makeMockExpData</a>(<span class="string">'C:\Vicon\Trial09_SplitIdx009'</span>);
+0135 <a href="#_sub3" class="code" title="subfunction assertThrows(fcn, expectedID, caseName)">assertThrows</a>(@() <a href="../../labTools/gui/importc3d/splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>(splitSession), <span class="keyword">...</span>
+0136     <span class="string">'splitSpinalAdaptBoutConds:alreadySplit'</span>, <span class="keyword">...</span>
+0137     <span class="string">'Splitting an already split session'</span>);
+0138 
+0139 <span class="comment">%% splitSpinalAdaptBoutConds: No Bout Cues -&gt; Unchanged</span>
+0140 plainSession = <a href="#_sub2" class="code" title="subfunction expData = makeMockExpData(rawDataFilename)">makeMockExpData</a>(<span class="string">'C:\Vicon\Trial04'</span>);
+0141 warnState = warning(<span class="string">'off'</span>, <span class="string">'splitSpinalAdaptBoutConds:noBoutTrials'</span>);
+0142 [sameSession, report] = <a href="../../labTools/gui/importc3d/splitSpinalAdaptBoutConds.html" class="code" title="function [expData, splitReport] = splitSpinalAdaptBoutConds(expData)">splitSpinalAdaptBoutConds</a>(plainSession);
+0143 warning(warnState);
+0144 assert(isequal(sameSession.metaData.conditionName, <span class="keyword">...</span>
+0145     plainSession.metaData.conditionName) &amp;&amp; <span class="keyword">...</span>
+0146     <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(report.segments), <span class="keyword">...</span>
+0147     <span class="string">'A session without bout cues should be returned unchanged.'</span>);
+0148 
+0149 fprintf(<span class="string">'All TestSpinalAdaptBoutSegments checks passed.\n'</span>);
+0150 
+0151 <span class="comment">%% Local Functions</span>
+0152 
+0153 <a name="_sub0" href="#_subfunctions" class="code">function datlog = makeDatlog(names, times)</a>
+0154 <span class="comment">%MAKEDATLOG Build a minimal synthetic datlog with audio-cue rows.</span>
+0155 <span class="comment">%</span>
+0156 <span class="comment">%   Mirrors the fields the controller saves: a column cell of cue names</span>
+0157 <span class="comment">% and their times in seconds relative to the first frame.</span>
+0158 <span class="comment">%</span>
+0159 <span class="comment">% Inputs:</span>
+0160 <span class="comment">%   names - cell array of cue-row names</span>
+0161 <span class="comment">%   times - vector of cue times (s), one per name</span>
+0162 <span class="comment">%</span>
+0163 <span class="comment">% Outputs:</span>
+0164 <span class="comment">%   datlog - struct with audioCues.audio_instruction_message and</span>
+0165 <span class="comment">%            audioCues.startInRelativeTime</span>
+0166 <span class="comment">%</span>
+0167 <span class="comment">% Toolbox Dependencies:</span>
+0168 <span class="comment">%   None</span>
+0169 <span class="comment">%</span>
+0170 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS.</span>
+0171 
+0172 datlog = struct();
+0173 datlog.audioCues.audio_instruction_message = names(:);
+0174 datlog.audioCues.startInRelativeTime       = <a href="../../labTools/classes/labTS/@alignedTimeSeries/times.html" class="code" title="function this = times(this, constant)">times</a>(:);
+0175 
+0176 <span class="keyword">end</span>
+0177 
+0178 <a name="_sub1" href="#_subfunctions" class="code">function expData = makeMockExpData(rawDataFilename)</a>
+0179 <span class="comment">%MAKEMOCKEXPDATA Build a one-trial session with no data and no datlog.</span>
+0180 <span class="comment">%</span>
+0181 <span class="comment">%   Enough structure for SPLITSPINALADAPTBOUTCONDS's input guards, which</span>
+0182 <span class="comment">% run before any trial data or datlog is read.</span>
+0183 <span class="comment">%</span>
+0184 <span class="comment">% Inputs:</span>
+0185 <span class="comment">%   rawDataFilename - char; the single trial's rawDataFilename</span>
+0186 <span class="comment">%</span>
+0187 <span class="comment">% Outputs:</span>
+0188 <span class="comment">%   expData - experimentData with one empty processedTrialData</span>
+0189 <span class="comment">%</span>
+0190 <span class="comment">% Toolbox Dependencies:</span>
+0191 <span class="comment">%   None</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">% See also SPLITSPINALADAPTBOUTCONDS.</span>
+0194 
+0195 warnState = warning(<span class="string">'off'</span>, <span class="string">'all'</span>);  <span class="comment">% silence metadata default notices</span>
+0196 trialMeta = <a href="../../labTools/classes/dataStructs/metaData/trialMetaData.html" class="code" title="">trialMetaData</a>(<span class="string">'Mock'</span>, <span class="string">'mock trial'</span>, <span class="string">''</span>, <span class="string">'L'</span>, 1, <span class="keyword">...</span>
+0197     rawDataFilename, <span class="string">'TM'</span>);
+0198 meta = <a href="../../labTools/classes/dataStructs/metaData/@experimentMetaData/experimentMetaData.html" class="code" title="">experimentMetaData</a>(<span class="string">'SpinalAdapt'</span>, labDate.default, <span class="string">'tester'</span>, <span class="keyword">...</span>
+0199     <span class="string">''</span>, {<span class="string">'Mock'</span>}, {<span class="string">'mock condition'</span>}, {1}, 1, 0, 0, {[]});
+0200 sub  = <a href="../../labTools/classes/auxData/subjectData.html" class="code" title="">subjectData</a>([], <span class="string">'male'</span>, <span class="string">'R'</span>, <span class="string">'R'</span>, 170, 70, 30, <span class="string">'Mock01'</span>, <span class="string">'R'</span>);
+0201 warning(warnState);
+0202 expData = <a href="../../labTools/classes/dataStructs/@experimentData/experimentData.html" class="code" title="">experimentData</a>(meta, sub, {<a href="../../labTools/classes/dataStructs/processedTrialData.html" class="code" title="">processedTrialData</a>(trialMeta)});
+0203 
+0204 <span class="keyword">end</span>
+0205 
+0206 <a name="_sub2" href="#_subfunctions" class="code">function assertThrows(fcn, expectedID, caseName)</a>
+0207 <span class="comment">%ASSERTTHROWS Assert that a call raises an error with a given identifier.</span>
+0208 <span class="comment">%</span>
+0209 <span class="comment">% Inputs:</span>
+0210 <span class="comment">%   fcn        - function handle to call</span>
+0211 <span class="comment">%   expectedID - expected error identifier</span>
+0212 <span class="comment">%   caseName   - short description used in the failure message</span>
+0213 <span class="comment">%</span>
+0214 <span class="comment">% Outputs:</span>
+0215 <span class="comment">%   None</span>
+0216 <span class="comment">%</span>
+0217 <span class="comment">% Toolbox Dependencies:</span>
+0218 <span class="comment">%   None</span>
+0219 <span class="comment">%</span>
+0220 <span class="comment">% See also GETSPINALADAPTBOUTSEGMENTS.</span>
+0221 
+0222 actualID = <span class="string">''</span>;
+0223 <span class="keyword">try</span>
+0224     fcn();
+0225 <span class="keyword">catch</span> err
+0226     actualID = err.identifier;
+0227 <span class="keyword">end</span>
+0228 assert(strcmp(actualID, expectedID), <span class="keyword">...</span>
+0229     <span class="string">'%s should raise %s (got ''%s'').'</span>, caseName, expectedID, actualID);
+0230 
+0231 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

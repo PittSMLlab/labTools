@@ -4,7 +4,7 @@
 <head>
   <title>Description of runAvg</title>
   <meta name="keywords" content="runAvg">
-  <meta name="description" content="writen based on bin_dataV1 writen by GTO April 14th 2009">
+  <meta name="description" content="RUNAVG Compute a running (sliding-window) average of a matrix.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,23 +21,38 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>writen based on bin_dataV1 writen by GTO April 14th 2009</strong></div>
+<div class="box"><strong>RUNAVG Compute a running (sliding-window) average of a matrix.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [xnew, xnewstd]=runAvg(x,binwidth,dim) </strong></div>
+<div class="box"><strong>function [xnew, xnewstd] = runAvg(x, binwidth, dim) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> writen based on bin_dataV1 writen by GTO April 14th 2009
- function does running average. xnew averages x along dimension entered,
- if specified (1=rows, 2=cols) otherwise it averages along larger dimension.
- binwidth indicates the duration of each time bin
- Created by HH on 9/18/2014</pre></div>
+<div class="fragment"><pre class="comment">RUNAVG Compute a running (sliding-window) average of a matrix.
+
+   Computes a running average of X along the larger dimension (rows
+ or columns) or along the dimension specified by DIM. BINWIDTH sets
+ the number of samples in each window. Based on bin_dataV1 written
+ by GTO, April 14 2009.
+
+ Inputs:
+   x        - numeric matrix to average
+   binwidth - number of samples in the sliding window
+   dim      - (optional) dimension to average along: 1 = rows,
+              2 = columns; defaults to the larger dimension
+
+ Outputs:
+   xnew    - running-average matrix, same size as X
+   xnewstd - running standard deviation, same size as X
+
+ Toolbox Dependencies: None
+
+ See also <a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd] = bin_dataV1(x, binwidth)">BIN_DATAV1</a>, MEAN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -46,47 +61,62 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xnew, xnewstd]=runAvg(x,binwidth,dim)</a>
-0002 <span class="comment">% writen based on bin_dataV1 writen by GTO April 14th 2009</span>
-0003 <span class="comment">% function does running average. xnew averages x along dimension entered,</span>
-0004 <span class="comment">% if specified (1=rows, 2=cols) otherwise it averages along larger dimension.</span>
-0005 <span class="comment">% binwidth indicates the duration of each time bin</span>
-0006 <span class="comment">% Created by HH on 9/18/2014</span>
-0007 
-0008 rows=size(x,1);
-0009 cols=size(x,2);
-0010 
-0011 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x)
-0012     <span class="keyword">if</span> binwidth==1
-0013         xnew=x;
-0014         xnewstd=zeros(rows,cols);
-0015     <span class="keyword">else</span>
-0016         <span class="keyword">if</span> rows&gt;=cols || (nargin&gt;2 &amp;&amp; dim==1) <span class="comment">%average rows</span>
-0017             <span class="keyword">for</span>  i=1:rows
-0018                 t1=max([1 i-floor(binwidth/2)]);
-0019                 t2=min([rows i+ceil(binwidth/2)]);
-0020                 
-0021                 xnew(i,:) = nanmean(x(t1:t2,:),1);
-0022                 xnewstd(i,:) = nanstd(x(t1:t2,:),[],1);                
-0023             <span class="keyword">end</span>
-0024         <span class="keyword">elseif</span> cols&gt;rows || (nargin&gt;2 &amp;&amp; dim==2) <span class="comment">%average columns</span>
-0025             <span class="keyword">for</span>  i=1:cols
-0026                 t1=max([1 i-floor(binwidth/2)]);
-0027                 t2=min([cols i+ceil(binwidth/2)]);
-0028                 
-0029                 xnew(:,i) = nanmean(x(:,t1:t2),2);
-0030                 xnewstd(:,i) = nanstd(x(:,t1:t2),[],2);                
-0031             <span class="keyword">end</span>
-0032         <span class="keyword">else</span>
-0033             warning(<span class="string">'Dimension entered not correct'</span>)
-0034             xnew=[];
-0035             xnewstd=[];
-0036         <span class="keyword">end</span>
-0037     <span class="keyword">end</span>
-0038 <span class="keyword">else</span>
-0039     xnew=[];
-0040     xnewstd=[];
-0041 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xnew, xnewstd] = runAvg(x, binwidth, dim)</a>
+0002 <span class="comment">%RUNAVG Compute a running (sliding-window) average of a matrix.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Computes a running average of X along the larger dimension (rows</span>
+0005 <span class="comment">% or columns) or along the dimension specified by DIM. BINWIDTH sets</span>
+0006 <span class="comment">% the number of samples in each window. Based on bin_dataV1 written</span>
+0007 <span class="comment">% by GTO, April 14 2009.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   x        - numeric matrix to average</span>
+0011 <span class="comment">%   binwidth - number of samples in the sliding window</span>
+0012 <span class="comment">%   dim      - (optional) dimension to average along: 1 = rows,</span>
+0013 <span class="comment">%              2 = columns; defaults to the larger dimension</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   xnew    - running-average matrix, same size as X</span>
+0017 <span class="comment">%   xnewstd - running standard deviation, same size as X</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also BIN_DATAV1, MEAN.</span>
+0022 rows = size(x, 1);
+0023 cols = size(x, 2);
+0024 
+0025 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(x)
+0026     <span class="keyword">if</span> binwidth == 1
+0027         xnew    = x;
+0028         xnewstd = zeros(rows, cols);
+0029     <span class="keyword">else</span>
+0030         <span class="keyword">if</span> rows &gt;= cols || (nargin &gt; 2 &amp;&amp; dim == 1)
+0031             <span class="keyword">for</span> st = 1:rows             <span class="comment">% average along rows</span>
+0032                 t1 = max([1 st - floor(binwidth / 2)]);
+0033                 t2 = min([rows st + ceil(binwidth / 2)]);
+0034 
+0035                 xnew(st, :)    = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x(t1:t2, :), 1, <span class="string">'omitnan'</span>);
+0036                 xnewstd(st, :) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x(t1:t2, :), 0, 1, <span class="string">'omitnan'</span>);
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">elseif</span> cols &gt; rows || (nargin &gt; 2 &amp;&amp; dim == 2)
+0039             <span class="keyword">for</span> ii = 1:cols             <span class="comment">% average along columns</span>
+0040                 t1 = max([1 ii - floor(binwidth / 2)]);
+0041                 t2 = min([cols ii + ceil(binwidth / 2)]);
+0042 
+0043                 xnew(:, ii)    = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x(:, t1:t2), 2, <span class="string">'omitnan'</span>);
+0044                 xnewstd(:, ii) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x(:, t1:t2), 0, 2, <span class="string">'omitnan'</span>);
+0045             <span class="keyword">end</span>
+0046         <span class="keyword">else</span>
+0047             warning(<span class="string">'Dimension entered not correct'</span>)
+0048             xnew    = [];
+0049             xnewstd = [];
+0050         <span class="keyword">end</span>
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">else</span>
+0053     xnew    = [];
+0054     xnewstd = [];
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ValidateHreflexGuardOnServer</title>
+  <meta name="keywords" content="ValidateHreflexGuardOnServer">
+  <meta name="description" content="ValidateHreflexGuardOnServer Validates the H-reflex stim-trigger guard">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">testing</a> &gt; ValidateHreflexGuardOnServer.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>ValidateHreflexGuardOnServer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ValidateHreflexGuardOnServer Validates the H-reflex stim-trigger guard</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ValidateHreflexGuardOnServer Validates the H-reflex stim-trigger guard
+ on real sessions copied locally from the server.
+
+   Runs EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS (the same
+ recomputation path used by post-processing, which re-enters
+ CALCPARAMETERS -&gt; COMPUTEHREFLEXPARAMETERS) against local copies of:
+
+   1. 'AccidentalNonStim' -- a session where the H-reflex Nexus
+      configuration (Stimulator_Trigger_Sync_* channels) was left
+      enabled for a study that never stimulated. Before this fix, this
+      aborted recomputation entirely; this checks it now completes
+      without error and without needing the +Hreflex helper commented
+      out.
+   2. 'KnownGoodHreflex' -- a session with real H-reflex stimulation.
+      This checks that its H-reflex (and all other) parameters are
+      BYTE-IDENTICAL to a pre-fix baseline, not merely that recomputation
+      does not error -- that is the regression that matters, since the
+      guard must never affect a genuine stimulation session.
+
+   IMPORTANT -- SAFETY:
+     This script must be pointed at LOCAL COPIES of the session data,
+   never at the original server location. It only ever loads and
+   recomputes in memory; it never calls SAVE. You are still
+   responsible for ensuring 'sessionDirs' below points at a local
+   copy, not 'Z:\Nathan\C3\Data' or any other server path. Each
+   session folder must contain that session's '*expData.mat' (required
+   -- flushAndRecomputeParameters needs real per-trial processed data,
+   not just the saved 'params.mat').
+
+   Usage:
+     1. Edit 'sessionDirs' below to point at your local copies.
+     2. Run: run('testing/ValidateHreflexGuardOnServer.m')
+        This always checks 'AccidentalNonStim' completes without error.
+     3. For the 'KnownGoodHreflex' byte-identical regression check:
+        a. With this fix applied (current working tree), run this
+           script once with 'baselineMatFile' left as '' -- it saves a
+           baseline snapshot and prints the path.
+        b. git stash the fix (fun/+Hreflex/hasStimTrigger.m and the
+           edits to computeHreflexParameters.m/calcParameters.m),
+           restart MATLAB to clear the function cache, and rerun this
+           script with 'baselineMatFile' set to the path printed in
+           step (a) -- this compares the pre-fix run against that
+           baseline and reports PASS/FAIL.
+        c. git stash pop to restore the fix.
+
+ Toolbox Dependencies:
+   None
+
+ See also HREFLEX.HASSTIMTRIGGER, COMPUTEHREFLEXPARAMETERS,
+   <a href="TestHreflexStimTriggerGuard.html" class="code" title="">TESTHREFLEXSTIMTRIGGERGUARD</a>, EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function checkAccidentalSession(sessionDir)</a></li><li><a href="#_sub2" class="code">function checkKnownGoodSession(sessionDir, baselineMatFile)</a></li><li><a href="#_sub3" class="code">function out = ternary(cond, trueVal, falseVal)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%ValidateHreflexGuardOnServer Validates the H-reflex stim-trigger guard</span>
+0002 <span class="comment">% on real sessions copied locally from the server.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Runs EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS (the same</span>
+0005 <span class="comment">% recomputation path used by post-processing, which re-enters</span>
+0006 <span class="comment">% CALCPARAMETERS -&gt; COMPUTEHREFLEXPARAMETERS) against local copies of:</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   1. 'AccidentalNonStim' -- a session where the H-reflex Nexus</span>
+0009 <span class="comment">%      configuration (Stimulator_Trigger_Sync_* channels) was left</span>
+0010 <span class="comment">%      enabled for a study that never stimulated. Before this fix, this</span>
+0011 <span class="comment">%      aborted recomputation entirely; this checks it now completes</span>
+0012 <span class="comment">%      without error and without needing the +Hreflex helper commented</span>
+0013 <span class="comment">%      out.</span>
+0014 <span class="comment">%   2. 'KnownGoodHreflex' -- a session with real H-reflex stimulation.</span>
+0015 <span class="comment">%      This checks that its H-reflex (and all other) parameters are</span>
+0016 <span class="comment">%      BYTE-IDENTICAL to a pre-fix baseline, not merely that recomputation</span>
+0017 <span class="comment">%      does not error -- that is the regression that matters, since the</span>
+0018 <span class="comment">%      guard must never affect a genuine stimulation session.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   IMPORTANT -- SAFETY:</span>
+0021 <span class="comment">%     This script must be pointed at LOCAL COPIES of the session data,</span>
+0022 <span class="comment">%   never at the original server location. It only ever loads and</span>
+0023 <span class="comment">%   recomputes in memory; it never calls SAVE. You are still</span>
+0024 <span class="comment">%   responsible for ensuring 'sessionDirs' below points at a local</span>
+0025 <span class="comment">%   copy, not 'Z:\Nathan\C3\Data' or any other server path. Each</span>
+0026 <span class="comment">%   session folder must contain that session's '*expData.mat' (required</span>
+0027 <span class="comment">%   -- flushAndRecomputeParameters needs real per-trial processed data,</span>
+0028 <span class="comment">%   not just the saved 'params.mat').</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%   Usage:</span>
+0031 <span class="comment">%     1. Edit 'sessionDirs' below to point at your local copies.</span>
+0032 <span class="comment">%     2. Run: run('testing/ValidateHreflexGuardOnServer.m')</span>
+0033 <span class="comment">%        This always checks 'AccidentalNonStim' completes without error.</span>
+0034 <span class="comment">%     3. For the 'KnownGoodHreflex' byte-identical regression check:</span>
+0035 <span class="comment">%        a. With this fix applied (current working tree), run this</span>
+0036 <span class="comment">%           script once with 'baselineMatFile' left as '' -- it saves a</span>
+0037 <span class="comment">%           baseline snapshot and prints the path.</span>
+0038 <span class="comment">%        b. git stash the fix (fun/+Hreflex/hasStimTrigger.m and the</span>
+0039 <span class="comment">%           edits to computeHreflexParameters.m/calcParameters.m),</span>
+0040 <span class="comment">%           restart MATLAB to clear the function cache, and rerun this</span>
+0041 <span class="comment">%           script with 'baselineMatFile' set to the path printed in</span>
+0042 <span class="comment">%           step (a) -- this compares the pre-fix run against that</span>
+0043 <span class="comment">%           baseline and reports PASS/FAIL.</span>
+0044 <span class="comment">%        c. git stash pop to restore the fix.</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">% Toolbox Dependencies:</span>
+0047 <span class="comment">%   None</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% See also HREFLEX.HASSTIMTRIGGER, COMPUTEHREFLEXPARAMETERS,</span>
+0050 <span class="comment">%   TESTHREFLEXSTIMTRIGGERGUARD, EXPERIMENTDATA.FLUSHANDRECOMPUTEPARAMETERS.</span>
+0051 
+0052 <span class="comment">%% Configuration -- Edit These Local (Not Server) Paths</span>
+0053 <span class="comment">% Each entry: sessionID -&gt; local folder containing that session's</span>
+0054 <span class="comment">% '*expData.mat'. Leave a folder as '' to skip that session. NEVER</span>
+0055 <span class="comment">% point these at Z:\Nathan\C3\Data or any other server path -- copy the</span>
+0056 <span class="comment">% files locally first.</span>
+0057 sessionDirs = struct( <span class="keyword">...</span>
+0058     <span class="string">'AccidentalNonStim'</span>, <span class="string">''</span>, <span class="keyword">...</span><span class="comment">  % H-reflex config enabled, no stim</span>
+0059     <span class="string">'KnownGoodHreflex'</span>,  <span class="string">''</span>);     <span class="comment">% real H-reflex stimulation session</span>
+0060 
+0061 <span class="comment">% Optional: path to a baseline .mat snapshot of KnownGoodHreflex's</span>
+0062 <span class="comment">% recomputed parameters (see Usage step 3 above). Leave '' to save a</span>
+0063 <span class="comment">% new baseline from the current (fixed) code instead of comparing.</span>
+0064 baselineMatFile = <span class="string">''</span>;
+0065 
+0066 <span class="comment">%% Validate Configuration Before Touching Any Files</span>
+0067 serverPathToken = <span class="string">'Z:\Nathan\C3\Data'</span>; <span class="comment">% guard token; see safety note</span>
+0068 sessionIDs = fieldnames(sessionDirs);
+0069 <span class="keyword">for</span> ii = 1:length(sessionIDs)
+0070     sessionDir = sessionDirs.(sessionIDs{ii});
+0071     <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sessionDir)
+0072         <span class="keyword">continue</span>
+0073     <span class="keyword">end</span>
+0074     <span class="keyword">if</span> contains(sessionDir, serverPathToken)
+0075         error(<span class="string">'ValidateHreflexGuardOnServer:serverPath'</span>, <span class="keyword">...</span>
+0076             [<span class="string">'sessionDirs.%s points at the server path (%s). '</span> <span class="keyword">...</span>
+0077             <span class="string">'Copy the session files to a local folder first and '</span> <span class="keyword">...</span>
+0078             <span class="string">'point this script at the copy.'</span>], sessionIDs{ii}, <span class="keyword">...</span>
+0079             serverPathToken);
+0080     <span class="keyword">end</span>
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="comment">%% Check 1: Accidental Non-Stimulation Session Recomputes Without Error</span>
+0084 sessionDir = sessionDirs.AccidentalNonStim;
+0085 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sessionDir)
+0086     fprintf([<span class="string">'AccidentalNonStim: (skipped -- no local path '</span> <span class="keyword">...</span>
+0087         <span class="string">'configured)\n'</span>]);
+0088 <span class="keyword">else</span>
+0089     <a href="#_sub1" class="code" title="subfunction checkAccidentalSession(sessionDir)">checkAccidentalSession</a>(sessionDir);
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">%% Check 2: Known-Good H-Reflex Session Parameters Are Unaffected</span>
+0093 sessionDir = sessionDirs.KnownGoodHreflex;
+0094 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sessionDir)
+0095     fprintf([<span class="string">'KnownGoodHreflex: (skipped -- no local path '</span> <span class="keyword">...</span>
+0096         <span class="string">'configured)\n'</span>]);
+0097 <span class="keyword">else</span>
+0098     <a href="#_sub2" class="code" title="subfunction checkKnownGoodSession(sessionDir, baselineMatFile)">checkKnownGoodSession</a>(sessionDir, baselineMatFile);
+0099 <span class="keyword">end</span>
+0100 
+0101 <span class="comment">% ============================================================</span>
+0102 <span class="comment">% ==================== Local Functions ======================</span>
+0103 <span class="comment">% ============================================================</span>
+0104 
+0105 <a name="_sub0" href="#_subfunctions" class="code">function checkAccidentalSession(sessionDir)</a>
+0106 <span class="comment">%CHECKACCIDENTALSESSION Confirm recomputation no longer aborts.</span>
+0107 <span class="comment">%</span>
+0108 <span class="comment">% Inputs:</span>
+0109 <span class="comment">%   sessionDir - char, LOCAL folder containing the session's saved</span>
+0110 <span class="comment">%                '*expData.mat'</span>
+0111 <span class="comment">%</span>
+0112 <span class="comment">% Outputs:</span>
+0113 <span class="comment">%   none (prints the result of the check)</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">% Toolbox Dependencies: None</span>
+0116 <span class="comment">%</span>
+0117 <span class="comment">% See also VALIDATEHREFLEXGUARDONSERVER.</span>
+0118 
+0119 expFiles = dir(fullfile(sessionDir, <span class="string">'*expData.mat'</span>));
+0120 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(expFiles)
+0121     warning(<span class="string">'ValidateHreflexGuardOnServer:noData'</span>, <span class="keyword">...</span>
+0122         [<span class="string">'AccidentalNonStim: no ''*expData.mat'' found in %s. '</span> <span class="keyword">...</span>
+0123         <span class="string">'Skipping.'</span>], sessionDir);
+0124     <span class="keyword">return</span>
+0125 <span class="keyword">end</span>
+0126 
+0127 <span class="keyword">try</span>
+0128     loaded  = load(fullfile(sessionDir, expFiles(1).name));
+0129     expData = loaded.expData.flushAndRecomputeParameters();
+0130     fprintf([<span class="string">'AccidentalNonStim: PASS -- '</span> <span class="keyword">...</span>
+0131         <span class="string">'flushAndRecomputeParameters completed without error.\n'</span>]);
+0132 <span class="keyword">catch</span> recomputeErr
+0133     warning(<span class="string">'ValidateHreflexGuardOnServer:accidentalSessionFailed'</span>, <span class="keyword">...</span>
+0134         [<span class="string">'AccidentalNonStim: flushAndRecomputeParameters still '</span> <span class="keyword">...</span>
+0135         <span class="string">'errors (%s). The guard did not resolve this session.'</span>], <span class="keyword">...</span>
+0136         recomputeErr.message);
+0137     <span class="keyword">return</span>
+0138 <span class="keyword">end</span>
+0139 
+0140 adaptData = expData.makeDataObj([]);
+0141 hreflexMask = contains(adaptData.data.labels, <span class="keyword">...</span>
+0142     {<span class="string">'Hwave'</span>, <span class="string">'Mwave'</span>, <span class="string">'HreflexNoise'</span>, <span class="string">'H2M'</span>, <span class="string">'HreflexBEMG'</span>, <span class="keyword">...</span>
+0143     <span class="string">'NoStimBEMG'</span>, <span class="string">'stimTimeFrom'</span>, <span class="string">'isSingleStance'</span>});
+0144 <span class="keyword">if</span> any(hreflexMask)
+0145     allNaN = all(isnan(adaptData.data.Data(:, hreflexMask)), <span class="string">'all'</span>);
+0146     fprintf([<span class="string">'AccidentalNonStim: H-reflex parameters present and '</span> <span class="keyword">...</span>
+0147         <span class="string">'%s all NaN, as expected for a non-stimulation session.\n'</span>], <span class="keyword">...</span>
+0148         <a href="#_sub3" class="code" title="subfunction out = ternary(cond, trueVal, falseVal)">ternary</a>(allNaN, <span class="string">'are'</span>, <span class="string">'are NOT'</span>));
+0149     <span class="keyword">if</span> ~allNaN
+0150         warning(<span class="string">'ValidateHreflexGuardOnServer:unexpectedHreflexData'</span>, <span class="keyword">...</span>
+0151             [<span class="string">'AccidentalNonStim: some H-reflex parameters are not '</span> <span class="keyword">...</span>
+0152             <span class="string">'NaN. Review manually -- this session was expected to '</span> <span class="keyword">...</span>
+0153             <span class="string">'have no stimulation.'</span>]);
+0154     <span class="keyword">end</span>
+0155 <span class="keyword">end</span>
+0156 
+0157 <span class="keyword">end</span>
+0158 
+0159 <a name="_sub1" href="#_subfunctions" class="code">function checkKnownGoodSession(sessionDir, baselineMatFile)</a>
+0160 <span class="comment">%CHECKKNOWNGOODSESSION Compare recomputed parameters to a baseline.</span>
+0161 <span class="comment">%</span>
+0162 <span class="comment">% Inputs:</span>
+0163 <span class="comment">%   sessionDir      - char, LOCAL folder containing the session's</span>
+0164 <span class="comment">%                     saved '*expData.mat'</span>
+0165 <span class="comment">%   baselineMatFile - char, path to a previously saved baseline</span>
+0166 <span class="comment">%                     snapshot, or '' to save a new one</span>
+0167 <span class="comment">%</span>
+0168 <span class="comment">% Outputs:</span>
+0169 <span class="comment">%   none (prints the result of the comparison)</span>
+0170 <span class="comment">%</span>
+0171 <span class="comment">% Toolbox Dependencies: None</span>
+0172 <span class="comment">%</span>
+0173 <span class="comment">% See also VALIDATEHREFLEXGUARDONSERVER.</span>
+0174 
+0175 expFiles = dir(fullfile(sessionDir, <span class="string">'*expData.mat'</span>));
+0176 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(expFiles)
+0177     warning(<span class="string">'ValidateHreflexGuardOnServer:noData'</span>, <span class="keyword">...</span>
+0178         [<span class="string">'KnownGoodHreflex: no ''*expData.mat'' found in %s. '</span> <span class="keyword">...</span>
+0179         <span class="string">'Skipping.'</span>], sessionDir);
+0180     <span class="keyword">return</span>
+0181 <span class="keyword">end</span>
+0182 
+0183 <span class="keyword">try</span>
+0184     loaded    = load(fullfile(sessionDir, expFiles(1).name));
+0185     expData   = loaded.expData.flushAndRecomputeParameters();
+0186     adaptData = expData.makeDataObj([]);
+0187 <span class="keyword">catch</span> recomputeErr
+0188     warning(<span class="string">'ValidateHreflexGuardOnServer:knownGoodSessionFailed'</span>, <span class="keyword">...</span>
+0189         [<span class="string">'KnownGoodHreflex: flushAndRecomputeParameters errored '</span> <span class="keyword">...</span>
+0190         <span class="string">'(%s). Investigate before trusting the guard on genuine '</span> <span class="keyword">...</span>
+0191         <span class="string">'H-reflex sessions.'</span>], recomputeErr.message);
+0192     <span class="keyword">return</span>
+0193 <span class="keyword">end</span>
+0194 
+0195 <a href="../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>   = adaptData.data.Data;
+0196 paramLabels = adaptData.data.labels;
+0197 
+0198 <span class="keyword">if</span> <a href="../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(baselineMatFile)
+0199     outFile = fullfile(sessionDir, <span class="keyword">...</span>
+0200         sprintf(<span class="string">'hreflexGuardBaseline_%s.mat'</span>, <span class="keyword">...</span>
+0201         datestr(now, <span class="string">'yyyymmdd_HHMMSS'</span>))); <span class="comment">%#ok&lt;TNOW1,DATST&gt;</span>
+0202     save(outFile, <span class="string">'paramData'</span>, <span class="string">'paramLabels'</span>);
+0203     fprintf([<span class="string">'KnownGoodHreflex: saved baseline snapshot to %s. '</span> <span class="keyword">...</span>
+0204         <span class="string">'Rerun with baselineMatFile set to this path after '</span> <span class="keyword">...</span>
+0205         <span class="string">'stashing the fix (see Usage step 3).\n'</span>], outFile);
+0206     <span class="keyword">return</span>
+0207 <span class="keyword">end</span>
+0208 
+0209 baseline = load(baselineMatFile, <span class="string">'paramData'</span>, <span class="string">'paramLabels'</span>);
+0210 <span class="keyword">if</span> ~isequal(sort(paramLabels(:)), sort(baseline.paramLabels(:)))
+0211     warning(<span class="string">'ValidateHreflexGuardOnServer:labelMismatch'</span>, <span class="keyword">...</span>
+0212         [<span class="string">'KnownGoodHreflex: parameter label sets differ between '</span> <span class="keyword">...</span>
+0213         <span class="string">'this run and the baseline. Cannot compare directly -- '</span> <span class="keyword">...</span>
+0214         <span class="string">'review manually.'</span>]);
+0215     <span class="keyword">return</span>
+0216 <span class="keyword">end</span>
+0217 
+0218 <span class="comment">% Reorder this run's columns to match the baseline label order before</span>
+0219 <span class="comment">% comparing, in case label order is not guaranteed to be stable.</span>
+0220 [~, reorderIdx] = ismember(baseline.paramLabels, paramLabels);
+0221 paramDataAligned = <a href="../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(:, reorderIdx);
+0222 
+0223 <span class="keyword">if</span> isequaln(paramDataAligned, baseline.paramData)
+0224     fprintf([<span class="string">'KnownGoodHreflex: PASS -- recomputed parameters are '</span> <span class="keyword">...</span>
+0225         <span class="string">'byte-identical to the baseline.\n'</span>]);
+0226 <span class="keyword">else</span>
+0227     warning(<span class="string">'ValidateHreflexGuardOnServer:regressionDetected'</span>, <span class="keyword">...</span>
+0228         [<span class="string">'KnownGoodHreflex: recomputed parameters DIFFER from the '</span> <span class="keyword">...</span>
+0229         <span class="string">'baseline. The guard may be affecting a genuine H-reflex '</span> <span class="keyword">...</span>
+0230         <span class="string">'session -- investigate before trusting it.'</span>]);
+0231 <span class="keyword">end</span>
+0232 
+0233 <span class="keyword">end</span>
+0234 
+0235 <a name="_sub2" href="#_subfunctions" class="code">function out = ternary(cond, trueVal, falseVal)</a>
+0236 <span class="comment">%TERNARY Small inline conditional helper for a single fprintf call.</span>
+0237 <span class="comment">%</span>
+0238 <span class="comment">% Inputs:</span>
+0239 <span class="comment">%   cond     - logical scalar</span>
+0240 <span class="comment">%   trueVal  - value returned when cond is true</span>
+0241 <span class="comment">%   falseVal - value returned when cond is false</span>
+0242 <span class="comment">%</span>
+0243 <span class="comment">% Outputs:</span>
+0244 <span class="comment">%   out - trueVal if cond is true, falseVal otherwise</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">% Toolbox Dependencies: None</span>
+0247 <span class="comment">%</span>
+0248 <span class="comment">% See also VALIDATEHREFLEXGUARDONSERVER.</span>
+0249 
+0250 <span class="keyword">if</span> cond
+0251     out = trueVal;
+0252 <span class="keyword">else</span>
+0253     out = falseVal;
+0254 <span class="keyword">end</span>
+0255 
+0256 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

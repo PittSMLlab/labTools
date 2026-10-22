@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionAll</title>
+  <meta name="keywords" content="regressionAll">
+  <meta name="description" content="REGRESSIONALL Run every regression compare in one go.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionAll.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionAll
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONALL Run every regression compare in one go.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionAll(baseDir, sessionID, eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONALL Run every regression compare in one go.
+
+   Runs, against the baselines in baseDir, the flush compare
+ (REGRESSIONCOMPARERUN), the event check (REGRESSIONEVENTSCHECK, fixture
+ and session) and the process-stage compare (REGRESSIONPROCESSRUN) on
+ the session copy in &lt;baseDir&gt;/session. Every check runs even if an
+ earlier one fails; errors at the end if any failed (nonzero exit under
+ matlab -batch). Prints which calcParameters ran, so the log shows
+ which tree was tested. A two-trial session takes ~10 min.
+
+ Inputs:
+   baseDir    - char, folder holding baselineParams.mat,
+                processParams.mat, fixtureEvents.mat, sessionEvents.mat
+                and session/&lt;sessionID&gt;.mat, session/&lt;sessionID&gt;RAW.mat
+   sessionID  - char, session ID (file name stem), e.g. 'C3S36_S1'
+   eventClass - char, '' | 'kin' | 'force' (same as the baseline)
+
+ Outputs:
+   none (prints one GATE line per check and a GATE SUMMARY line)
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONCOMPARERUN</a>, <a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">REGRESSIONEVENTSCHECK</a>,
+   <a href="regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">REGRESSIONPROCESSRUN</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>	REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</li><li><a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">regressionEventsCheck</a>	REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).</li><li><a href="regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">regressionProcessRun</a>	REGRESSIONPROCESSRUN Process-stage regression: RAW -> process -> params.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionAll(baseDir, sessionID, eventClass)</a>
+0002 <span class="comment">%REGRESSIONALL Run every regression compare in one go.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Runs, against the baselines in baseDir, the flush compare</span>
+0005 <span class="comment">% (REGRESSIONCOMPARERUN), the event check (REGRESSIONEVENTSCHECK, fixture</span>
+0006 <span class="comment">% and session) and the process-stage compare (REGRESSIONPROCESSRUN) on</span>
+0007 <span class="comment">% the session copy in &lt;baseDir&gt;/session. Every check runs even if an</span>
+0008 <span class="comment">% earlier one fails; errors at the end if any failed (nonzero exit under</span>
+0009 <span class="comment">% matlab -batch). Prints which calcParameters ran, so the log shows</span>
+0010 <span class="comment">% which tree was tested. A two-trial session takes ~10 min.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   baseDir    - char, folder holding baselineParams.mat,</span>
+0014 <span class="comment">%                processParams.mat, fixtureEvents.mat, sessionEvents.mat</span>
+0015 <span class="comment">%                and session/&lt;sessionID&gt;.mat, session/&lt;sessionID&gt;RAW.mat</span>
+0016 <span class="comment">%   sessionID  - char, session ID (file name stem), e.g. 'C3S36_S1'</span>
+0017 <span class="comment">%   eventClass - char, '' | 'kin' | 'force' (same as the baseline)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   none (prints one GATE line per check and a GATE SUMMARY line)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Toolbox Dependencies: None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also REGRESSIONCOMPARERUN, REGRESSIONEVENTSCHECK,</span>
+0025 <span class="comment">%   REGRESSIONPROCESSRUN.</span>
+0026 
+0027 arguments
+0028     baseDir    (1,:) char
+0029     sessionID  (1,:) char
+0030     eventClass (1,:) char
+0031 <span class="keyword">end</span>
+0032 
+0033 fprintf(<span class="string">'TREE calcParameters: %s\n'</span>, which(<span class="string">'calcParameters'</span>));
+0034 expFile = fullfile(baseDir, <span class="string">'session'</span>, [sessionID <span class="string">'.mat'</span>]);
+0035 rawFile = fullfile(baseDir, <span class="string">'session'</span>, [sessionID <span class="string">'RAW.mat'</span>]);
+0036 checks  = { <span class="keyword">...</span>
+0037     <span class="string">'flush'</span>,   @() <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>(expFile, eventClass, baseDir); <span class="keyword">...</span>
+0038     <span class="string">'events'</span>,  @() <a href="regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">regressionEventsCheck</a>(<span class="string">'compare'</span>, baseDir, expFile); <span class="keyword">...</span>
+0039     <span class="string">'process'</span>, @() <a href="regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">regressionProcessRun</a>(<span class="string">'compare'</span>, rawFile, <span class="keyword">...</span>
+0040     eventClass, baseDir)};
+0041 failed = {};
+0042 <span class="keyword">for</span> ii = 1:size(checks, 1)
+0043     t0 = tic;
+0044     <span class="keyword">try</span>
+0045         checks{ii, 2}();
+0046         fprintf(<span class="string">'GATE %-8s PASS (%.0f s)\n'</span>, checks{ii, 1}, toc(t0));
+0047     <span class="keyword">catch</span> err
+0048         failed{end + 1} = checks{ii, 1}; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0049         fprintf(<span class="string">'GATE %-8s FAIL (%.0f s): %s\n'</span>, checks{ii, 1}, <span class="keyword">...</span>
+0050             toc(t0), err.message);
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(failed)
+0054     fprintf(<span class="string">'GATE SUMMARY: all %d checks passed\n'</span>, size(checks, 1));
+0055 <span class="keyword">else</span>
+0056     fprintf(<span class="string">'GATE SUMMARY: FAILED %s\n'</span>, strjoin(failed, <span class="string">', '</span>));
+0057     error(<span class="string">'regressionAll:failed'</span>, <span class="string">'Regression gate failed.'</span>);
+0058 <span class="keyword">end</span>
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

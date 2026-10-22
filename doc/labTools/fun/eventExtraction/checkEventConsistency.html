@@ -81,30 +81,32 @@ This function is called by:
 0019 <span class="comment">%</span>
 0020 <span class="comment">% See also GETEVENTSFROMSTANCE, GETEVENTSFROMFORCES.</span>
 0021 
-0022 <span class="comment">% gait event binary encoding (powers of two for unique difference values)</span>
-0023 LHS_CODE = 1;
-0024 RTO_CODE = 2;
-0025 RHS_CODE = 4;
-0026 LTO_CODE = 8;
-0027 
-0028 isConsistent = true;
-0029 
-0030 <span class="comment">% encode events; expected sequence: 1, 2, 4, 8, 1, ...</span>
-0031 eventSequence = LHS * LHS_CODE + RTO * RTO_CODE <span class="keyword">...</span>
-0032     + RHS * RHS_CODE + LTO * LTO_CODE;
-0033 nonZeroEvents = eventSequence(eventSequence ~= 0);
-0034 eventDiffs    = diff(nonZeroEvents);
-0035 
-0036 <span class="comment">% Valid transitions: +1 (LHS→RTO), +2 (RTO→RHS), +4 (RHS→LTO),</span>
-0037 <span class="comment">% -7 (LTO→LHS wrap: code 8 back to code 1, so 1-8 = -7)</span>
-0038 <span class="keyword">if</span> any((eventDiffs ~= 1) &amp; (eventDiffs ~= 2) <span class="keyword">...</span>
-0039         &amp; (eventDiffs ~= 4) &amp; (eventDiffs ~= -7))
-0040     warning(<span class="string">'checkEventConsistency:inconsistentEvents'</span>, <span class="keyword">...</span>
-0041         <span class="string">'Inconsistent gait event sequence detected.'</span>);
-0042     isConsistent = false;
-0043 <span class="keyword">end</span>
-0044 
-0045 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0022 <span class="comment">%% Encode events</span>
+0023 <span class="comment">% gait event binary encoding (powers of two for unique difference values)</span>
+0024 LHS_CODE = 1;
+0025 RTO_CODE = 2;
+0026 RHS_CODE = 4;
+0027 LTO_CODE = 8;
+0028 
+0029 isConsistent = true;
+0030 
+0031 <span class="comment">% encode events; expected sequence: 1, 2, 4, 8, 1, ...</span>
+0032 eventSequence = LHS * LHS_CODE + RTO * RTO_CODE <span class="keyword">...</span>
+0033     + RHS * RHS_CODE + LTO * LTO_CODE;
+0034 nonZeroEvents = eventSequence(eventSequence ~= 0);
+0035 eventDiffs    = diff(nonZeroEvents);
+0036 
+0037 <span class="comment">%% Check transitions</span>
+0038 <span class="comment">% Valid transitions: +1 (LHS→RTO), +2 (RTO→RHS), +4 (RHS→LTO),</span>
+0039 <span class="comment">% -7 (LTO→LHS wrap: code 8 back to code 1, so 1-8 = -7)</span>
+0040 <span class="keyword">if</span> any((eventDiffs ~= 1) &amp; (eventDiffs ~= 2) <span class="keyword">...</span>
+0041         &amp; (eventDiffs ~= 4) &amp; (eventDiffs ~= -7))
+0042     warning(<span class="string">'checkEventConsistency:inconsistentEvents'</span>, <span class="keyword">...</span>
+0043         <span class="string">'Inconsistent gait event sequence detected.'</span>);
+0044     isConsistent = false;
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

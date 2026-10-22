@@ -4,7 +4,7 @@
 <head>
   <title>Description of getResultsBF</title>
   <meta name="keywords" content="getResultsBF">
-  <meta name="description" content="">
+  <meta name="description" content="GETRESULTSBF Compute body-frame perception results per group.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,40 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETRESULTSBF Compute body-frame perception results per group.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag) </strong></div>
+<div class="box"><strong>function results = getResultsBF(SMatrix, groups, plotFlag, indivFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETRESULTSBF Compute body-frame perception results per group.
+
+   Loads each subject's bilateral-force perception data file, organises
+ hit rates by target step length (short, medium, long), and computes
+ group-level means and standard errors for two after-effect windows and
+ three step-length map conditions.
+
+ Inputs:
+   SMatrix   - Struct with group fields; each group has an ID field
+               listing subject ID strings
+   groups    - Cell array of group name strings; defaults to all fields
+               of SMatrix when empty
+   plotFlag  - Logical; if true, create bar plots
+   indivFlag - Logical; if true, overlay individual subjects on bars
+
+ Outputs:
+   results - Struct with fields BFafter1, BFafter2, MapShort, MapMid,
+             MapLong; each has avg, se, indiv sub-structs
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox (ttest)
+
+ See also <a href="barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">BARGROUPS</a>, GETHITS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li><li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li><li><a href="barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>	BARGROUPS Make a bar plot comparing groups across epochs and parameters.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -42,224 +63,251 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)</a>
-0002 
-0003 params={<span class="string">'SlowLeg'</span>, <span class="string">'FastLeg'</span>};
-0004 
-0005 <span class="comment">% define number of points to use for calculating values</span>
-0006 catchNumPts = 3; <span class="comment">%catch</span>
-0007 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
-0008 transientNumPts = 5; <span class="comment">%OG and Washout</span>
-0009 
-0010 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groups)
-0011     groups=fields(SMatrix);  <span class="comment">%default</span>
-0012 <span class="keyword">end</span>
-0013 ngroups=length(groups);
-0014 
-0015 
-0016 <span class="comment">% Initialize values to calculate</span>
-0017 results.BFafter1.avg=[];
-0018 results.BFafter1.se=[];
-0019 
-0020 results.BFafter2.avg=[];
-0021 results.BFafter2.se=[];
-0022 
-0023 results.MapShort.avg=[];
-0024 results.MapShort.se=[];
-0025 
-0026 results.MapMid.avg=[];
-0027 results.MapMid.se=[];
-0028 
-0029 results.MapLong.avg=[];
-0030 results.MapLong.se=[];
-0031 
-0032 
-0033 <span class="keyword">for</span> g=1:ngroups
-0034     
-0035     <span class="comment">% get subjects in group</span>
-0036     subjects=SMatrix.(groups{g}).ID;
-0037     
-0038     BFafter1=[];
-0039     BFafter2=[];
-0040     MapShort=[];
-0041     MapMid=[];
-0042     MapLong=[];
-0043     
-0044     <span class="keyword">for</span> s=1:length(subjects)
-0045         <span class="comment">% load subject</span>
-0046         DATA=load([subjects{s} <span class="string">'_PerceptionBF_day.mat'</span>]);
-0047         eval([<span class="string">'DATA=DATA.'</span> subjects{s} <span class="string">';'</span>]);
-0048         
-0049         [rhits, lhits, rts, lts, color]=getHits(DATA);
-0050         
-0051         RDATA=[];
-0052         LDATA=[];
-0053         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
-0054         <span class="comment">%organize the data</span>
-0055         PossibleTarget=unique(rts{1});
-0056         LLL=max(PossibleTarget);
-0057         SS=min(PossibleTarget);
-0058         MM=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(PossibleTarget);
-0059         
-0060         <span class="keyword">for</span> z = 1:length(rts)
-0061             
-0062             <span class="keyword">for</span> t=1:length(rts{z})
-0063                 <span class="keyword">if</span> rts{z}(t)==LLL
-0064                     RDATA(t)=3;
-0065                 <span class="keyword">elseif</span> rts{z}(t)==SS
-0066                     RDATA(t)=1;
-0067                 <span class="keyword">elseif</span> rts{z}(t)==MM
-0068                     RDATA(t)=2;
-0069                 <span class="keyword">else</span>
-0070                     <span class="keyword">break</span>
-0071                 <span class="keyword">end</span>
-0072             <span class="keyword">end</span>
-0073             
-0074             <span class="keyword">for</span> t=1:length(lts{z})
-0075                 <span class="keyword">if</span> lts{z}(t)==LLL
-0076                     LDATA(t)=3;
-0077                 <span class="keyword">elseif</span> lts{z}(t)==SS
-0078                     LDATA(t)=1;
-0079                 <span class="keyword">elseif</span> lts{z}(t)==MM
-0080                     LDATA(t)=2;
-0081                 <span class="keyword">else</span>
-0082                     <span class="keyword">break</span>
-0083                 <span class="keyword">end</span>
-0084             <span class="keyword">end</span>
-0085             
-0086             t=1;
-0087             r=1;
-0088             RR{z}=[0, 0, 0];
-0089             <span class="keyword">while</span> t&lt;length(rts{z})
-0090                 RR{z}(r, RDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-2)));
-0091                 <span class="keyword">if</span> isnan(RR{z}(r, RDATA(t)))
-0092                     RR{z}(r, RDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rhits{z}(t:end));
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getResultsBF(SMatrix, groups, plotFlag, indivFlag)</a>
+0002 <span class="comment">%GETRESULTSBF Compute body-frame perception results per group.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Loads each subject's bilateral-force perception data file, organises</span>
+0005 <span class="comment">% hit rates by target step length (short, medium, long), and computes</span>
+0006 <span class="comment">% group-level means and standard errors for two after-effect windows and</span>
+0007 <span class="comment">% three step-length map conditions.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   SMatrix   - Struct with group fields; each group has an ID field</span>
+0011 <span class="comment">%               listing subject ID strings</span>
+0012 <span class="comment">%   groups    - Cell array of group name strings; defaults to all fields</span>
+0013 <span class="comment">%               of SMatrix when empty</span>
+0014 <span class="comment">%   plotFlag  - Logical; if true, create bar plots</span>
+0015 <span class="comment">%   indivFlag - Logical; if true, overlay individual subjects on bars</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   results - Struct with fields BFafter1, BFafter2, MapShort, MapMid,</span>
+0019 <span class="comment">%             MapLong; each has avg, se, indiv sub-structs</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox (ttest)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also BARGROUPS, GETHITS.</span>
+0024 
+0025 params = {<span class="string">'SlowLeg'</span>, <span class="string">'FastLeg'</span>};
+0026 
+0027 catchNumPts     = 3;   <span class="comment">% catch</span>
+0028 steadyNumPts    = 40;  <span class="comment">% end of adaptation</span>
+0029 transientNumPts = 5;   <span class="comment">% OG and Washout</span>
+0030 
+0031 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(groups)
+0032     groups = fields(SMatrix);
+0033 <span class="keyword">end</span>
+0034 ngroups = length(groups);
+0035 
+0036 results.BFafter1.avg = [];
+0037 results.BFafter1.se  = [];
+0038 results.BFafter2.avg = [];
+0039 results.BFafter2.se  = [];
+0040 results.MapShort.avg = [];
+0041 results.MapShort.se  = [];
+0042 results.MapMid.avg   = [];
+0043 results.MapMid.se    = [];
+0044 results.MapLong.avg  = [];
+0045 results.MapLong.se   = [];
+0046 
+0047 <span class="keyword">for</span> gg = 1:ngroups
+0048 
+0049     subjects = SMatrix.(groups{gg}).ID;
+0050 
+0051     BFafter1 = [];
+0052     BFafter2 = [];
+0053     MapShort = [];
+0054     MapMid   = [];
+0055     MapLong  = [];
+0056 
+0057     <span class="keyword">for</span> ss = 1:length(subjects)
+0058         DATA = load([subjects{ss} <span class="string">'_PerceptionBF_day.mat'</span>]);
+0059         eval([<span class="string">'DATA=DATA.'</span> subjects{ss} <span class="string">';'</span>]);
+0060 
+0061         [rhits, lhits, rts, lts, color] = getHits(DATA); <span class="comment">%#ok&lt;ASGLU&gt;</span>
+0062 
+0063         RDATA = [];
+0064         LDATA = [];
+0065 
+0066         PossibleTarget = unique(rts{1});
+0067         LLL = max(PossibleTarget);
+0068         SS  = min(PossibleTarget);
+0069         MM  = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(PossibleTarget);
+0070 
+0071         <span class="keyword">for</span> zz = 1:length(rts)
+0072             <span class="keyword">for</span> t = 1:length(rts{zz})
+0073                 <span class="keyword">if</span> rts{zz}(t) == LLL
+0074                     RDATA(t) = 3; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0075                 <span class="keyword">elseif</span> rts{zz}(t) == SS
+0076                     RDATA(t) = 1; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0077                 <span class="keyword">elseif</span> rts{zz}(t) == MM
+0078                     RDATA(t) = 2; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0079                 <span class="keyword">else</span>
+0080                     <span class="keyword">break</span>
+0081                 <span class="keyword">end</span>
+0082             <span class="keyword">end</span>
+0083 
+0084             <span class="keyword">for</span> t = 1:length(lts{zz})
+0085                 <span class="keyword">if</span> lts{zz}(t) == LLL
+0086                     LDATA(t) = 3; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0087                 <span class="keyword">elseif</span> lts{zz}(t) == SS
+0088                     LDATA(t) = 1; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0089                 <span class="keyword">elseif</span> lts{zz}(t) == MM
+0090                     LDATA(t) = 2; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0091                 <span class="keyword">else</span>
+0092                     <span class="keyword">break</span>
 0093                 <span class="keyword">end</span>
-0094                 t=find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-1;
-0095                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
-0096                     t=length(rts{z});
-0097                 <span class="keyword">end</span>
-0098                 <span class="keyword">if</span>  RR{z}(r, RDATA(t))~=0;
-0099                     r=r+1;
-0100                 <span class="keyword">end</span>
-0101             <span class="keyword">end</span>
-0102             t=1;
-0103             r=1;
-0104             LL{z}=[0, 0, 0];
-0105             <span class="keyword">while</span> t&lt;length(lts{z})
-0106                 LL{z}(r, LDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-2)));
-0107                 <span class="keyword">if</span> isnan(LL{z}(r, LDATA(t)))
-0108                     LL{z}(r, LDATA(t))=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(lhits{z}(t:end));
+0094             <span class="keyword">end</span>
+0095 
+0096             t     = 1;
+0097             r     = 1;
+0098             RR{zz} = [0, 0, 0]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0099             <span class="keyword">while</span> t &lt; length(rts{zz})
+0100                 nxtChg = find(RDATA(t:end) ~= RDATA(t), 1, <span class="string">'first'</span>);
+0101                 RR{zz}(r, RDATA(t)) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>( <span class="keyword">...</span>
+0102                     rhits{zz}(t:(nxtChg + t - 2)));
+0103                 <span class="keyword">if</span> isnan(RR{zz}(r, RDATA(t)))
+0104                     RR{zz}(r, RDATA(t)) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(rhits{zz}(t:end));
+0105                 <span class="keyword">end</span>
+0106                 t = find(RDATA(t:end) ~= RDATA(t), 1, <span class="string">'first'</span>) + t - 1;
+0107                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
+0108                     t = length(rts{zz});
 0109                 <span class="keyword">end</span>
-0110                 t=find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-1;
-0111                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
-0112                     t=length(lts{z});
-0113                 <span class="keyword">end</span>
-0114                 <span class="keyword">if</span>  LL{z}(r,LDATA(t))~=0;
-0115                     r=r+1;
-0116                 <span class="keyword">end</span>
-0117             <span class="keyword">end</span>
-0118             clear RDATA LDATA
-0119         <span class="keyword">end</span>
-0120         DDR{1}=RR{4}-RR{3};<span class="comment">% Error Clamp</span>
-0121         DDR{2}=nanmean(RR{5}-RR{2}); <span class="comment">%Map</span>
-0122         
-0123         DDL{1}=LL{4}-LL{3};
-0124         DDL{2}=nanmean(LL{5}-LL{2});
-0125         
-0126         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
-0127         <span class="keyword">if</span> DATA.fastleg==<span class="string">'r'</span>
-0128             <span class="comment">%Order independent</span>
-0129             MapShort=[MapShort; DDL{2}(1, 1) DDR{2}(1, 1)];
-0130             MapMid=[MapMid; DDL{2}(1, 2) DDR{2}(1, 2)];
-0131             MapLong=[MapLong; DDL{2}(1, 3) DDR{2}(1, 3)];
-0132             <span class="comment">%Order Dependent</span>
-0133             <span class="keyword">if</span> rts{3}(1)==SS
-0134                 BFafter1=[BFafter1; DDL{1}(1, 1) DDR{1}(1, 1)];
-0135                 BFafter2=[BFafter2; DDL{1}(1, 3) DDR{1}(1, 3)];
-0136             <span class="keyword">else</span>
-0137                 BFafter1=[BFafter1; DDL{1}(1, 3) DDR{1}(1, 3)];
-0138                 BFafter2=[BFafter2; DDL{1}(1, 1) DDR{1}(1, 1)];
-0139             <span class="keyword">end</span>
-0140         <span class="keyword">elseif</span> DATA.fastleg==<span class="string">'l'</span>
-0141             <span class="comment">%Order independent</span>
-0142             MapShort=[MapShort; DDR{2}(1, 1) DDL{2}(1, 1)];
-0143             MapMid=[MapMid; DDR{2}(1, 2) DDL{2}(1, 2)];
-0144             MapLong=[MapLong; DDR{2}(1, 3) DDL{2}(1, 3)];
-0145             <span class="comment">%Order Dependent</span>
-0146             <span class="keyword">if</span> rts{3}(1)==SS
-0147                 BFafter1=[BFafter1; DDR{1}(1, 1) DDL{1}(1, 1)];
-0148                 BFafter2=[BFafter2; DDR{1}(1, 3) DDL{1}(1, 3)];
+0110                 <span class="keyword">if</span> RR{zz}(r, RDATA(t)) ~= 0
+0111                     r = r + 1;
+0112                 <span class="keyword">end</span>
+0113             <span class="keyword">end</span>
+0114 
+0115             t     = 1;
+0116             r     = 1;
+0117             LL{zz} = [0, 0, 0]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0118             <span class="keyword">while</span> t &lt; length(lts{zz})
+0119                 nxtChg = find(LDATA(t:end) ~= LDATA(t), 1, <span class="string">'first'</span>);
+0120                 LL{zz}(r, LDATA(t)) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>( <span class="keyword">...</span>
+0121                     lhits{zz}(t:(nxtChg + t - 2)));
+0122                 <span class="keyword">if</span> isnan(LL{zz}(r, LDATA(t)))
+0123                     LL{zz}(r, LDATA(t)) = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(lhits{zz}(t:end));
+0124                 <span class="keyword">end</span>
+0125                 t = find(LDATA(t:end) ~= LDATA(t), 1, <span class="string">'first'</span>) + t - 1;
+0126                 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(t)
+0127                     t = length(lts{zz});
+0128                 <span class="keyword">end</span>
+0129                 <span class="keyword">if</span> LL{zz}(r, LDATA(t)) ~= 0
+0130                     r = r + 1;
+0131                 <span class="keyword">end</span>
+0132             <span class="keyword">end</span>
+0133             clear RDATA LDATA
+0134         <span class="keyword">end</span>
+0135 
+0136         DDR{1} = RR{4} - RR{3};
+0137         DDR{2} = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(RR{5} - RR{2}, <span class="string">'omitnan'</span>);
+0138 
+0139         DDL{1} = LL{4} - LL{3};
+0140         DDL{2} = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(LL{5} - LL{2}, <span class="string">'omitnan'</span>);
+0141 
+0142         <span class="keyword">if</span> DATA.fastleg == <span class="string">'r'</span>
+0143             MapShort = [MapShort; DDL{2}(1,1) DDR{2}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0144             MapMid   = [MapMid;   DDL{2}(1,2) DDR{2}(1,2)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0145             MapLong  = [MapLong;  DDL{2}(1,3) DDR{2}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0146             <span class="keyword">if</span> rts{3}(1) == SS
+0147                 BFafter1 = [BFafter1; DDL{1}(1,1) DDR{1}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0148                 BFafter2 = [BFafter2; DDL{1}(1,3) DDR{1}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
 0149             <span class="keyword">else</span>
-0150                 BFafter1=[BFafter1; DDR{1}(1, 3) DDL{1}(1, 3)];
-0151                 BFafter2=[BFafter2; DDR{1}(1, 1) DDL{1}(1, 1)];
+0150                 BFafter1 = [BFafter1; DDL{1}(1,3) DDR{1}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0151                 BFafter2 = [BFafter2; DDL{1}(1,1) DDR{1}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
 0152             <span class="keyword">end</span>
-0153         <span class="keyword">else</span>
-0154             <a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>,<span class="string">'WARNING: Which leg is fast????'</span>);
-0155         <span class="keyword">end</span>
-0156         
-0157         
-0158         
-0159     <span class="keyword">end</span>
-0160     
-0161     nSubs=length(subjects);
-0162     
-0163     results.BFafter1.avg(end+1,:)=nanmean(BFafter1,1);
-0164     results.BFafter1.se(end+1,:)=nanstd(BFafter1,1)./sqrt(nSubs);
-0165     
-0166     results.BFafter2.avg(end+1,:)=nanmean(BFafter2,1);
-0167     results.BFafter2.se(end+1,:)=nanstd(BFafter2,1)./sqrt(nSubs);
-0168     
-0169     results.MapShort.avg(end+1,:)=nanmean(MapShort,1);
-0170     results.MapShort.se(end+1,:)=nanstd(MapShort,1)./sqrt(nSubs);
-0171     
-0172     results.MapMid.avg(end+1,:)=nanmean(MapMid,1);
-0173     results.MapMid.se(end+1,:)=nanstd(MapMid,1)./sqrt(nSubs);
-0174     
-0175     results.MapLong.avg(end+1,:)=nanmean(MapLong,1);
-0176     results.MapLong.se(end+1,:)=nanstd(MapLong,1)./sqrt(nSubs);
-0177     
-0178     
-0179     <span class="keyword">if</span> g==1 <span class="comment">%This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS</span>
-0180         <span class="keyword">for</span> p=1:length(params)
-0181             results.BFafter1.indiv.(params{p})=[g*ones(nSubs,1) BFafter1(:,p)];
-0182             results.BFafter2.indiv.(params{p})=[g*ones(nSubs,1) BFafter2(:,p)];
-0183             results.MapShort.indiv.(params{p})=[g*ones(nSubs,1) MapShort(:,p)];
-0184             results.MapMid.indiv.(params{p})=[g*ones(nSubs,1) MapMid(:,p)];
-0185             results.MapLong.indiv.(params{p})=[g*ones(nSubs,1) MapLong(:,p)];
-0186         <span class="keyword">end</span>
-0187     <span class="keyword">else</span>
-0188         <span class="keyword">for</span> p=1:length(params)
-0189             results.BFafter1.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BFafter1(:,p)];
-0190             results.BFafter2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BFafter2(:,p)];
-0191             results.MapShort.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapShort(:,p)];
-0192             results.MapMid.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapMid(:,p)];
-0193             results.MapLong.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapLong(:,p)];
-0194         <span class="keyword">end</span>
-0195     <span class="keyword">end</span>
-0196 <span class="keyword">end</span>
-0197 
-0198 <span class="comment">%stats</span>
-0199 resultNames=fieldnames(results);
-0200 <span class="comment">%if StatFlag==1</span>
-0201 <span class="keyword">for</span> h=1:length(resultNames)
-0202     <span class="keyword">for</span> i=1:size(results.BFafter1.avg, 2)<span class="comment">%size(StatReady, 2)</span>
-0203         [~, results.(resultNames{h}).p(i)]=ttest(results.(resultNames{h}).indiv.(params{i})(:, 2));
-0204     <span class="keyword">end</span>
-0205 <span class="keyword">end</span>
-0206 
-0207 
-0208 <span class="comment">%plot stuff</span>
-0209 <span class="keyword">if</span> plotFlag
-0210     epochs={<span class="string">'BFafter1'</span>,<span class="string">'BFafter2'</span>, <span class="string">'MapShort'</span>, <span class="string">'MapMid'</span>, <span class="string">'MapLong'</span>};
-0211     <span class="keyword">if</span> nargin&gt;3 <span class="comment">%I imagine there has to be a better way to do this...</span>
-0212         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs,indivFlag)
-0213     <span class="keyword">else</span>
-0214         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs)
-0215     <span class="keyword">end</span>
-0216 <span class="keyword">end</span>
-0217 
-0218</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0153         <span class="keyword">elseif</span> DATA.fastleg == <span class="string">'l'</span>
+0154             MapShort = [MapShort; DDR{2}(1,1) DDL{2}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0155             MapMid   = [MapMid;   DDR{2}(1,2) DDL{2}(1,2)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0156             MapLong  = [MapLong;  DDR{2}(1,3) DDL{2}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0157             <span class="keyword">if</span> rts{3}(1) == SS
+0158                 BFafter1 = [BFafter1; DDR{1}(1,1) DDL{1}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0159                 BFafter2 = [BFafter2; DDR{1}(1,3) DDL{1}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0160             <span class="keyword">else</span>
+0161                 BFafter1 = [BFafter1; DDR{1}(1,3) DDL{1}(1,3)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0162                 BFafter2 = [BFafter2; DDR{1}(1,1) DDL{1}(1,1)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">else</span>
+0165             <a href="../../../../labTools/fun/misc/cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>(<span class="string">'err'</span>, <span class="string">'WARNING: Which leg is fast????'</span>);
+0166         <span class="keyword">end</span>
+0167     <span class="keyword">end</span>
+0168 
+0169     nSubs = length(subjects);
+0170 
+0171     results.BFafter1.avg(end+1, :) = <span class="keyword">...</span>
+0172         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(BFafter1, 1, <span class="string">'omitnan'</span>);
+0173     results.BFafter1.se(end+1, :)  = <span class="keyword">...</span>
+0174         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(BFafter1, 0, 1, <span class="string">'omitnan'</span>) ./ sqrt(nSubs);
+0175     results.BFafter2.avg(end+1, :) = <span class="keyword">...</span>
+0176         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(BFafter2, 1, <span class="string">'omitnan'</span>);
+0177     results.BFafter2.se(end+1, :)  = <span class="keyword">...</span>
+0178         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(BFafter2, 0, 1, <span class="string">'omitnan'</span>) ./ sqrt(nSubs);
+0179     results.MapShort.avg(end+1, :) = <span class="keyword">...</span>
+0180         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MapShort, 1, <span class="string">'omitnan'</span>);
+0181     results.MapShort.se(end+1, :)  = <span class="keyword">...</span>
+0182         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(MapShort, 0, 1, <span class="string">'omitnan'</span>) ./ sqrt(nSubs);
+0183     results.MapMid.avg(end+1, :)   = <span class="keyword">...</span>
+0184         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MapMid, 1, <span class="string">'omitnan'</span>);
+0185     results.MapMid.se(end+1, :)    = <span class="keyword">...</span>
+0186         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(MapMid, 0, 1, <span class="string">'omitnan'</span>) ./ sqrt(nSubs);
+0187     results.MapLong.avg(end+1, :)  = <span class="keyword">...</span>
+0188         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(MapLong, 1, <span class="string">'omitnan'</span>);
+0189     results.MapLong.se(end+1, :)   = <span class="keyword">...</span>
+0190         <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(MapLong, 0, 1, <span class="string">'omitnan'</span>) ./ sqrt(nSubs);
+0191 
+0192     <span class="keyword">if</span> gg == 1
+0193         <span class="keyword">for</span> pp = 1:length(params)
+0194             results.BFafter1.indiv.(params{pp}) = <span class="keyword">...</span>
+0195                 [gg * ones(nSubs, 1) BFafter1(:, pp)];
+0196             results.BFafter2.indiv.(params{pp}) = <span class="keyword">...</span>
+0197                 [gg * ones(nSubs, 1) BFafter2(:, pp)];
+0198             results.MapShort.indiv.(params{pp}) = <span class="keyword">...</span>
+0199                 [gg * ones(nSubs, 1) MapShort(:, pp)];
+0200             results.MapMid.indiv.(params{pp})   = <span class="keyword">...</span>
+0201                 [gg * ones(nSubs, 1) MapMid(:, pp)];
+0202             results.MapLong.indiv.(params{pp})  = <span class="keyword">...</span>
+0203                 [gg * ones(nSubs, 1) MapLong(:, pp)];
+0204         <span class="keyword">end</span>
+0205     <span class="keyword">else</span>
+0206         <span class="keyword">for</span> pp = 1:length(params)
+0207             results.BFafter1.indiv.(params{pp})( <span class="keyword">...</span>
+0208                 end+1:end+nSubs, 1:2) = <span class="keyword">...</span>
+0209                 [gg * ones(nSubs, 1) BFafter1(:, pp)];
+0210             results.BFafter2.indiv.(params{pp})( <span class="keyword">...</span>
+0211                 end+1:end+nSubs, 1:2) = <span class="keyword">...</span>
+0212                 [gg * ones(nSubs, 1) BFafter2(:, pp)];
+0213             results.MapShort.indiv.(params{pp})( <span class="keyword">...</span>
+0214                 end+1:end+nSubs, 1:2) = <span class="keyword">...</span>
+0215                 [gg * ones(nSubs, 1) MapShort(:, pp)];
+0216             results.MapMid.indiv.(params{pp})( <span class="keyword">...</span>
+0217                 end+1:end+nSubs, 1:2) = <span class="keyword">...</span>
+0218                 [gg * ones(nSubs, 1) MapMid(:, pp)];
+0219             results.MapLong.indiv.(params{pp})( <span class="keyword">...</span>
+0220                 end+1:end+nSubs, 1:2) = <span class="keyword">...</span>
+0221                 [gg * ones(nSubs, 1) MapLong(:, pp)];
+0222         <span class="keyword">end</span>
+0223     <span class="keyword">end</span>
+0224 <span class="keyword">end</span>
+0225 
+0226 <span class="comment">%% Statistics</span>
+0227 resultNames = fieldnames(results);
+0228 <span class="keyword">for</span> hh = 1:length(resultNames)
+0229     <span class="keyword">for</span> ii = 1:size(results.BFafter1.avg, 2)
+0230         [~, results.(resultNames{hh}).p(ii)] = ttest( <span class="keyword">...</span>
+0231             results.(resultNames{hh}).indiv.(params{ii})(:, 2));
+0232     <span class="keyword">end</span>
+0233 <span class="keyword">end</span>
+0234 
+0235 <span class="comment">%% Plot</span>
+0236 <span class="keyword">if</span> plotFlag
+0237     epochs = {<span class="string">'BFafter1'</span>, <span class="string">'BFafter2'</span>, <span class="string">'MapShort'</span>, <span class="string">'MapMid'</span>, <span class="string">'MapLong'</span>};
+0238     <span class="keyword">if</span> nargin &gt; 3
+0239         <a href="barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>(SMatrix, results, groups, params, epochs, indivFlag)
+0240     <span class="keyword">else</span>
+0241         <a href="barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>(SMatrix, results, groups, params, epochs)
+0242     <span class="keyword">end</span>
+0243 <span class="keyword">end</span>
+0244 
+0245 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

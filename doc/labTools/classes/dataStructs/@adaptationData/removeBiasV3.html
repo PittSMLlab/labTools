@@ -4,7 +4,7 @@
 <head>
   <title>Description of removeBiasV3</title>
   <meta name="keywords" content="removeBiasV3">
-  <meta name="description" content="removeBias('condition') or removeBias({'Condition1','Condition2',...})">
+  <meta name="description" content="REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,32 +21,47 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>removeBias('condition') or removeBias({'Condition1','Condition2',...})</strong></div>
+<div class="box"><strong>REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag) </strong></div>
+<div class="box"><strong>function [newThis,baseValues,typeList] =removeBiasV3(this,refConditions,normalizeFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> removeBias('condition') or removeBias({'Condition1','Condition2',...})
- removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
- from each trial that is the same type as the condition entered. If no
- condition is specified, then the condition name that contains both the
- type string and the string 'base' is used as the baseline condition.
-INPUT:
-this: adaptationData object
-conditions: list of conditions to be used as reference for bias removal,
-if none given, will search for conditions that contain the string 'base'
+<div class="fragment"><pre class="comment">REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).
 
-TO DO: see what happens when 2+ conditions of the same type are entered
-TO DO: see what happens when 0 conditions are given for a certain type
-TODO: implement a check of conditions such that only one condition per
-trialType is accepted</pre></div>
+   [newThis,baseValues,typeList] = REMOVEBIASV3(this,refConditions,
+ normalizeFlag) subtracts from, or divides, every parameter of all trials
+ of a trial type by its mean over the last 40 strides of that type's
+ baseline condition, exempting the very last 5 and the first 10 strides and
+ ignoring bad strides. Without refConditions, the baseline is the condition
+ whose name contains 'base' and the trial type. Prints a warning (and the
+ candidates) if several baseline conditions are found and uses the first;
+ trial types without a baseline are left unchanged. Columns that must not
+ change (bad, good, trial, initTime, finalTime, direction, the
+ stride-quality reason columns, triageOutlier and HandrailHolding) are
+ copied unchanged.
+
+ Inputs:
+   this           - adaptationData object
+   refConditions  - baseline condition name(s) or number(s), one per trial
+                    type; [] searches by name (default [])
+   normalizeFlag  - 0 subtracts the baseline, 1 divides by it (default 0)
+
+ Outputs:
+   newThis    - adaptationData object with the bias removed
+   baseValues - types x parameters baseline values (NaN if none)
+   typeList   - cell array of the trial types, in the order of baseValues
+
+ Toolbox Dependencies: None
+
+ See also <a href="removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList] =removeBiasV4(this,refConditions,normalizeFlag,padWithNaNFlag,numStrides,medianFlag)">REMOVEBIASV4</a>, <a href="adaptationData.html" class="code" title="">ADAPTATIONDATA</a>.REMOVEBIAS, <a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">GETEARLYLATEDATA_V2</a>,
+   GETSTRIDEQUALITYCONFIG.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two alignedTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	minus  Subtracts two labTimeSeries</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>	</li><li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	GETEARLYLATEDATA_V2 Get the earliest and latest strides of conditions.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two alignedTimeSeries.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>	MINUS Subtracts two labTimeSeries.</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/parameterCalculation/getStrideQualityConfig.html" class="code" title="function cfg = getStrideQualityConfig()">getStrideQualityConfig</a>	GETSTRIDEQUALITYCONFIG Return default stride-quality labeling config.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -55,105 +70,147 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)</a>
-0002 <span class="comment">% removeBias('condition') or removeBias({'Condition1','Condition2',...})</span>
-0003 <span class="comment">% removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)</span>
-0004 <span class="comment">% from each trial that is the same type as the condition entered. If no</span>
-0005 <span class="comment">% condition is specified, then the condition name that contains both the</span>
-0006 <span class="comment">% type string and the string 'base' is used as the baseline condition.</span>
-0007 <span class="comment">%INPUT:</span>
-0008 <span class="comment">%this: adaptationData object</span>
-0009 <span class="comment">%conditions: list of conditions to be used as reference for bias removal,</span>
-0010 <span class="comment">%if none given, will search for conditions that contain the string 'base'</span>
-0011 <span class="comment">%</span>
-0012 <span class="comment">%TO DO: see what happens when 2+ conditions of the same type are entered</span>
-0013 <span class="comment">%TO DO: see what happens when 0 conditions are given for a certain type</span>
-0014 <span class="comment">%TODO: implement a check of conditions such that only one condition per</span>
-0015 <span class="comment">%trialType is accepted</span>
-0016 
-0017 conds=this.metaData.conditionName;
-0018 <span class="keyword">if</span> nargin&lt;2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refConditions)
-0019     warning(<span class="string">'No condition names passed to removeBiasV3, will find reference conditions by name search.'</span>)
-0020     refConditions=[];
-0021 <span class="keyword">end</span>
-0022 <span class="comment">%if nargin&gt;1 &amp;&amp; ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)</span>
-0023     <span class="comment">%convert input to standardized format</span>
-0024     <span class="keyword">if</span> isa(refConditions,<span class="string">'char'</span>)
-0025         refConditions={refConditions};
-0026     <span class="keyword">elseif</span> isa(refConditions,<span class="string">'double'</span>)
-0027         refConditions=conds(refConditions);
-0028     <span class="keyword">end</span>
-0029     <span class="comment">% validate condition(s)</span>
-0030     cInput=refConditions(this.isaCondition(refConditions));
-0031 <span class="comment">%end</span>
-0032 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normalizeFlag)
-0033     normalizeFlag=0;
-0034 <span class="keyword">end</span>
-0035 
-0036 
-0037 trialsInCond=this.metaData.trialsInCondition;
-0038 <span class="comment">% trialTypes=this.data.trialTypes;</span>
-0039 trialTypes=this.trialTypes; <span class="comment">%Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible</span>
-0040 types=unique(trialTypes(~cellfun(@<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,trialTypes)));
-0041 labels=this.data.labels; <span class="comment">%all labels</span>
-0042 baseValues=NaN(length(types),length(labels));
-0043 newData=nan(size(this.data.Data));
-0044 
-0045 <span class="keyword">for</span> itype=1:length(types)
-0046     allTrials=find(strcmp(this.trialTypes,types{itype}));
-0047     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refConditions)
-0048         [baseCond]=this.metaData.getConditionsThatMatch(<span class="string">'base'</span>,types{itype});
-0049     <span class="keyword">else</span>
-0050         baseCond=refConditions{itype};
-0051     <span class="keyword">end</span>
-0052     <span class="keyword">if</span> length(baseCond)&gt;1
-0053         warning(<span class="string">'More than one base condition was provided/found. Using only the first one.'</span>)
-0054         disp(<span class="string">'List of baseline conditions provided:'</span>)
-0055         disp(baseCond)
-0056         baseCond=baseCond{1};
-0057     <span class="keyword">end</span>
-0058     <span class="comment">%Remove baseline tendencies from all itype trials</span>
-0059     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(baseCond)
-0060         <span class="comment">% CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline</span>
-0061         base=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this.removeBadStrides,labels,baseCond,0,-40,5,10); <span class="comment">%Last 40, exempting very last 5 and first 10</span>
-0062         base=nanmean(squeeze(base{1}));
-0063         [data, inds]=this.getParamInTrial(labels,allTrials);
-0064         <span class="keyword">if</span> normalizeFlag==0
-0065             <span class="comment">%added lines to ensure that if certain parameters never</span>
-0066             <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
-0067             <span class="comment">%as NaN from the bsxfun @minus.</span>
-0068             base(isnan(base))=0;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
-0069             newData(inds,:)=bsxfun(@<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,data,base); <span class="comment">%Substracting baseline</span>
-0070             base(base==0)=nan;
-0071         <span class="keyword">else</span>
-0072             base(isnan(base))=1;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
-0073             newData(inds,:)=bsxfun(@rdivide,data,base); <span class="comment">%Dividing by baseline</span>
-0074             base(base==1)=nan;
-0075         <span class="keyword">end</span>
-0076         baseValues(itype,:)=base;
-0077     
-0078     <span class="keyword">else</span>
-0079         warning([<span class="string">'No '</span> types{itype} <span class="string">' baseline trials detected. Bias not removed from '</span> types{itype} <span class="string">' trials.'</span>])
-0080         [~, inds]=this.getParamInTrial(labels,allTrials);
-0081         newData(inds,:)=this.data.Data(inds,:);
-0082     <span class="keyword">end</span>
-0083 <span class="keyword">end</span>
-0084 <span class="comment">%fix any parameters that should not have bias removal</span>
-0085 [~,idxs]=this.data.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>,<span class="string">'direction'</span>});
-0086 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxs)
-0087     newData(:,idxs(idxs&gt;0))=this.data.Data(:,idxs(idxs&gt;0));
-0088 <span class="keyword">end</span>
-0089 
-0090 <span class="comment">%Construct parameterSeries and maintain backwards compatibility:</span>
-0091 <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>)
-0092     newParamData=<a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(newData,labels,this.data.indsInTrial,this.data.trialTypes);
-0093 <span class="keyword">else</span>
-0094     newParamData=<a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(newData,labels,this.data.hiddenTime,this.data.description);
-0095 <span class="keyword">end</span>
-0096 newThis=<a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
-0097 typeList=types;
-0098 
-0099 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis,baseValues,typeList] = </a><span class="keyword">...</span>
+0002     removeBiasV3(this,refConditions,normalizeFlag)
+0003 <span class="comment">%REMOVEBIASV3 Remove the baseline of every parameter (last 40 strides).</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   [newThis,baseValues,typeList] = REMOVEBIASV3(this,refConditions,</span>
+0006 <span class="comment">% normalizeFlag) subtracts from, or divides, every parameter of all trials</span>
+0007 <span class="comment">% of a trial type by its mean over the last 40 strides of that type's</span>
+0008 <span class="comment">% baseline condition, exempting the very last 5 and the first 10 strides and</span>
+0009 <span class="comment">% ignoring bad strides. Without refConditions, the baseline is the condition</span>
+0010 <span class="comment">% whose name contains 'base' and the trial type. Prints a warning (and the</span>
+0011 <span class="comment">% candidates) if several baseline conditions are found and uses the first;</span>
+0012 <span class="comment">% trial types without a baseline are left unchanged. Columns that must not</span>
+0013 <span class="comment">% change (bad, good, trial, initTime, finalTime, direction, the</span>
+0014 <span class="comment">% stride-quality reason columns, triageOutlier and HandrailHolding) are</span>
+0015 <span class="comment">% copied unchanged.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Inputs:</span>
+0018 <span class="comment">%   this           - adaptationData object</span>
+0019 <span class="comment">%   refConditions  - baseline condition name(s) or number(s), one per trial</span>
+0020 <span class="comment">%                    type; [] searches by name (default [])</span>
+0021 <span class="comment">%   normalizeFlag  - 0 subtracts the baseline, 1 divides by it (default 0)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Outputs:</span>
+0024 <span class="comment">%   newThis    - adaptationData object with the bias removed</span>
+0025 <span class="comment">%   baseValues - types x parameters baseline values (NaN if none)</span>
+0026 <span class="comment">%   typeList   - cell array of the trial types, in the order of baseValues</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Toolbox Dependencies: None</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% See also REMOVEBIASV4, ADAPTATIONDATA.REMOVEBIAS, GETEARLYLATEDATA_V2,</span>
+0031 <span class="comment">%   GETSTRIDEQUALITYCONFIG.</span>
+0032 
+0033 conds = this.metaData.conditionName;
+0034 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refConditions)
+0035     warning([<span class="string">'No condition names passed to removeBiasV3, will find '</span> <span class="keyword">...</span>
+0036         <span class="string">'reference conditions by name search.'</span>])
+0037     refConditions = [];
+0038 <span class="keyword">end</span>
+0039 <span class="comment">%if nargin&gt;1 &amp;&amp; ~isempty(conditions) %Ideally, ...</span>
+0040 <span class="comment">% number of conditions given should be the same as the amount of types that</span>
+0041 <span class="comment">%     exist (i.e. one for OG, one for TM, ...)</span>
+0042 <span class="comment">%convert input to standardized format</span>
+0043 <span class="keyword">if</span> isa(refConditions,<span class="string">'char'</span>)
+0044     refConditions = {refConditions};
+0045 <span class="keyword">elseif</span> isa(refConditions,<span class="string">'double'</span>)
+0046     refConditions = conds(refConditions);
+0047 <span class="keyword">end</span>
+0048 <span class="comment">% validate condition(s)</span>
+0049 cInput = refConditions(this.isaCondition(refConditions));
+0050 <span class="comment">%end</span>
+0051 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(normalizeFlag)
+0052     normalizeFlag = 0;
+0053 <span class="keyword">end</span>
+0054 
+0055 
+0056 trialsInCond = this.metaData.trialsInCondition;
+0057 <span class="comment">% trialTypes=this.data.trialTypes;</span>
+0058 <span class="comment">% Pablo added this on 5/18 and a function in adaptationData that makes this</span>
+0059 <span class="comment">%     code back compatible</span>
+0060 trialTypes = this.trialTypes;
+0061 types      = unique(trialTypes(~cellfun(@<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,trialTypes)));
+0062 labels     = this.data.labels; <span class="comment">%all labels</span>
+0063 baseValues = NaN(length(types),length(labels));
+0064 newData    = nan(size(this.data.Data));
+0065 
+0066 baseNumStrides = -40; <span class="comment">% negative = count from the end of the condition</span>
+0067 exemptLast     = 5;
+0068 exemptFirst    = 10;
+0069 <span class="keyword">for</span> itype = 1:length(types)
+0070     allTrials = find(strcmp(this.trialTypes,types{itype}));
+0071     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(refConditions)
+0072         baseCond = this.metaData.getConditionsThatMatch(<span class="string">'base'</span>, <span class="keyword">...</span>
+0073             types{itype});
+0074     <span class="keyword">else</span>
+0075         baseCond = refConditions{itype};
+0076     <span class="keyword">end</span>
+0077     <span class="keyword">if</span> length(baseCond) &gt; 1
+0078         warning([<span class="string">'More than one base condition was provided/found. '</span> <span class="keyword">...</span>
+0079             <span class="string">'Using only the first one.'</span>])
+0080         disp(<span class="string">'List of baseline conditions provided:'</span>)
+0081         disp(baseCond)
+0082         baseCond = baseCond{1};
+0083     <span class="keyword">end</span>
+0084     <span class="comment">%Remove baseline tendencies from all itype trials</span>
+0085     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(baseCond)
+0086         <span class="comment">% OG and TM are treated the same: the baseline is the last 40</span>
+0087         <span class="comment">% strides, exempting the very last 5 and the first 10</span>
+0088         base = <a href="getEarlyLateData_v2.html" class="code" title="function dataPoints = getEarlyLateData_v2(this, labels, conds,removeBiasFlag, numberOfStrides, exemptLast, exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this.removeBadStrides,labels, <span class="keyword">...</span>
+0089             baseCond,0,baseNumStrides,exemptLast,exemptFirst);
+0090         base = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(squeeze(base{1}), <span class="string">'omitnan'</span>);
+0091         [data, inds] = this.getParamInTrial(labels,allTrials);
+0092         <span class="keyword">if</span> normalizeFlag == 0
+0093             <span class="comment">%added lines to ensure that if certain parameters never</span>
+0094             <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
+0095             <span class="comment">%as NaN from the bsxfun @minus.</span>
+0096             <span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0097             base(isnan(base)) = 0;
+0098             <span class="comment">%Substracting baseline</span>
+0099             newData(inds,:) = bsxfun(@<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/minus.html" class="code" title="function newThis = minus(this, other)">minus</a>,data,base);
+0100             base(base == 0) = nan;
+0101         <span class="keyword">else</span>
+0102             <span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0103             base(isnan(base)) = 1;
+0104             <span class="comment">%Dividing by baseline</span>
+0105             newData(inds,:) = bsxfun(@rdivide,data,base);
+0106             base(base == 1) = nan;
+0107         <span class="keyword">end</span>
+0108         baseValues(itype,:) = base;
+0109 
+0110     <span class="keyword">else</span>
+0111         warning([<span class="string">'No '</span> types{itype} <span class="keyword">...</span>
+0112             <span class="string">' baseline trials detected. Bias not removed from '</span> types{ <span class="keyword">...</span>
+0113             itype} <span class="string">' trials.'</span>])
+0114         [~, inds] = this.getParamInTrial(labels,allTrials);
+0115         newData(inds,:) = this.data.Data(inds,:);
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span>
+0118 <span class="comment">%fix any parameters that should not have bias removal</span>
+0119 <span class="comment">% Also protects stride-quality reason/triage columns (see</span>
+0120 <span class="comment">% GETSTRIDEQUALITYCONFIG) and 'HandrailHolding' so bias removal does</span>
+0121 <span class="comment">% not corrupt these binary flag columns.</span>
+0122 protectedLabels = [{<span class="string">'bad'</span>, <span class="string">'good'</span>, <span class="string">'trial'</span>, <span class="string">'initTime'</span>, <span class="keyword">...</span>
+0123     <span class="string">'finalTime'</span>, <span class="string">'direction'</span>}, <a href="../../../../labTools/fun/parameterCalculation/getStrideQualityConfig.html" class="code" title="function cfg = getStrideQualityConfig()">getStrideQualityConfig</a>().reasonLabels, <span class="keyword">...</span>
+0124     {<span class="string">'triageOutlier'</span>, <span class="string">'HandrailHolding'</span>}];
+0125 [~,idxs] = this.data.isaParameter(protectedLabels);
+0126 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxs)
+0127     newData(:,idxs(idxs &gt; 0)) = this.data.Data(:,idxs(idxs &gt; 0));
+0128 <span class="keyword">end</span>
+0129 
+0130 <span class="comment">%Construct parameterSeries and maintain backwards compatibility:</span>
+0131 <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>)
+0132     newParamData = <a href="../../../../labTools/classes/auxData/@paramData/paramData.html" class="code" title="">paramData</a>(newData,labels,this.data.indsInTrial, <span class="keyword">...</span>
+0133         this.data.trialTypes);
+0134 <span class="keyword">else</span>
+0135     newParamData = <a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(newData,labels,this.data.hiddenTime, <span class="keyword">...</span>
+0136         this.data.description);
+0137 <span class="keyword">end</span>
+0138 newThis  = <a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
+0139 typeList = types;
+0140 
+0141 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

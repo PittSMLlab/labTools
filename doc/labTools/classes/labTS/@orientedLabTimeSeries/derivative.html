@@ -4,7 +4,7 @@
 <head>
   <title>Description of derivative</title>
   <meta name="keywords" content="derivative">
-  <meta name="description" content="derivative  Numerical derivative (override)">
+  <meta name="description" content="DERIVATIVE Numerical derivative (override).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,61 +21,65 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>derivative  Numerical derivative (override)</strong></div>
+<div class="box"><strong>DERIVATIVE Numerical derivative (override).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = derivative(this, diffOrder) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">derivative  Numerical derivative (override)
+<div class="fragment"><pre class="comment">DERIVATIVE Numerical derivative (override).
 
-   newThis = derivative(this, diffOrder) computes derivative and
-   preserves orientedLabTimeSeries type
+   newThis = derivative(this, diffOrder) computes derivative and preserves
+ orientedLabTimeSeries type
 
-   Inputs:
-       this - orientedLabTimeSeries object
-       diffOrder - order of finite difference filter (optional)
+ Inputs:
+   this      - orientedLabTimeSeries object
+   diffOrder - order of finite difference filter (optional)
 
-   Outputs:
-       newThis - differentiated orientedLabTimeSeries
+ Outputs:
+   newThis - differentiated orientedLabTimeSeries
 
-   See also: labTimeSeries/derivative, <a href="derivate.html" class="code" title="function newThis = derivate(this)">derivate</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also LABTIMESERIES/DERIVATIVE, <a href="derivate.html" class="code" title="function newThis = derivate(this)">DERIVATE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	derivative  Numerical differentiation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	derivative  Numerical derivative (override)</li></ul>
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/derivative.html" class="code" title="function [newThis, lag] = derivative(this, diffOrder)">derivative</a>	DERIVATIVE Numerical differentiation.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	DERIVATIVE Numerical derivative (override).</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	derivative  Numerical derivative (override)</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>	DERIVATIVE Numerical derivative (override).</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = derivative(this, diffOrder)</a>
-0002 <span class="comment">%derivative  Numerical derivative (override)</span>
+0002 <span class="comment">%DERIVATIVE Numerical derivative (override).</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = derivative(this, diffOrder) computes derivative and</span>
-0005 <span class="comment">%   preserves orientedLabTimeSeries type</span>
+0004 <span class="comment">%   newThis = derivative(this, diffOrder) computes derivative and preserves</span>
+0005 <span class="comment">% orientedLabTimeSeries type</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - orientedLabTimeSeries object</span>
-0009 <span class="comment">%       diffOrder - order of finite difference filter (optional)</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this      - orientedLabTimeSeries object</span>
+0009 <span class="comment">%   diffOrder - order of finite difference filter (optional)</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       newThis - differentiated orientedLabTimeSeries</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   newThis - differentiated orientedLabTimeSeries</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: labTimeSeries/derivative, derivate</span>
-0015 
-0016 <span class="keyword">if</span> nargin &lt; 2
-0017     diffOrder = [];
-0018 <span class="keyword">end</span>
-0019 newThis = <a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this, diffOrder);
-0020 newThis = newThis.castAsOTS(this.orientation);
-0021 <span class="keyword">end</span>
-0022</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also LABTIMESERIES/DERIVATIVE, DERIVATE.</span>
+0017 
+0018 <span class="keyword">if</span> nargin &lt; 2
+0019     diffOrder = [];
+0020 <span class="keyword">end</span>
+0021 newThis = <a href="derivative.html" class="code" title="function newThis = derivative(this, diffOrder)">derivative</a>@<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(this, diffOrder);
+0022 newThis = newThis.castAsOTS(this.orientation);
+0023 <span class="keyword">end</span>
+0024</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

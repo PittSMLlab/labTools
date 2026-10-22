@@ -4,7 +4,7 @@
 <head>
   <title>Description of GroupDemographics</title>
   <meta name="keywords" content="GroupDemographics">
-  <meta name="description" content="GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17">
+  <meta name="description" content="GROUPDEMOGRAPHICS Compute group and study demographics.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,26 +21,45 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</strong></div>
+<div class="box"><strong>GROUPDEMOGRAPHICS Compute group and study demographics.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [ Demographics ] = GroupDemographics(SMatrix) </strong></div>
+<div class="box"><strong>function Demographics = GroupDemographics(SMatrix) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17
-   Calculates number subjects, mean and std of age and number of males
-   The input is either the output of &quot;makeSMatrixV2&quot; or &quot;uiCreateStudy&quot;.
-   Lets say the output of these funciton you called &quot;DumbTester7&quot;, you
-   would then call this funciton like this:
-   Demographics=GroupDemographics(DumbTester7)
-   Now Demographics has all the things you might want to know about your
-   study for inclusion in paper and posters and the like</pre></div>
+<div class="fragment"><pre class="comment">GROUPDEMOGRAPHICS Compute group and study demographics.
+
+   Demographics = GroupDemographics(SMatrix) calls the
+ GroupDemographics method of every group in SMatrix and adds study-wide
+ totals (number of subjects, mean and std of age, number of males).
+ SMatrix is the output of MAKESMATRIXV2 or UICREATESTUDY.
+
+ Inputs:
+   SMatrix - struct with one groupAdaptationData object per field
+             (one field per group)
+
+ Outputs:
+   Demographics - struct with one field per group (the output of that
+                  group's GroupDemographics method) and a field
+                  StudyDemographics with N, MeanAge, StdAge, and NMale
+                  over all groups
+
+ NOTE: shadowed. groupAdaptationData.m defines the method
+       GroupDemographics(this) inline, and that definition takes
+       precedence over this file. The call below passes an argument
+       (SMatrix.(group).GroupDemographics(group)) that the inline method
+       does not accept; the working study-level function is
+       fun/misc/hmhFun/GroupDemographics.m.
+
+ Toolbox Dependencies: None
+
+ See also MAKESMATRIXV2, UICREATESTUDY.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 </ul>
@@ -49,31 +68,50 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ Demographics ] = GroupDemographics(SMatrix)</a>
-0002 <span class="comment">%GroupDemographics Computes group demographics -- A CJS origonal, 5/5/17</span>
-0003 <span class="comment">%   Calculates number subjects, mean and std of age and number of males</span>
-0004 <span class="comment">%   The input is either the output of &quot;makeSMatrixV2&quot; or &quot;uiCreateStudy&quot;.</span>
-0005 <span class="comment">%   Lets say the output of these funciton you called &quot;DumbTester7&quot;, you</span>
-0006 <span class="comment">%   would then call this funciton like this:</span>
-0007 <span class="comment">%   Demographics=GroupDemographics(DumbTester7)</span>
-0008 <span class="comment">%   Now Demographics has all the things you might want to know about your</span>
-0009 <span class="comment">%   study for inclusion in paper and posters and the like</span>
-0010 
-0011 grps=fieldnames(SMatrix);
-0012 StudyAge=[];
-0013 StudyMale=[];
-0014 <span class="keyword">for</span> g=1:length(grps)  
-0015     [Demographics.(grps{g})]=SMatrix.(grps{g}).GroupDemographics(grps{g});
-0016     StudyAge=[StudyAge Demographics.(grps{g}).AllAge];
-0017     StudyMale=[StudyMale Demographics.(grps{g}).NMale];
-0018 <span class="keyword">end</span>
-0019 
-0020 Demographics.StudyDemographics.N=length(StudyAge);
-0021 Demographics.StudyDemographics.MeanAge=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(StudyAge);
-0022 Demographics.StudyDemographics.StdAge=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(StudyAge);
-0023 Demographics.StudyDemographics.NMale=sum(StudyMale);
-0024 <span class="keyword">end</span>
-0025</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Demographics = GroupDemographics(SMatrix)</a>
+0002 <span class="comment">%GROUPDEMOGRAPHICS Compute group and study demographics.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Demographics = GroupDemographics(SMatrix) calls the</span>
+0005 <span class="comment">% GroupDemographics method of every group in SMatrix and adds study-wide</span>
+0006 <span class="comment">% totals (number of subjects, mean and std of age, number of males).</span>
+0007 <span class="comment">% SMatrix is the output of MAKESMATRIXV2 or UICREATESTUDY.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   SMatrix - struct with one groupAdaptationData object per field</span>
+0011 <span class="comment">%             (one field per group)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   Demographics - struct with one field per group (the output of that</span>
+0015 <span class="comment">%                  group's GroupDemographics method) and a field</span>
+0016 <span class="comment">%                  StudyDemographics with N, MeanAge, StdAge, and NMale</span>
+0017 <span class="comment">%                  over all groups</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% NOTE: shadowed. groupAdaptationData.m defines the method</span>
+0020 <span class="comment">%       GroupDemographics(this) inline, and that definition takes</span>
+0021 <span class="comment">%       precedence over this file. The call below passes an argument</span>
+0022 <span class="comment">%       (SMatrix.(group).GroupDemographics(group)) that the inline method</span>
+0023 <span class="comment">%       does not accept; the working study-level function is</span>
+0024 <span class="comment">%       fun/misc/hmhFun/GroupDemographics.m.</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies: None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also MAKESMATRIXV2, UICREATESTUDY.</span>
+0029 
+0030 grps      = fieldnames(SMatrix);
+0031 StudyAge  = [];
+0032 StudyMale = [];
+0033 <span class="keyword">for</span> g = 1:length(grps)
+0034     Demographics.(grps{g}) = SMatrix.(grps{g}).GroupDemographics(grps{g});
+0035     StudyAge  = [StudyAge Demographics.(grps{g}).AllAge];
+0036     StudyMale = [StudyMale Demographics.(grps{g}).NMale];
+0037 <span class="keyword">end</span>
+0038 
+0039 Demographics.StudyDemographics.N = length(StudyAge);
+0040 Demographics.StudyDemographics.MeanAge = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(StudyAge);
+0041 Demographics.StudyDemographics.StdAge = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(StudyAge);
+0042 Demographics.StudyDemographics.NMale = sum(StudyMale);
+0043 <span class="keyword">end</span>
+0044</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

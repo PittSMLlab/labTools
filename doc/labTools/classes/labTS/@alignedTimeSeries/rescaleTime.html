@@ -4,7 +4,7 @@
 <head>
   <title>Description of rescaleTime</title>
   <meta name="keywords" content="rescaleTime">
-  <meta name="description" content="rescaleTime  Redefines time vector">
+  <meta name="description" content="RESCALETIME Redefines time vector.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,37 +21,39 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>rescaleTime  Redefines time vector</strong></div>
+<div class="box"><strong>RESCALETIME Redefines time vector.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = rescaleTime(this, newTs, newT0) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">rescaleTime  Redefines time vector
+<div class="fragment"><pre class="comment">RESCALETIME Redefines time vector.
 
    newThis = rescaleTime(this) rescales time to [0, 1] range
 
-   newThis = rescaleTime(this, newTs, newT0) uses specified sampling
-   period and initial time
+   newThis = rescaleTime(this, newTs, newT0) uses specified sampling period
+ and initial time
 
-   Inputs:
-       this - alignedTimeSeries object
-       newTs - new sampling period (optional, default: 1/numSamples)
-       newT0 - new initial time (optional, default: 0)
+ Inputs:
+   this  - alignedTimeSeries object
+   newTs - new sampling period (optional, default: 1/numSamples)
+   newT0 - new initial time (optional, default: 0)
 
-   Outputs:
-       newThis - alignedTimeSeries with rescaled time
+ Outputs:
+   newThis - alignedTimeSeries with rescaled time
 
    Note: Made for backwards compatibility of aligned series always
          being defined with time in [0 1]
 
-   See also: <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="alignedTimeSeries.html" class="code" title="">ALIGNEDTIMESERIES</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
@@ -61,41 +63,43 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = rescaleTime(this, newTs, newT0)</a>
-0002 <span class="comment">%rescaleTime  Redefines time vector</span>
+0002 <span class="comment">%RESCALETIME Redefines time vector.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   newThis = rescaleTime(this) rescales time to [0, 1] range</span>
 0005 <span class="comment">%</span>
-0006 <span class="comment">%   newThis = rescaleTime(this, newTs, newT0) uses specified sampling</span>
-0007 <span class="comment">%   period and initial time</span>
+0006 <span class="comment">%   newThis = rescaleTime(this, newTs, newT0) uses specified sampling period</span>
+0007 <span class="comment">% and initial time</span>
 0008 <span class="comment">%</span>
-0009 <span class="comment">%   Inputs:</span>
-0010 <span class="comment">%       this - alignedTimeSeries object</span>
-0011 <span class="comment">%       newTs - new sampling period (optional, default: 1/numSamples)</span>
-0012 <span class="comment">%       newT0 - new initial time (optional, default: 0)</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   this  - alignedTimeSeries object</span>
+0011 <span class="comment">%   newTs - new sampling period (optional, default: 1/numSamples)</span>
+0012 <span class="comment">%   newT0 - new initial time (optional, default: 0)</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   Outputs:</span>
-0015 <span class="comment">%       newThis - alignedTimeSeries with rescaled time</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   newThis - alignedTimeSeries with rescaled time</span>
 0016 <span class="comment">%</span>
 0017 <span class="comment">%   Note: Made for backwards compatibility of aligned series always</span>
 0018 <span class="comment">%         being defined with time in [0 1]</span>
 0019 <span class="comment">%</span>
-0020 <span class="comment">%   See also: alignedTimeSeries</span>
-0021 
-0022 <span class="comment">% Re-defines the Time vector to force a new sampling time Made for</span>
-0023 <span class="comment">% backwards compatibility of aligned series always being defined with</span>
-0024 <span class="comment">% time in [0 1]</span>
-0025 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newT0)
-0026     newT0 = 0;
-0027 <span class="keyword">end</span>
-0028 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newTs)
-0029     <span class="comment">% Re-scales such that total duration is 1 [time can be thought of</span>
-0030     <span class="comment">% as % of some cycle]</span>
-0031     newTs = 1 / length(this.Time);
-0032 <span class="keyword">end</span>
-0033 newThis = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(newT0, newTs, this.Data, this.labels, <span class="keyword">...</span>
-0034     this.alignmentVector, this.alignmentLabels);
-0035 <span class="keyword">end</span>
-0036</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0020 <span class="comment">% Toolbox Dependencies: None</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also ALIGNEDTIMESERIES.</span>
+0023 
+0024 <span class="comment">% Re-defines the Time vector to force a new sampling time Made for</span>
+0025 <span class="comment">% backwards compatibility of aligned series always being defined with</span>
+0026 <span class="comment">% time in [0 1]</span>
+0027 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newT0)
+0028     newT0 = 0;
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(newTs)
+0031     <span class="comment">% Re-scales such that total duration is 1 [time can be thought of</span>
+0032     <span class="comment">% as % of some cycle]</span>
+0033     newTs = 1 / length(this.Time);
+0034 <span class="keyword">end</span>
+0035 newThis = <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(newT0, newTs, this.Data, this.labels, <span class="keyword">...</span>
+0036     this.alignmentVector, this.alignmentLabels);
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

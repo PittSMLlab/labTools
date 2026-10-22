@@ -4,7 +4,7 @@
 <head>
   <title>Description of plotAllStridesBilateral</title>
   <meta name="keywords" content="plotAllStridesBilateral">
-  <meta name="description" content="plotAllStridesBilateral  Plots bilateral data overlaid">
+  <meta name="description" content="PLOTALLSTRIDESBILATERAL Plots bilateral data overlaid.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,41 +21,44 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>plotAllStridesBilateral  Plots bilateral data overlaid</strong></div>
+<div class="box"><strong>PLOTALLSTRIDESBILATERAL Plots bilateral data overlaid.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [figHandle, plotHandles] = plotAllStridesBilateral(this,field, conditions, plotHandles, figHandle) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">plotAllStridesBilateral  Plots bilateral data overlaid
+<div class="fragment"><pre class="comment">PLOTALLSTRIDESBILATERAL Plots bilateral data overlaid.
 
    [figHandle, plotHandles] = plotAllStridesBilateral(this, field,
-   conditions) forces 'L' and 'R' labeled data to be plotted on top
-   of each other
+ conditions) forces 'L' and 'R' labeled data to be plotted on top
+ of each other
 
    [figHandle, plotHandles] = plotAllStridesBilateral(this, field,
-   conditions, plotHandles, figHandle) uses existing plot handles
+ conditions, plotHandles, figHandle) uses existing plot handles
 
-   Inputs:
-       this - stridedExperimentData object
-       field - name of field to plot
-       conditions - vector of condition indices to plot
-       plotHandles - existing subplot handles (optional)
-       figHandle - existing figure handle (optional)
+ Inputs:
+   this        - stridedExperimentData object
+   field       - name of field to plot
+   conditions  - vector of condition indices to plot
+   plotHandles - existing subplot handles (optional)
+   figHandle   - existing figure handle (optional)
 
-   Outputs:
-       figHandle - handle to figure
-       plotHandles - array of subplot handles
+ Outputs:
+   figHandle   - handle to figure
+   plotHandles - array of subplot handles
 
-   Note: To Do - implementation currently just calls plotAllStrides
+ TODO: implement bilateral overlay; currently this just calls
+       plotAllStrides.
 
-   See also: <a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>, <a href="plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">PLOTALLSTRIDES</a>, <a href="plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">PLOTAVGSTRIDE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li></ul>
+<li><a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	PLOTALLSTRIDES Plots all individual strides for a field.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
@@ -66,35 +69,38 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle, plotHandles] = plotAllStridesBilateral(this, </a><span class="keyword">...</span>
 0002     field, conditions, plotHandles, figHandle)
-0003 <span class="comment">%plotAllStridesBilateral  Plots bilateral data overlaid</span>
+0003 <span class="comment">%PLOTALLSTRIDESBILATERAL Plots bilateral data overlaid.</span>
 0004 <span class="comment">%</span>
 0005 <span class="comment">%   [figHandle, plotHandles] = plotAllStridesBilateral(this, field,</span>
-0006 <span class="comment">%   conditions) forces 'L' and 'R' labeled data to be plotted on top</span>
-0007 <span class="comment">%   of each other</span>
+0006 <span class="comment">% conditions) forces 'L' and 'R' labeled data to be plotted on top</span>
+0007 <span class="comment">% of each other</span>
 0008 <span class="comment">%</span>
 0009 <span class="comment">%   [figHandle, plotHandles] = plotAllStridesBilateral(this, field,</span>
-0010 <span class="comment">%   conditions, plotHandles, figHandle) uses existing plot handles</span>
+0010 <span class="comment">% conditions, plotHandles, figHandle) uses existing plot handles</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   Inputs:</span>
-0013 <span class="comment">%       this - stridedExperimentData object</span>
-0014 <span class="comment">%       field - name of field to plot</span>
-0015 <span class="comment">%       conditions - vector of condition indices to plot</span>
-0016 <span class="comment">%       plotHandles - existing subplot handles (optional)</span>
-0017 <span class="comment">%       figHandle - existing figure handle (optional)</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   this        - stridedExperimentData object</span>
+0014 <span class="comment">%   field       - name of field to plot</span>
+0015 <span class="comment">%   conditions  - vector of condition indices to plot</span>
+0016 <span class="comment">%   plotHandles - existing subplot handles (optional)</span>
+0017 <span class="comment">%   figHandle   - existing figure handle (optional)</span>
 0018 <span class="comment">%</span>
-0019 <span class="comment">%   Outputs:</span>
-0020 <span class="comment">%       figHandle - handle to figure</span>
-0021 <span class="comment">%       plotHandles - array of subplot handles</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   figHandle   - handle to figure</span>
+0021 <span class="comment">%   plotHandles - array of subplot handles</span>
 0022 <span class="comment">%</span>
-0023 <span class="comment">%   Note: To Do - implementation currently just calls plotAllStrides</span>
-0024 <span class="comment">%</span>
-0025 <span class="comment">%   See also: plotAllStrides, plotAvgStride</span>
-0026 
-0027 <span class="comment">% Forces 'L' and 'R' to be plotted on top of each other TODO</span>
-0028 [figHandle, plotHandles] = <a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>(this, field, conditions, <span class="keyword">...</span>
-0029     plotHandles, figHandle);
-0030 <span class="keyword">end</span>
-0031</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0023 <span class="comment">% TODO: implement bilateral overlay; currently this just calls</span>
+0024 <span class="comment">%       plotAllStrides.</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies: None</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% See also PLOTALLSTRIDES, PLOTAVGSTRIDE.</span>
+0029 
+0030 <span class="comment">% Forces 'L' and 'R' to be plotted on top of each other TODO</span>
+0031 [figHandle, plotHandles] = <a href="plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>(this, field, conditions, <span class="keyword">...</span>
+0032     plotHandles, figHandle);
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of calcLimbAngles</title>
   <meta name="keywords" content="calcLimbAngles">
-  <meta name="description" content="calcLimbAngles  Calculates limb and joint angles from marker data.">
+  <meta name="description" content="CALCLIMBANGLES Calculate limb and joint angles from marker data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>calcLimbAngles  Calculates limb and joint angles from marker data.</strong></div>
+<div class="box"><strong>CALCLIMBANGLES Calculate limb and joint angles from marker data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function angleData = calcLimbAngles(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> calcLimbAngles  Calculates limb and joint angles from marker data.
+<div class="fragment"><pre class="comment">CALCLIMBANGLES Calculate limb and joint angles from marker data.
 
    Computes sagittal-plane limb, thigh, shank, foot, hip, knee, and
  ankle angles and their angular velocities for both legs from the 2D
@@ -39,30 +39,26 @@
    - Knee angle:  between the thigh and shank segments
    - Ankle angle: between the shank and foot segments
 
-   Inputs:
-     this - labData object containing markerData with hip, ankle,
-            knee, toe, and heel marker trajectories
+ Inputs:
+   this - labData object containing markerData with hip, ankle, knee,
+          toe, and heel marker trajectories
 
-   Outputs:
-     angleData - labTimeSeries with 20 channels of angle and angular
-                 velocity time series for both legs (degrees, deg/s)
+ Outputs:
+   angleData - labTimeSeries with 20 channels of angle and angular
+               velocity time series for both legs (degrees, deg/s)
 
-   Toolbox Dependencies:
-     None
+ Toolbox Dependencies: None
 
-   See also: labTimeSeries, orientationInfo, calcangle, labData/process
-
-   Created:  2014-05-14  HMH
-   Modified: Adapted by Digna de Kam to compute individual joint angles</pre></div>
+ See also LABTIMESERIES, ORIENTATIONINFO, CALCANGLE, LABDATA/PROCESS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle=calcangle(jt1, jt2, jt3)">calcangle</a>	angle.m</li><li><a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function [file] = getSimpleFileName(filename)">getSimpleFileName</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle = calcangle(jt1, jt2, jt3)">calcangle</a>	CALCANGLE Compute the joint angle at the vertex joint.</li><li><a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function file = getSimpleFileName(filename)">getSimpleFileName</a>	GETSIMPLEFILENAME Extract the bare filename from a full path string.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li></ul>
+<li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	PROCESS Process raw trial data into angles, events, and parameters.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -71,7 +67,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angleData = calcLimbAngles(this)</a>
-0002 <span class="comment">% calcLimbAngles  Calculates limb and joint angles from marker data.</span>
+0002 <span class="comment">%CALCLIMBANGLES Calculate limb and joint angles from marker data.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Computes sagittal-plane limb, thigh, shank, foot, hip, knee, and</span>
 0005 <span class="comment">% ankle angles and their angular velocities for both legs from the 2D</span>
@@ -83,246 +79,246 @@ This function is called by:
 0011 <span class="comment">%   - Knee angle:  between the thigh and shank segments</span>
 0012 <span class="comment">%   - Ankle angle: between the shank and foot segments</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   Inputs:</span>
-0015 <span class="comment">%     this - labData object containing markerData with hip, ankle,</span>
-0016 <span class="comment">%            knee, toe, and heel marker trajectories</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   this - labData object containing markerData with hip, ankle, knee,</span>
+0016 <span class="comment">%          toe, and heel marker trajectories</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   Outputs:</span>
-0019 <span class="comment">%     angleData - labTimeSeries with 20 channels of angle and angular</span>
-0020 <span class="comment">%                 velocity time series for both legs (degrees, deg/s)</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   angleData - labTimeSeries with 20 channels of angle and angular</span>
+0020 <span class="comment">%               velocity time series for both legs (degrees, deg/s)</span>
 0021 <span class="comment">%</span>
-0022 <span class="comment">%   Toolbox Dependencies:</span>
-0023 <span class="comment">%     None</span>
-0024 <span class="comment">%</span>
-0025 <span class="comment">%   See also: labTimeSeries, orientationInfo, calcangle, labData/process</span>
-0026 <span class="comment">%</span>
-0027 <span class="comment">%   Created:  2014-05-14  HMH</span>
-0028 <span class="comment">%   Modified: Adapted by Digna de Kam to compute individual joint angles</span>
+0022 <span class="comment">% Toolbox Dependencies: None</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also LABTIMESERIES, ORIENTATIONINFO, CALCANGLE, LABDATA/PROCESS.</span>
+0025 
+0026 arguments
+0027     this (1,1) <a href="labData.html" class="code" title="">labData</a>
+0028 <span class="keyword">end</span>
 0029 
-0030 arguments
-0031     this (1,1) <a href="labData.html" class="code" title="">labData</a>
-0032 <span class="keyword">end</span>
-0033 
-0034 <span class="comment">%% Named Constants</span>
-0035 <span class="comment">% Horizontal offset (in marker data units, typically mm) used to define</span>
-0036 <span class="comment">% the reference direction for limb angle calculation via calcangle.</span>
-0037 <span class="comment">% The reference point is placed to the right of the hip along the</span>
-0038 <span class="comment">% fore-aft axis, so the resulting angle is measured from the horizontal,</span>
-0039 <span class="comment">% and 90 degrees is subtracted to convert to angle from the vertical.</span>
-0040 limbAngleRefOffset = 100;
-0041 
-0042 <span class="comment">%% Setup</span>
-0043 <span class="comment">% disp('TEST: computing limb angles');</span>
-0044 fs   = 1 / this.markerData.sampPeriod;
-0045 file = <a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function [file] = getSimpleFileName(filename)">getSimpleFileName</a>(this.metaData.rawDataFilename); <span class="comment">% for warnings</span>
-0046 
-0047 <span class="comment">% Angular velocity helper: forward-differentiates an angle signal,</span>
-0048 <span class="comment">% extending the result by one sample (repeating the last value) to</span>
-0049 <span class="comment">% preserve the original signal length after diff reduces it by one</span>
-0050 angVel = @(angle) [diff(angle); angle(end) - angle(end-1)] * fs;
-0051 
-0052 <span class="comment">% Get orientation axes and signs from marker data</span>
-0053 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.markerData.orientation)
-0054     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
-0055     orientation = <a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0, 0, 0], <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, 1, 1, 1);
-0056 <span class="keyword">else</span>
-0057     orientation = this.markerData.orientation;
-0058 <span class="keyword">end</span>
-0059 
-0060 <span class="comment">%% Retrieve Marker Positions</span>
-0061 
-0062 <span class="comment">% ---- Hip ------------------------------------------------------------</span>
-0063 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RHIPx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LHIPx'</span>)
-0064     RhipPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RHIP'</span>, orientation);
-0065     LhipPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LHIP'</span>, orientation);
-0066 <span class="keyword">else</span>
-0067     warning([<span class="string">'There are missing hip markers in '</span> file <span class="keyword">...</span>
-0068         <span class="string">'. Unable to calculate limb angles.'</span>]);
-0069     angleData = [];
-0070     <span class="keyword">return</span>;
-0071 <span class="keyword">end</span>
-0072 
-0073 <span class="comment">% ---- Ankle ----------------------------------------------------------</span>
-0074 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RANKx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LANKx'</span>)
-0075     RankPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RANK'</span>, orientation);
-0076     LankPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LANK'</span>, orientation);
-0077 <span class="keyword">else</span>
-0078     warning([<span class="string">'There are missing ankle markers in '</span> file <span class="keyword">...</span>
-0079         <span class="string">'. Unable to calculate limb angles.'</span>]);
-0080     <span class="comment">% angleData = [];</span>
-0081     <span class="keyword">return</span>;
-0082 <span class="keyword">end</span>
-0083 
-0084 <span class="comment">% ---- Knee (two label variants: 'KNE' and 'KNEE') --------------------</span>
-0085 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RKNEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LKNEx'</span>)
-0086     RkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RKNE'</span>, orientation);
-0087     LkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LKNE'</span>, orientation);
-0088 <span class="keyword">elseif</span> this.markerData.isaLabel(<span class="string">'RKNEEx'</span>) &amp;&amp; <span class="keyword">...</span>
-0089         this.markerData.isaLabel(<span class="string">'LKNEEx'</span>)
-0090     RkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RKNEE'</span>, orientation);
-0091     LkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LKNEE'</span>, orientation);
-0092 <span class="keyword">else</span>
-0093     warning([<span class="string">'There are missing knee markers in '</span> file <span class="keyword">...</span>
-0094         <span class="string">'. Unable to calculate limb angles.'</span>]);
-0095     <span class="comment">% % Marcela temporary fix</span>
-0096     <span class="comment">% temp = this.markerData.getDataAsVector( ...</span>
-0097     <span class="comment">%     {['RHIP' orientation.foreaftAxis], ...</span>
-0098     <span class="comment">%     ['RHIP' orientation.updownAxis]});</span>
-0099     <span class="comment">% LkneePos2D = nan * ones(size(temp));</span>
-0100     <span class="comment">% RkneePos2D = nan * ones(size(temp));</span>
-0101     <span class="comment">% % angleData = [];</span>
-0102     <span class="keyword">return</span>;
-0103 <span class="keyword">end</span>
-0104 
-0105 <span class="comment">% ---- Toe ------------------------------------------------------------</span>
-0106 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RTOEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LTOEx'</span>)
-0107     RtoePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RTOE'</span>, orientation);
-0108     LtoePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LTOE'</span>, orientation);
-0109 <span class="keyword">else</span>
-0110     warning([<span class="string">'There are missing toe markers in '</span> file <span class="keyword">...</span>
-0111         <span class="string">'. Unable to calculate limb angles.'</span>]);
-0112     <span class="comment">% keyboard</span>
-0113     <span class="comment">% angleData = [];</span>
-0114     <span class="keyword">return</span>;
-0115 <span class="keyword">end</span>
-0116 
-0117 <span class="comment">% ---- Heel -----------------------------------------------------------</span>
-0118 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RHEEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LHEEx'</span>)
-0119     RheelPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RHEE'</span>, orientation);
-0120     LheelPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LHEE'</span>, orientation);
-0121 <span class="keyword">else</span>
-0122     LheelPos2D = nan(size(LtoePos2D));
-0123     RheelPos2D = nan(size(RtoePos2D));
-0124     warning([<span class="string">'There are missing heel markers in '</span> file <span class="keyword">...</span>
-0125         <span class="string">'. Unable to calculate limb angles.'</span>]);
-0126     <span class="comment">% keyboard</span>
-0127     <span class="comment">% angleData = [];</span>
-0128     <span class="keyword">return</span>;
-0129 <span class="keyword">end</span>
-0130 
-0131 <span class="comment">%% Calculate Angles</span>
-0132 <span class="comment">% ---- Limb angles ----------------------------------------------------</span>
-0133 <span class="comment">% Angle of the hip-to-ankle segment with the horizontal; 90 degrees is</span>
-0134 <span class="comment">% subtracted to convert to angle measured from the vertical</span>
-0135 RLimbAngle = <a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle=calcangle(jt1, jt2, jt3)">calcangle</a>([RankPos2D(:, 1),  RankPos2D(:, 2)], <span class="keyword">...</span>
-0136     [RhipPos2D(:, 1),  RhipPos2D(:, 2)], <span class="keyword">...</span>
-0137     [RhipPos2D(:, 1) + limbAngleRefOffset,  RhipPos2D(:, 2)]) - 90;
-0138 LLimbAngle = <a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle=calcangle(jt1, jt2, jt3)">calcangle</a>([LankPos2D(:, 1),  LankPos2D(:, 2)], <span class="keyword">...</span>
-0139     [LhipPos2D(:, 1),  LhipPos2D(:, 2)], <span class="keyword">...</span>
-0140     [LhipPos2D(:, 1) + limbAngleRefOffset,  LhipPos2D(:, 2)]) - 90;
-0141 
-0142 <span class="comment">% Commented-out alternative using the hip-knee segment</span>
-0143 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
-0144 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)], ...</span>
-0145 <span class="comment">%     [RhipPos2D(:, 1) + limbAngleRefOffset,  RhipPos2D(:, 2)]) - 90;</span>
-0146 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
-0147 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)], ...</span>
-0148 <span class="comment">%     [LhipPos2D(:, 1) + limbAngleRefOffset,  LhipPos2D(:, 2)]) - 90;</span>
-0149 
-0150 <span class="comment">% ---- Segment angles (thigh, shank, foot) ----------------------------</span>
-0151 RThighAngle = atand((RhipPos2D(:, 1) - RkneePos2D(:, 1)) ./ <span class="keyword">...</span>
-0152     (RhipPos2D(:, 2) - RkneePos2D(:, 2)));
-0153 LThighAngle = atand((LhipPos2D(:, 1) - LkneePos2D(:, 1)) ./ <span class="keyword">...</span>
-0154     (LhipPos2D(:, 2) - LkneePos2D(:, 2)));
-0155 
-0156 RShankAngle = atand((RkneePos2D(:, 1) - RankPos2D(:, 1)) ./ <span class="keyword">...</span>
-0157     (RkneePos2D(:, 2) - RankPos2D(:, 2)));
-0158 LShankAngle = atand((LkneePos2D(:, 1) - LankPos2D(:, 1)) ./ <span class="keyword">...</span>
-0159     (LkneePos2D(:, 2) - LankPos2D(:, 2)));
-0160 
-0161 RfootAngle = atand((RtoePos2D(:, 2) - RheelPos2D(:, 2)) ./ <span class="keyword">...</span>
-0162     (RtoePos2D(:, 1) - RheelPos2D(:, 1)));
-0163 LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ <span class="keyword">...</span>
-0164     (LtoePos2D(:, 1) - LheelPos2D(:, 1)));
-0165 
-0166 <span class="comment">% ---- Joint angles and angular velocities ----------------------------</span>
-0167 <span class="comment">% Hip: thigh angle from vertical, assuming trunk is vertical</span>
-0168 RhipAngle   = RThighAngle;
-0169 LhipAngle   = LThighAngle;
-0170 RhipAngVel  = angVel(RhipAngle);
-0171 LhipAngVel  = angVel(LhipAngle);
-0172 
-0173 <span class="comment">% Knee: angle between the thigh and shank segments.</span>
-0174 <span class="comment">% Derivation: 180 - ((90 - thighAngle) + (90 + shankAngle))</span>
-0175 <span class="comment">%           = 180 - 90 + thighAngle - 90 - shankAngle</span>
-0176 <span class="comment">%           = thighAngle - shankAngle</span>
-0177 RkneeAngle  = RThighAngle - RShankAngle;
-0178 LkneeAngle  = LThighAngle - LShankAngle;
-0179 RkneeAngVel = angVel(RkneeAngle);
-0180 LkneeAngVel = angVel(LkneeAngle);
-0181 
-0182 <span class="comment">% Ankle: foot deviation from shank alignment.</span>
-0183 <span class="comment">% Derivation: 90 - (shankAngle + 90 + footAngle)</span>
-0184 <span class="comment">%           = 90 - shankAngle - 90 - footAngle</span>
-0185 <span class="comment">%           = -(shankAngle + footAngle)</span>
-0186 RankAngle   = -(RShankAngle + RfootAngle);
-0187 LankAngle   = -(LShankAngle + LfootAngle);
-0188 RankAngVel  = angVel(RankAngle);
-0189 LankAngVel  = angVel(LankAngle);
-0190 
-0191 <span class="comment">% keyboard</span>
-0192 <span class="comment">% Commented-out alternative joint angle calculations using calcangle</span>
-0193 <span class="comment">% and calcangle2; cosine-based approach had issues with negative values</span>
-0194 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
-0195 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)], ...</span>
-0196 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2) + limbAngleRefOffset]) - 90;</span>
-0197 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
-0198 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)], ...</span>
-0199 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2) + limbAngleRefOffset]) - 90;</span>
-0200 <span class="comment">%</span>
-0201 <span class="comment">% RkneeAngle = calcangle([RankPos2D(:, 1),   RankPos2D(:, 2)], ...</span>
-0202 <span class="comment">%     [RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
-0203 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)]) - 90;</span>
-0204 <span class="comment">% LkneeAngle = calcangle([LankPos2D(:, 1),   LankPos2D(:, 2)], ...</span>
-0205 <span class="comment">%     [LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
-0206 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)]) - 90;</span>
-0207 <span class="comment">%</span>
-0208 <span class="comment">% RankAngle = calcangle2([RkneePos2D(:, 1), RkneePos2D(:, 2)] - ...</span>
-0209 <span class="comment">%     [RankPos2D(:, 1),  RankPos2D(:, 2)], ...</span>
-0210 <span class="comment">%     [RtoePos2D(:, 1),  RtoePos2D(:, 2)] - ...</span>
-0211 <span class="comment">%     [RheelPos2D(:, 1), RheelPos2D(:, 2)]) - 90;</span>
-0212 <span class="comment">% LankAngle = calcangle2([LkneePos2D(:, 1), LkneePos2D(:, 2)] - ...</span>
-0213 <span class="comment">%     [LankPos2D(:, 1),  LankPos2D(:, 2)], ...</span>
-0214 <span class="comment">%     [LtoePos2D(:, 1),  LtoePos2D(:, 2)] - ...</span>
-0215 <span class="comment">%     [LheelPos2D(:, 1), LheelPos2D(:, 2)]) - 90;</span>
-0216 <span class="comment">% % keyboard</span>
-0217 
-0218 <span class="comment">%% Construct Output</span>
-0219 angleData = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
-0220     [RLimbAngle   LLimbAngle   RThighAngle  LThighAngle  <span class="keyword">...</span>
-0221     RShankAngle  LShankAngle  RfootAngle   LfootAngle   <span class="keyword">...</span>
-0222     RhipAngle    LhipAngle    RkneeAngle   LkneeAngle   <span class="keyword">...</span>
-0223     RankAngle    LankAngle    RhipAngVel   LhipAngVel   <span class="keyword">...</span>
-0224     RkneeAngVel  LkneeAngVel  RankAngVel   LankAngVel], <span class="keyword">...</span>
-0225     this.markerData.Time(1), this.markerData.sampPeriod, <span class="keyword">...</span>
-0226     {<span class="string">'RLimb'</span>,    <span class="string">'LLimb'</span>,    <span class="string">'RThigh'</span>,   <span class="string">'LThigh'</span>,   <span class="keyword">...</span>
-0227     <span class="string">'RShank'</span>,   <span class="string">'LShank'</span>,   <span class="string">'RFoot'</span>,    <span class="string">'LFoot'</span>,    <span class="keyword">...</span>
-0228     <span class="string">'Rhip'</span>,     <span class="string">'Lhip'</span>,     <span class="string">'Rknee'</span>,    <span class="string">'Lknee'</span>,    <span class="keyword">...</span>
-0229     <span class="string">'Rank'</span>,     <span class="string">'Lank'</span>,     <span class="string">'RhipVel'</span>,  <span class="string">'LhipVel'</span>,  <span class="keyword">...</span>
-0230     <span class="string">'RkneeVel'</span>, <span class="string">'LkneeVel'</span>, <span class="string">'RankVel'</span>,  <span class="string">'LankVel'</span>});
-0231 
-0232 <span class="keyword">end</span>
+0030 <span class="comment">%% Named Constants</span>
+0031 <span class="comment">% Horizontal offset (in marker data units, typically mm) used to define</span>
+0032 <span class="comment">% the reference direction for limb angle calculation via calcangle.</span>
+0033 <span class="comment">% The reference point is placed to the right of the hip along the</span>
+0034 <span class="comment">% fore-aft axis, so the resulting angle is measured from the horizontal,</span>
+0035 <span class="comment">% and 90 degrees is subtracted to convert to angle from the vertical.</span>
+0036 limbAngleRefOffset = 100;
+0037 
+0038 <span class="comment">%% Setup</span>
+0039 <span class="comment">% disp('TEST: computing limb angles');</span>
+0040 fs   = 1 / this.markerData.sampPeriod;
+0041 file = <a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function file = getSimpleFileName(filename)">getSimpleFileName</a>(this.metaData.rawDataFilename); <span class="comment">% for warnings</span>
+0042 
+0043 <span class="comment">% Angular velocity helper: forward-differentiates an angle signal,</span>
+0044 <span class="comment">% extending the result by one sample (repeating the last value) to</span>
+0045 <span class="comment">% preserve the original signal length after diff reduces it by one</span>
+0046 angVel = @(angle) [diff(angle); angle(end) - angle(end-1)] * fs;
+0047 
+0048 <span class="comment">% Get orientation axes and signs from marker data</span>
+0049 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(this.markerData.orientation)
+0050     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0051     orientation = <a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0, 0, 0], <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, 1, 1, 1);
+0052 <span class="keyword">else</span>
+0053     orientation = this.markerData.orientation;
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">%% Retrieve Marker Positions</span>
+0057 
+0058 <span class="comment">% ---- Hip ------------------------------------------------------------</span>
+0059 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RHIPx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LHIPx'</span>)
+0060     RhipPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RHIP'</span>, orientation);
+0061     LhipPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LHIP'</span>, orientation);
+0062 <span class="keyword">else</span>
+0063     warning([<span class="string">'There are missing hip markers in '</span> file <span class="keyword">...</span>
+0064         <span class="string">'. Unable to calculate limb angles.'</span>]);
+0065     angleData = [];
+0066     <span class="keyword">return</span>;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="comment">% ---- Ankle ----------------------------------------------------------</span>
+0070 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RANKx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LANKx'</span>)
+0071     RankPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RANK'</span>, orientation);
+0072     LankPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LANK'</span>, orientation);
+0073 <span class="keyword">else</span>
+0074     warning([<span class="string">'There are missing ankle markers in '</span> file <span class="keyword">...</span>
+0075         <span class="string">'. Unable to calculate limb angles.'</span>]);
+0076     <span class="comment">% angleData = [];</span>
+0077     <span class="keyword">return</span>;
+0078 <span class="keyword">end</span>
+0079 
+0080 <span class="comment">% ---- Knee (two label variants: 'KNE' and 'KNEE') --------------------</span>
+0081 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RKNEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LKNEx'</span>)
+0082     RkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RKNE'</span>, orientation);
+0083     LkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LKNE'</span>, orientation);
+0084 <span class="keyword">elseif</span> this.markerData.isaLabel(<span class="string">'RKNEEx'</span>) &amp;&amp; <span class="keyword">...</span>
+0085         this.markerData.isaLabel(<span class="string">'LKNEEx'</span>)
+0086     RkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RKNEE'</span>, orientation);
+0087     LkneePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LKNEE'</span>, orientation);
+0088 <span class="keyword">else</span>
+0089     warning([<span class="string">'There are missing knee markers in '</span> file <span class="keyword">...</span>
+0090         <span class="string">'. Unable to calculate limb angles.'</span>]);
+0091     <span class="comment">% % Disabled temporary fix: NaN-fill the knee positions</span>
+0092     <span class="comment">% temp = this.markerData.getDataAsVector( ...</span>
+0093     <span class="comment">%     {['RHIP' orientation.foreaftAxis], ...</span>
+0094     <span class="comment">%     ['RHIP' orientation.updownAxis]});</span>
+0095     <span class="comment">% LkneePos2D = nan * ones(size(temp));</span>
+0096     <span class="comment">% RkneePos2D = nan * ones(size(temp));</span>
+0097     <span class="comment">% % angleData = [];</span>
+0098     <span class="keyword">return</span>;
+0099 <span class="keyword">end</span>
+0100 
+0101 <span class="comment">% ---- Toe ------------------------------------------------------------</span>
+0102 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RTOEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LTOEx'</span>)
+0103     RtoePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RTOE'</span>, orientation);
+0104     LtoePos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LTOE'</span>, orientation);
+0105 <span class="keyword">else</span>
+0106     warning([<span class="string">'There are missing toe markers in '</span> file <span class="keyword">...</span>
+0107         <span class="string">'. Unable to calculate limb angles.'</span>]);
+0108     <span class="comment">% keyboard</span>
+0109     <span class="comment">% angleData = [];</span>
+0110     <span class="keyword">return</span>;
+0111 <span class="keyword">end</span>
+0112 
+0113 <span class="comment">% ---- Heel -----------------------------------------------------------</span>
+0114 <span class="keyword">if</span> this.markerData.isaLabel(<span class="string">'RHEEx'</span>) &amp;&amp; this.markerData.isaLabel(<span class="string">'LHEEx'</span>)
+0115     RheelPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'RHEE'</span>, orientation);
+0116     LheelPos2D = <a href="#_sub1" class="code" title="subfunction pos2D = getMarker2D(markerData, markerName, orientation)">getMarker2D</a>(this.markerData, <span class="string">'LHEE'</span>, orientation);
+0117 <span class="keyword">else</span>
+0118     LheelPos2D = nan(size(LtoePos2D));
+0119     RheelPos2D = nan(size(RtoePos2D));
+0120     warning([<span class="string">'There are missing heel markers in '</span> file <span class="keyword">...</span>
+0121         <span class="string">'. Unable to calculate limb angles.'</span>]);
+0122     <span class="comment">% keyboard</span>
+0123     <span class="comment">% angleData = [];</span>
+0124     <span class="keyword">return</span>;
+0125 <span class="keyword">end</span>
+0126 
+0127 <span class="comment">%% Calculate Angles</span>
+0128 <span class="comment">% ---- Limb angles ----------------------------------------------------</span>
+0129 <span class="comment">% Angle of the hip-to-ankle segment with the horizontal; 90 degrees is</span>
+0130 <span class="comment">% subtracted to convert to angle measured from the vertical</span>
+0131 RLimbAngle = <a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle = calcangle(jt1, jt2, jt3)">calcangle</a>([RankPos2D(:, 1),  RankPos2D(:, 2)], <span class="keyword">...</span>
+0132     [RhipPos2D(:, 1),  RhipPos2D(:, 2)], <span class="keyword">...</span>
+0133     [RhipPos2D(:, 1) + limbAngleRefOffset,  RhipPos2D(:, 2)]) - 90;
+0134 LLimbAngle = <a href="../../../../labTools/fun/misc/calcangle.html" class="code" title="function angle = calcangle(jt1, jt2, jt3)">calcangle</a>([LankPos2D(:, 1),  LankPos2D(:, 2)], <span class="keyword">...</span>
+0135     [LhipPos2D(:, 1),  LhipPos2D(:, 2)], <span class="keyword">...</span>
+0136     [LhipPos2D(:, 1) + limbAngleRefOffset,  LhipPos2D(:, 2)]) - 90;
+0137 
+0138 <span class="comment">% Commented-out alternative using the hip-knee segment</span>
+0139 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
+0140 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)], ...</span>
+0141 <span class="comment">%     [RhipPos2D(:, 1) + limbAngleRefOffset,  RhipPos2D(:, 2)]) - 90;</span>
+0142 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
+0143 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)], ...</span>
+0144 <span class="comment">%     [LhipPos2D(:, 1) + limbAngleRefOffset,  LhipPos2D(:, 2)]) - 90;</span>
+0145 
+0146 <span class="comment">% ---- Segment angles (thigh, shank, foot) ----------------------------</span>
+0147 RThighAngle = atand((RhipPos2D(:, 1) - RkneePos2D(:, 1)) ./ <span class="keyword">...</span>
+0148     (RhipPos2D(:, 2) - RkneePos2D(:, 2)));
+0149 LThighAngle = atand((LhipPos2D(:, 1) - LkneePos2D(:, 1)) ./ <span class="keyword">...</span>
+0150     (LhipPos2D(:, 2) - LkneePos2D(:, 2)));
+0151 
+0152 RShankAngle = atand((RkneePos2D(:, 1) - RankPos2D(:, 1)) ./ <span class="keyword">...</span>
+0153     (RkneePos2D(:, 2) - RankPos2D(:, 2)));
+0154 LShankAngle = atand((LkneePos2D(:, 1) - LankPos2D(:, 1)) ./ <span class="keyword">...</span>
+0155     (LkneePos2D(:, 2) - LankPos2D(:, 2)));
+0156 
+0157 RfootAngle = atand((RtoePos2D(:, 2) - RheelPos2D(:, 2)) ./ <span class="keyword">...</span>
+0158     (RtoePos2D(:, 1) - RheelPos2D(:, 1)));
+0159 LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ <span class="keyword">...</span>
+0160     (LtoePos2D(:, 1) - LheelPos2D(:, 1)));
+0161 
+0162 <span class="comment">% ---- Joint angles and angular velocities ----------------------------</span>
+0163 <span class="comment">% Hip: thigh angle from vertical, assuming trunk is vertical</span>
+0164 RhipAngle  = RThighAngle;
+0165 LhipAngle  = LThighAngle;
+0166 RhipAngVel = angVel(RhipAngle);
+0167 LhipAngVel = angVel(LhipAngle);
+0168 
+0169 <span class="comment">% Knee: angle between the thigh and shank segments.</span>
+0170 <span class="comment">% Derivation: 180 - ((90 - thighAngle) + (90 + shankAngle))</span>
+0171 <span class="comment">%           = 180 - 90 + thighAngle - 90 - shankAngle</span>
+0172 <span class="comment">%           = thighAngle - shankAngle</span>
+0173 RkneeAngle  = RThighAngle - RShankAngle;
+0174 LkneeAngle  = LThighAngle - LShankAngle;
+0175 RkneeAngVel = angVel(RkneeAngle);
+0176 LkneeAngVel = angVel(LkneeAngle);
+0177 
+0178 <span class="comment">% Ankle: foot deviation from shank alignment.</span>
+0179 <span class="comment">% Derivation: 90 - (shankAngle + 90 + footAngle)</span>
+0180 <span class="comment">%           = 90 - shankAngle - 90 - footAngle</span>
+0181 <span class="comment">%           = -(shankAngle + footAngle)</span>
+0182 RankAngle  = -(RShankAngle + RfootAngle);
+0183 LankAngle  = -(LShankAngle + LfootAngle);
+0184 RankAngVel = angVel(RankAngle);
+0185 LankAngVel = angVel(LankAngle);
+0186 
+0187 <span class="comment">% keyboard</span>
+0188 <span class="comment">% Commented-out alternative joint angle calculations using calcangle</span>
+0189 <span class="comment">% and calcangle2; cosine-based approach had issues with negative values</span>
+0190 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
+0191 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)], ...</span>
+0192 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2) + limbAngleRefOffset]) - 90;</span>
+0193 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
+0194 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)], ...</span>
+0195 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2) + limbAngleRefOffset]) - 90;</span>
+0196 <span class="comment">%</span>
+0197 <span class="comment">% RkneeAngle = calcangle([RankPos2D(:, 1),   RankPos2D(:, 2)], ...</span>
+0198 <span class="comment">%     [RkneePos2D(:, 1),  RkneePos2D(:, 2)], ...</span>
+0199 <span class="comment">%     [RhipPos2D(:, 1),   RhipPos2D(:, 2)]) - 90;</span>
+0200 <span class="comment">% LkneeAngle = calcangle([LankPos2D(:, 1),   LankPos2D(:, 2)], ...</span>
+0201 <span class="comment">%     [LkneePos2D(:, 1),  LkneePos2D(:, 2)], ...</span>
+0202 <span class="comment">%     [LhipPos2D(:, 1),   LhipPos2D(:, 2)]) - 90;</span>
+0203 <span class="comment">%</span>
+0204 <span class="comment">% RankAngle = calcangle2([RkneePos2D(:, 1), RkneePos2D(:, 2)] - ...</span>
+0205 <span class="comment">%     [RankPos2D(:, 1),  RankPos2D(:, 2)], ...</span>
+0206 <span class="comment">%     [RtoePos2D(:, 1),  RtoePos2D(:, 2)] - ...</span>
+0207 <span class="comment">%     [RheelPos2D(:, 1), RheelPos2D(:, 2)]) - 90;</span>
+0208 <span class="comment">% LankAngle = calcangle2([LkneePos2D(:, 1), LkneePos2D(:, 2)] - ...</span>
+0209 <span class="comment">%     [LankPos2D(:, 1),  LankPos2D(:, 2)], ...</span>
+0210 <span class="comment">%     [LtoePos2D(:, 1),  LtoePos2D(:, 2)] - ...</span>
+0211 <span class="comment">%     [LheelPos2D(:, 1), LheelPos2D(:, 2)]) - 90;</span>
+0212 <span class="comment">% % keyboard</span>
+0213 
+0214 <span class="comment">%% Construct Output</span>
+0215 angleData = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>( <span class="keyword">...</span>
+0216     [RLimbAngle   LLimbAngle   RThighAngle  LThighAngle  <span class="keyword">...</span>
+0217     RShankAngle  LShankAngle  RfootAngle   LfootAngle   <span class="keyword">...</span>
+0218     RhipAngle    LhipAngle    RkneeAngle   LkneeAngle   <span class="keyword">...</span>
+0219     RankAngle    LankAngle    RhipAngVel   LhipAngVel   <span class="keyword">...</span>
+0220     RkneeAngVel  LkneeAngVel  RankAngVel   LankAngVel], <span class="keyword">...</span>
+0221     this.markerData.Time(1), this.markerData.sampPeriod, <span class="keyword">...</span>
+0222     {<span class="string">'RLimb'</span>,    <span class="string">'LLimb'</span>,    <span class="string">'RThigh'</span>,   <span class="string">'LThigh'</span>,   <span class="keyword">...</span>
+0223     <span class="string">'RShank'</span>,   <span class="string">'LShank'</span>,   <span class="string">'RFoot'</span>,    <span class="string">'LFoot'</span>,    <span class="keyword">...</span>
+0224     <span class="string">'Rhip'</span>,     <span class="string">'Lhip'</span>,     <span class="string">'Rknee'</span>,    <span class="string">'Lknee'</span>,    <span class="keyword">...</span>
+0225     <span class="string">'Rank'</span>,     <span class="string">'Lank'</span>,     <span class="string">'RhipVel'</span>,  <span class="string">'LhipVel'</span>,  <span class="keyword">...</span>
+0226     <span class="string">'RkneeVel'</span>, <span class="string">'LkneeVel'</span>, <span class="string">'RankVel'</span>,  <span class="string">'LankVel'</span>});
+0227 
+0228 <span class="keyword">end</span>
+0229 
+0230 <span class="comment">% ============================================================</span>
+0231 <span class="comment">% ==================== Local Functions =======================</span>
+0232 <span class="comment">% ============================================================</span>
 0233 
-0234 <span class="comment">% ============================================================</span>
-0235 <span class="comment">% ==================== Local Functions =======================</span>
-0236 <span class="comment">% ============================================================</span>
-0237 
-0238 <a name="_sub1" href="#_subfunctions" class="code">function pos2D = getMarker2D(markerData, markerName, orientation)</a>
-0239 <span class="comment">% getMarker2D  Retrieves a single marker's signed 2D position.</span>
+0234 <a name="_sub1" href="#_subfunctions" class="code">function pos2D = getMarker2D(markerData, markerName, orientation)</a>
+0235 <span class="comment">%GETMARKER2D Retrieve a single marker's signed 2D position.</span>
+0236 <span class="comment">%</span>
+0237 <span class="comment">%   Extracts the fore-aft and up-down position components for the</span>
+0238 <span class="comment">% named marker and applies the orientation sign conventions, returning</span>
+0239 <span class="comment">% a two-column matrix ready for angle computation.</span>
 0240 <span class="comment">%</span>
-0241 <span class="comment">%   Extracts the fore-aft and up-down position components for the</span>
-0242 <span class="comment">% named marker and applies the orientation sign conventions, returning</span>
-0243 <span class="comment">% a two-column matrix ready for angle computation.</span>
-0244 <span class="comment">%</span>
-0245 <span class="comment">%   Inputs:</span>
-0246 <span class="comment">%     markerData  - orientedLabTimeSeries containing marker trajectories</span>
-0247 <span class="comment">%     markerName  - String marker label prefix, e.g. 'RHIP', 'LANK'</span>
-0248 <span class="comment">%     orientation - orientationInfo object specifying axis names and signs</span>
-0249 <span class="comment">%</span>
-0250 <span class="comment">%   Outputs:</span>
-0251 <span class="comment">%     pos2D - Nx2 matrix of signed [foreaft, updown] positions</span>
+0241 <span class="comment">% Inputs:</span>
+0242 <span class="comment">%   markerData  - orientedLabTimeSeries containing marker trajectories</span>
+0243 <span class="comment">%   markerName  - String marker label prefix, e.g. 'RHIP', 'LANK'</span>
+0244 <span class="comment">%   orientation - orientationInfo object specifying axis names and signs</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">% Outputs:</span>
+0247 <span class="comment">%   pos2D - Nx2 matrix of signed [foreaft, updown] positions</span>
+0248 <span class="comment">%</span>
+0249 <span class="comment">% Toolbox Dependencies: None</span>
+0250 <span class="comment">%</span>
+0251 <span class="comment">% See also LABDATA/CALCLIMBANGLES.</span>
 0252 
-0253 raw   = markerData.getDataAsVector( <span class="keyword">...</span>
+0253 raw = markerData.getDataAsVector( <span class="keyword">...</span>
 0254     {[markerName orientation.foreaftAxis], <span class="keyword">...</span>
 0255     [markerName orientation.updownAxis]});
 0256 pos2D = [orientation.foreaftSign * raw(:, 1), <span class="keyword">...</span>
@@ -330,6 +326,6 @@ This function is called by:
 0258 
 0259 <span class="keyword">end</span>
 0260</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

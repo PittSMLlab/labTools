@@ -4,7 +4,7 @@
 <head>
   <title>Description of anova</title>
   <meta name="keywords" content="anova">
-  <meta name="description" content="anova  Performs one-way ANOVA on parameters">
+  <meta name="description" content="ANOVA Performs one-way ANOVA on parameters.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,95 +21,100 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>anova  Performs one-way ANOVA on parameters</strong></div>
+<div class="box"><strong>ANOVA Performs one-way ANOVA on parameters.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">anova  Performs one-way ANOVA on parameters
+<div class="fragment"><pre class="comment">ANOVA Performs one-way ANOVA on parameters.
 
-   [p, postHocMatrix] = anova(this, params, groupIdxs) performs
-   one-way ANOVA among groups and post-hoc analysis
+   [p, postHocMatrix] = anova(this, params, groupIdxs) performs one-way
+ ANOVA among groups and post-hoc analysis
 
-   [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)
-   controls display
+   [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt) controls
+ display
 
-   Inputs:
-       this - parameterSeries object
-       params - string or cell array of parameter names to analyze
-       groupIdxs - cell array of stride index vectors, one per group
-       dispOpt - display option for anova1: 'on' or 'off' (optional,
-                 default: 'off')
+ Inputs:
+   this      - parameterSeries object
+   params    - string or cell array of parameter names to analyze
+   groupIdxs - cell array of stride index vectors, one per group
+   dispOpt   - display option for anova1: 'on' or 'off' (optional, default:
+               'off')
 
-   Outputs:
-       p - vector of p-values, one per parameter
-       postHocMatrix - cell array of post-hoc comparison matrices
-                       (Tukey-Kramer), one per parameter
+ Outputs:
+   p             - vector of p-values, one per parameter
+   postHocMatrix - cell array of post-hoc comparison matrices
+                   (Tukey-Kramer), one per parameter
 
-   See also: anova1, multcompare</pre></div>
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also ANOVA1, MULTCOMPARE.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>	</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch] = AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	ANOVAEPOCHS ANOVA of a parameter across groups and epochs.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData] = plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	PLOTMULTIPLEGROUPSBARS Bar plot of stride-group means for many groups.</li><li><a href="../../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>	</li><li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)</a>
-0002 <span class="comment">%anova  Performs one-way ANOVA on parameters</span>
+0002 <span class="comment">%ANOVA Performs one-way ANOVA on parameters.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   [p, postHocMatrix] = anova(this, params, groupIdxs) performs</span>
-0005 <span class="comment">%   one-way ANOVA among groups and post-hoc analysis</span>
+0004 <span class="comment">%   [p, postHocMatrix] = anova(this, params, groupIdxs) performs one-way</span>
+0005 <span class="comment">% ANOVA among groups and post-hoc analysis</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)</span>
-0008 <span class="comment">%   controls display</span>
+0007 <span class="comment">%   [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt) controls</span>
+0008 <span class="comment">% display</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Inputs:</span>
-0011 <span class="comment">%       this - parameterSeries object</span>
-0012 <span class="comment">%       params - string or cell array of parameter names to analyze</span>
-0013 <span class="comment">%       groupIdxs - cell array of stride index vectors, one per group</span>
-0014 <span class="comment">%       dispOpt - display option for anova1: 'on' or 'off' (optional,</span>
-0015 <span class="comment">%                 default: 'off')</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   this      - parameterSeries object</span>
+0012 <span class="comment">%   params    - string or cell array of parameter names to analyze</span>
+0013 <span class="comment">%   groupIdxs - cell array of stride index vectors, one per group</span>
+0014 <span class="comment">%   dispOpt   - display option for anova1: 'on' or 'off' (optional, default:</span>
+0015 <span class="comment">%               'off')</span>
 0016 <span class="comment">%</span>
-0017 <span class="comment">%   Outputs:</span>
-0018 <span class="comment">%       p - vector of p-values, one per parameter</span>
-0019 <span class="comment">%       postHocMatrix - cell array of post-hoc comparison matrices</span>
-0020 <span class="comment">%                       (Tukey-Kramer), one per parameter</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   p             - vector of p-values, one per parameter</span>
+0019 <span class="comment">%   postHocMatrix - cell array of post-hoc comparison matrices</span>
+0020 <span class="comment">%                   (Tukey-Kramer), one per parameter</span>
 0021 <span class="comment">%</span>
-0022 <span class="comment">%   See also: anova1, multcompare</span>
-0023 
-0024 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dispOpt)
-0025     dispOpt = <span class="string">'off'</span>;
-0026 <span class="keyword">end</span>
-0027 strides = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(groupIdxs);
-0028 Ngroups = length(groupIdxs);
-0029 <span class="keyword">for</span> i = 1:Ngroups
-0030     groupID{i} = i * ones(size(groupIdxs{i}));
-0031 <span class="keyword">end</span>
-0032 groupID = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(groupID);
-0033 <span class="keyword">if</span> isa(params, <span class="string">'char'</span>)
-0034     params = {params};
-0035 <span class="keyword">end</span>
-0036 Nparams = length(params);
-0037 aux = this.getDataAsPS([], strides);
-0038 postHocMatrix = cell(Nparams, 1);
-0039 <span class="keyword">for</span> i = 1:Nparams
-0040     postHocMatrix{i} = nan(Ngroups);
-0041     relevantData = aux.getDataAsVector(params(i));
-0042     [p(i), ANOVATAB, STATS] = anova1(relevantData, groupID, dispOpt);
-0043     <span class="comment">% Default post-hoc is tukey-kramer</span>
-0044     [c, MEANS, H, GNAMES] = multcompare(STATS);
-0045     postHocMatrix{i}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) =c(:, 6);
-0046 <span class="keyword">end</span>
-0047 <span class="keyword">end</span>
-0048</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0022 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also ANOVA1, MULTCOMPARE.</span>
+0025 
+0026 <span class="keyword">if</span> nargin &lt; 4 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(dispOpt)
+0027     dispOpt = <span class="string">'off'</span>;
+0028 <span class="keyword">end</span>
+0029 strides = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(groupIdxs);
+0030 Ngroups = length(groupIdxs);
+0031 <span class="keyword">for</span> ii = 1:Ngroups
+0032     groupID{ii} = ii * ones(size(groupIdxs{ii}));
+0033 <span class="keyword">end</span>
+0034 groupID = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(groupID);
+0035 <span class="keyword">if</span> isa(params, <span class="string">'char'</span>)
+0036     params = {params};
+0037 <span class="keyword">end</span>
+0038 Nparams       = length(params);
+0039 aux           = this.getDataAsPS([], strides);
+0040 postHocMatrix = cell(Nparams, 1);
+0041 <span class="keyword">for</span> ii = 1:Nparams
+0042     postHocMatrix{ii} = nan(Ngroups);
+0043     relevantData = aux.getDataAsVector(params(ii));
+0044     [p(ii), ANOVATAB, STATS] = anova1(relevantData, groupID, dispOpt);
+0045     <span class="comment">% Default post-hoc is tukey-kramer</span>
+0046     [c, MEANS, H, GNAMES] = multcompare(STATS);
+0047     postHocMatrix{ii}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) = <span class="keyword">...</span>
+0048         c(:, 6);
+0049 <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of CleanStudyData</title>
   <meta name="keywords" content="CleanStudyData">
-  <meta name="description" content="CleanStudyData Makes group data files safe to put online">
+  <meta name="description" content="CLEANSTUDYDATA Reduce group data to the parameters needed for sharing.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,16 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>CleanStudyData Makes group data files safe to put online</strong></div>
+<div class="box"><strong>CLEANSTUDYDATA Reduce group data to the parameters needed for sharing.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function cleanedStudyData = CleanStudyData(StudyData, params) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">CleanStudyData Makes group data files safe to put online
-   For the group data, for each group, it will only keep the parameters
-   that you indicate that you need in params as well as a few that are
-   needed for general proper function such as bas and trial number</pre></div>
+<div class="fragment"><pre class="comment">CLEANSTUDYDATA Reduce group data to the parameters needed for sharing.
+
+   For every group and adaptationData in the study data, keeps only the
+ parameters in params plus the ones required for the data to work (via
+ adaptationData.reduce) so the files are safe to put online.
+
+ Inputs:
+   StudyData - struct with one field per group, each with an adaptData
+               cell array
+   params    - cell array of parameter names to keep
+
+ Outputs:
+   cleanedStudyData - copy of StudyData with reduced adaptData
+
+ Toolbox Dependencies: None
+
+ See also ADAPTATIONDATA.REDUCE.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -46,31 +59,51 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function cleanedStudyData = CleanStudyData(StudyData, params)</a>
-0002 <span class="comment">%CleanStudyData Makes group data files safe to put online</span>
-0003 <span class="comment">%   For the group data, for each group, it will only keep the parameters</span>
-0004 <span class="comment">%   that you indicate that you need in params as well as a few that are</span>
-0005 <span class="comment">%   needed for general proper function such as bas and trial number</span>
-0006 cleanedStudyData=StudyData;
-0007 <span class="comment">% For each group</span>
-0008 groups=fieldnames(StudyData);
-0009 <span class="keyword">for</span> g=1:length(groups)
-0010     <span class="comment">%For each adaptData</span>
-0011     <span class="keyword">for</span> a=1:length(StudyData.(groups{g}).adaptData)
-0012         <span class="comment">%% Carly's Crude Way --  Only use if you do not have a new enough labtools</span>
-0013 <span class="comment">%         % Find the labels I want</span>
-0014 <span class="comment">%         KeepIndex=[1 2 3 find(ismember(StudyData.(groups{g}).adaptData{a}.data.labels, params))'];</span>
-0015 <span class="comment">%         RemoveIndex=setdiff([1:length(StudyData.(groups{g}).adaptData{a}.data.labels)], KeepIndex);</span>
-0016 <span class="comment">%</span>
-0017 <span class="comment">%         %NAN the data I do not want to share</span>
-0018 <span class="comment">%         cleanedStudyData.(groups{g}).adaptData{a}.data.Data(:, RemoveIndex)=NaN;</span>
-0019         
-0020         <span class="comment">%% Pablo's Way -- Obiviously better!</span>
-0021         cleanedStudyData.(groups{g}).adaptData{a}=cleanedStudyData.(groups{g}).adaptData{a}.reduce(params);
-0022     <span class="keyword">end</span>
-0023 <span class="keyword">end</span>
-0024 <span class="keyword">end</span>
-0025 
-0026</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%CLEANSTUDYDATA Reduce group data to the parameters needed for sharing.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For every group and adaptationData in the study data, keeps only the</span>
+0005 <span class="comment">% parameters in params plus the ones required for the data to work (via</span>
+0006 <span class="comment">% adaptationData.reduce) so the files are safe to put online.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   StudyData - struct with one field per group, each with an adaptData</span>
+0010 <span class="comment">%               cell array</span>
+0011 <span class="comment">%   params    - cell array of parameter names to keep</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   cleanedStudyData - copy of StudyData with reduced adaptData</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also ADAPTATIONDATA.REDUCE.</span>
+0019 
+0020 cleanedStudyData = StudyData;
+0021 <span class="comment">% For each group</span>
+0022 groups = fieldnames(StudyData);
+0023 <span class="keyword">for</span> g = 1:length(groups)
+0024     <span class="comment">%For each adaptData</span>
+0025     <span class="keyword">for</span> a = 1:length(StudyData.(groups{g}).adaptData)
+0026         <span class="comment">% Fallback for labtools versions without reduce() (commented out):</span>
+0027         <span class="comment">% % Find the labels I want</span>
+0028         <span class="comment">% KeepIndex=[1 2 3 ...</span>
+0029         <span class="comment">%    find(ismember(StudyData.(groups{g}).adaptData{ ...</span>
+0030         <span class="comment">%    a}.data.labels, params))'];</span>
+0031         <span class="comment">% RemoveIndex=setdiff( ...</span>
+0032         <span class="comment">%    [1:length(StudyData.(groups{g}).adaptData{a}.data.labels)], ...</span>
+0033         <span class="comment">%    KeepIndex);</span>
+0034         <span class="comment">%</span>
+0035         <span class="comment">% %NAN the data I do not want to share</span>
+0036         <span class="comment">% cleanedStudyData.(groups{g}).adaptData{a}.data.Data(:, ...</span>
+0037         <span class="comment">%    RemoveIndex)=NaN;</span>
+0038 
+0039         <span class="comment">% Keep only the requested parameters</span>
+0040         cleanedStudyData.(groups{g}).adaptData{a} = <span class="keyword">...</span>
+0041             cleanedStudyData.(groups{g}).adaptData{a}.reduce(params);
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

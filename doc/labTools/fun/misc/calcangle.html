@@ -4,7 +4,7 @@
 <head>
   <title>Description of calcangle</title>
   <meta name="keywords" content="calcangle">
-  <meta name="description" content="angle.m">
+  <meta name="description" content="CALCANGLE Compute the joint angle at the vertex joint.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>angle.m</strong></div>
+<div class="box"><strong>CALCANGLE Compute the joint angle at the vertex joint.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function angle=calcangle(jt1, jt2, jt3) </strong></div>
+<div class="box"><strong>function angle = calcangle(jt1, jt2, jt3) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">angle.m
- data=angle(jt1, jt2, jt3)
-calculates angle between vectors
-pass it the 3D position of three joints - e.g. jt1=[x y z] jt2=[x y z] jt3=[x y z]
-make jt2 the vertex. Pass 2D position for 2D angle</pre></div>
+<div class="fragment"><pre class="comment">CALCANGLE Compute the joint angle at the vertex joint.
+
+   Calculates the angle in degrees between vectors formed by three
+ joint positions. JT2 is the vertex. Accepts both 2D (N×2) and 3D
+ (N×3) position matrices.
+
+ Inputs:
+   jt1 - N×2 or N×3 matrix of joint 1 positions
+   jt2 - N×2 or N×3 matrix of vertex joint positions
+   jt3 - N×2 or N×3 matrix of joint 3 positions
+
+ Outputs:
+   angle - N×1 vector of joint angles in degrees
+
+ Toolbox Dependencies: None
+
+ See also DOT, ACOS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -40,40 +52,44 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(this)">calcLimbAngles</a>	calcLimbAngles  Calculates limb and joint angles from marker data.</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(this)">calcLimbAngles</a>	CALCLIMBANGLES Calculate limb and joint angles from marker data.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angle=calcangle(jt1, jt2, jt3)</a>
-0002 <span class="comment">%angle.m</span>
-0003 <span class="comment">% data=angle(jt1, jt2, jt3)</span>
-0004 <span class="comment">%calculates angle between vectors</span>
-0005 <span class="comment">%pass it the 3D position of three joints - e.g. jt1=[x y z] jt2=[x y z] jt3=[x y z]</span>
-0006 <span class="comment">%make jt2 the vertex. Pass 2D position for 2D angle</span>
-0007 
-0008 
-0009      
-0010       vector1=jt2-jt1;
-0011       vector2=jt2-jt3;
-0012       dotprod=dot(vector1,vector2,2); <span class="comment">%find dot product in 2D</span>
-0013       [rr, cc]=size(jt1);
-0014       
-0015       <span class="keyword">if</span> cc==3 <span class="comment">%3D</span>
-0016        len1=sqrt((vector1(:,1).^2)+(vector1(:,2).^2)+(vector1(:,3).^2));
-0017        len2=sqrt((vector2(:,1).^2)+(vector2(:,2).^2)+(vector2(:,3).^2));
-0018        theangle=acos(dotprod./(len1.*len2));
-0019       <span class="keyword">else</span> <span class="comment">%2D</span>
-0020        len1=sqrt((vector1(:,1).^2)+(vector1(:,2).^2));
-0021        len2=sqrt((vector2(:,1).^2)+(vector2(:,2).^2));
-0022        theangle=acos(dotprod./(len1.*len2));
-0023       <span class="keyword">end</span>;
-0024       angle=theangle*(180/pi);
-0025               
-0026       
-0027 
-0028     clear vector1 vector2 dotprod jt1 jt2 jt3 rr cc len1 len2 tempang theangle</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angle = calcangle(jt1, jt2, jt3)</a>
+0002 <span class="comment">%CALCANGLE Compute the joint angle at the vertex joint.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Calculates the angle in degrees between vectors formed by three</span>
+0005 <span class="comment">% joint positions. JT2 is the vertex. Accepts both 2D (N×2) and 3D</span>
+0006 <span class="comment">% (N×3) position matrices.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   jt1 - N×2 or N×3 matrix of joint 1 positions</span>
+0010 <span class="comment">%   jt2 - N×2 or N×3 matrix of vertex joint positions</span>
+0011 <span class="comment">%   jt3 - N×2 or N×3 matrix of joint 3 positions</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   angle - N×1 vector of joint angles in degrees</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also DOT, ACOS.</span>
+0019 vector1 = jt2 - jt1;
+0020 vector2 = jt2 - jt3;
+0021 dotprod = dot(vector1, vector2, 2);
+0022 [~, cc] = size(jt1);
+0023 
+0024 <span class="keyword">if</span> cc == 3                              <span class="comment">% 3D positions</span>
+0025     len1 = sqrt(vector1(:,1).^2 + vector1(:,2).^2 + vector1(:,3).^2);
+0026     len2 = sqrt(vector2(:,1).^2 + vector2(:,2).^2 + vector2(:,3).^2);
+0027 <span class="keyword">else</span>                                    <span class="comment">% 2D positions</span>
+0028     len1 = sqrt(vector1(:,1).^2 + vector1(:,2).^2);
+0029     len2 = sqrt(vector2(:,1).^2 + vector2(:,2).^2);
+0030 <span class="keyword">end</span>
+0031 angle = acos(dotprod ./ (len1 .* len2)) * (180 / pi);
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

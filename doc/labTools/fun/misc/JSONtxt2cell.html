@@ -4,7 +4,7 @@
 <head>
   <title>Description of JSONtxt2cell</title>
   <meta name="keywords" content="JSONtxt2cell">
-  <meta name="description" content="JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell">
+  <meta name="description" content="JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,82 +21,107 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</strong></div>
+<div class="box"><strong>JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [header,outmat] = JSONtxt2cell(filename) </strong></div>
+<div class="box"><strong>function [header, outmat] = JSONtxt2cell(filename) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell
-array
-   ...</pre></div>
+<div class="fragment"><pre class="comment">JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.
+
+   Opens FILENAME, reads its contents as a single string, and uses
+ JSON.parse to decode each top-level bracketed array. The first
+ array becomes the header; subsequent arrays are parsed into rows of
+ the output matrix.
+
+ Inputs:
+   filename - path to the JSON text file
+
+ Outputs:
+   header - parsed first JSON array (cell or struct from JSON.parse)
+   outmat - numeric matrix where each row is a subsequent JSON array
+
+ Toolbox Dependencies: None
+
+ See also <a href="JSON.html" class="code" title="">JSON</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="V2P_tester.html" class="code" title="">V2P_tester</a>	</li></ul>
+<li><a href="../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	% Add Python biofeedback data to adaptData</li><li><a href="V2P_tester.html" class="code" title="">V2P_tester</a>	% V2P_Tester — Parse and Inspect V2P Data File</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [header,outmat] = JSONtxt2cell(filename)</a>
-0002 <span class="comment">%JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</span>
-0003 <span class="comment">%array</span>
-0004 <span class="comment">%   ...</span>
-0005 fid = fopen(filename);
-0006 bigstring = fread(fid);
-0007 fclose(fid);
-0008 <span class="comment">% smallstring = char(bigstring(1:150)');</span>
-0009 bigstring = char(bigstring');
-0010 <span class="comment">%figure out how many &quot;[&quot; and &quot;]&quot; there are</span>
-0011 <span class="comment">% [IB] = length(strfind(bigstring,'['));</span>
-0012 <span class="comment">% [IC] = length(strfind(bigstring,']'));</span>
-0013 [IB] = ismember(bigstring,<span class="string">'['</span>);
-0014 [IC] = ismember(bigstring,<span class="string">']'</span>);
-0015 
-0016 <span class="comment">%check to make sure the file is complete before going on</span>
-0017 startindex = find(IB);
-0018 stopindex = find(IC);
-0019 <span class="keyword">if</span> length(startindex) ~= length(stopindex)
-0020     disp(<span class="string">'Error in file construction, mismatch of JSON string terminators &quot;[&quot; and &quot;]&quot;'</span>);
-0021     disp(filename);
-0022     header = <span class="string">''</span>;
-0023     outmat = [];
-0024     <span class="keyword">return</span>
-0025 <span class="keyword">end</span>
-0026 outcell = cell(length(startindex),1);
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [header, outmat] = JSONtxt2cell(filename)</a>
+0002 <span class="comment">%JSONTXT2CELL Parse a JSON text file into a header and numeric matrix.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Opens FILENAME, reads its contents as a single string, and uses</span>
+0005 <span class="comment">% JSON.parse to decode each top-level bracketed array. The first</span>
+0006 <span class="comment">% array becomes the header; subsequent arrays are parsed into rows of</span>
+0007 <span class="comment">% the output matrix.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   filename - path to the JSON text file</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   header - parsed first JSON array (cell or struct from JSON.parse)</span>
+0014 <span class="comment">%   outmat - numeric matrix where each row is a subsequent JSON array</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also JSON.</span>
+0019 fid = fopen(filename);
+0020 bigstring = fread(fid);
+0021 fclose(fid);
+0022 bigstring = char(bigstring');
+0023 
+0024 <span class="comment">% find opening and closing bracket positions</span>
+0025 IB = ismember(bigstring, <span class="string">'['</span>);
+0026 IC = ismember(bigstring, <span class="string">']'</span>);
 0027 
-0028 <span class="comment">%the header</span>
-0029 header = JSON.parse(bigstring(startindex(1):stopindex(1)));
-0030 
-0031 <span class="keyword">for</span> z = 2:length(startindex)
-0032     temp = bigstring(startindex(z):stopindex(z));
-0033 <span class="comment">%     g = JSON.parse(temp);</span>
-0034     [ID] = ismember(temp,<span class="string">','</span>);<span class="comment">%find out how many items there are</span>
-0035     commaindex = find(ID);
-0036     g{1} = str2double(temp(2:commaindex(1)-1));
-0037     <span class="keyword">for</span> zz = 2:length(commaindex)
-0038        g{zz} = str2double(temp(commaindex(zz-1)+1:commaindex(zz)-1));
-0039     <span class="keyword">end</span>
-0040     g{end+1} = str2double(temp(commaindex(end)+1:end-1));
-0041     outcell{z-1} = g;
-0042     clear g
-0043 <span class="keyword">end</span>
-0044 
-0045 outcell = outcell(~cellfun(<span class="string">'isempty'</span>,outcell));
-0046 outmat = zeros(length(outcell),length(outcell{1}));
-0047 
-0048 <span class="keyword">for</span> z = 1:length(outcell)
-0049    outmat(z,:) = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(outcell{z}); 
-0050 <span class="keyword">end</span>
-0051 clear outcell
-0052 <span class="keyword">end</span>
-0053</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0028 <span class="comment">% verify the file has matching bracket pairs</span>
+0029 startindex = find(IB);
+0030 stopindex  = find(IC);
+0031 <span class="keyword">if</span> length(startindex) ~= length(stopindex)
+0032     disp([<span class="string">'Error in file construction, mismatch of JSON string '</span> <span class="keyword">...</span>
+0033         <span class="string">'terminators &quot;[&quot; and &quot;]&quot;'</span>]);
+0034     disp(filename);
+0035     header = <span class="string">''</span>;
+0036     outmat = [];
+0037     <span class="keyword">return</span>
+0038 <span class="keyword">end</span>
+0039 outcell = cell(length(startindex), 1);
+0040 
+0041 <span class="comment">% parse the header (first bracketed array)</span>
+0042 header = JSON.parse(bigstring(startindex(1):stopindex(1)));
+0043 
+0044 <span class="keyword">for</span> ii = 2:length(startindex)
+0045     temp = bigstring(startindex(ii):stopindex(ii));
+0046     ID   = ismember(temp, <span class="string">','</span>);
+0047     commaindex = find(ID);
+0048     g{1} = str2double(temp(2:commaindex(1) - 1));
+0049     <span class="keyword">for</span> jj = 2:length(commaindex)
+0050         g{jj} = str2double( <span class="keyword">...</span>
+0051             temp(commaindex(jj-1)+1:commaindex(jj)-1));     <span class="comment">%#ok&lt;AGROW&gt;</span>
+0052     <span class="keyword">end</span>
+0053     g{end+1} = str2double(temp(commaindex(end)+1:end-1));   <span class="comment">%#ok&lt;AGROW&gt;</span>
+0054     outcell{ii-1} = g;
+0055     clear g
+0056 <span class="keyword">end</span>
+0057 
+0058 outcell = outcell(~cellfun(<span class="string">'isempty'</span>, outcell));
+0059 outmat  = zeros(length(outcell), length(outcell{1}));
+0060 
+0061 <span class="keyword">for</span> ii = 1:length(outcell)
+0062     outmat(ii, :) = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(outcell{ii});
+0063 <span class="keyword">end</span>
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

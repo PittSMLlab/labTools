@@ -4,7 +4,7 @@
 <head>
   <title>Description of polyfit1PCA</title>
   <meta name="keywords" content="polyfit1PCA">
-  <meta name="description" content="Finding best-fit line through PCA">
+  <meta name="description" content="POLYFIT1PCA Best-fit line through two variables using PCA.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,19 +21,39 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Finding best-fit line through PCA</strong></div>
+<div class="box"><strong>POLYFIT1PCA Best-fit line through two variables using PCA.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [pp] = polyfit1PCA(x,y,varNormalizeFlag) </strong></div>
+<div class="box"><strong>function pp = polyfit1PCA(x,y,varNormalizeFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Finding best-fit line through PCA</pre></div>
+<div class="fragment"><pre class="comment">POLYFIT1PCA Best-fit line through two variables using PCA.
+
+   pp = POLYFIT1PCA(x,y) fits y = pp(1)*x + pp(2) as the first principal
+ component of the centered data, which minimizes the orthogonal distance
+ to the line instead of the vertical one.
+
+   pp = POLYFIT1PCA(x,y,1) first divides each variable by its standard
+ deviation, so both contribute equally to the fit.
+
+ Inputs:
+   x                - vector of x values
+   y                - vector of y values (same length as x)
+   varNormalizeFlag - (optional) 1 to normalize by the standard deviations
+                      (default: no normalization)
+
+ Outputs:
+   pp - [slope intercept] of the fitted line
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox (pca)
+
+ See also POLYFIT, PCA.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
 <li><a href="../../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
@@ -42,26 +62,46 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pp] = polyfit1PCA(x,y,varNormalizeFlag)</a>
-0002 <span class="comment">%Finding best-fit line through PCA</span>
-0003 my=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(y);
-0004 y=y(:)'-my;
-0005 mx=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x);
-0006 x=x(:)'-mx;
-0007 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(varNormalizeFlag) &amp;&amp; varNormalizeFlag==1
-0008   vx=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x);
-0009   vy=<a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(y);
-0010 <span class="keyword">else</span>
-0011   vx=1;
-0012   vy=1;
-0013 <span class="keyword">end</span>
-0014 [ppp,ccc,aaa]=pca([x/vx; y/vy],<span class="string">'Centered'</span>,false);
-0015 ccc=ccc(:,1);
-0016 pp(1)=ccc(2)*vy/(ccc(1)*vx);
-0017 pp(2)=my-mx*pp(1);
-0018 
-0019 
-0020 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function pp = polyfit1PCA(x,y,varNormalizeFlag)</a>
+0002 <span class="comment">%POLYFIT1PCA Best-fit line through two variables using PCA.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   pp = POLYFIT1PCA(x,y) fits y = pp(1)*x + pp(2) as the first principal</span>
+0005 <span class="comment">% component of the centered data, which minimizes the orthogonal distance</span>
+0006 <span class="comment">% to the line instead of the vertical one.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   pp = POLYFIT1PCA(x,y,1) first divides each variable by its standard</span>
+0009 <span class="comment">% deviation, so both contribute equally to the fit.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   x                - vector of x values</span>
+0013 <span class="comment">%   y                - vector of y values (same length as x)</span>
+0014 <span class="comment">%   varNormalizeFlag - (optional) 1 to normalize by the standard deviations</span>
+0015 <span class="comment">%                      (default: no normalization)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Outputs:</span>
+0018 <span class="comment">%   pp - [slope intercept] of the fitted line</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox (pca)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also POLYFIT, PCA.</span>
+0023 
+0024 my = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(y);
+0025 y  = y(:)'-my;
+0026 mx = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(x);
+0027 x  = x(:)'-mx;
+0028 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~<a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(varNormalizeFlag) &amp;&amp; varNormalizeFlag == 1
+0029     vx = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(x);
+0030     vy = <a href="../../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(y);
+0031 <span class="keyword">else</span>
+0032     vx = 1;
+0033     vy = 1;
+0034 <span class="keyword">end</span>
+0035 [~,ccc,~] = pca([x/vx; y/vy],<span class="string">'Centered'</span>,false);
+0036 ccc = ccc(:,1);
+0037 pp(1) = ccc(2)*vy/(ccc(1)*vx);
+0038 pp(2) = my-mx*pp(1);
+0039 
+0040 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

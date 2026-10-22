@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of removeStridesByReason</title>
+  <meta name="keywords" content="removeStridesByReason">
+  <meta name="description" content="REMOVESTRIDESBYREASON Remove/NaN strides flagged by chosen reasons.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; removeStridesByReason.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\classes\dataStructs\@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>removeStridesByReason
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>REMOVESTRIDESBYREASON Remove/NaN strides flagged by chosen reasons.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function newThis = removeStridesByReason(this, reasonLabels, markAsNaNflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REMOVESTRIDESBYREASON Remove/NaN strides flagged by chosen reasons.
+
+   General-purpose stride-censoring method: any stride where at least
+ one column in 'reasonLabels' is true (1) is flagged for removal (or
+ NaN'ing). REMOVEBADSTRIDES and REMOVEHANDRAILSTRIDES both delegate to
+ this method with a fixed reason list; call it directly to censor a
+ chosen SUBSET of stride-quality reasons (see GETSTRIDEQUALITYCONFIG
+ for the reason schema), e.g.:
+   adaptData.removeStridesByReason({'badMissingEvent', 'badDisordered'})
+
+   NOTE: manual 'Label Bad'/'Label Good' edits made in REVIEWEVENTSGUI
+ are recorded only in the aggregate 'bad'/'good' columns, not in any
+ individual reason column. Include 'bad' in 'reasonLabels' (or call
+ REMOVEBADSTRIDES) to also honor those manual edits.
+
+   DESIGN NOTE: the returned object's 'bad'/'good' columns are
+ overwritten to reflect exactly the OR of 'reasonLabels' used in THIS
+ call (needed for MARKBADSTRIDESASNAN, which reads 'bad' internally,
+ and kept for both code paths so 'bad'/'good' mean the same thing
+ regardless of 'markAsNaNflag'). This is deliberate, not incidental:
+ a stride surviving a narrow reason subset (e.g. only
+ 'badMissingEvent') will read 'good' even if it is still bad for a
+ different, non-selected reason (e.g. 'badDurationOutlier'). Chaining
+ multiple censoring calls should not assume 'bad' still reflects the
+ full original aggregate after a subset call; pass the full reason
+ list (or use REMOVEBADSTRIDES) if that is what you need.
+
+ Inputs:
+   this          - adaptationData object
+   reasonLabels  - string or cell array of parameterSeries column
+                  name(s) to OR together as the censoring criterion
+   markAsNaNflag - (optional) if true, NaN flagged strides instead of
+                  removing rows entirely. Defaults to false.
+
+ Outputs:
+   newThis - adaptationData object with flagged strides removed (or
+             NaN'd); unchanged (with a warning) if none of
+             'reasonLabels' are present, or all are entirely NaN
+
+ Toolbox Dependencies: None
+
+ See also REMOVEBADSTRIDES, REMOVEHANDRAILSTRIDES,
+   GETSTRIDEQUALITYCONFIG, MARKBADSTRIDESASNAN.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = removeStridesByReason(this, reasonLabels, markAsNaNflag)</a>
+0002 <span class="comment">%REMOVESTRIDESBYREASON Remove/NaN strides flagged by chosen reasons.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   General-purpose stride-censoring method: any stride where at least</span>
+0005 <span class="comment">% one column in 'reasonLabels' is true (1) is flagged for removal (or</span>
+0006 <span class="comment">% NaN'ing). REMOVEBADSTRIDES and REMOVEHANDRAILSTRIDES both delegate to</span>
+0007 <span class="comment">% this method with a fixed reason list; call it directly to censor a</span>
+0008 <span class="comment">% chosen SUBSET of stride-quality reasons (see GETSTRIDEQUALITYCONFIG</span>
+0009 <span class="comment">% for the reason schema), e.g.:</span>
+0010 <span class="comment">%   adaptData.removeStridesByReason({'badMissingEvent', 'badDisordered'})</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   NOTE: manual 'Label Bad'/'Label Good' edits made in REVIEWEVENTSGUI</span>
+0013 <span class="comment">% are recorded only in the aggregate 'bad'/'good' columns, not in any</span>
+0014 <span class="comment">% individual reason column. Include 'bad' in 'reasonLabels' (or call</span>
+0015 <span class="comment">% REMOVEBADSTRIDES) to also honor those manual edits.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   DESIGN NOTE: the returned object's 'bad'/'good' columns are</span>
+0018 <span class="comment">% overwritten to reflect exactly the OR of 'reasonLabels' used in THIS</span>
+0019 <span class="comment">% call (needed for MARKBADSTRIDESASNAN, which reads 'bad' internally,</span>
+0020 <span class="comment">% and kept for both code paths so 'bad'/'good' mean the same thing</span>
+0021 <span class="comment">% regardless of 'markAsNaNflag'). This is deliberate, not incidental:</span>
+0022 <span class="comment">% a stride surviving a narrow reason subset (e.g. only</span>
+0023 <span class="comment">% 'badMissingEvent') will read 'good' even if it is still bad for a</span>
+0024 <span class="comment">% different, non-selected reason (e.g. 'badDurationOutlier'). Chaining</span>
+0025 <span class="comment">% multiple censoring calls should not assume 'bad' still reflects the</span>
+0026 <span class="comment">% full original aggregate after a subset call; pass the full reason</span>
+0027 <span class="comment">% list (or use REMOVEBADSTRIDES) if that is what you need.</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Inputs:</span>
+0030 <span class="comment">%   this          - adaptationData object</span>
+0031 <span class="comment">%   reasonLabels  - string or cell array of parameterSeries column</span>
+0032 <span class="comment">%                  name(s) to OR together as the censoring criterion</span>
+0033 <span class="comment">%   markAsNaNflag - (optional) if true, NaN flagged strides instead of</span>
+0034 <span class="comment">%                  removing rows entirely. Defaults to false.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% Outputs:</span>
+0037 <span class="comment">%   newThis - adaptationData object with flagged strides removed (or</span>
+0038 <span class="comment">%             NaN'd); unchanged (with a warning) if none of</span>
+0039 <span class="comment">%             'reasonLabels' are present, or all are entirely NaN</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% Toolbox Dependencies: None</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% See also REMOVEBADSTRIDES, REMOVEHANDRAILSTRIDES,</span>
+0044 <span class="comment">%   GETSTRIDEQUALITYCONFIG, MARKBADSTRIDESASNAN.</span>
+0045 
+0046 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markAsNaNflag)
+0047     markAsNaNflag = false;
+0048 <span class="keyword">end</span>
+0049 <span class="keyword">if</span> ischar(reasonLabels)
+0050     reasonLabels = {reasonLabels};
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">if</span> isa(this.data, <span class="string">'paramData'</span>)
+0054     <span class="comment">% Legacy paramData-backed objects: pass through unchanged,</span>
+0055     <span class="comment">% mirroring REMOVEBADSTRIDES and REMOVEHANDRAILSTRIDES.</span>
+0056     newThis = this;
+0057     <span class="keyword">return</span>;
+0058 <span class="keyword">end</span>
+0059 
+0060 aux = this.data;
+0061 [hasReason, reasonIdxs] = aux.isaLabel(reasonLabels);
+0062 validIdxs = reasonIdxs(hasReason);
+0063 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(validIdxs) || all(all(isnan(aux.Data(:, validIdxs))))
+0064     warning(<span class="string">'adaptationData:noStrideQualityReason'</span>, <span class="keyword">...</span>
+0065         [<span class="string">'None of the requested stride-quality reason column(s) are '</span> <span class="keyword">...</span>
+0066         <span class="string">'present (or all are entirely NaN) for this subject; '</span> <span class="keyword">...</span>
+0067         <span class="string">'returning object unchanged.'</span>]);
+0068     newThis = this;
+0069     <span class="keyword">return</span>;
+0070 <span class="keyword">end</span>
+0071 
+0072 flagged = any(aux.Data(:, validIdxs) == 1, 2);
+0073 [~, badGoodIdxs] = aux.isaParameter({<span class="string">'bad'</span>, <span class="string">'good'</span>});
+0074 aux.Data(:, badGoodIdxs) = [flagged, ~flagged];
+0075 
+0076 inds = ~flagged;
+0077 <span class="keyword">if</span> ~markAsNaNflag
+0078     newParamData = <a href="../../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(aux.Data(inds, :), <span class="keyword">...</span>
+0079         aux.labels, aux.hiddenTime(inds), aux.description);
+0080     newParamData = newParamData.setTrialTypes(aux.trialTypes);
+0081 <span class="keyword">else</span>
+0082     newParamData = aux.markBadStridesAsNan();
+0083 <span class="keyword">end</span>
+0084 newThis = <a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData, this.subData, newParamData);
+0085 
+0086 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

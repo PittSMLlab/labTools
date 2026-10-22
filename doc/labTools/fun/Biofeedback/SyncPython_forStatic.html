@@ -4,7 +4,7 @@
 <head>
   <title>Description of SyncPython_forStatic</title>
   <meta name="keywords" content="SyncPython_forStatic">
-  <meta name="description" content="function to incorporate biofeedback data from Python scripts into labtools">
+  <meta name="description" content="SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,25 +21,41 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function to incorporate biofeedback data from Python scripts into labtools</strong></div>
+<div class="box"><strong>SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function results=SyncPython_forStatic(subject) </strong></div>
+<div class="box"><strong>function results = SyncPython_forStatic(subject) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">function to incorporate biofeedback data from Python scripts into labtools
-objects. This is specifically for Dulce's distraction study only! this
-function will not universally work
+<div class="fragment"><pre class="comment">SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.
 
- Inputs are a string type that designates the subject code, i.e. &quot;OG103&quot;
+   Incorporates biofeedback data recorded by Python scripts into the
+ labTools objects of one subject. Written for the distraction study only
+ and not general. For each biofeedback condition (Gradual adaptation,
+ Re-adaptation, TM medium W/Bio, Abrupt adaptation) it loads the next
+ PytonData#.mat, aligns the Python and Nexus time bases by
+ cross-correlation, matches heel strikes, compares the Python and Nexus
+ step lengths with the target band, and appends the TargetHitR,
+ TargetHitL, TargetHit, and TargetNexus parameters to adaptData.
 
-by Dulce Mariscal</pre></div>
+ Side effects: loads &lt;subject&gt;params.mat, &lt;subject&gt;.mat, &lt;subject&gt;RAW.mat
+   and PytonData#.mat from the current folder; opens many diagnostic
+   figures; silently overwrites &lt;subject&gt;params.mat and writes
+   &lt;subject&gt;Pyton2.mat in the current folder (see DATA_OUTPUTS.md).
+
+ Inputs:
+   subject - subject code, e.g., 'OG103'
+
+ Outputs:
+   results - struct of matched event indices, targets, and scales
+
+ Toolbox Dependencies: Signal Processing Toolbox</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATASVECTOR Extract data vectors for the specified label(s).</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples timeseries to different sampling period</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	resample  Resamples (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>	GETDATAASVECTOR Extract data vectors for the specified label(s).</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	RESAMPLE Resamples timeseries to different sampling period.</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>	RESAMPLE Resamples (override).</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -48,582 +64,663 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results=SyncPython_forStatic(subject)</a>
-0002 <span class="comment">%function to incorporate biofeedback data from Python scripts into labtools</span>
-0003 <span class="comment">%objects. This is specifically for Dulce's distraction study only! this</span>
-0004 <span class="comment">%function will not universally work</span>
-0005 <span class="comment">%</span>
-0006 <span class="comment">% Inputs are a string type that designates the subject code, i.e. &quot;OG103&quot;</span>
-0007 <span class="comment">%</span>
-0008 <span class="comment">%by Dulce Mariscal</span>
-0009 
-0010 
-0011 typeBiofeedback=0;
-0012 load([subject <span class="string">'params.mat'</span>])
-0013 load([subject <span class="string">'.mat'</span>])
-0014 load([subject <span class="string">'RAW.mat'</span>])
-0015 
-0016 adaptData = adaptData.removeBadStrides;
-0017 
-0018 condition= adaptData.metaData.conditionName;
-0019 condition=condition(find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>,adaptData.metaData.trialsInCondition)));<span class="comment">%watches out for conditions with no trials</span>
-0020 
-0021 <span class="comment">%initializes output structure</span>
-0022 w=0;
-0023 StepsR=[];
-0024 StepsL=[];
-0025 Steps=[];
-0026 Stepsnexus=[];
-0027 
-0028 results.locRindex=[];
-0029 results.locLindex=[];
-0030 results.locLindex2=[];
-0031 results.alphaRPyton=[];
-0032 results.alphaLPyton=[];
-0033 results.Rtarget=[];
-0034 results.Ltarget=[];
-0035 results.RscaleGood=[];
-0036 results.LscaleGood=[];
-0037 results.GoodRHS=[];
-0038 results.GoodLHS=[];
-0039 result.stepLengthAsym=[];
-0040 results.GoodnexusR=[];
-0041 results.GoodnexusL=[];
-0042 
-0043 <span class="keyword">for</span> p=1:length(condition)
-0044     
-0045     <span class="comment">%initialize variables to use</span>
-0046     j=[];
-0047     GRRz=[];
-0048     GRLz=[];
-0049     NexusRlowFreq=[];
-0050     NexusLlowFreq=[];
-0051     newData=[];
-0052     newData2=[];
-0053     datarows=[];
-0054     locLHSnexus=[];
-0055     locRHSnexus=[];
-0056     LHSpyton=[];
-0057     RHSpyton=[];
-0058     locRHSpyton=[];
-0059     locRHSnexus=[];
-0060     locLHSpyton=[];
-0061     locLHSnexus=[];
-0062     locRindex=[];
-0063     locLindex=[];
-0064     IsBadR=[];
-0065     IsBad=[];
-0066     GoodEvents=[];
-0067     GoodRHS=[];
-0068     GoodLHS=[];
-0069     data=[];
-0070     alphaR_time=[];
-0071     alphaL_time=[];
-0072     alphaRPyton2=[];
-0073     alphaLPyton2=[];
-0074     alphaRPyton=[];
-0075     alphaLPyton=[];
-0076     Rtarget2=[];
-0077     Ltarget2=[];
-0078     Rtarget=[];
-0079     Ltarget=[];
-0080     Rscale=[];
-0081     Lscale=[];
-0082     RscaleGood=[];
-0083     LscaleGood=[];
-0084     GoodR=[];
-0085     GoodL=[];
-0086     Rtarget2Good=[];
-0087     Ltarget2Good=[];
-0088     alphaRnexus=[];
-0089     alphaLnexusTemp=[];
-0090     
-0091     <span class="keyword">if</span> strcmp(lower(condition{p}),lower(<span class="string">'Gradual adaptation'</span>)) || strcmp(lower(condition{p}),lower(<span class="string">'Re-adaptation'</span>)) ||strcmp(lower(condition{p}),lower(<span class="string">'TM medium W/Bio'</span>))||strcmp(lower(condition{p}),lower(<span class="string">'Abrupt adaptation'</span>))         w=w+1;
-0092         
-0093         load([<span class="string">'PytonData'</span> num2str(w) <span class="string">'.mat'</span>])
-0094   
-0095         z=expData.metaData.getConditionIdxsFromName(condition{p});
-0096         j=adaptData.metaData.trialsInCondition{z};
-0097         
-0098         <span class="comment">%Force plate data from Nexus</span>
-0099 
-0100         GRRz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'RFz'</span>);
-0101         GRLz=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'LFz'</span>);
-0102         
-0103         <span class="comment">%Converting force plate data from 1080Hz to 120Hz</span>
-0104         NexusRlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRRz,1,9);
-0105         NexusLlowFreq=<a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRLz,1,9);
-0106         
-0107         <span class="comment">%Creating NaN matrix with the lenght of the data</span>
-0108         newData=nan((((outmat(<span class="keyword">end</span>,1)-outmat(1,1)))+1),size(header,2));
-0109         newData2=nan((((outmat(<span class="keyword">end</span>,1)-outmat(1,1)))+1),size(header,2));
-0110         
-0111         <span class="comment">%Making frames from Pyton start at 1</span>
-0112         outmat(:,1)=outmat(:,1)-outmat(1,1)+1;
-0113         
-0114         data=unique(outmat(:,1));
-0115         
-0116         <span class="comment">%finding unique colums</span>
-0117         <span class="keyword">for</span> i=1:length(data)
-0118             [datarows(i),~]=find(outmat(:,1)==data(i),1,<span class="string">'first'</span>);
-0119         <span class="keyword">end</span>
-0120         
-0121         outmat=outmat(datarows,:);
-0122         <span class="comment">%Calculating the gaps length for pyton data</span>
-0123         gap=diff(outmat(:,1));
-0124         figure()
-0125         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(gap,<span class="string">'b'</span>)
-0126         
-0127         <span class="comment">%Creating a linear interpolate matrix from Pyton data</span>
-0128         newData=interp1(outmat(:,1),outmat(:,1:end),[outmat(1,1):outmat(<span class="keyword">end</span>,1)]);
-0129         
-0130         <span class="comment">%Creating a Matrix with NaN in gaps from Pyton</span>
-0131         <span class="keyword">for</span> i=1:length(outmat)
-0132             newData2(outmat(i,1),1:end)=outmat(i,:);
-0133         <span class="keyword">end</span>
-0134         
-0135         <span class="comment">%%</span>
-0136         RANK=[];
-0137         [RANK,~,~]=<a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.markerData,<span class="string">'RANKy'</span>);
-0138         
-0139         <span class="comment">%Determination of crosscorrelation between Nexus at 120Hz and Interpolate</span>
-0140         <span class="comment">%Pyton data</span>
-0141 
-0142             figure()
-0143             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
-0144             hold on
-0145             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData(:,16)*1000, <span class="string">'r'</span>)
-0146             
-0147             [acor, lag]=xcorr(NexusRlowFreq,newData(:,2));
-0148             [~,I]=max((acor));
-0149             timeDiff=lag(I);
-0150             
-0151             <span class="keyword">if</span> timeDiff&lt;0
-0152                 newData=newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
-0153                 newData2=newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
-0154             <span class="keyword">elseif</span> timeDiff&gt;0
-0155                 newData=[zeros([timeDiff,size(header,2)]);newData];
-0156                 newData2=[zeros([timeDiff,size(header,2)]);newData2];
-0157                 
-0158             <span class="keyword">end</span>
-0159             
-0160             [acor, lag]=xcorr(RANK,newData(:,16));
-0161             [~,I]=max((acor));
-0162             timeDiff=lag(I);
-0163             
-0164             <span class="keyword">if</span> timeDiff&lt;5
-0165                 <span class="keyword">if</span> timeDiff&lt;0
-0166                     newData=newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
-0167                     newData2=newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
-0168                 <span class="keyword">elseif</span> timeDiff&gt;0
-0169                     newData=[zeros([timeDiff,size(header,2)]);newData];
-0170                     newData2=[zeros([timeDiff,size(header,2)]);newData2];
-0171                     
-0172                 <span class="keyword">end</span>
-0173             <span class="keyword">end</span>
-0174             figure()
-0175             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
-0176             hold on
-0177             <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData2(:,16)*1000, <span class="string">'r'</span>)
-0178 
-0179         
-0180         <span class="comment">%%</span>
-0181         <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
-0182         <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
-0183         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(NexusLlowFreq,NexusRlowFreq,120);
-0184         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(newData(:,3),newData(:,2),120);
-0185         
-0186         <span class="comment">%% HEEL STRIKE</span>
-0187         <span class="comment">%localication of HS==1);</span>
-0188         locLHSpyton=find(LHSpyton==1);
-0189         locRHSpyton=find(RHSpyton==1);
-0190         locRHSnexus=find(RHSnexus==1);
-0191         locLHSnexus=find(LHSnexus==1);
-0192         
-0193         locRindex=find(newData2(:,4)==1);
-0194         locLindex=find(newData2(:,5)==1);
-0195         
-0196         <span class="keyword">if</span> length(locRindex)&lt;length(locRHSpyton)
-0197             warning(<span class="string">'No all the HS where detected'</span>)
-0198         <span class="keyword">end</span>
-0199         
-0200         
-0201         <span class="comment">%Delete extras HS deteted by Python</span>
-0202         <span class="keyword">while</span> length(locRHSpyton)~=length(locRindex)
-0203             diffLengthR=length(locRindex)-length(locRHSpyton);
-0204             FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
-0205             IsBadR=find(FrameDiffR&lt;=-10);
-0206             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
-0207                 <span class="keyword">break</span>
-0208             <span class="keyword">else</span>
-0209                 locRindex(IsBadR(1))=[];
-0210             <span class="keyword">end</span>
-0211         <span class="keyword">end</span>
-0212         
-0213         <span class="keyword">while</span> length(locLHSpyton)~=length(locLindex)
-0214             diffLength=length(locLindex)-length(locLHSpyton);
-0215             FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
-0216             IsBad=find(FrameDiff&lt;=-10);
-0217             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
-0218                 <span class="keyword">break</span>
-0219             <span class="keyword">else</span>
-0220                 locLindex(IsBad(1))=[];
-0221             <span class="keyword">end</span>
-0222         <span class="keyword">end</span>
-0223         
-0224         <span class="keyword">if</span> length(locRHSnexus)&lt;length(locRindex)
-0225             FrameDiffR=[];
-0226             IsBadR=[];
-0227             <span class="keyword">while</span> length(locRHSnexus)~=length(locRindex)
-0228                 diffLengthR=length(locRindex)-length(locRHSnexus);
-0229                 FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
-0230                 IsBadR=find(abs(FrameDiffR)&gt;10);
-0231                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
-0232                     <span class="keyword">break</span>
-0233                 <span class="keyword">else</span>
-0234                     locRindex(IsBadR(1))=[];
-0235                 <span class="keyword">end</span>
-0236             <span class="keyword">end</span>
-0237         <span class="keyword">end</span>
-0238         
-0239         <span class="keyword">if</span> length(locLHSnexus)&lt;length(locLindex)
-0240             FrameDiff=[];
-0241             IsBad=[];
-0242             <span class="keyword">while</span> length(locLindex)~=length(locLHSnexus)
-0243                 diffLength=length(locLindex)-length(locLHSnexus);
-0244                 FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
-0245                 IsBad=find(abs(FrameDiff)&gt;10);
-0246                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
-0247                     <span class="keyword">break</span>
-0248                 <span class="keyword">else</span>
-0249                     locLindex(IsBad(1))=[];
-0250                 <span class="keyword">end</span>
-0251             <span class="keyword">end</span>
-0252         <span class="keyword">end</span>
-0253         
-0254         <span class="keyword">if</span> length(locRHSnexus)&gt;length(locRindex)
-0255             warning([<span class="string">'Gaps affected RHS detection  '</span> condition{p} ])
-0256             
-0257             <span class="keyword">while</span> length(locRHSnexus)&gt;length(locRindex)
-0258                 diffLengthR=-length(locRindex)+length(locRHSnexus);
-0259                 FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
-0260                
-0261                 IsBadR=find(FrameDiffR&lt;=-10);
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = SyncPython_forStatic(subject)</a>
+0002 <span class="comment">%SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Incorporates biofeedback data recorded by Python scripts into the</span>
+0005 <span class="comment">% labTools objects of one subject. Written for the distraction study only</span>
+0006 <span class="comment">% and not general. For each biofeedback condition (Gradual adaptation,</span>
+0007 <span class="comment">% Re-adaptation, TM medium W/Bio, Abrupt adaptation) it loads the next</span>
+0008 <span class="comment">% PytonData#.mat, aligns the Python and Nexus time bases by</span>
+0009 <span class="comment">% cross-correlation, matches heel strikes, compares the Python and Nexus</span>
+0010 <span class="comment">% step lengths with the target band, and appends the TargetHitR,</span>
+0011 <span class="comment">% TargetHitL, TargetHit, and TargetNexus parameters to adaptData.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Side effects: loads &lt;subject&gt;params.mat, &lt;subject&gt;.mat, &lt;subject&gt;RAW.mat</span>
+0014 <span class="comment">%   and PytonData#.mat from the current folder; opens many diagnostic</span>
+0015 <span class="comment">%   figures; silently overwrites &lt;subject&gt;params.mat and writes</span>
+0016 <span class="comment">%   &lt;subject&gt;Pyton2.mat in the current folder (see DATA_OUTPUTS.md).</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   subject - subject code, e.g., 'OG103'</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Outputs:</span>
+0022 <span class="comment">%   results - struct of matched event indices, targets, and scales</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox</span>
+0025 
+0026 
+0027 typeBiofeedback = 0;
+0028 errorBand    = 37.5;   <span class="comment">% TODO: source? (half-width of the good band)</span>
+0029 maxFrameDiff = 10;     <span class="comment">% TODO: source? (frames, Python vs Nexus HS)</span>
+0030 load([subject <span class="string">'params.mat'</span>])
+0031 load([subject <span class="string">'.mat'</span>])
+0032 load([subject <span class="string">'RAW.mat'</span>])
+0033 
+0034 adaptData = adaptData.removeBadStrides;
+0035 
+0036 condition = adaptData.metaData.conditionName;
+0037 <span class="comment">%watches out for conditions with no trials</span>
+0038 condition = <span class="keyword">...</span>
+0039     condition(find(~cellfun(@<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>, <span class="keyword">...</span>
+0040     adaptData.metaData.trialsInCondition)));
+0041 
+0042 <span class="comment">%initializes output structure</span>
+0043 w          = 0;
+0044 StepsR     = [];
+0045 StepsL     = [];
+0046 Steps      = [];
+0047 Stepsnexus = [];
+0048 
+0049 results.locRindex = [];
+0050 results.locLindex = [];
+0051 results.locLindex2 = [];
+0052 results.alphaRPyton = [];
+0053 results.alphaLPyton = [];
+0054 results.Rtarget = [];
+0055 results.Ltarget = [];
+0056 results.RscaleGood = [];
+0057 results.LscaleGood = [];
+0058 results.GoodRHS = [];
+0059 results.GoodLHS = [];
+0060 result.stepLengthAsym = [];
+0061 results.GoodnexusR = [];
+0062 results.GoodnexusL = [];
+0063 
+0064 <span class="keyword">for</span> p = 1:length(condition)
+0065 
+0066     <span class="comment">%initialize variables to use</span>
+0067     j = [];
+0068     GRRz = [];
+0069     GRLz = [];
+0070     NexusRlowFreq = [];
+0071     NexusLlowFreq = [];
+0072     newData = [];
+0073     newData2 = [];
+0074     datarows = [];
+0075     locLHSnexus = [];
+0076     locRHSnexus = [];
+0077     LHSpyton = [];
+0078     RHSpyton = [];
+0079     locRHSpyton = [];
+0080     locRHSnexus = [];
+0081     locLHSpyton = [];
+0082     locLHSnexus = [];
+0083     locRindex = [];
+0084     locLindex = [];
+0085     IsBadR = [];
+0086     IsBad = [];
+0087     GoodEvents = [];
+0088     GoodRHS = [];
+0089     GoodLHS = [];
+0090     data = [];
+0091     alphaR_time = [];
+0092     alphaL_time = [];
+0093     alphaRPyton2 = [];
+0094     alphaLPyton2 = [];
+0095     alphaRPyton = [];
+0096     alphaLPyton = [];
+0097     Rtarget2 = [];
+0098     Ltarget2 = [];
+0099     Rtarget = [];
+0100     Ltarget = [];
+0101     Rscale = [];
+0102     Lscale = [];
+0103     RscaleGood = [];
+0104     LscaleGood = [];
+0105     GoodR = [];
+0106     GoodL = [];
+0107     Rtarget2Good = [];
+0108     Ltarget2Good = [];
+0109     alphaRnexus = [];
+0110     alphaLnexusTemp = [];
+0111 
+0112     <span class="keyword">if</span> strcmp(lower(condition{p}),lower(<span class="string">'Gradual adaptation'</span>)) || <span class="keyword">...</span>
+0113             strcmp(lower(condition{p}), <span class="keyword">...</span>
+0114             lower(<span class="string">'Re-adaptation'</span>)) ||strcmp(lower(condition{p}), <span class="keyword">...</span>
+0115             lower(<span class="string">'TM medium W/Bio'</span>))||strcmp(lower(condition{p}), <span class="keyword">...</span>
+0116             lower(<span class="string">'Abrupt adaptation'</span>))         w = w+1;
+0117 
+0118         load([<span class="string">'PytonData'</span> num2str(w) <span class="string">'.mat'</span>])
+0119 
+0120         z = expData.metaData.getConditionIdxsFromName(condition{p});
+0121         j = adaptData.metaData.trialsInCondition{z};
+0122 
+0123         <span class="comment">%Force plate data from Nexus</span>
+0124 
+0125         GRRz = <a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'RFz'</span>);
+0126         GRLz = <a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.GRFData,<span class="string">'LFz'</span>);
+0127 
+0128         <span class="comment">%Converting force plate data from 1080Hz to 120Hz</span>
+0129         NexusRlowFreq = <a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRRz,1,9);
+0130         NexusLlowFreq = <a href="../../../labTools/classes/labTS/@labTimeSeries/resample.html" class="code" title="function newThis = resample(this, newTs, newT0, hiddenFlag)">resample</a>(GRLz,1,9);
+0131 
+0132         <span class="comment">%Creating NaN matrix with the lenght of the data</span>
+0133         newData  = nan((((outmat(<span class="keyword">end</span>,1)-outmat(1,1)))+1),size(header,2));
+0134         newData2 = nan((((outmat(<span class="keyword">end</span>,1)-outmat(1,1)))+1),size(header,2));
+0135 
+0136         <span class="comment">%Making frames from Pyton start at 1</span>
+0137         outmat(:,1) = outmat(:,1)-outmat(1,1)+1;
+0138 
+0139         data = unique(outmat(:,1));
+0140 
+0141         <span class="comment">%finding unique colums</span>
+0142         <span class="keyword">for</span> ii = 1:length(data)
+0143             [datarows(ii),~] = find(outmat(:,1) == data(ii),1,<span class="string">'first'</span>);
+0144         <span class="keyword">end</span>
+0145 
+0146         outmat = outmat(datarows,:);
+0147         <span class="comment">%Calculating the gaps length for pyton data</span>
+0148         gap = diff(outmat(:,1));
+0149         figure()
+0150         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(gap,<span class="string">'b'</span>)
+0151 
+0152         <span class="comment">%Creating a linear interpolate matrix from Pyton data</span>
+0153         newData = interp1(outmat(:,1),outmat(:,1:end), <span class="keyword">...</span>
+0154             [outmat(1,1):outmat(<span class="keyword">end</span>,1)]);
+0155 
+0156         <span class="comment">%Creating a Matrix with NaN in gaps from Pyton</span>
+0157         <span class="keyword">for</span> ii = 1:length(outmat)
+0158             newData2(outmat(ii,1),1:end) = outmat(ii,:);
+0159         <span class="keyword">end</span>
+0160 
+0161         <span class="comment">%% Align Python to Nexus</span>
+0162         RANK = [];
+0163         [RANK,~,~] = <a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsVector.html" class="code" title="function [data, time, auxLabel] = getDataAsVector(this, label)">getDataAsVector</a>(expData.data{j}.markerData,<span class="string">'RANKy'</span>);
+0164 
+0165         <span class="comment">%Determination of crosscorrelation between Nexus at 120Hz and</span>
+0166         <span class="comment">%Interpolate</span>
+0167         <span class="comment">%Pyton data</span>
+0168 
+0169         figure()
+0170         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
+0171         hold on
+0172         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData(:,16)*1000, <span class="string">'r'</span>)
+0173 
+0174         [acor, lag] = xcorr(NexusRlowFreq,newData(:,2));
+0175         [~,I] = max((acor));
+0176         timeDiff = lag(I);
+0177 
+0178         <span class="keyword">if</span> timeDiff &lt; 0
+0179             newData  = newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0180             newData2 = newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0181         <span class="keyword">elseif</span> timeDiff &gt; 0
+0182             newData  = [zeros([timeDiff,size(header,2)]);newData];
+0183             newData2 = [zeros([timeDiff,size(header,2)]);newData2];
+0184 
+0185         <span class="keyword">end</span>
+0186 
+0187         [acor, lag] = xcorr(RANK,newData(:,16));
+0188         [~,I] = max((acor));
+0189         timeDiff = lag(I);
+0190 
+0191         <span class="keyword">if</span> timeDiff &lt; 5
+0192             <span class="keyword">if</span> timeDiff &lt; 0
+0193                 newData  = newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0194                 newData2 = newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0195             <span class="keyword">elseif</span> timeDiff &gt; 0
+0196                 newData  = [zeros([timeDiff,size(header,2)]);newData];
+0197                 newData2 = [zeros([timeDiff,size(header,2)]);newData2];
+0198 
+0199             <span class="keyword">end</span>
+0200         <span class="keyword">end</span>
+0201         figure()
+0202         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(RANK,<span class="string">'b'</span>)
+0203         hold on
+0204         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(newData2(:,16)*1000, <span class="string">'r'</span>)
+0205 
+0206 
+0207         <span class="comment">%% Match events from forces</span>
+0208         <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data,</span>
+0209         <span class="comment">%interpolate</span>
+0210         <span class="comment">%data is used to make sure that we dont take in consideration extras</span>
+0211         <span class="comment">%HS.</span>
+0212         [LHSnexus,RHSnexus,LTOnexus,RTOnexus] = <span class="keyword">...</span>
+0213             <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(NexusLlowFreq,NexusRlowFreq,120);
+0214         [LHSpyton,RHSpyton,LTOpyton,RTOpyton] = <span class="keyword">...</span>
+0215             <a href="../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(newData(:,3),newData(:,2),120);
+0216 
+0217         <span class="comment">%% HEEL STRIKE</span>
+0218         <span class="comment">%localication of HS==1);</span>
+0219         locLHSpyton = find(LHSpyton == 1);
+0220         locRHSpyton = find(RHSpyton == 1);
+0221         locRHSnexus = find(RHSnexus == 1);
+0222         locLHSnexus = find(LHSnexus == 1);
+0223 
+0224         locRindex = find(newData2(:,4) == 1);
+0225         locLindex = find(newData2(:,5) == 1);
+0226 
+0227         <span class="keyword">if</span> length(locRindex) &lt; length(locRHSpyton)
+0228             warning(<span class="string">'No all the HS where detected'</span>)
+0229         <span class="keyword">end</span>
+0230 
+0231 
+0232         <span class="comment">%Delete extras HS deteted by Python</span>
+0233         <span class="keyword">while</span> length(locRHSpyton) ~= length(locRindex)
+0234             diffLengthR = length(locRindex)-length(locRHSpyton);
+0235             FrameDiffR  = locRindex(1:end-diffLengthR)-locRHSpyton;
+0236             IsBadR      = find(FrameDiffR &lt;= -maxFrameDiff);
+0237             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
+0238                 <span class="keyword">break</span>
+0239             <span class="keyword">else</span>
+0240                 locRindex(IsBadR(1)) = [];
+0241             <span class="keyword">end</span>
+0242         <span class="keyword">end</span>
+0243 
+0244         <span class="keyword">while</span> length(locLHSpyton) ~= length(locLindex)
+0245             diffLength = length(locLindex)-length(locLHSpyton);
+0246             FrameDiff  = locLindex(1:end-diffLength)-locLHSpyton;
+0247             IsBad      = find(FrameDiff &lt;= -maxFrameDiff);
+0248             <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
+0249                 <span class="keyword">break</span>
+0250             <span class="keyword">else</span>
+0251                 locLindex(IsBad(1)) = [];
+0252             <span class="keyword">end</span>
+0253         <span class="keyword">end</span>
+0254 
+0255         <span class="keyword">if</span> length(locRHSnexus) &lt; length(locRindex)
+0256             FrameDiffR = [];
+0257             IsBadR     = [];
+0258             <span class="keyword">while</span> length(locRHSnexus) ~= length(locRindex)
+0259                 diffLengthR = length(locRindex)-length(locRHSnexus);
+0260                 FrameDiffR  = -locRindex(1:end-diffLengthR)+locRHSnexus;
+0261                 IsBadR      = find(abs(FrameDiffR) &gt; maxFrameDiff);
 0262                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
 0263                     <span class="keyword">break</span>
 0264                 <span class="keyword">else</span>
-0265                     locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
-0266                     locRindex=locfakeR;
-0267                 <span class="keyword">end</span>
-0268             <span class="keyword">end</span>
-0269         <span class="keyword">end</span>
-0270         <span class="keyword">if</span> length(locLHSnexus)&gt;length(locLindex)
-0271             warning([<span class="string">'Gaps affected LHS detection  '</span> condition{p}])
-0272             
-0273             <span class="keyword">while</span> length(locLHSnexus)&gt;length(locLindex)
-0274                 diffLengthL=-length(locLindex)+length(locLHSnexus);
-0275                 FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
-0276                 IsBadL=find(FrameDiffL&lt;=-10);
-0277                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadL)
+0265                     locRindex(IsBadR(1)) = [];
+0266                 <span class="keyword">end</span>
+0267             <span class="keyword">end</span>
+0268         <span class="keyword">end</span>
+0269 
+0270         <span class="keyword">if</span> length(locLHSnexus) &lt; length(locLindex)
+0271             FrameDiff = [];
+0272             IsBad     = [];
+0273             <span class="keyword">while</span> length(locLindex) ~= length(locLHSnexus)
+0274                 diffLength = length(locLindex)-length(locLHSnexus);
+0275                 FrameDiff  = -locLindex(1:end-diffLength)+locLHSnexus;
+0276                 IsBad      = find(abs(FrameDiff) &gt; maxFrameDiff);
+0277                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBad)
 0278                     <span class="keyword">break</span>
 0279                 <span class="keyword">else</span>
-0280                     locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
-0281                     locLindex=locfakeL;
-0282                 <span class="keyword">end</span>
-0283             <span class="keyword">end</span>
-0284             
-0285         <span class="keyword">end</span>
-0286         
-0287         <span class="keyword">for</span> i=1:length(locLindex)-1
-0288             locLindex2(i,1)=locLindex(i+1);
-0289         <span class="keyword">end</span>
-0290        
-0291         <span class="comment">%%</span>
-0292         <span class="comment">%Good strides</span>
-0293         GoodEvents=expData.data{j}.adaptParams.Data(:,2);
-0294         locRindex=locRindex((GoodEvents)==1,1);
-0295         locLindex=locLindex((GoodEvents)==1,1);
-0296         locLindex2=locLindex2((GoodEvents)==1,1);
-0297        
-0298         GoodRHS=newData2(locRindex,8);
-0299         GoodLHS=newData2(locLindex,9);
-0300         GoodLHS2=newData2(locLindex2,9);
-0301         results.locLindex=[results.locLindex;locLindex];
-0302         results.locRindex=[results.locRindex;locRindex];
-0303         results.locLindex2=[results.locLindex2;locLindex2];
-0304         results.GoodRHS=[results.GoodRHS;GoodRHS];
-0305         results.GoodLHS=[results.GoodLHS;GoodLHS];
-0306         
-0307         
-0308         <span class="comment">%%</span>
-0309         <span class="comment">%find alpha value on time</span>
-0310         stepLengthSlow=(newData2(locLindex2,11)-newData2(locLindex2,10))*1000;
-0311         
-0312         stepLengthFast=(newData2(locRindex,10)-newData2(locRindex,11))*1000;
-0313         stepLengthDiff=stepLengthFast-stepLengthSlow;
-0314         stepLengthAsym=stepLengthDiff./(stepLengthFast+stepLengthSlow);
-0315         result.stepLengthAsym=[result.stepLengthAsym;stepLengthAsym];
-0316         
-0317         alphaR_time=nan(length(newData2),1);
-0318         alphaL_time=nan(length(newData2),1);
-0319         alphaR_time(locRindex,1)=newData2(locRindex,10)*1000;
-0320         alphaL_time(locLindex,1)=newData2(locLindex,11)*1000;
-0321         <span class="comment">%alpha values at HS</span>
-0322         alphaRPyton=newData2(locRindex,10)*1000;
-0323         alphaLPytonTemp=newData2(locLindex,11)*1000;
-0324         alphaLPyton=newData2(locLindex2,11)*1000;
-0325         XRpyton=newData2(locRindex,21)*1000; <span class="comment">% position of Left leg at RHS</span>
-0326         LRpyton=newData2(locLindex,20)*1000; <span class="comment">% position of Rigth leg at LHS</span>
-0327         results.alphaRPyton=[results.alphaRPyton;alphaRPyton];
-0328         results.alphaLPyton=[results.alphaLPyton;alphaLPyton];
-0329         <span class="comment">%</span>
-0330         <span class="keyword">if</span> typeBiofeedback ==1
-0331             Rtarget=newData2(locRindex,12)*1000;
-0332             Ltarget=newData2(locLindex,13)*1000;
-0333             Ltarget2=newData2(locLindex2,11)*1000;
-0334             results.Rtarget=[results.Rtarget;Rtarget];
-0335             results.Ltarget=[results.Ltarget;Ltarget];
-0336             
-0337             
-0338         <span class="keyword">elseif</span> typeBiofeedback== 0 <span class="comment">%static target</span>
-0339             Rscale=newData2(locRindex,12);
-0340             Lscale=newData2(locLindex,13);
-0341             
-0342             Rtarget2Good=(0.375./RscaleGood)*1000;
-0343             Ltarget2Good=(0.375./LscaleGood)*1000;
-0344             Rtarget=newData(locRindex,18)*1000;
-0345             Ltarget=newData(locLindex,19)*1000;
-0346             Ltarget2=newData(locLindex2,19)*1000;
-0347             results.Rtarget=[results.Rtarget;Rtarget];
-0348             results.Ltarget=[results.Ltarget;Ltarget];
-0349             results.RscaleGood=[results.RscaleGood;Rscale];
-0350             results.LscaleGood=[results.LscaleGood;Lscale];
-0351         <span class="keyword">end</span>
-0352         
-0353         
-0354         <span class="comment">%%</span>
-0355         <span class="comment">%Comprobando si los pasos fueron clasificados de la manera correcta</span>
-0356         <span class="keyword">for</span> i=1:length(GoodRHS)
-0357             <span class="keyword">if</span> abs(alphaRPyton(i)-Rtarget(i))&lt;=37.5
-0358                 GoodR(i,1)=1;
-0359             <span class="keyword">elseif</span> abs(alphaRPyton(i)-Rtarget(i))&gt;37.5
-0360                 GoodR(i,1)=0;
-0361             <span class="keyword">elseif</span> isnan(GoodRHS(i))
-0362                 GoodR(i,1)=NaN;
-0363             <span class="keyword">end</span>
-0364             <span class="keyword">if</span> GoodR(i)~=GoodRHS(i)
-0365                 display([<span class="string">'BAD LABEL RIGHT LEG '</span> num2str(i) <span class="string">' STEP'</span>])
-0366             <span class="keyword">end</span>
-0367         <span class="keyword">end</span>
-0368         
-0369         <span class="keyword">for</span> i=1:length(GoodLHS)
-0370             <span class="keyword">if</span> abs(alphaLPytonTemp(i)-Ltarget(i))&lt;=37.5
-0371                 GoodL(i,1)=1;
-0372             <span class="keyword">elseif</span> abs(alphaLPytonTemp(i)-Ltarget(i))&gt;37.5
-0373                 GoodL(i,1)=0;
-0374             <span class="keyword">elseif</span> isnan(GoodLHS(i))
-0375                 GoodL(i,1)=NaN;
-0376             <span class="keyword">end</span>
-0377             <span class="keyword">if</span> GoodL(i)~=GoodLHS(i)
-0378                 display([<span class="string">'BAD LABEL LEFT LEG '</span> num2str(i) <span class="string">' STEP'</span>])
-0379             <span class="keyword">end</span>
-0380         <span class="keyword">end</span>
-0381         
-0382         
-0383         <span class="comment">%%</span>
-0384         
-0385         alphaRnexus=adaptData.getParamInCond({<span class="string">'alphaFast'</span>},condition{p});
-0386         alphaLnexusTemp=adaptData.getParamInCond({<span class="string">'alphaTemp'</span>},condition{p});
-0387         alphaLnexus=adaptData.getParamInCond({<span class="string">'alphaSlow'</span>},condition{p});
-0388         
-0389         <span class="comment">%plot of the alpha values. Tolerance indicade</span>
-0390         ystdRU=37.5*ones([length(GoodRHS),1])+Rtarget;
-0391         ystdRL=-37.5*ones([length(GoodRHS),1])+Rtarget;
-0392         
-0393         ystdLU=37.5*ones([length(GoodLHS),1])+Ltarget;
-0394         ystdLL=-37.5*ones([length(GoodLHS),1])+Ltarget;
-0395         
-0396         ystdLU2=37.5*ones([length(GoodLHS2),1])+Ltarget2;
-0397         ystdLL2=-37.5*ones([length(GoodLHS2),1])+Ltarget2;
-0398         
-0399         figure()
-0400         hist(alphaRnexus-alphaRPyton,[-200:200],<span class="string">'BinWidth'</span>,4)
-0401         title([<span class="string">'Difference on RHS position Nexus-Python trial'</span> w])
-0402         xlabel(<span class="string">'mm'</span>)
-0403         figure
-0404         hist(alphaLnexus-alphaLPyton,[-200:200],<span class="string">'BinWidth'</span>,4)
-0405         title([<span class="string">'Difference on LHS position Nexus-Python trial'</span> w])
-0406         xlabel(<span class="string">'mm'</span>)
-0407         
-0408         figure()
-0409         hold on
-0410         toleranceR=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodRHS),ystdRU,<span class="string">'--r'</span>,1:length(GoodRHS),ystdRL,<span class="string">'--r'</span>,1:length(GoodRHS),Rtarget,<span class="string">'r'</span>);
-0411         
-0412         
-0413         GoodnexusR=NaN(length(GoodRHS),1);
-0414         <span class="keyword">for</span> i=1:length(GoodRHS)
-0415             
-0416             <span class="keyword">if</span> GoodRHS(i)==1
-0417                 gPr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
-0418                 
-0419                 
-0420             <span class="keyword">elseif</span> GoodRHS(i)==0
-0421                 
-0422                 blackPr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
-0423                 
-0424             <span class="keyword">end</span>
-0425             
-0426             <span class="keyword">if</span> abs(alphaRnexus(i)-Rtarget(i))&lt;37.5
-0427                 RNr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
-0428                 GoodnexusR(i,1)=1;
-0429             <span class="keyword">elseif</span> abs(alphaRnexus(i)-Rtarget(i))&gt;=37.5
-0430                 blackNr=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaRnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
-0431                 GoodnexusR(i,1)=0;
-0432             <span class="keyword">end</span>
-0433         <span class="keyword">end</span>
-0434         title([<span class="string">'Alpha Fast leg'</span> w])
-0435 <span class="comment">%         gPr=gPr(1,1);</span>
-0436 <span class="comment">%         toleranceR=toleranceR(1,1);</span>
-0437 <span class="comment">%         blackPr=blackPr(1,1);</span>
-0438 <span class="comment">%         RNr=RNr(1,1);</span>
-0439 <span class="comment">%         blackNr=blackNr(1,1);</span>
-0440 <span class="comment">%         legend([gPr,blackPr,RNr,blackNr,toleranceR],'Good Steps Python','Bad Steps Python','Good Steps Nexus','Bad Steps Nexus','Tolerance')</span>
-0441         axis tight
-0442         
-0443         figure()
-0444         hold on
-0445         toleranceL2=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS2),ystdLU2,<span class="string">'--r'</span>,1:length(GoodLHS2),ystdLL2,<span class="string">'--r'</span>,1:length(GoodLHS2),Ltarget2,<span class="string">'r'</span>);
-0446         GoodnexusL=NaN(length(GoodLHS2),1);
-0447         <span class="keyword">for</span> i=1:length(GoodLHS2)
-0448             <span class="keyword">if</span> GoodLHS2(i)==1
-0449                 
-0450                 gPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
-0451                 
-0452             <span class="keyword">elseif</span> GoodLHS2(i)==0
-0453                 
-0454                 blackPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPyton(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
-0455                 
-0456             <span class="keyword">end</span>
-0457             
-0458             <span class="keyword">if</span> abs(alphaLnexus(i)-Ltarget2(i))&lt;37.5
-0459                 RNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
-0460                 GoodnexusL(i,1)=1;
-0461             <span class="keyword">elseif</span> abs(alphaLnexus(i)-Ltarget2(i))&gt;=37.5
-0462                 
-0463                 blackNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexus(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
-0464                 GoodnexusL(i,1)=0;
-0465             <span class="keyword">end</span>
-0466             
-0467         <span class="keyword">end</span>
-0468         title([<span class="string">'Alpha Slow  leg'</span> w] )
-0469 <span class="comment">%                 gPL=gPL(1,1);</span>
-0470 <span class="comment">%                 blackPL=blackPL(1,1);</span>
-0471 <span class="comment">%                 RNL=RNL(1,1);</span>
-0472 <span class="comment">%                 blackNL=blackNL(1,1);</span>
-0473 <span class="comment">%                 toleranceL2=toleranceL2(1,1);</span>
-0474 <span class="comment">%                 legend([gPL,blackPL,RNL,blackNL,toleranceL2],'Good Steps Python','Bad Steps Python','Good Steps Nexus','Bad Steps Nexus','Tolerance')</span>
-0475         axis tight
-0476         
-0477         
-0478         figure()
-0479         hold on
-0480         title([<span class="string">'Alpha Slow Temp leg'</span> w])
-0481         toleranceL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS),ystdLU,<span class="string">'--r'</span>,1:length(GoodLHS),ystdLL,<span class="string">'--r'</span>,1:length(GoodLHS),Ltarget,<span class="string">'r'</span>);
-0482         l=0;
-0483         <span class="keyword">for</span> i=1:length(GoodLHS)
-0484             <span class="keyword">if</span> GoodLHS(i)==1
-0485                 
-0486                 gPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
-0487                 
-0488             <span class="keyword">elseif</span> GoodLHS(i)==0
-0489                 
-0490                 blackPL=<a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLPytonTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
-0491                 GoodL(i,1)=0;
-0492             <span class="keyword">end</span>
-0493             <span class="keyword">if</span> abs(alphaLnexusTemp(i)-Ltarget(i))&lt;37.5
-0494                 RNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
-0495             <span class="keyword">elseif</span> abs(alphaLnexusTemp(i)-Ltarget(i))&gt;=37.5
-0496                 blackNL= <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(i,alphaLnexusTemp(i),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
-0497                 l=l+1;
-0498             <span class="keyword">end</span>
-0499             
-0500         <span class="keyword">end</span>
-0501         
-0502         <span class="comment">%         gPL=gPL(1,1);</span>
-0503         <span class="comment">%         blackPL=blackPL(1,1);</span>
-0504         <span class="comment">%         RNL=RNL(1,1);</span>
-0505         <span class="comment">%         blackNL=blackNL(1,1);</span>
-0506         <span class="comment">%         toleranceL=toleranceL(1,1);</span>
-0507         
-0508         <span class="comment">%         legend([gPL,blackPL,RNL,blackNL,toleranceL],'Good Steps Python','Bad Steps Python','Good Steps Nexus','Bad Steps Nexus','Tolerance')</span>
-0509         axis tight
-0510             results.GoodnexusR=[results.GoodnexusR;GoodnexusR];
-0511             results.GoodnexusL=[results.GoodnexusL;GoodnexusL];
-0512 <span class="comment">%</span>
-0513     <span class="keyword">end</span>
-0514     <span class="comment">%%</span>
-0515     
-0516     numberSteps=adaptData.getParamInCond(<span class="string">'Good'</span>,condition{p});
-0517     <span class="comment">%     stepLengthAsymnexus=adaptData.getParamInCond('stepLengthAsym',condition{p});</span>
-0518     
-0519     StepsR2=NaN(length(numberSteps),1);
-0520     StepsL2=NaN(length(numberSteps),1);
-0521     Steps2=NaN(length(numberSteps),1);
-0522     Steps3=NaN(length(numberSteps),1);
-0523     
-0524     <span class="keyword">if</span> strcmp(condition{p},<span class="string">'Gradual adaptation'</span>) || strcmp(condition{p},<span class="string">'Re-adaptation'</span>) ||strcmp(condition{p},<span class="string">'TM medium W/Bio'</span>)||strcmp(condition{p},<span class="string">'Abrupt adaptation'</span>) ||strcmp(condition{p},<span class="string">'re-adaptation'</span>)
-0525         StepsR2=GoodRHS;
-0526         StepsL2=GoodLHS2;
-0527         <span class="comment">%         figure</span>
-0528         <span class="comment">%         hold on</span>
-0529         <span class="keyword">for</span> o=1:length(StepsR2)
-0530             
-0531             <span class="keyword">if</span>  ((StepsR2(o)+StepsL2(o))/2)==1
-0532                 Steps2(o,1)=1;
-0533                 <span class="comment">%                 blah=plot(o,stepLengthAsym(o),'o','MarkerSize',8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g');</span>
-0534             <span class="keyword">else</span>
-0535                 Steps2(o,1)=0;
-0536                 <span class="comment">%                 blah2=plot(o,stepLengthAsym(o),'o','MarkerSize',8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','k');</span>
-0537             <span class="keyword">end</span>
-0538             <span class="comment">%</span>
-0539             <span class="keyword">if</span>  (( GoodnexusL(o)+ GoodnexusR(o))/2)==1
-0540                 Steps3(o,1)=1;
-0541                 <span class="comment">%                         blah3=plot(o,stepLengthAsymnexus(o),'o','MarkerSize',8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r');</span>
-0542             <span class="keyword">else</span>
-0543                 Steps3(o,1)=0;
-0544                 <span class="comment">%                         blah2=plot(o,stepLengthAsymnexus(o),'o','MarkerSize',8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b');</span>
-0545             <span class="keyword">end</span>
-0546         <span class="keyword">end</span>
-0547         <span class="comment">%         blah=blah(1,1);</span>
-0548         <span class="comment">%         blah2=blah2(1,1);</span>
-0549         <span class="comment">%         title('stepLengthAsym')</span>
-0550         <span class="comment">%         legend([blah,blah2],'Good Steps','Bad Steps')</span>
-0551         <span class="comment">%         axis tight</span>
-0552     <span class="keyword">end</span>
-0553     Steps=[Steps;Steps2];
-0554     StepsR=[StepsR;StepsR2];
-0555     StepsL=[StepsL;StepsL2];
-0556     Stepsnexus=[Stepsnexus;Steps3];
-0557 
-0558     
-0559 <span class="keyword">end</span>
-0560 
-0561 <span class="comment">%%</span>
-0562 pData=adaptData.data;
-0563 labels={<span class="string">'TargetHitR'</span>, <span class="string">'TargetHitL'</span>, <span class="string">'TargetHit'</span>,<span class="string">'TargetNexus'</span>};
-0564 [aux,idx]=pData.isaLabel(labels);
-0565 <span class="keyword">if</span> all(aux)
-0566     adaptData.data.Data(:,idx)=[StepsR,StepsL,Steps,Stepsnexus];
-0567 <span class="keyword">else</span>
-0568     this=<a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; <span class="string">'TargetHitR'</span>; <span class="string">'TargetHitL'</span> ;<span class="string">'TargetHit'</span>; <span class="string">'TargetNexus'</span>],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+4));
-0569     <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
-0570     adaptData=<a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(rawExpData.metaData,rawExpData.subData,this);
-0571 <span class="keyword">end</span>
-0572 saveloc=[];
-0573 save([saveloc subject <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>);
-0574 save([saveloc subject <span class="string">'Pyton2.mat'</span>],<span class="string">'newData2'</span>,<span class="string">'header'</span>,<span class="string">'outmat'</span>,<span class="string">'results'</span>)
-0575 
-0576 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0280                     locLindex(IsBad(1)) = [];
+0281                 <span class="keyword">end</span>
+0282             <span class="keyword">end</span>
+0283         <span class="keyword">end</span>
+0284 
+0285         <span class="keyword">if</span> length(locRHSnexus) &gt; length(locRindex)
+0286             warning([<span class="string">'Gaps affected RHS detection  '</span> condition{p} ])
+0287 
+0288             <span class="keyword">while</span> length(locRHSnexus) &gt; length(locRindex)
+0289                 diffLengthR = -length(locRindex)+length(locRHSnexus);
+0290                 FrameDiffR  = locRHSnexus(1:end-diffLengthR)-locRindex;
+0291 
+0292                 IsBadR = find(FrameDiffR &lt;= -maxFrameDiff);
+0293                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadR)
+0294                     <span class="keyword">break</span>
+0295                 <span class="keyword">else</span>
+0296                     locfakeR  = [locRindex(1:IsBadR-1); <span class="keyword">...</span>
+0297                         locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
+0298                     locRindex = locfakeR;
+0299                 <span class="keyword">end</span>
+0300             <span class="keyword">end</span>
+0301         <span class="keyword">end</span>
+0302         <span class="keyword">if</span> length(locLHSnexus) &gt; length(locLindex)
+0303             warning([<span class="string">'Gaps affected LHS detection  '</span> condition{p}])
+0304 
+0305             <span class="keyword">while</span> length(locLHSnexus) &gt; length(locLindex)
+0306                 diffLengthL = -length(locLindex)+length(locLHSnexus);
+0307                 FrameDiffL  = locLHSnexus(1:end-diffLengthL)-locLindex;
+0308                 IsBadL      = find(FrameDiffL &lt;= -maxFrameDiff);
+0309                 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(IsBadL)
+0310                     <span class="keyword">break</span>
+0311                 <span class="keyword">else</span>
+0312                     locfakeL  = [locLindex(1:IsBadL-1); <span class="keyword">...</span>
+0313                         locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
+0314                     locLindex = locfakeL;
+0315                 <span class="keyword">end</span>
+0316             <span class="keyword">end</span>
+0317 
+0318         <span class="keyword">end</span>
+0319 
+0320         <span class="keyword">for</span> ii = 1:length(locLindex)-1
+0321             locLindex2(ii,1) = locLindex(ii+1);
+0322         <span class="keyword">end</span>
+0323 
+0324         <span class="comment">%% Keep good strides</span>
+0325         <span class="comment">%Good strides</span>
+0326         GoodEvents = expData.data{j}.adaptParams.Data(:,2);
+0327         locRindex  = locRindex((GoodEvents) == 1,1);
+0328         locLindex  = locLindex((GoodEvents) == 1,1);
+0329         locLindex2 = locLindex2((GoodEvents) == 1,1);
+0330 
+0331         GoodRHS  = newData2(locRindex,8);
+0332         GoodLHS  = newData2(locLindex,9);
+0333         GoodLHS2 = newData2(locLindex2,9);
+0334         results.locLindex = [results.locLindex;locLindex];
+0335         results.locRindex = [results.locRindex;locRindex];
+0336         results.locLindex2 = [results.locLindex2;locLindex2];
+0337         results.GoodRHS = [results.GoodRHS;GoodRHS];
+0338         results.GoodLHS = [results.GoodLHS;GoodLHS];
+0339 
+0340 
+0341         <span class="comment">%% Compute step lengths</span>
+0342         <span class="comment">%find alpha value on time</span>
+0343         stepLengthSlow = <span class="keyword">...</span>
+0344             (newData2(locLindex2,11)-newData2(locLindex2,10))*1000;
+0345 
+0346         stepLengthFast = <span class="keyword">...</span>
+0347             (newData2(locRindex,10)-newData2(locRindex,11))*1000;
+0348         stepLengthDiff = stepLengthFast-stepLengthSlow;
+0349         stepLengthAsym = stepLengthDiff./(stepLengthFast+stepLengthSlow);
+0350         result.stepLengthAsym = [result.stepLengthAsym;stepLengthAsym];
+0351 
+0352         alphaR_time = nan(length(newData2),1);
+0353         alphaL_time = nan(length(newData2),1);
+0354         alphaR_time(locRindex,1) = newData2(locRindex,10)*1000;
+0355         alphaL_time(locLindex,1) = newData2(locLindex,11)*1000;
+0356         <span class="comment">%alpha values at HS</span>
+0357         alphaRPyton     = newData2(locRindex,10)*1000;
+0358         alphaLPytonTemp = newData2(locLindex,11)*1000;
+0359         alphaLPyton     = newData2(locLindex2,11)*1000;
+0360         <span class="comment">% position of Left leg at RHS</span>
+0361         XRpyton         = newData2(locRindex,21)*1000;
+0362         <span class="comment">% position of Rigth leg at LHS</span>
+0363         LRpyton         = newData2(locLindex,20)*1000;
+0364         results.alphaRPyton = [results.alphaRPyton;alphaRPyton];
+0365         results.alphaLPyton = [results.alphaLPyton;alphaLPyton];
+0366         <span class="comment">%</span>
+0367         <span class="keyword">if</span> typeBiofeedback == 1
+0368             Rtarget  = newData2(locRindex,12)*1000;
+0369             Ltarget  = newData2(locLindex,13)*1000;
+0370             Ltarget2 = newData2(locLindex2,11)*1000;
+0371             results.Rtarget = [results.Rtarget;Rtarget];
+0372             results.Ltarget = [results.Ltarget;Ltarget];
+0373 
+0374 
+0375         <span class="keyword">elseif</span> typeBiofeedback == 0 <span class="comment">%static target</span>
+0376             Rscale = newData2(locRindex,12);
+0377             Lscale = newData2(locLindex,13);
+0378 
+0379             Rtarget2Good = (0.375./RscaleGood)*1000;
+0380             Ltarget2Good = (0.375./LscaleGood)*1000;
+0381             Rtarget      = newData(locRindex,18)*1000;
+0382             Ltarget      = newData(locLindex,19)*1000;
+0383             Ltarget2     = newData(locLindex2,19)*1000;
+0384             results.Rtarget = [results.Rtarget;Rtarget];
+0385             results.Ltarget = [results.Ltarget;Ltarget];
+0386             results.RscaleGood = [results.RscaleGood;Rscale];
+0387             results.LscaleGood = [results.LscaleGood;Lscale];
+0388         <span class="keyword">end</span>
+0389 
+0390 
+0391         <span class="comment">%% Check step classification</span>
+0392         <span class="comment">%Comprobando si los pasos fueron clasificados de la manera correcta</span>
+0393         <span class="keyword">for</span> ii = 1:length(GoodRHS)
+0394             <span class="keyword">if</span> abs(alphaRPyton(ii)-Rtarget(ii)) &lt;= errorBand
+0395                 GoodR(ii,1) = 1;
+0396             <span class="keyword">elseif</span> abs(alphaRPyton(ii)-Rtarget(ii)) &gt; errorBand
+0397                 GoodR(ii,1) = 0;
+0398             <span class="keyword">elseif</span> isnan(GoodRHS(ii))
+0399                 GoodR(ii,1) = NaN;
+0400             <span class="keyword">end</span>
+0401             <span class="keyword">if</span> GoodR(ii) ~= GoodRHS(ii)
+0402                 display([<span class="string">'BAD LABEL RIGHT LEG '</span> num2str(ii) <span class="string">' STEP'</span>])
+0403             <span class="keyword">end</span>
+0404         <span class="keyword">end</span>
+0405 
+0406         <span class="keyword">for</span> ii = 1:length(GoodLHS)
+0407             <span class="keyword">if</span> abs(alphaLPytonTemp(ii)-Ltarget(ii)) &lt;= errorBand
+0408                 GoodL(ii,1) = 1;
+0409             <span class="keyword">elseif</span> abs(alphaLPytonTemp(ii)-Ltarget(ii)) &gt; errorBand
+0410                 GoodL(ii,1) = 0;
+0411             <span class="keyword">elseif</span> isnan(GoodLHS(ii))
+0412                 GoodL(ii,1) = NaN;
+0413             <span class="keyword">end</span>
+0414             <span class="keyword">if</span> GoodL(ii) ~= GoodLHS(ii)
+0415                 display([<span class="string">'BAD LABEL LEFT LEG '</span> num2str(ii) <span class="string">' STEP'</span>])
+0416             <span class="keyword">end</span>
+0417         <span class="keyword">end</span>
+0418 
+0419 
+0420         <span class="comment">%% Compare with Nexus step lengths</span>
+0421 
+0422         alphaRnexus     = adaptData.getParamInCond({<span class="string">'alphaFast'</span>}, <span class="keyword">...</span>
+0423             condition{p});
+0424         alphaLnexusTemp = adaptData.getParamInCond({<span class="string">'alphaTemp'</span>}, <span class="keyword">...</span>
+0425             condition{p});
+0426         alphaLnexus     = adaptData.getParamInCond({<span class="string">'alphaSlow'</span>}, <span class="keyword">...</span>
+0427             condition{p});
+0428 
+0429         <span class="comment">%plot of the alpha values. Tolerance indicade</span>
+0430         ystdRU = errorBand*ones([length(GoodRHS),1])+Rtarget;
+0431         ystdRL = -errorBand*ones([length(GoodRHS),1])+Rtarget;
+0432 
+0433         ystdLU = errorBand*ones([length(GoodLHS),1])+Ltarget;
+0434         ystdLL = -errorBand*ones([length(GoodLHS),1])+Ltarget;
+0435 
+0436         ystdLU2 = errorBand*ones([length(GoodLHS2),1])+Ltarget2;
+0437         ystdLL2 = -errorBand*ones([length(GoodLHS2),1])+Ltarget2;
+0438 
+0439         figure()
+0440         hist(alphaRnexus-alphaRPyton,[-200:200],<span class="string">'BinWidth'</span>,4)
+0441         title([<span class="string">'Difference on RHS position Nexus-Python trial'</span> w])
+0442         xlabel(<span class="string">'mm'</span>)
+0443         figure
+0444         hist(alphaLnexus-alphaLPyton,[-200:200],<span class="string">'BinWidth'</span>,4)
+0445         title([<span class="string">'Difference on LHS position Nexus-Python trial'</span> w])
+0446         xlabel(<span class="string">'mm'</span>)
+0447 
+0448         figure()
+0449         hold on
+0450         toleranceR = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodRHS),ystdRU,<span class="string">'--r'</span>, <span class="keyword">...</span>
+0451             1:length(GoodRHS),ystdRL,<span class="string">'--r'</span>,1:length(GoodRHS),Rtarget,<span class="string">'r'</span>);
+0452 
+0453 
+0454         GoodnexusR = NaN(length(GoodRHS),1);
+0455         <span class="keyword">for</span> ii = 1:length(GoodRHS)
+0456 
+0457             <span class="keyword">if</span> GoodRHS(ii) == 1
+0458                 gPr = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaRPyton(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0459                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0460 
+0461 
+0462             <span class="keyword">elseif</span> GoodRHS(ii) == 0
+0463 
+0464                 blackPr = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaRPyton(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0465                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0466 
+0467             <span class="keyword">end</span>
+0468 
+0469             <span class="keyword">if</span> abs(alphaRnexus(ii)-Rtarget(ii)) &lt; errorBand
+0470                 RNr = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaRnexus(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0471                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0472                 GoodnexusR(ii,1) = 1;
+0473             <span class="keyword">elseif</span> abs(alphaRnexus(ii)-Rtarget(ii)) &gt;= errorBand
+0474                 blackNr = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaRnexus(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0475                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0476                 GoodnexusR(ii,1) = 0;
+0477             <span class="keyword">end</span>
+0478         <span class="keyword">end</span>
+0479         title([<span class="string">'Alpha Fast leg'</span> w])
+0480         <span class="comment">% gPr=gPr(1,1);</span>
+0481         <span class="comment">% toleranceR=toleranceR(1,1);</span>
+0482         <span class="comment">% blackPr=blackPr(1,1);</span>
+0483         <span class="comment">% RNr=RNr(1,1);</span>
+0484         <span class="comment">% blackNr=blackNr(1,1);</span>
+0485         <span class="comment">% legend([gPr,blackPr,RNr,blackNr,toleranceR], ...</span>
+0486         <span class="comment">%    'Good Steps Python','Bad Steps Python','Good Steps Nexus', ...</span>
+0487         <span class="comment">%    'Bad Steps Nexus','Tolerance')</span>
+0488         axis tight
+0489 
+0490         figure()
+0491         hold on
+0492         toleranceL2 = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS2),ystdLU2,<span class="string">'--r'</span>, <span class="keyword">...</span>
+0493             1:length(GoodLHS2),ystdLL2,<span class="string">'--r'</span>,1:length(GoodLHS2), <span class="keyword">...</span>
+0494             Ltarget2,<span class="string">'r'</span>);
+0495         GoodnexusL  = NaN(length(GoodLHS2),1);
+0496         <span class="keyword">for</span> ii = 1:length(GoodLHS2)
+0497             <span class="keyword">if</span> GoodLHS2(ii) == 1
+0498 
+0499                 gPL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLPyton(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0500                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0501 
+0502             <span class="keyword">elseif</span> GoodLHS2(ii) == 0
+0503 
+0504                 blackPL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLPyton(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0505                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0506 
+0507             <span class="keyword">end</span>
+0508 
+0509             <span class="keyword">if</span> abs(alphaLnexus(ii)-Ltarget2(ii)) &lt; errorBand
+0510                 RNL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLnexus(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0511                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0512                 GoodnexusL(ii,1) = 1;
+0513             <span class="keyword">elseif</span> abs(alphaLnexus(ii)-Ltarget2(ii)) &gt;= errorBand
+0514 
+0515                 blackNL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLnexus(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0516                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0517                 GoodnexusL(ii,1) = 0;
+0518             <span class="keyword">end</span>
+0519 
+0520         <span class="keyword">end</span>
+0521         title([<span class="string">'Alpha Slow  leg'</span> w] )
+0522         <span class="comment">% gPL=gPL(1,1);</span>
+0523         <span class="comment">% blackPL=blackPL(1,1);</span>
+0524         <span class="comment">% RNL=RNL(1,1);</span>
+0525         <span class="comment">% blackNL=blackNL(1,1);</span>
+0526         <span class="comment">% toleranceL2=toleranceL2(1,1);</span>
+0527         <span class="comment">% legend([gPL,blackPL,RNL,blackNL,toleranceL2], ...</span>
+0528         <span class="comment">%    'Good Steps Python','Bad Steps Python','Good Steps Nexus', ...</span>
+0529         <span class="comment">%    'Bad Steps Nexus','Tolerance')</span>
+0530         axis tight
+0531 
+0532 
+0533         figure()
+0534         hold on
+0535         title([<span class="string">'Alpha Slow Temp leg'</span> w])
+0536         toleranceL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(1:length(GoodLHS),ystdLU,<span class="string">'--r'</span>, <span class="keyword">...</span>
+0537             1:length(GoodLHS),ystdLL,<span class="string">'--r'</span>,1:length(GoodLHS),Ltarget,<span class="string">'r'</span>);
+0538         l          = 0;
+0539         <span class="keyword">for</span> ii = 1:length(GoodLHS)
+0540             <span class="keyword">if</span> GoodLHS(ii) == 1
+0541 
+0542                 gPL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLPytonTemp(ii),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0543                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+0544 
+0545             <span class="keyword">elseif</span> GoodLHS(ii) == 0
+0546 
+0547                 blackPL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLPytonTemp(ii),<span class="string">'o'</span>, <span class="keyword">...</span>
+0548                     <span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0549                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0550                 GoodL(ii,1) = 0;
+0551             <span class="keyword">end</span>
+0552             <span class="keyword">if</span> abs(alphaLnexusTemp(ii)-Ltarget(ii)) &lt; errorBand
+0553                 RNL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLnexusTemp(ii),<span class="string">'o'</span>, <span class="keyword">...</span>
+0554                     <span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0555                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+0556             <span class="keyword">elseif</span> abs(alphaLnexusTemp(ii)-Ltarget(ii)) &gt;= errorBand
+0557                 blackNL = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ii,alphaLnexusTemp(ii),<span class="string">'o'</span>, <span class="keyword">...</span>
+0558                     <span class="string">'MarkerSize'</span>,8, <span class="keyword">...</span>
+0559                     <span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+0560                 l       = l+1;
+0561             <span class="keyword">end</span>
+0562 
+0563         <span class="keyword">end</span>
+0564 
+0565         <span class="comment">% gPL=gPL(1,1);</span>
+0566         <span class="comment">% blackPL=blackPL(1,1);</span>
+0567         <span class="comment">% RNL=RNL(1,1);</span>
+0568         <span class="comment">% blackNL=blackNL(1,1);</span>
+0569         <span class="comment">% toleranceL=toleranceL(1,1);</span>
+0570 
+0571         <span class="comment">% legend([gPL,blackPL,RNL,blackNL,toleranceL], ...</span>
+0572         <span class="comment">%    'Good Steps Python','Bad Steps Python','Good Steps Nexus', ...</span>
+0573         <span class="comment">%    'Bad Steps Nexus','Tolerance')</span>
+0574         axis tight
+0575         results.GoodnexusR = [results.GoodnexusR;GoodnexusR];
+0576         results.GoodnexusL = [results.GoodnexusL;GoodnexusL];
+0577         <span class="comment">%</span>
+0578     <span class="keyword">end</span>
+0579     <span class="comment">%% Count good steps</span>
+0580 
+0581     numberSteps = adaptData.getParamInCond(<span class="string">'Good'</span>,condition{p});
+0582     <span class="comment">% stepLengthAsymnexus=adaptData.getParamInCond('stepLengthAsym', ...</span>
+0583     <span class="comment">%    condition{p});</span>
+0584 
+0585     StepsR2 = NaN(length(numberSteps),1);
+0586     StepsL2 = NaN(length(numberSteps),1);
+0587     Steps2  = NaN(length(numberSteps),1);
+0588     Steps3  = NaN(length(numberSteps),1);
+0589 
+0590     <span class="keyword">if</span> strcmp(condition{p},<span class="string">'Gradual adaptation'</span>) || <span class="keyword">...</span>
+0591             strcmp(condition{p},<span class="string">'Re-adaptation'</span>) ||strcmp(condition{p}, <span class="keyword">...</span>
+0592             <span class="string">'TM medium W/Bio'</span>)||strcmp(condition{p}, <span class="keyword">...</span>
+0593             <span class="string">'Abrupt adaptation'</span>) ||strcmp(condition{p},<span class="string">'re-adaptation'</span>)
+0594         StepsR2 = GoodRHS;
+0595         StepsL2 = GoodLHS2;
+0596         <span class="comment">% figure</span>
+0597         <span class="comment">% hold on</span>
+0598         <span class="keyword">for</span> o = 1:length(StepsR2)
+0599 
+0600             <span class="keyword">if</span>  ((StepsR2(o)+StepsL2(o))/2) == 1
+0601                 Steps2(o,1) = 1;
+0602                 <span class="comment">% blah=plot(o,stepLengthAsym(o),'o','MarkerSize',8, ...</span>
+0603                 <span class="comment">%    'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','g');</span>
+0604             <span class="keyword">else</span>
+0605                 Steps2(o,1) = 0;
+0606                 <span class="comment">% blah2=plot(o,stepLengthAsym(o),'o','MarkerSize',8, ...</span>
+0607                 <span class="comment">%    'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','k');</span>
+0608             <span class="keyword">end</span>
+0609             <span class="comment">%</span>
+0610             <span class="keyword">if</span>  (( GoodnexusL(o)+ GoodnexusR(o))/2) == 1
+0611                 Steps3(o,1) = 1;
+0612                 <span class="comment">% blah3=plot(o,stepLengthAsymnexus(o),'o','MarkerSize', ...</span>
+0613                 <span class="comment">%    8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','r');</span>
+0614             <span class="keyword">else</span>
+0615                 Steps3(o,1) = 0;
+0616                 <span class="comment">% blah2=plot(o,stepLengthAsymnexus(o),'o','MarkerSize', ...</span>
+0617                 <span class="comment">%    8,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor','b');</span>
+0618             <span class="keyword">end</span>
+0619         <span class="keyword">end</span>
+0620         <span class="comment">% blah=blah(1,1);</span>
+0621         <span class="comment">% blah2=blah2(1,1);</span>
+0622         <span class="comment">% title('stepLengthAsym')</span>
+0623         <span class="comment">% legend([blah,blah2],'Good Steps','Bad Steps')</span>
+0624         <span class="comment">% axis tight</span>
+0625     <span class="keyword">end</span>
+0626     Steps      = [Steps;Steps2];
+0627     StepsR     = [StepsR;StepsR2];
+0628     StepsL     = [StepsL;StepsL2];
+0629     Stepsnexus = [Stepsnexus;Steps3];
+0630 
+0631 
+0632 <span class="keyword">end</span>
+0633 
+0634 <span class="comment">%% Append the parameters and save</span>
+0635 pData  = adaptData.data;
+0636 labels = {<span class="string">'TargetHitR'</span>, <span class="string">'TargetHitL'</span>, <span class="string">'TargetHit'</span>,<span class="string">'TargetNexus'</span>};
+0637 [aux,idx] = pData.isaLabel(labels);
+0638 <span class="keyword">if</span> all(aux)
+0639     adaptData.data.Data(:,idx) = [StepsR,StepsL,Steps,Stepsnexus];
+0640 <span class="keyword">else</span>
+0641     this = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>([adaptData.data.Data,StepsR,StepsL,Steps, <span class="keyword">...</span>
+0642         Stepsnexus], <span class="keyword">...</span>
+0643         [adaptData.data.labels; <span class="string">'TargetHitR'</span>; <span class="string">'TargetHitL'</span> ;<span class="string">'TargetHit'</span>; <span class="keyword">...</span>
+0644         <span class="string">'TargetNexus'</span>],1:length(adaptData.data.Data), <span class="keyword">...</span>
+0645         cell(length(adaptData.data.labels)+4));
+0646     <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps, ...</span>
+0647     <span class="comment">%    Stepsnexus], ...</span>
+0648     <span class="comment">%    [adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ; ...</span>
+0649     <span class="comment">%    'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial, ...</span>
+0650     <span class="comment">%    adaptData.data.trialTypes);</span>
+0651     adaptData = <a href="../../../labTools/classes/dataStructs/@adaptationData/adaptationData.html" class="code" title="">adaptationData</a>(rawExpData.metaData,rawExpData.subData,this);
+0652 <span class="keyword">end</span>
+0653 saveloc = [];
+0654 save([saveloc subject <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>);
+0655 save([saveloc subject <span class="string">'Pyton2.mat'</span>],<span class="string">'newData2'</span>,<span class="string">'header'</span>,<span class="string">'outmat'</span>,<span class="string">'results'</span>)
+0656 
+0657 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -2,8 +2,8 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of labTSmanipulation</title>
-  <meta name="keywords" content="labTSmanipulation">
+  <title>Description of LabTSManipulation</title>
+  <meta name="keywords" content="LabTSManipulation">
   <meta name="description" content="LABTSMANIPULATION Example: labTimeSeries operations.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
@@ -12,12 +12,12 @@
 </head>
 <body>
 <a name="_top"></a>
-<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; labTSmanipulation.m</div>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; LabTSManipulation.m</div>
 
 <!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
 <td align="right"><a href="index.html">Index for labTools\example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
 
-<h1>labTSmanipulation
+<h1>LabTSManipulation
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
@@ -31,7 +31,9 @@
 
    Demonstrates derivative, integration, and label-based data access
  for labTimeSeries objects. Assumes a labTimeSeries variable is
- available in the workspace — replace 'allMarkers' with your own.</pre></div>
+ available in the workspace — replace 'allMarkers' with your own.
+
+ Toolbox Dependencies: None</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
@@ -51,53 +53,55 @@ This function is called by:
 0003 <span class="comment">%   Demonstrates derivative, integration, and label-based data access</span>
 0004 <span class="comment">% for labTimeSeries objects. Assumes a labTimeSeries variable is</span>
 0005 <span class="comment">% available in the workspace — replace 'allMarkers' with your own.</span>
-0006 
-0007 <span class="comment">%% Load labTimeSeries object</span>
-0008 <span class="comment">% NOTE: Replace allMarkers with your own labTimeSeries variable.</span>
-0009 lTS = allMarkers;
-0010 
-0011 <span class="comment">%% Inspect properties</span>
-0012 lTS.sampPeriod   <span class="comment">% sampling period</span>
-0013 lTS.Time(1)      <span class="comment">% initial sample time</span>
-0014 lTS.timeRange    <span class="comment">% interval of time contained in the series</span>
-0015 size(lTS.Data)
-0016 size(lTS.labels)
-0017 
-0018 <span class="comment">%% Get data by label pattern</span>
-0019 <span class="comment">% getLabelsThatMatch returns all labels containing the search string.</span>
-0020 lTS.getLabelsThatMatch(<span class="string">'ANK'</span>)                           <span class="comment">% ankle labels</span>
-0021 lTS.getDataAsVector(lTS.getLabelsThatMatch(<span class="string">'ANK'</span>))      <span class="comment">% numeric matrix</span>
-0022 lTS.getDataAsTS(lTS.getLabelsThatMatch(<span class="string">'ANK'</span>))          <span class="comment">% labTimeSeries</span>
-0023 
-0024 <span class="comment">%% Compute derivative</span>
-0025 <span class="comment">% 2nd-order differentials (diffOrder = []) lose one sample from each</span>
-0026 <span class="comment">% end, so dTS.Data is 2 rows shorter than lTS.Data.</span>
-0027 diffOrder = [];
-0028 dTS = lTS.derivative(diffOrder);
-0029 size(dTS.Data)
-0030 size(lTS.Data)
-0031 dTS.Time(1)  <span class="comment">% one full sample later than lTS.Time(1)</span>
-0032 lTS.Time(1)
-0033 
-0034 <span class="comment">%% Integrate labTimeSeries</span>
-0035 <span class="comment">% Centered trapezoid rule: initial time of iTS is half a sample before</span>
-0036 <span class="comment">% lTS.Time(1), but sampling periods are equal.</span>
-0037 initialConditions = [];  <span class="comment">% default: 0 initial condition for all columns</span>
-0038 iTS = lTS.integrate(initialConditions);
-0039 iTS.Time(1)
-0040 lTS.Time(1)
-0041 iTS.sampPeriod
-0042 lTS.sampPeriod
-0043 
-0044 <span class="comment">%% Derivative and integration as inverse operations</span>
-0045 <span class="comment">% Derivative and integration are theoretically inverse operations.</span>
-0046 <span class="comment">% With approximations, exact inversion requires matching orders:</span>
-0047 <span class="comment">% 1st-order derivative + trapezoid integration with the true initial</span>
-0048 <span class="comment">% condition exactly recovers the original series.</span>
-0049 dTS  = lTS.derivative(1);
-0050 lTS2 = dTS.integrate(lTS.Data(1, :));
-0051 
-0052 norm(lTS.Data - lTS2.Data)  <span class="comment">% should be 0</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Toolbox Dependencies: None</span>
+0008 
+0009 <span class="comment">%% Load labTimeSeries object</span>
+0010 <span class="comment">% NOTE: Replace allMarkers with your own labTimeSeries variable.</span>
+0011 lTS = allMarkers;
+0012 
+0013 <span class="comment">%% Inspect properties</span>
+0014 lTS.sampPeriod   <span class="comment">% sampling period</span>
+0015 lTS.Time(1)      <span class="comment">% initial sample time</span>
+0016 lTS.timeRange    <span class="comment">% interval of time contained in the series</span>
+0017 size(lTS.Data)
+0018 size(lTS.labels)
+0019 
+0020 <span class="comment">%% Get data by label pattern</span>
+0021 <span class="comment">% getLabelsThatMatch returns all labels containing the search string.</span>
+0022 lTS.getLabelsThatMatch(<span class="string">'ANK'</span>)                           <span class="comment">% ankle labels</span>
+0023 lTS.getDataAsVector(lTS.getLabelsThatMatch(<span class="string">'ANK'</span>))      <span class="comment">% numeric matrix</span>
+0024 lTS.getDataAsTS(lTS.getLabelsThatMatch(<span class="string">'ANK'</span>))          <span class="comment">% labTimeSeries</span>
+0025 
+0026 <span class="comment">%% Compute derivative</span>
+0027 <span class="comment">% 2nd-order differentials (diffOrder = []) lose one sample from each</span>
+0028 <span class="comment">% end, so dTS.Data is 2 rows shorter than lTS.Data.</span>
+0029 diffOrder = [];
+0030 dTS = lTS.derivative(diffOrder);
+0031 size(dTS.Data)
+0032 size(lTS.Data)
+0033 dTS.Time(1)  <span class="comment">% one full sample later than lTS.Time(1)</span>
+0034 lTS.Time(1)
+0035 
+0036 <span class="comment">%% Integrate labTimeSeries</span>
+0037 <span class="comment">% Centered trapezoid rule: initial time of iTS is half a sample before</span>
+0038 <span class="comment">% lTS.Time(1), but sampling periods are equal.</span>
+0039 initialConditions = [];  <span class="comment">% default: 0 initial condition for all columns</span>
+0040 iTS = lTS.integrate(initialConditions);
+0041 iTS.Time(1)
+0042 lTS.Time(1)
+0043 iTS.sampPeriod
+0044 lTS.sampPeriod
+0045 
+0046 <span class="comment">%% Derivative and integration as inverse operations</span>
+0047 <span class="comment">% Derivative and integration are theoretically inverse operations.</span>
+0048 <span class="comment">% With approximations, exact inversion requires matching orders:</span>
+0049 <span class="comment">% 1st-order derivative + trapezoid integration with the true initial</span>
+0050 <span class="comment">% condition exactly recovers the original series.</span>
+0051 dTS  = lTS.derivative(1);
+0052 lTS2 = dTS.integrate(lTS.Data(1, :));
+0053 
+0054 norm(lTS.Data - lTS2.Data)  <span class="comment">% should be 0</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

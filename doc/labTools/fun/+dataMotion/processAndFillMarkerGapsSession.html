@@ -4,7 +4,7 @@
 <head>
   <title>Description of processAndFillMarkerGapsSession</title>
   <meta name="keywords" content="processAndFillMarkerGapsSession">
-  <meta name="description" content="PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps">
+  <meta name="description" content="PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,31 +21,49 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps</strong></div>
+<div class="box"><strong>PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps
-   This function finds all trials in the session folder with filenames
- starting with 'Trial', filters them based on the specified indices, and
- runs the reconstruct and label pipelines. Then, the small marker gaps are
- filled using spline interpolation. Make sure the Vicon Nexus SDK is
- installed and added to the MATLAB path.
+<div class="fragment"><pre class="comment">PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.
 
- input(s):
-   pathSess: path to the session folder where all trial data is stored.
-   indsTrials: (optional) array of indices indicating which trials to
-       process. By default, all files starting with 'Trial' are processed.
-   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon
-       object will be created and connected.</pre></div>
+   For each selected trial in a session folder, runs the Nexus
+ reconstruct-and-label pipelines (RLPrePatternFill1 and 2), fills gaps by
+ reference-marker pattern, fills the remaining small gaps with 'makima'
+ interpolation, runs the post-fill pipeline (Butterworth smoothing),
+ saves the trial, and saves trajectory figures of the hip and ankle
+ markers. A failed pipeline stage only warns; a trial whose first two
+ pipelines fail is skipped.
+
+ Side effects: needs a running Vicon Nexus (a connection is opened when
+   no vicon object is passed); opens, edits, and saves each trial.
+   Writes &lt;fig|png&gt;/&lt;marker&gt;_Trial##.fig/.png under a TrajectoryFigures
+   folder next to the session folder. Each trial is saved in place over
+   its Nexus file and the figures overwrite same-named ones silently (see
+   DATA_OUTPUTS.md). Errors if the session folder does not exist.
+
+ Inputs:
+   pathSess   - path to the session folder holding the Trial*.x1d files
+   indsTrials - (optional) trial numbers to process; numbers without a
+                trial file are ignored (default: all trials)
+   vicon      - (optional) Vicon Nexus SDK object
+
+ Outputs:
+   none
+
+ Toolbox Dependencies: None
+
+ See also DATAMOTION.<a href="extractMarkerGapsTrial.html" class="code" title="function markerGaps = extractMarkerGapsTrial(pathTrial,vicon)">EXTRACTMARKERGAPSTRIAL</a>,
+   DATAMOTION.<a href="fillMarkerGapsPattern.html" class="code" title="function markerGapsUpdated =fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon,shouldSave)">FILLMARKERGAPSPATTERN</a>,
+   DATAMOTION.<a href="fillSmallMarkerGapsSpline.html" class="code" title="function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial,vicon, shouldSave, maxGapSize, interpMethod)">FILLSMALLMARKERGAPSSPLINE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../labTools/classes/synergies/@ClusteredSynergySetCollection/plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -53,339 +71,436 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets(</a></li><li><a href="#_sub2" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a></li><li><a href="#_sub3" class="code">function saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)</a></li></ul>
+<li><a href="#_sub1" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets(</a></li><li><a href="#_sub2" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a></li><li><a href="#_sub3" class="code">function saveTrajectoryFigures(pathSess, trialNum, vicon,</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)</a>
-0002 <span class="comment">%PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps</span>
-0003 <span class="comment">%   This function finds all trials in the session folder with filenames</span>
-0004 <span class="comment">% starting with 'Trial', filters them based on the specified indices, and</span>
-0005 <span class="comment">% runs the reconstruct and label pipelines. Then, the small marker gaps are</span>
-0006 <span class="comment">% filled using spline interpolation. Make sure the Vicon Nexus SDK is</span>
-0007 <span class="comment">% installed and added to the MATLAB path.</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">% input(s):</span>
-0010 <span class="comment">%   pathSess: path to the session folder where all trial data is stored.</span>
-0011 <span class="comment">%   indsTrials: (optional) array of indices indicating which trials to</span>
-0012 <span class="comment">%       process. By default, all files starting with 'Trial' are processed.</span>
-0013 <span class="comment">%   vicon: (optional) Vicon Nexus SDK object. If not supplied, a new Vicon</span>
-0014 <span class="comment">%       object will be created and connected.</span>
-0015 
-0016 <span class="comment">% TODO: add optional input for maximum marker gap size to pass along</span>
-0017 <span class="comment">% TODO: add a GUI input option if helpful</span>
-0018 narginchk(1,3);                 <span class="comment">% verify correct number of input arguments</span>
-0019 
-0020 <span class="comment">% ensure session folder path exists</span>
-0021 <span class="keyword">if</span> ~isfolder(pathSess)
-0022     error(<span class="string">'The session folder path specified does not exist: %s'</span>,pathSess);
-0023 <span class="keyword">end</span>
-0024 
-0025 <span class="comment">% get all trial files that start with 'Trial'</span>
-0026 trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
-0027 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)      <span class="comment">% if no trial files found, ...</span>
-0028     fprintf(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
-0029     <span class="keyword">return</span>;
-0030 <span class="keyword">end</span>
-0031 
-0032 <span class="comment">% extract trial indices from filenames</span>
-0033 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, <span class="keyword">...</span>
-0034     <span class="string">'UniformOutput'</span>,false);
-0035 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
-0036 
-0037 <span class="comment">% select trials to process</span>
-0038 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsTrials)    <span class="comment">% if 'indsTrials' not provided, ...</span>
-0039     indsTrials = indsTrialsAll;         <span class="comment">% process all trials</span>
-0040 <span class="keyword">else</span>    <span class="comment">% otherwise, ensure no values provided as input do not exist</span>
-0041     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
-0042 <span class="keyword">end</span>
-0043 
-0044 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
-0045 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
-0046     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
-0047         <span class="string">'Nexus...\n'</span>]);
-0048     vicon = ViconNexus();
-0049 <span class="keyword">end</span>
-0050 
-0051 <span class="comment">% define reference and target markers for pattern-based gap filling</span>
-0052 markersRef = {<span class="string">'GT'</span>,<span class="string">'KNEE'</span>,<span class="string">'GT'</span>,<span class="string">'ANK'</span>};
-0053 markersTarg = {
-0054     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
-0055     {<span class="string">'GT'</span>,<span class="string">'ANK'</span>}, <span class="keyword">...</span>
-0056     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
-0057     {<span class="string">'SHANK'</span>,<span class="string">'HEEL'</span>,<span class="string">'TOE'</span>}
-0058     };
-0059 
-0060 <span class="keyword">for</span> tr = indsTrials     <span class="comment">% for each trial specified, ...</span>
-0061     pathTrial = fullfile(pathSess,sprintf(<span class="string">'Trial%02d'</span>,tr));
-0062     fprintf(<span class="string">'Processing trial %d: %s\n'</span>,tr,pathTrial);
-0063 
-0064     <span class="comment">% open the trial if needed</span>
-0065     <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-0066         <span class="keyword">return</span>;     <span class="comment">% exit if the trial could not be opened</span>
-0067     <span class="keyword">end</span>
+0002 <span class="comment">%PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For each selected trial in a session folder, runs the Nexus</span>
+0005 <span class="comment">% reconstruct-and-label pipelines (RLPrePatternFill1 and 2), fills gaps by</span>
+0006 <span class="comment">% reference-marker pattern, fills the remaining small gaps with 'makima'</span>
+0007 <span class="comment">% interpolation, runs the post-fill pipeline (Butterworth smoothing),</span>
+0008 <span class="comment">% saves the trial, and saves trajectory figures of the hip and ankle</span>
+0009 <span class="comment">% markers. A failed pipeline stage only warns; a trial whose first two</span>
+0010 <span class="comment">% pipelines fail is skipped.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Side effects: needs a running Vicon Nexus (a connection is opened when</span>
+0013 <span class="comment">%   no vicon object is passed); opens, edits, and saves each trial.</span>
+0014 <span class="comment">%   Writes &lt;fig|png&gt;/&lt;marker&gt;_Trial##.fig/.png under a TrajectoryFigures</span>
+0015 <span class="comment">%   folder next to the session folder. Each trial is saved in place over</span>
+0016 <span class="comment">%   its Nexus file and the figures overwrite same-named ones silently (see</span>
+0017 <span class="comment">%   DATA_OUTPUTS.md). Errors if the session folder does not exist.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Inputs:</span>
+0020 <span class="comment">%   pathSess   - path to the session folder holding the Trial*.x1d files</span>
+0021 <span class="comment">%   indsTrials - (optional) trial numbers to process; numbers without a</span>
+0022 <span class="comment">%                trial file are ignored (default: all trials)</span>
+0023 <span class="comment">%   vicon      - (optional) Vicon Nexus SDK object</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Outputs:</span>
+0026 <span class="comment">%   none</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Toolbox Dependencies: None</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% See also DATAMOTION.EXTRACTMARKERGAPSTRIAL,</span>
+0031 <span class="comment">%   DATAMOTION.FILLMARKERGAPSPATTERN,</span>
+0032 <span class="comment">%   DATAMOTION.FILLSMALLMARKERGAPSSPLINE.</span>
+0033 
+0034 <span class="comment">% TODO: add optional input for maximum marker gap size to pass along</span>
+0035 <span class="comment">% TODO: add a GUI input option if helpful</span>
+0036 narginchk(1,3);                 <span class="comment">% verify correct number of input arguments</span>
+0037 
+0038 <span class="comment">%% Validate the session folder</span>
+0039 <span class="keyword">if</span> ~isfolder(pathSess)
+0040     error(<span class="string">'The session folder path specified does not exist: %s'</span>,pathSess);
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% get all trial files that start with 'Trial'</span>
+0044 trialFiles = dir(fullfile(pathSess,<span class="string">'Trial*.x1d'</span>));
+0045 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialFiles)      <span class="comment">% if no trial files found, ...</span>
+0046     fprintf(<span class="string">'No trials found in session folder: %s\n'</span>,pathSess);
+0047     <span class="keyword">return</span>;
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">%% Select trials</span>
+0051 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, <span class="keyword">...</span>
+0052     <span class="string">'UniformOutput'</span>,false);
+0053 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
+0054 
+0055 <span class="comment">% select trials to process</span>
+0056 <span class="keyword">if</span> nargin &lt; 2 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(indsTrials)    <span class="comment">% if 'indsTrials' not provided, ...</span>
+0057     indsTrials = indsTrialsAll;         <span class="comment">% process all trials</span>
+0058 <span class="keyword">else</span>    <span class="comment">% otherwise, ensure no values provided as input do not exist</span>
+0059     indsTrials = indsTrials(ismember(indsTrials,indsTrialsAll));
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="comment">% initialize the Vicon Nexus object if not provided</span>
+0063 <span class="keyword">if</span> nargin &lt; 3 || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(vicon)
+0064     fprintf([<span class="string">'No Vicon SDK object provided. Connecting to Vicon '</span> <span class="keyword">...</span>
+0065         <span class="string">'Nexus...\n'</span>]);
+0066     vicon = ViconNexus();
+0067 <span class="keyword">end</span>
 0068 
-0069     <span class="comment">% run reconstruct and label pipeline on the trial</span>
-0070     disp(<span class="string">'Running RLPrePatternFill1...'</span>);
-0071     <span class="keyword">try</span>
-0072         vicon.RunPipeline(<span class="string">'RLPrePatternFill1'</span>,<span class="string">''</span>,1200);
-0073     <span class="keyword">catch</span> ME
-0074         warning(<span class="string">'Failed to run RLPrePatternFill1 for trial %d: %s'</span>, tr, ME.message);
-0075         fprintf(<span class="string">'Skipping to next trial...\n'</span>);
-0076         <span class="keyword">continue</span>;
-0077     <span class="keyword">end</span>
-0078 
-0079     <span class="comment">% run woltring gap filling pipeline on the trial</span>
-0080     disp(<span class="string">'Running RLPrePatternFill2...'</span>);
-0081     <span class="keyword">try</span>
-0082         vicon.RunPipeline(<span class="string">'RLPrePatternFill2'</span>,<span class="string">''</span>,1200);
-0083     <span class="keyword">catch</span> ME
-0084         warning(<span class="string">'Failed to run RLPrePatternFill2 for trial %d: %s'</span>, tr, ME.message);
-0085         fprintf(<span class="string">'Skipping to next trial...\n'</span>);
-0086         <span class="keyword">continue</span>;
-0087     <span class="keyword">end</span>
-0088 
-0089     <span class="comment">% extract marker gaps to be filled</span>
-0090     <span class="keyword">try</span>
-0091         markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
-0092     <span class="keyword">catch</span> ME
-0093         warning(<span class="string">'Failed to extract marker gaps for trial %d: %s'</span>, tr, ME.message);
-0094         markerGaps = struct();
-0095     <span class="keyword">end</span>
-0096 
-0097     <span class="comment">% fill gaps using pattern fill for each reference marker</span>
-0098     disp(<span class="string">'Running Pattern Fill...'</span>);
-0099     <span class="keyword">for</span> ref = 1:numel(markersRef)       <span class="comment">% for each reference marker, ...</span>
-0100         refMarker = markersRef{ref};    <span class="comment">% retrieve reference marker name</span>
-0101         targetMarkers = markersTarg{ref};
-0102 
-0103         <span class="keyword">try</span>
-0104             <span class="comment">% Process gaps for the current reference marker</span>
-0105             markerGaps = <a href="#_sub1" class="code" title="subfunction markerGaps = fillMarkerGapsPatternSpecifiedTargets( ">fillMarkerGapsPatternSpecifiedTargets</a>( <span class="keyword">...</span>
-0106                 markerGaps,targetMarkers,refMarker,pathTrial,vicon);
-0107         <span class="keyword">catch</span> ME
-0108             warning(<span class="string">'Failed to fill gaps for reference marker %s for trial %d: %s'</span>, refMarker, tr, ME.message)
-0109         <span class="keyword">end</span>
-0110     <span class="keyword">end</span>
-0111 
-0112     <span class="comment">% fill remaining small gaps with makima</span>
-0113     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(markerGaps))
-0114         disp(<span class="string">'Filling remaining small marker gaps with makima...'</span>);
-0115         <span class="keyword">try</span>
-0116             dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false, 250, <span class="string">'makima'</span>);
-0117         <span class="keyword">catch</span> ME
-0118             warning(<span class="string">'Failed to fill small marker gaps for trial %d: %s'</span>, tr, ME.message);
-0119         <span class="keyword">end</span>
-0120     <span class="keyword">end</span>
-0121 
-0122 
-0123     <span class="comment">% smooth trajectories using Butterworth filter</span>
-0124     disp(<span class="string">'Running RLPostPatternFill...'</span>);
-0125     <span class="keyword">try</span>
-0126         vicon.RunPipeline(<span class="string">'RLPostPatternFill'</span>,<span class="string">''</span>,1200);
-0127     <span class="keyword">catch</span> ME
-0128         warning(<span class="string">'Failed to run RLPostPatternFill for trial %d: %s'</span>, tr, ME.message);
-0129     <span class="keyword">end</span>
-0130 
-0131     fprintf(<span class="string">'Saving trial %d: %s\n'</span>,tr,pathTrial);
-0132     <span class="keyword">try</span>
-0133         vicon.SaveTrial(900);
-0134         fprintf(<span class="string">'Vicon trial saved. Now creating trajectory figures...\n'</span>);
-0135 
-0136         <span class="comment">% Save trajectory figures</span>
-0137         <span class="keyword">try</span>
-0138             <span class="comment">% saveTrajectoryFigures(pathSess, pathTrial, tr, vicon);</span>
-0139             <span class="keyword">if</span> contains(pathSess, <span class="string">'C3'</span>, <span class="string">'IgnoreCase'</span>, true)
-0140                 <a href="#_sub3" class="code" title="subfunction saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)">saveTrajectoryFigures</a>(pathSess, tr, vicon, true); <span class="comment">% pass flag</span>
-0141             <span class="keyword">else</span>
-0142                 <a href="#_sub3" class="code" title="subfunction saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)">saveTrajectoryFigures</a>(pathSess, tr, vicon, false);
-0143             <span class="keyword">end</span>
-0144             fprintf(<span class="string">'Trajectory figures saved successfully for trial %d.\n'</span>, tr);
-0145         <span class="keyword">catch</span> ME
-0146             warning(<span class="string">'Failed to save trajectory figures for trial %d: %s'</span>, tr, ME.message);
-0147             fprintf(<span class="string">'Error details: %s\n'</span>, getReport(ME));
-0148         <span class="keyword">end</span>
-0149 
-0150         fprintf(<span class="string">'Trial %d processing completed.\n'</span>, tr);
-0151 
+0069 <span class="comment">%% Process each trial</span>
+0070 markersRef  = {<span class="string">'GT'</span>,<span class="string">'KNEE'</span>,<span class="string">'GT'</span>,<span class="string">'ANK'</span>};
+0071 markersTarg = {
+0072     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0073     {<span class="string">'GT'</span>,<span class="string">'ANK'</span>}, <span class="keyword">...</span>
+0074     {<span class="string">'ASIS'</span>,<span class="string">'PSIS'</span>,<span class="string">'THI'</span>,<span class="string">'KNEE'</span>}, <span class="keyword">...</span>
+0075     {<span class="string">'SHANK'</span>,<span class="string">'HEEL'</span>,<span class="string">'TOE'</span>}
+0076     };
+0077 
+0078 <span class="keyword">for</span> tr = indsTrials     <span class="comment">% for each trial specified, ...</span>
+0079     pathTrial = fullfile(pathSess,sprintf(<span class="string">'Trial%02d'</span>,tr));
+0080     fprintf(<span class="string">'Processing trial %d: %s\n'</span>,tr,pathTrial);
+0081 
+0082     <span class="comment">% open the trial if needed</span>
+0083     <span class="keyword">if</span> ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+0084         <span class="keyword">return</span>;     <span class="comment">% exit if the trial could not be opened</span>
+0085     <span class="keyword">end</span>
+0086 
+0087     <span class="comment">% run reconstruct and label pipeline on the trial</span>
+0088     disp(<span class="string">'Running RLPrePatternFill1...'</span>);
+0089     <span class="keyword">try</span>
+0090         vicon.RunPipeline(<span class="string">'RLPrePatternFill1'</span>,<span class="string">''</span>,1200);
+0091     <span class="keyword">catch</span> ME
+0092         warning(<span class="string">'Failed to run RLPrePatternFill1 for trial %d: %s'</span>, tr, <span class="keyword">...</span>
+0093             ME.message);
+0094         fprintf(<span class="string">'Skipping to next trial...\n'</span>);
+0095         <span class="keyword">continue</span>;
+0096     <span class="keyword">end</span>
+0097 
+0098     <span class="comment">% run woltring gap filling pipeline on the trial</span>
+0099     disp(<span class="string">'Running RLPrePatternFill2...'</span>);
+0100     <span class="keyword">try</span>
+0101         vicon.RunPipeline(<span class="string">'RLPrePatternFill2'</span>,<span class="string">''</span>,1200);
+0102     <span class="keyword">catch</span> ME
+0103         warning(<span class="string">'Failed to run RLPrePatternFill2 for trial %d: %s'</span>, tr, <span class="keyword">...</span>
+0104             ME.message);
+0105         fprintf(<span class="string">'Skipping to next trial...\n'</span>);
+0106         <span class="keyword">continue</span>;
+0107     <span class="keyword">end</span>
+0108 
+0109     <span class="comment">% extract marker gaps to be filled</span>
+0110     <span class="keyword">try</span>
+0111         markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
+0112     <span class="keyword">catch</span> ME
+0113         warning(<span class="string">'Failed to extract marker gaps for trial %d: %s'</span>, tr, <span class="keyword">...</span>
+0114             ME.message);
+0115         markerGaps = struct();
+0116     <span class="keyword">end</span>
+0117 
+0118     <span class="comment">% fill gaps using pattern fill for each reference marker</span>
+0119     disp(<span class="string">'Running Pattern Fill...'</span>);
+0120     <span class="keyword">for</span> ref = 1:numel(markersRef)       <span class="comment">% for each reference marker, ...</span>
+0121         refMarker     = markersRef{ref};    <span class="comment">% retrieve reference marker name</span>
+0122         targetMarkers = markersTarg{ref};
+0123 
+0124         <span class="keyword">try</span>
+0125             <span class="comment">% Process gaps for the current reference marker</span>
+0126             markerGaps = <a href="#_sub1" class="code" title="subfunction markerGaps = fillMarkerGapsPatternSpecifiedTargets( ">fillMarkerGapsPatternSpecifiedTargets</a>( <span class="keyword">...</span>
+0127                 markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+0128         <span class="keyword">catch</span> ME
+0129             warning([<span class="string">'Failed to fill gaps for reference marker %s for '</span> <span class="keyword">...</span>
+0130                 <span class="string">'trial %d: %s'</span>], refMarker, tr, ME.message)
+0131         <span class="keyword">end</span>
+0132     <span class="keyword">end</span>
+0133 
+0134     <span class="comment">% fill remaining small gaps with makima</span>
+0135     maxGapFrames = 250;     <span class="comment">% TODO: source?</span>
+0136     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(markerGaps))
+0137         disp(<span class="string">'Filling remaining small marker gaps with makima...'</span>);
+0138         <span class="keyword">try</span>
+0139             dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, <span class="keyword">...</span>
+0140                 vicon, false, maxGapFrames, <span class="string">'makima'</span>);
+0141         <span class="keyword">catch</span> ME
+0142             warning(<span class="string">'Failed to fill small marker gaps for trial %d: %s'</span>, <span class="keyword">...</span>
+0143                 tr, ME.message);
+0144         <span class="keyword">end</span>
+0145     <span class="keyword">end</span>
+0146 
+0147 
+0148     <span class="comment">% smooth trajectories using Butterworth filter</span>
+0149     disp(<span class="string">'Running RLPostPatternFill...'</span>);
+0150     <span class="keyword">try</span>
+0151         vicon.RunPipeline(<span class="string">'RLPostPatternFill'</span>,<span class="string">''</span>,1200);
 0152     <span class="keyword">catch</span> ME
-0153         warning(ME.identifier,<span class="string">'Failed to save trial %d: %s'</span>, tr, ME.message);
-0154     <span class="keyword">end</span>
-0155 <span class="keyword">end</span>
+0153         warning(<span class="string">'Failed to run RLPostPatternFill for trial %d: %s'</span>, tr, <span class="keyword">...</span>
+0154             ME.message);
+0155     <span class="keyword">end</span>
 0156 
-0157 fprintf(<span class="string">'All specified trials have been processed.\n'</span>);
-0158 <span class="keyword">end</span>
-0159 
-0160 <a name="_sub1" href="#_subfunctions" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets( </a><span class="keyword">...</span>
-0161     markerGaps,targetMarkers,refMarker,pathTrial,vicon)
-0162 <span class="comment">%PROCESSREFERENCEMARKERGAPS Process marker gaps for a reference marker</span>
-0163 <span class="comment">%   Helper function to perform a pattern-based fill of marker gaps for</span>
-0164 <span class="comment">% specified target markers and a referencefor right and left markers.</span>
-0165 
-0166 sides = {<span class="string">'R'</span>,<span class="string">'L'</span>};
-0167 <span class="keyword">for</span> side = sides
-0168     sidePrefix = side{1};
-0169     gaps = struct();
-0170 
-0171     <span class="comment">% collect gaps for the target markers</span>
-0172     <span class="keyword">for</span> targ = 1:numel(targetMarkers)
-0173         markerName = [sidePrefix targetMarkers{targ}];
-0174         <span class="keyword">if</span> isfield(markerGaps,markerName)
-0175             gaps.(markerName) = markerGaps.(markerName);
-0176         <span class="keyword">end</span>
-0177     <span class="keyword">end</span>
+0157     fprintf(<span class="string">'Saving trial %d: %s\n'</span>,tr,pathTrial);
+0158     <span class="keyword">try</span>
+0159         vicon.SaveTrial(900);
+0160         fprintf(<span class="string">'Vicon trial saved. Now creating trajectory figures...\n'</span>);
+0161 
+0162         <span class="comment">% Save trajectory figures</span>
+0163         <span class="keyword">try</span>
+0164             <span class="comment">% saveTrajectoryFigures(pathSess, pathTrial, tr, vicon);</span>
+0165             <span class="keyword">if</span> contains(pathSess, <span class="string">'C3'</span>, <span class="string">'IgnoreCase'</span>, true)
+0166                 <span class="comment">% pass flag</span>
+0167                 <a href="#_sub3" class="code" title="subfunction saveTrajectoryFigures(pathSess, trialNum, vicon, ">saveTrajectoryFigures</a>(pathSess, tr, vicon, true);
+0168             <span class="keyword">else</span>
+0169                 <a href="#_sub3" class="code" title="subfunction saveTrajectoryFigures(pathSess, trialNum, vicon, ">saveTrajectoryFigures</a>(pathSess, tr, vicon, false);
+0170             <span class="keyword">end</span>
+0171             fprintf([<span class="string">'Trajectory figures saved successfully for trial '</span> <span class="keyword">...</span>
+0172                 <span class="string">'%d.\n'</span>], tr);
+0173         <span class="keyword">catch</span> ME
+0174             warning([<span class="string">'Failed to save trajectory figures for trial '</span> <span class="keyword">...</span>
+0175                 <span class="string">'%d: %s'</span>], tr, ME.message);
+0176             fprintf(<span class="string">'Error details: %s\n'</span>, getReport(ME));
+0177         <span class="keyword">end</span>
 0178 
-0179     <span class="comment">% skip if no gaps to process</span>
-0180     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(gaps))
-0181         <span class="keyword">continue</span>;
-0182     <span class="keyword">end</span>
-0183 
-0184     <span class="comment">% fill gaps using pattern-based method</span>
-0185     remainingGaps = dataMotion.fillMarkerGapsPattern( <span class="keyword">...</span>
-0186         gaps,pathTrial,[sidePrefix refMarker],vicon,false);
-0187 
-0188     <span class="comment">% update the marker gaps structure with the remaining gaps</span>
-0189     markerNames = fieldnames(remainingGaps);
-0190     <span class="keyword">for</span> mrkr = 1:numel(markerNames)
-0191         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
-0192     <span class="keyword">end</span>
-0193 <span class="keyword">end</span>
-0194 
-0195 <span class="keyword">end</span>
-0196 
-0197 <a name="_sub2" href="#_subfunctions" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a>
-0198 
-0199 mrkrsRelevant = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
-0200 mrkrTrajs = struct();
-0201 
-0202 subjects = newVicon.GetSubjectNames();
-0203 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subjects)
-0204     warning(<span class="string">'No subject found in trial.'</span>);
-0205     mrkrTrajs = struct();
-0206     <span class="keyword">return</span>;
-0207 <span class="keyword">end</span>
-0208 subject = subjects{1};
-0209 fprintf(<span class="string">'Getting trajectories for subject: %s\n'</span>, subject);
-0210 
-0211 <span class="keyword">for</span> i = 1:numel(mrkrsRelevant)
-0212     marker = mrkrsRelevant{i};
-0213     <span class="keyword">try</span>
-0214         [trajX, trajY, trajZ, existsTraj] = newVicon.GetTrajectory(subject, marker);
-0215 
-0216         trajX(~existsTraj) = NaN;
-0217         trajY(~existsTraj) = NaN;
-0218         trajZ(~existsTraj) = NaN;
-0219 
-0220         mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];<span class="comment">%, double(exists(:))];</span>
-0221         fprintf(<span class="string">'Successfully retrieved trajectory for marker: %s\n'</span>, marker);
-0222     <span class="keyword">catch</span> ME
-0223         warning(<span class="string">'Failed to get trajectory for marker %s: %s'</span>, marker, ME.message);
-0224         mrkrTrajs.(marker) = [];  <span class="comment">% Empty array for failed markers</span>
-0225     <span class="keyword">end</span>
-0226 <span class="keyword">end</span>
-0227 
-0228 <span class="keyword">end</span>
-0229 
-0230 <a name="_sub3" href="#_subfunctions" class="code">function saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)</a>
-0231 
-0232 <span class="keyword">if</span> nargin &lt; 4
-0233     highlightTurningPoints = false;
-0234 <span class="keyword">end</span>
-0235 
-0236 markers = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
-0237 mrkrTrajs = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(vicon);
-0238 
-0239 outParent = fileparts(pathSess);
-0240 outDir = fullfile(outParent, <span class="string">'TrajectoryFigures'</span>);
-0241 figDir = fullfile(outDir, <span class="string">'fig'</span>);
-0242 pngDir = fullfile(outDir, <span class="string">'png'</span>);
+0179         fprintf(<span class="string">'Trial %d processing completed.\n'</span>, tr);
+0180 
+0181     <span class="keyword">catch</span> ME
+0182         warning(ME.identifier,<span class="string">'Failed to save trial %d: %s'</span>, tr, <span class="keyword">...</span>
+0183             ME.message);
+0184     <span class="keyword">end</span>
+0185 <span class="keyword">end</span>
+0186 
+0187 fprintf(<span class="string">'All specified trials have been processed.\n'</span>);
+0188 <span class="keyword">end</span>
+0189 
+0190 <a name="_sub1" href="#_subfunctions" class="code">function markerGaps = fillMarkerGapsPatternSpecifiedTargets( </a><span class="keyword">...</span>
+0191     markerGaps,targetMarkers,refMarker,pathTrial,vicon)
+0192 <span class="comment">%FILLMARKERGAPSPATTERNSPECIFIEDTARGETS Pattern-fill gaps for one reference.</span>
+0193 <span class="comment">%</span>
+0194 <span class="comment">%   For the right and left side, fills the gaps of the target markers</span>
+0195 <span class="comment">% (side prefix plus each target name) from the side's reference marker</span>
+0196 <span class="comment">% with fillMarkerGapsPattern, without saving the trial.</span>
+0197 <span class="comment">%</span>
+0198 <span class="comment">% Inputs:</span>
+0199 <span class="comment">%   markerGaps    - struct of [start end] gap frames per marker</span>
+0200 <span class="comment">%   targetMarkers - cell array of target marker names without side prefix</span>
+0201 <span class="comment">%   refMarker     - reference marker name without side prefix</span>
+0202 <span class="comment">%   pathTrial     - full path to the trial</span>
+0203 <span class="comment">%   vicon         - Vicon Nexus SDK object</span>
+0204 <span class="comment">%</span>
+0205 <span class="comment">% Outputs:</span>
+0206 <span class="comment">%   markerGaps - the input struct with the entries of the target markers</span>
+0207 <span class="comment">%                replaced by their remaining gaps</span>
+0208 <span class="comment">%</span>
+0209 <span class="comment">% Toolbox Dependencies: None</span>
+0210 <span class="comment">%</span>
+0211 <span class="comment">% See also DATAMOTION.FILLMARKERGAPSPATTERN.</span>
+0212 
+0213 sides = {<span class="string">'R'</span>,<span class="string">'L'</span>};
+0214 <span class="keyword">for</span> side = sides
+0215     sidePrefix = side{1};
+0216     gaps       = struct();
+0217 
+0218     <span class="comment">% collect gaps for the target markers</span>
+0219     <span class="keyword">for</span> targ = 1:numel(targetMarkers)
+0220         markerName = [sidePrefix targetMarkers{targ}];
+0221         <span class="keyword">if</span> isfield(markerGaps,markerName)
+0222             gaps.(markerName) = markerGaps.(markerName);
+0223         <span class="keyword">end</span>
+0224     <span class="keyword">end</span>
+0225 
+0226     <span class="comment">% skip if no gaps to process</span>
+0227     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(fieldnames(gaps))
+0228         <span class="keyword">continue</span>;
+0229     <span class="keyword">end</span>
+0230 
+0231     <span class="comment">% fill gaps using pattern-based method</span>
+0232     remainingGaps = dataMotion.fillMarkerGapsPattern( <span class="keyword">...</span>
+0233         gaps,pathTrial,[sidePrefix refMarker],vicon,false);
+0234 
+0235     <span class="comment">% update the marker gaps structure with the remaining gaps</span>
+0236     markerNames = fieldnames(remainingGaps);
+0237     <span class="keyword">for</span> mrkr = 1:numel(markerNames)
+0238         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
+0239     <span class="keyword">end</span>
+0240 <span class="keyword">end</span>
+0241 
+0242 <span class="keyword">end</span>
 0243 
-0244 <span class="keyword">if</span> ~exist(figDir, <span class="string">'dir'</span>)
-0245     mkdir(figDir);
-0246 <span class="keyword">end</span>
-0247 
-0248 <span class="keyword">if</span> ~exist(pngDir, <span class="string">'dir'</span>)
-0249     mkdir(pngDir);
-0250 <span class="keyword">end</span>
-0251 
-0252 lowerBound = -2500;
-0253 upperBound = 4500;
-0254 
-0255 <span class="keyword">for</span> i = 1:numel(markers)
-0256     markerName = markers{i};
-0257 
-0258     <span class="keyword">if</span> ~isfield(mrkrTrajs, markerName)
-0259         warning(<span class="string">'Marker %s not found in trial.'</span>, markerName);
-0260         <span class="keyword">continue</span>;
-0261     <span class="keyword">end</span>
-0262 
-0263     traj = mrkrTrajs.(markerName);
-0264     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(traj) || all(isnan(traj(:)))
-0265         warning(<span class="string">'No valid data for marker %s in trial %d.'</span>, markerName, trialNum);
-0266         <span class="keyword">continue</span>;
-0267     <span class="keyword">end</span>
-0268 
-0269     frames = 1:size(traj, 1);
-0270     yValues = traj(:,2);
-0271 
-0272     <span class="keyword">if</span> highlightTurningPoints <span class="comment">% only for C3 trajectories</span>
-0273         outOfBounds = (yValues &lt; lowerBound) | (yValues &gt; upperBound) | isnan(yValues);
-0274         outOfBounds = [false; outOfBounds(:); false];
-0275         d = diff(outOfBounds);
-0276         startIdxs = find(d == 1);
-0277         endIdxs   = find(d == -1) - 1;
-0278     <span class="keyword">end</span>
-0279 
-0280     <span class="comment">% Create stacked plot</span>
-0281     fig = figure(<span class="string">'Visible'</span>,<span class="string">'on'</span>, <span class="string">'Name'</span>, [<span class="string">'Trajectories for '</span> markerName], <span class="string">'NumberTitle'</span>, <span class="string">'off'</span>); <span class="comment">% changed this to &quot;on&quot; so that fig will automatically open</span>
-0282     tl = tiledlayout(3,1, <span class="string">'TileSpacing'</span>, <span class="string">'Compact'</span>);
-0283     title(tl, sprintf(<span class="string">'%s Trajectory - Trial %02d'</span>, markerName, trialNum), <span class="string">'Interpreter'</span>, <span class="string">'none'</span>);
-0284 
-0285     componentLabels = {<span class="string">'X'</span>,<span class="string">'Y'</span>,<span class="string">'Z'</span>};
-0286     <span class="keyword">for</span> dim = 1:3
-0287         ax = nexttile;
-0288         hold(ax,<span class="string">'on'</span>);
-0289         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ax, frames, traj(:,dim), <span class="string">'b-'</span>, <span class="string">'LineWidth'</span>,1.2);
-0290         ylabel(ax, [componentLabels{dim} <span class="string">' (mm)'</span>]);
-0291         <span class="keyword">if</span> dim == 3
-0292             xlabel(ax,<span class="string">'Frame'</span>);
-0293         <span class="keyword">end</span>
-0294         grid(ax,<span class="string">'on'</span>);
-0295 
-0296         dataMin = min(traj(:,dim),[],<span class="string">'omitnan'</span>);
-0297         dataMax = max(traj(:,dim),[],<span class="string">'omitnan'</span>);
-0298         padding = 0.1 * (dataMax - dataMin);
-0299         ylim(ax, [dataMin - padding, dataMax + padding]);
-0300 
-0301         <span class="keyword">if</span> highlightTurningPoints
-0302             <span class="comment">% vertical shading based on Y out-of-bounds, drawn on all subplots</span>
-0303             dataMin = min(traj(:,dim),[],<span class="string">'omitnan'</span>);
-0304             dataMax = max(traj(:,dim),[],<span class="string">'omitnan'</span>);
-0305             yMin = dataMin - 100;
-0306             yMax = dataMax + 100;
-0307 
-0308             <span class="keyword">for</span> j = 1:numel(startIdxs)
-0309                 fill(ax, [startIdxs(j) endIdxs(j) endIdxs(j) startIdxs(j)], <span class="keyword">...</span>
-0310                     [yMin yMin yMax yMax], <span class="keyword">...</span>
-0311                     [1 0 0], <span class="string">'FaceAlpha'</span>,0.2, <span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
-0312             <span class="keyword">end</span>
-0313 
-0314             <span class="comment">% only add Y threshold lines on Y subplot</span>
-0315             <span class="keyword">if</span> dim == 2
-0316                 yline(ax, lowerBound, <span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,1);
-0317                 yline(ax, upperBound, <span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,1);
-0318             <span class="keyword">end</span>
-0319         <span class="keyword">end</span>
-0320     <span class="keyword">end</span>
+0244 <a name="_sub2" href="#_subfunctions" class="code">function mrkrTrajs = getRelevantMrkrTrajs(newVicon)</a>
+0245 <span class="comment">%GETRELEVANTMRKRTRAJS Read the hip and ankle trajectories from Nexus.</span>
+0246 <span class="comment">%</span>
+0247 <span class="comment">%   Returns the RGT, LGT, RANK, and LANK trajectories of the first subject</span>
+0248 <span class="comment">% in the open trial, with frames where the marker does not exist set to</span>
+0249 <span class="comment">% NaN. A marker that cannot be read is returned as an empty array.</span>
+0250 <span class="comment">%</span>
+0251 <span class="comment">% Inputs:</span>
+0252 <span class="comment">%   newVicon - Vicon Nexus SDK object with a trial open</span>
+0253 <span class="comment">%</span>
+0254 <span class="comment">% Outputs:</span>
+0255 <span class="comment">%   mrkrTrajs - struct with one Nx3 [X Y Z] array per marker (mm)</span>
+0256 <span class="comment">%</span>
+0257 <span class="comment">% Toolbox Dependencies: None</span>
+0258 
+0259 mrkrsRelevant = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
+0260 mrkrTrajs     = struct();
+0261 
+0262 subjects = newVicon.GetSubjectNames();
+0263 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(subjects)
+0264     warning(<span class="string">'No subject found in trial.'</span>);
+0265     mrkrTrajs = struct();
+0266     <span class="keyword">return</span>;
+0267 <span class="keyword">end</span>
+0268 subject = subjects{1};
+0269 fprintf(<span class="string">'Getting trajectories for subject: %s\n'</span>, subject);
+0270 
+0271 <span class="keyword">for</span> mrkr = 1:numel(mrkrsRelevant)
+0272     marker = mrkrsRelevant{mrkr};
+0273     <span class="keyword">try</span>
+0274         [trajX, trajY, trajZ, existsTraj] = <span class="keyword">...</span>
+0275             newVicon.GetTrajectory(subject, marker);
+0276 
+0277         trajX(~existsTraj) = NaN;
+0278         trajY(~existsTraj) = NaN;
+0279         trajZ(~existsTraj) = NaN;
+0280 
+0281         <span class="comment">%, double(exists(:))];</span>
+0282         mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];
+0283         fprintf(<span class="string">'Successfully retrieved trajectory for marker: %s\n'</span>, <span class="keyword">...</span>
+0284             marker);
+0285     <span class="keyword">catch</span> ME
+0286         warning(<span class="string">'Failed to get trajectory for marker %s: %s'</span>, marker, <span class="keyword">...</span>
+0287             ME.message);
+0288         mrkrTrajs.(marker) = [];  <span class="comment">% Empty array for failed markers</span>
+0289     <span class="keyword">end</span>
+0290 <span class="keyword">end</span>
+0291 
+0292 <span class="keyword">end</span>
+0293 
+0294 <a name="_sub3" href="#_subfunctions" class="code">function saveTrajectoryFigures(pathSess, trialNum, vicon, </a><span class="keyword">...</span>
+0295     highlightTurningPoints)
+0296 <span class="comment">%SAVETRAJECTORYFIGURES Save X/Y/Z trajectory figures of the hip and ankle.</span>
+0297 <span class="comment">%</span>
+0298 <span class="comment">%   Plots the X, Y, and Z trajectories of RGT, LGT, RANK, and LANK of the</span>
+0299 <span class="comment">% open trial in a stacked layout and saves each marker as .fig and .png.</span>
+0300 <span class="comment">% With highlightTurningPoints, frames whose Y value is outside the walkway</span>
+0301 <span class="comment">% bounds are shaded and the bounds drawn on the Y panel.</span>
+0302 <span class="comment">%</span>
+0303 <span class="comment">% Side effects: creates TrajectoryFigures/fig and TrajectoryFigures/png</span>
+0304 <span class="comment">%   next to the session folder if missing and writes</span>
+0305 <span class="comment">%   &lt;marker&gt;_Trial##.fig and .png there; each figure is opened and then</span>
+0306 <span class="comment">%   closed.</span>
+0307 <span class="comment">%</span>
+0308 <span class="comment">% Inputs:</span>
+0309 <span class="comment">%   pathSess               - path to the session folder</span>
+0310 <span class="comment">%   trialNum               - trial number used in titles and file names</span>
+0311 <span class="comment">%   vicon                  - Vicon Nexus SDK object with the trial open</span>
+0312 <span class="comment">%   highlightTurningPoints - (optional) logical, shade out-of-bounds Y</span>
+0313 <span class="comment">%                            frames (default: false)</span>
+0314 <span class="comment">%</span>
+0315 <span class="comment">% Outputs:</span>
+0316 <span class="comment">%   none</span>
+0317 <span class="comment">%</span>
+0318 <span class="comment">% Toolbox Dependencies: None</span>
+0319 <span class="comment">%</span>
+0320 <span class="comment">% See also GETRELEVANTMRKRTRAJS.</span>
 0321 
-0322     <span class="comment">% Save .fig and .png</span>
-0323     baseName = sprintf(<span class="string">'%s_Trial%02d'</span>, markerName, trialNum);
-0324     savefig(fig, fullfile(figDir, [baseName <span class="string">'.fig'</span>]));
-0325     saveas(fig, fullfile(pngDir, [baseName <span class="string">'.png'</span>]));
-0326     close(fig);
-0327 <span class="keyword">end</span>
+0322 <span class="keyword">if</span> nargin &lt; 4
+0323     highlightTurningPoints = false;
+0324 <span class="keyword">end</span>
+0325 
+0326 markers   = {<span class="string">'RGT'</span>,<span class="string">'LGT'</span>,<span class="string">'RANK'</span>,<span class="string">'LANK'</span>};
+0327 mrkrTrajs = <a href="#_sub2" class="code" title="subfunction mrkrTrajs = getRelevantMrkrTrajs(newVicon)">getRelevantMrkrTrajs</a>(vicon);
 0328 
-0329 <span class="keyword">end</span>
-0330</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0329 outParent = fileparts(pathSess);
+0330 outDir    = fullfile(outParent, <span class="string">'TrajectoryFigures'</span>);
+0331 figDir    = fullfile(outDir, <span class="string">'fig'</span>);
+0332 pngDir    = fullfile(outDir, <span class="string">'png'</span>);
+0333 
+0334 <span class="keyword">if</span> ~exist(figDir, <span class="string">'dir'</span>)
+0335     mkdir(figDir);
+0336 <span class="keyword">end</span>
+0337 
+0338 <span class="keyword">if</span> ~exist(pngDir, <span class="string">'dir'</span>)
+0339     mkdir(pngDir);
+0340 <span class="keyword">end</span>
+0341 
+0342 lowerBound = -2500;     <span class="comment">% TODO: source?</span>
+0343 upperBound = 4500;      <span class="comment">% TODO: source?</span>
+0344 
+0345 <span class="keyword">for</span> mrkr = 1:numel(markers)
+0346     markerName = markers{mrkr};
+0347 
+0348     <span class="keyword">if</span> ~isfield(mrkrTrajs, markerName)
+0349         warning(<span class="string">'Marker %s not found in trial.'</span>, markerName);
+0350         <span class="keyword">continue</span>;
+0351     <span class="keyword">end</span>
+0352 
+0353     traj = mrkrTrajs.(markerName);
+0354     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(traj) || all(isnan(traj(:)))
+0355         warning(<span class="string">'No valid data for marker %s in trial %d.'</span>, markerName, <span class="keyword">...</span>
+0356             trialNum);
+0357         <span class="keyword">continue</span>;
+0358     <span class="keyword">end</span>
+0359 
+0360     frames  = 1:size(traj, 1);
+0361     yValues = traj(:,2);
+0362 
+0363     <span class="keyword">if</span> highlightTurningPoints <span class="comment">% only for C3 trajectories</span>
+0364         outOfBounds = (yValues &lt; lowerBound) | (yValues &gt; upperBound) | <span class="keyword">...</span>
+0365             isnan(yValues);
+0366         outOfBounds = [false; outOfBounds(:); false];
+0367         d           = diff(outOfBounds);
+0368         startIdxs   = find(d == 1);
+0369         endIdxs     = find(d == -1) - 1;
+0370     <span class="keyword">end</span>
+0371 
+0372     <span class="comment">% Create stacked plot</span>
+0373     <span class="comment">% visible so the figure opens automatically</span>
+0374     fig = figure(<span class="string">'Visible'</span>,<span class="string">'on'</span>, <span class="string">'Name'</span>, <span class="keyword">...</span>
+0375         [<span class="string">'Trajectories for '</span> markerName], <span class="string">'NumberTitle'</span>, <span class="string">'off'</span>);
+0376     tl  = tiledlayout(3,1, <span class="string">'TileSpacing'</span>, <span class="string">'Compact'</span>);
+0377     title(tl, sprintf(<span class="string">'%s Trajectory - Trial %02d'</span>, markerName, <span class="keyword">...</span>
+0378         trialNum), <span class="string">'Interpreter'</span>, <span class="string">'none'</span>);
+0379 
+0380     componentLabels = {<span class="string">'X'</span>,<span class="string">'Y'</span>,<span class="string">'Z'</span>};
+0381     <span class="keyword">for</span> dim = 1:3
+0382         ax = nexttile;
+0383         hold(ax,<span class="string">'on'</span>);
+0384         <a href="../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>(ax, frames, traj(:,dim), <span class="string">'b-'</span>, <span class="string">'LineWidth'</span>,1.2);
+0385         ylabel(ax, [componentLabels{dim} <span class="string">' (mm)'</span>]);
+0386         <span class="keyword">if</span> dim == 3
+0387             xlabel(ax,<span class="string">'Frame'</span>);
+0388         <span class="keyword">end</span>
+0389         grid(ax,<span class="string">'on'</span>);
+0390 
+0391         dataMin = min(traj(:,dim),[],<span class="string">'omitnan'</span>);
+0392         dataMax = max(traj(:,dim),[],<span class="string">'omitnan'</span>);
+0393         padding = 0.1 * (dataMax - dataMin);
+0394         ylim(ax, [dataMin - padding, dataMax + padding]);
+0395 
+0396         <span class="keyword">if</span> highlightTurningPoints
+0397             <span class="comment">% vertical shading based on Y out-of-bounds, drawn on all</span>
+0398             <span class="comment">% subplots</span>
+0399             dataMin = min(traj(:,dim),[],<span class="string">'omitnan'</span>);
+0400             dataMax = max(traj(:,dim),[],<span class="string">'omitnan'</span>);
+0401             yMin    = dataMin - 100;
+0402             yMax    = dataMax + 100;
+0403 
+0404             <span class="keyword">for</span> ii = 1:numel(startIdxs)
+0405                 fill(ax, [startIdxs(ii) endIdxs(ii) endIdxs(ii) <span class="keyword">...</span>
+0406                     startIdxs(ii)], <span class="keyword">...</span>
+0407                     [yMin yMin yMax yMax], <span class="keyword">...</span>
+0408                     [1 0 0], <span class="string">'FaceAlpha'</span>,0.2, <span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0409             <span class="keyword">end</span>
+0410 
+0411             <span class="comment">% only add Y threshold lines on Y subplot</span>
+0412             <span class="keyword">if</span> dim == 2
+0413                 yline(ax, lowerBound, <span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,1);
+0414                 yline(ax, upperBound, <span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,1);
+0415             <span class="keyword">end</span>
+0416         <span class="keyword">end</span>
+0417     <span class="keyword">end</span>
+0418 
+0419     <span class="comment">% Save .fig and .png</span>
+0420     baseName = sprintf(<span class="string">'%s_Trial%02d'</span>, markerName, trialNum);
+0421     savefig(fig, fullfile(figDir, [baseName <span class="string">'.fig'</span>]));
+0422     saveas(fig, fullfile(pngDir, [baseName <span class="string">'.png'</span>]));
+0423     close(fig);
+0424 <span class="keyword">end</span>
+0425 
+0426 <span class="keyword">end</span>
+0427</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

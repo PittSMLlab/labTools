@@ -4,7 +4,7 @@
 <head>
   <title>Description of batchReProcess</title>
   <meta name="keywords" content="batchReProcess">
-  <meta name="description" content="ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}">
+  <meta name="description" content="BATCHREPROCESS Reprocess raw experiment data for a list of subjects.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,32 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</strong></div>
+<div class="box"><strong>BATCHREPROCESS Reprocess raw experiment data for a list of subjects.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function batchReProcess(subjects,eventClass) </strong></div>
+<div class="box"><strong>function batchReProcess(subjects, eventClass) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</pre></div>
+<div class="fragment"><pre class="comment">BATCHREPROCESS Reprocess raw experiment data for a list of subjects.
+
+   Loads each subject's RAW.mat file, runs process() with the given
+ event class, and saves both the expData struct and the derived data
+ object to the same location as the RAW file, silently overwriting
+ existing &lt;ID&gt;.mat and &lt;ID&gt;params.mat files (see DATA_OUTPUTS.md).
+
+   Example:
+     batchReProcess({'OG11','OG12','OG13'}, eventClass)
+
+ Inputs:
+   subjects   - Cell array of subject ID strings, or a single string
+   eventClass - Event class passed to rawExpData.process()
+
+ Outputs:
+   None (saves files to disk)
+
+ Toolbox Dependencies: None
+
+ See also EXPERIMENTDATA.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -42,33 +61,56 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function batchReProcess(subjects,eventClass)</a>
-0002 <span class="comment">% ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</span>
-0003 
-0004 <span class="keyword">if</span> isa(subjects,<span class="string">'char'</span>)
-0005     subjects={subjects};    
-0006 <span class="keyword">end</span>
-0007 
-0008 <span class="keyword">for</span> s=subjects
-0009     <span class="keyword">try</span>
-0010         load([char(s),<span class="string">'RAW.mat'</span>]) <span class="comment">%could do this with not raw, but raw is faster to load</span>
-0011         saveloc = [];
-0012     <span class="keyword">catch</span>
-0013         <span class="keyword">try</span>
-0014             load([char(s) filesep char(s) <span class="string">'RAW.mat'</span>])
-0015             saveloc=[char(s) filesep];
-0016         <span class="keyword">catch</span>
-0017             ME=MException(<span class="string">'makeDataObject:loadSubject'</span>,[char(s) <span class="string">' could not be loaded, try changing your matlab path.'</span>]);
-0018             throw(ME)
-0019         <span class="keyword">end</span>
-0020     <span class="keyword">end</span>
-0021         
-0022     expData=rawExpData.process(eventClass);
-0023     save([saveloc,char(s)],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>)
-0024     expData.makeDataObj([saveloc char(s)]); <span class="comment">%overwrites file</span>
-0025     
-0026     clearvars -except eventClass
-0027 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function batchReProcess(subjects, eventClass)</a>
+0002 <span class="comment">%BATCHREPROCESS Reprocess raw experiment data for a list of subjects.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Loads each subject's RAW.mat file, runs process() with the given</span>
+0005 <span class="comment">% event class, and saves both the expData struct and the derived data</span>
+0006 <span class="comment">% object to the same location as the RAW file, silently overwriting</span>
+0007 <span class="comment">% existing &lt;ID&gt;.mat and &lt;ID&gt;params.mat files (see DATA_OUTPUTS.md).</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Example:</span>
+0010 <span class="comment">%     batchReProcess({'OG11','OG12','OG13'}, eventClass)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   subjects   - Cell array of subject ID strings, or a single string</span>
+0014 <span class="comment">%   eventClass - Event class passed to rawExpData.process()</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   None (saves files to disk)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Toolbox Dependencies: None</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also EXPERIMENTDATA.</span>
+0022 
+0023 <span class="keyword">if</span> isa(subjects, <span class="string">'char'</span>)
+0024     subjects = {subjects};
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="keyword">for</span> sub = subjects
+0028     <span class="keyword">try</span>
+0029         load([char(sub) <span class="string">'RAW.mat'</span>])
+0030         saveloc = [];
+0031     <span class="keyword">catch</span>
+0032         <span class="keyword">try</span>
+0033             load(fullfile(char(sub), [char(sub) <span class="string">'RAW.mat'</span>]))
+0034             saveloc = [char(sub) filesep];
+0035         <span class="keyword">catch</span>
+0036             ME = MException(<span class="string">'makeDataObject:loadSubject'</span>, <span class="keyword">...</span>
+0037                 [char(sub) <span class="string">' could not be loaded, try changing '</span> <span class="keyword">...</span>
+0038                 <span class="string">'your matlab path.'</span>]);
+0039             throw(ME)
+0040         <span class="keyword">end</span>
+0041     <span class="keyword">end</span>
+0042 
+0043     expData = rawExpData.process(eventClass);
+0044     save([saveloc, char(sub)], <span class="string">'expData'</span>, <span class="string">'-v7.3'</span>)
+0045     expData.makeDataObj([saveloc char(sub)]);
+0046 
+0047     clearvars -except eventClass
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

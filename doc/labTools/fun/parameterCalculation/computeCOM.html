@@ -66,10 +66,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns new labTimeSeries with given label(s)</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns labTimeSeries (override)</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@processedEMGTimeSeries/getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	getDataAsTS  Returns processedEMGTimeSeries with specified label(s)</li><li><a href="appendBodyCOM.html" class="code" title="function markerDataOut = appendBodyCOM(markerData, BW)">appendBodyCOM</a>	APPENDBODYCOM Approximate whole-body center of mass from marker data.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@labTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	GETDATAASTS Returns new labTimeSeries with given label(s).</li><li><a href="../../../labTools/classes/labTS/@orientedLabTimeSeries/getDataAsTS.html" class="code" title="function [newTS, auxLabel] = getDataAsTS(this, label)">getDataAsTS</a>	GETDATAASTS Returns labTimeSeries (override).</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="../../../labTools/classes/labTS/@processedEMGTimeSeries/getDataAsTS.html" class="code" title="function newTS = getDataAsTS(this, label)">getDataAsTS</a>	GETDATAASTS Returns processedEMGTimeSeries with specified label(s).</li><li><a href="appendBodyCOM.html" class="code" title="function markerDataOut = appendBodyCOM(markerData, BW)">appendBodyCOM</a>	APPENDBODYCOM Approximate whole-body center of mass from marker data.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP Compute AP GRF parameters from overground force plates.</li><li><a href="computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="computeForceParameters_OGFP.html" class="code" title="function out = computeForceParameters_OGFP(strideEvents, GRFData,slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP</a>	COMPUTEFORCEPARAMETERS_OGFP AP GRF parameters from overground plates.</li><li><a href="computeForceParameters_OGFP_aligned.html" class="code" title="function out = computeForceParameters_OGFP_aligned(strideEvents,GRFData, slowleg, fastleg, BW, trialData, markerData)">computeForceParameters_OGFP_aligned</a>	COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Stride-aligned AP GRF parameters.</li></ul>
 <!-- crossreference -->
 
 
@@ -312,251 +312,255 @@ This function is called by:
 0235 
 0236             [COMveloFY_Norm_Rot_max(st), <span class="keyword">...</span>
 0237                 COMveloFY_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
-0238                 max(flipIT.*AlignedCOMVelo_FY.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0239             [COMveloSY_Norm_Rot_max(st), <span class="keyword">...</span>
-0240                 COMveloSY_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
-0241                 max(flipIT.*AlignedCOMVelo_SY.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0242             [COMveloFY_Norm_Rot_min(st), <span class="keyword">...</span>
-0243                 COMveloFY_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
-0244                 min(flipIT.*AlignedCOMVelo_FY.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0245             [COMveloSY_Norm_Rot_min(st), <span class="keyword">...</span>
-0246                 COMveloSY_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
-0247                 min(flipIT.*AlignedCOMVelo_SY.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0248 
-0249             [COMveloFZ_Norm_Rot_max(st), <span class="keyword">...</span>
-0250                 COMveloFZ_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
-0251                 max(AlignedCOMVelo_FZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0252             [COMveloSZ_Norm_Rot_max(st), <span class="keyword">...</span>
-0253                 COMveloSZ_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
-0254                 max(AlignedCOMVelo_SZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0255             [COMveloFZ_Norm_Rot_min(st), <span class="keyword">...</span>
-0256                 COMveloFZ_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
-0257                 min(AlignedCOMVelo_FZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0258             [COMveloSZ_Norm_Rot_min(st), <span class="keyword">...</span>
-0259                 COMveloSZ_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
-0260                 min(AlignedCOMVelo_SZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
-0261 
-0262         <span class="keyword">else</span>
-0263             COMFZ_Norm_Rot_minIndex(st) = NaN;
-0264             COMSZ_Norm_Rot_minIndex(st) = NaN;
+0238                 max(flipIT.*AlignedCOMVelo_FY.Data(:, 1, st), [], <span class="keyword">...</span>
+0239                     <span class="string">'omitnan'</span>);
+0240             [COMveloSY_Norm_Rot_max(st), <span class="keyword">...</span>
+0241                 COMveloSY_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
+0242                 max(flipIT.*AlignedCOMVelo_SY.Data(:, 1, st), [], <span class="keyword">...</span>
+0243                     <span class="string">'omitnan'</span>);
+0244             [COMveloFY_Norm_Rot_min(st), <span class="keyword">...</span>
+0245                 COMveloFY_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
+0246                 min(flipIT.*AlignedCOMVelo_FY.Data(:, 1, st), [], <span class="keyword">...</span>
+0247                     <span class="string">'omitnan'</span>);
+0248             [COMveloSY_Norm_Rot_min(st), <span class="keyword">...</span>
+0249                 COMveloSY_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
+0250                 min(flipIT.*AlignedCOMVelo_SY.Data(:, 1, st), [], <span class="keyword">...</span>
+0251                     <span class="string">'omitnan'</span>);
+0252 
+0253             [COMveloFZ_Norm_Rot_max(st), <span class="keyword">...</span>
+0254                 COMveloFZ_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
+0255                 max(AlignedCOMVelo_FZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
+0256             [COMveloSZ_Norm_Rot_max(st), <span class="keyword">...</span>
+0257                 COMveloSZ_Norm_Rot_maxIndex(st)] = <span class="keyword">...</span>
+0258                 max(AlignedCOMVelo_SZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
+0259             [COMveloFZ_Norm_Rot_min(st), <span class="keyword">...</span>
+0260                 COMveloFZ_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
+0261                 min(AlignedCOMVelo_FZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
+0262             [COMveloSZ_Norm_Rot_min(st), <span class="keyword">...</span>
+0263                 COMveloSZ_Norm_Rot_minIndex(st)] = <span class="keyword">...</span>
+0264                 min(AlignedCOMVelo_SZ.Data(:, 1, st), [], <span class="string">'omitnan'</span>);
 0265 
-0266             <span class="comment">% AVERAGE: Normalized, Rotated COM position and Velocity</span>
-0267             COMFY_Norm_Rot_mean(st) = NaN;
-0268             COMSY_Norm_Rot_mean(st) = NaN;
-0269             COMFZ_Norm_Rot_mean(st) = NaN;
-0270             COMSZ_Norm_Rot_mean(st) = NaN;
-0271 
-0272             COMveloFY_Norm_Rot_mean(st) = NaN;
-0273             COMveloSY_Norm_Rot_mean(st) = NaN;
-0274             COMveloFZ_Norm_Rot_mean(st) = NaN;
-0275             COMveloSZ_Norm_Rot_mean(st) = NaN;
-0276 
-0277             COMFY_Norm_Rot_DSmean(st) = NaN;
-0278             COMSY_Norm_Rot_DSmean(st) = NaN;
-0279             COMFZ_Norm_Rot_DSmean(st) = NaN;
-0280             COMSZ_Norm_Rot_DSmean(st) = NaN;
-0281 
-0282             COMFY_Norm_Rot_WHOLEmean(st) = NaN;
-0283             COMSY_Norm_Rot_WHOLEmean(st) = NaN;
-0284             COMFZ_Norm_Rot_WHOLEmean(st) = NaN;
-0285             COMSZ_Norm_Rot_WHOLEmean(st) = NaN;
-0286 
-0287             COMveloFY_Norm_Rot_WHOLEmean(st) = NaN;
-0288             COMveloSY_Norm_Rot_WHOLEmean(st) = NaN;
-0289             COMveloFZ_Norm_Rot_WHOLEmean(st) = NaN;
-0290             COMveloSZ_Norm_Rot_WHOLEmean(st) = NaN;
-0291 
-0292             <span class="comment">% Little Bump Average: Normalized, Rotated COM pos. and Velocity</span>
-0293             COMFZ_Norm_Rot_Retraction(st)     = NaN;
-0294             COMSZ_Norm_Rot_Retraction(st)     = NaN;
-0295             COMveloFZ_Norm_Rot_Retraction(st) = NaN;
-0296             COMveloSZ_Norm_Rot_Retraction(st) = NaN;
-0297 
-0298             <span class="comment">%Time Normalied -- Rotated -- COM position and Velocity</span>
-0299             COMFY_Norm_Rot_max(st)      = NaN;
-0300             COMFY_Norm_Rot_maxIndex(st) = NaN;
-0301             COMSY_Norm_Rot_max(st)      = NaN;
-0302             COMSY_Norm_Rot_maxIndex(st) = NaN;
-0303             COMFY_Norm_Rot_min(st)      = NaN;
-0304             COMFY_Norm_Rot_minIndex(st) = NaN;
-0305             COMSY_Norm_Rot_min(st)      = NaN;
-0306             COMSY_Norm_Rot_minIndex(st) = NaN;
-0307 
-0308             COMFZ_Norm_Rot_max(st)      = NaN;
-0309             COMFZ_Norm_Rot_maxIndex(st) = NaN;
-0310             COMSZ_Norm_Rot_max(st)      = NaN;
-0311             COMSZ_Norm_Rot_maxIndex(st) = NaN;
-0312             COMFZ_Norm_Rot_min(st)      = NaN;
-0313             COMFZ_Norm_Rot_minIndex(st) = NaN;
-0314             COMSZ_Norm_Rot_min(st)      = NaN;
-0315             COMSZ_Norm_Rot_minIndex(st) = NaN;
-0316 
-0317             COMveloFY_Norm_Rot_max(st)      = NaN;
-0318             COMveloFY_Norm_Rot_maxIndex(st) = NaN;
-0319             COMveloSY_Norm_Rot_max(st)      = NaN;
-0320             COMveloSY_Norm_Rot_maxIndex(st) = NaN;
-0321             COMveloFY_Norm_Rot_min(st)      = NaN;
-0322             COMveloFY_Norm_Rot_minIndex(st) = NaN;
-0323             COMveloSY_Norm_Rot_min(st)      = NaN;
-0324             COMveloSY_Norm_Rot_minIndex(st) = NaN;
-0325 
-0326             COMveloFZ_Norm_Rot_max(st)      = NaN;
-0327             COMveloFZ_Norm_Rot_maxIndex(st) = NaN;
-0328             COMveloSZ_Norm_Rot_max(st)      = NaN;
-0329             COMveloSZ_Norm_Rot_maxIndex(st) = NaN;
-0330             COMveloFZ_Norm_Rot_min(st)      = NaN;
-0331             COMveloFZ_Norm_Rot_minIndex(st) = NaN;
-0332             COMveloSZ_Norm_Rot_min(st)      = NaN;
-0333             COMveloSZ_Norm_Rot_minIndex(st) = NaN;
-0334         <span class="keyword">end</span>
-0335     <span class="keyword">end</span>
-0336     clear tempFHS tempSHS
-0337 <span class="keyword">end</span>
-0338 
-0339 <span class="comment">%% Compute Symmetry Parameters</span>
-0340 COMveloY = COMveloFY - COMveloSY;
-0341 COMveloZ = COMveloFZ - COMveloSZ;
+0266         <span class="keyword">else</span>
+0267             COMFZ_Norm_Rot_minIndex(st) = NaN;
+0268             COMSZ_Norm_Rot_minIndex(st) = NaN;
+0269 
+0270             <span class="comment">% AVERAGE: Normalized, Rotated COM position and Velocity</span>
+0271             COMFY_Norm_Rot_mean(st) = NaN;
+0272             COMSY_Norm_Rot_mean(st) = NaN;
+0273             COMFZ_Norm_Rot_mean(st) = NaN;
+0274             COMSZ_Norm_Rot_mean(st) = NaN;
+0275 
+0276             COMveloFY_Norm_Rot_mean(st) = NaN;
+0277             COMveloSY_Norm_Rot_mean(st) = NaN;
+0278             COMveloFZ_Norm_Rot_mean(st) = NaN;
+0279             COMveloSZ_Norm_Rot_mean(st) = NaN;
+0280 
+0281             COMFY_Norm_Rot_DSmean(st) = NaN;
+0282             COMSY_Norm_Rot_DSmean(st) = NaN;
+0283             COMFZ_Norm_Rot_DSmean(st) = NaN;
+0284             COMSZ_Norm_Rot_DSmean(st) = NaN;
+0285 
+0286             COMFY_Norm_Rot_WHOLEmean(st) = NaN;
+0287             COMSY_Norm_Rot_WHOLEmean(st) = NaN;
+0288             COMFZ_Norm_Rot_WHOLEmean(st) = NaN;
+0289             COMSZ_Norm_Rot_WHOLEmean(st) = NaN;
+0290 
+0291             COMveloFY_Norm_Rot_WHOLEmean(st) = NaN;
+0292             COMveloSY_Norm_Rot_WHOLEmean(st) = NaN;
+0293             COMveloFZ_Norm_Rot_WHOLEmean(st) = NaN;
+0294             COMveloSZ_Norm_Rot_WHOLEmean(st) = NaN;
+0295 
+0296             <span class="comment">% Little Bump Average: Normalized, Rotated COM pos. and Velocity</span>
+0297             COMFZ_Norm_Rot_Retraction(st)     = NaN;
+0298             COMSZ_Norm_Rot_Retraction(st)     = NaN;
+0299             COMveloFZ_Norm_Rot_Retraction(st) = NaN;
+0300             COMveloSZ_Norm_Rot_Retraction(st) = NaN;
+0301 
+0302             <span class="comment">%Time Normalied -- Rotated -- COM position and Velocity</span>
+0303             COMFY_Norm_Rot_max(st)      = NaN;
+0304             COMFY_Norm_Rot_maxIndex(st) = NaN;
+0305             COMSY_Norm_Rot_max(st)      = NaN;
+0306             COMSY_Norm_Rot_maxIndex(st) = NaN;
+0307             COMFY_Norm_Rot_min(st)      = NaN;
+0308             COMFY_Norm_Rot_minIndex(st) = NaN;
+0309             COMSY_Norm_Rot_min(st)      = NaN;
+0310             COMSY_Norm_Rot_minIndex(st) = NaN;
+0311 
+0312             COMFZ_Norm_Rot_max(st)      = NaN;
+0313             COMFZ_Norm_Rot_maxIndex(st) = NaN;
+0314             COMSZ_Norm_Rot_max(st)      = NaN;
+0315             COMSZ_Norm_Rot_maxIndex(st) = NaN;
+0316             COMFZ_Norm_Rot_min(st)      = NaN;
+0317             COMFZ_Norm_Rot_minIndex(st) = NaN;
+0318             COMSZ_Norm_Rot_min(st)      = NaN;
+0319             COMSZ_Norm_Rot_minIndex(st) = NaN;
+0320 
+0321             COMveloFY_Norm_Rot_max(st)      = NaN;
+0322             COMveloFY_Norm_Rot_maxIndex(st) = NaN;
+0323             COMveloSY_Norm_Rot_max(st)      = NaN;
+0324             COMveloSY_Norm_Rot_maxIndex(st) = NaN;
+0325             COMveloFY_Norm_Rot_min(st)      = NaN;
+0326             COMveloFY_Norm_Rot_minIndex(st) = NaN;
+0327             COMveloSY_Norm_Rot_min(st)      = NaN;
+0328             COMveloSY_Norm_Rot_minIndex(st) = NaN;
+0329 
+0330             COMveloFZ_Norm_Rot_max(st)      = NaN;
+0331             COMveloFZ_Norm_Rot_maxIndex(st) = NaN;
+0332             COMveloSZ_Norm_Rot_max(st)      = NaN;
+0333             COMveloSZ_Norm_Rot_maxIndex(st) = NaN;
+0334             COMveloFZ_Norm_Rot_min(st)      = NaN;
+0335             COMveloFZ_Norm_Rot_minIndex(st) = NaN;
+0336             COMveloSZ_Norm_Rot_min(st)      = NaN;
+0337             COMveloSZ_Norm_Rot_minIndex(st) = NaN;
+0338         <span class="keyword">end</span>
+0339     <span class="keyword">end</span>
+0340     clear tempFHS tempSHS
+0341 <span class="keyword">end</span>
 0342 
-0343 COMY = COMFY - COMSY;
-0344 COMZ = COMFZ - COMSZ;
-0345 
-0346 COMsymY_Norm_Rot_mean = COMFY_Norm_Rot_mean - COMSY_Norm_Rot_mean;
-0347 COMsymZ_Norm_Rot_mean = COMFZ_Norm_Rot_mean - COMSZ_Norm_Rot_mean;
-0348 COMveloSYMY_Norm_Rot_mean = <span class="keyword">...</span>
-0349     COMveloFY_Norm_Rot_mean - COMveloSY_Norm_Rot_mean;
-0350 COMveloSYMZ_Norm_Rot_mean = <span class="keyword">...</span>
-0351     COMveloFZ_Norm_Rot_mean - COMveloSZ_Norm_Rot_mean;
-0352 
-0353 COMsymY_Norm_Rot_DSmean = <span class="keyword">...</span>
-0354     COMFY_Norm_Rot_DSmean - COMSY_Norm_Rot_DSmean;
-0355 COMsymZ_Norm_Rot_DSmean = <span class="keyword">...</span>
-0356     COMFZ_Norm_Rot_DSmean - COMSZ_Norm_Rot_DSmean;
-0357 
-0358 COMsymY_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
-0359     COMFY_Norm_Rot_WHOLEmean - COMSY_Norm_Rot_WHOLEmean;
-0360 COMsymZ_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
-0361     COMFZ_Norm_Rot_WHOLEmean - COMSZ_Norm_Rot_WHOLEmean;
-0362 COMveloSymY_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
-0363     COMveloFY_Norm_Rot_WHOLEmean - COMveloSY_Norm_Rot_WHOLEmean;
-0364 COMveloSymZ_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
-0365     COMveloFZ_Norm_Rot_WHOLEmean - COMveloSZ_Norm_Rot_WHOLEmean;
-0366 
-0367 <span class="comment">% Time Normalied -- Rotated -- COM position and Velocity</span>
-0368 COMsymY_Norm_Rot_max = COMFY_Norm_Rot_max - COMSY_Norm_Rot_max;
-0369 COMsymY_Norm_Rot_min = COMFY_Norm_Rot_min - COMSY_Norm_Rot_min;
-0370 COMsymZ_Norm_Rot_max = COMFZ_Norm_Rot_max - COMSZ_Norm_Rot_max;
-0371 COMsymZ_Norm_Rot_min = COMFZ_Norm_Rot_min - COMSZ_Norm_Rot_min;
-0372 
-0373 COMveloSYMY_Norm_Rot_max = <span class="keyword">...</span>
-0374     COMveloFY_Norm_Rot_max - COMveloSY_Norm_Rot_max;
-0375 COMveloSYMY_Norm_Rot_min = <span class="keyword">...</span>
-0376     COMveloFY_Norm_Rot_min - COMveloSY_Norm_Rot_min;
-0377 COMveloSYMZ_Norm_Rot_max = <span class="keyword">...</span>
-0378     COMveloFZ_Norm_Rot_max - COMveloSZ_Norm_Rot_max;
-0379 COMveloSYMZ_Norm_Rot_min = <span class="keyword">...</span>
-0380     COMveloFZ_Norm_Rot_min - COMveloSZ_Norm_Rot_min;
-0381 
-0382 <span class="comment">%% Assemble Output Data Matrix</span>
-0383 data = [COMveloY' COMveloFY' COMveloSY' COMveloZ' <span class="keyword">...</span>
-0384     COMveloFZ' COMveloSZ' <span class="keyword">...</span>
-0385     COMY' COMFY' COMSY' COMZ' COMFZ' COMSZ' <span class="keyword">...</span>
-0386     COMsymY_Norm_Rot_mean' COMFY_Norm_Rot_mean' <span class="keyword">...</span>
-0387     COMSY_Norm_Rot_mean' <span class="keyword">...</span>
-0388     COMsymZ_Norm_Rot_mean' COMFZ_Norm_Rot_mean' <span class="keyword">...</span>
-0389     COMSZ_Norm_Rot_mean' <span class="keyword">...</span>
-0390     COMveloSYMY_Norm_Rot_mean' COMveloFY_Norm_Rot_mean' <span class="keyword">...</span>
-0391     COMveloSY_Norm_Rot_mean' <span class="keyword">...</span>
-0392     COMveloSYMZ_Norm_Rot_mean' COMveloFZ_Norm_Rot_mean' <span class="keyword">...</span>
-0393     COMveloSZ_Norm_Rot_mean' <span class="keyword">...</span>
-0394     COMsymY_Norm_Rot_DSmean' COMFY_Norm_Rot_DSmean' <span class="keyword">...</span>
-0395     COMSY_Norm_Rot_DSmean' <span class="keyword">...</span>
-0396     COMsymZ_Norm_Rot_DSmean' COMFZ_Norm_Rot_DSmean' <span class="keyword">...</span>
-0397     COMSZ_Norm_Rot_DSmean' <span class="keyword">...</span>
-0398     COMsymY_Norm_Rot_WHOLEmean' COMFY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0399     COMSY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0400     COMsymZ_Norm_Rot_WHOLEmean' COMFZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0401     COMSZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0402     COMveloSymY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0403     COMveloFY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0404     COMveloSY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0405     COMveloSymZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0406     COMveloFZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0407     COMveloSZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
-0408     COMFZ_Norm_Rot_minIndex' COMSZ_Norm_Rot_minIndex' <span class="keyword">...</span>
-0409     COMFZ_Norm_Rot_Retraction' COMSZ_Norm_Rot_Retraction' <span class="keyword">...</span>
-0410     COMveloFZ_Norm_Rot_Retraction' COMveloSZ_Norm_Rot_Retraction' <span class="keyword">...</span>
-0411     COMsymY_Norm_Rot_max' COMFY_Norm_Rot_max' <span class="keyword">...</span>
-0412     COMSY_Norm_Rot_max' <span class="keyword">...</span><span class="comment"> %% Normalized, Rotated COM pos. and Velocity</span>
-0413     COMsymY_Norm_Rot_min' COMFY_Norm_Rot_min' <span class="keyword">...</span>
-0414     COMSY_Norm_Rot_min' <span class="keyword">...</span>
-0415     COMsymZ_Norm_Rot_max' COMFZ_Norm_Rot_max' <span class="keyword">...</span>
-0416     COMSZ_Norm_Rot_max' <span class="keyword">...</span>
-0417     COMsymZ_Norm_Rot_min' COMFZ_Norm_Rot_min' <span class="keyword">...</span>
-0418     COMSZ_Norm_Rot_min' <span class="keyword">...</span>
-0419     COMveloSYMY_Norm_Rot_max' COMveloFY_Norm_Rot_max' <span class="keyword">...</span>
-0420     COMveloSY_Norm_Rot_max' <span class="keyword">...</span>
-0421     COMveloSYMY_Norm_Rot_min' COMveloFY_Norm_Rot_min' <span class="keyword">...</span>
-0422     COMveloSY_Norm_Rot_min' <span class="keyword">...</span>
-0423     COMveloSYMZ_Norm_Rot_max' COMveloFZ_Norm_Rot_max' <span class="keyword">...</span>
-0424     COMveloSZ_Norm_Rot_max' <span class="keyword">...</span>
-0425     COMveloSYMZ_Norm_Rot_min' COMveloFZ_Norm_Rot_min' <span class="keyword">...</span>
-0426     COMveloSZ_Norm_Rot_min'];
-0427 
-0428 labels = {<span class="string">'COMveloY'</span> <span class="string">'COMveloFY'</span> <span class="string">'COMveloSY'</span> <span class="string">'COMveloZ'</span> <span class="keyword">...</span>
-0429     <span class="string">'COMveloFZ'</span> <span class="string">'COMveloSZ'</span> <span class="keyword">...</span>
-0430     <span class="string">'COMY'</span> <span class="string">'COMFY'</span> <span class="string">'COMSY'</span> <span class="string">'COMZ'</span> <span class="string">'COMFZ'</span> <span class="string">'COMSZ'</span> <span class="keyword">...</span>
-0431     <span class="string">'COMsymY_Norm_Rot_mean'</span> <span class="string">'COMFY_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0432     <span class="string">'COMSY_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0433     <span class="string">'COMsymZ_Norm_Rot_mean'</span> <span class="string">'COMFZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0434     <span class="string">'COMSZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0435     <span class="string">'COMveloSYMY_Norm_Rot_mean'</span> <span class="string">'COMveloFY_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0436     <span class="string">'COMveloSY_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0437     <span class="string">'COMveloSYMZ_Norm_Rot_mean'</span> <span class="string">'COMveloFZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0438     <span class="string">'COMveloSZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
-0439     <span class="string">'COMsymY_Norm_Rot_DSmean'</span> <span class="string">'COMFY_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
-0440     <span class="string">'COMSY_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
-0441     <span class="string">'COMsymZ_Norm_Rot_DSmean'</span> <span class="string">'COMFZ_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
-0442     <span class="string">'COMSZ_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
-0443     <span class="string">'COMsymY_Norm_Rot_WHOLEmean'</span> <span class="string">'COMFY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0444     <span class="string">'COMSY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0445     <span class="string">'COMsymZ_Norm_Rot_WHOLEmea'</span> <span class="string">'COMFZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0446     <span class="string">'COMSZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0447     <span class="string">'COMveloSymY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0448     <span class="string">'COMveloFY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0449     <span class="string">'COMveloSY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0450     <span class="string">'COMveloSymZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0451     <span class="string">'COMveloFZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0452     <span class="string">'COMveloSZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
-0453     <span class="string">'COMFZ_Norm_Rot_minIndex'</span> <span class="string">'COMSZ_Norm_Rot_minIndex'</span> <span class="keyword">...</span>
-0454     <span class="string">'COMFZ_Norm_Rot_Retraction'</span> <span class="string">'COMSZ_Norm_Rot_Retraction'</span> <span class="keyword">...</span>
-0455     <span class="string">'COMveloFZ_Norm_Rot_Retraction'</span> <span class="string">'COMveloSZ_Norm_Rot_Retraction'</span> <span class="keyword">...</span>
-0456     <span class="string">'COMsymY_Norm_Rot_max'</span> <span class="string">'COMFY_Norm_Rot_max'</span> <span class="keyword">...</span>
-0457     <span class="string">'COMSY_Norm_Rot_max'</span> <span class="keyword">...</span><span class="comment"> %% Normalized, Rotated COM pos. and Velocity</span>
-0458     <span class="string">'COMsymY_Norm_Rot_min'</span> <span class="string">'COMFY_Norm_Rot_min'</span> <span class="keyword">...</span>
-0459     <span class="string">'COMSY_Norm_Rot_min'</span> <span class="keyword">...</span>
-0460     <span class="string">'COMsymZ_Norm_Rot_max'</span> <span class="string">'COMFZ_Norm_Rot_max'</span> <span class="keyword">...</span>
-0461     <span class="string">'COMSZ_Norm_Rot_max'</span> <span class="keyword">...</span>
-0462     <span class="string">'COMsymZ_Norm_Rot_min'</span> <span class="string">'COMFZ_Norm_Rot_min'</span> <span class="keyword">...</span>
-0463     <span class="string">'COMSZ_Norm_Rot_min'</span> <span class="keyword">...</span>
-0464     <span class="string">'COMveloSYMY_Norm_Rot_max'</span> <span class="string">'COMveloFY_Norm_Rot_max'</span> <span class="keyword">...</span>
-0465     <span class="string">'COMveloSY_Norm_Rot_max'</span> <span class="keyword">...</span>
-0466     <span class="string">'COMveloSYMY_Norm_Rot_min'</span> <span class="string">'COMveloFY_Norm_Rot_min'</span> <span class="keyword">...</span>
-0467     <span class="string">'COMveloSY_Norm_Rot_min'</span> <span class="keyword">...</span>
-0468     <span class="string">'COMveloSYMZ_Norm_Rot_max'</span> <span class="string">'COMveloFZ_Norm_Rot_max'</span> <span class="keyword">...</span>
-0469     <span class="string">'COMveloSZ_Norm_Rot_max'</span> <span class="keyword">...</span>
-0470     <span class="string">'COMveloSYMZ_Norm_Rot_min'</span> <span class="string">'COMveloFZ_Norm_Rot_min'</span> <span class="keyword">...</span>
-0471     <span class="string">'COMveloSZ_Norm_Rot_min'</span>};
-0472 
-0473 <span class="comment">%% Return Output</span>
-0474 <span class="keyword">if</span> length(impactS) == length(COMveloFY)
-0475     data = [data; NaN(1, size(data, 2))];
-0476 <span class="keyword">end</span>
-0477 description = cell(1, size(data, 2));
-0478 description(:) = {<span class="string">''</span>};
-0479 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, labels, [], description);
-0480 
-0481 <span class="keyword">end</span>
-0482</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0343 <span class="comment">%% Compute Symmetry Parameters</span>
+0344 COMveloY = COMveloFY - COMveloSY;
+0345 COMveloZ = COMveloFZ - COMveloSZ;
+0346 
+0347 COMY = COMFY - COMSY;
+0348 COMZ = COMFZ - COMSZ;
+0349 
+0350 COMsymY_Norm_Rot_mean = COMFY_Norm_Rot_mean - COMSY_Norm_Rot_mean;
+0351 COMsymZ_Norm_Rot_mean = COMFZ_Norm_Rot_mean - COMSZ_Norm_Rot_mean;
+0352 COMveloSYMY_Norm_Rot_mean = <span class="keyword">...</span>
+0353     COMveloFY_Norm_Rot_mean - COMveloSY_Norm_Rot_mean;
+0354 COMveloSYMZ_Norm_Rot_mean = <span class="keyword">...</span>
+0355     COMveloFZ_Norm_Rot_mean - COMveloSZ_Norm_Rot_mean;
+0356 
+0357 COMsymY_Norm_Rot_DSmean = <span class="keyword">...</span>
+0358     COMFY_Norm_Rot_DSmean - COMSY_Norm_Rot_DSmean;
+0359 COMsymZ_Norm_Rot_DSmean = <span class="keyword">...</span>
+0360     COMFZ_Norm_Rot_DSmean - COMSZ_Norm_Rot_DSmean;
+0361 
+0362 COMsymY_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
+0363     COMFY_Norm_Rot_WHOLEmean - COMSY_Norm_Rot_WHOLEmean;
+0364 COMsymZ_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
+0365     COMFZ_Norm_Rot_WHOLEmean - COMSZ_Norm_Rot_WHOLEmean;
+0366 COMveloSymY_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
+0367     COMveloFY_Norm_Rot_WHOLEmean - COMveloSY_Norm_Rot_WHOLEmean;
+0368 COMveloSymZ_Norm_Rot_WHOLEmean = <span class="keyword">...</span>
+0369     COMveloFZ_Norm_Rot_WHOLEmean - COMveloSZ_Norm_Rot_WHOLEmean;
+0370 
+0371 <span class="comment">% Time Normalied -- Rotated -- COM position and Velocity</span>
+0372 COMsymY_Norm_Rot_max = COMFY_Norm_Rot_max - COMSY_Norm_Rot_max;
+0373 COMsymY_Norm_Rot_min = COMFY_Norm_Rot_min - COMSY_Norm_Rot_min;
+0374 COMsymZ_Norm_Rot_max = COMFZ_Norm_Rot_max - COMSZ_Norm_Rot_max;
+0375 COMsymZ_Norm_Rot_min = COMFZ_Norm_Rot_min - COMSZ_Norm_Rot_min;
+0376 
+0377 COMveloSYMY_Norm_Rot_max = <span class="keyword">...</span>
+0378     COMveloFY_Norm_Rot_max - COMveloSY_Norm_Rot_max;
+0379 COMveloSYMY_Norm_Rot_min = <span class="keyword">...</span>
+0380     COMveloFY_Norm_Rot_min - COMveloSY_Norm_Rot_min;
+0381 COMveloSYMZ_Norm_Rot_max = <span class="keyword">...</span>
+0382     COMveloFZ_Norm_Rot_max - COMveloSZ_Norm_Rot_max;
+0383 COMveloSYMZ_Norm_Rot_min = <span class="keyword">...</span>
+0384     COMveloFZ_Norm_Rot_min - COMveloSZ_Norm_Rot_min;
+0385 
+0386 <span class="comment">%% Assemble Output Data Matrix</span>
+0387 data = [COMveloY' COMveloFY' COMveloSY' COMveloZ' <span class="keyword">...</span>
+0388     COMveloFZ' COMveloSZ' <span class="keyword">...</span>
+0389     COMY' COMFY' COMSY' COMZ' COMFZ' COMSZ' <span class="keyword">...</span>
+0390     COMsymY_Norm_Rot_mean' COMFY_Norm_Rot_mean' <span class="keyword">...</span>
+0391     COMSY_Norm_Rot_mean' <span class="keyword">...</span>
+0392     COMsymZ_Norm_Rot_mean' COMFZ_Norm_Rot_mean' <span class="keyword">...</span>
+0393     COMSZ_Norm_Rot_mean' <span class="keyword">...</span>
+0394     COMveloSYMY_Norm_Rot_mean' COMveloFY_Norm_Rot_mean' <span class="keyword">...</span>
+0395     COMveloSY_Norm_Rot_mean' <span class="keyword">...</span>
+0396     COMveloSYMZ_Norm_Rot_mean' COMveloFZ_Norm_Rot_mean' <span class="keyword">...</span>
+0397     COMveloSZ_Norm_Rot_mean' <span class="keyword">...</span>
+0398     COMsymY_Norm_Rot_DSmean' COMFY_Norm_Rot_DSmean' <span class="keyword">...</span>
+0399     COMSY_Norm_Rot_DSmean' <span class="keyword">...</span>
+0400     COMsymZ_Norm_Rot_DSmean' COMFZ_Norm_Rot_DSmean' <span class="keyword">...</span>
+0401     COMSZ_Norm_Rot_DSmean' <span class="keyword">...</span>
+0402     COMsymY_Norm_Rot_WHOLEmean' COMFY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0403     COMSY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0404     COMsymZ_Norm_Rot_WHOLEmean' COMFZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0405     COMSZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0406     COMveloSymY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0407     COMveloFY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0408     COMveloSY_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0409     COMveloSymZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0410     COMveloFZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0411     COMveloSZ_Norm_Rot_WHOLEmean' <span class="keyword">...</span>
+0412     COMFZ_Norm_Rot_minIndex' COMSZ_Norm_Rot_minIndex' <span class="keyword">...</span>
+0413     COMFZ_Norm_Rot_Retraction' COMSZ_Norm_Rot_Retraction' <span class="keyword">...</span>
+0414     COMveloFZ_Norm_Rot_Retraction' COMveloSZ_Norm_Rot_Retraction' <span class="keyword">...</span>
+0415     COMsymY_Norm_Rot_max' COMFY_Norm_Rot_max' <span class="keyword">...</span>
+0416     COMSY_Norm_Rot_max' <span class="keyword">...</span><span class="comment"> %% Normalized, Rotated COM pos. and Velocity</span>
+0417     COMsymY_Norm_Rot_min' COMFY_Norm_Rot_min' <span class="keyword">...</span>
+0418     COMSY_Norm_Rot_min' <span class="keyword">...</span>
+0419     COMsymZ_Norm_Rot_max' COMFZ_Norm_Rot_max' <span class="keyword">...</span>
+0420     COMSZ_Norm_Rot_max' <span class="keyword">...</span>
+0421     COMsymZ_Norm_Rot_min' COMFZ_Norm_Rot_min' <span class="keyword">...</span>
+0422     COMSZ_Norm_Rot_min' <span class="keyword">...</span>
+0423     COMveloSYMY_Norm_Rot_max' COMveloFY_Norm_Rot_max' <span class="keyword">...</span>
+0424     COMveloSY_Norm_Rot_max' <span class="keyword">...</span>
+0425     COMveloSYMY_Norm_Rot_min' COMveloFY_Norm_Rot_min' <span class="keyword">...</span>
+0426     COMveloSY_Norm_Rot_min' <span class="keyword">...</span>
+0427     COMveloSYMZ_Norm_Rot_max' COMveloFZ_Norm_Rot_max' <span class="keyword">...</span>
+0428     COMveloSZ_Norm_Rot_max' <span class="keyword">...</span>
+0429     COMveloSYMZ_Norm_Rot_min' COMveloFZ_Norm_Rot_min' <span class="keyword">...</span>
+0430     COMveloSZ_Norm_Rot_min'];
+0431 
+0432 labels = {<span class="string">'COMveloY'</span> <span class="string">'COMveloFY'</span> <span class="string">'COMveloSY'</span> <span class="string">'COMveloZ'</span> <span class="keyword">...</span>
+0433     <span class="string">'COMveloFZ'</span> <span class="string">'COMveloSZ'</span> <span class="keyword">...</span>
+0434     <span class="string">'COMY'</span> <span class="string">'COMFY'</span> <span class="string">'COMSY'</span> <span class="string">'COMZ'</span> <span class="string">'COMFZ'</span> <span class="string">'COMSZ'</span> <span class="keyword">...</span>
+0435     <span class="string">'COMsymY_Norm_Rot_mean'</span> <span class="string">'COMFY_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0436     <span class="string">'COMSY_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0437     <span class="string">'COMsymZ_Norm_Rot_mean'</span> <span class="string">'COMFZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0438     <span class="string">'COMSZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0439     <span class="string">'COMveloSYMY_Norm_Rot_mean'</span> <span class="string">'COMveloFY_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0440     <span class="string">'COMveloSY_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0441     <span class="string">'COMveloSYMZ_Norm_Rot_mean'</span> <span class="string">'COMveloFZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0442     <span class="string">'COMveloSZ_Norm_Rot_mean'</span> <span class="keyword">...</span>
+0443     <span class="string">'COMsymY_Norm_Rot_DSmean'</span> <span class="string">'COMFY_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
+0444     <span class="string">'COMSY_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
+0445     <span class="string">'COMsymZ_Norm_Rot_DSmean'</span> <span class="string">'COMFZ_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
+0446     <span class="string">'COMSZ_Norm_Rot_DSmean'</span> <span class="keyword">...</span>
+0447     <span class="string">'COMsymY_Norm_Rot_WHOLEmean'</span> <span class="string">'COMFY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0448     <span class="string">'COMSY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0449     <span class="string">'COMsymZ_Norm_Rot_WHOLEmea'</span> <span class="string">'COMFZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0450     <span class="string">'COMSZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0451     <span class="string">'COMveloSymY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0452     <span class="string">'COMveloFY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0453     <span class="string">'COMveloSY_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0454     <span class="string">'COMveloSymZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0455     <span class="string">'COMveloFZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0456     <span class="string">'COMveloSZ_Norm_Rot_WHOLEmean'</span> <span class="keyword">...</span>
+0457     <span class="string">'COMFZ_Norm_Rot_minIndex'</span> <span class="string">'COMSZ_Norm_Rot_minIndex'</span> <span class="keyword">...</span>
+0458     <span class="string">'COMFZ_Norm_Rot_Retraction'</span> <span class="string">'COMSZ_Norm_Rot_Retraction'</span> <span class="keyword">...</span>
+0459     <span class="string">'COMveloFZ_Norm_Rot_Retraction'</span> <span class="string">'COMveloSZ_Norm_Rot_Retraction'</span> <span class="keyword">...</span>
+0460     <span class="string">'COMsymY_Norm_Rot_max'</span> <span class="string">'COMFY_Norm_Rot_max'</span> <span class="keyword">...</span>
+0461     <span class="string">'COMSY_Norm_Rot_max'</span> <span class="keyword">...</span><span class="comment"> %% Normalized, Rotated COM pos. and Velocity</span>
+0462     <span class="string">'COMsymY_Norm_Rot_min'</span> <span class="string">'COMFY_Norm_Rot_min'</span> <span class="keyword">...</span>
+0463     <span class="string">'COMSY_Norm_Rot_min'</span> <span class="keyword">...</span>
+0464     <span class="string">'COMsymZ_Norm_Rot_max'</span> <span class="string">'COMFZ_Norm_Rot_max'</span> <span class="keyword">...</span>
+0465     <span class="string">'COMSZ_Norm_Rot_max'</span> <span class="keyword">...</span>
+0466     <span class="string">'COMsymZ_Norm_Rot_min'</span> <span class="string">'COMFZ_Norm_Rot_min'</span> <span class="keyword">...</span>
+0467     <span class="string">'COMSZ_Norm_Rot_min'</span> <span class="keyword">...</span>
+0468     <span class="string">'COMveloSYMY_Norm_Rot_max'</span> <span class="string">'COMveloFY_Norm_Rot_max'</span> <span class="keyword">...</span>
+0469     <span class="string">'COMveloSY_Norm_Rot_max'</span> <span class="keyword">...</span>
+0470     <span class="string">'COMveloSYMY_Norm_Rot_min'</span> <span class="string">'COMveloFY_Norm_Rot_min'</span> <span class="keyword">...</span>
+0471     <span class="string">'COMveloSY_Norm_Rot_min'</span> <span class="keyword">...</span>
+0472     <span class="string">'COMveloSYMZ_Norm_Rot_max'</span> <span class="string">'COMveloFZ_Norm_Rot_max'</span> <span class="keyword">...</span>
+0473     <span class="string">'COMveloSZ_Norm_Rot_max'</span> <span class="keyword">...</span>
+0474     <span class="string">'COMveloSYMZ_Norm_Rot_min'</span> <span class="string">'COMveloFZ_Norm_Rot_min'</span> <span class="keyword">...</span>
+0475     <span class="string">'COMveloSZ_Norm_Rot_min'</span>};
+0476 
+0477 <span class="comment">%% Return Output</span>
+0478 <span class="keyword">if</span> length(impactS) == length(COMveloFY)
+0479     data = [data; NaN(1, size(data, 2))];
+0480 <span class="keyword">end</span>
+0481 description = cell(1, size(data, 2));
+0482 description(:) = {<span class="string">''</span>};
+0483 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, labels, [], description);
+0484 
+0485 <span class="keyword">end</span>
+0486</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

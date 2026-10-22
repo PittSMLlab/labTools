@@ -4,7 +4,7 @@
 <head>
   <title>Description of c3d2matCLI</title>
   <meta name="keywords" content="c3d2matCLI">
-  <meta name="description" content="c3d2matCLI  Parses C3D session files into a MAT file without a GUI.">
+  <meta name="description" content="C3D2MATCLI Parse C3D session files into a MAT file without a GUI.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>c3d2matCLI  Parses C3D session files into a MAT file without a GUI.</strong></div>
+<div class="box"><strong>C3D2MATCLI Parse C3D session files into a MAT file without a GUI.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> c3d2matCLI  Parses C3D session files into a MAT file without a GUI.
+<div class="fragment"><pre class="comment">C3D2MATCLI Parse C3D session files into a MAT file without a GUI.
 
    Performs the same processing as the c3d2mat script, but accepts a
  previously saved session info file in place of the GetInfoGUI interactive
@@ -52,16 +52,15 @@
      rawExpData - Raw experimental data object
      adaptData  - Adaptation parameters data object
 
-   Toolbox Dependencies:
-     None
+   Toolbox Dependencies: None
 
-   See also: <a href="c3d2mat.html" class="code" title="">c3d2mat</a>, <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>, <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a></pre></div>
+   See also <a href="c3d2mat.html" class="code" title="">C3D2MAT</a>, <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GETINFOGUI</a>, <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">LOADSUBJECT</a>, <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">ERRORPROOFINFO</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a>	errorProofInfo  Validates and extracts all fields from GetInfoGUI.</li><li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save experimental session</li></ul>
+<li><a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a>	ERRORPROOFINFO Validate and extract all fields from GetInfoGUI.</li><li><a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>	LOADSUBJECT Load, process, and save an experimental session from C3D.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -71,7 +70,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass)</a>
-0002 <span class="comment">% c3d2matCLI  Parses C3D session files into a MAT file without a GUI.</span>
+0002 <span class="comment">%C3D2MATCLI Parse C3D session files into a MAT file without a GUI.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Performs the same processing as the c3d2mat script, but accepts a</span>
 0005 <span class="comment">% previously saved session info file in place of the GetInfoGUI interactive</span>
@@ -96,29 +95,28 @@ This function is called by:
 0024 <span class="comment">%     rawExpData - Raw experimental data object</span>
 0025 <span class="comment">%     adaptData  - Adaptation parameters data object</span>
 0026 <span class="comment">%</span>
-0027 <span class="comment">%   Toolbox Dependencies:</span>
-0028 <span class="comment">%     None</span>
-0029 <span class="comment">%</span>
-0030 <span class="comment">%   See also: c3d2mat, GetInfoGUI, loadSubject, errorProofInfo</span>
-0031 
-0032 arguments
-0033     infoFile   (1,:) char
-0034     eventClass (1,:) char = <span class="string">''</span>              <span class="comment">% default gait event detection</span>
-0035 <span class="keyword">end</span>
-0036 
-0037 <span class="comment">%% Load Experimental Session Information</span>
-0038 <span class="comment">% Load the previously saved info struct from the specified MAT file.</span>
-0039 <span class="comment">% Validation is skipped (ignoreErrors = true) because the data was</span>
-0040 <span class="comment">% already validated interactively when the file was originally created.</span>
-0041 handles = loadInfoFile(infoFile, <span class="string">''</span>);
-0042 info    = <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a>(handles, true);
-0043 
-0044 <span class="comment">%% Process Experimental Data</span>
-0045 <span class="comment">% Main processing call for the participant's experimental data</span>
-0046 [expData, rawExpData, adaptData] = <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>(info, eventClass);
-0047 
-0048 <span class="keyword">end</span>
-0049</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0027 <span class="comment">%   Toolbox Dependencies: None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%   See also C3D2MAT, GETINFOGUI, LOADSUBJECT, ERRORPROOFINFO.</span>
+0030 
+0031 arguments
+0032     infoFile   (1,:) char
+0033     eventClass (1,:) char = <span class="string">''</span>              <span class="comment">% default gait event detection</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Load Experimental Session Information</span>
+0037 <span class="comment">% Load the previously saved info struct from the specified MAT file.</span>
+0038 <span class="comment">% Validation is skipped (ignoreErrors = true) because the data was</span>
+0039 <span class="comment">% already validated interactively when the file was originally created.</span>
+0040 handles = loadInfoFile(infoFile, <span class="string">''</span>);
+0041 info    = <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles, ignoreErrors)">errorProofInfo</a>(handles, true);
+0042 
+0043 <span class="comment">%% Process Experimental Data</span>
+0044 <span class="comment">% Main processing call for the participant's experimental data</span>
+0045 [expData, rawExpData, adaptData] = <a href="loadSubject.html" class="code" title="function [expData, rawExpData, adaptData] = loadSubject(info, eventClass)">loadSubject</a>(info, eventClass);
+0046 
+0047 <span class="keyword">end</span>
+0048</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

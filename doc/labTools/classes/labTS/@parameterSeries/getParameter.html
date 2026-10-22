@@ -4,7 +4,7 @@
 <head>
   <title>Description of getParameter</title>
   <meta name="keywords" content="getParameter">
-  <meta name="description" content="getParameter  Retrieves parameter data">
+  <meta name="description" content="GETPARAMETER Retrieves parameter data.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,28 +21,30 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getParameter  Retrieves parameter data</strong></div>
+<div class="box"><strong>GETPARAMETER Retrieves parameter data.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [data, auxLabel] = getParameter(this, label) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getParameter  Retrieves parameter data
+<div class="fragment"><pre class="comment">GETPARAMETER Retrieves parameter data.
 
-   [data, auxLabel] = getParameter(this, label) returns data for
-   specified parameter(s)
+   [data, auxLabel] = getParameter(this, label) returns data for specified
+ parameter(s)
 
-   Inputs:
-       this - parameterSeries object
-       label - string or cell array of parameter name(s)
+ Inputs:
+   this  - parameterSeries object
+   label - string or cell array of parameter name(s)
 
-   Outputs:
-       data - matrix of parameter values
-       auxLabel - cell array of parameter labels
+ Outputs:
+   data     - matrix of parameter values
+   auxLabel - cell array of parameter labels
 
    Note: Backwards compatibility wrapper
 
-   See also: getDataAsVector, isaParameter</pre></div>
+ Toolbox Dependencies: None
+
+ See also GETDATAASVECTOR, ISAPARAMETER.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -58,26 +60,28 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, auxLabel] = getParameter(this, label)</a>
-0002 <span class="comment">%getParameter  Retrieves parameter data</span>
+0002 <span class="comment">%GETPARAMETER Retrieves parameter data.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   [data, auxLabel] = getParameter(this, label) returns data for</span>
-0005 <span class="comment">%   specified parameter(s)</span>
+0004 <span class="comment">%   [data, auxLabel] = getParameter(this, label) returns data for specified</span>
+0005 <span class="comment">% parameter(s)</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - parameterSeries object</span>
-0009 <span class="comment">%       label - string or cell array of parameter name(s)</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this  - parameterSeries object</span>
+0009 <span class="comment">%   label - string or cell array of parameter name(s)</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       data - matrix of parameter values</span>
-0013 <span class="comment">%       auxLabel - cell array of parameter labels</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   data     - matrix of parameter values</span>
+0013 <span class="comment">%   auxLabel - cell array of parameter labels</span>
 0014 <span class="comment">%</span>
 0015 <span class="comment">%   Note: Backwards compatibility wrapper</span>
 0016 <span class="comment">%</span>
-0017 <span class="comment">%   See also: getDataAsVector, isaParameter</span>
-0018 
-0019 [data, ~, auxLabel] = this.getDataAsVector(label);
-0020 <span class="keyword">end</span>
-0021</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0017 <span class="comment">% Toolbox Dependencies: None</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also GETDATAASVECTOR, ISAPARAMETER.</span>
+0020 
+0021 [data, ~, auxLabel] = this.getDataAsVector(label);
+0022 <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

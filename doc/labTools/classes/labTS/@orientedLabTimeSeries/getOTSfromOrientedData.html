@@ -4,7 +4,7 @@
 <head>
   <title>Description of getOTSfromOrientedData</title>
   <meta name="keywords" content="getOTSfromOrientedData">
-  <meta name="description" content="getOTSfromOrientedData  Creates OTS from 3D data array">
+  <meta name="description" content="GETOTSFROMORIENTEDDATA Creates OTS from 3D data array.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,28 +21,30 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getOTSfromOrientedData  Creates OTS from 3D data array</strong></div>
+<div class="box"><strong>GETOTSFROMORIENTEDDATA Creates OTS from 3D data array.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,orientation) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getOTSfromOrientedData  Creates OTS from 3D data array
+<div class="fragment"><pre class="comment">GETOTSFROMORIENTEDDATA Creates OTS from 3D data array.
 
-   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,
-   orientation) creates orientedLabTimeSeries from oriented data
+   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes, orientation)
+ creates orientedLabTimeSeries from oriented data
 
-   Inputs:
-       data - 3D matrix (time x markers x 3)
-       t0 - initial time
-       Ts - sampling period
-       labelPrefixes - cell array of marker prefixes
-       orientation - orientationInfo object
+ Inputs:
+   data          - 3D matrix (time x markers x 3)
+   t0            - initial time
+   Ts            - sampling period
+   labelPrefixes - cell array of marker prefixes
+   orientation   - orientationInfo object
 
-   Outputs:
-       OTS - orientedLabTimeSeries object
+ Outputs:
+   OTS - orientedLabTimeSeries object
 
-   See also: <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">getOrientedData</a>, <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">addLabelSuffix</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="getOrientedData.html" class="code" title="function [data, label] = getOrientedData(this, label)">GETORIENTEDDATA</a>, <a href="addLabelSuffix.html" class="code" title="function extendedLabels = addLabelSuffix(labels)">ADDLABELSUFFIX</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -59,31 +61,33 @@ This function is called by:
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes, </a><span class="keyword">...</span>
 0002     orientation)
-0003 <span class="comment">%getOTSfromOrientedData  Creates OTS from 3D data array</span>
+0003 <span class="comment">%GETOTSFROMORIENTEDDATA Creates OTS from 3D data array.</span>
 0004 <span class="comment">%</span>
-0005 <span class="comment">%   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes,</span>
-0006 <span class="comment">%   orientation) creates orientedLabTimeSeries from oriented data</span>
+0005 <span class="comment">%   OTS = getOTSfromOrientedData(data, t0, Ts, labelPrefixes, orientation)</span>
+0006 <span class="comment">% creates orientedLabTimeSeries from oriented data</span>
 0007 <span class="comment">%</span>
-0008 <span class="comment">%   Inputs:</span>
-0009 <span class="comment">%       data - 3D matrix (time x markers x 3)</span>
-0010 <span class="comment">%       t0 - initial time</span>
-0011 <span class="comment">%       Ts - sampling period</span>
-0012 <span class="comment">%       labelPrefixes - cell array of marker prefixes</span>
-0013 <span class="comment">%       orientation - orientationInfo object</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   data          - 3D matrix (time x markers x 3)</span>
+0010 <span class="comment">%   t0            - initial time</span>
+0011 <span class="comment">%   Ts            - sampling period</span>
+0012 <span class="comment">%   labelPrefixes - cell array of marker prefixes</span>
+0013 <span class="comment">%   orientation   - orientationInfo object</span>
 0014 <span class="comment">%</span>
-0015 <span class="comment">%   Outputs:</span>
-0016 <span class="comment">%       OTS - orientedLabTimeSeries object</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   OTS - orientedLabTimeSeries object</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   See also: getOrientedData, addLabelSuffix</span>
-0019 
-0020 <span class="comment">% Static</span>
-0021 labels = [strcat(labelPrefixes, <span class="string">'x'</span>); strcat(labelPrefixes, <span class="string">'y'</span>); <span class="keyword">...</span>
-0022     strcat(labelPrefixes, <span class="string">'z'</span>)];
-0023 data = permute(data, [1, 3, 2]);
-0024 OTS = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(data(:, :), t0, Ts, labels(:), <span class="keyword">...</span>
-0025     orientation);
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also GETORIENTEDDATA, ADDLABELSUFFIX.</span>
+0021 
+0022 <span class="comment">% Static</span>
+0023 labels = [strcat(labelPrefixes, <span class="string">'x'</span>); strcat(labelPrefixes, <span class="string">'y'</span>); <span class="keyword">...</span>
+0024     strcat(labelPrefixes, <span class="string">'z'</span>)];
+0025 data = permute(data, [1, 3, 2]);
+0026 OTS = <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(data(:, :), t0, Ts, labels(:), <span class="keyword">...</span>
+0027     orientation);
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

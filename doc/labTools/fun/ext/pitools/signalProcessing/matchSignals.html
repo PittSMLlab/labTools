@@ -4,7 +4,7 @@
 <head>
   <title>Description of matchSignals</title>
   <meta name="keywords" content="matchSignals">
-  <meta name="description" content="MATCHSIGNALS Find and apply the transformation that best aligns signal2">
+  <meta name="description" content="MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,14 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>MATCHSIGNALS Find and apply the transformation that best aligns signal2</strong></div>
+<div class="box"><strong>MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="box"><strong>function [alignedSignal2, timeScaleFactor, lagInSamples, gain] =matchSignals(signal1, signal2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">MATCHSIGNALS Find and apply the transformation that best aligns signal2
-to signal1.
+<div class="fragment"><pre class="comment">MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).
 
    Estimates and applies three transformations in sequence: (1) a time
  shift to align the signals' start times, (2) a resampling factor to
@@ -37,8 +36,8 @@ to signal1.
  estimated transformation parameters.
 
    timeScaleFactor &gt; 1 means signal2 had a lower sampling rate and was
- interpolated; &lt; 1 means it was decimated. lagInSamples &gt; 0 means
- signal2 started recording earlier than signal1.
+ interpolated; &lt; 1 means it was decimated. lagInSamples &gt; 0 means signal2
+ started recording earlier than signal1.
 
  Inputs:
    signal1 - 1-D reference signal (row or column vector)
@@ -48,8 +47,8 @@ to signal1.
    alignedSignal2  - transformed signal2 aligned to signal1; NaN where
                      signal2 data were unavailable
    timeScaleFactor - resampling factor applied to signal2
-   lagInSamples    - total sample delay corrected (positive = signal2
-                     led signal1)
+   lagInSamples    - total sample delay corrected (positive = signal2 led
+                     signal1)
    gain            - divisive gain applied to signal2
 
  Toolbox Dependencies: None
@@ -70,81 +69,80 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [alignedSignal2, timeScaleFactor, lagInSamples, gain] = </a><span class="keyword">...</span>
-0002         matchSignals(signal1, signal2)
-0003 <span class="comment">%MATCHSIGNALS Find and apply the transformation that best aligns signal2</span>
-0004 <span class="comment">%to signal1.</span>
-0005 <span class="comment">%</span>
-0006 <span class="comment">%   Estimates and applies three transformations in sequence: (1) a time</span>
-0007 <span class="comment">% shift to align the signals' start times, (2) a resampling factor to</span>
-0008 <span class="comment">% correct for sampling-rate mismatch (Doppler shift), and (3) a</span>
-0009 <span class="comment">% multiplicative gain. Returns the aligned version of signal2 and the</span>
-0010 <span class="comment">% estimated transformation parameters.</span>
-0011 <span class="comment">%</span>
-0012 <span class="comment">%   timeScaleFactor &gt; 1 means signal2 had a lower sampling rate and was</span>
-0013 <span class="comment">% interpolated; &lt; 1 means it was decimated. lagInSamples &gt; 0 means</span>
-0014 <span class="comment">% signal2 started recording earlier than signal1.</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">% Inputs:</span>
-0017 <span class="comment">%   signal1 - 1-D reference signal (row or column vector)</span>
-0018 <span class="comment">%   signal2 - 1-D signal to align to signal1 (row or column vector)</span>
-0019 <span class="comment">%</span>
-0020 <span class="comment">% Outputs:</span>
-0021 <span class="comment">%   alignedSignal2  - transformed signal2 aligned to signal1; NaN where</span>
-0022 <span class="comment">%                     signal2 data were unavailable</span>
-0023 <span class="comment">%   timeScaleFactor - resampling factor applied to signal2</span>
-0024 <span class="comment">%   lagInSamples    - total sample delay corrected (positive = signal2</span>
-0025 <span class="comment">%                     led signal1)</span>
-0026 <span class="comment">%   gain            - divisive gain applied to signal2</span>
-0027 <span class="comment">%</span>
-0028 <span class="comment">% Toolbox Dependencies: None</span>
-0029 <span class="comment">%</span>
-0030 <span class="comment">% See also FINDTIMELAG, ESTIMATEDOPPLERSHIFT, RESAMPLESHIFTANDSCALE.</span>
-0031 
-0032 arguments
-0033     signal1 (:,1) double
-0034     signal2 (:,1) double
-0035 <span class="keyword">end</span>
-0036 
-0037 <span class="comment">%% Align Start Times and Correct Sampling-Rate Mismatch</span>
-0038 
-0039 <span class="comment">% Find initial lag, align, and make equal length</span>
-0040 [~, ~, lagInSamples] = <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>(signal1, signal2);
-0041 newSignal2 = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(signal2, 1, lagInSamples, 1);
-0042 <span class="keyword">if</span> length(newSignal2) &gt; length(signal1)
-0043     newSignal2(length(signal1) + 1:end) = [];
-0044 <span class="keyword">else</span>
-0045     signal1(length(newSignal2) + 1:end) = [];
-0046 <span class="keyword">end</span>
-0047 
-0048 <span class="comment">% Correct for Doppler shift (sampling-rate mismatch)</span>
-0049 [relativeShift, ~] = <a href="estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">estimateDopplerShift</a>(signal1, newSignal2);
-0050 timeScaleFactor    = 1 - relativeShift;
-0051 newSignal2         = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(newSignal2, timeScaleFactor, 0, 1);
-0052 
-0053 <span class="comment">% Refine lag after resampling</span>
-0054 [~, ~, lagInSamples2] = <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>(signal1, newSignal2);
-0055 newSignal2 = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(newSignal2, 1, lagInSamples2, 1);
-0056 <span class="keyword">if</span> length(newSignal2) &gt; length(signal1)
-0057     newSignal2(length(signal1) + 1:end) = [];
-0058 <span class="keyword">else</span>
-0059     signal1(length(newSignal2) + 1:end) = [];
-0060 <span class="keyword">end</span>
-0061 lagInSamples = lagInSamples + lagInSamples2;
-0062 
-0063 <span class="comment">%% Compute Best-Fit Gain</span>
-0064 gain = newSignal2' / signal1';
-0065 <span class="keyword">if</span> ~isfinite(gain) || gain == 0
-0066     warning(<span class="string">'matchSignals:degenerateGain'</span>, <span class="keyword">...</span>
-0067         <span class="string">'Gain is %g (non-finite or zero); returning identity.'</span>, gain);
-0068     alignedSignal2  = signal2;
-0069     timeScaleFactor = 1;
-0070     lagInSamples    = 0;
-0071     gain            = 1;
-0072     <span class="keyword">return</span>
-0073 <span class="keyword">end</span>
-0074 alignedSignal2 = newSignal2 / gain;
-0075 
-0076 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002     matchSignals(signal1, signal2)
+0003 <span class="comment">%MATCHSIGNALS Align signal2 to signal1 (shift, resampling and gain).</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Estimates and applies three transformations in sequence: (1) a time</span>
+0006 <span class="comment">% shift to align the signals' start times, (2) a resampling factor to</span>
+0007 <span class="comment">% correct for sampling-rate mismatch (Doppler shift), and (3) a</span>
+0008 <span class="comment">% multiplicative gain. Returns the aligned version of signal2 and the</span>
+0009 <span class="comment">% estimated transformation parameters.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   timeScaleFactor &gt; 1 means signal2 had a lower sampling rate and was</span>
+0012 <span class="comment">% interpolated; &lt; 1 means it was decimated. lagInSamples &gt; 0 means signal2</span>
+0013 <span class="comment">% started recording earlier than signal1.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Inputs:</span>
+0016 <span class="comment">%   signal1 - 1-D reference signal (row or column vector)</span>
+0017 <span class="comment">%   signal2 - 1-D signal to align to signal1 (row or column vector)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   alignedSignal2  - transformed signal2 aligned to signal1; NaN where</span>
+0021 <span class="comment">%                     signal2 data were unavailable</span>
+0022 <span class="comment">%   timeScaleFactor - resampling factor applied to signal2</span>
+0023 <span class="comment">%   lagInSamples    - total sample delay corrected (positive = signal2 led</span>
+0024 <span class="comment">%                     signal1)</span>
+0025 <span class="comment">%   gain            - divisive gain applied to signal2</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Toolbox Dependencies: None</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% See also FINDTIMELAG, ESTIMATEDOPPLERSHIFT, RESAMPLESHIFTANDSCALE.</span>
+0030 
+0031 arguments
+0032     signal1 (:,1) double
+0033     signal2 (:,1) double
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Align Start Times and Correct Sampling-Rate Mismatch</span>
+0037 
+0038 <span class="comment">% Find initial lag, align, and make equal length</span>
+0039 [~, ~, lagInSamples] = <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>(signal1, signal2);
+0040 newSignal2 = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(signal2, 1, lagInSamples, 1);
+0041 <span class="keyword">if</span> length(newSignal2) &gt; length(signal1)
+0042     newSignal2(length(signal1) + 1:end) = [];
+0043 <span class="keyword">else</span>
+0044     signal1(length(newSignal2) + 1:end) = [];
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% Correct for Doppler shift (sampling-rate mismatch)</span>
+0048 [relativeShift, ~] = <a href="estimateDopplerShift.html" class="code" title="function [relativeShift, initTimeDelay] = estimateDopplerShift(signal1, signal2, M)">estimateDopplerShift</a>(signal1, newSignal2);
+0049 timeScaleFactor = 1 - relativeShift;
+0050 newSignal2      = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(newSignal2, timeScaleFactor, 0, 1);
+0051 
+0052 <span class="comment">% Refine lag after resampling</span>
+0053 [~, ~, lagInSamples2] = <a href="findTimeLag.html" class="code" title="function [timeDiff, corrCoef, lagInSamples] = findTimeLag(referenceSignal, secondarySignal)">findTimeLag</a>(signal1, newSignal2);
+0054 newSignal2 = <a href="resampleShiftAndScale.html" class="code" title="function newSignals = resampleShiftAndScale(signals, timeScaleFactor, lagInSamples, scaleGain)">resampleShiftAndScale</a>(newSignal2, 1, lagInSamples2, 1);
+0055 <span class="keyword">if</span> length(newSignal2) &gt; length(signal1)
+0056     newSignal2(length(signal1) + 1:end) = [];
+0057 <span class="keyword">else</span>
+0058     signal1(length(newSignal2) + 1:end) = [];
+0059 <span class="keyword">end</span>
+0060 lagInSamples = lagInSamples + lagInSamples2;
+0061 
+0062 <span class="comment">%% Compute Best-Fit Gain</span>
+0063 gain = newSignal2' / signal1';
+0064 <span class="keyword">if</span> ~isfinite(gain) || gain == 0
+0065     warning(<span class="string">'matchSignals:degenerateGain'</span>, <span class="keyword">...</span>
+0066         <span class="string">'Gain is %g (non-finite or zero); returning identity.'</span>, gain);
+0067     alignedSignal2 = signal2;
+0068     timeScaleFactor = 1;
+0069     lagInSamples = 0;
+0070     gain = 1;
+0071     <span class="keyword">return</span>
+0072 <span class="keyword">end</span>
+0073 alignedSignal2 = newSignal2 / gain;
+0074 
+0075 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionEventsCheck</title>
+  <meta name="keywords" content="regressionEventsCheck">
+  <meta name="description" content="REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionEventsCheck.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionEventsCheck
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionEventsCheck(mode, baselineDir, sessionFile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).
+
+   Substitute for expData.recomputeEvents(), which currently errors.
+ Runs GETEVENTS on the single processedTrialData stored in
+ example/data/LI16_Trial9_expData.mat and, if sessionFile is given, on
+ every trial of that session's experimentData, with the same arguments
+ as labData.process (stored angleData, metaData.perceptualTasks).
+ 'baseline' saves the event matrices; 'compare' checks them with
+ ISEQUALN and errors on any difference. A trial whose GETEVENTS call
+ errors stores the error identifier and message instead, so a changed
+ failure also counts as a difference.
+
+ Inputs:
+   mode        - 'baseline' | 'compare'
+   baselineDir - char, folder for fixtureEvents.mat/sessionEvents.mat
+   sessionFile - char, optional path to a session *.mat holding an
+                 experimentData (default '': fixture only)
+
+ Outputs:
+   none
+
+ Toolbox Dependencies: None
+
+ See also GETEVENTS, <a href="regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONCOMPARERUN</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>	GETEVENTS Extract gait events from a raw trial by trial type.</li><li><a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="regressionAll.html" class="code" title="function regressionAll(baseDir, sessionID, eventClass)">regressionAll</a>	REGRESSIONALL Run every regression compare in one go.</li><li><a href="regressionLineCoverage.html" class="code" title="function regressionLineCoverage(outFile, baseDir, sessionID, eventClass)">regressionLineCoverage</a>	REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function out = runEvents(trial)</a></li><li><a href="#_sub2" class="code">function checkOrSave(mode, file, events, what)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionEventsCheck(mode, baselineDir, sessionFile)</a>
+0002 <span class="comment">%REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Substitute for expData.recomputeEvents(), which currently errors.</span>
+0005 <span class="comment">% Runs GETEVENTS on the single processedTrialData stored in</span>
+0006 <span class="comment">% example/data/LI16_Trial9_expData.mat and, if sessionFile is given, on</span>
+0007 <span class="comment">% every trial of that session's experimentData, with the same arguments</span>
+0008 <span class="comment">% as labData.process (stored angleData, metaData.perceptualTasks).</span>
+0009 <span class="comment">% 'baseline' saves the event matrices; 'compare' checks them with</span>
+0010 <span class="comment">% ISEQUALN and errors on any difference. A trial whose GETEVENTS call</span>
+0011 <span class="comment">% errors stores the error identifier and message instead, so a changed</span>
+0012 <span class="comment">% failure also counts as a difference.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   mode        - 'baseline' | 'compare'</span>
+0016 <span class="comment">%   baselineDir - char, folder for fixtureEvents.mat/sessionEvents.mat</span>
+0017 <span class="comment">%   sessionFile - char, optional path to a session *.mat holding an</span>
+0018 <span class="comment">%                 experimentData (default '': fixture only)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   none</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also GETEVENTS, REGRESSIONCOMPARERUN.</span>
+0026 
+0027 arguments
+0028     mode        (1,:) char {mustBeMember(mode, {<span class="string">'baseline'</span>, <span class="string">'compare'</span>})}
+0029     baselineDir (1,:) char
+0030     sessionFile (1,:) char = <span class="string">''</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% Fixture trial</span>
+0034 repo   = fileparts(fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))));
+0035 loaded = load(fullfile(repo, <span class="string">'example'</span>, <span class="string">'data'</span>, <span class="keyword">...</span>
+0036     <span class="string">'LI16_Trial9_expData.mat'</span>));
+0037 names  = fieldnames(loaded);
+0038 events = <a href="#_sub1" class="code" title="subfunction out = runEvents(trial)">runEvents</a>(loaded.(names{1}));
+0039 <a href="#_sub2" class="code" title="subfunction checkOrSave(mode, file, events, what)">checkOrSave</a>(mode, fullfile(baselineDir, <span class="string">'fixtureEvents.mat'</span>), <span class="keyword">...</span>
+0040     events, <span class="string">'fixture'</span>);
+0041 
+0042 <span class="comment">%% Session trials</span>
+0043 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(sessionFile)
+0044     <span class="keyword">return</span>
+0045 <span class="keyword">end</span>
+0046 info    = whos(<span class="string">'-file'</span>, sessionFile);
+0047 isExp   = strcmp({info.class}, <span class="string">'experimentData'</span>);
+0048 varName = info(find(isExp, 1)).name;
+0049 loaded  = load(sessionFile, varName);
+0050 expData = loaded.(varName);
+0051 trials  = <a href="../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(expData.metaData.trialsInCondition);
+0052 events  = cell(numel(trials), 1);
+0053 <span class="keyword">for</span> ii = 1:numel(trials)
+0054     events{ii} = <a href="#_sub1" class="code" title="subfunction out = runEvents(trial)">runEvents</a>(expData.data{trials(ii)});
+0055 <span class="keyword">end</span>
+0056 events = struct(<span class="string">'trials'</span>, trials, <span class="string">'events'</span>, {events});
+0057 <a href="#_sub2" class="code" title="subfunction checkOrSave(mode, file, events, what)">checkOrSave</a>(mode, fullfile(baselineDir, <span class="string">'sessionEvents.mat'</span>), <span class="keyword">...</span>
+0058     events, sprintf(<span class="string">'session (%d trials)'</span>, numel(trials)));
+0059 <span class="keyword">end</span>
+0060 
+0061 <a name="_sub1" href="#_subfunctions" class="code">function out = runEvents(trial)</a>
+0062 <span class="comment">%RUNEVENTS Call GETEVENTS as labData.process does; capture any error.</span>
+0063 perc = trial.metaData.perceptualTasks;
+0064 <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(perc)
+0065     perc = 0;
+0066 <span class="keyword">end</span>
+0067 <span class="keyword">try</span>
+0068     ev  = <a href="../../../labTools/classes/dataStructs/@labData/getEvents.html" class="code" title="function events = getEvents(trialData, angleData, perceptualFlag)">getEvents</a>(trial, trial.angleData, perc);
+0069     out = struct(<span class="string">'data'</span>, ev.Data, <span class="string">'labels'</span>, {ev.labels}, <span class="keyword">...</span>
+0070         <span class="string">'time'</span>, ev.Time, <span class="string">'err'</span>, <span class="string">''</span>);
+0071 <span class="keyword">catch</span> err
+0072     out = struct(<span class="string">'data'</span>, [], <span class="string">'labels'</span>, {{}}, <span class="string">'time'</span>, [], <span class="keyword">...</span>
+0073         <span class="string">'err'</span>, [err.identifier <span class="string">': '</span> err.message]);
+0074 <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 
+0077 <a name="_sub2" href="#_subfunctions" class="code">function checkOrSave(mode, file, events, what)</a>
+0078 <span class="comment">%CHECKORSAVE Save events (baseline) or compare them with ISEQUALN.</span>
+0079 <span class="keyword">switch</span> mode
+0080     <span class="keyword">case</span> <span class="string">'baseline'</span>
+0081         save(file, <span class="string">'events'</span>, <span class="string">'-v7.3'</span>);
+0082         fprintf(<span class="string">'EVENTS baseline saved (%s): %s\n'</span>, what, file);
+0083     <span class="keyword">case</span> <span class="string">'compare'</span>
+0084         ref  = load(file);
+0085         same = isequaln(ref.events, events);
+0086         fprintf(<span class="string">'EVENTS %s identical to baseline: %d\n'</span>, what, same);
+0087         <span class="keyword">if</span> ~same
+0088             error(<span class="string">'regressionEventsCheck:changed'</span>, <span class="keyword">...</span>
+0089                 <span class="string">'Events changed (%s).'</span>, what);
+0090         <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of BenjaminiHochberg</title>
   <meta name="keywords" content="BenjaminiHochberg">
-  <meta name="description" content="Performs the Benjamini-Hochberg procedure to determine significance in">
+  <meta name="description" content="BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,105 +21,139 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Performs the Benjamini-Hochberg procedure to determine significance in</strong></div>
+<div class="box"><strong>BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag) </strong></div>
+<div class="box"><strong>function [h, pThreshold, i1, pAdjusted] =BenjaminiHochberg(p, fdr, twoStageFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Performs the Benjamini-Hochberg procedure to determine significance in
-multiple comparisons while controlling the False Discovery Rate (number of
-false positives as a % of the number of total comparisons). This is a
-less taxing alternative to performing a Bonferroni correction, for example.
-FDR control is done in expectation over many realizations.
-See also: mafdr</pre></div>
+<div class="fragment"><pre class="comment">BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.
+
+   Determines significance across multiple comparisons while controlling
+ the False Discovery Rate (expected fraction of false positives among all
+ rejections). Less conservative than Bonferroni correction; FDR control
+ holds in expectation over many realizations.
+
+   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and Nov 2018
+ against the Bioinformatics Toolbox mafdr().
+
+   References:
+     Benjamini &amp; Hochberg 1995
+     Yekuteli &amp; Benjamini 1999 (adjusted p-values)
+     Benjamini, Krieger &amp; Yekuteli 2006 (two-stage procedure)
+
+ Inputs:
+   p            - vector of p-values from multiple comparisons
+   fdr          - scalar in [0,1]; tolerated False Discovery Rate
+   twoStageFlag - (optional) logical; if true, applies the BKY two-stage
+                  procedure (more power, same FDR guarantees under
+                  independent tests); default false
+
+ Outputs:
+   h          - binary vector; 1 where p-value is significant, 0 elsewhere
+   pThreshold - p-value cut-off; satisfies h = (p &lt;= pThreshold)
+   i1         - number of significant results; equals sum(h)
+   pAdjusted  - adjusted p-values; significant where pAdjusted &lt; fdr
+
+ Toolbox Dependencies: None
+
+ See also MAFDR.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>	Performs the Benjamini-Hochberg procedure to determine significance in</li></ul>
+<li><a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="BenjaminiHochberg.html" class="code" title="function [h, pThreshold, i1, pAdjusted] =BenjaminiHochberg(p, fdr, twoStageFlag)">BenjaminiHochberg</a>	BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>	Performs the Benjamini-Hochberg procedure to determine significance in</li></ul>
+<li><a href="../../../../../labTools/classes/dataStructs/@groupAdaptationData/AnovaEpochs.html" class="code" title="function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch] = AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)">AnovaEpochs</a>	ANOVAEPOCHS ANOVA of a parameter across groups and epochs.</li><li><a href="BenjaminiHochberg.html" class="code" title="function [h, pThreshold, i1, pAdjusted] =BenjaminiHochberg(p, fdr, twoStageFlag)">BenjaminiHochberg</a>	BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)</a>
-0002 <span class="comment">%Performs the Benjamini-Hochberg procedure to determine significance in</span>
-0003 <span class="comment">%multiple comparisons while controlling the False Discovery Rate (number of</span>
-0004 <span class="comment">%false positives as a % of the number of total comparisons). This is a</span>
-0005 <span class="comment">%less taxing alternative to performing a Bonferroni correction, for example.</span>
-0006 <span class="comment">%FDR control is done in expectation over many realizations.</span>
-0007 <span class="comment">%See also: mafdr</span>
-0008 
-0009 <span class="comment">%INPUT:</span>
-0010 <span class="comment">%p: vector of p-values from the multiple comparisons, has to be 1-D</span>
-0011 <span class="comment">%fdr: value in [0,1] that determines the (expected) False Discovery Rate that is</span>
-0012 <span class="comment">%tolerated</span>
-0013 <span class="comment">%twoStageFlag: if true, it performs the two-stage procedure suggested in</span>
-0014 <span class="comment">%Benjamini, Krieger and Yekuteli 2006, which maintains fdr control</span>
-0015 <span class="comment">%guarantees (under independent tests) but has more power. Default = false.</span>
-0016 <span class="comment">%OUTPUT:</span>
-0017 <span class="comment">%h= binary vector that is 1 if the corresponding p-value was deemed</span>
-0018 <span class="comment">%significant, and 0 if not.</span>
-0019 <span class="comment">%pThreshold = value that ends up being the cut-off for p. Should satisfy:</span>
-0020 <span class="comment">%h = p&lt;=pThreshold = pAdjusted&lt;fdr</span>
-0021 <span class="comment">%i1 = no. of significant results, equals sum(h)</span>
-0022 <span class="comment">%pAdjusted = adjusted p-values</span>
-0023 
-0024 <span class="comment">%Validated on Oct 19th 2017 against fdr_bh() function from Matlab Exchange,</span>
-0025 <span class="comment">%and on Nov 29th 2018 agains BioInformatic's Toolbox mafdr()</span>
-0026 <span class="comment">%References:</span>
-0027 <span class="comment">%Benjamini &amp; Hochberg 1995</span>
-0028 <span class="comment">%Yekuteli &amp; Benjamini 1999 (for definition of adjusted p-values)</span>
-0029 <span class="comment">%Benjamini, Krieger and Yekuteli 2006 (for two-stage procedure)</span>
-0030 
-0031 <span class="keyword">if</span> nargin&lt;3 || <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(twoStageFlag)
-0032     twoStageFlag=false;
-0033 <span class="keyword">end</span>
-0034 <span class="keyword">if</span> twoStageFlag
-0035     fdr=fdr/(1+fdr); <span class="comment">%BKY procedure requires using this value</span>
-0036     <span class="comment">%in the first and second pass for FDR guarantee, although authors later use fdr</span>
-0037     <span class="comment">%itself for the first pass and claim that it is ok in practice.</span>
-0038 <span class="keyword">end</span>
-0039 
-0040 M=numel(p); <span class="comment">%No. of total comparisons</span>
-0041 
-0042 [p1,idx]=sort(p(:),<span class="string">'ascend'</span>);
-0043 h1=zeros(size(p1));
-0044 ii=find(p1 &lt; fdr*[1:M]'/M,1,<span class="string">'last'</span>);
-0045 <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(ii)
-0046     i1=0;
-0047 <span class="keyword">else</span>
-0048     i1=ii;
-0049 <span class="keyword">end</span>
-0050 
-0051 h1(1:i1)=1; <span class="comment">%Significant results</span>
-0052 h=nan(size(p));
-0053 h(idx)=h1; <span class="comment">%Re-sorting</span>
-0054 
-0055 pThreshold=p1(ii);
-0056 
-0057 <span class="keyword">if</span> nargout&gt;3 <span class="comment">%Computing adjusted p-values</span>
-0058     <span class="comment">%Adjusted p-values are the thing that is compared to fdr</span>
-0059     pAdjusted=nan(size(p));
-0060     newP=p1*M./[1:M]';
-0061     <span class="keyword">for</span> i=(length(newP)-1):-1:1
-0062         <span class="keyword">if</span> newP(i)&gt;newP(i+1)
-0063             newP(i)=newP(i+1);
-0064         <span class="keyword">end</span>
-0065     <span class="keyword">end</span>
-0066     pAdjusted(idx)=newP;
-0067 <span class="keyword">end</span>
-0068 
-0069 <span class="keyword">if</span> twoStageFlag
-0070     [h,pThreshold,i1] = <a href="BenjaminiHochberg.html" class="code" title="function [h,pThreshold,i1,pAdjusted] = BenjaminiHochberg(p,fdr,twoStageFlag)">BenjaminiHochberg</a>(p,fdr*M/(M-i1),false);
-0071 <span class="keyword">end</span>
-0072 
-0073 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h, pThreshold, i1, pAdjusted] = </a><span class="keyword">...</span>
+0002     <a href="BenjaminiHochberg.html" class="code" title="function [h, pThreshold, i1, pAdjusted] =BenjaminiHochberg(p, fdr, twoStageFlag)">BenjaminiHochberg</a>(p, fdr, twoStageFlag)
+0003 <span class="comment">%BENJAMINIHOCHBERG Benjamini-Hochberg FDR correction.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Determines significance across multiple comparisons while controlling</span>
+0006 <span class="comment">% the False Discovery Rate (expected fraction of false positives among all</span>
+0007 <span class="comment">% rejections). Less conservative than Bonferroni correction; FDR control</span>
+0008 <span class="comment">% holds in expectation over many realizations.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Validated Oct 2017 against fdr_bh() (MATLAB File Exchange) and Nov 2018</span>
+0011 <span class="comment">% against the Bioinformatics Toolbox mafdr().</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   References:</span>
+0014 <span class="comment">%     Benjamini &amp; Hochberg 1995</span>
+0015 <span class="comment">%     Yekuteli &amp; Benjamini 1999 (adjusted p-values)</span>
+0016 <span class="comment">%     Benjamini, Krieger &amp; Yekuteli 2006 (two-stage procedure)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   p            - vector of p-values from multiple comparisons</span>
+0020 <span class="comment">%   fdr          - scalar in [0,1]; tolerated False Discovery Rate</span>
+0021 <span class="comment">%   twoStageFlag - (optional) logical; if true, applies the BKY two-stage</span>
+0022 <span class="comment">%                  procedure (more power, same FDR guarantees under</span>
+0023 <span class="comment">%                  independent tests); default false</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Outputs:</span>
+0026 <span class="comment">%   h          - binary vector; 1 where p-value is significant, 0 elsewhere</span>
+0027 <span class="comment">%   pThreshold - p-value cut-off; satisfies h = (p &lt;= pThreshold)</span>
+0028 <span class="comment">%   i1         - number of significant results; equals sum(h)</span>
+0029 <span class="comment">%   pAdjusted  - adjusted p-values; significant where pAdjusted &lt; fdr</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% Toolbox Dependencies: None</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% See also MAFDR.</span>
+0034 
+0035 arguments
+0036     p            {mustBeVector, mustBeNumeric}
+0037     fdr    (1,1) double {mustBeInRange(fdr, 0, 1)}
+0038     twoStageFlag (1,1) logical = false
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> twoStageFlag
+0042     <span class="comment">% BKY procedure uses fdr/(1+fdr) in both passes for FDR guarantee,</span>
+0043     <span class="comment">% though authors later suggest using fdr itself in the first pass.</span>
+0044     fdr = fdr / (1 + fdr);
+0045 <span class="keyword">end</span>
+0046 
+0047 M = numel(p);  <span class="comment">% total number of comparisons</span>
+0048 
+0049 <span class="comment">%% Sort and Apply BH Threshold</span>
+0050 [p1, idx] = sort(p(:), <span class="string">'ascend'</span>);
+0051 h1      = zeros(size(p1));
+0052 lastSig = find(p1 &lt; fdr * (1:M)' / M, 1, <span class="string">'last'</span>);
+0053 <span class="keyword">if</span> <a href="../../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(lastSig)
+0054     i1 = 0;
+0055 <span class="keyword">else</span>
+0056     i1 = lastSig;
+0057 <span class="keyword">end</span>
+0058 
+0059 h1(1:i1) = 1;  <span class="comment">% significant results</span>
+0060 h = nan(size(p));
+0061 h(idx) = h1;  <span class="comment">% restore original ordering</span>
+0062 
+0063 pThreshold = p1(lastSig);
+0064 
+0065 <span class="comment">%% Compute Adjusted P-Values</span>
+0066 <span class="keyword">if</span> nargout &gt; 3
+0067     pAdjusted = nan(size(p));
+0068     newP      = p1 * M ./ (1:M)';
+0069     <span class="keyword">for</span> ii = (length(newP) - 1):-1:1
+0070         <span class="keyword">if</span> newP(ii) &gt; newP(ii + 1)
+0071             newP(ii) = newP(ii + 1);
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074     pAdjusted(idx) = newP;
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">%% Two-Stage Recursive Call</span>
+0078 <span class="keyword">if</span> twoStageFlag
+0079     [h, pThreshold, i1] = <a href="BenjaminiHochberg.html" class="code" title="function [h, pThreshold, i1, pAdjusted] =BenjaminiHochberg(p, fdr, twoStageFlag)">BenjaminiHochberg</a>(p, fdr * M / (M - i1), false);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

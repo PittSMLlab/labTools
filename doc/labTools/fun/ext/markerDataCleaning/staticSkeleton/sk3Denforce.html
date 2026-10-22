@@ -4,7 +4,7 @@
 <head>
   <title>Description of sk3Denforce</title>
   <meta name="keywords" content="sk3Denforce">
-  <meta name="description" content="Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the">
+  <meta name="description" content="SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,51 +21,92 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</strong></div>
+<div class="box"><strong>SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [xMLE] = sk3Denforce(x,P,s,R) </strong></div>
+<div class="box"><strong>function xMLE = sk3Denforce(x,P,s,R) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the
-relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal
-(bayesian) estimate of x
-If elements of x are NaN, they are considered 'missing' and assigned an
-arbitrary value with (numerically) infinite uncertainty</pre></div>
+<div class="fragment"><pre class="comment">SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.
+
+   xMLE = SK3DENFORCE(x,P,s,R) combines a prior estimate x (normal, with
+ covariance P) of the marker positions with the relative-position model
+ W*x ~ N(s,diag(R)) and returns the optimal (bayesian) estimate. Elements
+ of x that are NaN are treated as missing and given numerically infinite
+ uncertainty.
+
+ NOTE: stale research code. The body calls COMPUTEDIFFMATRIX with a scalar
+ and calls UPDATEKF, which is not in the repository; the testSkeleton
+ script passes five arguments.
+
+ Inputs:
+   x - N x D prior marker positions (NaN marks a missing element)
+   P - prior covariance of x(:)
+   s - mean of the relative-position model
+   R - variances of the relative-position model
+
+ Outputs:
+   xMLE - estimated positions (vectorized)
+
+ Toolbox Dependencies: None
+
+ See also <a href="sk3Dlearn.html" class="code" title="function [m,R] = sk3Dlearn(pos)">SK3DLEARN</a>, <a href="sk3Ddetect.html" class="code" title="function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)">SK3DDETECT</a>, <a href="skDistenforce.html" class="code" title="function xMLE = skDistlearnenforce(x,P,s,R)">SKDISTENFORCE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDiffMatrix.html" class="code" title="function [D] = computeDiffMatrix(pos)">computeDiffMatrix</a>	Gets position data as N markers x 3D x M frames and for each frame</li></ul>
+<li><a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDiffMatrix.html" class="code" title="function D = computeDiffMatrix(pos)">computeDiffMatrix</a>	COMPUTEDIFFMATRIX Pairwise differences between marker components.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="testSkeleton.html" class="code" title="">testSkeleton</a>	testSkeleton</li></ul>
+<li><a href="../../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li><li><a href="testSkeleton.html" class="code" title="">testSkeleton</a>	TESTSKELETON Try the 3-D static skeleton model on synthetic data.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xMLE] = sk3Denforce(x,P,s,R)</a>
-0002 <span class="comment">%Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</span>
-0003 <span class="comment">%relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal</span>
-0004 <span class="comment">%(bayesian) estimate of x</span>
-0005 <span class="comment">%If elements of x are NaN, they are considered 'missing' and assigned an</span>
-0006 <span class="comment">%arbitrary value with (numerically) infinite uncertainty</span>
-0007 [N,D]=size(x);
-0008 W = <a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDiffMatrix.html" class="code" title="function [D] = computeDiffMatrix(pos)">computeDiffMatrix</a>(N);
-0009 Z=sparse(zeros(size(W)));
-0010 
-0011 <span class="comment">%Deal with NaNs in data:</span>
-0012 idx=isnan(x(:));
-0013 x(idx)=0;
-0014 aux=zeros(N*D,1);
-0015 aux(idx)=1;
-0016 P=P+1e15*max(P(:))*diag(aux);
-0017 
-0018 [xMLE,PMLE]=updateKF([W Z Z;Z W Z; Z Z W],diag(R(:)),x(:),P,s(:),zeros(size(W,1)*D,1)); <span class="comment">%Optimal bayesian update</span>
-0019 <span class="keyword">end</span>
-0020</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function xMLE = sk3Denforce(x,P,s,R)</a>
+0002 <span class="comment">%SK3DENFORCE Bayesian estimate of marker positions under a skeleton model.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   xMLE = SK3DENFORCE(x,P,s,R) combines a prior estimate x (normal, with</span>
+0005 <span class="comment">% covariance P) of the marker positions with the relative-position model</span>
+0006 <span class="comment">% W*x ~ N(s,diag(R)) and returns the optimal (bayesian) estimate. Elements</span>
+0007 <span class="comment">% of x that are NaN are treated as missing and given numerically infinite</span>
+0008 <span class="comment">% uncertainty.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% NOTE: stale research code. The body calls COMPUTEDIFFMATRIX with a scalar</span>
+0011 <span class="comment">% and calls UPDATEKF, which is not in the repository; the testSkeleton</span>
+0012 <span class="comment">% script passes five arguments.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Inputs:</span>
+0015 <span class="comment">%   x - N x D prior marker positions (NaN marks a missing element)</span>
+0016 <span class="comment">%   P - prior covariance of x(:)</span>
+0017 <span class="comment">%   s - mean of the relative-position model</span>
+0018 <span class="comment">%   R - variances of the relative-position model</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%   xMLE - estimated positions (vectorized)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also SK3DLEARN, SK3DDETECT, SKDISTENFORCE.</span>
+0026 
+0027 [N,D] = size(x);
+0028 W = <a href="../../../../../labTools/fun/ext/markerDataCleaning/fun/computeDiffMatrix.html" class="code" title="function D = computeDiffMatrix(pos)">computeDiffMatrix</a>(N);
+0029 Z = sparse(zeros(size(W)));
+0030 
+0031 <span class="comment">%Deal with NaNs in data:</span>
+0032 missingScale = 1e15; <span class="comment">% makes the uncertainty of missing elements infinite</span>
+0033 idx = isnan(x(:));
+0034 x(idx) = 0;
+0035 aux = zeros(N*D,1);
+0036 aux(idx) = 1;
+0037 P = P+missingScale*max(P(:))*diag(aux);
+0038 
+0039 [xMLE,PMLE] = updateKF([W Z Z;Z W Z; Z Z W],diag(R(:)),x(:),P,s(:), <span class="keyword">...</span>
+0040     zeros(size(W,1)*D,1)); <span class="comment">%Optimal bayesian update</span>
+0041 <span class="keyword">end</span>
+0042</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

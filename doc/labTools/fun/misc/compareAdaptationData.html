@@ -4,7 +4,7 @@
 <head>
   <title>Description of compareAdaptationData</title>
   <meta name="keywords" content="compareAdaptationData">
-  <meta name="description" content="COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.">
+  <meta name="description" content="COMPAREADAPTATIONDATA Compare two adaptationData objects or files.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.</strong></div>
+<div class="box"><strong>COMPAREADAPTATIONDATA Compare two adaptationData objects or files.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function report = compareAdaptationData(refInput, newInput, options) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.
+<div class="fragment"><pre class="comment">COMPAREADAPTATIONDATA Compare two adaptationData objects or files.
 
    Loads two adaptationData objects and reports differences in computed
  stride-by-stride parameters. Comparisons are restricted to trials
@@ -60,10 +60,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="cprintf.html" class="code" title="function count = cprintf(style,format,varargin)">cprintf</a>	CPRINTF displays styled formatted text in the Command Window</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/example/TestPipelineRecompute.html" class="code" title="">TestPipelineRecompute</a>	TESTPIPELINERECOMPUTE Template script for regression-testing recompute pipelines.</li></ul>
+<li><a href="../../../labTools/example/TestPipelineRecompute.html" class="code" title="">TestPipelineRecompute</a>	TESTPIPELINERECOMPUTE Template: regression-test recompute pipelines.</li><li><a href="../../../labTools/testing/regression/regressionBaselineRun.html" class="code" title="function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)">regressionBaselineRun</a>	REGRESSIONBASELINERUN Save a flush-stage regression baseline.</li><li><a href="../../../labTools/testing/regression/regressionCompareRun.html" class="code" title="function regressionCompareRun(refExpDataFile, eventClass, baselineDir)">regressionCompareRun</a>	REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</li><li><a href="../../../labTools/testing/regression/regressionProcessRun.html" class="code" title="function regressionProcessRun(mode, rawFile, eventClass, baselineDir)">regressionProcessRun</a>	REGRESSIONPROCESSRUN Process-stage regression: RAW -> process -> params.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -72,7 +72,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function report = compareAdaptationData(refInput, newInput, options)</a>
-0002 <span class="comment">%COMPAREADAPTATIONDATA Compare two adaptationData objects or params.mat files.</span>
+0002 <span class="comment">%COMPAREADAPTATIONDATA Compare two adaptationData objects or files.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Loads two adaptationData objects and reports differences in computed</span>
 0005 <span class="comment">% stride-by-stride parameters. Comparisons are restricted to trials</span>
@@ -149,11 +149,11 @@ This function is called by:
 0076 nCommon    = length(commonLabels);
 0077 refColIdx  = zeros(1, nCommon);
 0078 newColIdx  = zeros(1, nCommon);
-0079 <span class="keyword">for</span> iLabel = 1:nCommon
-0080     refColIdx(iLabel) = find( <span class="keyword">...</span>
-0081         strcmp(refAllLabels, commonLabels{iLabel}), 1);
-0082     newColIdx(iLabel) = find( <span class="keyword">...</span>
-0083         strcmp(newAllLabels, commonLabels{iLabel}), 1);
+0079 <span class="keyword">for</span> lbl = 1:nCommon
+0080     refColIdx(lbl) = find( <span class="keyword">...</span>
+0081         strcmp(refAllLabels, commonLabels{lbl}), 1);
+0082     newColIdx(lbl) = find( <span class="keyword">...</span>
+0083         strcmp(newAllLabels, commonLabels{lbl}), 1);
 0084 <span class="keyword">end</span>
 0085 refInitCol = find(strcmp(refAllLabels, <span class="string">'initTime'</span>), 1);
 0086 newInitCol  = find(strcmp(newAllLabels, <span class="string">'initTime'</span>), 1);
@@ -171,8 +171,8 @@ This function is called by:
 0098 <span class="comment">% any real stride-to-stride interval (typically 0.8–1.5 s)</span>
 0099 initTimeTol = 0.01;
 0100 
-0101 <span class="keyword">for</span> iTrial = 1:length(commonTrials)
-0102     t = commonTrials(iTrial);
+0101 <span class="keyword">for</span> tr = 1:length(commonTrials)
+0102     t = commonTrials(tr);
 0103     refIdxCell = refData.data.indsInTrial(t);
 0104     newIdxCell  = newData.data.indsInTrial(t);
 0105     refInds = refIdxCell{1};
@@ -207,32 +207,32 @@ This function is called by:
 0134     newMatchedGlobal  = newInds(matchedNewIdx);
 0135 
 0136     <span class="comment">% Compare each common parameter across matched strides</span>
-0137     <span class="keyword">for</span> iLabel = 1:nCommon
+0137     <span class="keyword">for</span> lbl = 1:nCommon
 0138         refVals = refData.data.Data( <span class="keyword">...</span>
-0139             refMatchedGlobal, refColIdx(iLabel));
+0139             refMatchedGlobal, refColIdx(lbl));
 0140         newVals  = newData.data.Data( <span class="keyword">...</span>
-0141             newMatchedGlobal, newColIdx(iLabel));
+0141             newMatchedGlobal, newColIdx(lbl));
 0142 
 0143         oneNaN      = isnan(refVals) ~= isnan(newVals);
 0144         bothNumeric = ~isnan(refVals) &amp; ~isnan(newVals);
 0145 
-0146         nNanMismatchAcc(iLabel) = nNanMismatchAcc(iLabel) <span class="keyword">...</span>
+0146         nNanMismatchAcc(lbl) = nNanMismatchAcc(lbl) <span class="keyword">...</span>
 0147             + sum(oneNaN);
 0148         <span class="keyword">if</span> any(oneNaN)
-0149             isChangedAcc(iLabel) = true;
+0149             isChangedAcc(lbl) = true;
 0150         <span class="keyword">end</span>
 0151 
 0152         <span class="keyword">if</span> any(bothNumeric)
 0153             rV    = refVals(bothNumeric);
 0154             nV    = newVals(bothNumeric);
 0155             diffs = abs(nV - rV);
-0156             maxAbsDiffAcc(iLabel) = max( <span class="keyword">...</span>
-0157                 maxAbsDiffAcc(iLabel), max(diffs));
+0156             maxAbsDiffAcc(lbl) = max( <span class="keyword">...</span>
+0157                 maxAbsDiffAcc(lbl), max(diffs));
 0158             relDiffs = diffs ./ (abs(rV) + options.AbsTol);
-0159             maxRelDiffAcc(iLabel) = max( <span class="keyword">...</span>
-0160                 maxRelDiffAcc(iLabel), max(relDiffs));
+0159             maxRelDiffAcc(lbl) = max( <span class="keyword">...</span>
+0160                 maxRelDiffAcc(lbl), max(relDiffs));
 0161             <span class="keyword">if</span> any(diffs &gt; options.AbsTol + options.RelTol * abs(rV))
-0162                 isChangedAcc(iLabel) = true;
+0162                 isChangedAcc(lbl) = true;
 0163             <span class="keyword">end</span>
 0164         <span class="keyword">end</span>
 0165     <span class="keyword">end</span>
@@ -245,12 +245,12 @@ This function is called by:
 0172     paramResults(nCommon, 1).maxRelDiff     = 0;
 0173     paramResults(nCommon, 1).nNanMismatches = 0;
 0174     paramResults(nCommon, 1).isChanged      = false;
-0175     <span class="keyword">for</span> iLabel = 1:nCommon
-0176         paramResults(iLabel).label          = commonLabels{iLabel};
-0177         paramResults(iLabel).maxAbsDiff     = maxAbsDiffAcc(iLabel);
-0178         paramResults(iLabel).maxRelDiff     = maxRelDiffAcc(iLabel);
-0179         paramResults(iLabel).nNanMismatches = nNanMismatchAcc(iLabel);
-0180         paramResults(iLabel).isChanged      = isChangedAcc(iLabel);
+0175     <span class="keyword">for</span> lbl = 1:nCommon
+0176         paramResults(lbl).label          = commonLabels{lbl};
+0177         paramResults(lbl).maxAbsDiff     = maxAbsDiffAcc(lbl);
+0178         paramResults(lbl).maxRelDiff     = maxRelDiffAcc(lbl);
+0179         paramResults(lbl).nNanMismatches = nNanMismatchAcc(lbl);
+0180         paramResults(lbl).isChanged      = isChangedAcc(lbl);
 0181     <span class="keyword">end</span>
 0182 <span class="keyword">else</span>
 0183     paramResults = struct( <span class="keyword">...</span>
@@ -310,7 +310,7 @@ This function is called by:
 0237 <span class="comment">% =========================================================================</span>
 0238 
 0239 <a name="_sub2" href="#_subfunctions" class="code">function printComparisonReport(report, relTol, absTol)</a>
-0240 <span class="comment">%PRINTCOMPARISONREPORT Print formatted comparison report to the command window.</span>
+0240 <span class="comment">%PRINTCOMPARISONREPORT Print the comparison report to the command window.</span>
 0241 
 0242 arguments
 0243     report struct
@@ -441,6 +441,6 @@ This function is called by:
 0368 <span class="keyword">end</span>
 0369 fprintf(<span class="string">'\n'</span>);
 0370 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

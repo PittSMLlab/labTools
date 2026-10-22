@@ -4,7 +4,7 @@
 <head>
   <title>Description of poster_colors</title>
   <meta name="keywords" content="poster_colors">
-  <meta name="description" content="1          2          3          4          5          6          7        8           9        10            11        12">
+  <meta name="description" content="% Poster colors">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>1          2          3          4          5          6          7        8           9        10            11        12</strong></div>
+<div class="box"><strong>% Poster colors</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">                  1          2          3          4          5          6          7        8           9        10            11        12
-                red     fade red     green    fade green    blue     fade blue   black     gray       yellow    orange        plum      lime
-color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77]*(1/255);
-new colors
-color_palette= [255 0 0; 255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);</pre></div>
+<div class="fragment"><pre class="comment">% Poster colors
+ Script. Defines the lab color palette and the named colors p_red,
+ p_fade_red, p_green, p_fade_green, p_blue, p_fade_blue, p_black,
+ p_gray, p_yellow, p_orange, p_plum, and p_lime used by plotEMGtraces and
+ optimizedSubPlot. The comment table lists the colors of palette rows
+ 1-12.
+
+ Inputs:
+   none
+
+ Outputs:
+   color_palette - (workspace) 29 x 3 RGB palette (0-1)
+   p_*           - (workspace) named RGB colors
+
+ Toolbox Dependencies: None
+
+ See also <a href="colorScheme.html" class="code" title="">COLORSCHEME</a>, <a href="poster_colorsHH.html" class="code" title="">POSTER_COLORSHH</a>.
+               1          2          3          4          5          6
+             red   fade red      green fade green       blue  fade blue
+               7          8          9         10         11         12
+           black       gray     yellow     orange       plum       lime</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -40,31 +56,61 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="../../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	% Plot the EMG ttraces for the Nimbus generalization project</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results, params, conds, groups,colorOrder, type)">Correlations</a>	CORRELATIONS Plot linear correlations between conditions or parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	PLOTAVGTIMECOURSE Plot binned group time courses of parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	PLOTALLSTRIDES Plots all individual strides for a field.</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	PLOTAVGSTRIDE Plots average stride across conditions.</li><li><a href="../../../../labTools/fun/PlotEMGTraces/Func/plotEMGtraces.html" class="code" title="function fh = plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly)">plotEMGtraces</a>	PLOTEMGTRACES Plot EMG traces of several conditions for each muscle.</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>	BARGROUPS Make a bar plot comparing groups across epochs and parameters.</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix, groups, plotFlag, indivFlag)">expResults</a>	EXPRESULTS Compute group-level steady-state and transfer results.</li><li><a href="../../../../labTools/fun/plotting/optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle] = optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT Full-screen figure of axes with minimal white space.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%                  1          2          3          4          5          6          7        8           9        10            11        12</span>
-0002 <span class="comment">%                red     fade red     green    fade green    blue     fade blue   black     gray       yellow    orange        plum      lime</span>
-0003 <span class="comment">%color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77]*(1/255);</span>
-0004 <span class="comment">%new colors</span>
-0005 <span class="comment">%color_palette= [255 0 0; 255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);</span>
-0006 color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77;255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);
-0007 p_red=color_palette(1,:);
-0008 p_fade_red=color_palette(2,:);
-0009 p_green=color_palette(3,:);
-0010 p_fade_green=color_palette(4,:);
-0011 p_blue=color_palette(5,:);
-0012 p_fade_blue=color_palette(6,:);
-0013 p_black=color_palette(18,:);
-0014 p_gray=color_palette(17,:);
-0015 p_yellow=color_palette(9,:);
-0016 p_orange=color_palette(10,:);
-0017 p_plum=color_palette(11,:);
-0018 p_lime=color_palette(12,:);
-0019</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%% Poster colors</span>
+0002 <span class="comment">% Script. Defines the lab color palette and the named colors p_red,</span>
+0003 <span class="comment">% p_fade_red, p_green, p_fade_green, p_blue, p_fade_blue, p_black,</span>
+0004 <span class="comment">% p_gray, p_yellow, p_orange, p_plum, and p_lime used by plotEMGtraces and</span>
+0005 <span class="comment">% optimizedSubPlot. The comment table lists the colors of palette rows</span>
+0006 <span class="comment">% 1-12.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   none</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   color_palette - (workspace) 29 x 3 RGB palette (0-1)</span>
+0013 <span class="comment">%   p_*           - (workspace) named RGB colors</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Toolbox Dependencies: None</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% See also COLORSCHEME, POSTER_COLORSHH.</span>
+0018 <span class="comment">%               1          2          3          4          5          6</span>
+0019 <span class="comment">%             red   fade red      green fade green       blue  fade blue</span>
+0020 <span class="comment">%               7          8          9         10         11         12</span>
+0021 <span class="comment">%           black       gray     yellow     orange       plum       lime</span>
+0022 
+0023 <span class="comment">%color_palette = [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; ...</span>
+0024 <span class="comment">%    44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; ...</span>
+0025 <span class="comment">%    171 218 77]*(1/255);</span>
+0026 <span class="comment">%new colors</span>
+0027 <span class="comment">%color_palette = [255 0 0; 255 185 0; 153 255 102; 44 176 207; ...</span>
+0028 <span class="comment">%    129 23 136; 0 114 54; 255 150 150; 29 14 130; 153 153 210; ...</span>
+0029 <span class="comment">%    151 15 0; 102 126 0; 255 51 102; 0 0 255; 71 38 0; 255 102 0; ...</span>
+0030 <span class="comment">%    171 218 77; 155 155 155; 0 0 0]*(1/255);</span>
+0031 color_palette = [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; <span class="keyword">...</span>
+0032     44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; <span class="keyword">...</span>
+0033     171 218 77; 255 185 0; 153 255 102; 44 176 207; 129 23 136; <span class="keyword">...</span>
+0034     0 114 54; 255 150 150; 29 14 130; 153 153 210; 151 15 0; 102 126 0; <span class="keyword">...</span>
+0035     255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155; <span class="keyword">...</span>
+0036     0 0 0]*(1/255);
+0037 p_red         = color_palette(1,:);
+0038 p_fade_red    = color_palette(2,:);
+0039 p_green       = color_palette(3,:);
+0040 p_fade_green  = color_palette(4,:);
+0041 p_blue        = color_palette(5,:);
+0042 p_fade_blue   = color_palette(6,:);
+0043 p_black       = color_palette(18,:);
+0044 p_gray        = color_palette(17,:);
+0045 p_yellow      = color_palette(9,:);
+0046 p_orange      = color_palette(10,:);
+0047 p_plum        = color_palette(11,:);
+0048 p_lime        = color_palette(12,:);
+0049</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

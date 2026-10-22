@@ -4,7 +4,7 @@
 <head>
   <title>Description of getBeltSpeedsFromFootMarkers</title>
   <meta name="keywords" content="getBeltSpeedsFromFootMarkers">
-  <meta name="description" content="">
+  <meta name="description" content="GETBELTSPEEDSFROMFOOTMARKERS Estimate belt speeds from heel markers.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,75 +21,143 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong></strong></div>
+<div class="box"><strong>GETBELTSPEEDSFROMFOOTMARKERS Estimate belt speeds from heel markers.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"></pre></div>
+<div class="fragment"><pre class="comment">GETBELTSPEEDSFROMFOOTMARKERS Estimate belt speeds from heel markers.
+
+   beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData, events)
+ estimates each belt's speed from the fore-aft heel marker speed. For
+ every heel strike, the stance-leg heel speed is the median over that
+ leg's single stance (from the contralateral toe-off to the next
+ contralateral heel strike); that value is assigned to the samples from
+ the heel strike to the ipsilateral toe-off. Strides with an incomplete
+ event sequence stay NaN. If either heel marker is missing, a warning is
+ issued and [] is returned.
+
+ Inputs:
+   trialData - rawTrialData with markerData (heel markers LHEE and RHEE)
+               and metaData.rawDataFilename
+   events    - labTimeSeries with LHS, RHS, LTO, RTO event labels
+
+ Outputs:
+   beltSpeedReadData - labTimeSeries with labels 'L' and 'R' sampled at
+                       the event time base (NaN where not estimated), or
+                       [] if the heel markers are missing
+
+ Toolbox Dependencies: None
+
+ See also LABTIMESERIES, LABDATA/GETEVENTS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li></ul>
+<li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	PROCESS Process raw trial data into angles, events, and parameters.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)</a>
-0002 
-0003 LHS=events.getDataAsVector(<span class="string">'LHS'</span>);
-0004 LTO=events.getDataAsVector(<span class="string">'LTO'</span>);
-0005 RHS=events.getDataAsVector(<span class="string">'RHS'</span>);
-0006 RTO=events.getDataAsVector(<span class="string">'RTO'</span>);
-0007 
-0008 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'RHEEx'</span>)
-0009     LHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector([<span class="string">'LHEE'</span> trialData.markerData.orientation.foreaftAxis]))];
-0010     RHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector([<span class="string">'RHEE'</span> trialData.markerData.orientation.foreaftAxis]))];
-0011 <span class="keyword">else</span>
-0012     slashes=find(trialData.metaData.rawDataFilename==<span class="string">'\'</span> | trialData.metaData.rawDataFilename==<span class="string">'/'</span>);
-0013     file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
-0014     warning([<span class="string">'There are missing heel markers. Belt speed read Data not calculated for '</span>,file]);
-0015     beltSpeedReadData=[];
-0016     <span class="keyword">return</span>
-0017 <span class="keyword">end</span>
-0018 beltSpeedReadData=<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(NaN(size(events.Data,1),2),events.Time(1),events.sampPeriod,{<span class="string">'L'</span>,<span class="string">'R'</span>});
-0019 
-0020 speed=<a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>([LHEEspeed,RHEEspeed],trialData.markerData.Time(1),trialData.markerData.sampPeriod,{<span class="string">'L'</span>,<span class="string">'R'</span>});
-0021 idxLHS=find(LHS);
-0022 <span class="keyword">for</span> i=1:length(idxLHS)
-0023     idxNextLTO=find(LTO &amp; events.Time&gt;events.Time(idxLHS(i)),1);
-0024     idxNextRTO=find(RTO &amp; events.Time&gt;events.Time(idxLHS(i)),1);
-0025     idxNextRHS=find(RHS &amp; events.Time&gt;events.Time(idxLHS(i)),1);
-0026     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRHS) &amp;&amp; events.Time(idxNextRHS)&gt;events.Time(idxNextRTO)
-0027         aux=speed.split(events.Time(idxNextRTO),events.Time(idxNextRHS));
-0028         <span class="comment">%if ~isempty(aux.Data) %To avoid 'not a labeled time series' message when the events fall within two consecutive samples</span>
-0029             beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(aux.getDataAsVector(<span class="string">'L'</span>)); <span class="comment">%Only considering median absolute speed on single stance phase</span>
-0030         <span class="comment">%else</span>
-0031         <span class="comment">%    beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=NaN;</span>
-0032         <span class="comment">%end</span>
-0033     <span class="keyword">end</span>
-0034 <span class="keyword">end</span>
-0035 idxRHS=find(RHS);
-0036 <span class="keyword">for</span> i=1:length(idxRHS)
-0037     idxNextRTO=find(RTO &amp; events.Time&gt;events.Time(idxRHS(i)),1);
-0038     idxNextLTO=find(LTO &amp; events.Time&gt;events.Time(idxRHS(i)),1);
-0039     idxNextLHS=find(LHS &amp; events.Time&gt;events.Time(idxRHS(i)),1);
-0040     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLHS) &amp;&amp; events.Time(idxNextLHS)&gt;events.Time(idxNextLTO)
-0041         aux=speed.split(events.Time(idxNextLTO),events.Time(idxNextLHS));
-0042         <span class="comment">%if ~isempty(aux.Data)</span>
-0043             beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(aux.getDataAsVector(<span class="string">'R'</span>)); <span class="comment">%Only considering median absolute speed on single stance phase</span>
-0044         <span class="comment">%else</span>
-0045         <span class="comment">%    beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=NaN;</span>
-0046         <span class="comment">%end</span>
-0047     <span class="keyword">end</span>
-0048 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002 <span class="comment">%GETBELTSPEEDSFROMFOOTMARKERS Estimate belt speeds from heel markers.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData, events)</span>
+0005 <span class="comment">% estimates each belt's speed from the fore-aft heel marker speed. For</span>
+0006 <span class="comment">% every heel strike, the stance-leg heel speed is the median over that</span>
+0007 <span class="comment">% leg's single stance (from the contralateral toe-off to the next</span>
+0008 <span class="comment">% contralateral heel strike); that value is assigned to the samples from</span>
+0009 <span class="comment">% the heel strike to the ipsilateral toe-off. Strides with an incomplete</span>
+0010 <span class="comment">% event sequence stay NaN. If either heel marker is missing, a warning is</span>
+0011 <span class="comment">% issued and [] is returned.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Inputs:</span>
+0014 <span class="comment">%   trialData - rawTrialData with markerData (heel markers LHEE and RHEE)</span>
+0015 <span class="comment">%               and metaData.rawDataFilename</span>
+0016 <span class="comment">%   events    - labTimeSeries with LHS, RHS, LTO, RTO event labels</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   beltSpeedReadData - labTimeSeries with labels 'L' and 'R' sampled at</span>
+0020 <span class="comment">%                       the event time base (NaN where not estimated), or</span>
+0021 <span class="comment">%                       [] if the heel markers are missing</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: None</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% See also LABTIMESERIES, LABDATA/GETEVENTS.</span>
+0026 
+0027 LHS = events.getDataAsVector(<span class="string">'LHS'</span>);
+0028 LTO = events.getDataAsVector(<span class="string">'LTO'</span>);
+0029 RHS = events.getDataAsVector(<span class="string">'RHS'</span>);
+0030 RTO = events.getDataAsVector(<span class="string">'RTO'</span>);
+0031 
+0032 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>) &amp;&amp; <span class="keyword">...</span>
+0033         trialData.markerData.isaLabel(<span class="string">'RHEEx'</span>)
+0034     LHEEspeed = [0;trialData.markerData.sampFreq * <span class="keyword">...</span>
+0035         diff(trialData.markerData.getDataAsVector([<span class="string">'LHEE'</span> <span class="keyword">...</span>
+0036         trialData.markerData.orientation.foreaftAxis]))];
+0037     RHEEspeed = [0;trialData.markerData.sampFreq * <span class="keyword">...</span>
+0038         diff(trialData.markerData.getDataAsVector([<span class="string">'RHEE'</span> <span class="keyword">...</span>
+0039         trialData.markerData.orientation.foreaftAxis]))];
+0040 <span class="keyword">else</span>
+0041     slashes = find(trialData.metaData.rawDataFilename == <span class="string">'\'</span> | <span class="keyword">...</span>
+0042         trialData.metaData.rawDataFilename == <span class="string">'/'</span>);
+0043     file    = trialData.metaData.rawDataFilename((slashes(end)+1):end);
+0044     warning([ <span class="keyword">...</span>
+0045         <span class="string">'There are missing heel markers. Belt speed read Data not '</span> <span class="keyword">...</span>
+0046         <span class="string">'calculated for '</span>,file]);
+0047     beltSpeedReadData = [];
+0048     <span class="keyword">return</span>
+0049 <span class="keyword">end</span>
+0050 beltSpeedReadData = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(NaN(size(events.Data,1),2), <span class="keyword">...</span>
+0051     events.Time(1),events.sampPeriod,{<span class="string">'L'</span>,<span class="string">'R'</span>});
+0052 
+0053 speed  = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>([LHEEspeed,RHEEspeed], <span class="keyword">...</span>
+0054     trialData.markerData.Time(1),trialData.markerData.sampPeriod,{<span class="string">'L'</span>,<span class="string">'R'</span>});
+0055 idxLHS = find(LHS);
+0056 <span class="keyword">for</span> st = 1:length(idxLHS)
+0057     idxNextLTO = find(LTO &amp; events.Time &gt; events.Time(idxLHS(st)),1);
+0058     idxNextRTO = find(RTO &amp; events.Time &gt; events.Time(idxLHS(st)),1);
+0059     idxNextRHS = find(RHS &amp; events.Time &gt; events.Time(idxLHS(st)),1);
+0060     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRTO) &amp;&amp; <span class="keyword">...</span>
+0061             ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRHS) &amp;&amp; <span class="keyword">...</span>
+0062             events.Time(idxNextRHS) &gt; events.Time(idxNextRTO)
+0063         aux = speed.split(events.Time(idxNextRTO),events.Time(idxNextRHS));
+0064         <span class="comment">%if ~isempty( ...</span>
+0065         <span class="comment">%    aux.Data)</span>
+0066         <span class="comment">% To avoid 'not a labeled time series' message when the events</span>
+0067         <span class="comment">% fall within two consecutive samples</span>
+0068         <span class="comment">%Only considering median absolute speed on single stance phase</span>
+0069         beltSpeedReadData.Data(idxLHS(st):idxNextLTO,1) = <span class="keyword">...</span>
+0070             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(aux.getDataAsVector(<span class="string">'L'</span>));
+0071         <span class="comment">%else</span>
+0072         <span class="comment">%    beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=NaN;</span>
+0073         <span class="comment">%end</span>
+0074     <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 idxRHS = find(RHS);
+0077 <span class="keyword">for</span> st = 1:length(idxRHS)
+0078     idxNextRTO = find(RTO &amp; events.Time &gt; events.Time(idxRHS(st)),1);
+0079     idxNextLTO = find(LTO &amp; events.Time &gt; events.Time(idxRHS(st)),1);
+0080     idxNextLHS = find(LHS &amp; events.Time &gt; events.Time(idxRHS(st)),1);
+0081     <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextRTO) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLTO) &amp;&amp; <span class="keyword">...</span>
+0082             ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(idxNextLHS) &amp;&amp; <span class="keyword">...</span>
+0083             events.Time(idxNextLHS) &gt; events.Time(idxNextLTO)
+0084         aux = speed.split(events.Time(idxNextLTO),events.Time(idxNextLHS));
+0085         <span class="comment">%if ~isempty(aux.Data)</span>
+0086         <span class="comment">%Only considering median absolute speed on single stance phase</span>
+0087         beltSpeedReadData.Data(idxRHS(st):idxNextRTO,2) = <span class="keyword">...</span>
+0088             <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(aux.getDataAsVector(<span class="string">'R'</span>));
+0089         <span class="comment">%else</span>
+0090         <span class="comment">%    beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=NaN;</span>
+0091         <span class="comment">%end</span>
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

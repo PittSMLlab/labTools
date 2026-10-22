@@ -4,7 +4,7 @@
 <head>
   <title>Description of plot</title>
   <meta name="keywords" content="plot">
-  <meta name="description" content="PLOT Implementation for ClusteredSynergySetCollection">
+  <meta name="description" content="PLOT Plots every cluster as a bar graph of its mean synergy.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,172 +21,231 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>PLOT Implementation for ClusteredSynergySetCollection</strong></div>
+<div class="box"><strong>PLOT Plots every cluster as a bar graph of its mean synergy.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2) </strong></div>
+<div class="box"><strong>function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">PLOT Implementation for ClusteredSynergySetCollection</pre></div>
+<div class="fragment"><pre class="comment">PLOT Plots every cluster as a bar graph of its mean synergy.
+
+   Each cluster gets one subplot with the mean weights, bars of one
+ standard deviation, the individual synergies (marker per second collection
+ index, color per first index), the number of elements, and the angle
+ statistics of the cluster (distance to centroid and range). The title of
+ the first subplot shows the inter-centroid distances.
+
+ Inputs:
+   this          - ClusteredSynergySetCollection object
+   figHandle     - existing figure handle (optional)
+   handleVector  - subplot handles, one per cluster (optional)
+   colorClusters - cell array of bar colors per cluster (default: the
+                   colors property)
+   colorInd1     - cell array of marker colors indexed by the first
+                   collection index (optional)
+   markerInd2    - cell array of markers indexed by the second collection
+                   index (optional)
+
+ Outputs:
+   figHandle      - handle of the figure
+   subplotHandles - subplot handles, one per cluster
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function [figHandle] = plot(this)">plot</a>	PLOT Implementation of the plot method for SynergySetCollections</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/plot.html" class="code" title="function figHandle = plot(this)">plot</a>	PLOT Plots a 1-D SynergySetCollection, one row of subplots per set.</li><li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>	GETFIGSTRUCT Layout to arrange N plots on a 16:9 screen.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotBars.html" class="code" title="function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>	TODO: Should check that numberOfStrides groups are given in</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	This function replaces plotMultipleGroupBars</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	checkMarkerDataHealth  Diagnoses issues with marker data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>	plotCell  Plots cell array of stride data</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	plotCellAvg  Plots average and std of stride cell array</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	plotAllStrides  Plots all individual strides for a field</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	plotAvgStride  Plots average stride across conditions</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	plot  Plots aligned data with mean</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/assessMissing.html" class="code" title="function [fh, ph, missing] = assessMissing(this, labels, fh, ph)">assessMissing</a>	assessMissing  Assesses and plots missing data</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	bilateralPlot  Plots bilateral comparison</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	plot  Plots data in subplots</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plotStridedTimeSeries.html" class="code" title="function [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle, plotHandles)">plotStridedTimeSeries</a>	plotStridedTimeSeries  Plots strided timeseries</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>	assessMissing  Assesses missing data</li><li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Implementation for ClusteredSynergySetCollection</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergyAnalysis/SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/example/testMarkerOutlierDetectAndCorrect.html" class="code" title="">testMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/+Hreflex/plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">plotSnippets</a>	PLOTSNIPPETS Plot H-reflex snippets with GRFs if available.</li><li><a href="../../../../labTools/fun/+Hreflex/plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin)">plotStimArtifactPeaks</a>	PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</li><li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	%INTERPOLTRAJ Interpolates trajectories to fill in marker gaps</li><li><a href="../../../../labTools/fun/+dataMotion/processAndFillMarkerGapsSession.html" class="code" title="function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)">processAndFillMarkerGapsSession</a>	PROCESSANDFILLMARKERGAPSSESSION Process trial and fill marker gaps</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	Script to process a python biofeedback data file and add the columns of</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results=SyncPython_forStatic(subject)">SyncPython_forStatic</a>	function to incorporate biofeedback data from Python scripts into labtools</li><li><a href="../../../../labTools/fun/EMGanalysis/procEMGhealthCheck.html" class="code" title="function [h] = procEMGhealthCheck(procExperimentData)">procEMGhealthCheck</a>	</li><li><a href="../../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function [Stride2SS]=CalcStrides2SS_PostAdapt(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	this version was my first attempt to plot the postadaptation stuff,</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/CompareTrajectory_RL.html" class="code" title="">CompareTrajectory_RL</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajectoryCheckOptimizedRL.html" class="code" title="">TrajectoryCheckOptimizedRL</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li><li><a href="../../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL Realtime</li><li><a href="../../../../labTools/fun/misc/V2P_tester.html" class="code" title="">V2P_tester</a>	</li><li><a href="../../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>	this version was my first attempt to plot the readaptation stuff,</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix,groups,plotFlag,indivFlag)">expResults</a>	% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</li><li><a href="../../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa,Li] = nanJackKnife(varargin)">nanJackKnife</a>	JACKKNIFE plots jackknife errorbars around a given curve</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li><li><a href="../../../../labTools/gui/eventReview/ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li><li><a href="../../../../labTools/gui/importc3d/SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li><li><a href="../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	Synchronize the datlog with the rawExpData using the force signal.</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
+<li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackPerception.html" class="code" title="">BiofeedbackPerception</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSL.html" class="code" title="">BiofeedbackSL</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/BiofeedbackVazE2B.html" class="code" title="">BiofeedbackVazE2B</a>	</li><li><a href="../../../../labTools/classes/Biofeedback/SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/Correlations.html" class="code" title="function Correlations(adapDataList, results, params, conds, groups,colorOrder, type)">Correlations</a>	CORRELATIONS Plot linear correlations between conditions or parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotAvgTimeCourse.html" class="code" title="function varargout = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	PLOTAVGTIMECOURSE Plot binned group time courses of parameters.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	PLOTGROUPEDSUBJECTSBARS Bar plot of early/late parameter means by group.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData] = plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	PLOTGROUPEDSUBJECTSBARSV2 Bar plot of stride-group parameter means.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData] =plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	PLOTGROUPEDSUBJECTSTIMECOURSE Not functional; use PLOTAVGTIMECOURSE.</li><li><a href="../../../../labTools/classes/dataStructs/@adaptationData/scatterPlotLab.html" class="code" title="function figHandle = scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	SCATTERPLOTLAB Plot up to 3 parameters as coordinates in one axes.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotBars.html" class="code" title="function [figHandle,allData] = plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>	PLOTBARS Bar plot of stride-group parameter means for one group.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.html" class="code" title="function [figHandle,allData] = plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)">plotMultipleEpochBars</a>	PLOTMULTIPLEEPOCHBARS Bar plot of epoch means for several groups.</li><li><a href="../../../../labTools/classes/dataStructs/@groupAdaptationData/plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData] = plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	PLOTMULTIPLEGROUPSBARS Bar plot of stride-group means for many groups.</li><li><a href="../../../../labTools/classes/dataStructs/@labData/checkMarkerDataHealth.html" class="code" title="function checkMarkerDataHealth(this)">checkMarkerDataHealth</a>	CHECKMARKERDATAHEALTH Diagnoses issues with marker data.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCell.html" class="code" title="function plotHandles = plotCell(strides, field, ampNorm,plotHandles, reqElements, color, plotEvents)">plotCell</a>	PLOTCELL Plots cell array of stride data.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/plotCellAvg.html" class="code" title="function [plotHandle, offset, ampCoefs] = plotCellAvg(strides,field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)">plotCellAvg</a>	PLOTCELLAVG Plots average and std of stride cell array.</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAllStrides.html" class="code" title="function [figHandle, plotHandles] = plotAllStrides(this, field,conditions, plotHandles, figHandle)">plotAllStrides</a>	PLOTALLSTRIDES Plots all individual strides for a field.</li><li><a href="../../../../labTools/classes/dataStructs/@stridedExperimentData/plotAvgStride.html" class="code" title="function [figHandle, plotHandles] = plotAvgStride(this, field,conditions, plotHandles, figHandle)">plotAvgStride</a>	PLOTAVGSTRIDE Plots average stride across conditions.</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@alignedTimeSeries/plot.html" class="code" title="function [figHandle, plotHandles, plottedInds] = plot(this,figHandle, plotHandles, meanColor, events,individualLineStyle, plottedInds, bounds, medianFlag)">plot</a>	PLOT Plots aligned data with mean.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/assessMissing.html" class="code" title="function [fh, ph, missing] = assessMissing(this, labels, fh, ph)">assessMissing</a>	ASSESSMISSING Assesses and plots missing data.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/bilateralPlot.html" class="code" title="function [h, plotHandles] = bilateralPlot(this, h, labels,plotHandles, events, color, lineWidth)">bilateralPlot</a>	BILATERALPLOT Plots bilateral comparison.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plot.html" class="code" title="function [h, plotHandles] = plot(this, h, labels, plotHandles, events,color, lineWidth)">plot</a>	PLOT Plots data in subplots.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/plotStridedTimeSeries.html" class="code" title="function [figHandle, plotHandles] = plotStridedTimeSeries(stridedTS, figHandle, plotHandles)">plotStridedTimeSeries</a>	PLOTSTRIDEDTIMESERIES Plots strided timeseries.</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/assessMissing.html" class="code" title="function [fh, ph, this] = assessMissing(this, labelPrefixes, fh, ph)">assessMissing</a>	ASSESSMISSING Assesses missing data.</li><li><a href="ClusteredSynergySetCollection.html" class="code" title="">ClusteredSynergySetCollection</a>	</li><li><a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>	PLOT Plots every cluster as a bar graph of its mean synergy.</li><li><a href="../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergyAnalysis/SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="../../../../labTools/classes/synergies/@SynergySetCollection/SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li><li><a href="../../../../labTools/example/TestMarkerOutlierDetectAndCorrect.html" class="code" title="">TestMarkerOutlierDetectAndCorrect</a>	TESTMARKEROUTLIERDETECTANDCORRECT Example: marker outlier correction.</li><li><a href="../../../../labTools/fun/+Hreflex/plotCal.html" class="code" title="function fig = plotCal(amplitudesStim, values, yLabel, leg, id,trialNum, options)">plotCal</a>	PLOTCAL Plot the H-reflex recruitment or ratio calibration curve.</li><li><a href="../../../../labTools/fun/+Hreflex/plotSnippets.html" class="code" title="function fig = plotSnippets(times, snippets, yLabels, titles,id, trialNum, options)">plotSnippets</a>	PLOTSNIPPETS Plot H-reflex snippets with GRFs if available.</li><li><a href="../../../../labTools/fun/+Hreflex/plotStimArtifactPeaks.html" class="code" title="function fig = plotStimArtifactPeaks(times, rawEMG, indsPeaks, id,trialNum, options)">plotStimArtifactPeaks</a>	PLOTSTIMARTIFACTPEAKS Plot located stimulation artifact peaks in EMG.</li><li><a href="../../../../labTools/fun/+dataMotion/TrajCheckOnePipeline.html" class="code" title="">TrajCheckOnePipeline</a>	% Trajectory Check - One Pipeline</li><li><a href="../../../../labTools/fun/+dataMotion/interpolTraj.html" class="code" title="function interpolTraj(pathSess,indsTrials,vicon)">interpolTraj</a>	INTERPOLTRAJ Fill marker gaps by interpolating each trajectory axis.</li><li><a href="../../../../labTools/fun/+dataMotion/processAndFillMarkerGapsSession.html" class="code" title="function processAndFillMarkerGapsSession(pathSess,indsTrials,vicon)">processAndFillMarkerGapsSession</a>	PROCESSANDFILLMARKERGAPSSESSION Reconstruct, label, and fill gaps.</li><li><a href="../../../../labTools/fun/Biofeedback/AddPythonData.html" class="code" title="">AddPythonData</a>	% Add Python biofeedback data to adaptData</li><li><a href="../../../../labTools/fun/Biofeedback/SyncPython_forStatic.html" class="code" title="function results = SyncPython_forStatic(subject)">SyncPython_forStatic</a>	SYNCPYTHON_FORSTATIC Add Python biofeedback hits to a subject's params.</li><li><a href="../../../../labTools/fun/EMGanalysis/procEMGhealthCheck.html" class="code" title="function h = procEMGhealthCheck(procExperimentData)">procEMGhealthCheck</a>	PROCEMGHEALTHCHECK Plot processed EMG of every trial for a visual check.</li><li><a href="../../../../labTools/fun/SteadyStateTau/CalcStrides2SS_PostAdapt.html" class="code" title="function Stride2SS = CalcStrides2SS_PostAdapt(allValues,SSraw, params,plotFlag, subID)">CalcStrides2SS_PostAdapt</a>	CALCSTRIDES2SS_POSTADAPT Strides to reach steady state after adaptation.</li><li><a href="../../../../labTools/fun/ext/markerDataCleaning/models/markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/CompareTrajectory_RL.html" class="code" title="">CompareTrajectory_RL</a>	% Compare Trajectory — Old vs. New Reconstruct & Label</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajCheckOtherPipeline.html" class="code" title="">TrajCheckOtherPipeline</a>	% Trajectory Check — Other Pipeline</li><li><a href="../../../../labTools/fun/misc/OptimizedReconstructAndLabel/TrajectoryCheckOptimizedRL.html" class="code" title="">TrajectoryCheckOptimizedRL</a>	% Trajectory Check — Optimized Reconstruct & Label</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	</li><li><a href="../../../../labTools/fun/misc/SL_Realtime.html" class="code" title="">SL_Realtime</a>	SL_REALTIME Compute step length, cadence and step time of a Nexus trial.</li><li><a href="../../../../labTools/fun/misc/SL_RealtimeAlpha.html" class="code" title="">SL_RealtimeAlpha</a>	SL_REALTIMEALPHA Compute step length, cadence, alpha and X of a trial.</li><li><a href="../../../../labTools/fun/misc/V2P_tester.html" class="code" title="">V2P_tester</a>	% V2P_Tester — Parse and Inspect V2P Data File</li><li><a href="../../../../labTools/fun/misc/hmhFun/CalcStrides2SS.html" class="code" title="function Stride2SS = CalcStrides2SS(allValues, SSraw, params, plotFlag,subID)">CalcStrides2SS</a>	CALCSTRIDES2SS Estimate strides-to-steady-state for each parameter.</li><li><a href="../../../../labTools/fun/misc/hmhFun/barGroups.html" class="code" title="function barGroups(Study, results, groups, params, epochs,indivFlag, colorOrder, mode)">barGroups</a>	BARGROUPS Make a bar plot comparing groups across epochs and parameters.</li><li><a href="../../../../labTools/fun/misc/hmhFun/expResults.html" class="code" title="function results = expResults(SMatrix, groups, plotFlag, indivFlag)">expResults</a>	EXPRESULTS Compute group-level steady-state and transfer results.</li><li><a href="../../../../labTools/fun/misc/nanJackKnife.html" class="code" title="function [Pa, Li] = nanJackKnife(varargin)">nanJackKnife</a>	NANJACKKNIFE Plot shaded error-bar patches around a data curve.</li><li><a href="../../../../labTools/fun/plotting/prettyBarPlot.html" class="code" title="function [fh,ph] = prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	PRETTYBARPLOT Grouped bar plot with spread and individual data points.</li><li><a href="../../../../labTools/gui/eventReview/ReviewEventsGUI.html" class="code" title="function varargout = ReviewEventsGUI(varargin)">ReviewEventsGUI</a>	REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.</li><li><a href="../../../../labTools/gui/importc3d/SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData,resSavePath, subjectID, eventClass, studyName, muscleLabels,normalizationRefCond, biasRemovalCond)">SepCondsInExpByAudioCue</a>	SEPCONDSINEXPBYAUDIOCUE Split conditions of a session at audio-cue times.</li><li><a href="../../../../labTools/gui/importc3d/SyncDatalog.html" class="code" title="function rawExpData = SyncDatalog(rawExpData, syncImgSavePath)">SyncDatalog</a>	SYNCDATALOG Synchronize the datlog with rawExpData using the force signal.</li><li><a href="../../../../labTools/gui/importc3d/syncEMGData.html" class="code" title="function [allData, sync, lagInSamplesA, lagInSamples,timeScaleFactor] = syncEMGData(relData, relData2, refSync,EMGList, EMGfrequency, secondFile, trialNum, saveFolder)">syncEMGData</a>	SYNCEMGDATA Synchronize two-PC EMG recordings to a reference signal.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)</a>
-0002 <span class="comment">%PLOT Implementation for ClusteredSynergySetCollection</span>
-0003 
-0004 Nplots=numel(this.content);
-0005 Ndims=this.getSynergyDim;
-0006 
-0007 <span class="comment">%Figure handle argument</span>
-0008 <span class="keyword">if</span> (nargin&gt;1)&amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
-0009     <span class="keyword">if</span> isscalar(figHandle)
-0010         h=figure(figHandle);
-0011     <span class="keyword">else</span>
-0012         h=[];
-0013     <span class="keyword">end</span>
-0014 <span class="keyword">else</span>
-0015     h=[];
-0016 <span class="keyword">end</span>
-0017 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(h)
-0018     h=figure;
-0019 <span class="keyword">end</span>
-0020 set(h,<span class="string">'Name'</span>,[this.name <span class="string">' Collection'</span>])
-0021 set(gcf,<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
-0022 
-0023 <span class="comment">%subplot handleVector argument</span>
-0024 <span class="keyword">if</span> (nargin&gt;2) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(handleVector) 
-0025     <span class="comment">%Check that handleVector has adequate size</span>
-0026     <span class="keyword">if</span> length(handleVector)~=Nplots
-0027         disp(<span class="string">'Warning: handle vector provided has inconsitent size for provided ClusteredSynergySetCollection, ignoring.'</span>)
-0028         handleVector=[];
-0029     <span class="keyword">end</span>
-0030 <span class="keyword">else</span>
-0031     handleVector=[];
-0032 <span class="keyword">end</span>
-0033 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(handleVector)
-0034     [a,b]=<a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(Nplots);
-0035      <span class="keyword">for</span> i=1:Nplots
-0036         handleVector(i)=subplot(b,a,i);
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,subplotHandles] = </a><span class="keyword">...</span>
+0002     <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)
+0003 <span class="comment">%PLOT Plots every cluster as a bar graph of its mean synergy.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Each cluster gets one subplot with the mean weights, bars of one</span>
+0006 <span class="comment">% standard deviation, the individual synergies (marker per second collection</span>
+0007 <span class="comment">% index, color per first index), the number of elements, and the angle</span>
+0008 <span class="comment">% statistics of the cluster (distance to centroid and range). The title of</span>
+0009 <span class="comment">% the first subplot shows the inter-centroid distances.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs:</span>
+0012 <span class="comment">%   this          - ClusteredSynergySetCollection object</span>
+0013 <span class="comment">%   figHandle     - existing figure handle (optional)</span>
+0014 <span class="comment">%   handleVector  - subplot handles, one per cluster (optional)</span>
+0015 <span class="comment">%   colorClusters - cell array of bar colors per cluster (default: the</span>
+0016 <span class="comment">%                   colors property)</span>
+0017 <span class="comment">%   colorInd1     - cell array of marker colors indexed by the first</span>
+0018 <span class="comment">%                   collection index (optional)</span>
+0019 <span class="comment">%   markerInd2    - cell array of markers indexed by the second collection</span>
+0020 <span class="comment">%                   index (optional)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Outputs:</span>
+0023 <span class="comment">%   figHandle      - handle of the figure</span>
+0024 <span class="comment">%   subplotHandles - subplot handles, one per cluster</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0027 
+0028 Nplots = numel(this.content);
+0029 Ndims  = this.getSynergyDim;
+0030 
+0031 <span class="comment">%Figure handle argument</span>
+0032 <span class="keyword">if</span> (nargin &gt; 1)&amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(figHandle)
+0033     <span class="keyword">if</span> isscalar(figHandle)
+0034         h = figure(figHandle);
+0035     <span class="keyword">else</span>
+0036         h = [];
 0037     <span class="keyword">end</span>
-0038 <span class="keyword">end</span>
-0039 
-0040 <span class="keyword">if</span> (nargin&lt;4) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorClusters)
-0041    colorClusters=this.colors; 
-0042 <span class="keyword">end</span>
-0043 
-0044 <span class="keyword">if</span> (nargin&lt;5) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorInd1)
-0045    colorInd1={[0,0.4,1],[0,0.8,1],[0,0.8,0],[0.8,0.8,0.3],[0.8,0,0.3],[0.8,0,1],[0.5,0.5,0.5],[1,0.2,0.4],[0.3,0.4,0.2],[0.2,0.4,1]};
-0046 <span class="keyword">end</span>
-0047 
-0048 <span class="keyword">if</span> (nargin&lt;6) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerInd2)
-0049    markerInd2={<span class="string">'x'</span>,<span class="string">'o'</span>,<span class="string">'*'</span>,<span class="string">'v'</span>,<span class="string">'+'</span>,<span class="string">'d'</span>,<span class="string">'s'</span>};
-0050 <span class="keyword">end</span>
-0051         
-0052 maxY=max(this.getContentAsSet.content(:));
-0053 minY=min(this.getContentAsSet.content(:));
-0054 allAvg=zeros(Nplots,Ndims);
-0055 <span class="keyword">for</span> i=1:Nplots
-0056     subplot(handleVector(i))
-0057     hold on
-0058     Nelements=size(this.content{i}.content,1);
-0059     
-0060     <span class="comment">%Plot average of cluster</span>
-0061     stddev=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(this.content{i}.content,[],1);
-0062     avg=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(this.content{i}.content,1);
-0063     allAvg(i,:)=avg;
-0064     B=bar(avg);
-0065     colormap(colorClusters{i})
-0066     freezeColors
-0067     
-0068     <span class="comment">%Get distance statistics</span>
-0069     dist=this.content{i}.distance;
-0070     dist1=<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([avg;this.content{i}.content],this.muscleList).distance;
-0071     dist=dist1(1:Nelements);
-0072     avgSim=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dist);
-0073     stdSim=<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dist);
-0074     loSim=min(dist);
-0075     hiSim=max(dist);
-0076     
-0077     <span class="comment">%Plot stdev bars</span>
-0078     <span class="comment">%barwitherr(std(this.content{i}.content,[],1),mean(this.content{i}.content,1))</span>
-0079     <span class="keyword">for</span> j=1:Ndims
-0080        <a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>([j j],avg(j)+[-stddev(j),stddev(j)],<span class="string">'k'</span>)
-0081        <a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(j+[-.1 .1],(avg(j)-stddev(j))*[1 1],<span class="string">'k'</span>)
-0082        <a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(j+[-.1 .1],(avg(j)+stddev(j))*[1 1],<span class="string">'k'</span>)
-0083     <span class="keyword">end</span>
-0084     
-0085     <span class="comment">%Plot individual ocurrences (does this help?)</span>
-0086     <span class="keyword">for</span> j=1:Nelements
-0087         <span class="keyword">if</span> this.originalCollection.getCollectionDim&gt;1
-0088             [ind1,ind2]=ind2sub(this.originalCollection.getCollectionSize,this.indexInOriginalCollection{i}(j)); <span class="comment">%Get synergy set in original collection</span>
-0089         <span class="keyword">else</span>
-0090             ind1=this.indexInOriginalCollection{i}(j);
-0091             ind2=1;
-0092         <span class="keyword">end</span>
-0093         newInd1=mod(ind1-1,length(colorInd1))+1;
-0094         newInd2=mod(ind2-1,length(markerInd2))+1;
-0095         <a href="plot.html" class="code" title="function [figHandle,subplotHandles] = plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>([1:Ndims]+.3,this.content{i}.content(j,:),markerInd2{newInd2},<span class="string">'Color'</span>,colorInd1{newInd1})
-0096     <span class="keyword">end</span>
-0097     
-0098     <span class="comment">%Add number of elements N=</span>
-0099     <span class="keyword">if</span> Nelements&gt;0
-0100         text(1,maxY,[<span class="string">'N='</span> num2str(Nelements)])
-0101     <span class="keyword">else</span>
-0102         text(1,maxY,[<span class="string">'N=0'</span>])
-0103     <span class="keyword">end</span>
-0104     
-0105     <span class="comment">%Add similarity stats</span>
-0106     text(1,-.1,[<span class="string">'DTC = '</span> num2str(avgSim,3) <span class="string">' \pm '</span> num2str(stdSim,3) <span class="string">'\circ'</span>]); <span class="comment">%Distance to centroid</span>
-0107     text(1,-.25,[<span class="string">'['</span> num2str(loSim,3) <span class="string">'\circ,'</span> num2str(hiSim,3) <span class="string">'\circ]'</span>]);
-0108     
-0109     <span class="comment">%Label axes properly</span>
-0110     set(gca,<span class="string">'XTick'</span>,[1:Ndims],<span class="string">'XTickLabel'</span>,this.muscleList)
-0111     xlabel([<span class="string">'Cluster '</span> this.indexLabels{1}{i}])
-0112     hold off
-0113     
-0114     <span class="comment">%Set axes</span>
-0115     axis([.5 Ndims+.5 min([-.4,minY]) 1.1*maxY])
-0116 <span class="keyword">end</span>
-0117 
-0118 <span class="comment">%Add some data in extra axes:</span>
-0119 <span class="comment">% if length(handleVector)==Nplots+1</span>
-0120 <span class="comment">%     subplot(handleVector(end))</span>
-0121 <span class="comment">%     hold on</span>
-0122 <span class="comment">%     dist=SynergySet(allAvg,this.muscleList).distanceMatrix;</span>
-0123 <span class="comment">%</span>
-0124 <span class="comment">%     for i=1:size(dist,1)</span>
-0125 <span class="comment">%         str=[];</span>
-0126 <span class="comment">%         for j=1:size(dist,2)</span>
-0127 <span class="comment">%             str=[str, num2str(dist(i,j),3) ','];</span>
-0128 <span class="comment">%         end</span>
-0129 <span class="comment">%         text(1,maxY-.1*i,str)</span>
-0130 <span class="comment">%     end</span>
-0131 <span class="comment">%</span>
-0132 <span class="comment">%     axis([.5 Ndims+.5 min([-.4,minY]) 1.1*maxY])</span>
-0133 <span class="comment">%     axis off</span>
-0134 <span class="comment">%     hold off</span>
-0135 <span class="comment">% end</span>
-0136 
-0137 subplot(handleVector(1))
-0138 dist=<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(allAvg,this.muscleList).distance;
-0139 title([<span class="string">'Inter-centroid distance = '</span> num2str(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dist),3) <span class="string">' \pm '</span> num2str(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dist),3) <span class="string">'\circ, ['</span> num2str(min(dist),3) <span class="string">','</span> num2str(max(dist),3) <span class="string">']'</span>])
-0140     
-0141     figHandle=h;
-0142     subplotHandles=handleVector;
-0143 
-0144 <span class="keyword">end</span>
-0145</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0038 <span class="keyword">else</span>
+0039     h = [];
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(h)
+0042     h = figure;
+0043 <span class="keyword">end</span>
+0044 set(h,<span class="string">'Name'</span>,[this.name <span class="string">' Collection'</span>])
+0045 set(gcf,<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+0046 
+0047 <span class="comment">%subplot handleVector argument</span>
+0048 <span class="keyword">if</span> (nargin &gt; 2) &amp;&amp; ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(handleVector)
+0049     <span class="comment">%Check that handleVector has adequate size</span>
+0050     <span class="keyword">if</span> length(handleVector) ~= Nplots
+0051         disp([<span class="string">'Warning: handle vector provided has inconsitent size '</span> <span class="keyword">...</span>
+0052             <span class="string">'for provided ClusteredSynergySetCollection, ignoring.'</span>])
+0053         handleVector = [];
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">else</span>
+0056     handleVector = [];
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(handleVector)
+0059     [a,b] = <a href="../../../../labTools/fun/plotting/getFigStruct.html" class="code" title="function [a,b] = getFigStruct(N)">getFigStruct</a>(Nplots);
+0060     <span class="keyword">for</span> ii = 1:Nplots
+0061         handleVector(ii) = subplot(b,a,ii);
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="keyword">if</span> (nargin &lt; 4) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorClusters)
+0066     colorClusters = this.colors;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="keyword">if</span> (nargin &lt; 5) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(colorInd1)
+0070     colorInd1 = {[0,0.4,1],[0,0.8,1],[0,0.8,0],[0.8,0.8,0.3], <span class="keyword">...</span>
+0071         [0.8,0,0.3],[0.8,0,1],[0.5,0.5,0.5],[1,0.2,0.4],[0.3,0.4,0.2], <span class="keyword">...</span>
+0072         [0.2,0.4,1]};
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="keyword">if</span> (nargin &lt; 6) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(markerInd2)
+0076     markerInd2 = {<span class="string">'x'</span>,<span class="string">'o'</span>,<span class="string">'*'</span>,<span class="string">'v'</span>,<span class="string">'+'</span>,<span class="string">'d'</span>,<span class="string">'s'</span>};
+0077 <span class="keyword">end</span>
+0078 
+0079 maxY   = max(this.getContentAsSet.content(:));
+0080 minY   = min(this.getContentAsSet.content(:));
+0081 allAvg = zeros(Nplots,Ndims);
+0082 <span class="keyword">for</span> ii = 1:Nplots
+0083     subplot(handleVector(ii))
+0084     hold on
+0085     Nelements = size(this.content{ii}.content,1);
+0086 
+0087     <span class="comment">%Plot average of cluster</span>
+0088     stddev = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(this.content{ii}.content,[],1);
+0089     avg    = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(this.content{ii}.content,1);
+0090     allAvg(ii,:) = avg;
+0091     B = bar(avg);
+0092     colormap(colorClusters{ii})
+0093     freezeColors
+0094 
+0095     <span class="comment">%Get distance statistics</span>
+0096     dist = this.content{ii}.distance;
+0097     dist1 = <a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([avg;this.content{ii}.content], <span class="keyword">...</span>
+0098         this.muscleList).distance;
+0099     dist   = dist1(1:Nelements);
+0100     avgSim = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dist);
+0101     stdSim = <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dist);
+0102     loSim  = min(dist);
+0103     hiSim  = max(dist);
+0104 
+0105     <span class="comment">%Plot stdev bars</span>
+0106     <span class="comment">%barwitherr(std(this.content{i}.content,[],1), ...</span>
+0107     <span class="comment">%    mean(this.content{i}.content,1))</span>
+0108     <span class="keyword">for</span> jj = 1:Ndims
+0109         <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>([jj jj],avg(jj)+[-stddev(jj),stddev(jj)],<span class="string">'k'</span>)
+0110         <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(jj+[-0.1 0.1],(avg(jj)-stddev(jj))*[1 1],<span class="string">'k'</span>)
+0111         <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>(jj+[-0.1 0.1],(avg(jj)+stddev(jj))*[1 1],<span class="string">'k'</span>)
+0112     <span class="keyword">end</span>
+0113 
+0114     <span class="comment">%Plot individual ocurrences (does this help?)</span>
+0115     <span class="keyword">for</span> jj = 1:Nelements
+0116         <span class="keyword">if</span> this.originalCollection.getCollectionDim &gt; 1
+0117             <span class="comment">%Get synergy set in original collection</span>
+0118             [ind1,ind2] = <span class="keyword">...</span>
+0119                 ind2sub(this.originalCollection.getCollectionSize, <span class="keyword">...</span>
+0120                 this.indexInOriginalCollection{ii}(jj));
+0121         <span class="keyword">else</span>
+0122             ind1 = this.indexInOriginalCollection{ii}(jj);
+0123             ind2 = 1;
+0124         <span class="keyword">end</span>
+0125         newInd1 = mod(ind1-1,length(colorInd1))+1;
+0126         newInd2 = mod(ind2-1,length(markerInd2))+1;
+0127         <a href="plot.html" class="code" title="function [figHandle,subplotHandles] =plot(this,figHandle,handleVector,colorClusters,colorInd1,markerInd2)">plot</a>([1:Ndims]+0.3,this.content{ii}.content(jj,:), <span class="keyword">...</span>
+0128             markerInd2{newInd2},<span class="string">'Color'</span>,colorInd1{newInd1})
+0129     <span class="keyword">end</span>
+0130 
+0131     <span class="comment">%Add number of elements N=</span>
+0132     <span class="keyword">if</span> Nelements &gt; 0
+0133         text(1,maxY,[<span class="string">'N='</span> num2str(Nelements)])
+0134     <span class="keyword">else</span>
+0135         text(1,maxY,[<span class="string">'N=0'</span>])
+0136     <span class="keyword">end</span>
+0137 
+0138     <span class="comment">%Add similarity stats</span>
+0139     text(1,-0.1,[<span class="string">'DTC = '</span> num2str(avgSim,3) <span class="string">' \pm '</span> num2str(stdSim,3) <span class="keyword">...</span>
+0140         <span class="string">'\circ'</span>]); <span class="comment">%Distance to centroid</span>
+0141     text(1,-0.25,[<span class="string">'['</span> num2str(loSim,3) <span class="string">'\circ,'</span> num2str(hiSim,3) <span class="string">'\circ]'</span>]);
+0142 
+0143     <span class="comment">%Label axes properly</span>
+0144     set(gca,<span class="string">'XTick'</span>,[1:Ndims],<span class="string">'XTickLabel'</span>,this.muscleList)
+0145     xlabel([<span class="string">'Cluster '</span> this.indexLabels{1}{ii}])
+0146     hold off
+0147 
+0148     <span class="comment">%Set axes</span>
+0149     axis([0.5 Ndims+0.5 min([-0.4,minY]) 1.1*maxY])
+0150 <span class="keyword">end</span>
+0151 
+0152 <span class="comment">%Add some data in extra axes:</span>
+0153 <span class="comment">% if length(handleVector)==Nplots+1</span>
+0154 <span class="comment">%     subplot(handleVector(end))</span>
+0155 <span class="comment">%     hold on</span>
+0156 <span class="comment">%     dist=SynergySet(allAvg,this.muscleList).distanceMatrix;</span>
+0157 <span class="comment">%</span>
+0158 <span class="comment">%     for i=1:size(dist,1)</span>
+0159 <span class="comment">%         str=[];</span>
+0160 <span class="comment">%         for j=1:size(dist,2)</span>
+0161 <span class="comment">%             str=[str, num2str(dist(i,j),3) ','];</span>
+0162 <span class="comment">%         end</span>
+0163 <span class="comment">%         text(1,maxY-.1*i,str)</span>
+0164 <span class="comment">%     end</span>
+0165 <span class="comment">%</span>
+0166 <span class="comment">%     axis([.5 Ndims+.5 min([-.4,minY]) 1.1*maxY])</span>
+0167 <span class="comment">%     axis off</span>
+0168 <span class="comment">%     hold off</span>
+0169 <span class="comment">% end</span>
+0170 
+0171 subplot(handleVector(1))
+0172 dist = <a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>(allAvg,this.muscleList).distance;
+0173 title([<span class="string">'Inter-centroid distance = '</span> num2str(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(dist),3) <span class="string">' \pm '</span> <span class="keyword">...</span>
+0174     num2str(<a href="../../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(dist),3) <span class="string">'\circ, ['</span> num2str(min(dist), <span class="keyword">...</span>
+0175     3) <span class="string">','</span> num2str(max(dist),3) <span class="string">']'</span>])
+0176 
+0177 figHandle      = h;
+0178 subplotHandles = handleVector;
+0179 
+0180 <span class="keyword">end</span>
+0181</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

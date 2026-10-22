@@ -4,7 +4,7 @@
 <head>
   <title>Description of sliceArray</title>
   <meta name="keywords" content="sliceArray">
-  <meta name="description" content="sliceArray returns a subset of 'slices' of an array (indexed by inds)">
+  <meta name="description" content="SLICEARRAY Extract slices of an array along a given dimension.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,17 +21,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>sliceArray returns a subset of 'slices' of an array (indexed by inds)</strong></div>
+<div class="box"><strong>SLICEARRAY Extract slices of an array along a given dimension.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [slices] = sliceArray(data,inds,dim) </strong></div>
+<div class="box"><strong>function slices = sliceArray(data, inds, dim) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">sliceArray returns a subset of 'slices' of an array (indexed by inds)
-along dimension dim. %Preferable to solutions using permute() which create copies of the array,
-which is not desirable for large arrays.
-It is equivalent to slices=data(:,:,..,:,inds,:,...,:), where 'inds' is
-located at the 'dim' dimension of the array.</pre></div>
+<div class="fragment"><pre class="comment">SLICEARRAY Extract slices of an array along a given dimension.
+
+   Returns the subset of slices indexed by inds along dimension dim.
+ Equivalent to data(:,...,inds,...,:) where inds occupies position dim.
+ Preferable to permute-based solutions, which copy the full array.
+
+ Inputs:
+   data - N-D array to index into
+   inds - index vector selecting slices along dimension dim
+   dim  - dimension along which to slice (scalar integer)
+
+ Outputs:
+   slices - array with size(slices, dim) == length(inds)
+
+ Toolbox Dependencies: None
+
+ See also PERMUTE, SQUEEZE.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -40,32 +52,43 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	This function swaps the first and second half of EMGdata along phaseDim,</li><li><a href="../../../../../labTools/fun/EMGanalysis/getSymmetry.html" class="code" title="function [symData] = getSymmetry(EMGdata,muscleDim)">getSymmetry</a>	Returns the differences of the two halves of the EMGdata array along</li></ul>
+<li><a href="../../../../../labTools/fun/EMGanalysis/flipEMGdata.html" class="code" title="function flippedEMGData = flipEMGdata(EMGdata,phaseDim,muscleDim)">flipEMGdata</a>	FLIPEMGDATA Swap the halves of the phase dimension for half the muscles.</li><li><a href="../../../../../labTools/fun/EMGanalysis/getSymmetry.html" class="code" title="function symData = getSymmetry(EMGdata,muscleDim)">getSymmetry</a>	GETSYMMETRY Difference between the two halves of an array.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [slices] = sliceArray(data,inds,dim)</a>
-0002 <span class="comment">%sliceArray returns a subset of 'slices' of an array (indexed by inds)</span>
-0003 <span class="comment">%along dimension dim. %Preferable to solutions using permute() which create copies of the array,</span>
-0004 <span class="comment">%which is not desirable for large arrays.</span>
-0005 <span class="comment">%It is equivalent to slices=data(:,:,..,:,inds,:,...,:), where 'inds' is</span>
-0006 <span class="comment">%located at the 'dim' dimension of the array.</span>
-0007 
-0008 nd=ndims(data);
-0009 <span class="keyword">if</span> dim&gt;nd
-0010     error(<span class="string">''</span>)
-0011 <span class="keyword">end</span>
-0012 N=size(data,dim);
-0013 <span class="keyword">if</span> any(inds&gt;N | inds&lt;1)
-0014     error()
-0015 <span class="keyword">end</span>
-0016 prefix=repmat(<span class="string">':,'</span>,1,dim-1);
-0017 suffix=repmat(<span class="string">',:'</span>,1,nd-dim);
-0018 eval([<span class="string">'slices=data('</span> prefix <span class="string">'inds'</span> suffix <span class="string">');'</span>])
-0019 <span class="keyword">end</span>
-0020</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function slices = sliceArray(data, inds, dim)</a>
+0002 <span class="comment">%SLICEARRAY Extract slices of an array along a given dimension.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Returns the subset of slices indexed by inds along dimension dim.</span>
+0005 <span class="comment">% Equivalent to data(:,...,inds,...,:) where inds occupies position dim.</span>
+0006 <span class="comment">% Preferable to permute-based solutions, which copy the full array.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Inputs:</span>
+0009 <span class="comment">%   data - N-D array to index into</span>
+0010 <span class="comment">%   inds - index vector selecting slices along dimension dim</span>
+0011 <span class="comment">%   dim  - dimension along which to slice (scalar integer)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   slices - array with size(slices, dim) == length(inds)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Toolbox Dependencies: None</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also PERMUTE, SQUEEZE.</span>
+0019 
+0020 nd = ndims(data);
+0021 <span class="keyword">if</span> dim &gt; nd
+0022     error(<span class="string">''</span>);
+0023 <span class="keyword">end</span>
+0024 N = size(data, dim);
+0025 <span class="keyword">if</span> any(inds &gt; N | inds &lt; 1)
+0026     error();
+0027 <span class="keyword">end</span>
+0028 prefix = repmat(<span class="string">':,'</span>, 1, dim - 1);
+0029 suffix = repmat(<span class="string">',:'</span>, 1, nd - dim);
+0030 eval([<span class="string">'slices = data('</span> prefix <span class="string">'inds'</span> suffix <span class="string">');'</span>])
+0031 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

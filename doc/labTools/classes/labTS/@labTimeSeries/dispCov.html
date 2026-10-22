@@ -4,7 +4,7 @@
 <head>
   <title>Description of dispCov</title>
   <meta name="keywords" content="dispCov">
-  <meta name="description" content="dispCov  Displays covariance matrix">
+  <meta name="description" content="DISPCOV Displays covariance matrix.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,24 +21,26 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>dispCov  Displays covariance matrix</strong></div>
+<div class="box"><strong>DISPCOV Displays covariance matrix.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function h = dispCov(this) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">dispCov  Displays covariance matrix
+<div class="fragment"><pre class="comment">DISPCOV Displays covariance matrix.
 
-   h = dispCov(this) creates a figure displaying the covariance
-   matrix of the data
+   h = dispCov(this) creates a figure displaying the covariance matrix of
+ the data
 
-   Inputs:
-       this - labTimeSeries object
+ Inputs:
+   this - labTimeSeries object
 
-   Outputs:
-       h - figure handle
+ Outputs:
+   h - figure handle
 
-   See also: cov</pre></div>
+ Toolbox Dependencies: None
+
+ See also COV.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -54,29 +56,31 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function h = dispCov(this)</a>
-0002 <span class="comment">%dispCov  Displays covariance matrix</span>
+0002 <span class="comment">%DISPCOV Displays covariance matrix.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   h = dispCov(this) creates a figure displaying the covariance</span>
-0005 <span class="comment">%   matrix of the data</span>
+0004 <span class="comment">%   h = dispCov(this) creates a figure displaying the covariance matrix of</span>
+0005 <span class="comment">% the data</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - labTimeSeries object</span>
 0009 <span class="comment">%</span>
-0010 <span class="comment">%   Outputs:</span>
-0011 <span class="comment">%       h - figure handle</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   h - figure handle</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   See also: cov</span>
-0014 
-0015 h = figure;
-0016 dd = cov(this.Data);
-0017 imagesc(dd);
-0018 set(gca, <span class="string">'XTick'</span>, 1:length(this.labels), <span class="string">'XTickLabels'</span>, this.labels, <span class="keyword">...</span>
-0019     <span class="string">'XTickLabelRotation'</span>, 90, <span class="string">'YTick'</span>, 1:length(this.labels), <span class="keyword">...</span>
-0020     <span class="string">'YTickLabels'</span>, this.labels, <span class="string">'YTickLabelRotation'</span>, 0);
-0021 colorbar;
-0022 caxis([-1 1] * max(dd(:)));
-0023 <span class="keyword">end</span>
-0024</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0013 <span class="comment">% Toolbox Dependencies: None</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also COV.</span>
+0016 
+0017 h  = figure;
+0018 dd = cov(this.Data);
+0019 imagesc(dd);
+0020 set(gca, <span class="string">'XTick'</span>, 1:length(this.labels), <span class="string">'XTickLabels'</span>, this.labels, <span class="keyword">...</span>
+0021     <span class="string">'XTickLabelRotation'</span>, 90, <span class="string">'YTick'</span>, 1:length(this.labels), <span class="keyword">...</span>
+0022     <span class="string">'YTickLabels'</span>, this.labels, <span class="string">'YTickLabelRotation'</span>, 0);
+0023 colorbar;
+0024 caxis([-1 1] * max(dd(:)));
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

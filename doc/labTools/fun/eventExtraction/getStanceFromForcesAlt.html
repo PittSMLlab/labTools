@@ -4,7 +4,7 @@
 <head>
   <title>Description of getStanceFromForcesAlt</title>
   <meta name="keywords" content="getStanceFromForcesAlt">
-  <meta name="description" content="GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.">
+  <meta name="description" content="GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.</strong></div>
+<div class="box"><strong>GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.
+<div class="fragment"><pre class="comment">GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.
 
    Alternative to GETSTANCEFROMFORCES. Detects stance by identifying
  loading and unloading regions in the force derivative, then expands
@@ -43,7 +43,11 @@
  Outputs:
    stance - N×1 logical, stance phase (true = stance)
 
- Toolbox Dependencies: None
+ NOTE: no repo caller; GETEVENTSFROMFORCES uses GETSTANCEFROMFORCES (a
+       threshold-based method; this one is derivative-based).
+
+ Toolbox Dependencies:
+   Signal Processing Toolbox (medfilt1; butter via lowpassfiltering2)
 
  See also <a href="getStanceFromForces.html" class="code" title="function stance = getStanceFromForces(Fz, threshold, fsample)">GETSTANCEFROMFORCES</a>, <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">DELETESHORTPHASES</a>, <a href="getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">GETEVENTSFROMFORCES</a>.</pre></div>
 
@@ -51,7 +55,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/lowpassfiltering2.html" class="code" title="function data = lowpassfiltering2(data, fcut, filterOrder, fsample)">lowpassfiltering2</a>	LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with</li></ul>
+<li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>	DELETESHORTPHASES Remove stance or swing phases shorter than a minimum</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/lowpassfiltering2.html" class="code" title="function data = lowpassfiltering2(data, fcut, filterOrder, fsample)">lowpassfiltering2</a>	LOWPASSFILTERING2 Zero-phase Butterworth lowpass with mirrored padding.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -61,7 +65,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)</a>
-0002 <span class="comment">%GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.</span>
+0002 <span class="comment">%GETSTANCEFROMFORCESALT Estimate stance phase from force derivative.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   Alternative to GETSTANCEFROMFORCES. Detects stance by identifying</span>
 0005 <span class="comment">% loading and unloading regions in the force derivative, then expands</span>
@@ -77,55 +81,65 @@ This function is called by:
 0015 <span class="comment">% Outputs:</span>
 0016 <span class="comment">%   stance - N×1 logical, stance phase (true = stance)</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">% Toolbox Dependencies: None</span>
-0019 <span class="comment">%</span>
-0020 <span class="comment">% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMFORCES.</span>
-0021 
-0022 fcut = 25; <span class="comment">% lowpass cutoff frequency (Hz)</span>
-0023 coarseFilteredFz = medfilt1(Fz, round(0.0025 * fsample)); <span class="comment">% median filter: 2.5 ms window</span>
-0024 forces    = <a href="../../../labTools/fun/ext/pitools/signalProcessing/lowpassfiltering2.html" class="code" title="function data = lowpassfiltering2(data, fcut, filterOrder, fsample)">lowpassfiltering2</a>(coarseFilteredFz, fcut, 2, fsample);
-0025 forceSign = sign(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(Fz, <span class="string">'omitnan'</span>));
-0026 forces    = forces * forceSign; <span class="comment">% ensure forces are positive on average</span>
-0027 
-0028 <span class="comment">% Factor of 2 scales the mean absolute deviation to a full-range estimate</span>
-0029 <span class="comment">% (half-range × 2 ≈ peak-to-peak ≈ body weight for a typical GRF signal)</span>
-0030 bodyWeight = 2 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(abs(forces - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(forces)));
-0031 
-0032 LOADING_MULT   = 3; <span class="comment">% loading  rate threshold (× body weight per second)</span>
-0033 UNLOADING_MULT = 4; <span class="comment">% unloading rate threshold (× body weight per second)</span>
-0034 
-0035 forceDiff    = diff(forces) * fsample;
-0036 lowThreshold = bodyWeight;
-0037 loading      = forceDiff &gt;  LOADING_MULT   * bodyWeight;
-0038 unloading    = forceDiff &lt; -UNLOADING_MULT * bodyWeight;
-0039 unstance     = abs(forceDiff) &lt; lowThreshold; <span class="comment">% threshold in N/s</span>
-0040 
-0041 <span class="comment">% expand loading zone rightwards and unloading leftwards until they meet</span>
-0042 <span class="keyword">while</span> any(diff(loading) == -1 &amp; ~unloading(1:end-1))
-0043     <span class="comment">% inward expansion</span>
-0044     loading(2:end)   = loading(2:end) | (loading(1:end-1) &amp; ~unloading(1:end-1));
-0045     unloading(1:end-1) = unloading(1:end-1) <span class="keyword">...</span>
-0046         | (unloading(2:end) &amp; ~loading(2:end));
-0047 <span class="keyword">end</span>
-0048 <span class="keyword">while</span> any(diff(loading) == 1 &amp; ~unstance(1:end-1)) <span class="keyword">...</span>
-0049         || any(diff(unloading) == -1 &amp; ~unstance(2:end))
-0050     <span class="comment">% outward expansion</span>
-0051     loading(1:end-1)   = loading(1:end-1) | (loading(2:end) &amp; ~unstance(1:end-1));
-0052     unloading(2:end)   = unloading(2:end) | (unloading(1:end-1) &amp; ~unstance(2:end));
+0018 <span class="comment">% NOTE: no repo caller; GETEVENTSFROMFORCES uses GETSTANCEFROMFORCES (a</span>
+0019 <span class="comment">%       threshold-based method; this one is derivative-based).</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% Toolbox Dependencies:</span>
+0022 <span class="comment">%   Signal Processing Toolbox (medfilt1; butter via lowpassfiltering2)</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMFORCES.</span>
+0025 
+0026 fcut = 25; <span class="comment">% lowpass cutoff frequency (Hz)</span>
+0027 <span class="comment">% median filter: 2.5 ms window</span>
+0028 coarseFilteredFz = medfilt1(Fz, round(0.0025 * fsample));
+0029 forces    = <a href="../../../labTools/fun/ext/pitools/signalProcessing/lowpassfiltering2.html" class="code" title="function data = lowpassfiltering2(data, fcut, filterOrder, fsample)">lowpassfiltering2</a>(coarseFilteredFz, fcut, 2, fsample);
+0030 forceSign = sign(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(Fz, <span class="string">'omitnan'</span>));
+0031 forces    = forces * forceSign; <span class="comment">% ensure forces are positive on average</span>
+0032 
+0033 <span class="comment">% Factor of 2 scales the mean absolute deviation to a full-range estimate</span>
+0034 <span class="comment">% (half-range × 2 ≈ peak-to-peak ≈ body weight for a typical GRF signal)</span>
+0035 bodyWeight = 2 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(abs(forces - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(forces)));
+0036 
+0037 LOADING_MULT   = 3; <span class="comment">% loading  rate threshold (× body weight per second)</span>
+0038 UNLOADING_MULT = 4; <span class="comment">% unloading rate threshold (× body weight per second)</span>
+0039 
+0040 forceDiff    = diff(forces) * fsample;
+0041 lowThreshold = bodyWeight;
+0042 loading      = forceDiff &gt;  LOADING_MULT   * bodyWeight;
+0043 unloading    = forceDiff &lt; -UNLOADING_MULT * bodyWeight;
+0044 unstance     = abs(forceDiff) &lt; lowThreshold; <span class="comment">% threshold in N/s</span>
+0045 
+0046 <span class="comment">% expand loading zone rightwards and unloading leftwards until they meet</span>
+0047 <span class="keyword">while</span> any(diff(loading) == -1 &amp; ~unloading(1:end-1))
+0048     <span class="comment">% inward expansion</span>
+0049     loading(2:end)     = loading(2:end) <span class="keyword">...</span>
+0050         | (loading(1:end-1) &amp; ~unloading(1:end-1));
+0051     unloading(1:end-1) = unloading(1:end-1) <span class="keyword">...</span>
+0052         | (unloading(2:end) &amp; ~loading(2:end));
 0053 <span class="keyword">end</span>
-0054 stance = loading | unloading;
-0055 
-0056 <span class="comment">%% Shorten stance phases to compensate for low-pass filter broadening</span>
-0057 <span class="comment">% Erode by applying a length-N kernel and requiring all N values to be</span>
-0058 <span class="comment">% stance. This removes up to N-1 samples from each phase boundary to undo</span>
-0059 <span class="comment">% broadening introduced by low-pass filtering (half-width ≈ fsample / (2*fcut)).</span>
-0060 N      = round(0.5 * fsample / fcut);
-0061 stance = conv(double(stance), ones(N, 1), <span class="string">'same'</span>) &gt; N - 1;
-0062 
-0063 <span class="comment">%% Eliminate stance and swing phases shorter than 100 ms</span>
-0064 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.1); <span class="comment">% used to be 200 ms, but too long for stroke subjects</span>
-0065 
-0066 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0054 <span class="keyword">while</span> any(diff(loading) == 1 &amp; ~unstance(1:end-1)) <span class="keyword">...</span>
+0055         || any(diff(unloading) == -1 &amp; ~unstance(2:end))
+0056     <span class="comment">% outward expansion</span>
+0057     loading(1:end-1) = loading(1:end-1) <span class="keyword">...</span>
+0058         | (loading(2:end) &amp; ~unstance(1:end-1));
+0059     unloading(2:end) = unloading(2:end) <span class="keyword">...</span>
+0060         | (unloading(1:end-1) &amp; ~unstance(2:end));
+0061 <span class="keyword">end</span>
+0062 stance = loading | unloading;
+0063 
+0064 <span class="comment">%% Shorten stance phases to compensate for low-pass filter broadening</span>
+0065 <span class="comment">% Erode by applying a length-N kernel and requiring all N values to be</span>
+0066 <span class="comment">% stance. This removes up to N-1 samples from each phase boundary to undo</span>
+0067 <span class="comment">% broadening introduced by low-pass filtering (half-width ≈ fsample /</span>
+0068 <span class="comment">% (2*fcut)).</span>
+0069 N      = round(0.5 * fsample / fcut);
+0070 stance = conv(double(stance), ones(N, 1), <span class="string">'same'</span>) &gt; N - 1;
+0071 
+0072 <span class="comment">%% Eliminate stance and swing phases shorter than 100 ms</span>
+0073 <span class="comment">% 100 ms; 200 ms is too long for stroke subjects</span>
+0074 stance = <a href="deleteShortPhases.html" class="code" title="function stance = deleteShortPhases(stance, fsample, minDuration)">deleteShortPhases</a>(stance, fsample, 0.1);
+0075 
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

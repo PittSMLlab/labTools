@@ -42,7 +42,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>	</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/dataStructs/@groupAdaptationData/groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -268,37 +268,43 @@ This function is called by:
 0213 
 0214 <a name="_sub10" href="#_subfunctions" class="code">function saveButton_Callback(hObject, eventdata, handles)</a>
 0215 <span class="comment">% saveButton_Callback  Saves the assembled study to a MAT file.</span>
-0216 <span class="comment">%</span>
-0217 <span class="comment">%   Inputs:</span>
-0218 <span class="comment">%     hObject   - handle to saveButton (see GCBO)</span>
-0219 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
-0220 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
-0221 
-0222 [file, path] = uiputfile(<span class="string">'*.mat'</span>, <span class="string">'Save Study As'</span>);
-0223 <a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>    = handles.studyData;
-0224 save([path file], <span class="string">'studyData'</span>, <span class="string">'-v7.3'</span>);
-0225 
-0226 close(handles.figure1);
+0216 <span class="comment">%   Writes studyData (-v7.3) to the file chosen in uiputfile, which asks</span>
+0217 <span class="comment">%   before replacing an existing file (see DATA_OUTPUTS.md).</span>
+0218 <span class="comment">%</span>
+0219 <span class="comment">%   Inputs:</span>
+0220 <span class="comment">%     hObject   - handle to saveButton (see GCBO)</span>
+0221 <span class="comment">%     eventdata - reserved for future MATLAB versions</span>
+0222 <span class="comment">%     handles   - struct with handles and user data (see GUIDATA)</span>
+0223 
+0224 [file, path] = uiputfile(<span class="string">'*.mat'</span>, <span class="string">'Save Study As'</span>);
+0225 <a href="../../../labTools/classes/dataStructs/@studyData/studyData.html" class="code" title="">studyData</a>    = handles.studyData;
+0226 save([path file], <span class="string">'studyData'</span>, <span class="string">'-v7.3'</span>);
 0227 
-0228 <a name="_sub11" href="#_subfunctions" class="code">function allSubList_CreateFcn(hObject, eventdata, handles)</a>
-0229 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0230     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
-0231 <span class="keyword">end</span>
-0232 
-0233 <a name="_sub12" href="#_subfunctions" class="code">function groupNameEdit_CreateFcn(hObject, eventdata, handles)</a>
-0234 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0235     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
-0236 <span class="keyword">end</span>
-0237 
-0238 <a name="_sub13" href="#_subfunctions" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a>
-0239 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
-0240     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
-0241 <span class="keyword">end</span>
-0242 
-0243 <a name="_sub14" href="#_subfunctions" class="code">function selectSubList_CreateFcn(hObject, eventdata, handles)</a>
-0244 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0228 close(handles.figure1);
+0229 
+0230 <a name="_sub11" href="#_subfunctions" class="code">function allSubList_CreateFcn(hObject, eventdata, handles)</a>
+0231 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), <span class="keyword">...</span>
+0232         get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0233     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0234 <span class="keyword">end</span>
+0235 
+0236 <a name="_sub12" href="#_subfunctions" class="code">function groupNameEdit_CreateFcn(hObject, eventdata, handles)</a>
+0237 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), <span class="keyword">...</span>
+0238         get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0239     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0240 <span class="keyword">end</span>
+0241 
+0242 <a name="_sub13" href="#_subfunctions" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a>
+0243 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), <span class="keyword">...</span>
+0244         get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
 0245     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
-0246 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0246 <span class="keyword">end</span>
+0247 
+0248 <a name="_sub14" href="#_subfunctions" class="code">function selectSubList_CreateFcn(hObject, eventdata, handles)</a>
+0249 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), <span class="keyword">...</span>
+0250         get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0251     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'White'</span>);
+0252 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

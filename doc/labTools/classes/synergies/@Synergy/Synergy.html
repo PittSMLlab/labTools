@@ -36,95 +36,189 @@ This function calls:
 <li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="Synergy.html" class="code" title="">Synergy</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="Synergy.html" class="code" title="">Synergy</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleSynergy.html" class="code" title="">exampleSynergy</a>	Test Synergy class creation and display</li></ul>
+<li><a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>	</li><li><a href="Synergy.html" class="code" title="">Synergy</a>	</li><li><a href="../../../../labTools/classes/synergies/exampleSynergy.html" class="code" title="">exampleSynergy</a>	EXAMPLESYNERGY Example usage of the Synergy class.</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function s = Synergy(content,muscleList,varargin)</a></li><li><a href="#_sub2" class="code">function handle=plot(this,varargin)</a></li><li><a href="#_sub3" class="code">function display(this)</a></li><li><a href="#_sub4" class="code">function dim=getDim(this)</a></li><li><a href="#_sub5" class="code">function dist=distance(this,otherSynergy)</a></li></ul>
+<li><a href="#_sub1" class="code">function s = Synergy(content,muscleList,varargin)</a></li><li><a href="#_sub2" class="code">function handle = plot(this,varargin)</a></li><li><a href="#_sub3" class="code">function display(this)</a></li><li><a href="#_sub4" class="code">function dim = getDim(this)</a></li><li><a href="#_sub5" class="code">function dist = distance(this,otherSynergy)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="Synergy.html" class="code" title="">Synergy</a>
-0002     <span class="comment">%Synergy Summary of this class goes here</span>
-0003     <span class="comment">%   Detailed explanation goes here</span>
-0004     
-0005     properties(SetAccess = private, GetAccess = public)
-0006         content=[]; <span class="comment">%Real positive vector</span>
-0007         muscleList={}; <span class="comment">%Cell array of strings</span>
-0008     <span class="keyword">end</span>
-0009     properties
-0010         name=[<span class="string">'Unnamed'</span>];
-0011         <span class="comment">%metadata %subject number, condition, etc?</span>
-0012         <span class="comment">%uniqueID %A unique number identificator, just in case?</span>
-0013     <span class="keyword">end</span>
-0014     
-0015     methods
-0016         <span class="comment">%Constructor:</span>
-0017         <a name="_sub0" href="#_subfunctions" class="code">function s = Synergy(content,muscleList,varargin) </a><span class="comment">%Creator</span>
-0018             <span class="keyword">if</span> length(content)==numel(content) <span class="comment">%Check that content is 1-D</span>
-0019                 <span class="keyword">if</span> length(content)==length(muscleList)
-0020                     <span class="keyword">if</span> size(content,1)==1
-0021                         s.content = content;
-0022                     <span class="keyword">else</span>
-0023                         s.content=content.';
-0024                     <span class="keyword">end</span>
-0025                     s.muscleList=muscleList;
-0026                     <span class="keyword">if</span> nargin&gt;2
-0027                         <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
-0028                             s.name=varargin{1};
-0029                         <span class="keyword">end</span>
-0030                     <span class="keyword">end</span>
-0031                 <span class="keyword">else</span>
-0032                     disp(<span class="string">'ERROR: Attempting to create Synergy object with different number of elements and element names.'</span>)
-0033                     <span class="keyword">return</span>
-0034                 <span class="keyword">end</span>
-0035             <span class="keyword">else</span>
-0036                 disp(<span class="string">'ERROR: Attempting to create Synergy object with an array for content. You probably want to try to create a SynergySet.'</span>)
-0037                 <span class="keyword">return</span>
-0038             <span class="keyword">end</span>
-0039         <span class="keyword">end</span>
-0040         
-0041         <span class="comment">%Output:</span>
-0042         <a name="_sub1" href="#_subfunctions" class="code">function handle=plot(this,varargin) </a><span class="comment">%barGraph of synergy with appropriate labeling</span>
-0043             <span class="keyword">if</span> length(varargin)&lt;1
-0044                 handle=figure;
-0045             <span class="keyword">else</span>
-0046                 handle=varargin{1};
-0047                 figure(handle);
-0048             <span class="keyword">end</span>
-0049             handle=figure;
-0050             hold on
-0051             bar(this.content)
-0052             set(gca,<span class="string">'XTick'</span>,[1:this.getDim],<span class="string">'XTickLabel'</span>,this.muscleList)
-0053             <span class="keyword">if</span> length(varargin)&lt;2
-0054                 colormap([0,0,1]); <span class="comment">%Blue bars</span>
-0055             <span class="keyword">else</span>
-0056                 colormap(varargin{2}); <span class="comment">%Color passed by caller</span>
-0057             <span class="keyword">end</span>
-0058             hold off
-0059         <span class="keyword">end</span>
-0060         <a name="_sub2" href="#_subfunctions" class="code">function display(this)</a>
-0061             disp(<span class="string">'---'</span>)
-0062             disp([<span class="string">'Synergy '</span> this.name])
-0063            content=this.content
-0064            labels=this.muscleList
-0065            disp(<span class="string">'---'</span>)
-0066         <span class="keyword">end</span>
-0067         
-0068         <span class="comment">%Gets and sets:</span>
-0069         <a name="_sub3" href="#_subfunctions" class="code">function dim=getDim(this) </a><span class="comment">%Returns dimensions of the synergy</span>
-0070             dim=length(this.content);
-0071         <span class="keyword">end</span>
-0072         
-0073         <span class="comment">%Other (misc):</span>
-0074         <a name="_sub4" href="#_subfunctions" class="code">function dist=distance(this,otherSynergy)</a>
-0075             auxSet=<a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([this.content;otherSynergy.content],this.muscleList);
-0076             dist=<a href="#_sub5" class="code" title="subfunction dist=distance(this,otherSynergy)">distance</a>(auxSet);
-0077         <span class="keyword">end</span>
-0078     <span class="keyword">end</span>
-0079     
-0080 <span class="keyword">end</span>
-0081</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0002     <span class="comment">%SYNERGY One muscle synergy: a vector of nonnegative muscle weights.</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%   A Synergy stores one vector of muscle weights (content) together</span>
+0005     <span class="comment">% with the matching muscle names (muscleList) and a display name.</span>
+0006     <span class="comment">%</span>
+0007     <span class="comment">% Synergy properties:</span>
+0008     <span class="comment">%   content    - 1xN vector of muscle weights (real, positive)</span>
+0009     <span class="comment">%   muscleList - cell array of N muscle-name strings</span>
+0010     <span class="comment">%   name       - display name (default 'Unnamed')</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">% Synergy methods:</span>
+0013     <span class="comment">%   Synergy  - constructor</span>
+0014     <span class="comment">%   plot     - bar graph of the weights</span>
+0015     <span class="comment">%   display  - prints the name, weights, and muscle labels</span>
+0016     <span class="comment">%   getDim   - number of muscles</span>
+0017     <span class="comment">%   distance - angle in degrees to another Synergy</span>
+0018     <span class="comment">%</span>
+0019     <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0020     <span class="comment">%</span>
+0021     <span class="comment">% See also SYNERGYSET, SYNERGYSETCOLLECTION.</span>
+0022 
+0023     properties(SetAccess = private, GetAccess = public)
+0024         content    = []; <span class="comment">%Real positive vector</span>
+0025         muscleList = {}; <span class="comment">%Cell array of strings</span>
+0026     <span class="keyword">end</span>
+0027     properties
+0028         name = [<span class="string">'Unnamed'</span>];
+0029         <span class="comment">%metadata %subject number, condition, etc?</span>
+0030         <span class="comment">%uniqueID %A unique number identificator, just in case?</span>
+0031     <span class="keyword">end</span>
+0032 
+0033     methods
+0034         <span class="comment">%Constructor:</span>
+0035         <a name="_sub0" href="#_subfunctions" class="code">function s = Synergy(content,muscleList,varargin) </a><span class="comment">%Creator</span>
+0036             <span class="comment">%SYNERGY Constructor for Synergy class.</span>
+0037             <span class="comment">%</span>
+0038             <span class="comment">%   s = Synergy(content, muscleList) creates a synergy from a</span>
+0039             <span class="comment">% vector of muscle weights and the matching muscle names. s =</span>
+0040             <span class="comment">% Synergy(content, muscleList, name) also sets the display name.</span>
+0041             <span class="comment">%</span>
+0042             <span class="comment">%   NOTE: if content is not a vector or its length differs from</span>
+0043             <span class="comment">% muscleList, an error message is printed and an empty Synergy</span>
+0044             <span class="comment">% is returned; no exception is thrown.</span>
+0045             <span class="comment">%</span>
+0046             <span class="comment">% Inputs:</span>
+0047             <span class="comment">%   content    - numeric vector of muscle weights (stored as a</span>
+0048             <span class="comment">%                row)</span>
+0049             <span class="comment">%   muscleList - cell array of muscle names, one per weight</span>
+0050             <span class="comment">%   varargin   - optional display name (char) as first element</span>
+0051             <span class="comment">%</span>
+0052             <span class="comment">% Outputs:</span>
+0053             <span class="comment">%   s - Synergy object</span>
+0054             <span class="comment">%</span>
+0055             <span class="comment">% Toolbox Dependencies: None</span>
+0056 
+0057             <span class="keyword">if</span> length(content) == numel(content) <span class="comment">%Check that content is 1-D</span>
+0058                 <span class="keyword">if</span> length(content) == length(muscleList)
+0059                     <span class="keyword">if</span> size(content,1) == 1
+0060                         s.content = content;
+0061                     <span class="keyword">else</span>
+0062                         s.content = content.';
+0063                     <span class="keyword">end</span>
+0064                     s.muscleList = muscleList;
+0065                     <span class="keyword">if</span> nargin &gt; 2
+0066                         <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
+0067                             s.name = varargin{1};
+0068                         <span class="keyword">end</span>
+0069                     <span class="keyword">end</span>
+0070                 <span class="keyword">else</span>
+0071                     disp([<span class="string">'ERROR: Attempting to create Synergy object '</span> <span class="keyword">...</span>
+0072                         <span class="string">'with different number of elements and '</span> <span class="keyword">...</span>
+0073                         <span class="string">'element names.'</span>])
+0074                     <span class="keyword">return</span>
+0075                 <span class="keyword">end</span>
+0076             <span class="keyword">else</span>
+0077                 disp([<span class="string">'ERROR: Attempting to create Synergy object with '</span> <span class="keyword">...</span>
+0078                     <span class="string">'an array for content. You probably want to try '</span> <span class="keyword">...</span>
+0079                     <span class="string">'to create a SynergySet.'</span>])
+0080                 <span class="keyword">return</span>
+0081             <span class="keyword">end</span>
+0082         <span class="keyword">end</span>
+0083 
+0084         <span class="comment">%Output:</span>
+0085         <span class="comment">%barGraph of synergy with appropriate labeling</span>
+0086         <a name="_sub1" href="#_subfunctions" class="code">function handle = plot(this,varargin)</a>
+0087             <span class="comment">%PLOT Bar graph of the synergy weights labeled by muscle.</span>
+0088             <span class="comment">%</span>
+0089             <span class="comment">%   NOTE: a figure handle passed in varargin{1} is activated,</span>
+0090             <span class="comment">% but the bars are drawn in a newly created figure that is</span>
+0091             <span class="comment">% returned.</span>
+0092             <span class="comment">%</span>
+0093             <span class="comment">% Inputs:</span>
+0094             <span class="comment">%   this     - Synergy object</span>
+0095             <span class="comment">%   varargin - optional: {1} figure handle (see NOTE), {2}</span>
+0096             <span class="comment">%              colormap for the bars (default blue)</span>
+0097             <span class="comment">%</span>
+0098             <span class="comment">% Outputs:</span>
+0099             <span class="comment">%   handle - handle of the figure containing the bar graph</span>
+0100             <span class="comment">%</span>
+0101             <span class="comment">% Toolbox Dependencies: None</span>
+0102 
+0103             <span class="keyword">if</span> length(varargin) &lt; 1
+0104                 handle = figure;
+0105             <span class="keyword">else</span>
+0106                 handle = varargin{1};
+0107                 figure(handle);
+0108             <span class="keyword">end</span>
+0109             handle = figure;
+0110             hold on
+0111             bar(this.content)
+0112             set(gca,<span class="string">'XTick'</span>,[1:this.getDim],<span class="string">'XTickLabel'</span>,this.muscleList)
+0113             <span class="keyword">if</span> length(varargin) &lt; 2
+0114                 colormap([0,0,1]); <span class="comment">%Blue bars</span>
+0115             <span class="keyword">else</span>
+0116                 colormap(varargin{2}); <span class="comment">%Color passed by caller</span>
+0117             <span class="keyword">end</span>
+0118             hold off
+0119         <span class="keyword">end</span>
+0120         <a name="_sub2" href="#_subfunctions" class="code">function display(this)</a>
+0121             <span class="comment">%DISPLAY Prints the synergy name, weights, and muscle labels.</span>
+0122             <span class="comment">%</span>
+0123             <span class="comment">% Inputs:</span>
+0124             <span class="comment">%   this - Synergy object</span>
+0125             <span class="comment">%</span>
+0126             <span class="comment">% Toolbox Dependencies: None</span>
+0127 
+0128             disp(<span class="string">'---'</span>)
+0129             disp([<span class="string">'Synergy '</span> this.name])
+0130             content = this.content
+0131             labels  = this.muscleList
+0132             disp(<span class="string">'---'</span>)
+0133         <span class="keyword">end</span>
+0134 
+0135         <span class="comment">%Gets and sets:</span>
+0136         <a name="_sub3" href="#_subfunctions" class="code">function dim = getDim(this) </a><span class="comment">%Returns dimensions of the synergy</span>
+0137             <span class="comment">%GETDIM Number of muscles in the synergy.</span>
+0138             <span class="comment">%</span>
+0139             <span class="comment">% Inputs:</span>
+0140             <span class="comment">%   this - Synergy object</span>
+0141             <span class="comment">%</span>
+0142             <span class="comment">% Outputs:</span>
+0143             <span class="comment">%   dim - length of content</span>
+0144             <span class="comment">%</span>
+0145             <span class="comment">% Toolbox Dependencies: None</span>
+0146 
+0147             dim = length(this.content);
+0148         <span class="keyword">end</span>
+0149 
+0150         <span class="comment">%Other (misc):</span>
+0151         <a name="_sub4" href="#_subfunctions" class="code">function dist = distance(this,otherSynergy)</a>
+0152             <span class="comment">%DISTANCE Angle in degrees between this synergy and another one.</span>
+0153             <span class="comment">%</span>
+0154             <span class="comment">%   Builds a two-row SynergySet from both synergies and returns</span>
+0155             <span class="comment">% its angular distance, acosd of the cosine similarity.</span>
+0156             <span class="comment">%</span>
+0157             <span class="comment">% Inputs:</span>
+0158             <span class="comment">%   this         - Synergy object</span>
+0159             <span class="comment">%   otherSynergy - Synergy object over the same muscles</span>
+0160             <span class="comment">%</span>
+0161             <span class="comment">% Outputs:</span>
+0162             <span class="comment">%   dist - angle between the two weight vectors in degrees</span>
+0163             <span class="comment">%</span>
+0164             <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0165             <span class="comment">%</span>
+0166             <span class="comment">% See also SYNERGYSET/DISTANCE.</span>
+0167 
+0168             auxSet = <a href="../../../../labTools/classes/synergies/@SynergySet/SynergySet.html" class="code" title="">SynergySet</a>([this.content;otherSynergy.content], <span class="keyword">...</span>
+0169                 this.muscleList);
+0170             dist = <a href="#_sub5" class="code" title="subfunction dist = distance(this,otherSynergy)">distance</a>(auxSet);
+0171         <span class="keyword">end</span>
+0172     <span class="keyword">end</span>
+0173 
+0174 <span class="keyword">end</span>
+0175</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

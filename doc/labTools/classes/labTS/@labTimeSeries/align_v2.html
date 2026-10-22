@@ -4,7 +4,7 @@
 <head>
   <title>Description of align_v2</title>
   <meta name="keywords" content="align_v2">
-  <meta name="description" content="align_v2  Efficient and robust alignment to events">
+  <meta name="description" content="ALIGN_V2 Efficient and robust alignment to events.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,29 +21,31 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>align_v2  Efficient and robust alignment to events</strong></div>
+<div class="box"><strong>ALIGN_V2 Efficient and robust alignment to events.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">align_v2  Efficient and robust alignment to events
+<div class="fragment"><pre class="comment">ALIGN_V2 Efficient and robust alignment to events.
 
    [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N) is an
-   efficient substitute for legacy align()
+ efficient substitute for legacy align()
 
-   Inputs:
-       this - labTimeSeries object
-       eventTS - labTimeSeries with event markers
-       eventLabel - cell array of event labels
-       N - vector of sample counts between events
+ Inputs:
+   this       - labTimeSeries object
+   eventTS    - labTimeSeries with event markers
+   eventLabel - cell array of event labels
+   N          - vector of sample counts between events
 
-   Outputs:
-       ATS - alignedTimeSeries object
-       bad - logical vector indicating strides with issues
-       Data - 3D data array (samples x labels x strides)
+ Outputs:
+   ATS  - alignedTimeSeries object
+   bad  - logical vector indicating strides with issues
+   Data - 3D data array (samples x labels x strides)
 
-   See also: <a href="align.html" class="code" title="function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)">align</a>, alignedTimeSeries</pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="align.html" class="code" title="function [ATS, bad] = align(this, eventTS, eventLabel, N, ~)">ALIGN</a>, ALIGNEDTIMESERIES.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -59,32 +61,34 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)</a>
-0002 <span class="comment">%align_v2  Efficient and robust alignment to events</span>
+0002 <span class="comment">%ALIGN_V2 Efficient and robust alignment to events.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N) is an</span>
-0005 <span class="comment">%   efficient substitute for legacy align()</span>
+0005 <span class="comment">% efficient substitute for legacy align()</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
-0009 <span class="comment">%       eventTS - labTimeSeries with event markers</span>
-0010 <span class="comment">%       eventLabel - cell array of event labels</span>
-0011 <span class="comment">%       N - vector of sample counts between events</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this       - labTimeSeries object</span>
+0009 <span class="comment">%   eventTS    - labTimeSeries with event markers</span>
+0010 <span class="comment">%   eventLabel - cell array of event labels</span>
+0011 <span class="comment">%   N          - vector of sample counts between events</span>
 0012 <span class="comment">%</span>
-0013 <span class="comment">%   Outputs:</span>
-0014 <span class="comment">%       ATS - alignedTimeSeries object</span>
-0015 <span class="comment">%       bad - logical vector indicating strides with issues</span>
-0016 <span class="comment">%       Data - 3D data array (samples x labels x strides)</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">%   ATS  - alignedTimeSeries object</span>
+0015 <span class="comment">%   bad  - logical vector indicating strides with issues</span>
+0016 <span class="comment">%   Data - 3D data array (samples x labels x strides)</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   See also: align, alignedTimeSeries</span>
-0019 
-0020 eventTimes = labTimeSeries.getArrayedEvents(eventTS, eventLabel);
-0021 expEventTimes = alignedTimeSeries.expandEventTimes(eventTimes', N);
-0022 Data = permute(this.getSample(expEventTimes), [1, 3, 2]);
-0023 bad = any(isnan(eventTimes(1:end - 1, :)), 2);
-0024 ATS = <span class="keyword">...</span>
-0025     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(0, 1, Data, this.labels, N, eventLabel, eventTimes');
-0026 <span class="keyword">end</span>
-0027</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also ALIGN, ALIGNEDTIMESERIES.</span>
+0021 
+0022 eventTimes    = labTimeSeries.getArrayedEvents(eventTS, eventLabel);
+0023 expEventTimes = alignedTimeSeries.expandEventTimes(eventTimes', N);
+0024 Data          = permute(this.getSample(expEventTimes), [1, 3, 2]);
+0025 bad           = any(isnan(eventTimes(1:end - 1, :)), 2);
+0026 ATS = <span class="keyword">...</span>
+0027     <a href="../../../../labTools/classes/labTS/@alignedTimeSeries/alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(0, 1, Data, this.labels, N, eventLabel, eventTimes');
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

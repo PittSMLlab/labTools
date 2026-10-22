@@ -4,7 +4,7 @@
 <head>
   <title>Description of exampleSynergy</title>
   <meta name="keywords" content="exampleSynergy">
-  <meta name="description" content="Test Synergy class creation and display">
+  <meta name="description" content="EXAMPLESYNERGY Example usage of the Synergy class.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,20 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Test Synergy class creation and display</strong></div>
+<div class="box"><strong>EXAMPLESYNERGY Example usage of the Synergy class.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">Test Synergy class creation and display</pre></div>
+<div class="fragment"><pre class="comment">EXAMPLESYNERGY Example usage of the Synergy class.
+
+   Creates a Synergy, plots it, sets its name, and computes the distance to
+ a copy of itself.
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also SYNERGY, SYNERGYSET.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -42,18 +49,27 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%Test Synergy class creation and display</span>
-0002 clear s
-0003 s=<a href="../../../labTools/classes/synergies/@Synergy/Synergy.html" class="code" title="">Synergy</a>(randn(9,1),{<span class="string">'TA'</span>,<span class="string">'PER'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'RF'</span>,<span class="string">'VM'</span>,<span class="string">'BF'</span>,<span class="string">'TFL'</span>,<span class="string">'GLU'</span>},[<span class="string">''</span>]);
-0004 handle=s.plot;
-0005 s <span class="comment">%Equivalent to s.display</span>
-0006 s.name
-0007 s.name=<span class="string">'TestSyn'</span>;
-0008 s.name
-0009 s.muscleList
-0010 s.content
-0011 s2=s;
-0012 s.distance(s2)</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <span class="comment">%EXAMPLESYNERGY Example usage of the Synergy class.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%   Creates a Synergy, plots it, sets its name, and computes the distance to</span>
+0004 <span class="comment">% a copy of itself.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% See also SYNERGY, SYNERGYSET.</span>
+0009 
+0010 clear s
+0011 s = <a href="../../../labTools/classes/synergies/@Synergy/Synergy.html" class="code" title="">Synergy</a>(randn(9,1),{<span class="string">'TA'</span>,<span class="string">'PER'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'RF'</span>,<span class="string">'VM'</span>,<span class="string">'BF'</span>,<span class="string">'TFL'</span>, <span class="keyword">...</span>
+0012     <span class="string">'GLU'</span>},[<span class="string">''</span>]);
+0013 handle = s.plot;
+0014 s <span class="comment">%Equivalent to s.display</span>
+0015 s.name
+0016 s.name = <span class="string">'TestSyn'</span>;
+0017 s.name
+0018 s.muscleList
+0019 s.content
+0020 s2 = s;
+0021 s.distance(s2)</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

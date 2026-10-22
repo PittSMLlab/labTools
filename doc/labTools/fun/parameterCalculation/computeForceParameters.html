@@ -35,6 +35,13 @@
  object that can be concatenated with other parameter series objects
  (e.g., from computeTemporalParameters).
 
+   Also computes the handrail parameters HandrailHolding (1/0; NaN
+ with no handrail), HandrailForceNorm (mean |vertical force| per
+ stride, body-weight normalized) and HandrailForceN (same, in N) from
+ the HFz channel. Unlike the belt-plate force parameters, these are
+ not limited to 'TM' trials. HandrailHolding is informational only and
+ is never folded into the bad/good flags.
+
  Inputs:
    strideEvents - struct of stride-level gait event times generated
                   by calcParameters, with fields tSHS, tFTO, tFHS,
@@ -68,7 +75,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>	COMPUTELEGFORCEPARAMETERS Compute AP force parameters for one leg stride.</li><li><a href="determineTMAngle.html" class="code" title="function ang = determineTMAngle(trialData)">determineTMAngle</a>	DETERMINETMANGLE Extract treadmill incline angle from trial description.</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li><li><a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>	</li><li><a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>	COMPUTELEGFORCEPARAMETERS Compute AP force parameters for one leg stride.</li><li><a href="determineTMAngle.html" class="code" title="function ang = determineTMAngle(trialData)">determineTMAngle</a>	DETERMINETMANGLE Extract treadmill incline angle from trial description.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li></ul>
@@ -87,358 +94,469 @@ This function is called by:
 0008 <span class="comment">% object that can be concatenated with other parameter series objects</span>
 0009 <span class="comment">% (e.g., from computeTemporalParameters).</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">% Inputs:</span>
-0012 <span class="comment">%   strideEvents - struct of stride-level gait event times generated</span>
-0013 <span class="comment">%                  by calcParameters, with fields tSHS, tFTO, tFHS,</span>
-0014 <span class="comment">%                  tSTO, tSHS2, and tFTO2 (N-by-1 vectors, in seconds)</span>
-0015 <span class="comment">%   GRFData      - orientedLabTimeSeries containing ground reaction</span>
-0016 <span class="comment">%                  force data for the trial</span>
-0017 <span class="comment">%   slowleg      - char specifying the slow-belt leg ('L' or 'R')</span>
-0018 <span class="comment">%   fastleg      - char specifying the fast-belt leg ('L' or 'R')</span>
-0019 <span class="comment">%   BW           - body weight of the subject (in kg)</span>
-0020 <span class="comment">%   trialData    - processedTrialData object; used for trial type,</span>
-0021 <span class="comment">%                  description, and inclination angle</span>
-0022 <span class="comment">%   markerData   - orientedLabTimeSeries containing kinematic marker</span>
-0023 <span class="comment">%                  data (used for optional COM/COP computations)</span>
-0024 <span class="comment">%   subData      - subjectData object containing subject information,</span>
-0025 <span class="comment">%                  including the ID used to detect decline trials</span>
-0026 <span class="comment">%   FyPSat       - (optional) saturation value for the slow-leg</span>
-0027 <span class="comment">%                  propulsion force; passed to the commented-out</span>
-0028 <span class="comment">%                  computeCOM call. Defaults to [] if omitted.</span>
-0029 <span class="comment">%</span>
-0030 <span class="comment">% Outputs:</span>
-0031 <span class="comment">%   out - parameterSeries object containing all kinetic parameters</span>
-0032 <span class="comment">%</span>
-0033 <span class="comment">% Toolbox Dependencies:</span>
-0034 <span class="comment">%   None</span>
-0035 <span class="comment">%</span>
-0036 <span class="comment">% See also COMPUTETEMPORALPARAMETERS, COMPUTESPATIALPARAMETERS,</span>
-0037 <span class="comment">%   COMPUTELEGFORCEPARAMETERS, DETERMINETMANGLE, PARAMETERSERIES,</span>
-0038 <span class="comment">%   CALCPARAMETERS.</span>
-0039 
-0040 arguments
-0041     strideEvents (1,1) struct
-0042     GRFData
-0043     slowleg      (1,:) char
-0044     fastleg      (1,:) char
-0045     BW           (1,1) double
-0046     trialData    (1,1)
-0047     markerData
-0048     subData      (1,1)
-0049     FyPSat              = []
-0050 <span class="keyword">end</span>
-0051 
-0052 <span class="comment">%% Labels and Descriptions</span>
-0053 aux = { <span class="keyword">...</span>
-0054     <span class="string">'TMAngle'</span>,              <span class="string">'Angle I think the study was run at'</span>;<span class="keyword">...</span>
-0055     <span class="string">'WalkingDirection'</span>,     <span class="string">'Identified as a decline trial with subjects walking backwards'</span>;<span class="keyword">...</span>
-0056     <span class="string">'FyBS'</span>,                 <span class="string">'GRF-FYs average signed braking'</span>;<span class="keyword">...</span>
-0057     <span class="string">'FyPS'</span>,                 <span class="string">'GRF-FYs average signed propulsion'</span>;<span class="keyword">...</span>
-0058     <span class="string">'FyBF'</span>,                 <span class="string">'GRF-FYf average signed braking'</span>;<span class="keyword">...</span>
-0059     <span class="string">'FyPF'</span>,                 <span class="string">'GRF-FYf average signed propulsion'</span>;<span class="keyword">...</span>
-0060     <span class="string">'FyBSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry braking'</span>;<span class="keyword">...</span>
-0061     <span class="string">'FyPSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry propulsion'</span>;<span class="keyword">...</span>
-0062     <span class="string">'FxS'</span>,                  <span class="string">'GRF-Fxs average force'</span>;<span class="keyword">...</span>
-0063     <span class="string">'FzS'</span>,                  <span class="string">'GRF-Fzs average force'</span>;<span class="keyword">...</span>
-0064     <span class="string">'FxF'</span>,                  <span class="string">'GRF-Fxf average force'</span>;<span class="keyword">...</span>
-0065     <span class="string">'FzF'</span>,                  <span class="string">'GRF-Fzf average force'</span>;<span class="keyword">...</span>
-0066     <span class="string">'HandrailHolding'</span>,      <span class="string">'Handrail was being held onto'</span>;<span class="keyword">...</span>
-0067     <span class="string">'ImpactMagS'</span>,           <span class="string">'Max anterior-posterior impact force of the slow leg'</span>;<span class="keyword">...</span>
-0068     <span class="string">'ImpactMagF'</span>,           <span class="string">'Max anterior-posterior impact force of the fast leg'</span>;<span class="keyword">...</span>
-0069     <span class="string">'FyBSmax'</span>,              <span class="string">'GRF-FYs max signed braking'</span>;<span class="keyword">...</span>
-0070     <span class="string">'FyPSmax'</span>,              <span class="string">'GRF-FYs max signed propulsion'</span>;<span class="keyword">...</span>
-0071     <span class="string">'FyBFmax'</span>,              <span class="string">'GRF-FYf max signed braking'</span>;<span class="keyword">...</span>
-0072     <span class="string">'FyPFmax'</span>,              <span class="string">'GRF-FYf max signed propulsion'</span>;<span class="keyword">...</span>
-0073     <span class="string">'FyBmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry braking (fast-slow)'</span>;<span class="keyword">...</span>
-0074     <span class="string">'FyPmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry propulsion (fast-slow)'</span>;<span class="keyword">...</span>
-0075     <span class="string">'FyBmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio braking (s/f)'</span>;<span class="keyword">...</span>
-0076     <span class="string">'FyPmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio propulsion (s/f)'</span>;<span class="keyword">...</span>
-0077     <span class="string">'FyBmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio braking (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span>
-0078     <span class="string">'FyPmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio propulsion (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span>
-0079     <span class="string">'FyBFmaxPer'</span>,           <span class="string">'Fast max Braking Percent'</span>;<span class="keyword">...</span>
-0080     <span class="string">'FyBSmaxPer'</span>,           <span class="string">'Slow max Braking Percent'</span>;<span class="keyword">...</span>
-0081     <span class="string">'FyPFmaxPer'</span>,           <span class="string">'Fast max Propulsion Percent'</span>;<span class="keyword">...</span>
-0082     <span class="string">'FyPSmaxPer'</span>,           <span class="string">'Slow max Propulsion Percent'</span>;<span class="keyword">...</span>
-0083     <span class="string">'Slow_Ipsi_FySym'</span>,      <span class="string">'[FyBSmax+FyPSmax]'</span>;<span class="keyword">...</span>
-0084     <span class="string">'Fast_Ipsi_FySym'</span>,      <span class="string">'[FyBFmax+FyPFmax]'</span>;<span class="keyword">...</span>
-0085     <span class="string">'SlowB_Contra_FySym'</span>,   <span class="string">'[FyBSmax+FyPFmax]'</span>;<span class="keyword">...</span>
-0086     <span class="string">'FastB_Contra_FySym'</span>,   <span class="string">'[FyBFmax+FyPSmax]'</span>;<span class="keyword">...</span>
-0087     <span class="string">'FyPSsum'</span>,              <span class="string">'Summed time normalized slow propulsion force'</span>;<span class="keyword">...</span>
-0088     <span class="string">'FyPFsum'</span>,              <span class="string">'Summed time normalized fast propulsion force'</span>;<span class="keyword">...</span>
-0089     <span class="string">'FyBSsum'</span>,              <span class="string">'Summed slow braking'</span>;<span class="keyword">...</span>
-0090     <span class="string">'FyBFsum'</span>,              <span class="string">'Summed Fast braking'</span>;<span class="keyword">...</span>
-0091     <span class="string">'FxSmax'</span>,               <span class="string">'GRF-Fxs max force'</span>;<span class="keyword">...</span>
-0092     <span class="string">'FzSmax'</span>,               <span class="string">'GRF-Fzs max force'</span>;<span class="keyword">...</span>
-0093     <span class="string">'FxFmax'</span>,               <span class="string">'GRF-Fxf max force'</span>;<span class="keyword">...</span>
-0094     <span class="string">'FzFmax'</span>,               <span class="string">'GRF-Fzf max force'</span>;<span class="keyword">...</span>
-0095     <span class="string">'FyBFmax_ABS'</span>,          <span class="string">'FyBFmax_ABS'</span>;<span class="keyword">...</span>
-0096     <span class="string">'FyBSmax_ABS'</span>,          <span class="string">'FyBSmax_ABS'</span>};
-0097 
-0098 paramLabels = aux(:, 1);
-0099 description = aux(:, 2);
-0100 
-0101 <span class="comment">%% Retrieve Trial Information and Filter Data</span>
-0102 <span class="comment">% Retrieve trial description, which contains TM inclination information</span>
-0103 <span class="comment">% (currently unused directly; retained as reference for the</span>
-0104 <span class="comment">% commented-out computeCOM call below)</span>
-0105 trialDesc   = trialData.description; <span class="comment">%#ok&lt;NASGU&gt;</span>
-0106 tmAngle     = <a href="determineTMAngle.html" class="code" title="function ang = determineTMAngle(trialData)">determineTMAngle</a>(trialData);
-0107 numStrides  = length(strideEvents.tSHS);
-0108 
-0109 shoeWeightKg   = 3.4;   <span class="comment">% Nimbus shoe pair mass (two shoes; update if shoes change)</span>
-0110 gravityAcc     = 9.81;  <span class="comment">% gravitational acceleration (m/s^2)</span>
-0111 noiseThreshold = 0.01;  <span class="comment">% min GRF std/mean to skip near-zero strides</span>
-0112 
-0113 <span class="comment">% Normalize forces to body weight (add Nimbus shoe mass for those trials)</span>
-0114 <span class="keyword">if</span> strcmpi(trialData.type, <span class="string">'NIM'</span>)   <span class="comment">% if Nimbus shoe trial, ...</span>
-0115     <span class="comment">% TODO: update this block to account for weight of new Moonwalkers</span>
-0116     normalizer = gravityAcc * (BW + shoeWeightKg);
-0117 <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
-0118     normalizer = gravityAcc * BW;
-0119 <span class="keyword">end</span>
-0120 <span class="comment">% NOTE: may want to change if desire braking magnitudes</span>
-0121 flipB = 1;
-0122 
-0123 <span class="keyword">if</span> iscell(trialDesc)        <span class="comment">% if 'trialDesc' is a cell array, ...</span>
-0124     trialDesc = trialDesc{1};   <span class="comment">% retrieve only first element</span>
-0125 <span class="keyword">end</span>
-0126 
-0127 <span class="comment">% Determine walking direction sign for force flipping in decline trials</span>
-0128 <span class="keyword">if</span> contains(lower(subData.ID), <span class="string">'decline'</span>)
-0129     flipSign = -1;
-0130 <span class="keyword">else</span>
-0131     flipSign = 1;
-0132 <span class="keyword">end</span>
-0133 
-0134 <span class="comment">% Low-pass filter forces prior to all further processing (cutoff: 20 Hz)</span>
-0135 filteredGRF = GRFData.lowPassFilter(20);
-0136 
-0137 <span class="comment">%% Remove Anterior-Posterior Force Offsets</span>
-0138 <span class="comment">% CJS (8/5/2016): One decline subject (LD30) had a force plate that was not</span>
-0139 <span class="comment">% properly zeroed. The Fy offsets are estimated here from the swing phase</span>
-0140 <span class="comment">% of each leg (when that leg is airborne, Fy should be ~0). Vertical forces</span>
-0141 <span class="comment">% are assumed to be correctly zeroed during c3d2mat; if they are not, gait</span>
-0142 <span class="comment">% events will be incorrect and this correction will not help.</span>
-0143 
-0144 <span class="comment">% figure; plot(filteredGRF.getDataAsTS([s 'Fy']).Data, 'b');</span>
-0145 <span class="comment">% hold on; plot(filteredGRF.getDataAsTS([f 'Fy']).Data, 'r');</span>
-0146 
-0147 fastLegOffsetData = nan(1, numStrides - 1);
-0148 slowLegOffsetData = nan(1, numStrides - 1);
-0149 <span class="keyword">for</span> st = 1:numStrides - 1
-0150     SHS  = strideEvents.tSHS(st);
-0151     FTO  = strideEvents.tFTO(st);
-0152     FHS  = strideEvents.tFHS(st);
-0153     STO  = strideEvents.tSTO(st);
-0154     FTO2 = strideEvents.tFTO2(st);
-0155     SHS2 = strideEvents.tSHS2(st);
-0156 
-0157     <span class="keyword">if</span> isnan(FTO) || isnan(FHS) || FTO &gt; FHS
-0158         fastLegOffsetData(st) = NaN;
-0159     <span class="keyword">else</span>
-0160         fastLegOffsetData(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(filteredGRF.split(FTO, FHS) <span class="keyword">...</span>
-0161             .getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data, <span class="string">'omitnan'</span>);
-0162     <span class="keyword">end</span>
-0163     <span class="keyword">if</span> isnan(STO) || isnan(SHS2)
-0164         slowLegOffsetData(st) = NaN;
-0165     <span class="keyword">else</span>
-0166         slowLegOffsetData(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(filteredGRF.split(STO, SHS2) <span class="keyword">...</span>
-0167             .getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data, <span class="string">'omitnan'</span>);
-0168     <span class="keyword">end</span>
-0169 <span class="keyword">end</span>
-0170 fastLegOffset = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(fastLegOffsetData, <span class="string">'omitnan'</span>), 3);
-0171 slowLegOffset = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(slowLegOffsetData, <span class="string">'omitnan'</span>), 3);
-0172 disp([<span class="string">'Fast Leg Offset: '</span> num2str(fastLegOffset) <span class="keyword">...</span>
-0173     <span class="string">', Slow Leg Offset: '</span> num2str(slowLegOffset)]);
-0174 
-0175 <span class="comment">% Apply the estimated offsets to the filtered Fy channels</span>
-0176 fastFyIdx = find(strcmp(filteredGRF.getLabels(), [fastleg <span class="string">'Fy'</span>]));
-0177 filteredGRF.Data(:, fastFyIdx) = <span class="keyword">...</span>
-0178     filteredGRF.getDataAsVector([fastleg <span class="string">'Fy'</span>]) - fastLegOffset;
-0179 slowFyIdx = find(strcmp(filteredGRF.getLabels(), [slowleg <span class="string">'Fy'</span>]));
-0180 filteredGRF.Data(:, slowFyIdx) = <span class="keyword">...</span>
-0181     filteredGRF.getDataAsVector([slowleg <span class="string">'Fy'</span>]) - slowLegOffset;
-0182 
-0183 <span class="comment">% figure; plot(filteredGRF.getDataAsTS([slowleg 'Fy']).Data, 'b');</span>
-0184 <span class="comment">% hold on; plot(filteredGRF.getDataAsTS([fastleg 'Fy']).Data, 'r');</span>
-0185 <span class="comment">% line([0 5*10^5], [0, 0]);</span>
-0186 
-0187 <span class="comment">% Gravity component projected onto walking direction for inclined treadmill</span>
-0188 inclineAPFactor = 0.5;  <span class="comment">% scales gravity to the AP direction for inclined trials</span>
-0189 levelOfInterest = inclineAPFactor .* flipSign .* cosd(90 - abs(tmAngle));
-0190 
-0191 <span class="comment">%% Initialize Output Arrays</span>
-0192 TMAngle          = repmat(tmAngle,   1, numStrides);
-0193 WalkingDirection = repmat(flipSign,  1, numStrides);
-0194 FyBS          = nan(1, numStrides);
-0195 FyPS          = nan(1, numStrides);
-0196 FzS           = nan(1, numStrides);
-0197 FxS           = nan(1, numStrides);
-0198 FyBF          = nan(1, numStrides);
-0199 FyPF          = nan(1, numStrides);
-0200 FzF           = nan(1, numStrides);
-0201 FxF           = nan(1, numStrides);
-0202 HandrailHolding = nan(1, numStrides);
-0203 FyBSmax       = nan(1, numStrides);
-0204 FyPSmax       = nan(1, numStrides);
-0205 FzSmax        = nan(1, numStrides);
-0206 FxSmax        = nan(1, numStrides);
-0207 FyBFmax       = nan(1, numStrides);
-0208 FyPFmax       = nan(1, numStrides);
-0209 FzFmax        = nan(1, numStrides);
-0210 FxFmax        = nan(1, numStrides);
-0211 FyPSsum       = nan(1, numStrides);
-0212 FyPFsum       = nan(1, numStrides);
-0213 FyBSsum       = nan(1, numStrides);
-0214 FyBFsum       = nan(1, numStrides);
-0215 FyBSmax_ABS   = nan(1, numStrides);
-0216 FyBFmax_ABS   = nan(1, numStrides);
-0217 ImpactMagS    = nan(1, numStrides);
-0218 ImpactMagF    = nan(1, numStrides);
-0219 
-0220 <span class="comment">%% Compute Stride-by-Stride Force Parameters</span>
-0221 <span class="comment">% Only compute force parameters for treadmill (TM) trials; overground</span>
-0222 <span class="comment">% (OG) trials do not have reliable belt force plate data.</span>
-0223 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(regexp(trialData.type, <span class="string">'TM'</span>)) <span class="comment">%#ok&lt;RGXP1&gt;</span>
-0224     <span class="keyword">for</span> st = 1:numStrides - 1
-0225         SHS  = strideEvents.tSHS(st);
-0226         FTO  = strideEvents.tFTO(st);
-0227         FHS  = strideEvents.tFHS(st);
-0228         STO  = strideEvents.tSTO(st);
-0229         FTO2 = strideEvents.tFTO2(st);
-0230         SHS2 = strideEvents.tSHS2(st);
-0231 
-0232         <span class="comment">% Slow-leg stance phase Fy (SHS to STO), normalized to BW</span>
-0233         <span class="keyword">if</span> isnan(SHS) || isnan(STO)
-0234             striderS = [];
-0235         <span class="keyword">else</span>
-0236             striderS = flipSign .* filteredGRF.split(SHS, STO) <span class="keyword">...</span>
-0237                 .getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data / normalizer;
-0238         <span class="keyword">end</span>
-0239 
-0240         <span class="comment">% Fast-leg stance phase Fy (FHS to FTO2), normalized to BW</span>
-0241         <span class="keyword">if</span> isnan(FHS) || isnan(FTO2)
-0242             striderF = [];
-0243         <span class="keyword">else</span>
-0244             striderF = flipSign .* filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
-0245                 .getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data / normalizer;
-0246         <span class="keyword">end</span>
-0247 
-0248         <span class="comment">% Currently, handrail holding is not computed because data</span>
-0249         <span class="comment">% integrity is poor unless it was explicitly collected.</span>
-0250         <span class="comment">% HandrailHolding(i) = NaN;</span>
-0251 
-0252         <span class="comment">% Slow leg: compute anterior-posterior force measures</span>
-0253         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(striderS) &amp;&amp; ~all(striderS == striderS(1)) &amp;&amp; <span class="keyword">...</span>
-0254                 ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(FTO)  &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(STO)
-0255             <span class="comment">% Skip strides where signal is only noise or near-zero</span>
-0256             <span class="keyword">if</span> <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(striderS, <span class="string">'omitnan'</span>) &gt; noiseThreshold &amp;&amp; <span class="keyword">...</span>
-0257                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(striderS, <span class="string">'omitnan'</span>) &gt; noiseThreshold
-0258                 [FyBS(st), FyBSsum(st), FyPS(st), FyPSsum(st), <span class="keyword">...</span>
-0259                     FyBSmax(st), FyBSmax_ABS(st), ~, FyPSmax(st), ~, <span class="keyword">...</span>
-0260                     ImpactMagS(st)] = <a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>( <span class="keyword">...</span>
-0261                     striderS, levelOfInterest, flipB, [<span class="string">'Epoch: '</span> <span class="keyword">...</span>
-0262                     trialData.name <span class="string">', Stride#: '</span> num2str(st) <span class="string">'; SlowLeg'</span>]);
-0263             <span class="keyword">end</span>
-0264 
-0265             <span class="comment">% Vertical and medial-lateral force measures</span>
-0266             FzS(st) = -1 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
-0267                 .getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
-0268             FxS(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
-0269                 .getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
-0270             FzSmax(st) = -1 * min(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
-0271                 .getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
-0272                 / normalizer;
-0273             FxSmax(st) = min(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
-0274                 .getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
-0275                 / normalizer;
-0276         <span class="keyword">end</span>
-0277 
-0278         <span class="comment">% Fast leg: compute anterior-posterior force measures</span>
-0279         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(striderF) &amp;&amp; ~all(striderF == striderF(1)) &amp;&amp; <span class="keyword">...</span>
-0280                 ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(FTO)  &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(STO)
-0281             <span class="comment">% Skip strides where signal is only noise or near-zero</span>
-0282             <span class="keyword">if</span> <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(striderF, <span class="string">'omitnan'</span>) &gt; noiseThreshold || <span class="keyword">...</span>
-0283                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(striderF, <span class="string">'omitnan'</span>) &gt; noiseThreshold
-0284                 [FyBF(st), FyBFsum(st), FyPF(st), FyPFsum(st), <span class="keyword">...</span>
-0285                     FyBFmax(st), FyBFmax_ABS(st), ~, FyPFmax(st), <span class="keyword">...</span>
-0286                     ~, ImpactMagF(st)] = <a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>( <span class="keyword">...</span>
-0287                     striderF, levelOfInterest, flipB, [<span class="string">'Epoch: '</span> <span class="keyword">...</span>
-0288                     trialData.name <span class="string">', Stride#: '</span> num2str(st) <span class="string">'; FastLeg'</span>]);
-0289             <span class="keyword">end</span>
-0290 
-0291             <span class="comment">% Vertical and medial-lateral force measures</span>
-0292             <span class="comment">% TODO: why min &amp; max here compared to min &amp; min above?</span>
-0293             FzF(st) = -1 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
-0294                 .getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
-0295             FxF(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
-0296                 .getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
-0297             FzFmax(st) = -1 * min(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
-0298                 .getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
-0299                 / normalizer;
-0300             FxFmax(st) = max(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
-0301                 .getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
-0302                 / normalizer;
-0303         <span class="keyword">end</span>
-0304     <span class="keyword">end</span>
-0305 <span class="keyword">end</span>
-0306 
-0307 <span class="comment">%% Kinetic Symmetry Measures</span>
-0308 FyBSym       = FyBF   - FyBS;
-0309 FyPSym       = FyPF   - FyPS;
-0310 FyBmaxSym    = FyBFmax - FyBSmax;
-0311 FyPmaxSym    = FyPFmax - FyPSmax;
-0312 FyBmaxRatio  = FyBSmax ./ FyBFmax;
-0313 FyPmaxRatio  = FyPSmax ./ FyPFmax;
-0314 FyBmaxSymNorm = (abs(FyBFmax) - abs(FyBSmax)) ./ <span class="keyword">...</span>
-0315     (abs(FyBFmax) + abs(FyBSmax));
-0316 FyPmaxSymNorm = (abs(FyPFmax) - abs(FyPSmax)) ./ <span class="keyword">...</span>
-0317     (abs(FyPFmax) + abs(FyPSmax));
-0318 FyBFmaxPer   = abs(FyBFmax) ./ (abs(FyBFmax) + abs(FyBSmax));
-0319 FyBSmaxPer   = abs(FyBSmax) ./ (abs(FyBFmax) + abs(FyBSmax));
-0320 FyPFmaxPer   = abs(FyPFmax) ./ (abs(FyPFmax) + abs(FyPSmax));
-0321 FyPSmaxPer   = abs(FyPSmax) ./ (abs(FyPFmax) + abs(FyPSmax));
-0322 Slow_Ipsi_FySym    = FyBSmax + FyPSmax;
-0323 Fast_Ipsi_FySym    = FyBFmax + FyPFmax;
-0324 SlowB_Contra_FySym = FyBSmax + FyPFmax;
-0325 FastB_Contra_FySym = FyBFmax + FyPSmax;
-0326 
-0327 <span class="comment">%% Center of Mass (COM): Not Robust Enough for General Code</span>
-0328 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('HAT'))</span>
-0329 <span class="comment">%     outCOM = computeCOM(strideEvents, markerData, BW, slowleg, ...</span>
-0330 <span class="comment">%         fastleg, impactS, expData, gaitEvents, flipSign, FyPSat);</span>
-0331 <span class="comment">% else</span>
-0332 outCOM.Data        = [];
-0333 outCOM.labels      = [];
-0334 outCOM.description = [];
-0335 <span class="comment">% end</span>
-0336 
-0337 <span class="comment">%% Center of Pressure (COP): Not Ready to Be Used</span>
-0338 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('LCOP'))</span>
-0339 <span class="comment">%     outCOP = computeCOPParams(strideEvents, markerData, BW, ...</span>
-0340 <span class="comment">%         slowleg, fastleg, impactS, expData, gaitEvents);</span>
-0341 <span class="comment">% else</span>
-0342 outCOP.Data        = [];
-0343 outCOP.labels      = [];
-0344 outCOP.description = [];
-0345 <span class="comment">% end</span>
+0011 <span class="comment">%   Also computes the handrail parameters HandrailHolding (1/0; NaN</span>
+0012 <span class="comment">% with no handrail), HandrailForceNorm (mean |vertical force| per</span>
+0013 <span class="comment">% stride, body-weight normalized) and HandrailForceN (same, in N) from</span>
+0014 <span class="comment">% the HFz channel. Unlike the belt-plate force parameters, these are</span>
+0015 <span class="comment">% not limited to 'TM' trials. HandrailHolding is informational only and</span>
+0016 <span class="comment">% is never folded into the bad/good flags.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Inputs:</span>
+0019 <span class="comment">%   strideEvents - struct of stride-level gait event times generated</span>
+0020 <span class="comment">%                  by calcParameters, with fields tSHS, tFTO, tFHS,</span>
+0021 <span class="comment">%                  tSTO, tSHS2, and tFTO2 (N-by-1 vectors, in seconds)</span>
+0022 <span class="comment">%   GRFData      - orientedLabTimeSeries containing ground reaction</span>
+0023 <span class="comment">%                  force data for the trial</span>
+0024 <span class="comment">%   slowleg      - char specifying the slow-belt leg ('L' or 'R')</span>
+0025 <span class="comment">%   fastleg      - char specifying the fast-belt leg ('L' or 'R')</span>
+0026 <span class="comment">%   BW           - body weight of the subject (in kg)</span>
+0027 <span class="comment">%   trialData    - processedTrialData object; used for trial type,</span>
+0028 <span class="comment">%                  description, and inclination angle</span>
+0029 <span class="comment">%   markerData   - orientedLabTimeSeries containing kinematic marker</span>
+0030 <span class="comment">%                  data (used for optional COM/COP computations)</span>
+0031 <span class="comment">%   subData      - subjectData object containing subject information,</span>
+0032 <span class="comment">%                  including the ID used to detect decline trials</span>
+0033 <span class="comment">%   FyPSat       - (optional) saturation value for the slow-leg</span>
+0034 <span class="comment">%                  propulsion force; passed to the commented-out</span>
+0035 <span class="comment">%                  computeCOM call. Defaults to [] if omitted.</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">% Outputs:</span>
+0038 <span class="comment">%   out - parameterSeries object containing all kinetic parameters</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% Toolbox Dependencies:</span>
+0041 <span class="comment">%   None</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% See also COMPUTETEMPORALPARAMETERS, COMPUTESPATIALPARAMETERS,</span>
+0044 <span class="comment">%   COMPUTELEGFORCEPARAMETERS, DETERMINETMANGLE, PARAMETERSERIES,</span>
+0045 <span class="comment">%   CALCPARAMETERS.</span>
+0046 
+0047 arguments
+0048     strideEvents (1,1) struct
+0049     GRFData
+0050     slowleg      (1,:) char
+0051     fastleg      (1,:) char
+0052     BW           (1,1) double
+0053     trialData    (1,1)
+0054     markerData
+0055     subData      (1,1)
+0056     FyPSat              = []
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="comment">%% Labels and Descriptions</span>
+0060 aux = { <span class="keyword">...</span>
+0061     <span class="string">'TMAngle'</span>,              <span class="string">'Angle I think the study was run at'</span>;<span class="keyword">...</span>
+0062     <span class="string">'WalkingDirection'</span>,     <span class="string">'Identified as a decline trial with subjects walking backwards'</span>;<span class="keyword">...</span>
+0063     <span class="string">'FyBS'</span>,                 <span class="string">'GRF-FYs average signed braking'</span>;<span class="keyword">...</span>
+0064     <span class="string">'FyPS'</span>,                 <span class="string">'GRF-FYs average signed propulsion'</span>;<span class="keyword">...</span>
+0065     <span class="string">'FyBF'</span>,                 <span class="string">'GRF-FYf average signed braking'</span>;<span class="keyword">...</span>
+0066     <span class="string">'FyPF'</span>,                 <span class="string">'GRF-FYf average signed propulsion'</span>;<span class="keyword">...</span>
+0067     <span class="string">'FyBSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry braking'</span>;<span class="keyword">...</span>
+0068     <span class="string">'FyPSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry propulsion'</span>;<span class="keyword">...</span>
+0069     <span class="string">'FxS'</span>,                  <span class="string">'GRF-Fxs average force'</span>;<span class="keyword">...</span>
+0070     <span class="string">'FzS'</span>,                  <span class="string">'GRF-Fzs average force'</span>;<span class="keyword">...</span>
+0071     <span class="string">'FxF'</span>,                  <span class="string">'GRF-Fxf average force'</span>;<span class="keyword">...</span>
+0072     <span class="string">'FzF'</span>,                  <span class="string">'GRF-Fzf average force'</span>;<span class="keyword">...</span>
+0073     <span class="string">'HandrailHolding'</span>,      <span class="string">'1 if mean abs. vertical handrail force &gt; 5% BW this stride; 0 if not; NaN if no handrail data'</span>;<span class="keyword">...</span>
+0074     <span class="string">'ImpactMagS'</span>,           <span class="string">'Max anterior-posterior impact force of the slow leg'</span>;<span class="keyword">...</span>
+0075     <span class="string">'ImpactMagF'</span>,           <span class="string">'Max anterior-posterior impact force of the fast leg'</span>;<span class="keyword">...</span>
+0076     <span class="string">'FyBSmax'</span>,              <span class="string">'GRF-FYs max signed braking'</span>;<span class="keyword">...</span>
+0077     <span class="string">'FyPSmax'</span>,              <span class="string">'GRF-FYs max signed propulsion'</span>;<span class="keyword">...</span>
+0078     <span class="string">'FyBFmax'</span>,              <span class="string">'GRF-FYf max signed braking'</span>;<span class="keyword">...</span>
+0079     <span class="string">'FyPFmax'</span>,              <span class="string">'GRF-FYf max signed propulsion'</span>;<span class="keyword">...</span>
+0080     <span class="string">'FyBmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry braking (fast-slow)'</span>;<span class="keyword">...</span>
+0081     <span class="string">'FyPmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry propulsion (fast-slow)'</span>;<span class="keyword">...</span>
+0082     <span class="string">'FyBmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio braking (s/f)'</span>;<span class="keyword">...</span>
+0083     <span class="string">'FyPmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio propulsion (s/f)'</span>;<span class="keyword">...</span>
+0084     <span class="string">'FyBmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio braking (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span>
+0085     <span class="string">'FyPmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio propulsion (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span>
+0086     <span class="string">'FyBFmaxPer'</span>,           <span class="string">'Fast max Braking Percent'</span>;<span class="keyword">...</span>
+0087     <span class="string">'FyBSmaxPer'</span>,           <span class="string">'Slow max Braking Percent'</span>;<span class="keyword">...</span>
+0088     <span class="string">'FyPFmaxPer'</span>,           <span class="string">'Fast max Propulsion Percent'</span>;<span class="keyword">...</span>
+0089     <span class="string">'FyPSmaxPer'</span>,           <span class="string">'Slow max Propulsion Percent'</span>;<span class="keyword">...</span>
+0090     <span class="string">'Slow_Ipsi_FySym'</span>,      <span class="string">'[FyBSmax+FyPSmax]'</span>;<span class="keyword">...</span>
+0091     <span class="string">'Fast_Ipsi_FySym'</span>,      <span class="string">'[FyBFmax+FyPFmax]'</span>;<span class="keyword">...</span>
+0092     <span class="string">'SlowB_Contra_FySym'</span>,   <span class="string">'[FyBSmax+FyPFmax]'</span>;<span class="keyword">...</span>
+0093     <span class="string">'FastB_Contra_FySym'</span>,   <span class="string">'[FyBFmax+FyPSmax]'</span>;<span class="keyword">...</span>
+0094     <span class="string">'FyPSsum'</span>,              <span class="string">'Summed time normalized slow propulsion force'</span>;<span class="keyword">...</span>
+0095     <span class="string">'FyPFsum'</span>,              <span class="string">'Summed time normalized fast propulsion force'</span>;<span class="keyword">...</span>
+0096     <span class="string">'FyBSsum'</span>,              <span class="string">'Summed slow braking'</span>;<span class="keyword">...</span>
+0097     <span class="string">'FyBFsum'</span>,              <span class="string">'Summed Fast braking'</span>;<span class="keyword">...</span>
+0098     <span class="string">'FxSmax'</span>,               <span class="string">'GRF-Fxs max force'</span>;<span class="keyword">...</span>
+0099     <span class="string">'FzSmax'</span>,               <span class="string">'GRF-Fzs max force'</span>;<span class="keyword">...</span>
+0100     <span class="string">'FxFmax'</span>,               <span class="string">'GRF-Fxf max force'</span>;<span class="keyword">...</span>
+0101     <span class="string">'FzFmax'</span>,               <span class="string">'GRF-Fzf max force'</span>;<span class="keyword">...</span>
+0102     <span class="string">'FyBFmax_ABS'</span>,          <span class="string">'FyBFmax_ABS'</span>;<span class="keyword">...</span>
+0103     <span class="string">'FyBSmax_ABS'</span>,          <span class="string">'FyBSmax_ABS'</span>;<span class="keyword">...</span>
+0104     <span class="string">'HandrailForceNorm'</span>,    <span class="string">'Mean absolute vertical handrail force per stride, normalized to body weight'</span>;<span class="keyword">...</span>
+0105     <span class="string">'HandrailForceN'</span>,       <span class="string">'Mean absolute vertical handrail force per stride, in Newtons (not normalized)'</span>};
+0106 
+0107 paramLabels = aux(:, 1);
+0108 description = aux(:, 2);
+0109 
+0110 <span class="comment">%% Retrieve Trial Information and Filter Data</span>
+0111 <span class="comment">% Retrieve trial description, which contains TM inclination information</span>
+0112 <span class="comment">% (currently unused directly; retained as reference for the</span>
+0113 <span class="comment">% commented-out computeCOM call below)</span>
+0114 trialDesc   = trialData.description; <span class="comment">%#ok&lt;NASGU&gt;</span>
+0115 tmAngle     = <a href="determineTMAngle.html" class="code" title="function ang = determineTMAngle(trialData)">determineTMAngle</a>(trialData);
+0116 numStrides  = length(strideEvents.tSHS);
+0117 
+0118 shoeWeightKg   = 3.4;   <span class="comment">% Nimbus shoe pair mass (kg; update if shoes change)</span>
+0119 gravityAcc     = 9.81;  <span class="comment">% gravitational acceleration (m/s^2)</span>
+0120 noiseThreshold = 0.01;  <span class="comment">% min std/mean ratio; TODO: confirm threshold</span>
+0121 
+0122 <span class="comment">% Handrail holding: light-touch ceiling of 5% BW (mean vertical force</span>
+0123 <span class="comment">% ~1-2% BW during casual light touch; source: instrumented-handrail</span>
+0124 <span class="comment">% literature, e.g. PMC10957321). Matches the threshold used in the</span>
+0125 <span class="comment">% legacy computeForceParameters_OGFP implementation.</span>
+0126 handrailHoldFractionBW = 0.05;
+0127 <span class="comment">% Body weight (N), unadjusted for shoe mass: shoe weight does not act</span>
+0128 <span class="comment">% on the handrail load cell, unlike the belt GRF 'normalizer' below.</span>
+0129 bodyweightN = gravityAcc * BW;
+0130 
+0131 <span class="comment">% Normalize forces to body weight (add Nimbus shoe mass for those trials)</span>
+0132 <span class="keyword">if</span> strcmpi(trialData.type, <span class="string">'NIM'</span>)   <span class="comment">% if Nimbus shoe trial, ...</span>
+0133     <span class="comment">% TODO: update this block to account for weight of new Moonwalkers</span>
+0134     normalizer = gravityAcc * (BW + shoeWeightKg);
+0135 <span class="keyword">else</span>                                <span class="comment">% otherwise, ...</span>
+0136     normalizer = gravityAcc * BW;
+0137 <span class="keyword">end</span>
+0138 <span class="comment">% NOTE: may want to change if desire braking magnitudes</span>
+0139 flipB = 1;
+0140 
+0141 <span class="keyword">if</span> iscell(trialDesc)        <span class="comment">% if 'trialDesc' is a cell array, ...</span>
+0142     trialDesc = trialDesc{1};   <span class="comment">% retrieve only first element</span>
+0143 <span class="keyword">end</span>
+0144 
+0145 <span class="comment">% Determine walking direction sign for force flipping in decline trials</span>
+0146 <span class="keyword">if</span> contains(lower(subData.ID), <span class="string">'decline'</span>)
+0147     flipSign = -1;
+0148 <span class="keyword">else</span>
+0149     flipSign = 1;
+0150 <span class="keyword">end</span>
+0151 
+0152 <span class="comment">% Low-pass filter forces prior to all further processing</span>
+0153 grfCutoffHz = 20;  <span class="comment">% GRF low-pass cutoff (Hz)</span>
+0154 filteredGRF = GRFData.lowPassFilter(grfCutoffHz);
+0155 
+0156 <span class="comment">%% Remove Anterior-Posterior Force Offsets</span>
+0157 <span class="comment">% One decline subject (LD30) had a force plate that was not properly</span>
+0158 <span class="comment">% zeroed. The Fy offsets are estimated here from the swing phase of</span>
+0159 <span class="comment">% each leg (when that leg is airborne, Fy should be ~0). Vertical</span>
+0160 <span class="comment">% forces are assumed to be correctly zeroed during c3d2mat; if they are</span>
+0161 <span class="comment">% not, gait events will be incorrect and this correction will not help.</span>
+0162 
+0163 <span class="comment">% figure; plot(filteredGRF.getDataAsTS([s 'Fy']).Data, 'b');</span>
+0164 <span class="comment">% hold on; plot(filteredGRF.getDataAsTS([f 'Fy']).Data, 'r');</span>
+0165 
+0166 fastLegOffsetData = nan(1, numStrides - 1);
+0167 slowLegOffsetData = nan(1, numStrides - 1);
+0168 <span class="keyword">for</span> st = 1:numStrides - 1
+0169     SHS  = strideEvents.tSHS(st);
+0170     FTO  = strideEvents.tFTO(st);
+0171     FHS  = strideEvents.tFHS(st);
+0172     STO  = strideEvents.tSTO(st);
+0173     FTO2 = strideEvents.tFTO2(st);
+0174     SHS2 = strideEvents.tSHS2(st);
+0175 
+0176     <span class="keyword">if</span> isnan(FTO) || isnan(FHS) || FTO &gt; FHS
+0177         fastLegOffsetData(st) = NaN;
+0178     <span class="keyword">else</span>
+0179         fastLegOffsetData(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(filteredGRF.split(FTO, FHS) <span class="keyword">...</span>
+0180             .getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data, <span class="string">'omitnan'</span>);
+0181     <span class="keyword">end</span>
+0182     <span class="keyword">if</span> isnan(STO) || isnan(SHS2)
+0183         slowLegOffsetData(st) = NaN;
+0184     <span class="keyword">else</span>
+0185         slowLegOffsetData(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(filteredGRF.split(STO, SHS2) <span class="keyword">...</span>
+0186             .getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data, <span class="string">'omitnan'</span>);
+0187     <span class="keyword">end</span>
+0188 <span class="keyword">end</span>
+0189 fastLegOffset = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(fastLegOffsetData, <span class="string">'omitnan'</span>), 3);
+0190 slowLegOffset = round(<a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(slowLegOffsetData, <span class="string">'omitnan'</span>), 3);
+0191 disp([<span class="string">'Fast Leg Offset: '</span> num2str(fastLegOffset) <span class="keyword">...</span>
+0192     <span class="string">', Slow Leg Offset: '</span> num2str(slowLegOffset)]);
+0193 
+0194 <span class="comment">% Apply the estimated offsets to the filtered Fy channels</span>
+0195 fastFyIdx = find(strcmp(filteredGRF.getLabels(), [fastleg <span class="string">'Fy'</span>]));
+0196 filteredGRF.Data(:, fastFyIdx) = <span class="keyword">...</span>
+0197     filteredGRF.getDataAsVector([fastleg <span class="string">'Fy'</span>]) - fastLegOffset;
+0198 slowFyIdx = find(strcmp(filteredGRF.getLabels(), [slowleg <span class="string">'Fy'</span>]));
+0199 filteredGRF.Data(:, slowFyIdx) = <span class="keyword">...</span>
+0200     filteredGRF.getDataAsVector([slowleg <span class="string">'Fy'</span>]) - slowLegOffset;
+0201 
+0202 <span class="comment">% figure; plot(filteredGRF.getDataAsTS([slowleg 'Fy']).Data, 'b');</span>
+0203 <span class="comment">% hold on; plot(filteredGRF.getDataAsTS([fastleg 'Fy']).Data, 'r');</span>
+0204 <span class="comment">% line([0 5*10^5], [0, 0]);</span>
+0205 
+0206 <span class="comment">% Gravity component projected onto walking direction for inclined treadmill</span>
+0207 inclineAPFactor = 0.5;  <span class="comment">% AP-direction gravity fraction; TODO: confirm</span>
+0208 levelOfInterest = inclineAPFactor .* flipSign .* cosd(90 - abs(tmAngle));
+0209 
+0210 <span class="comment">%% Initialize Output Arrays</span>
+0211 TMAngle          = repmat(tmAngle,   1, numStrides);
+0212 WalkingDirection = repmat(flipSign,  1, numStrides);
+0213 FyBS          = nan(1, numStrides);
+0214 FyPS          = nan(1, numStrides);
+0215 FzS           = nan(1, numStrides);
+0216 FxS           = nan(1, numStrides);
+0217 FyBF          = nan(1, numStrides);
+0218 FyPF          = nan(1, numStrides);
+0219 FzF           = nan(1, numStrides);
+0220 FxF           = nan(1, numStrides);
+0221 HandrailHolding    = nan(1, numStrides);
+0222 HandrailForceNorm  = nan(1, numStrides);
+0223 HandrailForceN     = nan(1, numStrides);
+0224 FyBSmax       = nan(1, numStrides);
+0225 FyPSmax       = nan(1, numStrides);
+0226 FzSmax        = nan(1, numStrides);
+0227 FxSmax        = nan(1, numStrides);
+0228 FyBFmax       = nan(1, numStrides);
+0229 FyPFmax       = nan(1, numStrides);
+0230 FzFmax        = nan(1, numStrides);
+0231 FxFmax        = nan(1, numStrides);
+0232 FyPSsum       = nan(1, numStrides);
+0233 FyPFsum       = nan(1, numStrides);
+0234 FyBSsum       = nan(1, numStrides);
+0235 FyBFsum       = nan(1, numStrides);
+0236 FyBSmax_ABS   = nan(1, numStrides);
+0237 FyBFmax_ABS   = nan(1, numStrides);
+0238 ImpactMagS    = nan(1, numStrides);
+0239 ImpactMagF    = nan(1, numStrides);
+0240 
+0241 <span class="comment">%% Retrieve Handrail Force Data</span>
+0242 <span class="comment">% Vertical instrumented-handrail force channel ('HFz'), loaded by</span>
+0243 <span class="comment">% processGRFData as force-plate channel 3. Not all trials were</span>
+0244 <span class="comment">% collected with an instrumented handrail, so this is commonly absent</span>
+0245 <span class="comment">% (handrailFz stays empty; HandrailHolding/HandrailForceNorm/</span>
+0246 <span class="comment">% HandrailForceN stay NaN).</span>
+0247 <span class="comment">% Some collections mislabel the channel 'XFz' due to a known force</span>
+0248 <span class="comment">% channel numbering mismatch (channel 3 vs. 4) in c3d2mat loading; that</span>
+0249 <span class="comment">% case is used as a fallback but flagged with a warning since it is not</span>
+0250 <span class="comment">% confirmed to actually be the handrail.</span>
+0251 <span class="keyword">if</span> filteredGRF.isaLabel(<span class="string">'HFz'</span>)
+0252     handrailFz = filteredGRF.getDataAsTS(<span class="string">'HFz'</span>);
+0253 <span class="keyword">elseif</span> filteredGRF.isaLabel(<span class="string">'XFz'</span>)
+0254     handrailFz = filteredGRF.getDataAsTS(<span class="string">'XFz'</span>);
+0255     warning(<span class="string">'computeForceParameters:handrailLabel'</span>, [<span class="string">'Handrail data '</span> <span class="keyword">...</span>
+0256         <span class="string">'was not found labeled ''HFz''; using ''XFz'' instead (not '</span> <span class="keyword">...</span>
+0257         <span class="string">'confirmed to be the handrail). This is likely a force '</span> <span class="keyword">...</span>
+0258         <span class="string">'channel numbering mismatch during loading (c3d2mat).'</span>]);
+0259 <span class="keyword">else</span>
+0260     handrailFz = [];
+0261 <span class="keyword">end</span>
+0262 
+0263 <span class="comment">%% Compute Handrail Holding (Independent of Belt-Force Trial Gate)</span>
+0264 <span class="comment">% Unlike the belt-plate force parameters below, the handrail signal</span>
+0265 <span class="comment">% comes from an independent load cell rather than the treadmill belt</span>
+0266 <span class="comment">% plates, so it is not restricted to TM trials the way FyBS/FyPS/etc.</span>
+0267 <span class="comment">% are (that gate exists because OG trials lack reliable belt force</span>
+0268 <span class="comment">% plate data, which is not a constraint on the handrail transducer).</span>
+0269 <span class="comment">% This loop is self-gated purely on handrail-channel presence and</span>
+0270 <span class="comment">% valid stride timing, so it naturally stays NaN for OG trials or any</span>
+0271 <span class="comment">% trial without an instrumented handrail.</span>
+0272 <span class="comment">%</span>
+0273 <span class="comment">% Mean absolute vertical handrail force over the full stride (SHS to</span>
+0274 <span class="comment">% SHS2). abs() is used so that both pushing down (weight support) and</span>
+0275 <span class="comment">% pulling up (recovering balance from a backward fall) count toward</span>
+0276 <span class="comment">% &quot;holding&quot;. HandrailForceN is the raw mean in Newtons; HandrailForceNorm</span>
+0277 <span class="comment">% is the same value normalized to body weight, and is what</span>
+0278 <span class="comment">% HandrailHolding thresholds. Left as NaN (not 0) when handrail data or</span>
+0279 <span class="comment">% the stride window is unavailable, since NaN &gt; threshold would</span>
+0280 <span class="comment">% otherwise silently evaluate to false.</span>
+0281 <span class="keyword">for</span> st = 1:numStrides - 1
+0282     SHS  = strideEvents.tSHS(st);
+0283     SHS2 = strideEvents.tSHS2(st);
+0284     <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(handrailFz) &amp;&amp; ~isnan(SHS) &amp;&amp; ~isnan(SHS2)
+0285         HandrailForceN(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(abs(handrailFz.split(SHS, SHS2) <span class="keyword">...</span>
+0286             .Data), <span class="string">'omitnan'</span>);
+0287         HandrailForceNorm(st) = HandrailForceN(st) / bodyweightN;
+0288         HandrailHolding(st) = <span class="keyword">...</span>
+0289             double(HandrailForceNorm(st) &gt; handrailHoldFractionBW);
+0290     <span class="keyword">end</span>
+0291 <span class="keyword">end</span>
+0292 
+0293 <span class="comment">%% Compute Stride-by-Stride Force Parameters</span>
+0294 <span class="comment">% Only compute force parameters for treadmill (TM) trials; overground</span>
+0295 <span class="comment">% (OG) trials do not have reliable belt force plate data.</span>
+0296 <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(regexp(trialData.type, <span class="string">'TM'</span>)) <span class="comment">%#ok&lt;RGXP1&gt;</span>
+0297     <span class="keyword">for</span> st = 1:numStrides - 1
+0298         SHS  = strideEvents.tSHS(st);
+0299         FTO  = strideEvents.tFTO(st);
+0300         FHS  = strideEvents.tFHS(st);
+0301         STO  = strideEvents.tSTO(st);
+0302         FTO2 = strideEvents.tFTO2(st);
+0303 
+0304         <span class="comment">% Slow-leg stance phase Fy (SHS to STO), normalized to BW</span>
+0305         <span class="keyword">if</span> isnan(SHS) || isnan(STO)
+0306             striderS = [];
+0307         <span class="keyword">else</span>
+0308             striderS = flipSign .* filteredGRF.split(SHS, STO) <span class="keyword">...</span>
+0309                 .getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data / normalizer;
+0310         <span class="keyword">end</span>
+0311 
+0312         <span class="comment">% Fast-leg stance phase Fy (FHS to FTO2), normalized to BW</span>
+0313         <span class="keyword">if</span> isnan(FHS) || isnan(FTO2)
+0314             striderF = [];
+0315         <span class="keyword">else</span>
+0316             striderF = flipSign .* filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
+0317                 .getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data / normalizer;
+0318         <span class="keyword">end</span>
+0319 
+0320         <span class="comment">% Slow leg: compute anterior-posterior force measures</span>
+0321         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(striderS) &amp;&amp; ~all(striderS == striderS(1)) &amp;&amp; <span class="keyword">...</span>
+0322                 ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(FTO)  &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(STO)
+0323             <span class="comment">% Skip strides where signal is only noise or near-zero</span>
+0324             <span class="comment">% TODO: verify that '&amp;&amp;' rather than '||' is correct</span>
+0325             <span class="keyword">if</span> <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(striderS, <span class="string">'omitnan'</span>) &gt; noiseThreshold &amp;&amp; <span class="keyword">...</span>
+0326                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(striderS, <span class="string">'omitnan'</span>) &gt; noiseThreshold
+0327                 [FyBS(st), FyBSsum(st), FyPS(st), FyPSsum(st), <span class="keyword">...</span>
+0328                     FyBSmax(st), FyBSmax_ABS(st), ~, FyPSmax(st), ~, <span class="keyword">...</span>
+0329                     ImpactMagS(st)] = <a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>( <span class="keyword">...</span>
+0330                     striderS, levelOfInterest, flipB, [<span class="string">'Epoch: '</span> <span class="keyword">...</span>
+0331                     trialData.name <span class="string">', Stride#: '</span> num2str(st) <span class="string">'; SlowLeg'</span>]);
+0332             <span class="keyword">end</span>
+0333 
+0334             <span class="comment">% Vertical and medial-lateral force measures</span>
+0335             FzS(st) = -1 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
+0336                 .getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
+0337             FxS(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
+0338                 .getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
+0339             FzSmax(st) = -1 * min(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
+0340                 .getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
+0341                 / normalizer;
+0342             FxSmax(st) = min(filteredGRF.split(SHS, STO) <span class="keyword">...</span>
+0343                 .getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
+0344                 / normalizer;
+0345         <span class="keyword">end</span>
 0346 
-0347 <span class="comment">% if isempty(markerData.getLabelsThatMatch('Hat'))</span>
-0348 <span class="comment">%     labels = [labels outCOM.labels outCOP.labels];</span>
-0349 <span class="comment">%     description = [description outCOM.description outCOP.description];</span>
-0350 <span class="comment">% end</span>
-0351 
-0352 <span class="comment">%% Assign Parameters to Data Matrix</span>
-0353 data = nan(numStrides, length(paramLabels));
-0354 <span class="keyword">for</span> ii = 1:length(paramLabels)
-0355     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
-0356 <span class="keyword">end</span>
-0357 
-0358 <span class="comment">%% Output Computed Parameters</span>
-0359 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
-0360 
-0361 <span class="keyword">end</span>
-0362</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0347         <span class="comment">% Fast leg: compute anterior-posterior force measures</span>
+0348         <span class="keyword">if</span> ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(striderF) &amp;&amp; ~all(striderF == striderF(1)) &amp;&amp; <span class="keyword">...</span>
+0349                 ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(FTO)  &amp;&amp; ~<a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(STO)
+0350             <span class="comment">% Skip strides where signal is only noise or near-zero</span>
+0351             <span class="keyword">if</span> <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(striderF, <span class="string">'omitnan'</span>) &gt; noiseThreshold &amp;&amp; <span class="keyword">...</span>
+0352                     <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(striderF, <span class="string">'omitnan'</span>) &gt; noiseThreshold
+0353                 [FyBF(st), FyBFsum(st), FyPF(st), FyPFsum(st), <span class="keyword">...</span>
+0354                     FyBFmax(st), FyBFmax_ABS(st), ~, FyPFmax(st), <span class="keyword">...</span>
+0355                     ~, ImpactMagF(st)] = <a href="computeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmaxAbs, SBmaxQS, SPmax,SPmaxQS, ImpactMagS] = computeLegForceParameters(apForceTrace, forceBaseline, brakingSign, titleText)">computeLegForceParameters</a>( <span class="keyword">...</span>
+0356                     striderF, levelOfInterest, flipB, [<span class="string">'Epoch: '</span> <span class="keyword">...</span>
+0357                     trialData.name <span class="string">', Stride#: '</span> num2str(st) <span class="string">'; FastLeg'</span>]);
+0358             <span class="keyword">end</span>
+0359 
+0360             <span class="comment">% Vertical and medial-lateral force measures</span>
+0361             <span class="comment">% TODO: why min &amp; max here compared to min &amp; min above?</span>
+0362             FzF(st) = -1 * <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
+0363                 .getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
+0364             FxF(st) = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
+0365                 .getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data, <span class="string">'omitnan'</span>) / normalizer;
+0366             FzFmax(st) = -1 * min(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
+0367                 .getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
+0368                 / normalizer;
+0369             FxFmax(st) = max(filteredGRF.split(FHS, FTO2) <span class="keyword">...</span>
+0370                 .getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data, [], <span class="string">'omitnan'</span>) <span class="keyword">...</span>
+0371                 / normalizer;
+0372         <span class="keyword">end</span>
+0373     <span class="keyword">end</span>
+0374 <span class="keyword">end</span>
+0375 
+0376 <span class="comment">%% Kinetic Symmetry Measures</span>
+0377 FyBSym       = FyBF   - FyBS;
+0378 FyPSym       = FyPF   - FyPS;
+0379 FyBmaxSym    = FyBFmax - FyBSmax;
+0380 FyPmaxSym    = FyPFmax - FyPSmax;
+0381 FyBmaxRatio  = FyBSmax ./ FyBFmax;
+0382 FyPmaxRatio  = FyPSmax ./ FyPFmax;
+0383 FyBmaxSymNorm = (abs(FyBFmax) - abs(FyBSmax)) ./ <span class="keyword">...</span>
+0384     (abs(FyBFmax) + abs(FyBSmax));
+0385 FyPmaxSymNorm = (abs(FyPFmax) - abs(FyPSmax)) ./ <span class="keyword">...</span>
+0386     (abs(FyPFmax) + abs(FyPSmax));
+0387 FyBFmaxPer   = abs(FyBFmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+0388 FyBSmaxPer   = abs(FyBSmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+0389 FyPFmaxPer   = abs(FyPFmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+0390 FyPSmaxPer   = abs(FyPSmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+0391 Slow_Ipsi_FySym    = FyBSmax + FyPSmax;
+0392 Fast_Ipsi_FySym    = FyBFmax + FyPFmax;
+0393 SlowB_Contra_FySym = FyBSmax + FyPFmax;
+0394 FastB_Contra_FySym = FyBFmax + FyPSmax;
+0395 
+0396 <span class="comment">%% Center of Mass (COM): Not Robust Enough for General Code</span>
+0397 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('HAT'))</span>
+0398 <span class="comment">%     outCOM = computeCOM(strideEvents, markerData, BW, slowleg, ...</span>
+0399 <span class="comment">%         fastleg, impactS, expData, gaitEvents, flipSign, FyPSat);</span>
+0400 <span class="comment">% else</span>
+0401 outCOM.Data        = [];
+0402 outCOM.labels      = [];
+0403 outCOM.description = [];
+0404 <span class="comment">% end</span>
+0405 
+0406 <span class="comment">%% Center of Pressure (COP): Not Ready to Be Used</span>
+0407 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('LCOP'))</span>
+0408 <span class="comment">%     outCOP = computeCOPParams(strideEvents, markerData, BW, ...</span>
+0409 <span class="comment">%         slowleg, fastleg, impactS, expData, gaitEvents);</span>
+0410 <span class="comment">% else</span>
+0411 outCOP.Data        = [];
+0412 outCOP.labels      = [];
+0413 outCOP.description = [];
+0414 <span class="comment">% end</span>
+0415 
+0416 <span class="comment">% if isempty(markerData.getLabelsThatMatch('Hat'))</span>
+0417 <span class="comment">%     labels = [labels outCOM.labels outCOP.labels];</span>
+0418 <span class="comment">%     description = [description outCOM.description outCOP.description];</span>
+0419 <span class="comment">% end</span>
+0420 
+0421 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0422 data = nan(numStrides, length(paramLabels));
+0423 data(:,  1) = TMAngle;
+0424 data(:,  2) = WalkingDirection;
+0425 data(:,  3) = FyBS;
+0426 data(:,  4) = FyPS;
+0427 data(:,  5) = FyBF;
+0428 data(:,  6) = FyPF;
+0429 data(:,  7) = FyBSym;
+0430 data(:,  8) = FyPSym;
+0431 data(:,  9) = FxS;
+0432 data(:, 10) = FzS;
+0433 data(:, 11) = FxF;
+0434 data(:, 12) = FzF;
+0435 data(:, 13) = HandrailHolding;
+0436 data(:, 14) = ImpactMagS;
+0437 data(:, 15) = ImpactMagF;
+0438 data(:, 16) = FyBSmax;
+0439 data(:, 17) = FyPSmax;
+0440 data(:, 18) = FyBFmax;
+0441 data(:, 19) = FyPFmax;
+0442 data(:, 20) = FyBmaxSym;
+0443 data(:, 21) = FyPmaxSym;
+0444 data(:, 22) = FyBmaxRatio;
+0445 data(:, 23) = FyPmaxRatio;
+0446 data(:, 24) = FyBmaxSymNorm;
+0447 data(:, 25) = FyPmaxSymNorm;
+0448 data(:, 26) = FyBFmaxPer;
+0449 data(:, 27) = FyBSmaxPer;
+0450 data(:, 28) = FyPFmaxPer;
+0451 data(:, 29) = FyPSmaxPer;
+0452 data(:, 30) = Slow_Ipsi_FySym;
+0453 data(:, 31) = Fast_Ipsi_FySym;
+0454 data(:, 32) = SlowB_Contra_FySym;
+0455 data(:, 33) = FastB_Contra_FySym;
+0456 data(:, 34) = FyPSsum;
+0457 data(:, 35) = FyPFsum;
+0458 data(:, 36) = FyBSsum;
+0459 data(:, 37) = FyBFsum;
+0460 data(:, 38) = FxSmax;
+0461 data(:, 39) = FzSmax;
+0462 data(:, 40) = FxFmax;
+0463 data(:, 41) = FzFmax;
+0464 data(:, 42) = FyBFmax_ABS;
+0465 data(:, 43) = FyBSmax_ABS;
+0466 data(:, 44) = HandrailForceNorm;
+0467 data(:, 45) = HandrailForceN;
+0468 
+0469 <span class="comment">%% Output Computed Parameters</span>
+0470 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0471 
+0472 <span class="keyword">end</span>
+0473</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

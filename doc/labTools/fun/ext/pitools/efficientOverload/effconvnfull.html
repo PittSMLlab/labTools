@@ -4,7 +4,7 @@
 <head>
   <title>Description of effconvnfull</title>
   <meta name="keywords" content="effconvnfull">
-  <meta name="description" content="effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.">
+  <meta name="description" content="EFFCONVNFULL Convolve N-D arrays via FFT (full output).">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</strong></div>
+<div class="box"><strong>EFFCONVNFULL Convolve N-D arrays via FFT (full output).</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [newP] = effconvnfull(pValues1,pValues2) </strong></div>
+<div class="box"><strong>function newP = effconvnfull(pValues1, pValues2) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</pre></div>
+<div class="fragment"><pre class="comment">EFFCONVNFULL Convolve N-D arrays via FFT (full output).
+
+   Implements convn using FFTs; equivalent to convn(A, B, 'full'). Note:
+ FFT-based convolution is generally faster only for large arrays.
+
+ Inputs:
+   pValues1 - first N-D numeric array
+   pValues2 - second N-D numeric array
+
+ Outputs:
+   newP - full convolution; size = size(pValues1)+size(pValues2)-1
+
+ Toolbox Dependencies: None
+
+ See also <a href="effconvn.html" class="code" title="function newP = effconvn(pValues1, pValues2, shape)">EFFCONVN</a>, CONVN, IFFTN, FFTN.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -36,21 +50,33 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="effconvn.html" class="code" title="function [newP] = effconvn(pValues1,pValues2,shape)">effconvn</a>	effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</li></ul>
+<li><a href="effconvn.html" class="code" title="function newP = effconvn(pValues1, pValues2, shape)">effconvn</a>	EFFCONVN Convolve N-D arrays via FFT.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newP] = effconvnfull(pValues1,pValues2)</a>
-0002 <span class="comment">%effconvn Implements the convn function by means of ffts, to -supposedly- be more efficient. It is certainly not the case for small arrays.</span>
-0003 
-0004 newSize=size(pValues1)+size(pValues2)-1;
-0005 newP=ifftn(fftn(pValues1,newSize).*fftn(pValues2,newSize));
-0006 
-0007 
-0008 <span class="keyword">end</span>
-0009</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newP = effconvnfull(pValues1, pValues2)</a>
+0002 <span class="comment">%EFFCONVNFULL Convolve N-D arrays via FFT (full output).</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Implements convn using FFTs; equivalent to convn(A, B, 'full'). Note:</span>
+0005 <span class="comment">% FFT-based convolution is generally faster only for large arrays.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   pValues1 - first N-D numeric array</span>
+0009 <span class="comment">%   pValues2 - second N-D numeric array</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   newP - full convolution; size = size(pValues1)+size(pValues2)-1</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also EFFCONVN, CONVN, IFFTN, FFTN.</span>
+0017 
+0018 newSize = size(pValues1) + size(pValues2) - 1;
+0019 newP    = ifftn(fftn(pValues1, newSize) .* fftn(pValues2, newSize));
+0020 
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

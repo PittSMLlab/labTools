@@ -4,7 +4,7 @@
 <head>
   <title>Description of split</title>
   <meta name="keywords" content="split">
-  <meta name="description" content="split  Returns timeseries between two timepoints">
+  <meta name="description" content="SPLIT Returns timeseries between two timepoints.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,78 +21,80 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>split  Returns timeseries between two timepoints</strong></div>
+<div class="box"><strong>SPLIT Returns timeseries between two timepoints.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function newThis = split(this, t0, t1) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">split  Returns timeseries between two timepoints
+<div class="fragment"><pre class="comment">SPLIT Returns timeseries between two timepoints.
 
-   newThis = split(this, t0, t1) returns a timeseries containing data
-   in the semi-closed interval [t0, t1)
+   newThis = split(this, t0, t1) returns a timeseries containing data in
+ the semi-closed interval [t0, t1)
 
-   Inputs:
-       this - labTimeSeries object
-       t0 - start time (inclusive)
-       t1 - end time (exclusive)
+ Inputs:
+   this - labTimeSeries object
+   t0   - start time (inclusive)
+   t1   - end time (exclusive)
 
-   Outputs:
-       newThis - labTimeSeries containing data in [t0, t1)
+ Outputs:
+   newThis - labTimeSeries containing data in [t0, t1)
 
    Note: Pads with NaN if requested interval extends beyond available
          data. Returns empty if interval falls between samples.
 
-   See also: <a href="sliceTS.html" class="code" title="function [slicedTS, initTime, duration] = sliceTS(this,timeBreakpoints, timeMargin)">sliceTS</a>, <a href="getSample.html" class="code" title="function data = getSample(this, timePoints, method)">getSample</a></pre></div>
+ Toolbox Dependencies: None
+
+ See also <a href="sliceTS.html" class="code" title="function [slicedTS, initTime, duration] = sliceTS(this,timeBreakpoints, timeMargin)">SLICETS</a>, <a href="getSample.html" class="code" title="function data = getSample(this, timePoints, method)">GETSAMPLE</a>.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="getPartialDataAsVector.html" class="code" title="function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1)">getPartialDataAsVector</a>	getPartialDataAsVector  Returns data for labels and time range</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<li><a href="../../../../labTools/classes/dataStructs/@labData/labData.html" class="code" title="">labData</a>	</li><li><a href="getPartialDataAsVector.html" class="code" title="function [data, time, auxLabel] =getPartialDataAsVector(this, label, t0, t1)">getPartialDataAsVector</a>	GETPARTIALDATAASVECTOR Returns data for labels and time range.</li><li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@orientedLabTimeSeries/orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/@processedEMGTimeSeries/processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="../../../../labTools/fun/misc/PlotHelper.html" class="code" title="">PlotHelper</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newThis = split(this, t0, t1)</a>
-0002 <span class="comment">%split  Returns timeseries between two timepoints</span>
+0002 <span class="comment">%SPLIT Returns timeseries between two timepoints.</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%   newThis = split(this, t0, t1) returns a timeseries containing data</span>
-0005 <span class="comment">%   in the semi-closed interval [t0, t1)</span>
+0004 <span class="comment">%   newThis = split(this, t0, t1) returns a timeseries containing data in</span>
+0005 <span class="comment">% the semi-closed interval [t0, t1)</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - labTimeSeries object</span>
-0009 <span class="comment">%       t0 - start time (inclusive)</span>
-0010 <span class="comment">%       t1 - end time (exclusive)</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this - labTimeSeries object</span>
+0009 <span class="comment">%   t0   - start time (inclusive)</span>
+0010 <span class="comment">%   t1   - end time (exclusive)</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%   Outputs:</span>
-0013 <span class="comment">%       newThis - labTimeSeries containing data in [t0, t1)</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   newThis - labTimeSeries containing data in [t0, t1)</span>
 0014 <span class="comment">%</span>
 0015 <span class="comment">%   Note: Pads with NaN if requested interval extends beyond available</span>
 0016 <span class="comment">%         data. Returns empty if interval falls between samples.</span>
 0017 <span class="comment">%</span>
-0018 <span class="comment">%   See also: sliceTS, getSample</span>
-0019 
-0020 <span class="comment">% Need to test this chunk of code before enabling:</span>
-0021 <span class="comment">% if isnan(t0) || isnan(t1)</span>
-0022 <span class="comment">%     warning('labTS:split', 'One of the interval limits is NaN.</span>
-0023 <span class="comment">%         Returning empty TS.')</span>
-0024 <span class="comment">%     newTS = [];</span>
-0025 <span class="comment">%     return</span>
-0026 <span class="comment">% end</span>
-0027 
-0028 <span class="comment">% Check t0 &gt;= Time(1)</span>
-0029 <span class="comment">% Check t1 &lt;= Time(end)</span>
-0030 initT = this.Time(1) - eps;
-0031 <span class="comment">% finalT = this.Time(end) + eps; % SL commented out, this will throw</span>
-0032 <span class="comment">% warning when trying to get the last sample the original intention</span>
-0033 <span class="comment">% was good to do [t0, t1) to avoid repeated sample, but the last</span>
-0034 <span class="comment">% sample (Time(end)) was never retrievable with this approach.</span>
-0035 <span class="comment">% To get the last sample without warning.</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also SLICETS, GETSAMPLE.</span>
+0021 
+0022 <span class="comment">% Need to test this chunk of code before enabling:</span>
+0023 <span class="comment">% if isnan(t0) || isnan(t1)</span>
+0024 <span class="comment">%     warning('labTS:split', 'One of the interval limits is NaN.</span>
+0025 <span class="comment">%         Returning empty TS.')</span>
+0026 <span class="comment">%     newTS = [];</span>
+0027 <span class="comment">%     return</span>
+0028 <span class="comment">% end</span>
+0029 
+0030 <span class="comment">% Check t0 &gt;= Time(1)</span>
+0031 <span class="comment">% Check t1 &lt;= Time(end)</span>
+0032 initT = this.Time(1) - eps;
+0033 <span class="comment">% finalT = this.Time(end) + eps;</span>
+0034 <span class="comment">% finalT extends one sample past the end so that Time(end) can be</span>
+0035 <span class="comment">% retrieved with the [t0, t1) convention without a warning.</span>
 0036 finalT = this.Time(end) + this.sampPeriod;
 0037 <span class="keyword">if</span> ~(t0 &gt;= initT &amp;&amp; t1 &lt;= finalT)
 0038     <span class="keyword">if</span> (t1 &lt; initT) || (t0 &gt;= finalT)
@@ -166,6 +168,6 @@ This function is called by:
 0106 <span class="keyword">end</span>
 0107 <span class="keyword">end</span>
 0108</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

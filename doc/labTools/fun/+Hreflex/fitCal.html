@@ -57,7 +57,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	mean  Computes mean across strides</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	median  Computes median</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	std  Computes standard deviation</li></ul>
+<li><a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>	MEAN Computes mean across strides.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>	MEDIAN Computes median.</li><li><a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>	STD Computes standard deviation.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -126,95 +126,96 @@ This function is called by:
 0056 <span class="comment">%% Fit Recruitment Curves for Each Leg</span>
 0057 <span class="keyword">for</span> leg = 1:2                       <span class="comment">% for each leg, ...</span>
 0058     <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(intensitiesStim{leg}) || <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(amplitudesWaves{leg,1})
-0059         warning(<span class="string">'No data available for leg %d. Skipping.'</span>, leg);
-0060         <span class="keyword">continue</span>;                   <span class="comment">% advance to next leg</span>
-0061     <span class="keyword">end</span>
-0062 
-0063     <span class="keyword">if</span> leg == 1                     <span class="comment">% if right leg, ...</span>
-0064         idLeg = <span class="string">'R'</span>;
-0065     <span class="keyword">else</span>                            <span class="comment">% otherwise, left leg</span>
-0066         idLeg = <span class="string">'L'</span>;
-0067     <span class="keyword">end</span>
-0068 
-0069     I = intensitiesStim{leg};       <span class="comment">% stimulation intensities (mA)</span>
-0070     M = amplitudesWaves{leg,1};     <span class="comment">% M-wave amplitudes</span>
-0071     H = amplitudesWaves{leg,2};     <span class="comment">% H-wave amplitudes</span>
-0072 
-0073     <span class="comment">% fit M-wave data using non-linear least squares</span>
-0074     <span class="keyword">try</span>
-0075         p0M = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% initialize: Mmax, I_50, c</span>
-0076         paramsM = nlinfit(I, M, modHyperbolic, p0M);
-0077     <span class="keyword">catch</span>
-0078         warning(<span class="string">'M-wave fitting failed for leg %d. Using defaults.'</span>, leg);
-0079         paramsM = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% default fallback params</span>
-0080     <span class="keyword">end</span>
-0081 
-0082     MmaxFit = paramsM(1);           <span class="comment">% extract fit Mmax for normalization</span>
-0083     fit.M.(idLeg).params = paramsM;
-0084     fit.M.(idLeg).Mmax   = MmaxFit;
-0085     [fit.M.(idLeg).R2, fit.M.(idLeg).AIC, fit.M.(idLeg).BIC] = <span class="keyword">...</span>
-0086         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, M, modHyperbolic, paramsM);
-0087 
-0088     <span class="comment">% fit H-wave data using non-linear least squares</span>
-0089     <span class="keyword">try</span>
-0090         IU = unique(I);             <span class="comment">% find unique stimulation amplitudes</span>
-0091         avgsH = arrayfun(@(x) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(H(I == x), <span class="string">'omitnan'</span>), IU);
-0092         [valHmax, locHmax, width] = findpeaks(avgsH, IU, <span class="string">'NPeaks'</span>, 1);
-0093         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(valHmax)         <span class="comment">% if no peak found, ...</span>
-0094             [valHmax, indHmax] = max(H);        <span class="comment">% compute maximum</span>
-0095             locHmax = I(indHmax);               <span class="comment">% intensity at maximum</span>
-0096             width = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I);
-0097         <span class="keyword">end</span>
-0098         p0H = [valHmax locHmax width 1]; <span class="comment">% initialize: Hmax, Ipeak, sigma, c</span>
-0099         paramsH = nlinfit(I, H, asymGaussian, p0H);
-0100     <span class="keyword">catch</span>
-0101         warning(<span class="string">'H-wave fitting failed for leg %d. Using defaults.'</span>, leg);
-0102         paramsH = [max(H) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I) 1];  <span class="comment">% default fallback params</span>
-0103     <span class="keyword">end</span>
-0104 
-0105     fit.H.(idLeg).params = paramsH;
-0106     [fit.H.(idLeg).R2, fit.H.(idLeg).AIC, fit.H.(idLeg).BIC] = <span class="keyword">...</span>
-0107         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, H, asymGaussian, paramsH);
-0108 
-0109 <span class="keyword">end</span>
-0110 
-0111 <span class="keyword">end</span>
-0112 
-0113 <span class="comment">%% Helper Functions</span>
-0114 
-0115 <a name="_sub1" href="#_subfunctions" class="code">function [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)</a>
-0116 <span class="comment">%COMPUTEFITQUALITY Compute goodness-of-fit metrics for a recruitment curve.</span>
-0117 <span class="comment">%</span>
-0118 <span class="comment">%   Compute R-squared, Akaike information criterion (AIC), and Bayesian</span>
-0119 <span class="comment">% information criterion (BIC) for a fitted recruitment curve model.</span>
-0120 <span class="comment">%</span>
-0121 <span class="comment">% Inputs:</span>
-0122 <span class="comment">%   intensities - number of data points x 1 array of stimulation</span>
-0123 <span class="comment">%                 intensities (mA)</span>
-0124 <span class="comment">%   amps        - number of data points x 1 array of wave amplitudes (mV)</span>
-0125 <span class="comment">%   func        - function handle for the model: func(params, intensities)</span>
-0126 <span class="comment">%   params      - 1 x numParams vector of fitted model parameters</span>
-0127 <span class="comment">%</span>
-0128 <span class="comment">% Outputs:</span>
-0129 <span class="comment">%   R2  - coefficient of determination</span>
-0130 <span class="comment">%   AIC - Akaike information criterion</span>
-0131 <span class="comment">%   BIC - Bayesian information criterion</span>
-0132 <span class="comment">%</span>
-0133 <span class="comment">% Toolbox Dependencies:</span>
-0134 <span class="comment">%   None</span>
-0135 
-0136 numParams = numel(params);                      <span class="comment">% number of parameters</span>
-0137 numPnts   = numel(amps);                        <span class="comment">% number of data points</span>
-0138 pred      = func(params, intensities);          <span class="comment">% model-predicted values</span>
-0139 residuals = amps - pred;
-0140 SSR = sum(residuals.^2);                        <span class="comment">% sum of squared residuals</span>
-0141 R2  = 1 - (SSR / sum((amps - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(amps)).^2)); <span class="comment">% R^2 calculation</span>
-0142 <span class="comment">% Akaike information criterion</span>
-0143 AIC = numPnts * log(SSR / numPnts) + 2 * numParams;
-0144 <span class="comment">% Bayesian information criterion</span>
-0145 BIC = numPnts * log(SSR / numPnts) + numParams * log(numPnts);
-0146 
-0147 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0059         warning(<span class="string">'Hreflex:noLegData'</span>, <span class="keyword">...</span>
+0060             <span class="string">'No data available for leg %d. Skipping.'</span>, leg);
+0061         <span class="keyword">continue</span>;                   <span class="comment">% advance to next leg</span>
+0062     <span class="keyword">end</span>
+0063 
+0064     <span class="keyword">if</span> leg == 1                     <span class="comment">% if right leg, ...</span>
+0065         idLeg = <span class="string">'R'</span>;
+0066     <span class="keyword">else</span>                            <span class="comment">% otherwise, left leg</span>
+0067         idLeg = <span class="string">'L'</span>;
+0068     <span class="keyword">end</span>
+0069 
+0070     I = intensitiesStim{leg};       <span class="comment">% stimulation intensities (mA)</span>
+0071     M = amplitudesWaves{leg,1};     <span class="comment">% M-wave amplitudes</span>
+0072     H = amplitudesWaves{leg,2};     <span class="comment">% H-wave amplitudes</span>
+0073 
+0074     <span class="comment">% fit M-wave data using non-linear least squares</span>
+0075     <span class="keyword">try</span>
+0076         p0M = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% initialize: Mmax, I_50, c</span>
+0077         paramsM = nlinfit(I, M, modHyperbolic, p0M);
+0078     <span class="keyword">catch</span>
+0079         warning(<span class="string">'M-wave fitting failed for leg %d. Using defaults.'</span>, leg);
+0080         paramsM = [max(M) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) 1.2];   <span class="comment">% default fallback params</span>
+0081     <span class="keyword">end</span>
+0082 
+0083     MmaxFit = paramsM(1);           <span class="comment">% extract fit Mmax for normalization</span>
+0084     fit.M.(idLeg).params = paramsM;
+0085     fit.M.(idLeg).Mmax   = MmaxFit;
+0086     [fit.M.(idLeg).R2, fit.M.(idLeg).AIC, fit.M.(idLeg).BIC] = <span class="keyword">...</span>
+0087         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, M, modHyperbolic, paramsM);
+0088 
+0089     <span class="comment">% fit H-wave data using non-linear least squares</span>
+0090     <span class="keyword">try</span>
+0091         IU = unique(I);             <span class="comment">% find unique stimulation amplitudes</span>
+0092         avgsH = arrayfun(@(x) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(H(I == x), <span class="string">'omitnan'</span>), IU);
+0093         [valHmax, locHmax, width] = findpeaks(avgsH, IU, <span class="string">'NPeaks'</span>, 1);
+0094         <span class="keyword">if</span> <a href="../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(valHmax)         <span class="comment">% if no peak found, ...</span>
+0095             [valHmax, indHmax] = max(H);        <span class="comment">% compute maximum</span>
+0096             locHmax = I(indHmax);               <span class="comment">% intensity at maximum</span>
+0097             width = <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I);
+0098         <span class="keyword">end</span>
+0099         p0H = [valHmax locHmax width 1]; <span class="comment">% initialize: Hmax, Ipeak, sigma, c</span>
+0100         paramsH = nlinfit(I, H, asymGaussian, p0H);
+0101     <span class="keyword">catch</span>
+0102         warning(<span class="string">'H-wave fitting failed for leg %d. Using defaults.'</span>, leg);
+0103         paramsH = [max(H) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/median.html" class="code" title="function medianTS = median(this, strideIdxs)">median</a>(I) <a href="../../../labTools/classes/labTS/@alignedTimeSeries/std.html" class="code" title="function stdTS = std(this, strideIdxs)">std</a>(I) 1];  <span class="comment">% default fallback params</span>
+0104     <span class="keyword">end</span>
+0105 
+0106     fit.H.(idLeg).params = paramsH;
+0107     [fit.H.(idLeg).R2, fit.H.(idLeg).AIC, fit.H.(idLeg).BIC] = <span class="keyword">...</span>
+0108         <a href="#_sub1" class="code" title="subfunction [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)">computeFitQuality</a>(I, H, asymGaussian, paramsH);
+0109 
+0110 <span class="keyword">end</span>
+0111 
+0112 <span class="keyword">end</span>
+0113 
+0114 <span class="comment">%% Helper Functions</span>
+0115 
+0116 <a name="_sub1" href="#_subfunctions" class="code">function [R2, AIC, BIC] = computeFitQuality(intensities, amps, func, params)</a>
+0117 <span class="comment">%COMPUTEFITQUALITY Compute goodness-of-fit metrics for a recruitment curve.</span>
+0118 <span class="comment">%</span>
+0119 <span class="comment">%   Compute R-squared, Akaike information criterion (AIC), and Bayesian</span>
+0120 <span class="comment">% information criterion (BIC) for a fitted recruitment curve model.</span>
+0121 <span class="comment">%</span>
+0122 <span class="comment">% Inputs:</span>
+0123 <span class="comment">%   intensities - number of data points x 1 array of stimulation</span>
+0124 <span class="comment">%                 intensities (mA)</span>
+0125 <span class="comment">%   amps        - number of data points x 1 array of wave amplitudes (mV)</span>
+0126 <span class="comment">%   func        - function handle for the model: func(params, intensities)</span>
+0127 <span class="comment">%   params      - 1 x numParams vector of fitted model parameters</span>
+0128 <span class="comment">%</span>
+0129 <span class="comment">% Outputs:</span>
+0130 <span class="comment">%   R2  - coefficient of determination</span>
+0131 <span class="comment">%   AIC - Akaike information criterion</span>
+0132 <span class="comment">%   BIC - Bayesian information criterion</span>
+0133 <span class="comment">%</span>
+0134 <span class="comment">% Toolbox Dependencies:</span>
+0135 <span class="comment">%   None</span>
+0136 
+0137 numParams = numel(params);                      <span class="comment">% number of parameters</span>
+0138 numPnts   = numel(amps);                        <span class="comment">% number of data points</span>
+0139 pred      = func(params, intensities);          <span class="comment">% model-predicted values</span>
+0140 residuals = amps - pred;
+0141 SSR = sum(residuals.^2);                        <span class="comment">% sum of squared residuals</span>
+0142 R2  = 1 - (SSR / sum((amps - <a href="../../../labTools/classes/labTS/@alignedTimeSeries/mean.html" class="code" title="function [meanTS, stds] = mean(this, strideIdxs)">mean</a>(amps)).^2)); <span class="comment">% R^2 calculation</span>
+0143 <span class="comment">% Akaike information criterion</span>
+0144 AIC = numPnts * log(SSR / numPnts) + 2 * numParams;
+0145 <span class="comment">% Bayesian information criterion</span>
+0146 BIC = numPnts * log(SSR / numPnts) + numParams * log(numPnts);
+0147 
+0148 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

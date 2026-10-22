@@ -4,7 +4,7 @@
 <head>
   <title>Description of extractMuscleActivityFromEMG</title>
   <meta name="keywords" content="extractMuscleActivityFromEMG">
-  <meta name="description" content="Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.">
+  <meta name="description" content="EXTRACTMUSCLEACTIVITYFROMEMG Estimate the EMG amplitude envelope.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,47 +21,97 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</strong></div>
+<div class="box"><strong>EXTRACTMUSCLEACTIVITYFROMEMG Estimate the EMG amplitude envelope.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</pre></div>
+<div class="fragment"><pre class="comment">EXTRACTMUSCLEACTIVITYFROMEMG Estimate the EMG amplitude envelope.
+
+   Wrapper that band-pass filters the raw EMG (and optionally notch
+ filters it) with filterEMG, then estimates the amplitude envelope with
+ amp_estim.
+
+ Inputs:
+   data      - raw EMG, samples x channels
+   fs        - sampling frequency (Hz)
+   f_cut     - (optional) cutoff frequency (Hz) of the envelope estimate
+               (default: 10)
+   BW        - (optional) band-pass edges [low high] (Hz); empty uses the
+               filterEMG default
+   notchList - (optional) frequencies (Hz) to notch out (default: none)
+
+ Outputs:
+   procData     - amplitude envelope of each channel
+   filteredData - band-pass (and notch) filtered EMG
+   filterList   - filter objects used by filterEMG
+   procList     - filter objects used by amp_estim
+
+ Toolbox Dependencies: Signal Processing Toolbox (through filterEMG)
+
+ See also <a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">FILTEREMG</a>, AMP_ESTIM.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	Estimation of amplitude of a given EMG signal (envelope detection).</li></ul>
+<li><a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	FILTEREMG Band-pass and notch filter EMG with zero phase.</li><li><a href="../../../labTools/fun/ext/pitools/signalProcessing/amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	AMP_ESTIM Amplitude estimate (envelope) of an EMG signal.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	processEMG  Extracts processed and filtered EMG amplitude envelopes</li></ul>
+<li><a href="../../../labTools/classes/dataStructs/@labData/processEMG.html" class="code" title="function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)">processEMG</a>	PROCESSEMG Extract EMG amplitude envelopes from raw trial EMG.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)</a>
-0002 <span class="comment">% Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</span>
-0003 
-0004 N=size(data,2); <span class="comment">%Number of channels</span>
-0005 <span class="keyword">if</span> nargin&lt;3
-0006     f_cut=10;
-0007 <span class="keyword">end</span>
-0008 <span class="keyword">if</span> nargin&lt;4
-0009     BW=[];
-0010 <span class="keyword">end</span>
-0011 <span class="keyword">if</span> nargin&lt;5
-0012     notchList=[];
-0013 <span class="keyword">end</span>
-0014 
-0015     [filteredData,filterList] = <a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>(data,fs,BW,notchList); <span class="comment">%Does a band-pass filter of the data, and removes some specific frequencies through notch-filters</span>
-0016     
-0017     [procData,procList]=<a href="../../../labTools/fun/ext/pitools/signalProcessing/amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>(filteredData,fs,1,f_cut); <span class="comment">%Amplitude estimation. 3rd argument defines order of estimation.</span>
-0018     
-0019 <span class="keyword">end</span>
-0020</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [procData,filteredData,filterList,procList] = </a><span class="keyword">...</span>
+0002     extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)
+0003 <span class="comment">%EXTRACTMUSCLEACTIVITYFROMEMG Estimate the EMG amplitude envelope.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Wrapper that band-pass filters the raw EMG (and optionally notch</span>
+0006 <span class="comment">% filters it) with filterEMG, then estimates the amplitude envelope with</span>
+0007 <span class="comment">% amp_estim.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%   data      - raw EMG, samples x channels</span>
+0011 <span class="comment">%   fs        - sampling frequency (Hz)</span>
+0012 <span class="comment">%   f_cut     - (optional) cutoff frequency (Hz) of the envelope estimate</span>
+0013 <span class="comment">%               (default: 10)</span>
+0014 <span class="comment">%   BW        - (optional) band-pass edges [low high] (Hz); empty uses the</span>
+0015 <span class="comment">%               filterEMG default</span>
+0016 <span class="comment">%   notchList - (optional) frequencies (Hz) to notch out (default: none)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   procData     - amplitude envelope of each channel</span>
+0020 <span class="comment">%   filteredData - band-pass (and notch) filtered EMG</span>
+0021 <span class="comment">%   filterList   - filter objects used by filterEMG</span>
+0022 <span class="comment">%   procList     - filter objects used by amp_estim</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (through filterEMG)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% See also FILTEREMG, AMP_ESTIM.</span>
+0027 
+0028 N = size(data,2); <span class="comment">%Number of channels</span>
+0029 <span class="keyword">if</span> nargin &lt; 3
+0030     f_cut = 10;
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> nargin &lt; 4
+0033     BW = [];
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">if</span> nargin &lt; 5
+0036     notchList = [];
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">%Does a band-pass filter of the data, and removes some specific frequencies</span>
+0040 <span class="comment">%through notch-filters</span>
+0041 [filteredData,filterList] = <a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>(data,fs,BW,notchList);
+0042 
+0043 <span class="comment">%Amplitude estimation. 3rd argument defines order of estimation.</span>
+0044 [procData,procList] = <a href="../../../labTools/fun/ext/pitools/signalProcessing/amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>(filteredData,fs,1,f_cut);
+0045 
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

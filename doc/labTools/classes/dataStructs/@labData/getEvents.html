@@ -4,7 +4,7 @@
 <head>
   <title>Description of getEvents</title>
   <meta name="keywords" content="getEvents">
-  <meta name="description" content="GETEVENTS Extract gait events from a raw trial, selecting the appropriate">
+  <meta name="description" content="GETEVENTS Extract gait events from a raw trial by trial type.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,14 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>GETEVENTS Extract gait events from a raw trial, selecting the appropriate</strong></div>
+<div class="box"><strong>GETEVENTS Extract gait events from a raw trial by trial type.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function events = getEvents(trialData, angleData, perceptualFlag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">GETEVENTS Extract gait events from a raw trial, selecting the appropriate
-detection strategy based on trial type and available data.
+<div class="fragment"><pre class="comment">GETEVENTS Extract gait events from a raw trial by trial type.
 
    For OG and NIM trials, events are derived from limb angles
  (GETEVENTSFROMANGLES). For treadmill (TM) trials with GRF data, events
@@ -42,14 +41,16 @@ detection strategy based on trial type and available data.
    trialData      - rawTrialData, contains markerData, GRFData, metaData
    angleData      - labTimeSeries with 'RLimb' and 'LLimb' labels, or []
    perceptualFlag - scalar logical/numeric (1 = include perceptual cue
-                   columns in the output)
+                    columns in the output)
 
  Outputs:
-   events - labTimeSeries, sparse logical event matrix with labels:
-            LHS, RHS, LTO, RTO, forceLHS/RHS/LTO/RTO,
-            kinLHS/RHS/LTO/RTO, [percStartCue, percEndCue, percEndRamp]
+   events - labTimeSeries, sparse logical event matrix with labels: LHS,
+            RHS, LTO, RTO, forceLHS/RHS/LTO/RTO, kinLHS/RHS/LTO/RTO,
+            [percStartCue, percEndCue, percEndRamp]
 
- Toolbox Dependencies: None
+ Toolbox Dependencies: Signal Processing Toolbox (indirect, via
+                        GETSTANCEFROMFORCES and
+                        GETSTANCEFROMTOEANDHEEL)
 
  See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,
           GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.</pre></div>
@@ -58,250 +59,303 @@ detection strategy based on trial type and available data.
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromAngles.html" class="code" title="function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation)">getEventsFromAngles</a>	GETEVENTSFROMANGLES Detect gait events from limb angle data.</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.</li><li><a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function [file] = getSimpleFileName(filename)">getSimpleFileName</a>	</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li><li><a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromAngles.html" class="code" title="function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation)">getEventsFromAngles</a>	GETEVENTSFROMANGLES Detect gait events from limb angle data.</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>	GETEVENTSFROMFORCES Detect gait events from vertical GRF signals.</li><li><a href="../../../../labTools/fun/eventExtraction/getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>	GETEVENTSFROMTOEANDHEEL Detect gait events from toe and heel marker data.</li><li><a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function file = getSimpleFileName(filename)">getSimpleFileName</a>	GETSIMPLEFILENAME Extract the bare filename from a full path string.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	process  Processes raw trial data to compute angles, gait events,</li><li><a href="recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-calculates gait events from angle data</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	recomputeEvents  Re-computes gait events and adaptation parameters</li></ul>
+<li><a href="process.html" class="code" title="function processedData = process(this, subData, eventClass)">process</a>	PROCESS Process raw trial data into angles, events, and parameters.</li><li><a href="recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	RECOMPUTEEVENTS Re-calculates gait events from angle data.</li><li><a href="../../../../labTools/classes/dataStructs/@processedLabData/recomputeEvents.html" class="code" title="function newThis = recomputeEvents(this)">recomputeEvents</a>	RECOMPUTEEVENTS Re-computes gait events and adaptation parameters</li><li><a href="../../../../labTools/testing/regression/regressionEventsCheck.html" class="code" title="function regressionEventsCheck(mode, baselineDir, sessionFile)">regressionEventsCheck</a>	REGRESSIONEVENTSCHECK Gait-event regression check (fixture and session).</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function events = getEvents(trialData, angleData, perceptualFlag)</a>
-0002 <span class="comment">%GETEVENTS Extract gait events from a raw trial, selecting the appropriate</span>
-0003 <span class="comment">%detection strategy based on trial type and available data.</span>
-0004 <span class="comment">%</span>
-0005 <span class="comment">%   For OG and NIM trials, events are derived from limb angles</span>
-0006 <span class="comment">% (GETEVENTSFROMANGLES). For treadmill (TM) trials with GRF data, events</span>
-0007 <span class="comment">% are derived from vertical forces (GETEVENTSFROMFORCES); kinematic events</span>
-0008 <span class="comment">% are also computed and stored as diagnostics. For TM trials without GRF</span>
-0009 <span class="comment">% data, events are derived from toe and heel markers</span>
-0010 <span class="comment">% (GETEVENTSFROMTOENANDHEEL). In all cases, the output labTimeSeries</span>
-0011 <span class="comment">% contains LHS, RHS, LTO, RTO plus diagnostic force and kinematic copies.</span>
-0012 <span class="comment">%</span>
-0013 <span class="comment">% Inputs:</span>
-0014 <span class="comment">%   trialData      - rawTrialData, contains markerData, GRFData, metaData</span>
-0015 <span class="comment">%   angleData      - labTimeSeries with 'RLimb' and 'LLimb' labels, or []</span>
-0016 <span class="comment">%   perceptualFlag - scalar logical/numeric (1 = include perceptual cue</span>
-0017 <span class="comment">%                   columns in the output)</span>
-0018 <span class="comment">%</span>
-0019 <span class="comment">% Outputs:</span>
-0020 <span class="comment">%   events - labTimeSeries, sparse logical event matrix with labels:</span>
-0021 <span class="comment">%            LHS, RHS, LTO, RTO, forceLHS/RHS/LTO/RTO,</span>
-0022 <span class="comment">%            kinLHS/RHS/LTO/RTO, [percStartCue, percEndCue, percEndRamp]</span>
-0023 <span class="comment">%</span>
-0024 <span class="comment">% Toolbox Dependencies: None</span>
-0025 <span class="comment">%</span>
-0026 <span class="comment">% See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,</span>
-0027 <span class="comment">%          GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.</span>
-0028 
-0029 arguments
-0030     trialData
-0031     angleData
-0032     perceptualFlag (1,1) {mustBeNumeric}
-0033 <span class="keyword">end</span>
-0034 
-0035 trialFileName = <a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function [file] = getSimpleFileName(filename)">getSimpleFileName</a>(trialData.metaData.rawDataFilename);
-0036 
-0037 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.markerData.orientation)
-0038     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
-0039     orientation = <a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0, 0, 0], <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, 1, 1, 1);
-0040 <span class="keyword">else</span>
-0041     orientation = trialData.markerData.orientation;
-0042 <span class="keyword">end</span>
-0043 
-0044 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(angleData)
-0045     [kinLHS, kinRHS, kinLTO, kinRTO] = <span class="keyword">...</span>
-0046         <a href="../../../../labTools/fun/eventExtraction/getEventsFromAngles.html" class="code" title="function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation)">getEventsFromAngles</a>(trialData, angleData, orientation);
-0047 <span class="keyword">else</span>
-0048     <span class="comment">% length 10 is arbitrary; prevents length-mismatch errors downstream</span>
-0049     [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1));
-0050 <span class="keyword">end</span>
-0051 
-0052 <span class="keyword">if</span> strcmpi(trialData.metaData.type, <span class="string">'OG'</span>) <span class="keyword">...</span>
-0053         || strcmpi(trialData.metaData.type, <span class="string">'NIM'</span>) <span class="comment">% overground trial: use limb angles</span>
-0054     [LHSevent, LHSeventKin] = deal(kinLHS); <span class="comment">% make a redundant copy; kinematic events are default</span>
-0055     [RHSevent, RHSeventKin] = deal(kinRHS);
-0056     [LTOevent, LTOeventKin] = deal(kinLTO);
-0057     [RTOevent, RTOeventKin] = deal(kinRTO);
-0058 
-0059     LHSeventForce = false(length(LHSevent), 1); <span class="comment">% no force events; fill with logical 0s</span>
-0060     RHSeventForce = false(length(RHSevent), 1);
-0061     LTOeventForce = false(length(LTOevent), 1);
-0062     RTOeventForce = false(length(RTOevent), 1);
-0063 
-0064     t0 = trialData.markerData.Time(1);
-0065     Ts = trialData.markerData.sampPeriod;
-0066 
-0067     <span class="comment">%     t0=trialData.GRFData.Time(1);</span>
-0068     <span class="comment">%     Ts=trialData.GRFData.sampPeriod;</span>
-0069 <span class="keyword">else</span> <span class="comment">% treadmill trial</span>
+0002 <span class="comment">%GETEVENTS Extract gait events from a raw trial by trial type.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   For OG and NIM trials, events are derived from limb angles</span>
+0005 <span class="comment">% (GETEVENTSFROMANGLES). For treadmill (TM) trials with GRF data, events</span>
+0006 <span class="comment">% are derived from vertical forces (GETEVENTSFROMFORCES); kinematic events</span>
+0007 <span class="comment">% are also computed and stored as diagnostics. For TM trials without GRF</span>
+0008 <span class="comment">% data, events are derived from toe and heel markers</span>
+0009 <span class="comment">% (GETEVENTSFROMTOENANDHEEL). In all cases, the output labTimeSeries</span>
+0010 <span class="comment">% contains LHS, RHS, LTO, RTO plus diagnostic force and kinematic copies.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Inputs:</span>
+0013 <span class="comment">%   trialData      - rawTrialData, contains markerData, GRFData, metaData</span>
+0014 <span class="comment">%   angleData      - labTimeSeries with 'RLimb' and 'LLimb' labels, or []</span>
+0015 <span class="comment">%   perceptualFlag - scalar logical/numeric (1 = include perceptual cue</span>
+0016 <span class="comment">%                    columns in the output)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Outputs:</span>
+0019 <span class="comment">%   events - labTimeSeries, sparse logical event matrix with labels: LHS,</span>
+0020 <span class="comment">%            RHS, LTO, RTO, forceLHS/RHS/LTO/RTO, kinLHS/RHS/LTO/RTO,</span>
+0021 <span class="comment">%            [percStartCue, percEndCue, percEndRamp]</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Toolbox Dependencies: Signal Processing Toolbox (indirect, via</span>
+0024 <span class="comment">%                        GETSTANCEFROMFORCES and</span>
+0025 <span class="comment">%                        GETSTANCEFROMTOEANDHEEL)</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,</span>
+0028 <span class="comment">%          GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.</span>
+0029 
+0030 arguments
+0031     trialData
+0032     angleData
+0033     perceptualFlag (1,1) {mustBeNumeric}
+0034 <span class="keyword">end</span>
+0035 
+0036 trialFileName = <a href="../../../../labTools/fun/misc/getSimpleFileName.html" class="code" title="function file = getSimpleFileName(filename)">getSimpleFileName</a>(trialData.metaData.rawDataFilename);
+0037 
+0038 <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.markerData.orientation)
+0039     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0040     orientation = <a href="../../../../labTools/classes/labTS/orientationInfo.html" class="code" title="">orientationInfo</a>([0, 0, 0], <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, 1, 1, 1);
+0041 <span class="keyword">else</span>
+0042     orientation = trialData.markerData.orientation;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(angleData)
+0046     [kinLHS, kinRHS, kinLTO, kinRTO] = <span class="keyword">...</span>
+0047         <a href="../../../../labTools/fun/eventExtraction/getEventsFromAngles.html" class="code" title="function [LHSevent, RHSevent, LTOevent, RTOevent] =getEventsFromAngles(trialData, angleData, orientation)">getEventsFromAngles</a>(trialData, angleData, orientation);
+0048 <span class="keyword">else</span>
+0049     <span class="comment">% length 10 is arbitrary; prevents length-mismatch errors downstream</span>
+0050     [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1));
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="keyword">if</span> strcmpi(trialData.metaData.type, <span class="string">'OG'</span>) <span class="keyword">...</span>
+0054         || strcmpi(trialData.metaData.type, <span class="string">'NIM'</span>)
+0055     <span class="comment">% overground trial: use limb angles</span>
+0056     <span class="comment">% make a redundant copy; kinematic events are default</span>
+0057     [LHSevent, LHSeventKin] = deal(kinLHS);
+0058     [RHSevent, RHSeventKin] = deal(kinRHS);
+0059     [LTOevent, LTOeventKin] = deal(kinLTO);
+0060     [RTOevent, RTOeventKin] = deal(kinRTO);
+0061 
+0062     <span class="comment">% no force events; fill with logical 0s</span>
+0063     LHSeventForce = false(length(LHSevent), 1);
+0064     RHSeventForce = false(length(RHSevent), 1);
+0065     LTOeventForce = false(length(LTOevent), 1);
+0066     RTOeventForce = false(length(RTOevent), 1);
+0067 
+0068     t0 = trialData.markerData.Time(1);
+0069     Ts = trialData.markerData.sampPeriod;
 0070 
-0071     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.GRFData) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.GRFData.Data) <span class="comment">% no force data: use marker kinematics</span>
-0072         disp([<span class="string">'No ground reaction forces data in '</span> trialFileName <span class="keyword">...</span>
-0073             <span class="string">'. Using marker data to compute events.'</span>])
+0071     <span class="comment">% t0=trialData.GRFData.Time(1);</span>
+0072     <span class="comment">% Ts=trialData.GRFData.sampPeriod;</span>
+0073 <span class="keyword">else</span> <span class="comment">% treadmill trial</span>
 0074 
-0075         <span class="comment">%         LtoePos=trialData.getMarkerData({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis],['LTOE' orientation.sideAxis]});</span>
-0076         <span class="comment">%         LtoePos=[orientation.foreaftSign* LtoePos(:,1),orientation.updownSign*LtoePos(:,2),orientation.sideSign*LtoePos(:,3)];</span>
-0077         <span class="comment">%         RtoePos=trialData.getMarkerData({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis],['RTOE' orientation.sideAxis]});</span>
-0078         <span class="comment">%         RtoePos=[orientation.foreaftSign* RtoePos(:,1),orientation.sideSign*RtoePos(:,2),orientation.updownSign*RtoePos(:,3)];</span>
+0075     <span class="comment">% no force data: use marker kinematics</span>
+0076     <span class="keyword">if</span> <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.GRFData) || <a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(trialData.GRFData.Data)
+0077         disp([<span class="string">'No ground reaction forces data in '</span> trialFileName <span class="keyword">...</span>
+0078             <span class="string">'. Using marker data to compute events.'</span>])
 0079 
-0080         LtoePos = trialData.markerData.getDataAsVector({<span class="string">'LTOE'</span>});
-0081         RtoePos = trialData.markerData.getDataAsVector({<span class="string">'RTOE'</span>}); <span class="comment">% was incorrectly 'LTOE' before</span>
-0082 
-0083         <span class="comment">%         LanklePos=trialData.getMarkerData({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis],['LANK' orientation.sideAxis]});</span>
-0084         <span class="comment">%         LanklePos=[orientation.foreaftSign* LanklePos(:,1),orientation.sideSign*LanklePos(:,2),orientation.updownSign*LanklePos(:,3)];</span>
-0085         <span class="comment">%         RanklePos=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis],['RANK' orientation.sideAxis]});</span>
-0086         <span class="comment">%         RanklePos=[orientation.foreaftSign* RanklePos(:,1),orientation.sideSign*RanklePos(:,2),orientation.updownSign*RanklePos(:,3)];</span>
-0087 
-0088         LanklePos = trialData.markerData.getDataAsVector({<span class="string">'LANK'</span>});
-0089         RanklePos = trialData.markerData.getDataAsVector({<span class="string">'RANK'</span>});
-0090 
-0091         <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>)
-0092             <span class="comment">%             LheelPos=trialData.getMarkerData({['LHEE' orientation.foreaftAxis],['LHEE' orientation.updownAxis],['LHEE' orientation.sideAxis]});</span>
-0093             <span class="comment">%             LheelPos=[orientation.foreaftSign* LheelPos(:,1),orientation.sideSign*LheelPos(:,2),orientation.updownSign*LheelPos(:,3)];</span>
-0094             <span class="comment">%             RheelPos=trialData.getMarkerData({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis],['RHEE' orientation.sideAxis]});</span>
-0095             <span class="comment">%             RheelPos=[orientation.foreaftSign* RheelPos(:,1),orientation.sideSign*RheelPos(:,2),orientation.updownSign*RheelPos(:,3)];</span>
+0080         <span class="comment">% LtoePos=trialData.getMarkerData({['LTOE' ...</span>
+0081         <span class="comment">%    orientation.foreaftAxis],['LTOE' orientation.updownAxis], ...</span>
+0082         <span class="comment">%    ['LTOE' orientation.sideAxis]});</span>
+0083         <span class="comment">% LtoePos=[orientation.foreaftSign* LtoePos(:,1), ...</span>
+0084         <span class="comment">%    orientation.updownSign*LtoePos(:,2), ...</span>
+0085         <span class="comment">%    orientation.sideSign*LtoePos(:,3)];</span>
+0086         <span class="comment">% RtoePos=trialData.getMarkerData({['RTOE' ...</span>
+0087         <span class="comment">%    orientation.foreaftAxis],['RTOE' orientation.updownAxis], ...</span>
+0088         <span class="comment">%    ['RTOE' orientation.sideAxis]});</span>
+0089         <span class="comment">% RtoePos=[orientation.foreaftSign* RtoePos(:,1), ...</span>
+0090         <span class="comment">%    orientation.sideSign*RtoePos(:,2), ...</span>
+0091         <span class="comment">%    orientation.updownSign*RtoePos(:,3)];</span>
+0092 
+0093         LtoePos = trialData.markerData.getDataAsVector({<span class="string">'LTOE'</span>});
+0094         <span class="comment">% was incorrectly 'LTOE' before</span>
+0095         RtoePos = trialData.markerData.getDataAsVector({<span class="string">'RTOE'</span>});
 0096 
-0097             LheelPos = trialData.markerData.getDataAsVector({<span class="string">'LHEE'</span>});
-0098             RheelPos = trialData.markerData.getDataAsVector({<span class="string">'RHEE'</span>});
-0099 
-0100         <span class="keyword">else</span>
-0101             disp([<span class="string">'No heel markers in '</span> trialFileName <span class="keyword">...</span>
-0102                 <span class="string">'. Using ankle markers instead to compute events.'</span>])
-0103             LheelPos = LanklePos;
-0104             RheelPos = RanklePos;
-0105         <span class="keyword">end</span>
-0106         fs_kin = trialData.markerData.sampFreq;
-0107         [LHSevent, RHSevent, LTOevent, RTOevent] = <span class="keyword">...</span>
-0108             <a href="../../../../labTools/fun/eventExtraction/getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>(LtoePos, LheelPos, RtoePos, RheelPos, fs_kin);
+0097         <span class="comment">% LanklePos=trialData.getMarkerData({['LANK' ...</span>
+0098         <span class="comment">%    orientation.foreaftAxis],['LANK' orientation.updownAxis], ...</span>
+0099         <span class="comment">%    ['LANK' orientation.sideAxis]});</span>
+0100         <span class="comment">% LanklePos=[orientation.foreaftSign* LanklePos(:,1), ...</span>
+0101         <span class="comment">%    orientation.sideSign*LanklePos(:,2), ...</span>
+0102         <span class="comment">%    orientation.updownSign*LanklePos(:,3)];</span>
+0103         <span class="comment">% RanklePos=trialData.getMarkerData({['RANK' ...</span>
+0104         <span class="comment">%    orientation.foreaftAxis],['RANK' orientation.updownAxis], ...</span>
+0105         <span class="comment">%    ['RANK' orientation.sideAxis]});</span>
+0106         <span class="comment">% RanklePos=[orientation.foreaftSign* RanklePos(:,1), ...</span>
+0107         <span class="comment">%    orientation.sideSign*RanklePos(:,2), ...</span>
+0108         <span class="comment">%    orientation.updownSign*RanklePos(:,3)];</span>
 0109 
-0110         LHSeventForce = false(length(LHSevent), 1); <span class="comment">% no force events; fill with logical 0s</span>
-0111         RHSeventForce = false(length(RHSevent), 1);
-0112         LTOeventForce = false(length(LTOevent), 1);
-0113         RTOeventForce = false(length(RTOevent), 1);
-0114 
-0115         LHSeventKin = kinLHS;
-0116         RHSeventKin = kinRHS;
-0117         LTOeventKin = kinLTO;
-0118         RTOeventKin = kinRTO;
-0119 
-0120         t0 = trialData.markerData.Time(1);
-0121         Ts = trialData.markerData.sampPeriod;
-0122 
-0123     <span class="keyword">else</span> <span class="comment">% TM trial with GRF data: use forces as primary events</span>
-0124         upAxis = trialData.GRFData.orientation.updownAxis;
-0125         upSign = trialData.GRFData.orientation.updownSign;
-0126         FzL    = upSign * trialData.GRFData.getDataAsVector([<span class="string">'LF'</span>, upAxis]);
-0127         FzR    = upSign * trialData.GRFData.getDataAsVector([<span class="string">'RF'</span>, upAxis]);
+0110         LanklePos = trialData.markerData.getDataAsVector({<span class="string">'LANK'</span>});
+0111         RanklePos = trialData.markerData.getDataAsVector({<span class="string">'RANK'</span>});
+0112 
+0113         <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>)
+0114             <span class="comment">% LheelPos=trialData.getMarkerData({['LHEE' ...</span>
+0115             <span class="comment">%    orientation.foreaftAxis], ...</span>
+0116             <span class="comment">%    ['LHEE' orientation.updownAxis], ...</span>
+0117             <span class="comment">%    ['LHEE' orientation.sideAxis]});</span>
+0118             <span class="comment">% LheelPos=[orientation.foreaftSign* LheelPos(:,1), ...</span>
+0119             <span class="comment">%    orientation.sideSign*LheelPos(:,2), ...</span>
+0120             <span class="comment">%    orientation.updownSign*LheelPos(:,3)];</span>
+0121             <span class="comment">% RheelPos=trialData.getMarkerData({['RHEE' ...</span>
+0122             <span class="comment">%    orientation.foreaftAxis], ...</span>
+0123             <span class="comment">%    ['RHEE' orientation.updownAxis], ...</span>
+0124             <span class="comment">%    ['RHEE' orientation.sideAxis]});</span>
+0125             <span class="comment">% RheelPos=[orientation.foreaftSign* RheelPos(:,1), ...</span>
+0126             <span class="comment">%    orientation.sideSign*RheelPos(:,2), ...</span>
+0127             <span class="comment">%    orientation.updownSign*RheelPos(:,3)];</span>
 0128 
-0129         <span class="comment">% %Sanity check: correct non-zeroed force-plates: % Now we will be</span>
-0130         <span class="comment">% doing this inside the even detection</span>
-0131         <span class="comment">% if mode(FzL)~=0</span>
-0132         <span class="comment">%     disp(['Warning: Left z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])</span>
-0133         <span class="comment">%     FzL=FzL-mode(FzL);</span>
-0134         <span class="comment">% end</span>
-0135         <span class="comment">% if mode(FzR)~=0</span>
-0136         <span class="comment">%     disp(['Warning: Right z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])</span>
-0137         <span class="comment">%     FzR=FzR-mode(FzR);</span>
-0138         <span class="comment">% end</span>
-0139 
-0140         [LHSevent, RHSevent, LTOevent, RTOevent] = <span class="keyword">...</span>
-0141             <a href="../../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(FzL, FzR, trialData.GRFData.sampFreq);
+0129             LheelPos = trialData.markerData.getDataAsVector({<span class="string">'LHEE'</span>});
+0130             RheelPos = trialData.markerData.getDataAsVector({<span class="string">'RHEE'</span>});
+0131 
+0132         <span class="keyword">else</span>
+0133             disp([<span class="string">'No heel markers in '</span> trialFileName <span class="keyword">...</span>
+0134                 <span class="string">'. Using ankle markers instead to compute events.'</span>])
+0135             LheelPos = LanklePos;
+0136             RheelPos = RanklePos;
+0137         <span class="keyword">end</span>
+0138         fs_kin = trialData.markerData.sampFreq;
+0139         [LHSevent, RHSevent, LTOevent, RTOevent] = <span class="keyword">...</span>
+0140             <a href="../../../../labTools/fun/eventExtraction/getEventsFromToeAndHeel.html" class="code" title="function [LHS, RHS, LTO, RTO] =getEventsFromToeAndHeel(Ltoe, Lheel, Rtoe, Rheel, fsample)">getEventsFromToeAndHeel</a>(LtoePos, LheelPos, RtoePos, <span class="keyword">...</span>
+0141             RheelPos, fs_kin);
 0142 
-0143         LHSeventForce = LHSevent; <span class="comment">% make a redundant copy to label as force events</span>
-0144         RHSeventForce = RHSevent;
-0145         LTOeventForce = LTOevent;
-0146         RTOeventForce = RTOevent;
-0147 
-0148         t0 = trialData.GRFData.Time(1);
-0149         Ts = trialData.GRFData.sampPeriod;
-0150         [LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin] = <span class="keyword">...</span>
-0151             deal(false(trialData.GRFData.Length, 1));
-0152 
-0153         <span class="comment">% TODO: use a method to re-sample kinematic events to be consistent</span>
-0154         <span class="comment">% with forces.</span>
-0155         kinToGrfRatio = trialData.GRFData.sampFreq <span class="keyword">...</span>
-0156             / trialData.markerData.sampFreq; <span class="comment">% GRF samples per kinematic sample</span>
-0157         LHSeventKin(round((find(kinLHS) - 1) * kinToGrfRatio + 1)) = true;
-0158         RHSeventKin(round((find(kinRHS) - 1) * kinToGrfRatio + 1)) = true;
-0159         LTOeventKin(round((find(kinLTO) - 1) * kinToGrfRatio + 1)) = true;
-0160         RTOeventKin(round((find(kinRTO) - 1) * kinToGrfRatio + 1)) = true;
-0161 
-0162         <span class="comment">%%</span>
-0163 
-0164         <span class="keyword">if</span> perceptualFlag == 1 <span class="comment">% If your code is breaking, I am iterating so just comment this out</span>
-0165 
-0166             <span class="comment">% timeLHS = find(LHSeventForce==1)./trialData.GRFData.sampFreq; timeRHS = find(RHSeventForce==1)./trialData.GRFData.sampFreq;</span>
-0167             <span class="comment">% timeLTO = find(LTOeventForce==1)./trialData.GRFData.sampFreq;</span>
-0168             timeRTO = find(RTOeventForce == 1) ./ trialData.GRFData.sampFreq; <span class="comment">% time of each RTO event, used to align with datalog</span>
-0169 
-0170             <span class="comment">% [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);</span>
-0171 
-0172             <span class="comment">% actual frame number for the stride whose time is closest to</span>
-0173             <span class="comment">% the perceptual trial start and end cues</span>
-0174             percStartCue = zeros(1, length(RTOeventForce));
-0175             percEndCue   = zeros(1, length(RTOeventForce));
-0176             percEndRamp  = zeros(1, length(RTOeventForce));
+0143         <span class="comment">% no force events; fill with logical 0s</span>
+0144         LHSeventForce = false(length(LHSevent), 1);
+0145         RHSeventForce = false(length(RHSevent), 1);
+0146         LTOeventForce = false(length(LTOevent), 1);
+0147         RTOeventForce = false(length(RTOevent), 1);
+0148 
+0149         LHSeventKin = kinLHS;
+0150         RHSeventKin = kinRHS;
+0151         LTOeventKin = kinLTO;
+0152         RTOeventKin = kinRTO;
+0153 
+0154         t0 = trialData.markerData.Time(1);
+0155         Ts = trialData.markerData.sampPeriod;
+0156 
+0157     <span class="keyword">else</span> <span class="comment">% TM trial with GRF data: use forces as primary events</span>
+0158         upAxis = trialData.GRFData.orientation.updownAxis;
+0159         upSign = trialData.GRFData.orientation.updownSign;
+0160         FzL    = upSign * trialData.GRFData.getDataAsVector([<span class="string">'LF'</span>, upAxis]);
+0161         FzR    = upSign * trialData.GRFData.getDataAsVector([<span class="string">'RF'</span>, upAxis]);
+0162 
+0163         <span class="comment">% %Sanity check: correct non-zeroed force-plates: % Now we will be</span>
+0164         <span class="comment">% doing this inside the even detection</span>
+0165         <span class="comment">% if mode(FzL)~=0</span>
+0166         <span class="comment">%     disp(['Warning: Left z-axis forces in ' trialFileName ...</span>
+0167         <span class="comment">%    ' have non-zero mode. Subtracting mode from force data ' ...</span>
+0168         <span class="comment">%    'before event detection'])</span>
+0169         <span class="comment">%     FzL=FzL-mode(FzL);</span>
+0170         <span class="comment">% end</span>
+0171         <span class="comment">% if mode(FzR)~=0</span>
+0172         <span class="comment">%     disp(['Warning: Right z-axis forces in ' trialFileName ...</span>
+0173         <span class="comment">%    ' have non-zero mode. Subtracting mode from force data ' ...</span>
+0174         <span class="comment">%    'before event detection'])</span>
+0175         <span class="comment">%     FzR=FzR-mode(FzR);</span>
+0176         <span class="comment">% end</span>
 0177 
-0178             <span class="comment">% grab auditory cue times from the datlog; offset by</span>
-0179             <span class="comment">% synchronization with Nexus</span>
-0180             <span class="keyword">if</span> sum(contains(fields(trialData.metaData.datlog), <span class="keyword">...</span>
-0181                     <span class="string">'dataLogTimeOffsetBest'</span>)) &gt; 0
-0182                 startCue = trialData.metaData.datlog.audioCues.start <span class="keyword">...</span>
-0183                     + trialData.metaData.datlog.dataLogTimeOffsetBest;
-0184                 endCue = trialData.metaData.datlog.audioCues.stop <span class="keyword">...</span>
-0185                     + trialData.metaData.datlog.dataLogTimeOffsetBest;
+0178         [LHSevent, RHSevent, LTOevent, RTOevent] = <span class="keyword">...</span>
+0179             <a href="../../../../labTools/fun/eventExtraction/getEventsFromForces.html" class="code" title="function [LHS, RHS, LTO, RTO] = getEventsFromForces(FzL, FzR, fsample)">getEventsFromForces</a>(FzL, FzR, trialData.GRFData.sampFreq);
+0180 
+0181         <span class="comment">% make a redundant copy to label as force events</span>
+0182         LHSeventForce = LHSevent;
+0183         RHSeventForce = RHSevent;
+0184         LTOeventForce = LTOevent;
+0185         RTOeventForce = RTOevent;
 0186 
-0187                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(startCue)
-0188                     <span class="comment">% find last RTO before each cue; the controller</span>
-0189                     <span class="comment">% increments stride count starting from RTO</span>
-0190                     idxStrideScue = arrayfun( <span class="keyword">...</span>
-0191                         @(x) find((x - timeRTO) &gt;= 0, 1, <span class="string">'last'</span>), startCue);
-0192                     <span class="keyword">...</span><span class="comment"> start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task</span>
-0193                         idxStrideEcue = arrayfun( <span class="keyword">...</span>
-0194                         @(x) find((x - timeRTO) &gt;= 0, 1, <span class="string">'last'</span>), endCue);
-0195 
-0196                     framesRTO = find(RTOeventForce == 1);
-0197                     idxFrameStart = framesRTO(idxStrideScue);
-0198                     percStartCue(idxFrameStart) = true;
-0199                     idxFrameEnd = framesRTO(idxStrideEcue);
-0200                     percEndCue(idxFrameEnd)  = true;
-0201                     idxFrameEndRamp = framesRTO(idxStrideEcue);
-0202                     percEndRamp(idxFrameEndRamp) = true;
-0203                     <span class="comment">% Currently for Weber Perception I have a ramp down of 3</span>
-0204                     <span class="comment">% strides which might change in the future. TODO: make it</span>
-0205                     <span class="comment">% more robust such that this is only computed for Weber</span>
-0206                     <span class="comment">% Study</span>
-0207                     <span class="comment">% idxFrameEndRamp = framesRTO(idxStrideEcue+3);</span>
-0208                     <span class="comment">% percEndRamp(idxFrameEndRamp) = true;</span>
-0209                 <span class="keyword">end</span>
-0210             <span class="keyword">else</span> <span class="comment">% proceed with caution; relative times in MATLAB are not synchronized with Nexus</span>
-0211                 warning(&quot;Datalogs can't be synchronized with Nexus data&quot;);
-0212             <span class="keyword">end</span>
-0213         <span class="keyword">end</span>
-0214 
-0215     <span class="keyword">end</span>
-0216 <span class="keyword">end</span>
-0217 
-0218 <span class="comment">%% Assemble output event time series</span>
-0219 eventLabels = {<span class="string">'LHS'</span>, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>, <span class="string">'RTO'</span>, <span class="keyword">...</span>
-0220     <span class="string">'forceLHS'</span>, <span class="string">'forceRHS'</span>, <span class="string">'forceLTO'</span>, <span class="string">'forceRTO'</span>, <span class="keyword">...</span>
-0221     <span class="string">'kinLHS'</span>, <span class="string">'kinRHS'</span>, <span class="string">'kinLTO'</span>, <span class="string">'kinRTO'</span>};
-0222 eventData   = [LHSevent, RHSevent, LTOevent, RTOevent, <span class="keyword">...</span>
-0223     LHSeventForce, RHSeventForce, LTOeventForce, RTOeventForce, <span class="keyword">...</span>
-0224     LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin];
+0187         t0 = trialData.GRFData.Time(1);
+0188         Ts = trialData.GRFData.sampPeriod;
+0189         [LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin] = <span class="keyword">...</span>
+0190             deal(false(trialData.GRFData.Length, 1));
+0191 
+0192         <span class="comment">% TODO: use a method to re-sample kinematic events to be consistent</span>
+0193         <span class="comment">% with forces.</span>
+0194         kinToGrfRatio = trialData.GRFData.sampFreq <span class="keyword">...</span>
+0195             / trialData.markerData.sampFreq;
+0196         <span class="comment">% ratio = GRF samples per kinematic sample</span>
+0197         LHSeventKin(round((find(kinLHS) - 1) * kinToGrfRatio + 1)) = true;
+0198         RHSeventKin(round((find(kinRHS) - 1) * kinToGrfRatio + 1)) = true;
+0199         LTOeventKin(round((find(kinLTO) - 1) * kinToGrfRatio + 1)) = true;
+0200         RTOeventKin(round((find(kinRTO) - 1) * kinToGrfRatio + 1)) = true;
+0201 
+0202         <span class="comment">%%</span>
+0203 
+0204         <span class="comment">% If your code is breaking, I am iterating so just comment this out</span>
+0205         <span class="keyword">if</span> perceptualFlag == 1
+0206 
+0207             <span class="comment">% timeLHS = ...</span>
+0208             <span class="comment">%    find(LHSeventForce==1)./trialData.GRFData.sampFreq;</span>
+0209             <span class="comment">% timeRHS = ...</span>
+0210             <span class="comment">%    find(RHSeventForce==1)./trialData.GRFData.sampFreq;</span>
+0211             <span class="comment">% timeLTO = find(LTOeventForce==1)./trialData.GRFData.sampFreq;</span>
+0212             <span class="comment">% time of each RTO event, used to align with datalog</span>
+0213             timeRTO = find(RTOeventForce == <span class="keyword">...</span>
+0214                 1) ./ trialData.GRFData.sampFreq;
+0215 
+0216             <span class="comment">% [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = ...</span>
+0217             <span class="comment">%    getPerceptualEventsFromCues(trialData.metaData.datlog, ...</span>
+0218             <span class="comment">%    infoLHSevent, infoRHSevent);</span>
+0219 
+0220             <span class="comment">% actual frame number for the stride whose time is closest to</span>
+0221             <span class="comment">% the perceptual trial start and end cues</span>
+0222             percStartCue = zeros(1, length(RTOeventForce));
+0223             percEndCue   = zeros(1, length(RTOeventForce));
+0224             percEndRamp  = zeros(1, length(RTOeventForce));
 0225 
-0226 <span class="keyword">if</span> perceptualFlag == 1
-0227     eventLabels = [eventLabels, <span class="keyword">...</span>
-0228         {<span class="string">'percStartCue'</span>, <span class="string">'percEndCue'</span>, <span class="string">'percEndRamp'</span>}];
-0229     eventData   = [eventData, <span class="keyword">...</span>
-0230         percStartCue', percEndCue', percEndRamp'];
-0231 <span class="keyword">end</span>
-0232 
-0233 events = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(sparse(eventData), t0, Ts, eventLabels);
+0226             <span class="comment">% grab auditory cue times from the datlog; offset by</span>
+0227             <span class="comment">% synchronization with Nexus</span>
+0228             <span class="keyword">if</span> sum(contains(fields(trialData.metaData.datlog), <span class="keyword">...</span>
+0229                     <span class="string">'dataLogTimeOffsetBest'</span>)) &gt; 0
+0230                 startCue = trialData.metaData.datlog.audioCues.start <span class="keyword">...</span>
+0231                     + trialData.metaData.datlog.dataLogTimeOffsetBest;
+0232                 endCue = trialData.metaData.datlog.audioCues.stop <span class="keyword">...</span>
+0233                     + trialData.metaData.datlog.dataLogTimeOffsetBest;
 0234 
-0235 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0235                 <span class="keyword">if</span> ~<a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>(startCue)
+0236                     <span class="comment">% find last RTO before each cue; the controller</span>
+0237                     <span class="comment">% increments stride count starting from RTO</span>
+0238                     idxStrideScue = arrayfun( <span class="keyword">...</span>
+0239                         @(x) find((x - timeRTO) &gt;= 0, 1, <span class="string">'last'</span>), startCue);
+0240                     <span class="comment">% start cue should happen after updating both legs,</span>
+0241                     <span class="comment">% so the RTO after the left leg speed was updated in</span>
+0242                     <span class="comment">% the task</span>
+0243                     idxStrideEcue = arrayfun( <span class="keyword">...</span>
+0244                         @(x) find((x - timeRTO) &gt;= 0, 1, <span class="string">'last'</span>), endCue);
+0245 
+0246                     framesRTO     = find(RTOeventForce == 1);
+0247                     idxFrameStart = framesRTO(idxStrideScue);
+0248                     percStartCue(idxFrameStart) = true;
+0249                     idxFrameEnd = framesRTO(idxStrideEcue);
+0250                     percEndCue(idxFrameEnd) = true;
+0251                     idxFrameEndRamp = framesRTO(idxStrideEcue);
+0252                     percEndRamp(idxFrameEndRamp) = true;
+0253                     <span class="comment">% Currently for Weber Perception I have a ramp down of 3</span>
+0254                     <span class="comment">% strides which might change in the future. TODO: make</span>
+0255                     <span class="comment">% it</span>
+0256                     <span class="comment">% more robust such that this is only computed for Weber</span>
+0257                     <span class="comment">% Study</span>
+0258                     <span class="comment">% idxFrameEndRamp = framesRTO(idxStrideEcue+3);</span>
+0259                     <span class="comment">% percEndRamp(idxFrameEndRamp) = true;</span>
+0260                 <span class="keyword">end</span>
+0261                 <span class="comment">% proceed with caution; relative times in MATLAB are not</span>
+0262                 <span class="comment">% synchronized with Nexus</span>
+0263             <span class="keyword">else</span>
+0264                 warning(&quot;Datalogs can't be synchronized with Nexus data&quot;);
+0265             <span class="keyword">end</span>
+0266         <span class="keyword">end</span>
+0267 
+0268     <span class="keyword">end</span>
+0269 <span class="keyword">end</span>
+0270 
+0271 <span class="comment">%% Assemble output event time series</span>
+0272 eventLabels = {<span class="string">'LHS'</span>, <span class="string">'RHS'</span>, <span class="string">'LTO'</span>, <span class="string">'RTO'</span>, <span class="keyword">...</span>
+0273     <span class="string">'forceLHS'</span>, <span class="string">'forceRHS'</span>, <span class="string">'forceLTO'</span>, <span class="string">'forceRTO'</span>, <span class="keyword">...</span>
+0274     <span class="string">'kinLHS'</span>, <span class="string">'kinRHS'</span>, <span class="string">'kinLTO'</span>, <span class="string">'kinRTO'</span>};
+0275 eventData = [LHSevent, RHSevent, LTOevent, RTOevent, <span class="keyword">...</span>
+0276     LHSeventForce, RHSeventForce, LTOeventForce, RTOeventForce, <span class="keyword">...</span>
+0277     LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin];
+0278 
+0279 <span class="keyword">if</span> perceptualFlag == 1
+0280     eventLabels = [eventLabels, <span class="keyword">...</span>
+0281         {<span class="string">'percStartCue'</span>, <span class="string">'percEndCue'</span>, <span class="string">'percEndRamp'</span>}];
+0282     eventData = [eventData, <span class="keyword">...</span>
+0283         percStartCue', percEndCue', percEndRamp'];
+0284 <span class="keyword">end</span>
+0285 
+0286 events = <a href="../../../../labTools/classes/labTS/@labTimeSeries/labTimeSeries.html" class="code" title="">labTimeSeries</a>(sparse(eventData), t0, Ts, eventLabels);
+0287 
+0288 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

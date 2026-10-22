@@ -4,7 +4,7 @@
 <head>
   <title>Description of myNNMF</title>
   <meta name="keywords" content="myNNMF">
-  <meta name="description" content="myNNMF Customized call to NNMF to get more consistent results">
+  <meta name="description" content="MYNNMF Non-negative matrix factorisation with robust defaults.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,23 +21,33 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>myNNMF Customized call to NNMF to get more consistent results</strong></div>
+<div class="box"><strong>MYNNMF Non-negative matrix factorisation with robust defaults.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="box"><strong>function [W,C,d] = myNNMF(data,rank,reps,useParallel) </strong></div>
+<div class="box"><strong>function [W, C, d] = myNNMF(data, rank, reps, useParallel) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">myNNMF Customized call to NNMF to get more consistent results
-This function calls nnmf with custom params:
-INPUTS:
-data is the matrix to be factorized
-rank is the desired rank of the factorization (dimensionality)
-useParallel defines whether to use parallel computation
-------------------------------------------------------------------------
-CUSTOM PARAMS:
-tolF is a % error that will be accepted as the min increment to say that
-convergence has been achieved
-tolX is</pre></div>
+<div class="fragment"><pre class="comment">MYNNMF Non-negative matrix factorisation with robust defaults.
+
+   Calls nnmf() with custom convergence tolerances and multiple random
+ initialisations to obtain more consistent results than a single run.
+
+ Inputs:
+   data        - matrix to factorize (observations-by-features; transposed
+                 automatically when features exceed observations)
+   rank        - desired factorization rank (dimensionality)
+   reps        - (optional) number of random initialisations; default 8
+   useParallel - (optional) parallel-computation flag passed to statset;
+                 default 'always'
+
+ Outputs:
+   W - left factor matrix (observations-by-rank)
+   C - right factor matrix (rank-by-features)
+   d - residual norm
+
+ Toolbox Dependencies: Statistics and Machine Learning Toolbox
+
+ See also NNMF, STATSET.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
@@ -46,59 +56,78 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../../matlabicon.gif)">
-<li><a href="../../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../../labTools/fun/EMGanalysis/synergyAnalysis/getSynergies.html" class="code" title="function [syns,coefs,res,fullSyns] = getSynergies(data,dim,replicates,usePar)">getSynergies</a>	Returns the non-negative matrix factorization with normalized synergies</li></ul>
+<li><a href="../../../../../labTools/classes/synergies/@FactorizedMatrix/FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="../../../../../labTools/fun/EMGanalysis/synergyAnalysis/getSynergies.html" class="code" title="function [syns,coefs,res,fullSyns] =getSynergies(data,dim,replicates,usePar)">getSynergies</a>	GETSYNERGIES Non-negative matrix factorization with normalized synergies.</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [W,C,d] = myNNMF(data,rank,reps,useParallel)</a>
-0002 <span class="comment">%myNNMF Customized call to NNMF to get more consistent results</span>
-0003 <span class="comment">%This function calls nnmf with custom params:</span>
-0004 <span class="comment">%INPUTS:</span>
-0005 <span class="comment">%data is the matrix to be factorized</span>
-0006 <span class="comment">%rank is the desired rank of the factorization (dimensionality)</span>
-0007 <span class="comment">%useParallel defines whether to use parallel computation</span>
-0008 <span class="comment">%------------------------------------------------------------------------</span>
-0009 <span class="comment">%CUSTOM PARAMS:</span>
-0010 <span class="comment">%tolF is a % error that will be accepted as the min increment to say that</span>
-0011 <span class="comment">%convergence has been achieved</span>
-0012 <span class="comment">%tolX is</span>
-0013 
-0014 <span class="keyword">if</span> nargin&lt;4
-0015     useParallel=<span class="string">'always'</span>;
-0016 <span class="keyword">end</span>
-0017 <span class="keyword">if</span> nargin&lt;3
-0018     reps=8;
-0019 <span class="keyword">end</span>
-0020 
-0021 <span class="keyword">if</span> size(data,1)&lt;size(data,2)
-0022     data=data';
-0023 <span class="keyword">end</span>
-0024 
-0025 <span class="keyword">if</span> rank==0
-0026     disp(<span class="string">'There are no possible factorizations of rank 0, returning'</span>)
-0027     <span class="keyword">return</span>
-0028 <span class="keyword">elseif</span> rank==size(data,2)
-0029     <span class="comment">%disp('Full rank factorization: returning original matrix.')</span>
-0030     C=eye(size(data,2));
-0031     W=data;
-0032     d=0;
-0033     <span class="keyword">return</span>
-0034 <span class="keyword">end</span>
-0035 
-0036 nm=numel(data);
-0037 alg=<span class="string">'als'</span>; <span class="comment">%Should verify this is the best choice</span>
-0038 tolF=sqrt(.0001*norm(data,<span class="string">'fro'</span>)^2/(nm*(rank^2))) + eps; <span class="comment">% 0.1% tolerance in objective function (note that this is 1/1000th of the max value for the tolerance function F)divided by desired rank squared.</span>
-0039 tolX=0.0001; <span class="comment">%This is as a percentage (0.01%). It will determine convergence if the element that changes the most in W or H changes less than 0.01% of the highest element in those matrices.</span>
-0040 
-0041 opts=statset(<span class="string">'TolFun'</span>,tolF,<span class="string">'TolX'</span>,tolX,<span class="string">'UseParallel'</span>,useParallel,<span class="string">'Display'</span>,<span class="string">'off'</span>);
-0042 
-0043 [W,C,d]=nnmf(data,rank,<span class="string">'replicates'</span>,reps,<span class="string">'algorithm'</span>,alg,<span class="string">'options'</span>,opts);
-0044 
-0045 
-0046 <span class="keyword">end</span>
-0047</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [W, C, d] = myNNMF(data, rank, reps, useParallel)</a>
+0002 <span class="comment">%MYNNMF Non-negative matrix factorisation with robust defaults.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Calls nnmf() with custom convergence tolerances and multiple random</span>
+0005 <span class="comment">% initialisations to obtain more consistent results than a single run.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   data        - matrix to factorize (observations-by-features; transposed</span>
+0009 <span class="comment">%                 automatically when features exceed observations)</span>
+0010 <span class="comment">%   rank        - desired factorization rank (dimensionality)</span>
+0011 <span class="comment">%   reps        - (optional) number of random initialisations; default 8</span>
+0012 <span class="comment">%   useParallel - (optional) parallel-computation flag passed to statset;</span>
+0013 <span class="comment">%                 default 'always'</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   W - left factor matrix (observations-by-rank)</span>
+0017 <span class="comment">%   C - right factor matrix (rank-by-features)</span>
+0018 <span class="comment">%   d - residual norm</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Toolbox Dependencies: Statistics and Machine Learning Toolbox</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also NNMF, STATSET.</span>
+0023 
+0024 arguments
+0025     data
+0026     rank        (1,1) {mustBeInteger, mustBeNonnegative}
+0027     reps        (1,1) {mustBeInteger, mustBePositive} = 8
+0028     useParallel = <span class="string">'always'</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> size(data, 1) &lt; size(data, 2)
+0032     data = data';
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%% Handle Edge Cases</span>
+0036 <span class="keyword">if</span> rank == 0
+0037     disp(<span class="string">'There are no possible factorizations of rank 0, returning'</span>)
+0038     <span class="keyword">return</span>
+0039 <span class="keyword">elseif</span> rank == size(data, 2)
+0040     <span class="comment">%disp('Full rank factorization: returning original matrix.')</span>
+0041     C = eye(size(data, 2));
+0042     W = data;
+0043     d = 0;
+0044     <span class="keyword">return</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">%% Set Algorithm Parameters</span>
+0048 nm  = numel(data);
+0049 alg = <span class="string">'als'</span>;  <span class="comment">% TODO: verify this is the optimal algorithm choice</span>
+0050 
+0051 <span class="comment">% tolF: 0.1% relative tolerance in the objective function.</span>
+0052 <span class="comment">% Equals 0.001 * max(F) / rank^2 where F is the Frobenius-norm error.</span>
+0053 tolF = sqrt(0.0001 * norm(data, <span class="string">'fro'</span>)^2 / (nm * (rank^2))) + eps;
+0054 
+0055 <span class="comment">% tolX: convergence fires when the largest per-element change in W or C</span>
+0056 <span class="comment">% falls below 0.01% of the maximum element in those matrices.</span>
+0057 tolX = 0.0001;
+0058 
+0059 opts = statset(<span class="string">'TolFun'</span>, tolF, <span class="string">'TolX'</span>, tolX, <span class="keyword">...</span>
+0060     <span class="string">'UseParallel'</span>, useParallel, <span class="string">'Display'</span>, <span class="string">'off'</span>);
+0061 
+0062 <span class="comment">%% Run NNMF</span>
+0063 [W, C, d] = nnmf(data, rank, <span class="string">'replicates'</span>, reps, <span class="keyword">...</span>
+0064     <span class="string">'algorithm'</span>, alg, <span class="string">'options'</span>, opts);
+0065 
+0066 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

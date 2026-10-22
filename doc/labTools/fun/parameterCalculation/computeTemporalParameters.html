@@ -140,59 +140,82 @@ This function is called by:
 0078 <span class="comment">% Double support phase durations</span>
 0079 doubleSupportSlow = timeSTO - timeFHS;
 0080 doubleSupportTemp = timeFTO - timeSHS;
-0081 <span class="comment">% Pablo I. modified (11/11/2014) the parameter below to use the second</span>
-0082 <span class="comment">% step rather than the first one, so that:</span>
-0083 <span class="comment">% stance time = step time + double support time (with given indexing)</span>
-0084 doubleSupportFast = timeFTO2 - timeSHS2;
-0085 
-0086 <span class="comment">% Step durations (time between heel strike events)</span>
-0087 stepTimeSlow = timeSHS2 - timeFHS;
-0088 stepTimeFast = timeFHS  - timeSHS;
-0089 
-0090 <span class="comment">% Time between toe off events</span>
-0091 toeOffSlow = timeFTO2 - timeSTO;
-0092 toeOffFast = timeSTO  - timeFTO;
-0093 
-0094 <span class="comment">% Stride durations</span>
-0095 strideTimeSlow = timeSHS2 - timeSHS;
-0096 strideTimeFast = timeFTO2 - timeFTO;
-0097 
-0098 <span class="comment">% Cadence (stride cycles per second)</span>
-0099 cadenceSlow = 1 ./ strideTimeSlow;
-0100 cadenceFast = 1 ./ strideTimeFast;
-0101 
-0102 <span class="comment">% Step cadence (steps per second)</span>
-0103 stepCadenceSlow = 1 ./ stepTimeSlow;
-0104 stepCadenceFast = 1 ./ stepTimeFast;
-0105 
-0106 <span class="comment">% Percentage of gait cycle that is double support phase</span>
-0107 doubleSupportPctSlow = (doubleSupportSlow ./ strideTimeSlow) * 100;
-0108 doubleSupportPctFast = (doubleSupportFast ./ strideTimeFast) * 100;
-0109 
-0110 <span class="comment">% Interleg parameters (i.e., across the legs)</span>
-0111 <span class="comment">% NOTE: the sign convention (fast - slow or slow - fast) was chosen</span>
-0112 <span class="comment">% pragmatically based on how each parameter timecourse appeared</span>
-0113 doubleSupportDiff = doubleSupportSlow - doubleSupportFast;
-0114 stepTimeDiff      = stepTimeFast      - stepTimeSlow;
-0115 stanceTimeDiff    = stanceTimeSlow    - stanceTimeFast;
-0116 swingTimeDiff     = swingTimeFast     - swingTimeSlow;
-0117 doubleSupportAsym = (doubleSupportPctFast - doubleSupportPctSlow) ./ <span class="keyword">...</span>
-0118     (doubleSupportPctFast + doubleSupportPctSlow);
-0119 Tout   = stepTimeDiff   ./ strideTimeSlow;
-0120 Tgoal  = stanceTimeDiff ./ strideTimeSlow;
-0121 TgoalSW = swingTimeDiff ./ strideTimeSlow;
-0122 
-0123 <span class="comment">%% Assign Parameters to Data Matrix</span>
-0124 data = nan(length(timeSHS), length(paramLabels));
-0125 <span class="keyword">for</span> ii = 1:length(paramLabels)
-0126     eval([<span class="string">'data(:, ii) = '</span> paramLabels{ii} <span class="string">';'</span>]);
-0127 <span class="keyword">end</span>
-0128 
-0129 <span class="comment">%% Output Computed Parameters</span>
-0130 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
-0131 
-0132 <span class="keyword">end</span>
-0133</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0081 <span class="comment">% Uses the second step rather than the first one, so that:</span>
+0082 <span class="comment">% stance time = step time + double support time (with given indexing)</span>
+0083 doubleSupportFast = timeFTO2 - timeSHS2;
+0084 
+0085 <span class="comment">% Step durations (time between heel strike events)</span>
+0086 stepTimeSlow = timeSHS2 - timeFHS;
+0087 stepTimeFast = timeFHS  - timeSHS;
+0088 
+0089 <span class="comment">% Time between toe off events</span>
+0090 toeOffSlow = timeFTO2 - timeSTO;
+0091 toeOffFast = timeSTO  - timeFTO;
+0092 
+0093 <span class="comment">% Stride durations</span>
+0094 strideTimeSlow = timeSHS2 - timeSHS;
+0095 strideTimeFast = timeFTO2 - timeFTO;
+0096 
+0097 <span class="comment">% Cadence (stride cycles per second)</span>
+0098 cadenceSlow = 1 ./ strideTimeSlow;
+0099 cadenceFast = 1 ./ strideTimeFast;
+0100 
+0101 <span class="comment">% Step cadence (steps per second)</span>
+0102 stepCadenceSlow = 1 ./ stepTimeSlow;
+0103 stepCadenceFast = 1 ./ stepTimeFast;
+0104 
+0105 <span class="comment">% Percentage of gait cycle that is double support phase (fraction → %)</span>
+0106 doubleSupportPctSlow = (doubleSupportSlow ./ strideTimeSlow) * 100;
+0107 doubleSupportPctFast = (doubleSupportFast ./ strideTimeFast) * 100;
+0108 
+0109 <span class="comment">% Interleg parameters (i.e., across the legs)</span>
+0110 <span class="comment">% NOTE: the sign convention (fast - slow or slow - fast) was chosen</span>
+0111 <span class="comment">% pragmatically based on how each parameter timecourse appeared</span>
+0112 doubleSupportDiff = doubleSupportSlow - doubleSupportFast;
+0113 stepTimeDiff      = stepTimeFast      - stepTimeSlow;
+0114 stanceTimeDiff    = stanceTimeSlow    - stanceTimeFast;
+0115 swingTimeDiff     = swingTimeFast     - swingTimeSlow;
+0116 doubleSupportAsym = (doubleSupportPctFast - doubleSupportPctSlow) ./ <span class="keyword">...</span>
+0117     (doubleSupportPctFast + doubleSupportPctSlow);
+0118 Tout   = stepTimeDiff   ./ strideTimeSlow;
+0119 Tgoal  = stanceTimeDiff ./ strideTimeSlow;
+0120 TgoalSW = swingTimeDiff ./ strideTimeSlow;
+0121 
+0122 <span class="comment">%% Assign Parameters to Data Matrix</span>
+0123 data = nan(length(timeSHS), length(paramLabels));
+0124 data(:,  1) = swingTimeSlow;
+0125 data(:,  2) = swingTimeFast;
+0126 data(:,  3) = stanceTimeSlow;
+0127 data(:,  4) = stanceTimeFast;
+0128 data(:,  5) = doubleSupportSlow;
+0129 data(:,  6) = doubleSupportFast;
+0130 data(:,  7) = doubleSupportTemp;
+0131 data(:,  8) = stepTimeSlow;
+0132 data(:,  9) = stepTimeFast;
+0133 data(:, 10) = toeOffSlow;
+0134 data(:, 11) = toeOffFast;
+0135 data(:, 12) = strideTimeSlow;
+0136 data(:, 13) = strideTimeFast;
+0137 data(:, 14) = cadenceSlow;
+0138 data(:, 15) = cadenceFast;
+0139 data(:, 16) = stepCadenceSlow;
+0140 data(:, 17) = stepCadenceFast;
+0141 data(:, 18) = doubleSupportPctSlow;
+0142 data(:, 19) = doubleSupportPctFast;
+0143 data(:, 20) = doubleSupportDiff;
+0144 data(:, 21) = stepTimeDiff;
+0145 data(:, 22) = stanceTimeDiff;
+0146 data(:, 23) = swingTimeDiff;
+0147 data(:, 24) = doubleSupportAsym;
+0148 data(:, 25) = Tout;
+0149 data(:, 26) = Tgoal;
+0150 data(:, 27) = TgoalSW;
+0151 
+0152 <span class="comment">%% Output Computed Parameters</span>
+0153 out = <a href="../../../labTools/classes/labTS/@parameterSeries/parameterSeries.html" class="code" title="">parameterSeries</a>(data, paramLabels, [], description);
+0154 
+0155 <span class="keyword">end</span>
+0156</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of getStridesFromCondition</title>
   <meta name="keywords" content="getStridesFromCondition">
-  <meta name="description" content="getStridesFromCondition  Extracts strides from specific condition">
+  <meta name="description" content="GETSTRIDESFROMCONDITION Extracts strides from specific condition.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,25 +21,27 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="box"><strong>getStridesFromCondition  Extracts strides from specific condition</strong></div>
+<div class="box"><strong>GETSTRIDESFROMCONDITION Extracts strides from specific condition.</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="box"><strong>function strides = getStridesFromCondition(this, condition) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">getStridesFromCondition  Extracts strides from specific condition
+<div class="fragment"><pre class="comment">GETSTRIDESFROMCONDITION Extracts strides from specific condition.
 
    strides = getStridesFromCondition(this, condition) returns all
-   strides from the specified experimental condition
+ strides from the specified experimental condition
 
-   Inputs:
-       this - stridedExperimentData object
-       condition - condition index number
+ Inputs:
+   this      - stridedExperimentData object
+   condition - condition index number
 
-   Outputs:
-       strides - cell array of strideData objects from the condition
+ Outputs:
+   strides - cell array of strideData objects from the condition
 
-   See also: experimentMetaData/getTrialsInCondition</pre></div>
+ Toolbox Dependencies: None
+
+ See also EXPERIMENTMETADATA/GETTRIALSINCONDITION.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
@@ -55,28 +57,30 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function strides = getStridesFromCondition(this, condition)</a>
-0002 <span class="comment">%getStridesFromCondition  Extracts strides from specific condition</span>
+0002 <span class="comment">%GETSTRIDESFROMCONDITION Extracts strides from specific condition.</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%   strides = getStridesFromCondition(this, condition) returns all</span>
-0005 <span class="comment">%   strides from the specified experimental condition</span>
+0005 <span class="comment">% strides from the specified experimental condition</span>
 0006 <span class="comment">%</span>
-0007 <span class="comment">%   Inputs:</span>
-0008 <span class="comment">%       this - stridedExperimentData object</span>
-0009 <span class="comment">%       condition - condition index number</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%   this      - stridedExperimentData object</span>
+0009 <span class="comment">%   condition - condition index number</span>
 0010 <span class="comment">%</span>
-0011 <span class="comment">%   Outputs:</span>
-0012 <span class="comment">%       strides - cell array of strideData objects from the condition</span>
+0011 <span class="comment">% Outputs:</span>
+0012 <span class="comment">%   strides - cell array of strideData objects from the condition</span>
 0013 <span class="comment">%</span>
-0014 <span class="comment">%   See also: experimentMetaData/getTrialsInCondition</span>
-0015 
-0016 strides = {};
-0017 <span class="keyword">for</span> trial = this.metaData.trialsInCondition{condition}
-0018     trialData = this.stridedTrials{trial};
-0019     Nsteps = length(trialData);
-0020     strides(end + 1:end + Nsteps) = trialData;
-0021 <span class="keyword">end</span>
-0022 <span class="keyword">end</span>
-0023</pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+0014 <span class="comment">% Toolbox Dependencies: None</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% See also EXPERIMENTMETADATA/GETTRIALSINCONDITION.</span>
+0017 
+0018 strides = {};
+0019 <span class="keyword">for</span> trial = this.metaData.trialsInCondition{condition}
+0020     trialData = this.stridedTrials{trial};
+0021     Nsteps    = length(trialData);
+0022     strides(end + 1:end + Nsteps) = trialData;
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">end</span>
+0025</pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

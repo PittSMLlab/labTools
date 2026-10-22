@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regressionCompareRun</title>
+  <meta name="keywords" content="regressionCompareRun">
+  <meta name="description" content="REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">testing</a> &gt; <a href="index.html">regression</a> &gt; regressionCompareRun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools\testing\regression&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>regressionCompareRun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function regressionCompareRun(refExpDataFile, eventClass, baselineDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.
+
+   Re-runs the same in-memory pipeline as REGRESSIONBASELINERUN on the
+ current code and compares with &lt;baselineDir&gt;/baselineParams.mat
+ (RefName 'baseline', NewName 'current'). Also diffs per-trial
+ warning text. Errors (nonzero exit under matlab -batch) when any
+ parameter changed or any trial's warnings differ.
+
+ Inputs:
+   refExpDataFile - char, same file used for the baseline
+   eventClass     - char, same eventClass used for the baseline
+   baselineDir    - char, folder holding baselineParams.mat
+
+ Outputs:
+   none (prints the compareAdaptationData report)
+
+ Toolbox Dependencies: None
+
+ See also <a href="regressionBaselineRun.html" class="code" title="function regressionBaselineRun(refExpDataFile, eventClass, baselineDir)">REGRESSIONBASELINERUN</a>, COMPAREADAPTATIONDATA.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>	COMPAREADAPTATIONDATA Compare two adaptationData objects or files.</li><li><a href="regressionRunPipeline.html" class="code" title="function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass)">regressionRunPipeline</a>	REGRESSIONRUNPIPELINE Flush-recompute a reference session in memory.</li><li><a href="regressionStrictCheck.html" class="code" title="function regressionStrictCheck(report, label)">regressionStrictCheck</a>	REGRESSIONSTRICTCHECK Phase-C gate: unmatched strides and NaN mismatches.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="regressionAll.html" class="code" title="function regressionAll(baseDir, sessionID, eventClass)">regressionAll</a>	REGRESSIONALL Run every regression compare in one go.</li><li><a href="regressionLineCoverage.html" class="code" title="function regressionLineCoverage(outFile, baseDir, sessionID, eventClass)">regressionLineCoverage</a>	REGRESSIONLINECOVERAGE Executed line numbers of the regression checks.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function regressionCompareRun(refExpDataFile, eventClass, baselineDir)</a>
+0002 <span class="comment">%REGRESSIONCOMPARERUN Compare the current tree against the saved baseline.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   Re-runs the same in-memory pipeline as REGRESSIONBASELINERUN on the</span>
+0005 <span class="comment">% current code and compares with &lt;baselineDir&gt;/baselineParams.mat</span>
+0006 <span class="comment">% (RefName 'baseline', NewName 'current'). Also diffs per-trial</span>
+0007 <span class="comment">% warning text. Errors (nonzero exit under matlab -batch) when any</span>
+0008 <span class="comment">% parameter changed or any trial's warnings differ.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%   refExpDataFile - char, same file used for the baseline</span>
+0012 <span class="comment">%   eventClass     - char, same eventClass used for the baseline</span>
+0013 <span class="comment">%   baselineDir    - char, folder holding baselineParams.mat</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%   none (prints the compareAdaptationData report)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Toolbox Dependencies: None</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% See also REGRESSIONBASELINERUN, COMPAREADAPTATIONDATA.</span>
+0021 
+0022 arguments
+0023     refExpDataFile (1,:) char
+0024     eventClass     (1,:) char
+0025     baselineDir    (1,:) char
+0026 <span class="keyword">end</span>
+0027 
+0028 base = load(fullfile(baselineDir, <span class="string">'baselineParams.mat'</span>));
+0029 <span class="keyword">if</span> ~strcmp(base.meta.eventClass, eventClass)
+0030     error(<span class="string">'regressionCompareRun:eventClass'</span>, <span class="keyword">...</span>
+0031         <span class="string">'Baseline used eventClass ''%s''.'</span>, base.meta.eventClass);
+0032 <span class="keyword">end</span>
+0033 [newData, newWarnings] = <a href="regressionRunPipeline.html" class="code" title="function [adaptData, trialWarnings] = regressionRunPipeline(refExpDataFile, eventClass)">regressionRunPipeline</a>(refExpDataFile, eventClass);
+0034 report = <a href="../../../labTools/fun/misc/compareAdaptationData.html" class="code" title="function report = compareAdaptationData(refInput, newInput, options)">compareAdaptationData</a>(fullfile(baselineDir, <span class="keyword">...</span>
+0035     <span class="string">'baselineParams.mat'</span>), newData, RefName=<span class="string">'baseline'</span>, <span class="keyword">...</span>
+0036     NewName=<span class="string">'current'</span>);
+0037 
+0038 <span class="comment">%% Per-trial warnings</span>
+0039 nWarnDiff = 0;
+0040 <span class="keyword">for</span> ii = 1:size(base.trialWarnings, 1)
+0041     <span class="keyword">if</span> ~isequal(base.trialWarnings(ii, :), newWarnings(ii, :))
+0042         nWarnDiff = nWarnDiff + 1;
+0043         fprintf(<span class="string">'WARNINGS differ in trial %d\n'</span>, base.trialWarnings{ii, 1});
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 fprintf(<span class="string">'RESULT nChanged = %d | trials with different warnings = %d\n'</span>, <span class="keyword">...</span>
+0047     report.nChanged, nWarnDiff);
+0048 <span class="keyword">if</span> report.nChanged &gt; 0 || nWarnDiff &gt; 0
+0049     error(<span class="string">'regressionCompareRun:changed'</span>, <span class="string">'Regression detected.'</span>);
+0050 <span class="keyword">end</span>
+0051 <a href="regressionStrictCheck.html" class="code" title="function regressionStrictCheck(report, label)">regressionStrictCheck</a>(report, <span class="string">'flush'</span>);
+0052 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

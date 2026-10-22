@@ -29,40 +29,40 @@
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.
 
-   Discards all existing adaptation parameters and recomputes from
- scratch. Unlike RECOMPUTEPARAMETERS, no previously computed parameters
- are preserved — this is equivalent to re-running the full parameter
+   Discards all existing adaptation parameters and recomputes from scratch.
+ Unlike RECOMPUTEPARAMETERS, no previously computed parameters are
+ preserved — this is equivalent to re-running the full parameter
  calculation pipeline from existing processed trial data.
 
  Inputs:
    this                 - experimentData object
-   eventClass           - (optional) gait event source: '' (default,
-                          auto-select), 'kin', or 'force'
-   initEventSide        - (optional) 'L' or 'R'; defaults to trial
-                          metadata when empty
-   shouldComputeEMGNorm - (optional) logical; compute EMG norm
-                          parameters (default false)
+   eventClass           - (optional) gait event source: '' (default, auto-
+                          select), 'kin', or 'force'
+   initEventSide        - (optional) 'L' or 'R'; defaults to trial metadata
+                          when empty
+   shouldComputeEMGNorm - (optional) logical; compute EMG norm parameters
+                          (default false)
    muscleLabels         - (optional) cell array of unique muscle label
-                          strings; required when shouldComputeEMGNorm
-                          is true
-   normalizationRefCond - (optional) condition name used to normalize
-                          EMG; uses type-specific search if empty
-   biasRemovalCond      - (optional) condition name for bias removal;
-                          uses type-specific default if empty
+                          strings; required when shouldComputeEMGNorm is
+                          true
+   normalizationRefCond - (optional) condition name used to normalize EMG;
+                          uses type-specific search if empty
+   biasRemovalCond      - (optional) condition name for bias removal; uses
+                          type-specific default if empty
 
  Outputs:
    this - experimentData object with freshly computed parameters
 
  Toolbox Dependencies: None
 
- See also <a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">RECOMPUTEPARAMETERS</a>, <a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">RECOMPUTEEVENTS</a>,
-   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.</pre></div>
+ See also <a href="recomputeParameters.html" class="code" title="function this = recomputeParameters(this, eventClass, initEventSide,parameterClasses, shouldComputeEMGNorm, muscleLabels,normalizationRefCond, biasRemovalCond)">RECOMPUTEPARAMETERS</a>, <a href="recomputeEvents.html" class="code" title="function this = recomputeEvents(this, eventClass, initEventSide)">RECOMPUTEEVENTS</a>, CALCPARAMETERS,
+   APPENDEMGNORMPARAMETERS.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	isempty  Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	cell2mat  Converts cell array of strideData to matrix</li><li><a href="../../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>	APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>	POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</li></ul>
+<li><a href="../../../../labTools/classes/auxData/@labDate/isempty.html" class="code" title="function flag = isempty(this)">isempty</a>	ISEMPTY Checks if the date equals the default value.</li><li><a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>	CELL2MAT Converts cell array of strideData to matrix.</li><li><a href="../../../../labTools/fun/parameterCalculation/appendEMGNormParameters.html" class="code" title="function adaptData = appendEMGNormParameters(adaptData,muscleLabels, normalizationRefCond, biasRemovalCond)">appendEMGNormParameters</a>	APPENDEMGNORMPARAMETERS Compute and append EMG norm parameters.</li><li><a href="../../../../labTools/fun/parameterCalculation/calcParameters.html" class="code" title="function out = calcParameters(trialData, subData, eventClass,initEventSide, parameterClasses)">calcParameters</a>	CALCPARAMETERS Compute stride-by-stride parameters for analysis.</li><li><a href="../../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>	POPULATENEWPARAMBACKTOEXPDATA Back-populate new parameters into expData.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
 <li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
@@ -76,43 +76,43 @@ This function is called by:
 0003     normalizationRefCond, biasRemovalCond)
 0004 <span class="comment">%FLUSHANDRECOMPUTEPARAMETERS Discard existing parameters and recompute all.</span>
 0005 <span class="comment">%</span>
-0006 <span class="comment">%   Discards all existing adaptation parameters and recomputes from</span>
-0007 <span class="comment">% scratch. Unlike RECOMPUTEPARAMETERS, no previously computed parameters</span>
-0008 <span class="comment">% are preserved — this is equivalent to re-running the full parameter</span>
+0006 <span class="comment">%   Discards all existing adaptation parameters and recomputes from scratch.</span>
+0007 <span class="comment">% Unlike RECOMPUTEPARAMETERS, no previously computed parameters are</span>
+0008 <span class="comment">% preserved — this is equivalent to re-running the full parameter</span>
 0009 <span class="comment">% calculation pipeline from existing processed trial data.</span>
 0010 <span class="comment">%</span>
 0011 <span class="comment">% Inputs:</span>
 0012 <span class="comment">%   this                 - experimentData object</span>
-0013 <span class="comment">%   eventClass           - (optional) gait event source: '' (default,</span>
-0014 <span class="comment">%                          auto-select), 'kin', or 'force'</span>
-0015 <span class="comment">%   initEventSide        - (optional) 'L' or 'R'; defaults to trial</span>
-0016 <span class="comment">%                          metadata when empty</span>
-0017 <span class="comment">%   shouldComputeEMGNorm - (optional) logical; compute EMG norm</span>
-0018 <span class="comment">%                          parameters (default false)</span>
+0013 <span class="comment">%   eventClass           - (optional) gait event source: '' (default, auto-</span>
+0014 <span class="comment">%                          select), 'kin', or 'force'</span>
+0015 <span class="comment">%   initEventSide        - (optional) 'L' or 'R'; defaults to trial metadata</span>
+0016 <span class="comment">%                          when empty</span>
+0017 <span class="comment">%   shouldComputeEMGNorm - (optional) logical; compute EMG norm parameters</span>
+0018 <span class="comment">%                          (default false)</span>
 0019 <span class="comment">%   muscleLabels         - (optional) cell array of unique muscle label</span>
-0020 <span class="comment">%                          strings; required when shouldComputeEMGNorm</span>
-0021 <span class="comment">%                          is true</span>
-0022 <span class="comment">%   normalizationRefCond - (optional) condition name used to normalize</span>
-0023 <span class="comment">%                          EMG; uses type-specific search if empty</span>
-0024 <span class="comment">%   biasRemovalCond      - (optional) condition name for bias removal;</span>
-0025 <span class="comment">%                          uses type-specific default if empty</span>
+0020 <span class="comment">%                          strings; required when shouldComputeEMGNorm is</span>
+0021 <span class="comment">%                          true</span>
+0022 <span class="comment">%   normalizationRefCond - (optional) condition name used to normalize EMG;</span>
+0023 <span class="comment">%                          uses type-specific search if empty</span>
+0024 <span class="comment">%   biasRemovalCond      - (optional) condition name for bias removal; uses</span>
+0025 <span class="comment">%                          type-specific default if empty</span>
 0026 <span class="comment">%</span>
 0027 <span class="comment">% Outputs:</span>
 0028 <span class="comment">%   this - experimentData object with freshly computed parameters</span>
 0029 <span class="comment">%</span>
 0030 <span class="comment">% Toolbox Dependencies: None</span>
 0031 <span class="comment">%</span>
-0032 <span class="comment">% See also RECOMPUTEPARAMETERS, RECOMPUTEEVENTS,</span>
-0033 <span class="comment">%   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.</span>
+0032 <span class="comment">% See also RECOMPUTEPARAMETERS, RECOMPUTEEVENTS, CALCPARAMETERS,</span>
+0033 <span class="comment">%   APPENDEMGNORMPARAMETERS.</span>
 0034 
 0035 arguments
 0036     this
-0037     eventClass           (1,:) char    = <span class="string">''</span>
-0038     initEventSide        (1,:) char    = <span class="string">''</span>
+0037     eventClass           (1,:) char = <span class="string">''</span>
+0038     initEventSide        (1,:) char = <span class="string">''</span>
 0039     shouldComputeEMGNorm (1,1) logical = false
-0040     muscleLabels                       = {}
-0041     normalizationRefCond               = []
-0042     biasRemovalCond                    = []
+0040     muscleLabels         = {}
+0041     normalizationRefCond = []
+0042     biasRemovalCond      = []
 0043 <span class="keyword">end</span>
 0044 
 0045 trials = <a href="../../../../labTools/classes/dataStructs/@strideData/cell2mat.html" class="code" title="function strideMat = cell2mat(strides, field, N)">cell2mat</a>(this.metaData.trialsInCondition);
@@ -134,6 +134,6 @@ This function is called by:
 0061     this = <a href="../../../../labTools/fun/parameterCalculation/populateNewParamBackToExpData.html" class="code" title="function expData = populateNewParamBackToExpData(expData, adaptData)">populateNewParamBackToExpData</a>(this, adaptData);
 0062 <span class="keyword">end</span>
 0063 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 18-May-2026 12:20:44 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+<hr><address>Generated on Thu 22-Oct-2026 08:36:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>
