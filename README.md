@@ -23,8 +23,9 @@ through stride-indexed adaptation metrics and group statistics.
 8. [GUI Tools](#gui-tools)
 9. [Example Scripts](#example-scripts)
 10. [Generating Documentation](#generating-documentation)
-11. [Reporting Bugs](#reporting-bugs)
-12. [Development](#development)
+11. [Published Releases](#published-releases)
+12. [Reporting Bugs](#reporting-bugs)
+13. [Development](#development)
 
 ---
 
@@ -466,6 +467,34 @@ find your installed copy, check its header for a version date, and
 compare against the latest commit on the [m2html GitHub repo][m2html].
 
 [m2html]: https://github.com/gllmflndn/m2html
+
+---
+
+## Published Releases
+
+Two Git tags mark the exact code behind published papers. Each is also
+a [GitHub Release][releases] titled after its paper, so **do not
+delete, move, or re-tag them**: deleting a tag orphans its release and
+breaks the link between the paper and the code that produced its
+results.
+
+| Tag | Commit | Date | Paper |
+|---|---|---|---|
+| `splitbelt-EMG` | `5116e47` | 2019-02-26 | Iturralde & Torres-Oviedo (2019), "Corrective muscle activity reveals subject-specific sensorimotor recalibration" |
+| `Attention.01` | `e9ff57c` | 2021-06-03 | Mariscal, Iturralde & Torres-Oviedo (2020), "Altering attention to split-belt walking increases the generalization of motor memories across walking contexts" |
+
+To reproduce a paper's analysis, check out its tag (detached HEAD) in a
+separate clone or worktree rather than on your working copy:
+
+```bash
+git worktree add ../labTools-splitbelt-EMG splitbelt-EMG
+```
+
+These snapshots are over a thousand commits behind `master`, so their
+function names, signatures and file layout differ from what this README
+describes.
+
+[releases]: https://github.com/PittSMLlab/labTools/releases
 
 ---
 
