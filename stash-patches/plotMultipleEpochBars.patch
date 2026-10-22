@@ -1,0 +1,19 @@
+diff --git a/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.m b/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.m
+--- a/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.m
++++ b/classes/dataStructs/@groupAdaptationData/plotMultipleEpochBars.m
+@@ -102,6 +102,7 @@
+ nsubs = NaN(length(groups),1);
+ for ii = 1:length(groups)
+     nsubs(ii) = length(groups{ii}.adaptData);
++    groups{ii} = groups{ii}.removeBadStrides;
+ end
+ nsub = max(nsubs);
+ 
+@@ -279,6 +280,7 @@
+     end
+ end
+ set(plotHandles,'FontSize',20)
++hold off;
+ figHandle = gcf;
+ 
+ %TO DO: add stats

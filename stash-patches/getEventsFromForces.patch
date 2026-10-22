@@ -1,0 +1,12 @@
+diff --git a/fun/eventExtraction/getEventsFromForces.m b/fun/eventExtraction/getEventsFromForces.m
+--- a/fun/eventExtraction/getEventsFromForces.m
++++ b/fun/eventExtraction/getEventsFromForces.m
+@@ -21,7 +21,7 @@
+ % See also GETSTANCEFROMFORCES, GETEVENTSFROMSTANCE.
+ 
+ %% Get stance phases
+-forceThresh = 10; % stance detection threshold (N); ~8% of typical BW
++forceThresh = 60; % stance detection threshold (N); ~8% of typical BW
+ 
+ % % Temporarily filter force data (4th order butterworth Low pass filter
+ % % with cutoff frequency of 10 Hz)

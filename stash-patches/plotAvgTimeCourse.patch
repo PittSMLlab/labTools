@@ -1,0 +1,300 @@
+diff --git a/classes/dataStructs/@adaptationData/plotAvgTimeCourse.m b/classes/dataStructs/@adaptationData/plotAvgTimeCourse.m
+--- a/classes/dataStructs/@adaptationData/plotAvgTimeCourse.m
++++ b/classes/dataStructs/@adaptationData/plotAvgTimeCourse.m
+@@ -136,11 +136,9 @@
+ end
+ 
+ % if nargin<9
+-%set to true to plot the maximum number of strides per trial/condition
+-maxNumPts = false;
+-%                      otherwise, the subject with the fewest strides in a
+-%                      particular trial/condition
+-%                      determines the number of strides plotted.
++    maxNumPts=true; %set to true to plot the maximum number of strides per trial/condition
++    %                      otherwise, the subject with the fewest strides in a particular trial/condition
++    %                      determines the number of strides plotted.
+ %     if ~isempty(alignEnd)
+ %         maxNumPts=true;
+ %     end
+@@ -242,11 +240,6 @@
+             else
+                 adaptData = adaptData.normalizeBias;
+             end
+-        elseif removeBiasFlag == 3
+-            numStrides = -140;  % last 140 strides for 10 stimuli
+-            % removeBias(this,conditions,padWithNaNFlag,numStrides, ...
+-            %    medianFlag)
+-            adaptData = adaptData.removeBias([],[],numStrides,1);
+         end
+ 
+         for c = 1:nConds
+@@ -278,24 +271,7 @@
+                     end
+                 else
+                     try % It is an experiment with perceptual tasks
+-                        dataPts = ...
+-                            adaptData.getParamInTrial([params, ...
+-                            'percTaskInitStride','percTaskEndStride'], ...
+-                            trials{t});
+-                        % % Maybe needed later
+-                        % dataPts=adaptData.getParamInTrial([params, ...
+-                        %    'percTaskInitStride','percTaskEndStride', ...
+-                        %    'pertSizePercTask'],trials{t});
+-                        % is_non_nan=~isnan(dataPts(:, ...
+-                        %    end)); % Identify non-NaN values
+-                        % transition=diff(is_non_nan); % Detect the
+-                        % transition from NaN (0) to non-NaN (1)
+-                        % start_indices=find(transition==1)+1; % Find the
+-                        % indices where the transition is 1, and add 1 to
+-                        % correct for the diff operation
+-                        % if is_non_nan(1)
+-                        %     start_indices=[1,start_indices];
+-                        % end
++                        dataPts=adaptData.getParamInTrial({params,'percTaskInitStride','percTaskEndStride'},trials{t});
+                     catch
+                         dataPts = adaptData.getParamInTrial(params, ...
+                             trials{t});
+@@ -320,27 +296,13 @@
+                         end
+                     end
+                 end
+-                if sum(contains(adaptData.data.labels,'perc')) > 0
+-                    paramsTemp = [params,'percTaskInitStride', ...
+-                        'percTaskEndStride'];
+-                    % It is an experiment with perceptual tasks
+-                    for p = 1:length(paramsTemp)
+-                        %initialize so there are no inconsistant dimensions
+-                        %or out of bounds errors
+-                        values(group).(paramsTemp{p}).(cond{c}).( ...
+-                            ['trial' num2str(t)])(subject,:) = NaN(1,M);
+-                        % if strcmp(paramsTemp{p},'pertSizePercTask')
+-                        %     values(group).(paramsTemp{p}).(cond{c}).( ...
+-                        %    ['trial' num2str(t)])(subject, ...
+-                        %    1:nPoints)=dataPts(:,p);
+-                        % else
+-                        values(group).(paramsTemp{p}).(cond{c}).( ...
+-                            ['trial' num2str(t)])(subject, ...
+-                            1:nPoints) = dataPts(:,p);
+-                        % end
+-                        % Aligning data to the end too, by creating a fake
+-                        %     condition
+-                        if ~isempty(alignEnd)
++                try
++                    paramsTemp=[params,'percTaskInitStride','percTaskEndStride'];
++                    for p=1:length(paramsTemp) % It is an experiment with perceptual tasks
++                        %initialize so there are no inconsistant dimensions or out of bounds errors
++                        values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
++                        values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
++                        if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                             if strcmpi(cond{c},'catch')
+                                 values(group).(paramsTemp{p}).( ...
+                                     cond{c}).(['trial' ...
+@@ -357,17 +319,12 @@
+                             end
+                         end
+                     end
+-                else
+-                    for p = 1:length(params)
+-                        %initialize so there are no inconsistant dimensions
+-                        %or out of bounds errors
+-                        values(group).(params{p}).(cond{c}).(['trial' ...
+-                            num2str(t)])(subject,:) = NaN(1,M);
+-                        values(group).(params{p}).(cond{c}).(['trial' ...
+-                            num2str(t)])(subject,1:nPoints) = dataPts(:,p);
+-                        % Aligning data to the end too, by creating a fake
+-                        %     condition
+-                        if ~isempty(alignEnd)
++                catch
++                    for p=1:length(params)
++                        %initialize so there are no inconsistant dimensions or out of bounds errors
++                        values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
++                        values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
++                        if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                             if strcmpi(cond{c},'catch')
+                                 values(group).(params{p}).(cond{c}).( ...
+                                     ['trial' num2str(t)])(subject, ...
+@@ -388,21 +345,6 @@
+         end
+         s = s+1;
+     end
+-
+-    % For the perceptual tasks align the data
+-    if sum(contains(fields(values(group)),'perc')) > 0
+-        % Add as a new row (row 3 in your case)
+-        fieldNames = fieldnames(values);
+-        % TODO: not working for the padded perceptual tasks
+-        tempValues = alignPercTasks(values(group));
+-
+-        for ii = 1:length(fieldNames)
+-            fieldName = fieldNames{ii};
+-            values(group).(fieldName) = tempValues.(fieldName);
+-        end
+-
+-    end
+-
+ end
+ 
+ %% Do the actual plotting
+@@ -450,9 +392,6 @@
+                 if maxPts == 0
+                     continue
+                 end
+-            elseif sum(contains(fields(values(group)),'perc')) > 0
+-                maxPts = size(values(group).(params{p}).(cond{c}).( ...
+-                    ['trial' num2str(t)]),2);
+             else
+                 %to plot the MIN number of pts in each trial:
+                 [maxPts,loc] = min( ...
+@@ -584,9 +523,10 @@
+                                     adaptDataList{group}{1}.subData.ID]};
+                             end
+                         else
+-                            if length(adaptDataList{group}) > 1
+-                                legStr = {[params{p} ' ' ...
+-                                    adaptDataList{group}{1}]};
++                            if length(adaptDataList{group})>1
++                                legStr={[params{p} ' ' adaptDataList{group}{1}]};
++                            else
++                                legStr={[params{p} ' ' adaptDataList{group}{1}]};
+                             end
+ 
+                         end
+@@ -622,7 +562,7 @@
+                     E          = E(1:length(x));
+                     condLength = length(y);
+                 end
+-
++          
+                 %Biofeedback
+                 if nargin > 8 && ~isempty(biofeedback)
+                     if biofeedback == 1 && strcmp(params{p},'alphaFast')
+@@ -719,27 +659,13 @@
+                                 Opacity,w);
+                         end
+                         %set(Li{c},'Clipping','off')
+-                        H = get(Li{c},'Parent');
+-                        try
+-                            if length(adaptDataList) == 1
+-                                initIdx  = ...
+-                                    find(mean( ...
+-                                    values(group).percTaskInitStride.( ...
+-                                    cond{c}).(['trial' num2str(t)])) == 1);
+-                                finalIdx = ...
+-                                    find(mean( ...
+-                                    values(group).percTaskEndStride.( ...
+-                                    cond{c}).(['trial' num2str(t)])) == 1);
+-                                for ii = 1:length(initIdx)
+-                                    yaxis = get(gca,'YLim');
+-                                    pp    = patch(x(1)+[initIdx(ii) ...
+-                                        finalIdx(ii) finalIdx(ii) ...
+-                                        initIdx(ii)], ...
+-                                        [yaxis(1) yaxis(1) yaxis(2) ...
+-                                        yaxis(2)],0.85*ones(1,3), ...
+-                                        'FaceAlpha',0.9, ...
+-                                        'EdgeColor','none', ...
+-                                        'DisplayName','task');
++                        H=get(Li{c},'Parent');                        
++                        try    
++                            if length(adaptDataList{group}) == 1
++                                initIdx=find(values.percTaskInitStride.(cond{c}).(['trial' num2str(t)])==1);
++                                finalIdx=find(values.percTaskEndStride.(cond{c}).(['trial' num2str(t)])==1);
++                                for ii=1:length(initIdx)
++                                    pp=patch(x(1)+[initIdx(ii) finalIdx(ii) finalIdx(ii) initIdx(ii)],[-0.25 -0.25 0.25 0.25],.85*ones(1,3),'FaceAlpha',.9,'EdgeColor','none','DisplayName','task');
+                                     uistack(pp,'bottom');
+                                 end
+                                 legendStr = ...
+@@ -783,8 +709,10 @@
+                                     {adaptDataList{g}{1}.subData.ID};
+                             end
+                         else
+-                            if length(adaptDataList{g}) > 1
+-                                legendStr{g} = {adaptDataList{g}{1}};
++                            if length(adaptDataList{g})>1
++                                legendStr{g}={adaptDataList{g}{1}};
++                            else
++                                legendStr{g}={adaptDataList{g}{1}};
+                             end
+ 
+                         end
+@@ -794,32 +722,24 @@
+                             nanJackKnife(x,y,E,color, ...
+                             color+0.5.*abs(color-1),Opacity,w);
+                         %set(Li{g},'Clipping','off')
+-                        H          = get(Li{g},'Parent');
+-                        group      = adaptData{g}{1}.subData.ID;
+-                        abrevGroup = [group];
+-                        legendStr{g} = {[ abrevGroup]};
+-                    elseif Ngroups == 1 && ~(size(params,1) > 1) && ...
+-                            ~isempty(biofeedback)
+-                        [~, Li{c}] = ...
+-                            nanJackKnife(x,y,E, ...
+-                            colorOrder(colorIdxBounded(c),:), ...
+-                            colorOrder(colorIdxBounded(c), ...
+-                            :)+0.5.*abs(colorOrder(colorIdxBounded(c), ...
+-                            :)-1),Opacity,w);
++                        H=get(Li{g},'Parent');
++                        group=adaptData{g}{1}.subData.ID;
++                        abrevGroup=[group];
++                        legendStr{g}={[ abrevGroup]};
++                        elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
++                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
+                         %set(Li{c},'Clipping','off')
+-                        H         = get(Li{c},'Parent');
+-                        legendStr = {conditions};
+-                        % elseif ~(size(params,1)>1) && ...
+-                        %    ~isempty(biofeedback)
+-                        %     color=colorOrder(colorIdxBounded(g),:)./Cdiv;
+-                        %     [Pa, Li{g}]=nanJackKnife(x,y,E,color, ...
+-                        %    color+0.5.*abs(color-1),Opacity,w);
+-                        %     %set(Li{g},'Clipping','off')
+-                        %     H=get(Li{g},'Parent');
+-                        %     load([adaptDataList{g}{1,1}])
+-                        %     group=adaptData.subData.ID;
+-                        %     abrevGroup=[group];
+-                        %     legendStr{g}={[ abrevGroup]};
++                        H=get(Li{c},'Parent');
++                        legendStr={conditions};
++                    elseif ~(size(params,1)>1) && ~isempty(biofeedback)
++                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
++                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
++                        %set(Li{g},'Clipping','off')
++                        H=get(Li{g},'Parent');
++                        load([adaptDataList{g}{1,1}])
++                        group=adaptData.subData.ID;
++                        abrevGroup=[group];
++                        legendStr{g}={[ abrevGroup]};
+                     end
+                     %set(Pa,'Clipping','off')
+                     set(H,'Layer','top')
+@@ -848,10 +768,7 @@
+                 %end
+                 xticks = lineX+diff([lineX Xstart])./2;
+ 
+-                %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart], ...
+-                %    'Xtick', xticks, 'Xticklabel', ...
+-                %    adaptData.metaData.conditionName( ...
+-                %    adaptData.getConditionIdxsFromName(conditions)))
++                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart]); %,'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
+                 if ~isempty(alignEnd)
+ 
+                     xticks = [[0 lineX(3:2:end)];xticks(1:2:end)];
+@@ -870,8 +787,7 @@
+                     xtl = adaptData.metaData.conditionName( ...
+                         adaptData.getConditionIdxsFromName(conditions));
+                 end
+-                %                 set(gca,'fontsize',axesFontSize, ...
+-                %    'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
++                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart]); %,'Xtick', [0 50]xticks, 'Xticklabel', {'0','50'}xtl)
+                 %h=refline(0,0);
+                 %set(h,'color','k')
+             end
+@@ -898,8 +814,7 @@
+             legend([Li{:},pp],[legendStr{:}],'Location','Best', ...
+                 'AutoUpdate',false)
+         catch
+-            legend([Li{:}],[legendStr{:}],'Location','Best', ...
+-                'AutoUpdate',false)
++            % legend([Li{:}],[legendStr{:}],'Location','Best','AutoUpdate',false)
+         end
+     end
+ else

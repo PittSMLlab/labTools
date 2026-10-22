@@ -13,6 +13,10 @@ change, reprocess the same dataset and compare the two files with
 `compareAdaptationData`. Parameters that changed beyond floating-point
 noise are flagged explicitly.
 
+For a stricter, scripted version (per-trial warnings and gait events,
+unmatched strides, NaN mismatches, the RAW -> process stage), use the
+harness in [testing/regression/](testing/regression/README.md).
+
 ---
 
 ## Prerequisites
@@ -278,4 +282,6 @@ code live with each feature in [FEATURES.md](FEATURES.md).
 - `fun/misc/compareAdaptationData.m` — parameter value comparison
 - `fun/misc/compareExperimentData.m` — structural comparison
 - `example/TestPipelineRecompute.m` — template script
+- [testing/regression/](testing/regression/README.md) — scripted
+  before/after harness
 - [README.md](README.md#full-call-chain) — pipeline call chain

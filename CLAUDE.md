@@ -37,6 +37,9 @@ All code must run on MATLAB R2021a through the current release.
 Style: `.claude/rules/matlab-style.md` (loads for `.m` files).
 
 ## Hard Rules
+- Never commit, merge, tag, or push unless the user explicitly asks in
+  the current conversation. A plan, summary, or earlier approval is
+  not permission. Leave changes uncommitted for the user to review.
 - Do not rename or delete existing files, functions, or commented-out
   code without the user's approval (lab sign-off pending).
 - Never edit `fun/ext/BTK/`: it is unmodified third-party code.
@@ -53,4 +56,7 @@ trial's warnings and label presence, not only that the run finished.
 [TESTING](TESTING.md) (regression) ·
 [FEATURES](FEATURES.md) (handrail, stride quality, H-reflex,
 SpinalAdapt) · [EXPERIMENT_SETUP](EXPERIMENT_SETUP.md) (new
-experiments) · [DATA_OUTPUTS](DATA_OUTPUTS.md) (what writes where)
+experiments) · [DATA_OUTPUTS](DATA_OUTPUTS.md) (what writes where) ·
+[FUTURE](FUTURE.md) (known bugs, follow-ups) ·
+[DEAD_FILES](DEAD_FILES.md), [COMMENTED_CODE](COMMENTED_CODE.md)
+(pending lab deletion decisions)
